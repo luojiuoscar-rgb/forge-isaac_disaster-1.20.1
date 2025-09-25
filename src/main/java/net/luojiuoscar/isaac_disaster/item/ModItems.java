@@ -16,17 +16,29 @@ public class ModItems {
     public static final DeferredRegister<Item> ITEMS =
             DeferredRegister.create(ForgeRegistries.ITEMS, IsaacDisaster.MOD_ID);
 
-    // 1. breakfast
+    public static void register(IEventBus eventBus){
+        ITEMS.register(eventBus);
+    }
+
+
+    // Passive items
     public static final RegistryObject<Item> BREAKFAST = ITEMS.register("breakfast",
             () -> new ModPassiveItems(new Item.Properties().stacksTo(1), ItemIdManager.BREAKFAST));
 
-    // 2. dessert
     public static final RegistryObject<Item> DESSERT = ITEMS.register("dessert",
             () -> new ModPassiveItems(new Item.Properties().stacksTo(1), ItemIdManager.DESSERT));
 
 
-    public static void register(IEventBus eventBus){
-        ITEMS.register(eventBus);
-    }
+
+
+
+
+
+
+
+
+
+
+
 
 }

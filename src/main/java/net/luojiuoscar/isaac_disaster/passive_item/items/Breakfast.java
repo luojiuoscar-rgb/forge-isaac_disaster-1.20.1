@@ -23,12 +23,17 @@ public class Breakfast implements PassiveItem {
 
     @Override
     public void directObtainEffect(Player player) {
-        StatManager.modifyMaxHealth(player, 1, 1);
+        //属性修改需要在服务端权威修改
+        if(!player.level().isClientSide()){
+            StatManager.modifyMaxHealth(player, 1, 1);
+        }
     }
 
     @Override
     public void removeEffect(Player player) {
-        StatManager.modifyMaxHealth(player, -1, 0);
+        if(!player.level().isClientSide()){
+            StatManager.modifyMaxHealth(player, -1, 0);
+        }
     }
 
     @Override

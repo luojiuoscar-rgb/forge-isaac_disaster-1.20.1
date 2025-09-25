@@ -3,6 +3,8 @@ package net.luojiuoscar.isaac_disaster.manager;
 import net.luojiuoscar.isaac_disaster.passive_item.PassiveItem;
 import net.luojiuoscar.isaac_disaster.passive_item.items.Breakfast;
 import net.luojiuoscar.isaac_disaster.passive_item.items.Dessert;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.player.Player;
 
 import java.util.HashMap;
 import java.util.Map;

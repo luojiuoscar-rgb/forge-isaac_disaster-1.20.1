@@ -49,7 +49,7 @@ public class Config
         // 生命值增量基准  默认100
         BASE_HEALTH_BONUS = BUILDER
                 .comment("Base value of health increment")
-                .defineInRange("base_health_bonus", 100, 1, 10000);
+                .defineInRange("base_health_bonus", 10, 1, 10000);
 
         BUILDER.pop();
     }

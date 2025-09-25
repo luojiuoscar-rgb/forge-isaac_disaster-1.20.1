@@ -10,7 +10,7 @@ import java.util.UUID;
 import static net.luojiuoscar.isaac_disaster.Config.BASE_HEALTH_BONUS;
 
 /**
- * 最大生命值控制器，统一管理所有道具对玩家最大生命值的修改
+ * 属性控制器，统一管理所有道具对玩家的属性修改
  */
 public class StatManager {
     private static final UUID MAX_HEALTH_MODIFIER_ADDER_UUID =

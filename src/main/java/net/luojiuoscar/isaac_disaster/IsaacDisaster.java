@@ -4,6 +4,7 @@ import com.mojang.logging.LogUtils;
 import net.luojiuoscar.isaac_disaster.item.ModCreativeModeTabs;
 import net.luojiuoscar.isaac_disaster.item.ModItems;
 import net.luojiuoscar.isaac_disaster.manager.ItemManager;
+import net.luojiuoscar.isaac_disaster.networking.ModMessages;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
@@ -49,6 +50,7 @@ public class IsaacDisaster
     }
 
     private void commonSetup(final FMLCommonSetupEvent event) {
+        ModMessages.register();
     }
 
 

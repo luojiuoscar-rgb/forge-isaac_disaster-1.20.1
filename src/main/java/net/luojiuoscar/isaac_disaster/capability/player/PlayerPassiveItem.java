@@ -1,4 +1,4 @@
-package net.luojiuoscar.isaac_disaster.player_passive_item;
+package net.luojiuoscar.isaac_disaster.capability.player;
 
 import net.minecraft.nbt.CompoundTag;
 
@@ -65,7 +65,7 @@ public class PlayerPassiveItem {
     }
 
     //从目标处复制
-    public void copyFromSource(PlayerPassiveItem source) {
+    public void copyFrom(PlayerPassiveItem source) {
         this.playerPassiveItems = new ArrayList<>(source.playerPassiveItems);
     }
 

@@ -2,6 +2,9 @@ package net.luojiuoscar.isaac_disaster.item;
 
 import net.luojiuoscar.isaac_disaster.manager.ItemManager;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
@@ -44,6 +47,23 @@ public class ModPassiveItems extends Item {
         }
     }
 
+    /**
+     * 重写右键使用方法
+     */
+    @Override
+    public @NotNull InteractionResultHolder<ItemStack> use(@NotNull Level level, Player player, @NotNull InteractionHand hand) {
+        // 获取玩家手中的物品栈
+        ItemStack stack = player.getItemInHand(hand);
+
+        // 删除物品
+        stack.shrink(1);
+
+        // 触发效果
+        ItemManager.getInstance().getItemFromId(itemId).onObtain(player);
+
+        // 返回成功结果
+        return InteractionResultHolder.pass(stack);
+    }
 
     public int getItemId(){
         return this.itemId;
