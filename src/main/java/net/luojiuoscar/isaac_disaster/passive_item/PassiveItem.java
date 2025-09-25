@@ -63,8 +63,6 @@ public interface PassiveItem {
         return getItemStack().getDisplayName();
     }
 
-    default List<Component> getDescription(){
-        return getItemStack().getTooltipLines(null, TooltipFlag.NORMAL);
-    }
+    List<Component> getDescription();
 
 }

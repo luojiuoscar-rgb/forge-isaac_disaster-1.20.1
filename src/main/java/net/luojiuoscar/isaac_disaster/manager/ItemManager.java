@@ -2,8 +2,12 @@ package net.luojiuoscar.isaac_disaster.manager;
 
 import net.luojiuoscar.isaac_disaster.passive_item.PassiveItem;
 import net.luojiuoscar.isaac_disaster.passive_item.items.Breakfast;
+import net.luojiuoscar.isaac_disaster.passive_item.items.Dessert;
+
 import java.util.HashMap;
 import java.util.Map;
+
+import static com.mojang.text2speech.Narrator.LOGGER;
 
 /**
  * 被动道具管理器，负责注册和管理所有被动道具实例
@@ -32,6 +36,12 @@ public class ItemManager {
         registeredItems.put(itemId, item);
     }
 
+    public void registerItems(PassiveItem... items) {
+        for (PassiveItem item : items) {
+            registerItem(item);
+        }
+    }
+
     /**
      * 通过ID获取道具实例
      * @param itemId 道具ID
@@ -47,7 +57,9 @@ public class ItemManager {
      */
     public void init() {
         // 注册所有被动道具实例
-        registerItem(new Breakfast());
-
+        registerItems(
+                new Breakfast(),
+                new Dessert()
+        );
     }
 }

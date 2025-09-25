@@ -18,15 +18,11 @@ public class ModItems {
 
     // 1. breakfast
     public static final RegistryObject<Item> BREAKFAST = ITEMS.register("breakfast",
-            () -> new ModPassiveItems(new Item.Properties().stacksTo(1), List.of(
-                    Component.translatable("item.isaac_disaster.breakfast.lore.1")),
-                    ItemIdManager.BREAKFAST));
+            () -> new ModPassiveItems(new Item.Properties().stacksTo(1), ItemIdManager.BREAKFAST));
 
     // 2. dessert
     public static final RegistryObject<Item> DESSERT = ITEMS.register("dessert",
-            () -> new ModPassiveItems(new Item.Properties().stacksTo(1), List.of(
-                    Component.translatable("item.isaac_disaster.dessert.lore.1")),
-                    ItemIdManager.DESSERT));
+            () -> new ModPassiveItems(new Item.Properties().stacksTo(1), ItemIdManager.DESSERT));
 
 
     public static void register(IEventBus eventBus){

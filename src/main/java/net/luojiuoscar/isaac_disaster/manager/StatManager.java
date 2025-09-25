@@ -1,35 +1,73 @@
 package net.luojiuoscar.isaac_disaster.manager;
 
-import net.minecraftforge.common.ForgeConfigSpec;
-import net.minecraftforge.fml.common.Mod;
+import net.minecraft.world.entity.ai.attributes.AttributeInstance;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.player.Player;
+
+import java.util.UUID;
+
+import static net.luojiuoscar.isaac_disaster.Config.BASE_HEALTH_BONUS;
 
 /**
- * 数值管理类：集中管理属性的基准值
- * 支持通过配置文件修改
+ * 最大生命值控制器，统一管理所有道具对玩家最大生命值的修改
  */
-@Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)
 public class StatManager {
-    // 1. 配置文件
-    public static final ForgeConfigSpec.Builder BUILDER = new ForgeConfigSpec.Builder();
-    public static final ForgeConfigSpec SPEC;
+    private static final UUID MAX_HEALTH_MODIFIER_ADDER_UUID =
+            UUID.nameUUIDFromBytes(("isaac_disaster:max_health_modifier_adder_location").getBytes());
 
-    public static ForgeConfigSpec.IntValue BASE_HEALTH_BONUS;
+    /**
+     * 修改玩家最大生命值
+     * @param player 目标玩家
+     * @param changeRatio 相对基础值的比例变化
+     * @param healRatio 基于本次最大生命变化量的回复比例
+     */
+    public static void modifyMaxHealth(Player player, float changeRatio, float healRatio) {
+        // 防止玩家出于某种情况没有max_health属性 | 当玩家生命值超过设定上限时
+        AttributeInstance healthAttribute = player.getAttribute(Attributes.MAX_HEALTH);
+        if (healthAttribute == null) {
+            return;
+        }
 
+        // 获取当前已有的生命值上限加成 (若不存在则加值为0.0)
+        AttributeModifier healthModifierAdder = healthAttribute.getModifier(MAX_HEALTH_MODIFIER_ADDER_UUID);
+        double currentBoost = healthModifierAdder != null ? healthModifierAdder.getAmount() : 0.0;
 
-    static {
-        // 配置数值的默认值和范围
-        BUILDER.push("Passive Item Stats"); // 配置分组
+        // 计算新的加成值
+        double newBoost = currentBoost + StatManager.getBaseHealthBonus() * changeRatio;
 
-        // 生命值增量基准  默认10
-        BASE_HEALTH_BONUS = BUILDER
-                .comment("Base value of health increment")
-                .defineInRange("base_health_bonus", 10, 1, 10000);
+        // 更新属性修饰符
+        updateHealthModifier(healthAttribute, newBoost);
 
-        BUILDER.pop();
-        SPEC = BUILDER.build();
+        // 计算并恢复生命值
+        healHealth(player, StatManager.getBaseHealthBonus() * healRatio);
     }
 
-    // 获取基准值
+    private static void healHealth(Player player, float amount){
+        //回复amount点生命值
+        if (amount > 0) {
+            float currentHealth = player.getHealth();
+            float maxHealth = player.getMaxHealth();
+            // 确保生命值不超过最大生命值
+            float newHealth = Math.min(currentHealth + amount, maxHealth);
+            player.setHealth(newHealth);
+        }
+    }
+
+    private static void updateHealthModifier(AttributeInstance attribute, double totalBoost) {
+        // 先移除旧修饰符
+        attribute.removeModifier(MAX_HEALTH_MODIFIER_ADDER_UUID);
+        // 仅当有正加成时添加新修饰符
+        if (totalBoost > 0) {
+            attribute.addPermanentModifier(new AttributeModifier(
+                    MAX_HEALTH_MODIFIER_ADDER_UUID,
+                    "isaac_disaster:max_health_boost",
+                    totalBoost,
+                    AttributeModifier.Operation.ADDITION
+            ));
+        }
+    }
+
     public static int getBaseHealthBonus() {
         return BASE_HEALTH_BONUS.get(); // 从配置中获取
     }
