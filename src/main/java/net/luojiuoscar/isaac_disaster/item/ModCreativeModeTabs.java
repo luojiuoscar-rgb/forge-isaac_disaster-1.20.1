@@ -19,7 +19,7 @@ public class ModCreativeModeTabs {
                     .displayItems((itemDisplayParameters, output) -> {
                         output.accept(ModItems.BREAKFAST.get());
                         output.accept(ModItems.DESSERT.get());
-
+                        output.accept(ModItems.WOODEN_SPOON.get());
 
                     }).build());
 

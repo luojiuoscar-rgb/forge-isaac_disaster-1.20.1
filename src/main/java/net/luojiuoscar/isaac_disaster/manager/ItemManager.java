@@ -3,6 +3,7 @@ package net.luojiuoscar.isaac_disaster.manager;
 import net.luojiuoscar.isaac_disaster.passive_item.PassiveItem;
 import net.luojiuoscar.isaac_disaster.passive_item.items.Breakfast;
 import net.luojiuoscar.isaac_disaster.passive_item.items.Dessert;
+import net.luojiuoscar.isaac_disaster.passive_item.items.WoodenSpoon;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 
@@ -61,7 +62,8 @@ public class ItemManager {
         // 注册所有被动道具实例
         registerItems(
                 new Breakfast(),
-                new Dessert()
+                new Dessert(),
+                new WoodenSpoon()
         );
     }
 }

@@ -17,5 +17,6 @@ public class ModItemModelProvider extends ItemModelProvider {
     protected void registerModels() {
         basicItem(ModItems.BREAKFAST.get());
         basicItem(ModItems.DESSERT.get());
+        basicItem(ModItems.WOODEN_SPOON.get());
     }
 }

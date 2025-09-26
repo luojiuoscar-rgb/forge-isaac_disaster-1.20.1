@@ -28,7 +28,8 @@ public class ModItems {
     public static final RegistryObject<Item> DESSERT = ITEMS.register("dessert",
             () -> new ModPassiveItems(new Item.Properties().stacksTo(1), ItemIdManager.DESSERT));
 
-
+    public static final RegistryObject<Item> WOODEN_SPOON = ITEMS.register("wooden_spoon",
+            () -> new ModPassiveItems(new Item.Properties().stacksTo(1), ItemIdManager.WOODEN_SPOON));
 
 
 

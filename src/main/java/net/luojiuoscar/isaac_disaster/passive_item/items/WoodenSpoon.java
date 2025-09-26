@@ -10,41 +10,41 @@ import net.minecraft.world.item.ItemStack;
 
 import java.util.List;
 
-public class Dessert implements PassiveItem {
-
+public class WoodenSpoon implements PassiveItem {
     @Override
     public int getItemId() {
-        return ItemIdManager.DESSERT;
+        return ItemIdManager.WOODEN_SPOON;
     }
 
     @Override
     public void obtainEffect(Player player) {
+
     }
 
     @Override
     public void directObtainEffect(Player player) {
         if(!player.level().isClientSide()){
-            StatManager.modifyMaxHealth(player, 1);
-            StatManager.healHealth(player, 1.0f);
+            StatManager.modifyMovementSpeedAdder(player, 1.5);
         }
     }
 
     @Override
     public void removeEffect(Player player) {
-        if(!player.level().isClientSide()) {
-            StatManager.modifyMaxHealth(player, -1);
+        if(!player.level().isClientSide()){
+            StatManager.modifyMovementSpeedAdder(player, -1.5);
         }
     }
 
     @Override
-    public ItemStack getItemStack(){
-        return new ItemStack(ModItems.DESSERT.get());
+    public ItemStack getItemStack() {
+        return new ItemStack(ModItems.WOODEN_SPOON.get());
     }
 
     @Override
     public List<Component> getDescription() {
         return List.of(
-                Component.translatable("item.isaac_disaster.dessert.lore.1", StatManager.getBaseHealthBonus())
+                //移动速度以百分比显示
+                Component.translatable("item.isaac_disaster.wooden_spoon.lore.1", 1.5*StatManager.getMovementSpeedBonus()*1000)
         );
     }
 }

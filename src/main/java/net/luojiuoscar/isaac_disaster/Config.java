@@ -13,7 +13,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static com.mojang.text2speech.Narrator.LOGGER;
 import static net.luojiuoscar.isaac_disaster.IsaacDisaster.MOD_ID;
 
 // An example config class. This is not required, but it's a good idea to have one to keep your config organized.
@@ -40,16 +39,30 @@ public class Config
             .comment("A list of items to log on common setup.")
             .defineListAllowEmpty("items", List.of("minecraft:iron_ingot"), Config::validateItemName);
 
-    public static ForgeConfigSpec.IntValue BASE_HEALTH_BONUS;
+    // 可配置的属性
+    public static ForgeConfigSpec.IntValue HEALTH_BONUS;
+    public static ForgeConfigSpec.DoubleValue MOVEMENT_SPEED_BONUS;
+    public static ForgeConfigSpec.DoubleValue MOVEMENT_SPEED_LIMIT;
 
     static {
         // 配置数值的默认值和范围
         BUILDER.push("Passive Item Stats"); // 配置分组
 
-        // 生命值增量基准  默认100
-        BASE_HEALTH_BONUS = BUILDER
+        // 生命值增量基准  默认10
+        HEALTH_BONUS = BUILDER
                 .comment("Base value of health increment")
-                .defineInRange("base_health_bonus", 10, 1, 10000);
+                .defineInRange("health_bonus", 10, 1, 10000);
+
+        // 移动速度基准值  默认0.02
+        MOVEMENT_SPEED_BONUS = BUILDER
+                .comment("Base value of movement speed increment")
+                .defineInRange("movement_speed_bonus", 0.02, 0.0, 100.0);
+
+        // 移动速度最大值  默认0.2
+        MOVEMENT_SPEED_LIMIT = BUILDER
+                .comment("Limitation of movement speed value")
+                .defineInRange("movement_speed_limit", 0.2, 0.1, 100.0);
+
 
         BUILDER.pop();
     }

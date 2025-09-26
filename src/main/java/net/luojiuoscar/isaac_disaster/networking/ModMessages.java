@@ -1,7 +1,10 @@
 package net.luojiuoscar.isaac_disaster.networking;
 
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
+import net.luojiuoscar.isaac_disaster.networking.packet.ClearPassiveItemC2SPacket;
 import net.luojiuoscar.isaac_disaster.networking.packet.ObtainPassiveItemC2SPacket;
+import net.luojiuoscar.isaac_disaster.networking.packet.RemovePassiveItemFromIdC2SPacket;
+import net.luojiuoscar.isaac_disaster.networking.packet.DirectObtainPassiveItemC2SPacket;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.network.NetworkDirection;
@@ -32,6 +35,27 @@ public class ModMessages {
                 .decoder(ObtainPassiveItemC2SPacket::new)
                 .encoder(ObtainPassiveItemC2SPacket::toBytes)
                 .consumerNetworkThread(ObtainPassiveItemC2SPacket::handle)
+                .add();
+
+        // register DirectObtainPassiveItemC2SPacket
+        net.messageBuilder(DirectObtainPassiveItemC2SPacket.class, id(), NetworkDirection.PLAY_TO_SERVER)
+                .decoder(DirectObtainPassiveItemC2SPacket::new)
+                .encoder(DirectObtainPassiveItemC2SPacket::toBytes)
+                .consumerNetworkThread(DirectObtainPassiveItemC2SPacket::handle)
+                .add();
+
+        // register RemoveItemFromId
+        net.messageBuilder(RemovePassiveItemFromIdC2SPacket.class, id(), NetworkDirection.PLAY_TO_SERVER)
+                .decoder(RemovePassiveItemFromIdC2SPacket::new)
+                .encoder(RemovePassiveItemFromIdC2SPacket::toBytes)
+                .consumerNetworkThread(RemovePassiveItemFromIdC2SPacket::handle)
+                .add();
+
+        // register ClearPassiveItemC2SPacket
+        net.messageBuilder(ClearPassiveItemC2SPacket.class, id(), NetworkDirection.PLAY_TO_SERVER)
+                .decoder(ClearPassiveItemC2SPacket::new)
+                .encoder(ClearPassiveItemC2SPacket::toBytes)
+                .consumerNetworkThread(ClearPassiveItemC2SPacket::handle)
                 .add();
 
     }

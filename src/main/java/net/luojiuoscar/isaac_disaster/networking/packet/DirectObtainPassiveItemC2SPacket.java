@@ -7,16 +7,16 @@ import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
-public class ObtainPassiveItemC2SPacket {
+public class DirectObtainPassiveItemC2SPacket {
     private int itemId;
 
     //客户端构造时的函数
-    public ObtainPassiveItemC2SPacket(int itemId){
+    public DirectObtainPassiveItemC2SPacket(int itemId){
         this.itemId = itemId;
     }
 
     //服务器接收时使用的构造函数（从缓冲区读取数据）
-    public ObtainPassiveItemC2SPacket(FriendlyByteBuf buf){
+    public DirectObtainPassiveItemC2SPacket(FriendlyByteBuf buf){
         this.itemId = buf.readInt();
     }
 
@@ -31,8 +31,9 @@ public class ObtainPassiveItemC2SPacket {
             ServerPlayer player = context.getSender();
 
             player.getCapability(PlayerPassiveItemProvider.PLAYER_PASSIVE_ITEM).ifPresent(
-                    playerPassiveItem -> {playerPassiveItem.addItem(player, itemId);
+                    playerPassiveItem -> {playerPassiveItem.directAddItem(player, itemId);
                     });
+
 
         });
         return true;

@@ -7,6 +7,7 @@ import net.luojiuoscar.isaac_disaster.manager.ItemIdManager;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import org.lwjgl.system.linux.Stat;
 
 import java.util.List;
 
@@ -25,14 +26,15 @@ public class Breakfast implements PassiveItem {
     public void directObtainEffect(Player player) {
         //属性修改需要在服务端权威修改
         if(!player.level().isClientSide()){
-            StatManager.modifyMaxHealth(player, 1, 1);
+            StatManager.modifyMaxHealth(player, 1);
+            StatManager.healHealth(player, 1.0f);
         }
     }
 
     @Override
     public void removeEffect(Player player) {
         if(!player.level().isClientSide()){
-            StatManager.modifyMaxHealth(player, -1, 0);
+            StatManager.modifyMaxHealth(player, -1);
         }
     }
 

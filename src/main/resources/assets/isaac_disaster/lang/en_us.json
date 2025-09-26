@@ -4,7 +4,8 @@
 
   "item.isaac_disaster.breakfast": "早餐",
   "item.isaac_disaster.breakfast.lore.1": "生命上限+%d",
-
   "item.isaac_disaster.dessert": "甜点",
-  "item.isaac_disaster.dessert.lore.1": "生命上限+%d"
+  "item.isaac_disaster.dessert.lore.1": "生命上限+%d",
+  "item.isaac_disaster.wooden_spoon": "木勺",
+  "item.isaac_disaster.wooden_spoon.lore.1": "移动速度+%d%%"
 }

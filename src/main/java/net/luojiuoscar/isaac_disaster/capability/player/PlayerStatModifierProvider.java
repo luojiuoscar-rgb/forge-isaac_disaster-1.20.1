@@ -12,27 +12,26 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 
-public class PlayerPassiveItemProvider implements ICapabilityProvider, INBTSerializable<CompoundTag> {
-    public static Capability<PlayerPassiveItem> PLAYER_PASSIVE_ITEM = CapabilityManager.get(new CapabilityToken<PlayerPassiveItem>() {});
 
-    private PlayerPassiveItem passiveItem = null;
-    private final LazyOptional<PlayerPassiveItem> optional = LazyOptional.of(this::createPlayerPassiveItem);
+public class PlayerStatModifierProvider implements ICapabilityProvider, INBTSerializable<CompoundTag> {
+    //stat modifiers
+    public static Capability<PlayerStatModifier> PLAYER_STAT_MODIFIER = CapabilityManager.get(new CapabilityToken<PlayerStatModifier>() {});
 
-    /**
-     * 创建
-     */
-    private PlayerPassiveItem createPlayerPassiveItem() {
-        if(this.passiveItem == null){
-            this.passiveItem = new PlayerPassiveItem();
+
+    private PlayerStatModifier statModifier = null;
+    private final LazyOptional<PlayerStatModifier> optional = LazyOptional.of(this::createPlayerStatModifiers);
+
+    private PlayerStatModifier createPlayerStatModifiers(){
+        if(this.statModifier == null){
+            this.statModifier = new PlayerStatModifier();
         }
 
-        return this.passiveItem;
+        return this.statModifier;
     }
-
 
     @Override
     public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
-        if(cap == PLAYER_PASSIVE_ITEM){
+        if(cap == PLAYER_STAT_MODIFIER){
             return optional.cast();
         }
 
@@ -42,12 +41,12 @@ public class PlayerPassiveItemProvider implements ICapabilityProvider, INBTSeria
     @Override
     public CompoundTag serializeNBT() {
         CompoundTag nbt = new CompoundTag();
-        createPlayerPassiveItem().saveNBTData(nbt);
+        createPlayerStatModifiers().saveNBTData(nbt);
         return nbt;
     }
 
     @Override
     public void deserializeNBT(CompoundTag nbt) {
-        createPlayerPassiveItem().loadNBTData(nbt);
+        createPlayerStatModifiers().loadNBTData(nbt);
     }
 }

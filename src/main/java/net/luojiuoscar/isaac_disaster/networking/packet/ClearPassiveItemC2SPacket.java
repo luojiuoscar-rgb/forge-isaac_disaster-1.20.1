@@ -7,21 +7,19 @@ import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
-public class ObtainPassiveItemC2SPacket {
-    private int itemId;
+public class ClearPassiveItemC2SPacket {
 
     //客户端构造时的函数
-    public ObtainPassiveItemC2SPacket(int itemId){
-        this.itemId = itemId;
+    public ClearPassiveItemC2SPacket(){
     }
 
     //服务器接收时使用的构造函数（从缓冲区读取数据）
-    public ObtainPassiveItemC2SPacket(FriendlyByteBuf buf){
-        this.itemId = buf.readInt();
+    public ClearPassiveItemC2SPacket(FriendlyByteBuf buf){
+
     }
 
     public void toBytes(FriendlyByteBuf buf){
-        buf.writeInt(itemId);
+
     }
 
     public boolean handle(Supplier<NetworkEvent.Context> supplier){
@@ -31,7 +29,7 @@ public class ObtainPassiveItemC2SPacket {
             ServerPlayer player = context.getSender();
 
             player.getCapability(PlayerPassiveItemProvider.PLAYER_PASSIVE_ITEM).ifPresent(
-                    playerPassiveItem -> {playerPassiveItem.addItem(player, itemId);
+                    playerPassiveItem -> {playerPassiveItem.clearPlayerPassiveItems(player);
                     });
 
         });
