@@ -1,11 +1,24 @@
 {
   "creativetab.isaac_disaster.isaac_item": "以撒的灾难：被动道具",
 
+  "rarity.isaac_disaster.common": "COMMON",
+  "rarity.isaac_disaster.uncommon": "UNCOMMON",
+  "rarity.isaac_disaster.rare": "RARE",
+  "rarity.isaac_disaster.epic": "EPIC",
+  "rarity.isaac_disaster.legendary": "LEGENDARY",
+
+  "message.isaac_disaster.warning.too_many_items":  "[警告]携带的被动道具已达上限",
 
   "item.isaac_disaster.breakfast": "早餐",
   "item.isaac_disaster.breakfast.lore.1": "生命上限+%d",
   "item.isaac_disaster.dessert": "甜点",
   "item.isaac_disaster.dessert.lore.1": "生命上限+%d",
   "item.isaac_disaster.wooden_spoon": "木勺",
-  "item.isaac_disaster.wooden_spoon.lore.1": "移动速度+%d%%"
+  "item.isaac_disaster.wooden_spoon.lore.1": "移动速度+%.1f%%",
+  "item.isaac_disaster.steven": "史蒂文",
+  "item.isaac_disaster.steven.lore.1": "攻击伤害+%.1f",
+  "item.isaac_disaster.crickets_head": "柯吉猫的头",
+  "item.isaac_disaster.crickets_head.lore.1": "攻击伤害+%.1f",
+  "item.isaac_disaster.crickets_head.lore.2": "攻击倍率+%.1f%%"
+
 }

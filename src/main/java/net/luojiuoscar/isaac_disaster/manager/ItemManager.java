@@ -1,9 +1,7 @@
 package net.luojiuoscar.isaac_disaster.manager;
 
 import net.luojiuoscar.isaac_disaster.passive_item.PassiveItem;
-import net.luojiuoscar.isaac_disaster.passive_item.items.Breakfast;
-import net.luojiuoscar.isaac_disaster.passive_item.items.Dessert;
-import net.luojiuoscar.isaac_disaster.passive_item.items.WoodenSpoon;
+import net.luojiuoscar.isaac_disaster.passive_item.items.*;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 
@@ -39,12 +37,6 @@ public class ItemManager {
         registeredItems.put(itemId, item);
     }
 
-    public void registerItems(PassiveItem... items) {
-        for (PassiveItem item : items) {
-            registerItem(item);
-        }
-    }
-
     /**
      * 通过ID获取道具实例
      * @param itemId 道具ID
@@ -63,7 +55,14 @@ public class ItemManager {
         registerItems(
                 new Breakfast(),
                 new Dessert(),
-                new WoodenSpoon()
+                new WoodenSpoon(),
+                new Steven(),
+                new CricketsHead()
         );
+    }
+    public void registerItems(PassiveItem... items) {
+        for (PassiveItem item : items) {
+            registerItem(item);
+        }
     }
 }

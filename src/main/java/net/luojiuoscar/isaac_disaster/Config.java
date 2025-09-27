@@ -39,35 +39,53 @@ public class Config
             .comment("A list of items to log on common setup.")
             .defineListAllowEmpty("items", List.of("minecraft:iron_ingot"), Config::validateItemName);
 
+
+
+
     // 可配置的属性
     public static ForgeConfigSpec.IntValue HEALTH_BONUS;
     public static ForgeConfigSpec.DoubleValue MOVEMENT_SPEED_BONUS;
     public static ForgeConfigSpec.DoubleValue MOVEMENT_SPEED_LIMIT;
+    public static ForgeConfigSpec.DoubleValue DAMAGE_BASE_BONUS;
+    // 其他可配置项目
+    public static ForgeConfigSpec.IntValue PASSIVE_ITEM_LIMIT;
 
     static {
         // 配置数值的默认值和范围
         BUILDER.push("Passive Item Stats"); // 配置分组
-
         // 生命值增量基准  默认10
         HEALTH_BONUS = BUILDER
                 .comment("Base value of health increment")
-                .defineInRange("health_bonus", 10, 1, 10000);
-
+                .defineInRange("health_bonus", 10, 1, 99999);
         // 移动速度基准值  默认0.02
         MOVEMENT_SPEED_BONUS = BUILDER
                 .comment("Base value of movement speed increment")
-                .defineInRange("movement_speed_bonus", 0.02, 0.0, 100.0);
-
-        // 移动速度最大值  默认0.2
+                .defineInRange("movement_speed_bonus", 0.02, 0.0, 99999.0);
+        // 移动速度最大值  默认0.1
         MOVEMENT_SPEED_LIMIT = BUILDER
-                .comment("Limitation of movement speed value")
-                .defineInRange("movement_speed_limit", 0.2, 0.1, 100.0);
+                .comment("Limitation of movement speed bonus value")
+                .defineInRange("movement_speed_limit", 0.1, 0.0, 99999.0);
+        // 攻击伤害  默认2
+        DAMAGE_BASE_BONUS = BUILDER
+                .comment("Base value of attack damage increment")
+                .defineInRange("damage_base_bonus", 2.0, 0.0, 99999.0);
 
+        BUILDER.pop();
+    }
+    static {
+        BUILDER.push("Other");
+        // 可携带的道具总数  默认999
+        PASSIVE_ITEM_LIMIT = BUILDER
+                .comment("How many passive items can a player carry")
+                .defineInRange("passive_item_limit", 999, 1, 99999);
 
         BUILDER.pop();
     }
 
+
+
     static final ForgeConfigSpec SPEC = BUILDER.build();
+
 
 
 

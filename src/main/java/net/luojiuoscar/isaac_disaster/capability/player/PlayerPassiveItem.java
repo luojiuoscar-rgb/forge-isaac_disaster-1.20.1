@@ -2,6 +2,8 @@ package net.luojiuoscar.isaac_disaster.capability.player;
 
 import net.luojiuoscar.isaac_disaster.manager.ItemManager;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.common.capabilities.AutoRegisterCapability;
 
@@ -9,6 +11,8 @@ import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.stream.Collectors;
+
+import static net.luojiuoscar.isaac_disaster.Config.PASSIVE_ITEM_LIMIT;
 
 @AutoRegisterCapability
 public class PlayerPassiveItem {
@@ -49,9 +53,20 @@ public class PlayerPassiveItem {
 
     //将一个新的道具添加到列表。同时触发添加道具的效果和直接添加效果
     public void addItem(Player player, int itemId){
+        // if there's too many items
+        if(this.getTotalItems() >= PASSIVE_ITEM_LIMIT.get()){
+            player.sendSystemMessage(Component.translatable("message.isaac_disaster.warning.too_many_items").withStyle(
+                    style -> style.withColor(0xFFBF00).withUnderlined(true)
+            ));
+            return;
+        }
+
+        // 增加被动道具到列表
         playerPassiveItems.add(itemId);
         ItemManager.getInstance().getItemFromId(itemId).obtainEffect(player);
         ItemManager.getInstance().getItemFromId(itemId).directObtainEffect(player);
+        // 删除手持的道具原型
+        player.getItemInHand(InteractionHand.MAIN_HAND).shrink(1);
     }
 
     //将一个新的道具添加到列表。同时触发添加道具的直接添加效果

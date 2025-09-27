@@ -20,6 +20,15 @@ public class DataGenerators {
         ExistingFileHelper existingFileHelper = event.getExistingFileHelper();
         CompletableFuture<HolderLookup.Provider> lookupProvider = event.getLookupProvider();
 
+        //模型生成器
         generator.addProvider(event.includeClient(), new ModItemModelProvider(packOutput, existingFileHelper));
+        //注册物品TAG生成器（无需方块标签，传递空的CompletableFuture）
+        generator.addProvider(event.includeServer(), new ModItemTagGenerator(
+                packOutput,
+                lookupProvider,
+                CompletableFuture.completedFuture(null),
+                existingFileHelper
+        ));
+
     }
 }

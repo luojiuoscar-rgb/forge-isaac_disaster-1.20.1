@@ -19,6 +19,10 @@ public class StatManager {
             UUID.nameUUIDFromBytes(("isaac_disaster:max_health_modifier_adder_location").getBytes());
     private static final UUID MOVEMENT_SPEED_MODIFIER_ADDER_UUID =
             UUID.nameUUIDFromBytes(("isaac_disaster:movement_speed_modifier_adder_uuid").getBytes());
+    private static final UUID DAMAGE_MODIFIER_ADDER_UUID =
+            UUID.nameUUIDFromBytes(("isaac_disaster:damage_modifier_adder_uuid").getBytes());
+    private static final UUID DAMAGE_MODIFIER_MULTIPLiER_UUID =
+            UUID.nameUUIDFromBytes(("isaac_disaster:damage_modifier_multiplier_uuid").getBytes());
 
 
     /**
@@ -119,32 +123,18 @@ public class StatManager {
 
         // 获取当前已有的移速加成 (若不存在则加值为0.0)
         AttributeModifier movementSpeedAdder = movementSpeedAttribute.getModifier(MOVEMENT_SPEED_MODIFIER_ADDER_UUID);
-        double newBoost = getFinalMovementSpeedAdder(ratio, movementSpeedAdder, movementSpeedAttribute);
+        double currentBoost = movementSpeedAdder != null ? movementSpeedAdder.getAmount() : 0.0;
+        double newBoost = currentBoost + StatManager.getMovementSpeedBonus() * ratio;
 
         player.getCapability(PlayerStatModifierProvider.PLAYER_STAT_MODIFIER).ifPresent(
                 playerStatModifier -> {playerStatModifier.setMovementSpeedAdder(player, newBoost);
                 });
     }
 
-    private static double getFinalMovementSpeedAdder(double ratio, AttributeModifier movementSpeedAdder, AttributeInstance movementSpeedAttribute){
-        double currentBoost = movementSpeedAdder != null ? movementSpeedAdder.getAmount() : 0.0;
-        // 计算新的加成值
-        double newBoost = currentBoost + StatManager.getMovementSpeedBonus() * ratio;
-
-        // 保底
-        if(ratio < 0){
-            double total = movementSpeedAttribute.getValue();
-            if(newBoost + total <= 0.03){
-                newBoost = 0.03 - total;
-            }
-        }
-
-        return newBoost;
-    }
 
     public static void updateMovementSpeedAdder(Player player, AttributeInstance attribute, double totalBoost) {
-        // 不能超过限制的最大值；但可以溢出
-        totalBoost = Math.min(totalBoost, getMovementSpeedLimit());
+        // 不能超过限制的最大值或小于-0.07；但可以溢出
+        totalBoost = Math.max(Math.min(totalBoost, getMovementSpeedLimit()),-0.07);
         // 移除旧修饰符
         attribute.removeModifier(MOVEMENT_SPEED_MODIFIER_ADDER_UUID);
         // 添加新修饰符
@@ -153,6 +143,82 @@ public class StatManager {
                 "isaac_disaster:movement_speed_adder",
                 totalBoost,
                 AttributeModifier.Operation.ADDITION
+        ));
+    }
+
+    /**
+     * DAMAGE
+     */
+    public static double getBaseDamageBonus(){
+        return DAMAGE_BASE_BONUS.get();
+    }
+
+    public static void modifyDamageAdder(Player player, double ratio){
+        AttributeInstance damageAttribute = player.getAttribute(Attributes.ATTACK_DAMAGE);
+        if (damageAttribute == null) {
+            return;
+        }
+
+        // 获取当前已有的加成 (若不存在则加值为0.0)
+        AttributeModifier damageAdder = damageAttribute.getModifier(DAMAGE_MODIFIER_ADDER_UUID);
+        double currentBoost = damageAdder != null ? damageAdder.getAmount() : 0.0;
+
+        // 计算新的加成值
+        double newBoost = currentBoost + StatManager.getBaseDamageBonus() * ratio;
+
+        player.getCapability(PlayerStatModifierProvider.PLAYER_STAT_MODIFIER).ifPresent(
+                playerStatModifier -> {playerStatModifier.setDamageAdder(player, newBoost);
+                });
+    }
+
+    public static void updateDamageAdder(Player player, AttributeInstance attribute, double totalBoost) {
+        // 不能小于-0.9 但可以溢出
+        totalBoost = Math.max(totalBoost,-0.9);
+        // 移除旧修饰符
+        attribute.removeModifier(DAMAGE_MODIFIER_ADDER_UUID);
+        // 添加新修饰符
+        attribute.addPermanentModifier(new AttributeModifier(
+                DAMAGE_MODIFIER_ADDER_UUID,
+                "isaac_disaster:damage_adder",
+                totalBoost,
+                AttributeModifier.Operation.ADDITION
+        ));
+    }
+
+
+    /**
+     * 直接输入数值
+     * @param amount 代表乘算数值。举例：0.5为+50%；-0.3为-30%
+     */
+    public static void modifyDamageMultiplier(Player player, double amount){
+        AttributeInstance damageAttribute = player.getAttribute(Attributes.ATTACK_DAMAGE);
+        if (damageAttribute == null) {
+            return;
+        }
+
+        // 获取当前已有的加成 (若不存在则加值为0.0)
+        AttributeModifier damageMultiplier = damageAttribute.getModifier(DAMAGE_MODIFIER_MULTIPLiER_UUID);
+        double currentBoost = damageMultiplier != null ? damageMultiplier.getAmount() : 0.0;
+
+        // 计算新的加成值
+        double newBoost = currentBoost + amount;
+
+        player.getCapability(PlayerStatModifierProvider.PLAYER_STAT_MODIFIER).ifPresent(
+                playerStatModifier -> {playerStatModifier.setDamageMultiplier(player, newBoost);
+                });
+    }
+
+    public static void updateDamageMultiplier(Player player, AttributeInstance attribute, double totalBoost) {
+        // 不能小于-0.9 但可以溢出
+        totalBoost = Math.max(totalBoost,-0.9);
+        // 移除旧修饰符
+        attribute.removeModifier(DAMAGE_MODIFIER_MULTIPLiER_UUID);
+        // 添加新修饰符
+        attribute.addPermanentModifier(new AttributeModifier(
+                DAMAGE_MODIFIER_MULTIPLiER_UUID,
+                "isaac_disaster:damage_adder",
+                totalBoost,
+                AttributeModifier.Operation.MULTIPLY_BASE
         ));
     }
 }
