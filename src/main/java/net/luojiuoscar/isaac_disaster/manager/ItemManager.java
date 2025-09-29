@@ -1,14 +1,9 @@
 package net.luojiuoscar.isaac_disaster.manager;
 
-import net.luojiuoscar.isaac_disaster.passive_item.PassiveItem;
-import net.luojiuoscar.isaac_disaster.passive_item.items.*;
-import net.minecraft.network.chat.Component;
-import net.minecraft.world.entity.player.Player;
+import net.luojiuoscar.isaac_disaster.isaac.passive_item.PassiveItem;
+import net.luojiuoscar.isaac_disaster.isaac.passive_item.items.*;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import static com.mojang.text2speech.Narrator.LOGGER;
+import java.util.*;
 
 /**
  * 被动道具管理器，负责注册和管理所有被动道具实例
@@ -46,10 +41,13 @@ public class ItemManager {
         return registeredItems.get(itemId);
     }
 
-    /**
-     * 初始化注册所有被动道具
-     * 应在Mod初始化时调用
-     */
+    public void registerItems(PassiveItem... items) {
+        for (PassiveItem item : items) {
+            registerItem(item);
+        }
+    }
+
+
     public void init() {
         // 注册所有被动道具实例
         registerItems(
@@ -57,12 +55,9 @@ public class ItemManager {
                 new Dessert(),
                 new WoodenSpoon(),
                 new Steven(),
-                new CricketsHead()
+                new CricketsHead(),
+                new TheCommonCold(),
+                new GlassEye()
         );
-    }
-    public void registerItems(PassiveItem... items) {
-        for (PassiveItem item : items) {
-            registerItem(item);
-        }
     }
 }

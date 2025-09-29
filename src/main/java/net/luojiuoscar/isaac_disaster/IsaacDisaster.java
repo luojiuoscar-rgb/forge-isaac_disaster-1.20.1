@@ -5,6 +5,7 @@ import net.luojiuoscar.isaac_disaster.item.ModCreativeModeTabs;
 import net.luojiuoscar.isaac_disaster.item.ModItems;
 import net.luojiuoscar.isaac_disaster.manager.ItemManager;
 import net.luojiuoscar.isaac_disaster.networking.ModMessages;
+import net.luojiuoscar.isaac_disaster.sound.ModSounds;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
@@ -40,7 +41,11 @@ public class IsaacDisaster
 
 
         ModCreativeModeTabs.register(modEventBus);
+
         ModItems.register(modEventBus);
+
+        ModSounds.register(modEventBus);
+
 
 
         // Register the item to a creative tab
@@ -51,6 +56,10 @@ public class IsaacDisaster
 
     private void commonSetup(final FMLCommonSetupEvent event) {
         ModMessages.register();
+
+        event.enqueueWork(() -> {
+            ItemManager.getInstance().init();
+        });
     }
 
 

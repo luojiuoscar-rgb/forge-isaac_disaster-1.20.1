@@ -1,9 +1,9 @@
-package net.luojiuoscar.isaac_disaster.passive_item.items;
+package net.luojiuoscar.isaac_disaster.isaac.passive_item.items;
 
 import net.luojiuoscar.isaac_disaster.item.ModItems;
-import net.luojiuoscar.isaac_disaster.manager.ItemIdManager;
+import net.luojiuoscar.isaac_disaster.manager.ItemId;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
-import net.luojiuoscar.isaac_disaster.passive_item.PassiveItem;
+import net.luojiuoscar.isaac_disaster.isaac.passive_item.PassiveItem;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -15,7 +15,7 @@ public class CricketsHead implements PassiveItem {
 
     @Override
     public int getItemId() {
-        return ItemIdManager.CRICKETS_HEAD;
+        return ItemId.CRICKETS_HEAD.getId();
     }
 
     @Override
@@ -47,8 +47,8 @@ public class CricketsHead implements PassiveItem {
     @Override
     public List<Component> getDescription() {
         return List.of(
-                Component.translatable("item.isaac_disaster.crickets_head.lore.1", 0.25*StatManager.getBaseDamageBonus()),
-                Component.translatable("item.isaac_disaster.crickets_head.lore.2", damage_multiplier*1000)
+                Component.translatable("item.isaac_disaster.attribute.damage", 0.25*StatManager.getDamageBonus()),
+                Component.translatable("item.isaac_disaster.attribute.damage_multiplier", damage_multiplier*100)
         );
     }
 }

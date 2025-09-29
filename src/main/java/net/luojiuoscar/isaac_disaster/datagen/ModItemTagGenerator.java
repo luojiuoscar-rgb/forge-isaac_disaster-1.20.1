@@ -1,8 +1,7 @@
 package net.luojiuoscar.isaac_disaster.datagen;
 
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
-import net.luojiuoscar.isaac_disaster.item.ModItems;
-import net.luojiuoscar.isaac_disaster.item.ModPassiveItems;
+import net.luojiuoscar.isaac_disaster.manager.ModItemManager;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.PackOutput;
@@ -34,7 +33,7 @@ public class ModItemTagGenerator extends ItemTagsProvider {
     protected void addTags(HolderLookup.Provider pProvider) {
         // 从统一列表中遍历所有被动物品，自动添加到标签中
         var passiveItemsTag = this.tag(PASSIVE_ITEMS);
-        ModPassiveItems.PASSIVE_ITEM_LIST.forEach(itemRegistry -> {
+        ModItemManager.PASSIVE_ITEM_LIST.forEach(itemRegistry -> {
             passiveItemsTag.add(itemRegistry.get());
         });
     }

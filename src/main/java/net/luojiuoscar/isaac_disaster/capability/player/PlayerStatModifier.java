@@ -17,6 +17,7 @@ public class PlayerStatModifier {
     private double movementSpeedAdder;
     private double damageAdder;
     private double damageMultiplier;
+    private double luckAdder;
 
     // constructor
     public PlayerStatModifier(){
@@ -24,6 +25,7 @@ public class PlayerStatModifier {
         movementSpeedAdder = 0;
         damageAdder = 0;
         damageMultiplier = 0;
+        luckAdder = 0;
     }
 
     /**
@@ -40,6 +42,9 @@ public class PlayerStatModifier {
     }
     public double getDamageMultiplier(){
         return damageMultiplier;
+    }
+    public double getLuckAdder(){
+        return luckAdder;
     }
 
     /**
@@ -65,6 +70,11 @@ public class PlayerStatModifier {
         StatManager.updateDamageMultiplier(player, (Objects.requireNonNull(player.getAttribute(Attributes.ATTACK_DAMAGE))), this.damageMultiplier);
     }
 
+    public void setLuckAdder(Player player, double amount){
+        luckAdder = amount;
+        StatManager.updateLuckAdder(player, (Objects.requireNonNull(player.getAttribute(Attributes.LUCK))), this.luckAdder);
+    }
+
     /**
      * 复制玩家属性
      * 复制后立刻触发属性修改；以确保玩家属性正确继承
@@ -75,6 +85,7 @@ public class PlayerStatModifier {
         setMovementSpeedAdder(player, source.movementSpeedAdder);
         setDamageAdder(player, source.damageAdder);
         setDamageMultiplier(player, source.damageMultiplier);
+        setLuckAdder(player, source.luckAdder);
     }
 
     public void saveNBTData(CompoundTag nbt) {
@@ -82,6 +93,7 @@ public class PlayerStatModifier {
         nbt.putDouble("movement_speed_adder", movementSpeedAdder);
         nbt.putDouble("damage_adder", damageAdder);
         nbt.putDouble("damage_multiplier", damageMultiplier);
+        nbt.putDouble("luck_adder", luckAdder);
     }
 
     public void loadNBTData(CompoundTag nbt) {
@@ -89,5 +101,6 @@ public class PlayerStatModifier {
         this.movementSpeedAdder = nbt.getDouble("movement_speed_adder");
         this.damageAdder = nbt.getDouble("damage_adder");;
         this.damageMultiplier = nbt.getDouble("damage_multiplier");
+        this.luckAdder = nbt.getDouble("luck_adder");
     }
 }

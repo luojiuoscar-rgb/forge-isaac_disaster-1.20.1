@@ -1,20 +1,17 @@
-package net.luojiuoscar.isaac_disaster.item;
+package net.luojiuoscar.isaac_disaster.item.custom;
 
 import net.luojiuoscar.isaac_disaster.manager.ItemManager;
+import net.minecraft.advancements.critereon.ItemPredicate;
+import net.minecraft.advancements.critereon.UsedTotemTrigger;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Rarity;
-import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.*;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.registries.RegistryObject;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -22,8 +19,6 @@ import java.util.List;
  * 只需在构造时传入lore文本列表，自动实现appendHoverText逻辑
  */
 public class ModPassiveItems extends Item {
-    // 统一存储所有被动道具
-    public static final List<RegistryObject<Item>> PASSIVE_ITEM_LIST = new ArrayList<>();
 
 
     // 存储Lore文本列表的成员变量
@@ -102,6 +97,23 @@ public class ModPassiveItems extends Item {
                 style -> style.withColor(color));
     }
 
+
+    /**
+     * 设置使用动画为不死图腾的动画
+     */
+    @Override
+    public UseAnim getUseAnimation(ItemStack stack) {
+        return UseAnim.CUSTOM;
+    }
+
+
+    /**
+     * 设置动画持续时间
+     */
+    @Override
+    public int getUseDuration(ItemStack stack) {
+        return 20;
+    }
 
 
     /**

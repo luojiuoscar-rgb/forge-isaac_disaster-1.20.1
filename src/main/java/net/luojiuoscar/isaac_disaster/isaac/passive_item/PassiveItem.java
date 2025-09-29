@@ -1,21 +1,20 @@
-/**
- * 被动道具接口，定义被动道具的核心行为和属性
- */
-package net.luojiuoscar.isaac_disaster.passive_item;
+package net.luojiuoscar.isaac_disaster.isaac.passive_item;
 
 import net.luojiuoscar.isaac_disaster.networking.ModMessages;
 import net.luojiuoscar.isaac_disaster.networking.packet.DirectObtainPassiveItemC2SPacket;
 import net.luojiuoscar.isaac_disaster.networking.packet.ObtainPassiveItemC2SPacket;
 import net.luojiuoscar.isaac_disaster.networking.packet.RemovePassiveItemFromIdC2SPacket;
+import net.luojiuoscar.isaac_disaster.sound.ModSounds;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.TooltipFlag;
 
 
 import java.util.List;
+
 
 public interface PassiveItem {
     /**
@@ -41,6 +40,10 @@ public interface PassiveItem {
 
     default void obtainEffectClient(Player player){
 
+    }
+
+    default void onObtainAnimation(Player player, InteractionHand hand){
+        player.startUsingItem(hand); // 启动动画
     }
 
     /**
@@ -78,7 +81,7 @@ public interface PassiveItem {
      * 获取道具时的默认音效，可修改
      */
     default void onObtainSound(Player player) {
-        SoundEvent defaultSound = SoundEvents.PLAYER_LEVELUP;
+        SoundEvent defaultSound = ModSounds.DEFAULT_OBTAIN_ITEM.get();
         player.playSound(defaultSound, 1.0F, 1.0F);
     }
 

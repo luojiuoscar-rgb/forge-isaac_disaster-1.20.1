@@ -1,21 +1,19 @@
-package net.luojiuoscar.isaac_disaster.passive_item.items;
+package net.luojiuoscar.isaac_disaster.isaac.passive_item.items;
 
 import net.luojiuoscar.isaac_disaster.item.ModItems;
+import net.luojiuoscar.isaac_disaster.manager.ItemId;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
-import net.luojiuoscar.isaac_disaster.passive_item.PassiveItem;
-import net.luojiuoscar.isaac_disaster.manager.ItemIdManager;
+import net.luojiuoscar.isaac_disaster.isaac.passive_item.PassiveItem;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import org.lwjgl.system.linux.Stat;
 
 import java.util.List;
 
 public class Breakfast implements PassiveItem {
-
     @Override
     public int getItemId() {
-        return ItemIdManager.BREAKFAST;
+        return ItemId.BREAKFAST.getId();
     }
 
     @Override
@@ -46,7 +44,7 @@ public class Breakfast implements PassiveItem {
     @Override
     public List<Component> getDescription() {
         return List.of(
-                Component.translatable("item.isaac_disaster.breakfast.lore.1", StatManager.getBaseHealthBonus())
+                Component.translatable("item.isaac_disaster.attribute.health", StatManager.getHealthBonus())
         );
     }
 }

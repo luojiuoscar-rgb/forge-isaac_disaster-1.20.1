@@ -1,22 +1,15 @@
 package net.luojiuoscar.isaac_disaster.event;
 
-import net.luojiuoscar.isaac_disaster.Config;
-import net.luojiuoscar.isaac_disaster.capability.player.PlayerPassiveItem;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerPassiveItemProvider;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerStatModifierProvider;
 import net.luojiuoscar.isaac_disaster.commands.clearPassiveItemsCommand;
 import net.luojiuoscar.isaac_disaster.commands.showPassiveItemsCommand;
-import net.luojiuoscar.isaac_disaster.item.ModPassiveItems;
-import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.common.capabilities.RegisterCapabilitiesEvent;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;

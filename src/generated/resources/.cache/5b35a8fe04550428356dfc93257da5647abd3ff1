@@ -1,6 +1,8 @@
-// 1.20.1	2025-09-27T21:21:00.4186002	Item Models: isaac_disaster
+// 1.20.1	2025-09-28T16:17:57.2967961	Item Models: isaac_disaster
 f84e7c8c3649edd969a720836fab6e4462fef0f6 assets/isaac_disaster/models/item/breakfast.json
 7e70ae576c0ffba832b8a9bdcf5f390bdb1d26c6 assets/isaac_disaster/models/item/crickets_head.json
 865a737796786bef4f95d9c962bade2afa21f2d6 assets/isaac_disaster/models/item/dessert.json
+122084417398bb2ac56518a9468abca9f75b96f8 assets/isaac_disaster/models/item/glass_eye.json
 59cae21b103ae226db647048e5923adbebbc4f70 assets/isaac_disaster/models/item/steven.json
+f9655737e8ff94a4a24a0793fbfeabf2af245d23 assets/isaac_disaster/models/item/the_common_cold.json
 168a596cadc8b97a3c44ca6ae8b3cd9bca38eec8 assets/isaac_disaster/models/item/wooden_spoon.json

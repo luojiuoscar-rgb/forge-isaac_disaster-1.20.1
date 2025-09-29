@@ -9,16 +9,18 @@
 
   "message.isaac_disaster.warning.too_many_items":  "[警告]携带的被动道具已达上限",
 
-  "item.isaac_disaster.breakfast": "早餐",
-  "item.isaac_disaster.breakfast.lore.1": "生命上限+%d",
-  "item.isaac_disaster.dessert": "甜点",
-  "item.isaac_disaster.dessert.lore.1": "生命上限+%d",
-  "item.isaac_disaster.wooden_spoon": "木勺",
-  "item.isaac_disaster.wooden_spoon.lore.1": "移动速度+%.1f%%",
-  "item.isaac_disaster.steven": "史蒂文",
-  "item.isaac_disaster.steven.lore.1": "攻击伤害+%.1f",
-  "item.isaac_disaster.crickets_head": "柯吉猫的头",
-  "item.isaac_disaster.crickets_head.lore.1": "攻击伤害+%.1f",
-  "item.isaac_disaster.crickets_head.lore.2": "攻击倍率+%.1f%%"
+  "item.isaac_disaster.attribute.health": "生命上限+%d",
+  "item.isaac_disaster.attribute.movement_speed": "移动速度+%.0f%%",
+  "item.isaac_disaster.attribute.damage": "攻击伤害+%.2f",
+  "item.isaac_disaster.attribute.damage_multiplier": "攻击倍率+%.0f%%",
+  "item.isaac_disaster.attribute.luck": "幸运值+%.2f",
 
+  "item.isaac_disaster.breakfast": "早餐",
+  "item.isaac_disaster.dessert": "甜点",
+  "item.isaac_disaster.wooden_spoon": "木勺",
+  "item.isaac_disaster.steven": "史蒂文",
+  "item.isaac_disaster.crickets_head": "柯吉猫的头",
+  "item.isaac_disaster.the_common_cold": "普通感冒",
+  "item.isaac_disaster.the_common_cold.lore.1": "攻击概率造成中毒",
+  "item.isaac_disaster.glass_eye": "玻璃眼"
 }

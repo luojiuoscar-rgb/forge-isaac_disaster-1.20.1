@@ -46,7 +46,8 @@ public class Config
     public static ForgeConfigSpec.IntValue HEALTH_BONUS;
     public static ForgeConfigSpec.DoubleValue MOVEMENT_SPEED_BONUS;
     public static ForgeConfigSpec.DoubleValue MOVEMENT_SPEED_LIMIT;
-    public static ForgeConfigSpec.DoubleValue DAMAGE_BASE_BONUS;
+    public static ForgeConfigSpec.DoubleValue DAMAGE_BONUS;
+    public static ForgeConfigSpec.DoubleValue LUCK_BONUS;
     // 其他可配置项目
     public static ForgeConfigSpec.IntValue PASSIVE_ITEM_LIMIT;
 
@@ -65,10 +66,14 @@ public class Config
         MOVEMENT_SPEED_LIMIT = BUILDER
                 .comment("Limitation of movement speed bonus value")
                 .defineInRange("movement_speed_limit", 0.1, 0.0, 99999.0);
-        // 攻击伤害  默认2
-        DAMAGE_BASE_BONUS = BUILDER
+        // 攻击伤害  默认2.0
+        DAMAGE_BONUS = BUILDER
                 .comment("Base value of attack damage increment")
-                .defineInRange("damage_base_bonus", 2.0, 0.0, 99999.0);
+                .defineInRange("damage_bonus", 2.0, 0.0, 99999.0);
+        // 幸运值  默认1.0
+        LUCK_BONUS = BUILDER
+                .comment("Base value of luck increment")
+                .defineInRange("luck_bonus", 1.0, 0.0, 99999.0);
 
         BUILDER.pop();
     }
@@ -112,8 +117,5 @@ public class Config
         items = ITEM_STRINGS.get().stream()
                 .map(itemName -> ForgeRegistries.ITEMS.getValue(ResourceLocation.parse(itemName)))
                 .collect(Collectors.toSet());
-
-        //初始化ItemManager
-        ItemManager.getInstance().init();
     }
 }

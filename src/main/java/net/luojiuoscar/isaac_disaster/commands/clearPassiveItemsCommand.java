@@ -2,20 +2,9 @@ package net.luojiuoscar.isaac_disaster.commands;
 
 import com.mojang.brigadier.CommandDispatcher;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerPassiveItemProvider;
-import net.luojiuoscar.isaac_disaster.manager.ItemManager;
-import net.luojiuoscar.isaac_disaster.networking.ModMessages;
-import net.luojiuoscar.isaac_disaster.networking.packet.ClearPassiveItemC2SPacket;
-import net.luojiuoscar.isaac_disaster.networking.packet.RemovePassiveItemFromIdC2SPacket;
-import net.luojiuoscar.isaac_disaster.passive_item.PassiveItem;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.HoverEvent;
-import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
-
-import java.util.ArrayList;
 
 
 public class clearPassiveItemsCommand {

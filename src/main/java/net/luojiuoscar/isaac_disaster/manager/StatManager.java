@@ -23,12 +23,14 @@ public class StatManager {
             UUID.nameUUIDFromBytes(("isaac_disaster:damage_modifier_adder_uuid").getBytes());
     private static final UUID DAMAGE_MODIFIER_MULTIPLiER_UUID =
             UUID.nameUUIDFromBytes(("isaac_disaster:damage_modifier_multiplier_uuid").getBytes());
+    private static final UUID LUCK_MODIFIER_ADDER =
+            UUID.nameUUIDFromBytes(("isaac_disaster:luck_modifier_adder").getBytes());
 
 
     /**
      * MAX HEALTH
      */
-    public static int getBaseHealthBonus() {
+    public static int getHealthBonus() {
         return HEALTH_BONUS.get(); // 从配置中获取
     }
 
@@ -60,7 +62,7 @@ public class StatManager {
         double currentBoost = healthModifierAdder != null ? healthModifierAdder.getAmount() : 0.0;
 
         // 计算新的加成值
-        double newBoost = currentBoost + StatManager.getBaseHealthBonus() * ratio;
+        double newBoost = currentBoost + StatManager.getHealthBonus() * ratio;
 
         // 确保玩家的血量有保底
         if(ratio < 0){
@@ -79,7 +81,7 @@ public class StatManager {
      * @param ratio 相对于*基础值*的回复量
      */
     public static void healHealth(Player player, float ratio){
-        float amount = ratio * StatManager.getBaseHealthBonus();
+        float amount = ratio * StatManager.getHealthBonus();
         //回复amount点生命值
         float currentHealth = player.getHealth();
         float maxHealth = player.getMaxHealth();
@@ -149,8 +151,8 @@ public class StatManager {
     /**
      * DAMAGE
      */
-    public static double getBaseDamageBonus(){
-        return DAMAGE_BASE_BONUS.get();
+    public static double getDamageBonus(){
+        return DAMAGE_BONUS.get();
     }
 
     public static void modifyDamageAdder(Player player, double ratio){
@@ -164,7 +166,7 @@ public class StatManager {
         double currentBoost = damageAdder != null ? damageAdder.getAmount() : 0.0;
 
         // 计算新的加成值
-        double newBoost = currentBoost + StatManager.getBaseDamageBonus() * ratio;
+        double newBoost = currentBoost + StatManager.getDamageBonus() * ratio;
 
         player.getCapability(PlayerStatModifierProvider.PLAYER_STAT_MODIFIER).ifPresent(
                 playerStatModifier -> {playerStatModifier.setDamageAdder(player, newBoost);
@@ -219,6 +221,43 @@ public class StatManager {
                 "isaac_disaster:damage_adder",
                 totalBoost,
                 AttributeModifier.Operation.MULTIPLY_BASE
+        ));
+    }
+
+    /**
+     * LUCK
+     */
+    public static double getLuckBonus(){
+        return LUCK_BONUS.get();
+    }
+
+    public static void modifyLuckAdder(Player player, double ratio){
+        AttributeInstance luckAttribute = player.getAttribute(Attributes.LUCK);
+        if (luckAttribute == null) {
+            return;
+        }
+
+        // 获取当前已有的加成 (若不存在则加值为0.0)
+        AttributeModifier luckAdder = luckAttribute.getModifier(LUCK_MODIFIER_ADDER);
+        double currentBoost = luckAdder != null ? luckAdder.getAmount() : 0.0;
+
+        // 计算新的加成值
+        double newBoost = currentBoost + StatManager.getLuckBonus() * ratio;
+
+        player.getCapability(PlayerStatModifierProvider.PLAYER_STAT_MODIFIER).ifPresent(
+                playerStatModifier -> {playerStatModifier.setLuckAdder(player, newBoost);
+                });
+    }
+
+    public static void updateLuckAdder(Player player, AttributeInstance attribute, double totalBoost) {
+        // 移除旧修饰符
+        attribute.removeModifier(LUCK_MODIFIER_ADDER);
+        // 添加新修饰符
+        attribute.addPermanentModifier(new AttributeModifier(
+                LUCK_MODIFIER_ADDER,
+                "isaac_disaster:luck_adder",
+                totalBoost,
+                AttributeModifier.Operation.ADDITION
         ));
     }
 }

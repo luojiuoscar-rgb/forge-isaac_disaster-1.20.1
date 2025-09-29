@@ -1,0 +1,8 @@
+{
+  "default_obtain_item": {
+    "subtitles": "sounds.isaac_disaster.default_obtain_item",
+    "sounds": [
+      "isaac_disaster:default_obtain_item"
+    ]
+  }
+}
