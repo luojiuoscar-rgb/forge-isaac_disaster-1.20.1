@@ -1,6 +1,5 @@
 package net.luojiuoscar.isaac_disaster;
 
-import net.luojiuoscar.isaac_disaster.manager.ItemManager;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraftforge.common.ForgeConfigSpec;

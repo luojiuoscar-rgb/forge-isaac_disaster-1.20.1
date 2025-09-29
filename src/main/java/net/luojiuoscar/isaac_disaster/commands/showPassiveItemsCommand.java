@@ -2,7 +2,7 @@ package net.luojiuoscar.isaac_disaster.commands;
 
 import com.mojang.brigadier.CommandDispatcher;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerPassiveItemProvider;
-import net.luojiuoscar.isaac_disaster.manager.ItemManager;
+import net.luojiuoscar.isaac_disaster.manager.PassiveItemManager;
 import net.luojiuoscar.isaac_disaster.isaac.passive_item.PassiveItem;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -34,7 +34,7 @@ public class showPassiveItemsCommand {
                         }
 
                         for (int i = 0; i < items.size(); i++) {
-                            PassiveItem item = ItemManager.getInstance().getItemFromId(items.get(i));
+                            PassiveItem item = PassiveItemManager.getInstance().getItemFromId(items.get(i));
 
                             // 创建带悬浮文本的显示名称组件
                             Component itemComponent = Component.literal("").append(item.getDisplayName()).withStyle(

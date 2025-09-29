@@ -7,7 +7,8 @@ public enum ItemId {
     STEVEN,
     CRICKETS_HEAD,
     THE_COMMON_COLD,
-    GLASS_EYE;
+    GLASS_EYE,
+    YUM_HEART;
 
     private final int id;
 

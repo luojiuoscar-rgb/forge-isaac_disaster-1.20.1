@@ -1,9 +1,11 @@
 package net.luojiuoscar.isaac_disaster;
 
 import com.mojang.logging.LogUtils;
+import net.luojiuoscar.isaac_disaster.event.ServerTickEvent;
 import net.luojiuoscar.isaac_disaster.item.ModCreativeModeTabs;
 import net.luojiuoscar.isaac_disaster.item.ModItems;
-import net.luojiuoscar.isaac_disaster.manager.ItemManager;
+import net.luojiuoscar.isaac_disaster.manager.ActiveItemManager;
+import net.luojiuoscar.isaac_disaster.manager.PassiveItemManager;
 import net.luojiuoscar.isaac_disaster.networking.ModMessages;
 import net.luojiuoscar.isaac_disaster.sound.ModSounds;
 import net.minecraftforge.api.distmarker.Dist;
@@ -14,13 +16,10 @@ import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
-import net.minecraftforge.fml.event.config.ModConfigEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.slf4j.Logger;
-
-import static com.mojang.text2speech.Narrator.LOGGER;
 
 @Mod(IsaacDisaster.MOD_ID)
 public class IsaacDisaster
@@ -40,11 +39,15 @@ public class IsaacDisaster
         MinecraftForge.EVENT_BUS.register(this);
 
 
+
         ModCreativeModeTabs.register(modEventBus);
 
         ModItems.register(modEventBus);
 
         ModSounds.register(modEventBus);
+
+        // Server Tick
+        MinecraftForge.EVENT_BUS.register(new ServerTickEvent());
 
 
 
@@ -58,7 +61,8 @@ public class IsaacDisaster
         ModMessages.register();
 
         event.enqueueWork(() -> {
-            ItemManager.getInstance().init();
+            PassiveItemManager.getInstance().init();
+            ActiveItemManager.getInstance().init();
         });
     }
 

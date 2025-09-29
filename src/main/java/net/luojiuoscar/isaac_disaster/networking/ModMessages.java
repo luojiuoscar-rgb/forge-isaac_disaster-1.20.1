@@ -1,16 +1,14 @@
 package net.luojiuoscar.isaac_disaster.networking;
 
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
-import net.luojiuoscar.isaac_disaster.networking.packet.ClearPassiveItemC2SPacket;
-import net.luojiuoscar.isaac_disaster.networking.packet.ObtainPassiveItemC2SPacket;
-import net.luojiuoscar.isaac_disaster.networking.packet.RemovePassiveItemFromIdC2SPacket;
-import net.luojiuoscar.isaac_disaster.networking.packet.DirectObtainPassiveItemC2SPacket;
+import net.luojiuoscar.isaac_disaster.networking.packet.*;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.network.NetworkDirection;
 import net.minecraftforge.network.NetworkRegistry;
 import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.network.simple.SimpleChannel;
+
 
 public class ModMessages {
     private static SimpleChannel INSTANCE;
@@ -37,11 +35,25 @@ public class ModMessages {
                 .consumerNetworkThread(ObtainPassiveItemC2SPacket::handle)
                 .add();
 
+        // register ObtainPassiveItemS2CPacket
+        net.messageBuilder(ObtainPassiveItemS2CPacket.class, id(), NetworkDirection.PLAY_TO_CLIENT)
+                .decoder(ObtainPassiveItemS2CPacket::new)
+                .encoder(ObtainPassiveItemS2CPacket::toBytes)
+                .consumerNetworkThread(ObtainPassiveItemS2CPacket::handle)
+                .add();
+
         // register DirectObtainPassiveItemC2SPacket
         net.messageBuilder(DirectObtainPassiveItemC2SPacket.class, id(), NetworkDirection.PLAY_TO_SERVER)
                 .decoder(DirectObtainPassiveItemC2SPacket::new)
                 .encoder(DirectObtainPassiveItemC2SPacket::toBytes)
                 .consumerNetworkThread(DirectObtainPassiveItemC2SPacket::handle)
+                .add();
+
+        // register DirectObtainPassiveItemS2CPacket
+        net.messageBuilder(DirectObtainPassiveItemS2CPacket.class, id(), NetworkDirection.PLAY_TO_CLIENT)
+                .decoder(DirectObtainPassiveItemS2CPacket::new)
+                .encoder(DirectObtainPassiveItemS2CPacket::toBytes)
+                .consumerNetworkThread(DirectObtainPassiveItemS2CPacket::handle)
                 .add();
 
         // register RemoveItemFromId
@@ -56,6 +68,20 @@ public class ModMessages {
                 .decoder(ClearPassiveItemC2SPacket::new)
                 .encoder(ClearPassiveItemC2SPacket::toBytes)
                 .consumerNetworkThread(ClearPassiveItemC2SPacket::handle)
+                .add();
+
+        // register UseActiveItemC2SPacket
+        net.messageBuilder(UseActiveItemC2SPacket.class, id(), NetworkDirection.PLAY_TO_SERVER)
+                .decoder(UseActiveItemC2SPacket::new)
+                .encoder(UseActiveItemC2SPacket::toBytes)
+                .consumerNetworkThread(UseActiveItemC2SPacket::handle)
+                .add();
+
+        // register UseActiveItemS2CPacket
+        net.messageBuilder(UseActiveItemS2CPacket.class, id(), NetworkDirection.PLAY_TO_CLIENT)
+                .decoder(UseActiveItemS2CPacket::new)
+                .encoder(UseActiveItemS2CPacket::toBytes)
+                .consumerNetworkThread(UseActiveItemS2CPacket::handle)
                 .add();
 
     }

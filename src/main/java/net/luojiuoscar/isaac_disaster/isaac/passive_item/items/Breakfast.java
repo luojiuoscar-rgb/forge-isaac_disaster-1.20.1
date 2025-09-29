@@ -11,17 +11,18 @@ import net.minecraft.world.item.ItemStack;
 import java.util.List;
 
 public class Breakfast implements PassiveItem {
+
     @Override
     public int getItemId() {
         return ItemId.BREAKFAST.getId();
     }
 
     @Override
-    public void obtainEffect(Player player) {
+    public void onObtain(Player player) {
     }
 
     @Override
-    public void directObtainEffect(Player player) {
+    public void onDirectObtain(Player player) {
         //属性修改需要在服务端权威修改
         if(!player.level().isClientSide()){
             StatManager.modifyMaxHealth(player, 1);
@@ -30,7 +31,7 @@ public class Breakfast implements PassiveItem {
     }
 
     @Override
-    public void removeEffect(Player player) {
+    public void onRemove(Player player) {
         if(!player.level().isClientSide()){
             StatManager.modifyMaxHealth(player, -1);
         }

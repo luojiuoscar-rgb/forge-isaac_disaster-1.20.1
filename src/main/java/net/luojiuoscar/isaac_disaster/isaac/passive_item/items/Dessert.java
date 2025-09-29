@@ -17,11 +17,11 @@ public class Dessert implements PassiveItem {
     }
 
     @Override
-    public void obtainEffect(Player player) {
+    public void onObtain(Player player) {
     }
 
     @Override
-    public void directObtainEffect(Player player) {
+    public void onDirectObtain(Player player) {
         if(!player.level().isClientSide()){
             StatManager.modifyMaxHealth(player, 1);
             StatManager.healHealth(player, 1.0f);
@@ -29,7 +29,7 @@ public class Dessert implements PassiveItem {
     }
 
     @Override
-    public void removeEffect(Player player) {
+    public void onRemove(Player player) {
         if(!player.level().isClientSide()) {
             StatManager.modifyMaxHealth(player, -1);
         }

@@ -6,23 +6,23 @@ import net.luojiuoscar.isaac_disaster.isaac.passive_item.items.*;
 import java.util.*;
 
 /**
- * 被动道具管理器，负责注册和管理所有被动道具实例
+ * 被动道具管理器，负责注册和管理所有道具实例
  */
-public class ItemManager {
+public class PassiveItemManager {
     // 单例实例
-    private static final ItemManager INSTANCE = new ItemManager();
+    private static final PassiveItemManager INSTANCE = new PassiveItemManager();
     // 存储道具ID与道具实例的映射
     private final Map<Integer, PassiveItem> registeredItems = new HashMap<>();
 
-    private ItemManager() {}
+    private PassiveItemManager() {}
 
-    public static ItemManager getInstance() {
+    public static PassiveItemManager getInstance() {
         return INSTANCE;
     }
 
     /**
-     * 注册被动道具
-     * @param item 要注册的被动道具实例
+     * 注册道具
+     * @param item 要注册的道具实例
      */
     public void registerItem(PassiveItem item) {
         int itemId = item.getItemId();
@@ -49,7 +49,7 @@ public class ItemManager {
 
 
     public void init() {
-        // 注册所有被动道具实例
+        // 注册所有道具实例
         registerItems(
                 new Breakfast(),
                 new Dessert(),

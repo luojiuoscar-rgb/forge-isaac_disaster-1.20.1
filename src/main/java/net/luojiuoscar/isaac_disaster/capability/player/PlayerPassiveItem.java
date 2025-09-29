@@ -1,11 +1,14 @@
 package net.luojiuoscar.isaac_disaster.capability.player;
 
-import net.luojiuoscar.isaac_disaster.manager.ItemManager;
+import net.luojiuoscar.isaac_disaster.manager.PassiveItemManager;
 import net.luojiuoscar.isaac_disaster.isaac.passive_item.InteractivePassiveItem;
+import net.luojiuoscar.isaac_disaster.networking.ModMessages;
+import net.luojiuoscar.isaac_disaster.networking.packet.DirectObtainPassiveItemS2CPacket;
+import net.luojiuoscar.isaac_disaster.networking.packet.ObtainPassiveItemS2CPacket;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.common.capabilities.AutoRegisterCapability;
 
 import java.util.ArrayList;
@@ -48,7 +51,7 @@ public class PlayerPassiveItem {
     private void updateItemMap(int itemId, int amount) {
         itemCountMap.put(itemId, itemCountMap.getOrDefault(itemId, 0) + amount);
         // 如果是触发型道具
-        if(ItemManager.getInstance().getItemFromId(itemId) instanceof InteractivePassiveItem){
+        if(PassiveItemManager.getInstance().getItemFromId(itemId) instanceof InteractivePassiveItem){
             interactiveItemCountMap.put(itemId, itemCountMap.getOrDefault(itemId, 0) + amount);
         }
     }
@@ -89,7 +92,7 @@ public class PlayerPassiveItem {
     /**
      * 通过循环删除最先获取的道具来清空道具列表
      */
-    public void clearPlayerPassiveItems(Player player){
+    public void clearPlayerPassiveItems(ServerPlayer player){
         // 循环清除最先获取的道具
         while(removeFromIndex(player, 0));
         // 清空哈希表
@@ -107,7 +110,7 @@ public class PlayerPassiveItem {
     /**
      * 将一个新的道具添加到列表。同时触发添加道具的效果和直接添加效果
      */
-    public void addItem(Player player, int itemId){
+    public void addItem(ServerPlayer player, int itemId){
         // 如果道具数量已达上限
         if(this.getTotalItems() >= PASSIVE_ITEM_LIMIT.get()){
             player.sendSystemMessage(Component.translatable("message.isaac_disaster.warning.too_many_items").withStyle(
@@ -122,18 +125,21 @@ public class PlayerPassiveItem {
         updateItemMap(itemId, 1);
 
         // 触发效果
-        ItemManager.getInstance().getItemFromId(itemId).obtainEffect(player);
-        ItemManager.getInstance().getItemFromId(itemId).directObtainEffect(player);
+        PassiveItemManager.getInstance().getItemFromId(itemId).onObtain(player);
+        ModMessages.sentToPlayer(new ObtainPassiveItemS2CPacket(itemId), player);
+
+        PassiveItemManager.getInstance().getItemFromId(itemId).onDirectObtain(player);
+        ModMessages.sentToPlayer(new DirectObtainPassiveItemS2CPacket(itemId), player);
+
+
         // 删除手持的道具原型
         player.getItemInHand(InteractionHand.MAIN_HAND).shrink(1);
-        // 触发动画
-        ItemManager.getInstance().getItemFromId(itemId).onObtainAnimation(player, InteractionHand.MAIN_HAND);
     }
 
     /**
      * 将一个新的道具添加到列表。同时触发添加道具的直接添加效果
      */
-    public void directAddItem(Player player, int itemId){
+    public void directAddItem(ServerPlayer player, int itemId){
         // 如果道具数量已达上限
         if(this.getTotalItems() >= PASSIVE_ITEM_LIMIT.get()){
             player.sendSystemMessage(Component.translatable("message.isaac_disaster.warning.too_many_items").withStyle(
@@ -146,13 +152,14 @@ public class PlayerPassiveItem {
         // 更新哈希表：数量+1
         updateItemMap(itemId, 1);
 
-        ItemManager.getInstance().getItemFromId(itemId).directObtainEffect(player);
+        PassiveItemManager.getInstance().getItemFromId(itemId).onDirectObtain(player);
+        ModMessages.sentToPlayer(new DirectObtainPassiveItemS2CPacket(itemId), player);
     }
 
     /**
      * 删除最先获取的一个道具
      */
-    public boolean removeFromIndex(Player player, int index) {
+    public boolean removeFromIndex(ServerPlayer player, int index) {
         // 确保索引有效
         if (index < 0 || index >= playerPassiveItems.size()) {
             return false; // 索引无效，直接返回失败
@@ -163,16 +170,15 @@ public class PlayerPassiveItem {
         updateItemMap(removeId, -1);
 
         //移除效果
-        ItemManager.getInstance().getItemFromId(removeId).removeEffect(player);
+        PassiveItemManager.getInstance().getItemFromId(removeId).onRemove(player);
         return true;
     }
 
 
     /**
      * 依据ID删除最先获取的一个道具
-     * 由C2S packet触发
      */
-    public void removeFromId(Player player, int itemId) {
+    public void removeFromId(ServerPlayer player, int itemId) {
         // 使用迭代器遍历并移除第一个匹配的元素
         for (Iterator<Integer> iterator = playerPassiveItems.iterator(); iterator.hasNext(); ) {
             int id = iterator.next();
@@ -181,7 +187,7 @@ public class PlayerPassiveItem {
                 // 更新哈希表：数量-1（若数量为0则移除键）
                 updateItemMap(itemId, -1);
 
-                ItemManager.getInstance().getItemFromId(itemId).removeEffect(player);
+                PassiveItemManager.getInstance().getItemFromId(itemId).onRemove(player);
                 break;
             }
         }

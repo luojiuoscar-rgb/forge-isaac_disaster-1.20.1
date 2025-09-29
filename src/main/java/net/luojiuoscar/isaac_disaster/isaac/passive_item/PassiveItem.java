@@ -7,7 +7,6 @@ import net.luojiuoscar.isaac_disaster.networking.packet.RemovePassiveItemFromIdC
 import net.luojiuoscar.isaac_disaster.sound.ModSounds;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvent;
-import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -16,66 +15,24 @@ import net.minecraft.world.item.ItemStack;
 import java.util.List;
 
 
-public interface PassiveItem {
+public interface PassiveItem{
     /**
      * 获取道具ID
      */
     int getItemId();
 
-    /**
-     * 获取道具时触发(包含生成、基于掉落物等)
-     * 默认音效 onObtainSound()
-     * 特殊客户端效果 obtainEffectClient()
-     */
-    default void onObtain(Player player){
-        if(player.level().isClientSide()){
-            //音效 需要在客户端执行
-            onObtainSound(player);
-            //特殊客户端效果
-            obtainEffectClient(player);
-            //请求增加到道具列表、同时由服务端触发效果
-            ModMessages.sendToServer(new ObtainPassiveItemC2SPacket(this.getItemId()));
-        }
-    };
-
-    default void obtainEffectClient(Player player){
-
-    }
-
-    default void onObtainAnimation(Player player, InteractionHand hand){
-        player.startUsingItem(hand); // 启动动画
-    }
 
     /**
-     * 直接给予道具时触发、不会生成部分掉落物、部分效果不触发
+     * 获取道具时的部分效果。不包含直接获取道具时的效果
+     * 由服务端触发
      */
-    default void onDirectObtain(Player player) {
-        if(player.level().isClientSide()){
-            //特殊客户端效果
-            directObtainEffectClient(player);
-            //请求增加到道具列表、同时由服务端触发效果 并告知不触发obtainEffect
-            ModMessages.sendToServer(new DirectObtainPassiveItemC2SPacket(this.getItemId()));
-        }
-    };
+    void onObtain(Player player);
 
-    default void directObtainEffectClient(Player player){
 
+    default void onObtainClient(Player player){
+        //音效 需要在客户端执行
+        onObtainSound(player);
     }
-
-
-    /**
-     * 移除道具时触发
-     * 仅发包告知服务端
-     * 随后服务端处理RemoveEffect
-     */
-    default void onRemove(Player player){
-        //从道具列表中删除
-        if(player.level().isClientSide()){
-            ModMessages.sendToServer(new RemovePassiveItemFromIdC2SPacket(this.getItemId()));
-            player.sendSystemMessage(Component.literal("移除了").append(this.getDisplayName()));
-        }
-    };
-
 
     /**
      * 获取道具时的默认音效，可修改
@@ -85,24 +42,24 @@ public interface PassiveItem {
         player.playSound(defaultSound, 1.0F, 1.0F);
     }
 
-    /**
-     * 获取道具时的部分效果。不包含直接获取道具时的效果
-     * 由服务端触发
-     */
-    void obtainEffect(Player player);
 
 
     /**
      * 直接给予道具时触发、不会生成部分掉落物、部分效果不触发
      * 由服务端触发
      */
-    void directObtainEffect(Player player);
+    void onDirectObtain(Player player);
+
+
+    default void onDirectObtainClient(Player player){
+
+    }
 
     /**
-     * 移除道具的效果
-     * 由服务端触发
+     * 移除道具时触发
      */
-    void removeEffect(Player player);
+    void onRemove(Player player);
+
 
     /**
      * 获取道具实例

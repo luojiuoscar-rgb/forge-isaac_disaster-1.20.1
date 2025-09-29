@@ -1,5 +1,6 @@
 {
-  "creativetab.isaac_disaster.isaac_item": "以撒的灾难：被动道具",
+  "creativetab.isaac_disaster.passive_item": "以撒的灾难：被动道具",
+  "creativetab.isaac_disaster.active_item": "以撒的灾难：主动道具",
 
   "rarity.isaac_disaster.common": "COMMON",
   "rarity.isaac_disaster.uncommon": "UNCOMMON",
@@ -15,6 +16,8 @@
   "item.isaac_disaster.attribute.damage_multiplier": "攻击倍率+%.0f%%",
   "item.isaac_disaster.attribute.luck": "幸运值+%.2f",
 
+  "item.isaac_disaster.action.heal_health": "恢复%d点生命值",
+
   "item.isaac_disaster.breakfast": "早餐",
   "item.isaac_disaster.dessert": "甜点",
   "item.isaac_disaster.wooden_spoon": "木勺",
@@ -22,5 +25,8 @@
   "item.isaac_disaster.crickets_head": "柯吉猫的头",
   "item.isaac_disaster.the_common_cold": "普通感冒",
   "item.isaac_disaster.the_common_cold.lore.1": "攻击概率造成中毒",
-  "item.isaac_disaster.glass_eye": "玻璃眼"
+  "item.isaac_disaster.glass_eye": "玻璃眼",
+
+  "item.isaac_disaster.yum_heart": "美味的心"
+
 }

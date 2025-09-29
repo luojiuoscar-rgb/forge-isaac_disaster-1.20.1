@@ -17,19 +17,19 @@ public class WoodenSpoon implements PassiveItem {
     }
 
     @Override
-    public void obtainEffect(Player player) {
+    public void onObtain(Player player) {
 
     }
 
     @Override
-    public void directObtainEffect(Player player) {
+    public void onDirectObtain(Player player) {
         if(!player.level().isClientSide()){
             StatManager.modifyMovementSpeedAdder(player, 1.5);
         }
     }
 
     @Override
-    public void removeEffect(Player player) {
+    public void onRemove(Player player) {
         if(!player.level().isClientSide()){
             StatManager.modifyMovementSpeedAdder(player, -1.5);
         }
