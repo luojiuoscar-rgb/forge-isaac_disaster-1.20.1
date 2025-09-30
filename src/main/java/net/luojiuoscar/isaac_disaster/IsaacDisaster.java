@@ -1,7 +1,6 @@
 package net.luojiuoscar.isaac_disaster;
 
 import com.mojang.logging.LogUtils;
-import net.luojiuoscar.isaac_disaster.event.ServerTickEvent;
 import net.luojiuoscar.isaac_disaster.item.ModCreativeModeTabs;
 import net.luojiuoscar.isaac_disaster.item.ModItems;
 import net.luojiuoscar.isaac_disaster.manager.ActiveItemManager;
@@ -45,10 +44,6 @@ public class IsaacDisaster
         ModItems.register(modEventBus);
 
         ModSounds.register(modEventBus);
-
-        // Server Tick
-        MinecraftForge.EVENT_BUS.register(new ServerTickEvent());
-
 
 
         // Register the item to a creative tab

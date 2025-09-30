@@ -1,7 +1,7 @@
 package net.luojiuoscar.isaac_disaster.item.custom;
 
-import net.luojiuoscar.isaac_disaster.manager.ActiveItemManager;
-import net.luojiuoscar.isaac_disaster.manager.PassiveItemManager;
+
+import net.luojiuoscar.isaac_disaster.manager.ColorManager;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.*;
 import net.minecraft.world.level.Level;
@@ -15,20 +15,9 @@ import java.util.List;
  * 仅在需要时将lore文本列表自动实现appendHoverText方法
  */
 public abstract class IsaacItems extends Item {
-    private final int itemId;
-    private final int itemLevel;
-    private final boolean useOriginalColor;
-
-
-    /**
-     * @param properties 物品属性
-     * @param itemLevel 物品等级0-4
-     * @param itemId 物品id（在ItemIdManager中获取）
-     */
-    public IsaacItems(Properties properties, int itemLevel, int itemId) {
-        this(properties, itemLevel, itemId, false);
-
-    }
+    private int itemId;
+    private int itemLevel;
+    private boolean useOriginalColor;
 
 
     /**
@@ -38,7 +27,7 @@ public abstract class IsaacItems extends Item {
      * @param useOriginalColor 默认为false，是否不自动替换为物品等级对应的颜色
      */
     public IsaacItems(Properties properties, int itemLevel, int itemId, boolean useOriginalColor) {
-        super(properties.stacksTo(1).rarity(Rarity.EPIC));
+        super(properties);
         this.itemId = itemId;
         if (itemLevel < 0 || itemLevel > 4) {
             throw new IllegalArgumentException("itemLevel must be between 0 and 4");
@@ -55,30 +44,45 @@ public abstract class IsaacItems extends Item {
     public void appendHoverText(@NotNull ItemStack stack, @Nullable Level level, @NotNull List<Component> tooltipComponents, @NotNull TooltipFlag isAdvanced) {
         super.appendHoverText(stack, level, tooltipComponents, isAdvanced);
 
-        // 从ItemManager中获取到的物品描述文本添加到tooltip
-        List<Component> description = null;
-        if (this instanceof NormalPassiveItem){
-            description = PassiveItemManager.getInstance().getItemFromId(itemId).getDescription();
-        }else if (this instanceof NormalActiveItem){
-            description = ActiveItemManager.getInstance().getItemFromId(itemId).getDescription();
-        }
-        tooltipComponents.addAll(description);
+        // 添加描述性文本组件
+        addDescription(tooltipComponents);
+        // 添加稀有度文本组件
+        addAdditionalInfo(tooltipComponents);
+        // 添加稀有度文本组件
+        addRarityComponent(tooltipComponents);
+    }
+    /**
+     * 添加描述性文本组件
+     */
+    public abstract void addDescription(List<Component> tooltipComponents);
 
-        // 空行分隔
-        tooltipComponents.add(Component.literal(""));
+    /**
+     * 额外信息
+     */
+    public abstract void addAdditionalInfo(List<Component> tooltipComponents);
+
+
+    /**
+     * 添加稀有度文本组件
+     */
+    public void addRarityComponent(List<Component> tooltipComponents){
+
         switch (itemLevel){
             case 1: tooltipComponents.add(Component.translatable("rarity.isaac_disaster.uncommon")
-                    .withStyle(style -> style.withColor(0x55FF55).withBold(true))); break;
+                    .withStyle(style -> style.withColor(ColorManager.UNCOMMON_GREEN).withBold(true))); break;
             case 2: tooltipComponents.add(Component.translatable("rarity.isaac_disaster.rare")
-                    .withStyle(style -> style.withColor(0x00FFFF).withBold(true))); break;
+                    .withStyle(style -> style.withColor(ColorManager.RARE_BLUE).withBold(true))); break;
             case 3: tooltipComponents.add(Component.translatable("rarity.isaac_disaster.epic")
-                    .withStyle(style -> style.withColor(0xFC54FC).withBold(true))); break;
+                    .withStyle(style -> style.withColor(ColorManager.EPIC_PURPLE).withBold(true))); break;
             case 4: tooltipComponents.add(Component.translatable("rarity.isaac_disaster.legendary")
-                    .withStyle(style -> style.withColor(0xFF3333).withBold(true))); break;
+                    .withStyle(style -> style.withColor(ColorManager.LEGEND_RED).withBold(true))); break;
             default: tooltipComponents.add(Component.translatable("rarity.isaac_disaster.common")
-                    .withStyle(style -> style.withColor(0xFFFFFF).withBold(true))); break;
+                    .withStyle(style -> style.withColor(ColorManager.COMMON_WHITE).withBold(true))); break;
         }
     }
+
+
+
 
     /**
      * 重写该方法使所有自定义物品名称的显示颜色根据等级变化
@@ -93,11 +97,11 @@ public abstract class IsaacItems extends Item {
 
         // 根据等级设置对应颜色（与上面的方法保持一致）
         int color = switch (this.itemLevel) {
-            case 1 -> 0x55FF55;   // 绿色
-            case 2 -> 0x00FFFF;   // 青色
-            case 3 -> 0xFC54FC;   // 粉色
-            case 4 -> 0xFF3333;   // 红色
-            default -> 0xFFFFFF;  // 白色
+            case 1 -> ColorManager.UNCOMMON_GREEN;
+            case 2 -> ColorManager.RARE_BLUE;
+            case 3 -> ColorManager.EPIC_PURPLE;
+            case 4 -> ColorManager.LEGEND_RED;
+            default -> ColorManager.COMMON_WHITE;
         };
         return Component.translatable(this.getDescriptionId(pStack)).withStyle(
                 style -> style.withColor(color));

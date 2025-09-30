@@ -13,7 +13,4 @@ public class ItemListManager {
     public static final List<RegistryObject<Item>> ACTIVE_ITEM_LIST = new ArrayList<>();
 
 
-    // 处在冷却中的道具
-    public static final List<ItemStack> ACTIVE_ITEMS_IN_CD_LIST = new ArrayList<>();
-
 }

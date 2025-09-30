@@ -57,7 +57,15 @@ public class PassiveItemManager {
                 new Steven(),
                 new CricketsHead(),
                 new TheCommonCold(),
-                new GlassEye()
+                new GlassEye(),
+                new CarBattery(),
+                new TheBattery(),
+                new Lunch(),
+                new MidnightSnack(),
+                new Supper(),
+                new RottenMeat(),
+                new ASnack(),
+                new Dinner()
         );
     }
 }

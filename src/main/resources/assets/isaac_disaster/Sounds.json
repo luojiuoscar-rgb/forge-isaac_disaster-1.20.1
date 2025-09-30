@@ -4,5 +4,11 @@
     "sounds": [
       "isaac_disaster:default_obtain_item"
     ]
+  },
+  "yum_heart_use": {
+    "subtitles": "sounds.isaac_disaster.yum_heart_use",
+    "sounds": [
+      "isaac_disaster:yum_heart_use"
+    ]
   }
 }

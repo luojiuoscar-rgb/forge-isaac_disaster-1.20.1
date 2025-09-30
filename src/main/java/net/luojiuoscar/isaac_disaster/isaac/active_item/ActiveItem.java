@@ -1,21 +1,25 @@
 package net.luojiuoscar.isaac_disaster.isaac.active_item;
 
 
+import net.luojiuoscar.isaac_disaster.capability.player.PlayerPassiveItemProvider;
 import net.luojiuoscar.isaac_disaster.item.custom.NormalActiveItem;
+import net.luojiuoscar.isaac_disaster.manager.ItemId;
 import net.luojiuoscar.isaac_disaster.manager.ItemListManager;
 import net.luojiuoscar.isaac_disaster.networking.ModMessages;
+import net.luojiuoscar.isaac_disaster.networking.packet.UseActiveItemC2SPacket;
 import net.luojiuoscar.isaac_disaster.networking.packet.UseActiveItemS2CPacket;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
 
 import java.util.List;
-
+import java.util.concurrent.atomic.AtomicInteger;
 
 
 public interface ActiveItem {
@@ -24,27 +28,38 @@ public interface ActiveItem {
      */
     int getItemId();
 
+    
+
     /**
      * 收到客户端使用物品时
      */
     default void onReceiveC2SPacket(ServerPlayer player, int itemId){
+        player.sendSystemMessage(Component.literal("收到包裹"));
         // 执行触发效果
-        onTriggeredEffect(player);
-
-        // 修改服务器端的使用次数&CD
-        ItemStack stack = player.getItemInHand(InteractionHand.MAIN_HAND);
-
-        if (stack.getItem() instanceof NormalActiveItem) {
-            NormalActiveItem item = (NormalActiveItem) stack.getItem();
-            // 通过 ItemStack 修改使用次数&CD
-            item.modifyCurrentItemUseCount(stack, 1);
-            item.resetCD(stack);
-
-            // 只有该道具不在冷却列表中时才加入
-            if (!ItemListManager.ACTIVE_ITEMS_IN_CD_LIST.contains(stack)) {
-                ItemListManager.ACTIVE_ITEMS_IN_CD_LIST.add(stack);
-            }
+        AtomicInteger carBatteryCount = new AtomicInteger();
+        player.getCapability(PlayerPassiveItemProvider.PLAYER_PASSIVE_ITEM).ifPresent(
+                playerPassiveItem -> {
+                    carBatteryCount.set(playerPassiveItem.getItemCount(ItemId.CAR_BATTERY.getId()));
+                });
+        if (carBatteryCount.get() != 0){
+            onTriggerEffectStronger(player);
+        }else {
+            onTriggeredEffect(player);
         }
+
+        // 修改服务器端的物品耐久度
+        ItemStack stack = player.getItemInHand(InteractionHand.MAIN_HAND);
+        NormalActiveItem item = (NormalActiveItem) stack.getItem();
+
+        int currentDamage = stack.getDamageValue();
+        int newDamage = Math.min(
+                currentDamage + item.getDamagePerUse(player)
+                , stack.getMaxDamage() - 1);
+        stack.setDamageValue(newDamage);
+
+        // 设置0.5秒的冷却
+        player.getCooldowns().addCooldown(item, 10);
+
 
         // 发送使用物品效果以触发客户端效果
         ModMessages.sentToPlayer(new UseActiveItemS2CPacket(itemId), player);

@@ -3,12 +3,21 @@ package net.luojiuoscar.isaac_disaster.manager;
 public enum ItemId {
     BREAKFAST,
     DESSERT,
+    DINNER,
+    LUNCH,
+    SUPPER,
+    MIDNIGHT_SNACK,
+    ROTTEN_MEAT,
+    A_SNACK,
     WOODEN_SPOON,
     STEVEN,
     CRICKETS_HEAD,
     THE_COMMON_COLD,
     GLASS_EYE,
-    YUM_HEART;
+    YUM_HEART,
+    CAR_BATTERY,
+    THE_BATTERY;
+
 
     private final int id;
 

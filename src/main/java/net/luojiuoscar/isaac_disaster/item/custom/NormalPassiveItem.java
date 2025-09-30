@@ -1,14 +1,18 @@
 package net.luojiuoscar.isaac_disaster.item.custom;
 
-import net.luojiuoscar.isaac_disaster.isaac.passive_item.PassiveItem;
+import net.luojiuoscar.isaac_disaster.manager.ActiveItemManager;
+import net.luojiuoscar.isaac_disaster.manager.PassiveItemManager;
 import net.luojiuoscar.isaac_disaster.networking.ModMessages;
 import net.luojiuoscar.isaac_disaster.networking.packet.ObtainPassiveItemC2SPacket;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.*;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.List;
 
 
 public class NormalPassiveItem extends IsaacItems {
@@ -18,7 +22,19 @@ public class NormalPassiveItem extends IsaacItems {
     }
 
     public NormalPassiveItem(Properties properties, int itemLevel, int itemId, boolean useOriginalColor) {
-        super(properties, itemLevel, itemId, useOriginalColor);
+        super(properties.stacksTo(1).rarity(Rarity.EPIC), itemLevel, itemId, useOriginalColor);
+    }
+
+    @Override
+    public void addDescription(List<Component> tooltipComponents){
+        tooltipComponents.addAll(
+                PassiveItemManager.getInstance().getItemFromId(getItemId()).getDescription()
+        );
+    }
+
+    @Override
+    public void addAdditionalInfo(List<Component> tooltipComponents){
+        tooltipComponents.add(Component.literal(""));
     }
 
     /**

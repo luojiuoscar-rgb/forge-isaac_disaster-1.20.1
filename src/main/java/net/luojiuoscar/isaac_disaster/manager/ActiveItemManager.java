@@ -6,8 +6,6 @@ import net.luojiuoscar.isaac_disaster.isaac.active_item.items.YumHeart;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.mojang.text2speech.Narrator.LOGGER;
-
 /**
  * 被动道具管理器，负责注册和管理所有道具实例
  */

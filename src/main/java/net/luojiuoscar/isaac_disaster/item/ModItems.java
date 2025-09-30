@@ -32,6 +32,31 @@ public class ModItems {
             () -> new NormalPassiveItem(new Item.Properties(),1, ItemId.DESSERT.getId()));
     static { PASSIVE_ITEM_LIST.add(DESSERT); }
 
+    public static final RegistryObject<Item> DINNER = ITEMS.register("dinner",
+            () -> new NormalPassiveItem(new Item.Properties(),1, ItemId.DINNER.getId()));
+    static { PASSIVE_ITEM_LIST.add(DINNER); }
+
+    public static final RegistryObject<Item> LUNCH = ITEMS.register("lunch",
+            () -> new NormalPassiveItem(new Item.Properties(),1, ItemId.LUNCH.getId()));
+    static { PASSIVE_ITEM_LIST.add(LUNCH); }
+
+    public static final RegistryObject<Item> SUPPER = ITEMS.register("supper",
+            () -> new NormalPassiveItem(new Item.Properties(),1, ItemId.SUPPER.getId()));
+    static { PASSIVE_ITEM_LIST.add(SUPPER); }
+
+    public static final RegistryObject<Item> MIDNIGHT_SNACK = ITEMS.register("midnight_snack",
+            () -> new NormalPassiveItem(new Item.Properties(),1, ItemId.MIDNIGHT_SNACK.getId()));
+    static { PASSIVE_ITEM_LIST.add(MIDNIGHT_SNACK); }
+
+    public static final RegistryObject<Item> ROTTEN_MEAT = ITEMS.register("rotten_meat",
+            () -> new NormalPassiveItem(new Item.Properties(),1, ItemId.ROTTEN_MEAT.getId()));
+    static { PASSIVE_ITEM_LIST.add(ROTTEN_MEAT); }
+
+    public static final RegistryObject<Item> A_SNACK = ITEMS.register("a_snack",
+            () -> new NormalPassiveItem(new Item.Properties(),1, ItemId.A_SNACK.getId()));
+    static { PASSIVE_ITEM_LIST.add(A_SNACK); }
+
+
     public static final RegistryObject<Item> WOODEN_SPOON = ITEMS.register("wooden_spoon",
             () -> new NormalPassiveItem(new Item.Properties(),1, ItemId.WOODEN_SPOON.getId()));
     static { PASSIVE_ITEM_LIST.add(WOODEN_SPOON); }
@@ -52,11 +77,33 @@ public class ModItems {
             () -> new NormalPassiveItem(new Item.Properties(),3, ItemId.GLASS_EYE.getId()));
     static { PASSIVE_ITEM_LIST.add(GLASS_EYE); }
 
+    public static final RegistryObject<Item> CAR_BATTERY = ITEMS.register("car_battery",
+            () -> new NormalPassiveItem(new Item.Properties(),3, ItemId.CAR_BATTERY.getId()));
+    static { PASSIVE_ITEM_LIST.add(CAR_BATTERY); }
+
+    public static final RegistryObject<Item> THE_BATTERY = ITEMS.register("the_battery",
+            () -> new NormalPassiveItem(new Item.Properties(),3, ItemId.THE_BATTERY.getId()));
+    static { PASSIVE_ITEM_LIST.add(THE_BATTERY); }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     // Active item
     public static final RegistryObject<Item> YUM_HEART = ITEMS.register("yum_heart",
             () -> new NormalActiveItem(new Item.Properties(),1, ItemId.YUM_HEART.getId(),
-                    100, 1));
+                    800, 800));
     static { ACTIVE_ITEM_LIST.add(YUM_HEART); }
 
 

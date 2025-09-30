@@ -3,12 +3,14 @@ package net.luojiuoscar.isaac_disaster.networking.packet;
 import net.luojiuoscar.isaac_disaster.manager.ActiveItemManager;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
 public class UseActiveItemC2SPacket {
     private int itemId;
+    private ItemStack stack;
 
     //客户端构造时的函数
     public UseActiveItemC2SPacket(int itemId){
