@@ -2,18 +2,17 @@ package net.luojiuoscar.isaac_disaster.isaac.passive_item.items;
 
 import net.luojiuoscar.isaac_disaster.effect.ModEffects;
 import net.luojiuoscar.isaac_disaster.item.ModItems;
-import net.luojiuoscar.isaac_disaster.manager.ItemId;
-import net.luojiuoscar.isaac_disaster.isaac.passive_item.InteractivePassiveItem;
+import net.luojiuoscar.isaac_disaster.manager.id_managers.ItemId;
+import net.luojiuoscar.isaac_disaster.isaac.passive_item.IInteractiveIPassiveItem;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
 import java.util.List;
 
-public class TheCommonCold implements InteractivePassiveItem {
+public class TheCommonCold implements IInteractiveIPassiveItem {
     @Override
     public int getItemId() {
         return ItemId.THE_COMMON_COLD.getId();

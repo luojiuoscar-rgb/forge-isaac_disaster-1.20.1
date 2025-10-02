@@ -1,6 +1,6 @@
-package net.luojiuoscar.isaac_disaster.manager;
+package net.luojiuoscar.isaac_disaster.manager.item_managers;
 
-import net.luojiuoscar.isaac_disaster.isaac.active_item.ActiveItem;
+import net.luojiuoscar.isaac_disaster.isaac.active_item.IActiveItem;
 import net.luojiuoscar.isaac_disaster.isaac.active_item.items.TheBookOfBelial;
 import net.luojiuoscar.isaac_disaster.isaac.active_item.items.YumHeart;
 
@@ -19,13 +19,13 @@ public class ActiveItemManager {
     }
 
     // 存储道具ID与道具实例的映射
-    private final Map<Integer, ActiveItem> registeredItems = new HashMap<>();
+    private final Map<Integer, IActiveItem> registeredItems = new HashMap<>();
 
     /**
      * 注册道具
      * @param item 要注册的道具实例
      */
-    public void registerItem(ActiveItem item) {
+    public void registerItem(IActiveItem item) {
         int itemId = item.getItemId();
         if (registeredItems.containsKey(itemId)) {
             throw new IllegalArgumentException("道具ID已存在: " + itemId);
@@ -38,12 +38,12 @@ public class ActiveItemManager {
      * @param itemId 道具ID
      * @return 对应的道具实例，不存在则返回null
      */
-    public ActiveItem getItemFromId(int itemId) {
+    public IActiveItem getItemFromId(int itemId) {
         return registeredItems.get(itemId);
     }
 
-    public void registerItems(ActiveItem... items) {
-        for (ActiveItem item : items) {
+    public void registerItems(IActiveItem... items) {
+        for (IActiveItem item : items) {
             registerItem(item);
         }
     }

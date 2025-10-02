@@ -1,39 +1,37 @@
 package net.luojiuoscar.isaac_disaster.networking.packet;
 
-import net.luojiuoscar.isaac_disaster.capability.player.PlayerPassiveItemProvider;
+import net.luojiuoscar.isaac_disaster.manager.ClientDataManager;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
-public class ObtainPassiveItemC2SPacket {
+public class PassiveItemSyncS2CPacket {
     private int itemId;
+    private int count;
 
     //客户端构造时的函数
-    public ObtainPassiveItemC2SPacket(int itemId){
+    public PassiveItemSyncS2CPacket(int itemId, int count){
         this.itemId = itemId;
+        this.count = count;
     }
 
     //服务器接收时使用的构造函数（从缓冲区读取数据）
-    public ObtainPassiveItemC2SPacket(FriendlyByteBuf buf){
+    public PassiveItemSyncS2CPacket(FriendlyByteBuf buf){
         this.itemId = buf.readInt();
+        this.count = buf.readInt();
     }
 
     public void toBytes(FriendlyByteBuf buf){
         buf.writeInt(itemId);
+        buf.writeInt(count);
     }
 
     public boolean handle(Supplier<NetworkEvent.Context> supplier){
         NetworkEvent.Context context = supplier.get();
         context.enqueueWork(() -> {
-            // On the server
-            ServerPlayer player = context.getSender();
 
-            player.getCapability(PlayerPassiveItemProvider.PLAYER_PASSIVE_ITEM).ifPresent(
-                    playerPassiveItem -> {playerPassiveItem.addItem(player, itemId);
-                    });
-
+            ClientDataManager.getInstance().setItemWithId(itemId, count);
         });
         return true;
     }

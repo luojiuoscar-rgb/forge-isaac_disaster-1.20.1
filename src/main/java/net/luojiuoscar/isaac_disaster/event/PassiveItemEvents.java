@@ -2,8 +2,8 @@ package net.luojiuoscar.isaac_disaster.event;
 
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerPassiveItemProvider;
-import net.luojiuoscar.isaac_disaster.manager.PassiveItemManager;
-import net.luojiuoscar.isaac_disaster.isaac.passive_item.InteractivePassiveItem;
+import net.luojiuoscar.isaac_disaster.manager.item_managers.PassiveItemManager;
+import net.luojiuoscar.isaac_disaster.isaac.passive_item.IInteractiveIPassiveItem;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -27,7 +27,7 @@ public class PassiveItemEvents {
             for (int itemId : interactiveItemMap.keySet())
             {
                 if (interactiveItemMap.get(itemId) > 0){
-                    InteractivePassiveItem item = (InteractivePassiveItem) PassiveItemManager.getInstance().getItemFromId(itemId);
+                    IInteractiveIPassiveItem item = (IInteractiveIPassiveItem) PassiveItemManager.getInstance().getItemFromId(itemId);
                     item.onAttackEntity(player, event.getEntity());
                 }
             }

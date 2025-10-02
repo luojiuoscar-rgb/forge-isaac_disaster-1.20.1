@@ -2,8 +2,8 @@ package net.luojiuoscar.isaac_disaster.isaac.active_item;
 
 
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerPassiveItemProvider;
-import net.luojiuoscar.isaac_disaster.item.custom.NormalActiveItem;
-import net.luojiuoscar.isaac_disaster.manager.ItemId;
+import net.luojiuoscar.isaac_disaster.item.item.ActiveItem;
+import net.luojiuoscar.isaac_disaster.manager.id_managers.ItemId;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 
-public interface ActiveItem {
+public interface IActiveItem {
     /**
      * 获取物品ID
      */
@@ -39,17 +39,17 @@ public interface ActiveItem {
 
         // 修改服务器端的物品耐久度
         ItemStack stack = player.getItemInHand(hand);
-        if (stack.isEmpty() || !(stack.getItem() instanceof NormalActiveItem item)){
+        if (stack.isEmpty() || !(stack.getItem() instanceof ActiveItem item)){
             return;
         }
 
         // 给予物品的过载情况计算剩余充能
         int damage = stack.getDamageValue();
-        if (NormalActiveItem.getOverCharged(stack)){
-            damage += NormalActiveItem.getDamagePerUse(player) - stack.getMaxDamage();
-            NormalActiveItem.setOverCharged(stack, false);
+        if (ActiveItem.getOverCharged(stack)){
+            damage += ActiveItem.getDamagePerUse(player) - stack.getMaxDamage();
+            ActiveItem.setOverCharged(stack, false);
         }else{
-            damage += NormalActiveItem.getDamagePerUse(player);
+            damage += ActiveItem.getDamagePerUse(player);
         }
         damage = Math.max(0, damage);
 
@@ -60,7 +60,7 @@ public interface ActiveItem {
                     volt_9.set(playerPassiveItem.getItemCount(ItemId.VOLT_9.getId()));
                 });
         if (volt_9.get() > 0){
-            damage -= (int) (NormalActiveItem.getOriginalDamagePerUse() * 0.2);
+            damage -= (int) (ActiveItem.getOriginalDamagePerUse() * 0.2);
         }
 
         stack.setDamageValue(damage);
@@ -125,6 +125,9 @@ public interface ActiveItem {
     /**
      * 获取描述文本(lore)
      */
-    List<Component> getDescription();
+     List<Component> getDescription();
+
+
+     List<Component> synergyDescriptionCarBattery();
 }
     

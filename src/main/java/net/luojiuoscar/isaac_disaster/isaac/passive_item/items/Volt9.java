@@ -1,10 +1,10 @@
 package net.luojiuoscar.isaac_disaster.isaac.passive_item.items;
 
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerPassiveItemProvider;
-import net.luojiuoscar.isaac_disaster.isaac.passive_item.PassiveItem;
+import net.luojiuoscar.isaac_disaster.isaac.passive_item.IPassiveItem;
 import net.luojiuoscar.isaac_disaster.item.ModItems;
-import net.luojiuoscar.isaac_disaster.item.custom.NormalActiveItem;
-import net.luojiuoscar.isaac_disaster.manager.ItemId;
+import net.luojiuoscar.isaac_disaster.item.item.ActiveItem;
+import net.luojiuoscar.isaac_disaster.manager.id_managers.ItemId;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -12,7 +12,7 @@ import net.minecraft.world.item.ItemStack;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class Volt9 implements PassiveItem {
+public class Volt9 implements IPassiveItem {
 
     @Override
     public int getItemId() {
@@ -31,9 +31,9 @@ public class Volt9 implements PassiveItem {
             ItemStack stack = player.getInventory().getItem(i);
 
             // 检查物品是否为NormalActiveItem类型且不为空
-            if (!stack.isEmpty() && stack.getItem() instanceof NormalActiveItem) {
+            if (!stack.isEmpty() && stack.getItem() instanceof ActiveItem) {
                 // 满电
-                NormalActiveItem.fullCharge(stack, theBatteryCount.get() > 0);
+                ActiveItem.fullCharge(stack, theBatteryCount.get() > 0);
             }
         }
     }

@@ -1,4 +1,4 @@
-package net.luojiuoscar.isaac_disaster.manager;
+package net.luojiuoscar.isaac_disaster.manager.id_managers;
 
 public enum ItemId {
     BREAKFAST,

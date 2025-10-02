@@ -1,8 +1,8 @@
 package net.luojiuoscar.isaac_disaster.isaac.passive_item.items;
 
-import net.luojiuoscar.isaac_disaster.isaac.passive_item.PassiveItem;
+import net.luojiuoscar.isaac_disaster.isaac.passive_item.IPassiveItem;
 import net.luojiuoscar.isaac_disaster.item.ModItems;
-import net.luojiuoscar.isaac_disaster.manager.ItemId;
+import net.luojiuoscar.isaac_disaster.manager.id_managers.ItemId;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
@@ -10,7 +10,7 @@ import net.minecraft.world.item.ItemStack;
 
 import java.util.List;
 
-public class Lunch implements PassiveItem {
+public class Lunch implements IPassiveItem {
 
     @Override
     public int getItemId() {

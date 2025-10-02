@@ -10,4 +10,5 @@ public class ColorManager {
     public static final int LEGEND_RED = 0xFF3333;
 
     public static final int TRANSPARENT_GRAY = 0x696969;
+    public static final int SYNERGY = 0xFFFF00;
 }

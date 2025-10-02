@@ -28,13 +28,6 @@ public class ModMessages {
 
         INSTANCE = net;
 
-        // register ObtainPassiveItemC2SPacket
-        net.messageBuilder(ObtainPassiveItemC2SPacket.class, id(), NetworkDirection.PLAY_TO_SERVER)
-                .decoder(ObtainPassiveItemC2SPacket::new)
-                .encoder(ObtainPassiveItemC2SPacket::toBytes)
-                .consumerNetworkThread(ObtainPassiveItemC2SPacket::handle)
-                .add();
-
         // register ObtainPassiveItemS2CPacket
         net.messageBuilder(ObtainPassiveItemS2CPacket.class, id(), NetworkDirection.PLAY_TO_CLIENT)
                 .decoder(ObtainPassiveItemS2CPacket::new)
@@ -75,6 +68,20 @@ public class ModMessages {
                 .decoder(UseActiveItemS2CPacket::new)
                 .encoder(UseActiveItemS2CPacket::toBytes)
                 .consumerNetworkThread(UseActiveItemS2CPacket::handle)
+                .add();
+
+        // register PassiveItemSyncS2CPacket
+        net.messageBuilder(PassiveItemSyncS2CPacket.class, id(), NetworkDirection.PLAY_TO_CLIENT)
+                .decoder(PassiveItemSyncS2CPacket::new)
+                .encoder(PassiveItemSyncS2CPacket::toBytes)
+                .consumerNetworkThread(PassiveItemSyncS2CPacket::handle)
+                .add();
+
+        // register PickupOnUseS2CPacket
+        net.messageBuilder(PickupOnUseS2CPacket.class, id(), NetworkDirection.PLAY_TO_CLIENT)
+                .decoder(PickupOnUseS2CPacket::new)
+                .encoder(PickupOnUseS2CPacket::toBytes)
+                .consumerNetworkThread(PickupOnUseS2CPacket::handle)
                 .add();
     }
 

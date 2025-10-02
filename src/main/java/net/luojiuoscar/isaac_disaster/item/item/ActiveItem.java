@@ -1,29 +1,35 @@
-package net.luojiuoscar.isaac_disaster.item.custom;
+package net.luojiuoscar.isaac_disaster.item.item;
 
-import net.luojiuoscar.isaac_disaster.manager.ActiveItemManager;
+import net.luojiuoscar.isaac_disaster.manager.ClientDataManager;
+import net.luojiuoscar.isaac_disaster.manager.item_managers.ActiveItemManager;
 import net.luojiuoscar.isaac_disaster.manager.ColorManager;
+import net.luojiuoscar.isaac_disaster.manager.id_managers.ItemId;
+import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 
 
 import java.util.List;
 
-public class NormalActiveItem extends IsaacItems {
+public class ActiveItem extends IsaacItem {
     private static int DAMAGE_PER_USE;
     private static int MAX_ITEM_DAMAGE;
     private static final String OVERCHARGED_TAG = "OverCharged";
 
 
 
-    public NormalActiveItem(Properties properties, int itemLevel, int itemId, int damagePerUse, int maxItemDamage) {
+    public ActiveItem(Properties properties, int itemLevel, int itemId, int damagePerUse, int maxItemDamage) {
         this(properties, itemLevel, itemId, damagePerUse, maxItemDamage, false);
     }
 
-    public NormalActiveItem(Properties properties, int itemLevel, int itemId, int damagePerUse, int maxItemDamage, boolean useOriginalColor) {
+    public ActiveItem(Properties properties, int itemLevel, int itemId, int damagePerUse, int maxItemDamage, boolean useOriginalColor) {
         // 在父类构造前设置最大耐久
-        super(properties.stacksTo(1).rarity(IsaacItems.getRarity(itemLevel)).durability(maxItemDamage),
+        super(properties.stacksTo(1).rarity(IsaacItem.getRarity(itemLevel)).durability(maxItemDamage),
                 itemLevel, itemId, useOriginalColor);
         MAX_ITEM_DAMAGE = maxItemDamage;
         DAMAGE_PER_USE = damagePerUse;
@@ -34,6 +40,15 @@ public class NormalActiveItem extends IsaacItems {
         tooltipComponents.addAll(
                 ActiveItemManager.getInstance().getItemFromId(getItemId()).getDescription()
         );
+        // 查看是否有车载电池的额外描述需求
+        Player player = Minecraft.getInstance().player;
+        if(player == null) return;
+
+        if (ClientDataManager.getInstance().getCountFromId(ItemId.CAR_BATTERY.getId()) > 0){
+            tooltipComponents.addAll(
+                   ActiveItemManager.getInstance().getItemFromId(getItemId()).synergyDescriptionCarBattery()
+           );
+        }
     }
 
     @Override
@@ -111,7 +126,7 @@ public class NormalActiveItem extends IsaacItems {
     }
 
     public static void modifyCharge(ItemStack stack, int amount, boolean hasTheBattery){
-        boolean OverCharged = NormalActiveItem.getOverCharged(stack);
+        boolean OverCharged = ActiveItem.getOverCharged(stack);
         // 检查物品是否耐久不满 或可以过载
         if ((stack.getDamageValue() > 0)
                 || (hasTheBattery || !OverCharged)) {
@@ -121,10 +136,23 @@ public class NormalActiveItem extends IsaacItems {
             // 未过载且有蓄电池时过载
             if (newDamage == 0 && !OverCharged && hasTheBattery){
                 newDamage = stack.getMaxDamage() - 1;
-                NormalActiveItem.setOverCharged(stack, true);
+                ActiveItem.setOverCharged(stack, true);
             }
 
             stack.setDamageValue(newDamage);
         }
+    }
+
+    @Override
+    public @NotNull InteractionResultHolder<ItemStack> use(@NotNull Level level, Player player, @NotNull InteractionHand hand) {
+        ItemStack stack = player.getItemInHand(hand);
+        // 如果当前物品的耐久度不足且没有过载则无法使用物品
+        if (!ActiveItem.getOverCharged(stack) &&
+                stack.getMaxDamage() - stack.getDamageValue() < ActiveItem.getDamagePerUse(player)){
+            return InteractionResultHolder.fail(stack);
+        }
+
+        // 返回成功动画
+        return InteractionResultHolder.success(stack);
     }
 }

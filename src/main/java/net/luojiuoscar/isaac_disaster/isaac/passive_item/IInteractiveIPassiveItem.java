@@ -8,7 +8,7 @@ import net.minecraft.world.entity.player.Player;
 /**
  * 触发型被动道具接口，处理由特定游戏事件触发的效果
  */
-public interface InteractivePassiveItem extends PassiveItem {
+public interface IInteractiveIPassiveItem extends IPassiveItem {
     /**
      * 获取触发概率（double 0.0-1.0）
      */
@@ -20,12 +20,12 @@ public interface InteractivePassiveItem extends PassiveItem {
 
     /**
      * 攻击实体时触发
+     *
      * @param player 玩家
      * @param target 被攻击的实体
-     * @return 是否成功触发效果
      */
-    default boolean onAttackEntity(Player player, LivingEntity target) {
-        return triggerWithChance(player, () -> {
+    default void onAttackEntity(Player player, LivingEntity target) {
+        triggerWithChance(player, () -> {
             // 具体触发逻辑由实现类完成
             handleAttackEntityEffect(player, target);
         });

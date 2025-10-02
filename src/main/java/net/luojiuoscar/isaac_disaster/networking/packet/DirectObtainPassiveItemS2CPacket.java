@@ -1,6 +1,6 @@
 package net.luojiuoscar.isaac_disaster.networking.packet;
 
-import net.luojiuoscar.isaac_disaster.manager.PassiveItemManager;
+import net.luojiuoscar.isaac_disaster.manager.item_managers.PassiveItemManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Player;

@@ -2,8 +2,8 @@ package net.luojiuoscar.isaac_disaster.event;
 
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerPassiveItemProvider;
-import net.luojiuoscar.isaac_disaster.item.custom.NormalActiveItem;
-import net.luojiuoscar.isaac_disaster.manager.ItemId;
+import net.luojiuoscar.isaac_disaster.item.item.ActiveItem;
+import net.luojiuoscar.isaac_disaster.manager.id_managers.ItemId;
 import net.minecraft.client.Minecraft;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
@@ -68,8 +68,8 @@ public class ServerTickEvent {
             ItemStack stack = player.getInventory().getItem(i);
 
             // 检查物品是否为NormalActiveItem类型且不为空
-            if (!stack.isEmpty() && stack.getItem() instanceof NormalActiveItem) {
-                NormalActiveItem.modifyCharge(stack, ServerTickEvent.CHARGE_FREQUENCY, theBatteryCount.get() > 0);
+            if (!stack.isEmpty() && stack.getItem() instanceof ActiveItem) {
+                ActiveItem.modifyCharge(stack, ServerTickEvent.CHARGE_FREQUENCY, theBatteryCount.get() > 0);
             }
         }
     }

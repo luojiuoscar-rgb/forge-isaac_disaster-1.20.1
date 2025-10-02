@@ -11,7 +11,6 @@ import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 
-import java.util.Arrays;
 import java.util.UUID;
 
 
@@ -29,4 +28,9 @@ public class ModEffects {
     public static final RegistryObject<MobEffect> POWER_OF_BELIAL = MOB_EFFECTS.register(EffectNameManager.POWER_OF_BELIAL,
             () -> new PowerOfBelialEffect(MobEffectCategory.BENEFICIAL, 0xee1c24)
             .addAttributeModifier(Attributes.ATTACK_DAMAGE, UUID.randomUUID().toString(), 0.0D, AttributeModifier.Operation.ADDITION));
+
+    public static final RegistryObject<MobEffect> DIZZINESS = MOB_EFFECTS.register(EffectNameManager.DIZZINESS,
+            () -> new DizzinessEffect(MobEffectCategory.HARMFUL, 0xFFFFFF)
+                    .addAttributeModifier(Attributes.MOVEMENT_SPEED, UUID.randomUUID().toString(), -1.0D, AttributeModifier.Operation.MULTIPLY_TOTAL)
+                    .addAttributeModifier(Attributes.JUMP_STRENGTH, UUID.randomUUID().toString(), -1.0D, AttributeModifier.Operation.MULTIPLY_TOTAL));
 }

@@ -1,8 +1,9 @@
 package net.luojiuoscar.isaac_disaster.isaac.active_item.items;
 
-import net.luojiuoscar.isaac_disaster.isaac.active_item.ActiveItem;
+import net.luojiuoscar.isaac_disaster.isaac.active_item.IActiveItem;
 import net.luojiuoscar.isaac_disaster.item.ModItems;
-import net.luojiuoscar.isaac_disaster.manager.ItemId;
+import net.luojiuoscar.isaac_disaster.manager.ColorManager;
+import net.luojiuoscar.isaac_disaster.manager.id_managers.ItemId;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.sound.ModSounds;
 import net.minecraft.network.chat.Component;
@@ -13,7 +14,7 @@ import net.minecraft.world.item.ItemStack;
 
 import java.util.List;
 
-public class YumHeart implements ActiveItem {
+public class YumHeart implements IActiveItem {
 
     @Override
     public int getItemId() {
@@ -44,6 +45,14 @@ public class YumHeart implements ActiveItem {
     public List<Component> getDescription() {
         return List.of(
                 Component.translatable("item.isaac_disaster.action.heal_health", StatManager.getHealthBonus())
+        );
+    }
+
+    @Override
+    public List<Component> synergyDescriptionCarBattery() {
+        return List.of(
+                Component.translatable("item.isaac_disaster.car_battery").append(": ")
+                        .append(Component.translatable("item.isaac_disaster.yum_heart.synergy.car_battery.1")).withStyle(style -> style.withColor(ColorManager.SYNERGY))
         );
     }
 }

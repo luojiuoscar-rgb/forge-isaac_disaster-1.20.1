@@ -16,6 +16,13 @@ import org.jetbrains.annotations.Nullable;
 import java.util.concurrent.CompletableFuture;
 
 public class ModItemTagGenerator extends ItemTagsProvider {
+    public ModItemTagGenerator(PackOutput p_275343_, CompletableFuture<HolderLookup.Provider> p_275729_,
+                               CompletableFuture<TagLookup<Block>> p_275322_,
+                               @Nullable ExistingFileHelper existingFileHelper) {
+        super(p_275343_, p_275729_, p_275322_, IsaacDisaster.MOD_ID, existingFileHelper);
+    }
+
+
     public static final TagKey<Item> PASSIVE_ITEMS = TagKey.create(
             Registries.ITEM,
             ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "passive_items")
@@ -24,12 +31,10 @@ public class ModItemTagGenerator extends ItemTagsProvider {
             Registries.ITEM,
             ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "active_items")
     );
-
-    public ModItemTagGenerator(PackOutput p_275343_, CompletableFuture<HolderLookup.Provider> p_275729_,
-                               CompletableFuture<TagLookup<Block>> p_275322_,
-                               @Nullable ExistingFileHelper existingFileHelper) {
-        super(p_275343_, p_275729_, p_275322_, IsaacDisaster.MOD_ID, existingFileHelper);
-    }
+    public static final TagKey<Item> PICKUPS = TagKey.create(
+            Registries.ITEM,
+            ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "pickups")
+    );
 
 
     @Override
@@ -43,6 +48,11 @@ public class ModItemTagGenerator extends ItemTagsProvider {
         var activeItemsTag = this.tag(ACTIVE_ITEMS);
         ItemListManager.ACTIVE_ITEM_LIST.forEach(itemRegistry -> {
             activeItemsTag.add(itemRegistry.get());
+        });
+
+        var pickupsTag = this.tag(PICKUPS);
+        ItemListManager.PICKUP_LIST.forEach(itemRegistry -> {
+            pickupsTag.add(itemRegistry.get());
         });
     }
 

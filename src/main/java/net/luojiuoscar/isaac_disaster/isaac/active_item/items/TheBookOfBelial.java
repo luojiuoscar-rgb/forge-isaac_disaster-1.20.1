@@ -1,10 +1,10 @@
 package net.luojiuoscar.isaac_disaster.isaac.active_item.items;
 
 import net.luojiuoscar.isaac_disaster.effect.ModEffects;
-import net.luojiuoscar.isaac_disaster.isaac.active_item.ActiveItem;
+import net.luojiuoscar.isaac_disaster.isaac.active_item.IActiveItem;
 import net.luojiuoscar.isaac_disaster.item.ModItems;
-import net.luojiuoscar.isaac_disaster.manager.ItemId;
-import net.luojiuoscar.isaac_disaster.manager.StatManager;
+import net.luojiuoscar.isaac_disaster.manager.ColorManager;
+import net.luojiuoscar.isaac_disaster.manager.id_managers.ItemId;
 import net.luojiuoscar.isaac_disaster.sound.ModSounds;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvent;
@@ -14,7 +14,7 @@ import net.minecraft.world.item.ItemStack;
 
 import java.util.List;
 
-public class TheBookOfBelial implements ActiveItem {
+public class TheBookOfBelial implements IActiveItem {
 
     @Override
     public int getItemId() {
@@ -56,6 +56,15 @@ public class TheBookOfBelial implements ActiveItem {
         return List.of(
                 Component.translatable("item.isaac_disaster.the_book_of_belial.lore.1"),
                 Component.translatable("item.isaac_disaster.the_book_of_belial.lore.2")
+        );
+    }
+
+    @Override
+    public List<Component> synergyDescriptionCarBattery() {
+        return List.of(
+                Component.translatable("item.isaac_disaster.car_battery").append(": ")
+                        .append(Component.translatable("item.isaac_disaster.the_book_of_belial.synergy.car_battery.1"))
+                        .withStyle(style -> style.withColor(ColorManager.SYNERGY))
         );
     }
 }

@@ -3,7 +3,6 @@ package net.luojiuoscar.isaac_disaster.effect;
 
 import net.luojiuoscar.isaac_disaster.capability.entity.EntityEffectProvider;
 import net.luojiuoscar.isaac_disaster.manager.EffectNameManager;
-import net.minecraft.network.chat.Component;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.entity.LivingEntity;

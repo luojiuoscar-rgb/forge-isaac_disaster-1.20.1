@@ -2,13 +2,18 @@ package net.luojiuoscar.isaac_disaster;
 
 import com.mojang.logging.LogUtils;
 import net.luojiuoscar.isaac_disaster.effect.ModEffects;
+import net.luojiuoscar.isaac_disaster.entity.ModEntity;
+import net.luojiuoscar.isaac_disaster.entity.tnt.CustomTntRenderer;
 import net.luojiuoscar.isaac_disaster.event.ServerTickEvent;
 import net.luojiuoscar.isaac_disaster.item.ModCreativeModeTabs;
 import net.luojiuoscar.isaac_disaster.item.ModItems;
-import net.luojiuoscar.isaac_disaster.manager.ActiveItemManager;
-import net.luojiuoscar.isaac_disaster.manager.PassiveItemManager;
+import net.luojiuoscar.isaac_disaster.item.pickup.Pickup;
+import net.luojiuoscar.isaac_disaster.manager.item_managers.ActiveItemManager;
+import net.luojiuoscar.isaac_disaster.manager.item_managers.PassiveItemManager;
+import net.luojiuoscar.isaac_disaster.manager.item_managers.PickupManager;
 import net.luojiuoscar.isaac_disaster.networking.ModMessages;
 import net.luojiuoscar.isaac_disaster.sound.ModSounds;
+import net.minecraft.client.renderer.entity.EntityRenderers;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
@@ -44,6 +49,7 @@ public class IsaacDisaster
         ModCreativeModeTabs.register(modEventBus);
 
         ModItems.register(modEventBus);
+        ModEntity.register(modEventBus);
 
         ModSounds.register(modEventBus);
         ModEffects.register(modEventBus);
@@ -61,6 +67,7 @@ public class IsaacDisaster
         event.enqueueWork(() -> {
             PassiveItemManager.getInstance().init();
             ActiveItemManager.getInstance().init();
+            PickupManager.getInstance().init();
         });
     }
 
@@ -78,7 +85,6 @@ public class IsaacDisaster
     public static class ClientModEvents {
         @SubscribeEvent
         public static void onClientSetup(FMLClientSetupEvent event) {
-
         }
     }
 }

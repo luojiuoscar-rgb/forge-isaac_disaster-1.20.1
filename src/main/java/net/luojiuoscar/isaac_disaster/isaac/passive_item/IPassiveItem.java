@@ -1,13 +1,8 @@
 package net.luojiuoscar.isaac_disaster.isaac.passive_item;
 
-import net.luojiuoscar.isaac_disaster.networking.ModMessages;
-import net.luojiuoscar.isaac_disaster.networking.packet.DirectObtainPassiveItemC2SPacket;
-import net.luojiuoscar.isaac_disaster.networking.packet.ObtainPassiveItemC2SPacket;
-import net.luojiuoscar.isaac_disaster.networking.packet.RemovePassiveItemFromIdC2SPacket;
 import net.luojiuoscar.isaac_disaster.sound.ModSounds;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvent;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
@@ -15,7 +10,7 @@ import net.minecraft.world.item.ItemStack;
 import java.util.List;
 
 
-public interface PassiveItem{
+public interface IPassiveItem {
     /**
      * 获取道具ID
      */

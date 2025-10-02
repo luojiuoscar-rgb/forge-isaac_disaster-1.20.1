@@ -1,7 +1,7 @@
 package net.luojiuoscar.isaac_disaster.capability.player;
 
-import net.luojiuoscar.isaac_disaster.manager.PassiveItemManager;
-import net.luojiuoscar.isaac_disaster.isaac.passive_item.InteractivePassiveItem;
+import net.luojiuoscar.isaac_disaster.manager.item_managers.PassiveItemManager;
+import net.luojiuoscar.isaac_disaster.isaac.passive_item.IInteractiveIPassiveItem;
 import net.luojiuoscar.isaac_disaster.networking.ModMessages;
 import net.luojiuoscar.isaac_disaster.networking.packet.DirectObtainPassiveItemS2CPacket;
 import net.luojiuoscar.isaac_disaster.networking.packet.ObtainPassiveItemS2CPacket;
@@ -9,6 +9,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.common.capabilities.AutoRegisterCapability;
 
 import java.util.ArrayList;
@@ -16,6 +17,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Arrays;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import static net.luojiuoscar.isaac_disaster.Config.PASSIVE_ITEM_LIMIT;
@@ -51,7 +53,7 @@ public class PlayerPassiveItem {
     private void updateItemMap(int itemId, int amount) {
         itemCountMap.put(itemId, itemCountMap.getOrDefault(itemId, 0) + amount);
         // 如果是触发型道具
-        if(PassiveItemManager.getInstance().getItemFromId(itemId) instanceof InteractivePassiveItem){
+        if(PassiveItemManager.getInstance().getItemFromId(itemId) instanceof IInteractiveIPassiveItem){
             interactiveItemCountMap.put(itemId, itemCountMap.getOrDefault(itemId, 0) + amount);
         }
     }
@@ -110,7 +112,7 @@ public class PlayerPassiveItem {
     /**
      * 将一个新的道具添加到列表。同时触发添加道具的效果和直接添加效果
      */
-    public void addItem(ServerPlayer player, int itemId){
+    public void addItem(ServerPlayer player, int itemId, InteractionHand hand){
         // 如果道具数量已达上限
         if(this.getTotalItems() >= PASSIVE_ITEM_LIMIT.get()){
             player.sendSystemMessage(Component.translatable("message.isaac_disaster.warning.too_many_items").withStyle(
@@ -133,7 +135,7 @@ public class PlayerPassiveItem {
 
 
         // 删除手持的道具原型
-        player.getItemInHand(InteractionHand.MAIN_HAND).shrink(1);
+        player.getItemInHand(hand).shrink(1);
     }
 
     /**
@@ -214,5 +216,14 @@ public class PlayerPassiveItem {
                 .collect(Collectors.toCollection(ArrayList::new));
         // 加载后刷新哈希表
         refreshItemCountMap();
+    }
+
+
+    public static boolean hasItem(int ItemId, Player player){
+        AtomicInteger count = new AtomicInteger();
+        player.getCapability(PlayerPassiveItemProvider.PLAYER_PASSIVE_ITEM).ifPresent(
+                playerPassiveItem -> count.set(playerPassiveItem.getItemCount(ItemId))
+        );
+        return count.get() > 0;
     }
 }
