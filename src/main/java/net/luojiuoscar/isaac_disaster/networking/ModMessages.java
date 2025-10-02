@@ -70,20 +70,12 @@ public class ModMessages {
                 .consumerNetworkThread(ClearPassiveItemC2SPacket::handle)
                 .add();
 
-        // register UseActiveItemC2SPacket
-        net.messageBuilder(UseActiveItemC2SPacket.class, id(), NetworkDirection.PLAY_TO_SERVER)
-                .decoder(UseActiveItemC2SPacket::new)
-                .encoder(UseActiveItemC2SPacket::toBytes)
-                .consumerNetworkThread(UseActiveItemC2SPacket::handle)
-                .add();
-
         // register UseActiveItemS2CPacket
         net.messageBuilder(UseActiveItemS2CPacket.class, id(), NetworkDirection.PLAY_TO_CLIENT)
                 .decoder(UseActiveItemS2CPacket::new)
                 .encoder(UseActiveItemS2CPacket::toBytes)
                 .consumerNetworkThread(UseActiveItemS2CPacket::handle)
                 .add();
-
     }
 
     public static <MSG> void sendToServer(MSG message){

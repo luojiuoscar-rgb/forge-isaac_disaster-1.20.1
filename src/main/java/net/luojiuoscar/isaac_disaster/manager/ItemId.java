@@ -16,7 +16,10 @@ public enum ItemId {
     GLASS_EYE,
     YUM_HEART,
     CAR_BATTERY,
-    THE_BATTERY;
+    THE_BATTERY,
+    VOLT_9,
+    VOLT_4P5,
+    THE_BOOK_OF_BELIAL;
 
 
     private final int id;

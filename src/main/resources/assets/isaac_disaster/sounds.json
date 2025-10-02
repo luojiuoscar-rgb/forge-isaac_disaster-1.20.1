@@ -10,5 +10,11 @@
     "sounds": [
       "isaac_disaster:yum_heart_use"
     ]
+  },
+  "the_book_of_belial_use": {
+    "subtitles": "sounds.isaac_disaster.the_book_of_belial_use",
+    "sounds": [
+      "isaac_disaster:the_book_of_belial_use"
+    ]
   }
 }

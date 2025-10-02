@@ -11,7 +11,7 @@ import net.minecraft.world.item.ItemStack;
 import java.util.List;
 
 public class CricketsHead implements PassiveItem {
-    public double damage_multiplier = 0.5;
+    private final double damage_multiplier = 0.5;
 
     @Override
     public int getItemId() {

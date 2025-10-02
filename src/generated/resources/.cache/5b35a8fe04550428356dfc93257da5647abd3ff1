@@ -1,4 +1,4 @@
-// 1.20.1	2025-09-30T23:15:15.3837349	Item Models: isaac_disaster
+// 1.20.1	2025-10-01T22:17:36.3581936	Item Models: isaac_disaster
 b2cb238ea4779eef4f9f14cba38fabb8d6513b76 assets/isaac_disaster/models/item/a_snack.json
 f84e7c8c3649edd969a720836fab6e4462fef0f6 assets/isaac_disaster/models/item/breakfast.json
 8ecd892814f58d3861cb37a5f88a3996d236d27a assets/isaac_disaster/models/item/car_battery.json
@@ -12,6 +12,9 @@ ea5d24e9493a10e98690d3c6aa0259c91283a6a0 assets/isaac_disaster/models/item/midni
 59cae21b103ae226db647048e5923adbebbc4f70 assets/isaac_disaster/models/item/steven.json
 cc9c3b0d0c8fae39c13e7f5347a80808a29743e7 assets/isaac_disaster/models/item/supper.json
 0b8453f01964e11d5e98d5c8f3639e7b9466d5b4 assets/isaac_disaster/models/item/the_battery.json
+b06c45e13a6125cb3d3f2912fb0ca7ef951c831a assets/isaac_disaster/models/item/the_book_of_belial.json
 f9655737e8ff94a4a24a0793fbfeabf2af245d23 assets/isaac_disaster/models/item/the_common_cold.json
+126e86db8c04aeee59f868dc58d9593d0085fcaf assets/isaac_disaster/models/item/volt_4p5.json
+77fa5d89efe19c68bc74d01e6e4d1cad394977cf assets/isaac_disaster/models/item/volt_9.json
 168a596cadc8b97a3c44ca6ae8b3cd9bca38eec8 assets/isaac_disaster/models/item/wooden_spoon.json
 b832f7f25a00db45efb61dd22089efbce4a9a0b1 assets/isaac_disaster/models/item/yum_heart.json

@@ -1,5 +1,6 @@
 package net.luojiuoscar.isaac_disaster.isaac.passive_item.items;
 
+import net.luojiuoscar.isaac_disaster.effect.ModEffects;
 import net.luojiuoscar.isaac_disaster.item.ModItems;
 import net.luojiuoscar.isaac_disaster.manager.ItemId;
 import net.luojiuoscar.isaac_disaster.isaac.passive_item.InteractivePassiveItem;
@@ -27,16 +28,16 @@ public class TheCommonCold implements InteractivePassiveItem {
     public void handleAttackEntityEffect(Player player, LivingEntity target){
         // 给目标添加中毒效果：持续5秒（100游戏刻，20刻=1秒），等级1（ amplifier=0 对应等级1）
         MobEffectInstance poisonEffect = new MobEffectInstance(
-                MobEffects.POISON,  // 中毒效果的类型
-                100,                // 持续时间（游戏刻）
+                ModEffects.ISAAC_POISON.get(),  // 中毒效果的类型
+                70,                 // 持续时间（游戏刻）
                 0,                  // 效果等级（0=I级，1=II级，以此类推）
                 false,              // 是否显示粒子效果
                 true,               // 是否显示图标
-                false               // 是否可以被移除（如牛奶）
+                true                // 是否可以被移除（如牛奶）
         );
 
         // 为目标实体应用效果
-        target.addEffect(poisonEffect);
+        target.addEffect(poisonEffect, player);
     };
 
 

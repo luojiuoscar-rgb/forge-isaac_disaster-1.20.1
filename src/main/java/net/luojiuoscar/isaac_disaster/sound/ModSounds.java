@@ -17,6 +17,7 @@ public class ModSounds {
 
     // item sounds
     public static final RegistryObject<SoundEvent> YUM_HEART_USE = registerSoundEvent("yum_heart_use");
+    public static final RegistryObject<SoundEvent> THE_BOOK_OF_BELIAL_USE = registerSoundEvent("the_book_of_belial_use");
 
 
 

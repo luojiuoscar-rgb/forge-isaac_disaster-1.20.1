@@ -1,6 +1,7 @@
 package net.luojiuoscar.isaac_disaster.manager;
 
 import net.luojiuoscar.isaac_disaster.isaac.active_item.ActiveItem;
+import net.luojiuoscar.isaac_disaster.isaac.active_item.items.TheBookOfBelial;
 import net.luojiuoscar.isaac_disaster.isaac.active_item.items.YumHeart;
 
 import java.util.HashMap;
@@ -51,7 +52,8 @@ public class ActiveItemManager {
     public void init() {
         // 注册所有道具实例
         registerItems(
-                new YumHeart()
+                new YumHeart(),
+                new TheBookOfBelial()
         );
     }
 }

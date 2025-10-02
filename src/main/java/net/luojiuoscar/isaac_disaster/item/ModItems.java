@@ -56,7 +56,6 @@ public class ModItems {
             () -> new NormalPassiveItem(new Item.Properties(),1, ItemId.A_SNACK.getId()));
     static { PASSIVE_ITEM_LIST.add(A_SNACK); }
 
-
     public static final RegistryObject<Item> WOODEN_SPOON = ITEMS.register("wooden_spoon",
             () -> new NormalPassiveItem(new Item.Properties(),1, ItemId.WOODEN_SPOON.getId()));
     static { PASSIVE_ITEM_LIST.add(WOODEN_SPOON); }
@@ -85,6 +84,14 @@ public class ModItems {
             () -> new NormalPassiveItem(new Item.Properties(),3, ItemId.THE_BATTERY.getId()));
     static { PASSIVE_ITEM_LIST.add(THE_BATTERY); }
 
+    public static final RegistryObject<Item> VOLT_9 = ITEMS.register("volt_9",
+            () -> new NormalPassiveItem(new Item.Properties(),2, ItemId.VOLT_9.getId()));
+    static { PASSIVE_ITEM_LIST.add(VOLT_9); }
+
+    public static final RegistryObject<Item> VOLT_4P5 = ITEMS.register("volt_4p5",
+            () -> new NormalPassiveItem(new Item.Properties(),2, ItemId.VOLT_4P5.getId()));
+    static { PASSIVE_ITEM_LIST.add(VOLT_4P5); }
+
 
 
 
@@ -106,6 +113,9 @@ public class ModItems {
                     800, 800));
     static { ACTIVE_ITEM_LIST.add(YUM_HEART); }
 
-
+    public static final RegistryObject<Item> THE_BOOK_OF_BELIAL = ITEMS.register("the_book_of_belial",
+            () -> new NormalActiveItem(new Item.Properties(),2, ItemId.THE_BOOK_OF_BELIAL.getId(),
+                    600, 600));
+    static { ACTIVE_ITEM_LIST.add(THE_BOOK_OF_BELIAL); }
 
 }

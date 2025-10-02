@@ -22,7 +22,7 @@ public class NormalPassiveItem extends IsaacItems {
     }
 
     public NormalPassiveItem(Properties properties, int itemLevel, int itemId, boolean useOriginalColor) {
-        super(properties.stacksTo(1).rarity(Rarity.EPIC), itemLevel, itemId, useOriginalColor);
+        super(properties.stacksTo(1).rarity(IsaacItems.getRarity(itemLevel)), itemLevel, itemId, useOriginalColor);
     }
 
     @Override
@@ -40,6 +40,7 @@ public class NormalPassiveItem extends IsaacItems {
     /**
      * 右键使用方法
      */
+    @Override
     public @NotNull InteractionResultHolder<ItemStack> use(@NotNull Level level, Player player, @NotNull InteractionHand hand) {
         // 获取玩家手中的物品栈
         ItemStack stack = player.getItemInHand(hand);

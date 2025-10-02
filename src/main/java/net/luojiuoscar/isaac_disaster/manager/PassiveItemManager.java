@@ -65,7 +65,9 @@ public class PassiveItemManager {
                 new Supper(),
                 new RottenMeat(),
                 new ASnack(),
-                new Dinner()
+                new Dinner(),
+                new Volt9(),
+                new Volt4p5()
         );
     }
 }

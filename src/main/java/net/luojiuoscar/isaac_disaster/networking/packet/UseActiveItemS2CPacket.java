@@ -3,7 +3,7 @@ package net.luojiuoscar.isaac_disaster.networking.packet;
 import net.luojiuoscar.isaac_disaster.manager.ActiveItemManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.network.NetworkEvent;
 
@@ -31,6 +31,10 @@ public class UseActiveItemS2CPacket {
         context.enqueueWork(() -> {
 
             Player player = Minecraft.getInstance().player;
+
+            if (player == null){
+                return;
+            }
 
             ActiveItemManager.getInstance().getItemFromId(itemId).onUseClientEffect(player);
         });

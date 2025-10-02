@@ -9,6 +9,7 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 添加Lore的基类：
@@ -18,7 +19,6 @@ public abstract class IsaacItems extends Item {
     private int itemId;
     private int itemLevel;
     private boolean useOriginalColor;
-
 
     /**
      * @param properties 物品属性
@@ -61,6 +61,17 @@ public abstract class IsaacItems extends Item {
      */
     public abstract void addAdditionalInfo(List<Component> tooltipComponents);
 
+    /**
+     * 获取Rarity
+     */
+    public static Rarity getRarity(int itemLevel){
+        return switch (itemLevel) {
+            case 0 -> Rarity.COMMON;
+            case 1 -> Rarity.UNCOMMON;
+            case 2 -> Rarity.RARE;
+            default -> Rarity.EPIC;
+        };
+    }
 
     /**
      * 添加稀有度文本组件
@@ -89,10 +100,11 @@ public abstract class IsaacItems extends Item {
      * 此Item的名称将被ItemStack.getHoverName()调用
      */
     @Override
-    public Component getName(ItemStack pStack) {
+    public @NotNull Component getName(@NotNull ItemStack stack) {
         // 如果需要使用原始文本颜色
         if(this.useOriginalColor){
-            return Component.translatable(this.getDescriptionId(pStack));
+            return Component.translatable(this.getDescriptionId(stack))
+                    .append("  #" + itemId);
         }
 
         // 根据等级设置对应颜色（与上面的方法保持一致）
@@ -103,9 +115,9 @@ public abstract class IsaacItems extends Item {
             case 4 -> ColorManager.LEGEND_RED;
             default -> ColorManager.COMMON_WHITE;
         };
-        return Component.translatable(this.getDescriptionId(pStack)).withStyle(
-                style -> style.withColor(color));
-    }
+        return Component.translatable(this.getDescriptionId(stack))
+                .append("#" + itemId).withStyle(
+                style -> style.withColor(color));}
 
     public int getItemId(){
         return this.itemId;
