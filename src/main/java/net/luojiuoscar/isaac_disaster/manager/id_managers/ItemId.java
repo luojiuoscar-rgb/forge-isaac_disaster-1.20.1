@@ -19,7 +19,14 @@ public enum ItemId {
     THE_BATTERY,
     VOLT_9,
     VOLT_4P5,
-    THE_BOOK_OF_BELIAL;
+    THE_BOOK_OF_BELIAL,
+    BOOM,
+    MR_MEGA,
+    BOMBER_BOY,
+    SCATTER_BOMB,
+    FAST_BOMB,
+    BOBBY_BOMB,
+    HOT_BOMB;
 
 
     private final int id;

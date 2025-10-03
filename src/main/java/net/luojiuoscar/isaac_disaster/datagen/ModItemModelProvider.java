@@ -1,9 +1,7 @@
 package net.luojiuoscar.isaac_disaster.datagen;
 
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
-import net.luojiuoscar.isaac_disaster.isaac.pickup.items.GigaBomb;
 import net.luojiuoscar.isaac_disaster.item.ModItems;
-import net.luojiuoscar.isaac_disaster.item.pickup.Bomb;
 import net.luojiuoscar.isaac_disaster.manager.ItemListManager;
 import net.minecraft.data.PackOutput;
 import net.minecraft.world.item.Item;
@@ -34,8 +32,9 @@ public class ModItemModelProvider extends ItemModelProvider {
 
         ItemListManager.PICKUP_LIST.forEach(itemRegistry -> {
             Item item = itemRegistry.get();
-            if (item == ModItems.GIGA_BOMB.get()) return;
-            basicItem(item);
+            if (item != ModItems.GIGA_BOMB.get()){
+                basicItem(item);
+            };
         });
     }
 }

@@ -4,17 +4,17 @@ import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.item.item.ActiveItem;
 import net.luojiuoscar.isaac_disaster.item.item.PassiveItem;
 import net.luojiuoscar.isaac_disaster.item.pickup.Bomb;
-import net.luojiuoscar.isaac_disaster.item.pickup.Pickup;
 import net.luojiuoscar.isaac_disaster.manager.id_managers.ItemId;
 import net.luojiuoscar.isaac_disaster.manager.id_managers.PickupId;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.Rarity;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 
 import static net.luojiuoscar.isaac_disaster.manager.ItemListManager.*;
-import static net.luojiuoscar.isaac_disaster.manager.id_managers.PickupId.GIGA_BOMB;
+
 
 public class ModItems {
     public static final DeferredRegister<Item> ITEMS =
@@ -94,11 +94,33 @@ public class ModItems {
             () -> new PassiveItem(new Item.Properties(),2, ItemId.VOLT_4P5.getId()));
     static { PASSIVE_ITEM_LIST.add(VOLT_4P5); }
 
+    public static final RegistryObject<Item> BOOM = ITEMS.register("boom",
+            () -> new PassiveItem(new Item.Properties(),0, ItemId.BOOM.getId()));
+    static { PASSIVE_ITEM_LIST.add(BOOM); }
 
+    public static final RegistryObject<Item> MR_MEGA = ITEMS.register("mr_mega",
+            () -> new PassiveItem(new Item.Properties(),3, ItemId.MR_MEGA.getId()));
+    static { PASSIVE_ITEM_LIST.add(MR_MEGA); }
 
+    public static final RegistryObject<Item> BOMBER_BOY = ITEMS.register("bomber_boy",
+            () -> new PassiveItem(new Item.Properties(),3, ItemId.BOMBER_BOY.getId()));
+    static { PASSIVE_ITEM_LIST.add(BOMBER_BOY); }
 
+    public static final RegistryObject<Item> SCATTER_BOMB = ITEMS.register("scatter_bomb",
+            () -> new PassiveItem(new Item.Properties(),2, ItemId.SCATTER_BOMB.getId()));
+    static { PASSIVE_ITEM_LIST.add(SCATTER_BOMB); }
 
+    public static final RegistryObject<Item> FAST_BOMB = ITEMS.register("fast_bomb",
+            () -> new PassiveItem(new Item.Properties(),2, ItemId.FAST_BOMB.getId()));
+    static { PASSIVE_ITEM_LIST.add(FAST_BOMB); }
 
+    public static final RegistryObject<Item> BOBBY_BOMB = ITEMS.register("bobby_bomb",
+            () -> new PassiveItem(new Item.Properties(),2, ItemId.BOBBY_BOMB.getId()));
+    static { PASSIVE_ITEM_LIST.add(BOBBY_BOMB); }
+
+    public static final RegistryObject<Item> HOT_BOMB = ITEMS.register("hot_bomb",
+            () -> new PassiveItem(new Item.Properties(),1, ItemId.HOT_BOMB.getId()));
+    static { PASSIVE_ITEM_LIST.add(HOT_BOMB); }
 
 
 
@@ -128,7 +150,11 @@ public class ModItems {
     static { PICKUP_LIST.add(BOMB); }
 
     public static final RegistryObject<Item> GIGA_BOMB = ITEMS.register("giga_bomb",
-            () -> new Bomb(new Item.Properties().stacksTo(16), PickupId.GIGA_BOMB.getId()));
+            () -> new Bomb(new Item.Properties().stacksTo(16).rarity(Rarity.RARE), PickupId.GIGA_BOMB.getId()));
     static { PICKUP_LIST.add(GIGA_BOMB); }
+
+    public static final RegistryObject<Item> GOLDEN_BOMB = ITEMS.register("golden_bomb",
+            () -> new Bomb(new Item.Properties().stacksTo(1).rarity(Rarity.EPIC), PickupId.GOLDEN_BOMB.getId()));
+    static { PICKUP_LIST.add(GOLDEN_BOMB); }
 
 }

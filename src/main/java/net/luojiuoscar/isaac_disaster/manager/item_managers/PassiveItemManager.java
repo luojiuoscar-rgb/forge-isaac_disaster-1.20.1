@@ -1,7 +1,8 @@
 package net.luojiuoscar.isaac_disaster.manager.item_managers;
 
-import net.luojiuoscar.isaac_disaster.isaac.passive_item.IPassiveItem;
-import net.luojiuoscar.isaac_disaster.isaac.passive_item.items.*;
+import net.luojiuoscar.isaac_disaster.item_ability.passive_item.IPassiveItem;
+import net.luojiuoscar.isaac_disaster.item_ability.passive_item.items.*;
+import net.luojiuoscar.isaac_disaster.item_ability.pickup.items.Bomb;
 
 import java.util.*;
 
@@ -67,7 +68,14 @@ public class PassiveItemManager {
                 new ASnack(),
                 new Dinner(),
                 new Volt9(),
-                new Volt4p5()
+                new Volt4p5(),
+                new Boom(),
+                new MrMega(),
+                new BomberBoy(),
+                new ScatterBomb(),
+                new FastBomb(),
+                new BobbyBomb(),
+                new HotBomb()
         );
     }
 }

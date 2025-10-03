@@ -1,6 +1,7 @@
 package net.luojiuoscar.isaac_disaster.entity;
 
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
+import net.luojiuoscar.isaac_disaster.entity.tnt.GigaBomb;
 import net.luojiuoscar.isaac_disaster.entity.tnt.IsaacBomb;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
@@ -21,7 +22,13 @@ public class ModEntity {
 
     public static final RegistryObject<EntityType<IsaacBomb>> ISAAC_BOMB = MOD_ENTITY.register("isaac_bomb",
             () -> EntityType.Builder.<IsaacBomb>of(IsaacBomb::new, MobCategory.MISC)
-                    .sized(0.5f, 0.5f) // 碰撞箱大小，根据你的实体调整
+                    .sized(0.98f, 0.98f) // 碰撞箱大小，根据你的实体调整
                     .build("isaac_bomb")
+    );
+
+    public static final RegistryObject<EntityType<IsaacBomb>> GIGA_BOMB = MOD_ENTITY.register("giga_bomb",
+            () -> EntityType.Builder.<IsaacBomb>of(GigaBomb::new, MobCategory.MISC)
+                    .sized(2.5f, 2.5f) // 碰撞箱大小，根据你的实体调整
+                    .build("giga_bomb")
     );
 }

@@ -21,6 +21,6 @@ public class Bomb extends Pickup {
         ItemStack stack = player.getItemInHand(hand);
 
         // 返回成功结果
-        return InteractionResultHolder.pass(stack);
+        return InteractionResultHolder.success(stack);
     }
 }

@@ -1,7 +1,7 @@
 package net.luojiuoscar.isaac_disaster.capability.player;
 
 import net.luojiuoscar.isaac_disaster.manager.item_managers.PassiveItemManager;
-import net.luojiuoscar.isaac_disaster.isaac.passive_item.IInteractiveIPassiveItem;
+import net.luojiuoscar.isaac_disaster.item_ability.passive_item.IDamageTriggerPItem;
 import net.luojiuoscar.isaac_disaster.networking.ModMessages;
 import net.luojiuoscar.isaac_disaster.networking.packet.DirectObtainPassiveItemS2CPacket;
 import net.luojiuoscar.isaac_disaster.networking.packet.ObtainPassiveItemS2CPacket;
@@ -28,14 +28,14 @@ public class PlayerPassiveItem {
     private ArrayList<Integer> playerPassiveItems;
     // 键为道具ID，值为道具数量
     private Map<Integer, Integer> itemCountMap;
-    private Map<Integer, Integer> interactiveItemCountMap;
+    private Map<Integer, Integer> damageTriggerMap;
 
     // constructor
     public PlayerPassiveItem(){
         this.playerPassiveItems = new ArrayList<>();
 
         this.itemCountMap = new HashMap<>();
-        this.interactiveItemCountMap = new HashMap<>();
+        this.damageTriggerMap = new HashMap<>();
     }
 
     /**
@@ -43,7 +43,7 @@ public class PlayerPassiveItem {
      */
     public void clearItemMap(){
         itemCountMap.clear();
-        interactiveItemCountMap.clear();
+        damageTriggerMap.clear();
     }
 
     /**
@@ -52,9 +52,9 @@ public class PlayerPassiveItem {
      */
     private void updateItemMap(int itemId, int amount) {
         itemCountMap.put(itemId, itemCountMap.getOrDefault(itemId, 0) + amount);
-        // 如果是触发型道具
-        if(PassiveItemManager.getInstance().getItemFromId(itemId) instanceof IInteractiveIPassiveItem){
-            interactiveItemCountMap.put(itemId, itemCountMap.getOrDefault(itemId, 0) + amount);
+        // 如果是伤害触发型道具
+        if(PassiveItemManager.getInstance().getItemFromId(itemId) instanceof IDamageTriggerPItem){
+            damageTriggerMap.put(itemId, itemCountMap.getOrDefault(itemId, 0) + amount);
         }
     }
 
@@ -80,7 +80,7 @@ public class PlayerPassiveItem {
      * @return 全部触发型道具的列表
      */
     public Map<Integer, Integer> getPlayerInteractiveItemMap(){
-        return interactiveItemCountMap;
+        return damageTriggerMap;
     }
 
     /**
@@ -216,14 +216,5 @@ public class PlayerPassiveItem {
                 .collect(Collectors.toCollection(ArrayList::new));
         // 加载后刷新哈希表
         refreshItemCountMap();
-    }
-
-
-    public static boolean hasItem(int ItemId, Player player){
-        AtomicInteger count = new AtomicInteger();
-        player.getCapability(PlayerPassiveItemProvider.PLAYER_PASSIVE_ITEM).ifPresent(
-                playerPassiveItem -> count.set(playerPassiveItem.getItemCount(ItemId))
-        );
-        return count.get() > 0;
     }
 }

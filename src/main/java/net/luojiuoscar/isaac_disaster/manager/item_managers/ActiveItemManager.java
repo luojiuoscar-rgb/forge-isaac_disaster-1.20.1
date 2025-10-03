@@ -1,8 +1,8 @@
 package net.luojiuoscar.isaac_disaster.manager.item_managers;
 
-import net.luojiuoscar.isaac_disaster.isaac.active_item.IActiveItem;
-import net.luojiuoscar.isaac_disaster.isaac.active_item.items.TheBookOfBelial;
-import net.luojiuoscar.isaac_disaster.isaac.active_item.items.YumHeart;
+import net.luojiuoscar.isaac_disaster.item_ability.active_item.IActiveItem;
+import net.luojiuoscar.isaac_disaster.item_ability.active_item.items.TheBookOfBelial;
+import net.luojiuoscar.isaac_disaster.item_ability.active_item.items.YumHeart;
 
 import java.util.HashMap;
 import java.util.Map;

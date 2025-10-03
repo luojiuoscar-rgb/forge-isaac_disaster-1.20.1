@@ -2,8 +2,8 @@ package net.luojiuoscar.isaac_disaster.manager.id_managers;
 
 public enum PickupId {
     BOMB,
-    GIGA_BOMB;
-
+    GIGA_BOMB,
+    GOLDEN_BOMB;
 
     private final int id;
 

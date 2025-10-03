@@ -1,7 +1,13 @@
 package net.luojiuoscar.isaac_disaster.manager.item_managers;
 
-import net.luojiuoscar.isaac_disaster.isaac.pickup.IPickup;
-import net.luojiuoscar.isaac_disaster.isaac.pickup.items.*;
+import net.luojiuoscar.isaac_disaster.item_ability.pickup.IPickup;
+import net.luojiuoscar.isaac_disaster.item_ability.pickup.items.*;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -52,7 +58,8 @@ public class PickupManager {
         // 注册所有道具实例
         registerItems(
                 new Bomb(),
-                new GigaBomb()
+                new GigaBomb(),
+                new GoldenBomb()
         );
     }
 }

@@ -22,11 +22,15 @@
   "item.isaac_disaster.attribute.damage_multiplier": "攻击倍率+%f%%",
   "item.isaac_disaster.attribute.luck": "幸运值+%f",
 
+
   "item.isaac_disaster.special.cannot_stack": "效果不可叠加",
   "item.isaac_disaster.special.recharge_require": "需要%f秒重新充能",
   "item.isaac_disaster.synergy.description.no_effect": "无效果",
   "item.isaac_disaster.action.heal_health": "恢复%f点生命值",
   "item.isaac_disaster.action.full_charge": "立刻为背包全部主动道具充能",
+  "item.isaac_disaster.action.give_bomb": "炸弹+%d",
+  "item.isaac_disaster.action.give_giga_bomb": "巨型炸弹+%d",
+
 
   "item.isaac_disaster.breakfast": "早餐",
   "item.isaac_disaster.dessert": "甜点",
@@ -57,7 +61,25 @@
   "item.isaac_disaster.the_book_of_belial.lore.1": "使用后获得彼列之力",
   "item.isaac_disaster.the_book_of_belial.lore.2": "使你伤害上升",
   "item.isaac_disaster.the_book_of_belial.synergy.car_battery.1": "彼列之力更强",
+  "item.isaac_disaster.boom": "轰！",
+  "item.isaac_disaster.boom.lore.1": "获得10个炸弹",
+  "item.isaac_disaster.mr_mega": "大爆弹先生",
+  "item.isaac_disaster.mr_mega.lore.1": "炸弹的威力更强",
+  "item.isaac_disaster.bomber_boy": "炸弹人",
+  "item.isaac_disaster.bomber_boy.lore.1": "产生十字爆炸",
+  "item.isaac_disaster.scatter_bomb": "分裂炸弹",
+  "item.isaac_disaster.scatter_bomb.lore.1": "你的炸弹会分裂！",
+  "item.isaac_disaster.fast_bomb": "快速炸弹",
+  "item.isaac_disaster.fast_bomb.lore.1": "更快地丢炸弹",
+  "item.isaac_disaster.bobby_bomb": "波比炸弹",
+  "item.isaac_disaster.bobby_bomb.lore.1": "跟踪炸弹",
+  "item.isaac_disaster.hot_bomb": "炙热炸弹",
+  "item.isaac_disaster.hot_bomb.lore.1": "炸弹蕴含火焰",
+
+
 
   "item.isaac_disaster.bomb": "炸弹",
-  "item.isaac_disaster.giga_bomb": "炸弹"
+  "item.isaac_disaster.giga_bomb": "炸弹",
+  "item.isaac_disaster.golden_bomb": "黄金炸弹"
+
 }
