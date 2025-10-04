@@ -3,6 +3,9 @@ package net.luojiuoscar.isaac_disaster.entity.tnt;
 import net.luojiuoscar.isaac_disaster.effect.ModEffects;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.manager.id_managers.ItemId;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -12,11 +15,8 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.NeutralMob;
 import net.minecraft.world.entity.PathfinderMob;
-import net.minecraft.world.entity.animal.Animal;
-import net.minecraft.world.entity.animal.IronGolem;
 import net.minecraft.world.entity.item.PrimedTnt;
 import net.minecraft.world.entity.monster.Monster;
-import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
@@ -27,9 +27,9 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 public class IsaacBomb extends PrimedTnt {
-    private static final EntityDataAccessor<Float> DATA_SCALE =
+    private static EntityDataAccessor<Float> DATA_SCALE =
             SynchedEntityData.defineId(IsaacBomb.class, EntityDataSerializers.FLOAT);
-    private static final EntityDataAccessor<Boolean> DATA_IS_ORIGINAL =
+    private static EntityDataAccessor<Boolean> DATA_IS_ORIGINAL =
             SynchedEntityData.defineId(IsaacBomb.class, EntityDataSerializers.BOOLEAN);
 
     private int power;
@@ -51,15 +51,6 @@ public class IsaacBomb extends PrimedTnt {
         this.entityData.set(DATA_IS_ORIGINAL, isOriginal);
     }
 
-    public int getPower() {
-        return power;
-    }
-
-    public IsaacBomb(EntityType<? extends IsaacBomb> type, Level level) {
-        super(type, level);
-    }
-
-
     @Override
     protected void defineSynchedData() {
         super.defineSynchedData();
@@ -74,6 +65,17 @@ public class IsaacBomb extends PrimedTnt {
     public void setScale(float scale) {
         this.entityData.set(DATA_SCALE, scale);
     }
+
+
+    public int getPower() {
+        return power;
+    }
+
+    public IsaacBomb(EntityType<? extends IsaacBomb> type, Level level) {
+        super(type, level);
+    }
+
+
 
     @Override
     protected void explode() {
@@ -203,10 +205,9 @@ public class IsaacBomb extends PrimedTnt {
         this.setDeltaMovement(newVel);
     }
 
-
-
-
-
+    /**
+     * 击中生物给予眩晕效果
+     */
     private void onHitEntity(LivingEntity entity) {
         if (!this.level().isClientSide()) {
 
@@ -214,6 +215,4 @@ public class IsaacBomb extends PrimedTnt {
             entity.addEffect(new MobEffectInstance(ModEffects.DIZZINESS.get(), 20, 0));
         }
     }
-
-
 }

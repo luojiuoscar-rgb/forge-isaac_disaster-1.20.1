@@ -14,6 +14,7 @@
   "effect.isaac_disaster.isaac_poison": "中毒",
   "effect.isaac_disaster.power_of_belial": "彼列之力",
   "effect.isaac_disaster.dizziness": "眩晕",
+  "effect.isaac_disaster.transcendence": "升天",
 
 
   "item.isaac_disaster.attribute.health": "生命上限+%f",
@@ -21,11 +22,18 @@
   "item.isaac_disaster.attribute.damage": "攻击伤害+%f",
   "item.isaac_disaster.attribute.damage_multiplier": "攻击倍率+%f%%",
   "item.isaac_disaster.attribute.luck": "幸运值+%f",
+  "item.isaac_disaster.attribute.fly": "可以飞行一段时间",
 
 
   "item.isaac_disaster.special.cannot_stack": "效果不可叠加",
+  "item.isaac_disaster.special.stackable": "效果可叠加",
   "item.isaac_disaster.special.recharge_require": "需要%f秒重新充能",
+  "item.isaac_disaster.special.invincible": "获得无敌效果%d秒",
+
   "item.isaac_disaster.synergy.description.no_effect": "无效果",
+  "item.isaac_disaster.synergy.description.double": "使用两次",
+  "item.isaac_disaster.synergy.description.increase_duration": "效果持续更久",
+
   "item.isaac_disaster.action.heal_health": "恢复%f点生命值",
   "item.isaac_disaster.action.full_charge": "立刻为背包全部主动道具充能",
   "item.isaac_disaster.action.give_bomb": "炸弹+%d",
@@ -75,6 +83,10 @@
   "item.isaac_disaster.bobby_bomb.lore.1": "跟踪炸弹",
   "item.isaac_disaster.hot_bomb": "炙热炸弹",
   "item.isaac_disaster.hot_bomb.lore.1": "炸弹蕴含火焰",
+  "item.isaac_disaster.book_of_shadow": "影之书",
+  "item.isaac_disaster.transcendence": "超凡升天！",
+  "item.isaac_disaster.the_bible": "圣经",
+  "item.isaac_disaster.the_bible.lore.1": "给予飞升效果",
 
 
 

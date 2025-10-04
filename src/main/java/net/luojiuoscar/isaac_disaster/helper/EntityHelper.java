@@ -4,6 +4,7 @@ import net.luojiuoscar.isaac_disaster.entity.ModEntity;
 import net.luojiuoscar.isaac_disaster.entity.fireball.TimedFireball;
 import net.luojiuoscar.isaac_disaster.entity.tnt.GigaBomb;
 import net.luojiuoscar.isaac_disaster.entity.tnt.IsaacBomb;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.LargeFireball;
 import net.minecraft.world.entity.projectile.SmallFireball;
@@ -20,6 +21,8 @@ public class EntityHelper {
     }
 
     public static void spawnBomb(Vec3 position, Player player, Vec3 tntVelocity, int fuse, int power, float scale, Level level, boolean isOriginal){
+        if (level.isClientSide()) return; // 不要在客户端生成实体
+
         IsaacBomb tnt = ModEntity.ISAAC_BOMB.get().create(player.level());
         if (tnt == null) return;
 
@@ -35,13 +38,15 @@ public class EntityHelper {
     }
 
     public static void spawnGigaBomb(Vec3 position, Player player, Vec3 tntVelocity, int fuse, Level level){
+        if (level.isClientSide()) return; // 不要在客户端生成实体
+
         IsaacBomb tnt = ModEntity.GIGA_BOMB.get().create(player.level());
         if (tnt == null) return;
 
         tnt.moveTo(position.x, position.y, position.z, 0, 0);
         tnt.setOwner(player);
         tnt.setFuse(fuse);
-        tnt.setPower(9);
+        tnt.setPower(10);
         tnt.setScale(2.5f);
         tnt.setOriginal(true);
         tnt.setDeltaMovement(tntVelocity);
@@ -121,10 +126,10 @@ public class EntityHelper {
     }
 
     public static void ScatterBomb(Player player, IsaacBomb tnt, Vec3 pos, Level level){
-        // 巨型炸弹等不触发效果
-        if(tnt.getPower() > 7 || tnt.getPower() <= 1) return;
+        // 巨型炸弹、微型炸弹不触发效果
+        if(tnt instanceof GigaBomb || tnt.getPower() <= 1) return;
         // 非“原始”不触发
-        if(tnt instanceof GigaBomb) return;
+        if(!tnt.isOriginal()) return;
 
 
         int power = tnt.getPower() - 3;

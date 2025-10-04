@@ -122,7 +122,9 @@ public class ModItems {
             () -> new PassiveItem(new Item.Properties(),1, ItemId.HOT_BOMB.getId()));
     static { PASSIVE_ITEM_LIST.add(HOT_BOMB); }
 
-
+    public static final RegistryObject<Item> TRANSCENDENCE = ITEMS.register("transcendence",
+            () -> new PassiveItem(new Item.Properties(),3, ItemId.TRANSCENDENCE.getId()));
+    static { PASSIVE_ITEM_LIST.add(TRANSCENDENCE); }
 
 
 
@@ -139,9 +141,18 @@ public class ModItems {
 
     public static final RegistryObject<Item> THE_BOOK_OF_BELIAL = ITEMS.register("the_book_of_belial",
             () -> new ActiveItem(new Item.Properties(),2, ItemId.THE_BOOK_OF_BELIAL.getId(),
-                    600, 600));
+                    800, 800));
     static { ACTIVE_ITEM_LIST.add(THE_BOOK_OF_BELIAL); }
 
+    public static final RegistryObject<Item> BOOK_OF_SHADOW = ITEMS.register("book_of_shadow",
+            () -> new ActiveItem(new Item.Properties(),3, ItemId.BOOK_OF_SHADOW.getId(),
+                    1200, 1200));
+    static { ACTIVE_ITEM_LIST.add(BOOK_OF_SHADOW); }
+
+    public static final RegistryObject<Item> THE_BIBLE = ITEMS.register("the_bible",
+            () -> new ActiveItem(new Item.Properties(),2, ItemId.THE_BIBLE.getId(),
+                    1, 1200));
+    static { ACTIVE_ITEM_LIST.add(THE_BIBLE); }
 
 
     // pickups

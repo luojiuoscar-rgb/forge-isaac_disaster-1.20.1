@@ -83,6 +83,13 @@ public class ModMessages {
                 .encoder(PickupOnUseS2CPacket::toBytes)
                 .consumerNetworkThread(PickupOnUseS2CPacket::handle)
                 .add();
+
+        // register FlyUpdateS2CPacket
+        net.messageBuilder(FlyUpdateS2CPacket.class, id(), NetworkDirection.PLAY_TO_CLIENT)
+                .decoder(FlyUpdateS2CPacket::new)
+                .encoder(FlyUpdateS2CPacket::toBytes)
+                .consumerNetworkThread(FlyUpdateS2CPacket::handle)
+                .add();
     }
 
     public static <MSG> void sendToServer(MSG message){

@@ -16,5 +16,11 @@
     "sounds": [
       "isaac_disaster:the_book_of_belial_use"
     ]
+  },
+  "giga_bomb_explosion": {
+    "subtitles": "sounds.isaac_disaster.giga_bomb_explosion",
+    "sounds": [
+      "isaac_disaster:giga_bomb_explosion"
+    ]
   }
 }

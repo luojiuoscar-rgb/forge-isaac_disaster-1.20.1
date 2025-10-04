@@ -1,8 +1,9 @@
-// 1.20.1	2025-10-03T21:35:21.7906475	Item Models: isaac_disaster
+// 1.20.1	2025-10-04T21:22:29.4175493	Item Models: isaac_disaster
 b2cb238ea4779eef4f9f14cba38fabb8d6513b76 assets/isaac_disaster/models/item/a_snack.json
 44bdc0ab12abe391e5b77f1110b22efa548350fc assets/isaac_disaster/models/item/bobby_bomb.json
 b42a58830679ccd1ba0538822689ee4d44cdf4bd assets/isaac_disaster/models/item/bomb.json
 c4880589d45e7cab8b8686d18078f4ca642909b4 assets/isaac_disaster/models/item/bomber_boy.json
+16443e5e143a4b0a70d4e4df9aeddda34e63c4f5 assets/isaac_disaster/models/item/book_of_shadow.json
 a787d1e5c7665275f17a3e8387b5bf6482c5546d assets/isaac_disaster/models/item/boom.json
 f84e7c8c3649edd969a720836fab6e4462fef0f6 assets/isaac_disaster/models/item/breakfast.json
 8ecd892814f58d3861cb37a5f88a3996d236d27a assets/isaac_disaster/models/item/car_battery.json
@@ -12,6 +13,7 @@ f84e7c8c3649edd969a720836fab6e4462fef0f6 assets/isaac_disaster/models/item/break
 e5b93630803e4129aed99a0eb740bef8a78a5686 assets/isaac_disaster/models/item/fast_bomb.json
 122084417398bb2ac56518a9468abca9f75b96f8 assets/isaac_disaster/models/item/glass_eye.json
 ced1f47d2b51f1feaa782fce845170856413ce67 assets/isaac_disaster/models/item/golden_bomb.json
+78692ab603012d583a29acd0aac32f88e83fefda assets/isaac_disaster/models/item/hot_bomb.json
 e928ba8f2c7b2c915a81708284c379b2a538cd11 assets/isaac_disaster/models/item/lunch.json
 ea5d24e9493a10e98690d3c6aa0259c91283a6a0 assets/isaac_disaster/models/item/midnight_snack.json
 d5bc639f44470e0537e0cc521d8a9a32a4af2d9f assets/isaac_disaster/models/item/mr_mega.json
@@ -20,8 +22,10 @@ d5bc639f44470e0537e0cc521d8a9a32a4af2d9f assets/isaac_disaster/models/item/mr_me
 59cae21b103ae226db647048e5923adbebbc4f70 assets/isaac_disaster/models/item/steven.json
 cc9c3b0d0c8fae39c13e7f5347a80808a29743e7 assets/isaac_disaster/models/item/supper.json
 0b8453f01964e11d5e98d5c8f3639e7b9466d5b4 assets/isaac_disaster/models/item/the_battery.json
+32bc21fe93f1856adc6263892003b97465744930 assets/isaac_disaster/models/item/the_bible.json
 b06c45e13a6125cb3d3f2912fb0ca7ef951c831a assets/isaac_disaster/models/item/the_book_of_belial.json
 f9655737e8ff94a4a24a0793fbfeabf2af245d23 assets/isaac_disaster/models/item/the_common_cold.json
+836902b33e8e0907fa5cb314f74aab70691c7e79 assets/isaac_disaster/models/item/transcendence.json
 126e86db8c04aeee59f868dc58d9593d0085fcaf assets/isaac_disaster/models/item/volt_4p5.json
 77fa5d89efe19c68bc74d01e6e4d1cad394977cf assets/isaac_disaster/models/item/volt_9.json
 168a596cadc8b97a3c44ca6ae8b3cd9bca38eec8 assets/isaac_disaster/models/item/wooden_spoon.json

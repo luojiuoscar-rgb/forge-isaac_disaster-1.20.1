@@ -1,14 +1,14 @@
 package net.luojiuoscar.isaac_disaster.helper;
 
+import com.google.common.util.concurrent.AtomicDouble;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerPassiveItemProvider;
-import net.minecraft.network.chat.Component;
+import net.luojiuoscar.isaac_disaster.capability.player.PlayerStatModifierProvider;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import org.apache.logging.log4j.core.jmx.Server;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -44,5 +44,39 @@ public class PlayerHelper {
         return count.get() > 0;
     }
 
+    public static int getItemCount(int itemId, ServerPlayer player){
+        AtomicInteger count = new AtomicInteger();
+        player.getCapability(PlayerPassiveItemProvider.PLAYER_PASSIVE_ITEM).ifPresent(
+                playerPassiveItem -> count.set(playerPassiveItem.getItemCount(itemId))
+        );
+        return count.get();
+    }
+
+    public static boolean canFly(ServerPlayer player){
+        AtomicDouble flyTime = new AtomicDouble();
+        player.getCapability(PlayerStatModifierProvider.PLAYER_STAT_MODIFIER).ifPresent(
+                playerStatModifier -> flyTime.set(playerStatModifier.getFlyTime())
+        );
+        return flyTime.get() > 0;
+    }
+
+    public static boolean isFlyLimit(ServerPlayer player){
+        return getFlyPercentage(player) >= 1;
+    }
+
+    public static double getFlyPercentage(ServerPlayer player){
+        AtomicDouble flyTime = new AtomicDouble();
+        player.getCapability(PlayerStatModifierProvider.PLAYER_STAT_MODIFIER).ifPresent(
+                playerStatModifier -> flyTime.set(playerStatModifier.getFlyTime())
+        );
+
+        AtomicDouble currentFlyTime = new AtomicDouble();
+        player.getCapability(PlayerStatModifierProvider.PLAYER_STAT_MODIFIER).ifPresent(
+                playerStatModifier -> currentFlyTime.set(playerStatModifier.getFlyTimeCurrent())
+        );
+
+        return currentFlyTime.get() / flyTime.get();
+    }
 
 }
+

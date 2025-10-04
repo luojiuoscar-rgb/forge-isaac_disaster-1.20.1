@@ -47,8 +47,11 @@ public class Config
     public static ForgeConfigSpec.DoubleValue MOVEMENT_SPEED_LIMIT;
     public static ForgeConfigSpec.DoubleValue DAMAGE_BONUS;
     public static ForgeConfigSpec.DoubleValue LUCK_BONUS;
+    public static ForgeConfigSpec.IntValue FLY_TIME;
+
     // 其他可配置项目
     public static ForgeConfigSpec.IntValue PASSIVE_ITEM_LIMIT;
+
 
     static {
         // 配置数值的默认值和范围
@@ -73,6 +76,11 @@ public class Config
         LUCK_BONUS = BUILDER
                 .comment("Base value of luck increment")
                 .defineInRange("luck_bonus", 1.0, 0.0, 99999.0);
+
+        // 飞行时间  默认120.0
+        FLY_TIME = BUILDER
+                .comment("Increment of fly time for each fly provided by item (tick)")
+                .defineInRange("fly_time", 100, 0, 99999);
 
         BUILDER.pop();
     }

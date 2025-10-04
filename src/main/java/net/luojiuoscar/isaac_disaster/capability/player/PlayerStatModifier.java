@@ -1,11 +1,19 @@
 package net.luojiuoscar.isaac_disaster.capability.player;
 
 
+import net.luojiuoscar.isaac_disaster.effect.ModEffects;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
+import net.luojiuoscar.isaac_disaster.networking.ModMessages;
+import net.luojiuoscar.isaac_disaster.networking.packet.FlyUpdateS2CPacket;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.common.capabilities.AutoRegisterCapability;
+import org.checkerframework.checker.units.qual.C;
 
 import java.util.Objects;
 
@@ -18,6 +26,8 @@ public class PlayerStatModifier {
     private double damageAdder;
     private double damageMultiplier;
     private double luckAdder;
+    private double flyTime;
+    private double flyTimeCurrent;
 
     // constructor
     public PlayerStatModifier(){
@@ -26,6 +36,8 @@ public class PlayerStatModifier {
         damageAdder = 0;
         damageMultiplier = 0;
         luckAdder = 0;
+        flyTime = 0;
+        flyTimeCurrent = 0;
     }
 
     /**
@@ -45,6 +57,12 @@ public class PlayerStatModifier {
     }
     public double getLuckAdder(){
         return luckAdder;
+    }
+    public double getFlyTime(){
+        return flyTime;
+    }
+    public double getFlyTimeCurrent(){
+        return flyTimeCurrent;
     }
 
     /**
@@ -75,17 +93,60 @@ public class PlayerStatModifier {
         StatManager.updateLuckAdder(player, (Objects.requireNonNull(player.getAttribute(Attributes.LUCK))), this.luckAdder);
     }
 
+    public void setFlyTime(Player player, double amount){
+        flyTime = amount;
+        if (flyTime > 0){
+            player.getAbilities().mayfly = true;
+            player.onUpdateAbilities();
+        }else{
+            player.getAbilities().flying = false;
+            player.getAbilities().mayfly = false;
+            player.onUpdateAbilities();
+        }
+
+    }
+
+    public void addFlyTime(Player player, double amount){
+        setFlyTime(player, flyTime + amount);
+        if (flyTime > 0){
+            addCurrentFlyTime((ServerPlayer) player, (int) -amount);
+        }
+    }
+
+    public void addCurrentFlyTime(ServerPlayer player, int amount){
+        double pre = flyTimeCurrent % (flyTime / 20);
+
+        flyTimeCurrent = Math.max(0, flyTimeCurrent + amount);
+
+        // 时间到达上限（且没有飞升效果）则取消飞行
+        if (flyTimeCurrent >= flyTime && player.getEffect(ModEffects.TRANSCENDENCE.get()) == null){
+            player.getAbilities().flying = false;
+            player.onUpdateAbilities();
+        }
+
+        if (flyTimeCurrent < 0 || flyTimeCurrent > flyTime) return;
+        // 当飞行能力变化的情况越过了1/20（即存在状态更新）时，发包更新客户端数据
+        double curr = pre + amount;
+        if (curr >= (flyTime / 20) || curr < 0){
+            // 把百分比映射为 0..20
+            int units = 20 - (int) Math.max((flyTimeCurrent / flyTime * 20), 0);
+            ModMessages.sentToPlayer(new FlyUpdateS2CPacket(units), player);
+        }
+    }
+
+
     /**
      * 复制玩家属性
      * 复制后立刻触发属性修改；以确保玩家属性正确继承
      */
     public void copyFrom(PlayerStatModifier source, Player player) {
-        // max health adder
         setMaxHealthAdder(player, source.maxHealthAdder);
         setMovementSpeedAdder(player, source.movementSpeedAdder);
         setDamageAdder(player, source.damageAdder);
         setDamageMultiplier(player, source.damageMultiplier);
         setLuckAdder(player, source.luckAdder);
+        setFlyTime(player, source.flyTime);
+        this.flyTime = 0;
     }
 
     public void saveNBTData(CompoundTag nbt) {
@@ -94,6 +155,7 @@ public class PlayerStatModifier {
         nbt.putDouble("damage_adder", damageAdder);
         nbt.putDouble("damage_multiplier", damageMultiplier);
         nbt.putDouble("luck_adder", luckAdder);
+        nbt.putDouble("fly_time", flyTime);
     }
 
     public void loadNBTData(CompoundTag nbt) {
@@ -102,5 +164,7 @@ public class PlayerStatModifier {
         this.damageAdder = nbt.getDouble("damage_adder");;
         this.damageMultiplier = nbt.getDouble("damage_multiplier");
         this.luckAdder = nbt.getDouble("luck_adder");
+        this.flyTime = nbt.getDouble("fly_time");
+        this.flyTimeCurrent = 0;
     }
 }

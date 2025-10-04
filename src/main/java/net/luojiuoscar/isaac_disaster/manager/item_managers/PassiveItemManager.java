@@ -9,7 +9,7 @@ import java.util.*;
 /**
  * 被动道具管理器，负责注册和管理所有道具实例
  */
-public class PassiveItemManager {
+public class  PassiveItemManager {
     // 单例实例
     private static final PassiveItemManager INSTANCE = new PassiveItemManager();
     // 存储道具ID与道具实例的映射
@@ -75,7 +75,8 @@ public class PassiveItemManager {
                 new ScatterBomb(),
                 new FastBomb(),
                 new BobbyBomb(),
-                new HotBomb()
+                new HotBomb(),
+                new Transcendence()
         );
     }
 }

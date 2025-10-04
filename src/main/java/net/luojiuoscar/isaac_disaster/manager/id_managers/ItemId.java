@@ -26,7 +26,10 @@ public enum ItemId {
     SCATTER_BOMB,
     FAST_BOMB,
     BOBBY_BOMB,
-    HOT_BOMB;
+    HOT_BOMB,
+    BOOK_OF_SHADOW,
+    TRANSCENDENCE,
+    THE_BIBLE;
 
 
     private final int id;

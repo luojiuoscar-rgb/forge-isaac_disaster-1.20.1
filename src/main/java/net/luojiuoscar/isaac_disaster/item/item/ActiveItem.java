@@ -1,6 +1,6 @@
 package net.luojiuoscar.isaac_disaster.item.item;
 
-import net.luojiuoscar.isaac_disaster.manager.ClientDataManager;
+import net.luojiuoscar.isaac_disaster.client.ClientDataManager;
 import net.luojiuoscar.isaac_disaster.manager.item_managers.ActiveItemManager;
 import net.luojiuoscar.isaac_disaster.manager.ColorManager;
 import net.luojiuoscar.isaac_disaster.manager.id_managers.ItemId;

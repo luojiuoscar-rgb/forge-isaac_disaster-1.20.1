@@ -14,6 +14,8 @@ public class ModSounds {
 
     // other
     public static final RegistryObject<SoundEvent> DEFAULT_OBTAIN_ITEM = registerSoundEvent("default_obtain_item");
+    public static final RegistryObject<SoundEvent> GIGA_BOMB_EXPLOSION = registerSoundEvent("giga_bomb_explosion");
+
 
     // item sounds
     public static final RegistryObject<SoundEvent> YUM_HEART_USE = registerSoundEvent("yum_heart_use");

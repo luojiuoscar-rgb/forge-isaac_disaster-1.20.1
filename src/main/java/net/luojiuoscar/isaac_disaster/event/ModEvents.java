@@ -3,10 +3,7 @@ package net.luojiuoscar.isaac_disaster.event;
 import net.luojiuoscar.isaac_disaster.capability.entity.EntityEffectProvider;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerPassiveItemProvider;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerStatModifierProvider;
-import net.luojiuoscar.isaac_disaster.commands.ClearPassiveItemsCommand;
-import net.luojiuoscar.isaac_disaster.commands.GetItemCountCommand;
-import net.luojiuoscar.isaac_disaster.commands.HasItemCommand;
-import net.luojiuoscar.isaac_disaster.commands.ShowPassiveItemsCommand;
+import net.luojiuoscar.isaac_disaster.commands.*;
 import net.luojiuoscar.isaac_disaster.effect.ModEffects;
 import net.luojiuoscar.isaac_disaster.entity.tnt.IsaacBomb;
 import net.luojiuoscar.isaac_disaster.helper.EntityHelper;
@@ -23,22 +20,22 @@ import net.luojiuoscar.isaac_disaster.networking.packet.PassiveItemSyncS2CPacket
 import net.luojiuoscar.isaac_disaster.networking.packet.UseActiveItemS2CPacket;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.projectile.SmallFireball;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
+import net.minecraftforge.event.entity.living.LivingKnockBackEvent;
 import net.minecraftforge.event.entity.living.MobEffectEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
@@ -101,6 +98,7 @@ public class ModEvents {
         new ClearPassiveItemsCommand(event.getDispatcher());
         new HasItemCommand(event.getDispatcher());
         new GetItemCountCommand(event.getDispatcher());
+        new GetFlyCommand(event.getDispatcher());
 
         ConfigCommand.register(event.getDispatcher());
     }
@@ -276,5 +274,23 @@ public class ModEvents {
             }
         }
     }
+
+    /**
+     * 监听并取消击退
+     */
+    @SubscribeEvent
+    public static void onLivingKnockback(LivingKnockBackEvent event) {
+        LivingEntity entity = event.getEntity();
+
+        // 检查玩家是否有无敌； 取消击退
+        if (entity.hasEffect(MobEffects.DAMAGE_RESISTANCE)) {
+            int amplifier = entity.getEffect(MobEffects.DAMAGE_RESISTANCE).getAmplifier();
+            if (amplifier >= 4) {
+                // 取消击退
+                event.setCanceled(true);
+            }
+        }
+    }
+
 
 }

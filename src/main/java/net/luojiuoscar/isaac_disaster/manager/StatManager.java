@@ -260,4 +260,11 @@ public class StatManager {
                 AttributeModifier.Operation.ADDITION
         ));
     }
+
+    /**
+     * FLY
+     */
+    public static double getFlyTime(){
+        return FLY_TIME.get();
+    }
 }

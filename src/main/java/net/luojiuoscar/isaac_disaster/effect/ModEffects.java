@@ -33,4 +33,8 @@ public class ModEffects {
             () -> new DizzinessEffect(MobEffectCategory.HARMFUL, 0xFFFFFF)
                     .addAttributeModifier(Attributes.MOVEMENT_SPEED, UUID.randomUUID().toString(), -1.0D, AttributeModifier.Operation.MULTIPLY_TOTAL)
                     .addAttributeModifier(Attributes.JUMP_STRENGTH, UUID.randomUUID().toString(), -1.0D, AttributeModifier.Operation.MULTIPLY_TOTAL));
+
+    public static final RegistryObject<MobEffect> TRANSCENDENCE = MOB_EFFECTS.register(EffectNameManager.TRANSCENDENCE,
+            () -> new Transcendence(MobEffectCategory.BENEFICIAL, 0xFFFFFF));
+
 }
