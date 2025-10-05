@@ -7,6 +7,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -72,5 +73,13 @@ public interface IPassiveItem {
      * 获取lore
      */
     List<Component> getDescription();
+
+    /**
+     * 获取解释性信息
+     */
+    default List<Component> getExplain(){
+        return new ArrayList<>();
+    };
+
 
 }

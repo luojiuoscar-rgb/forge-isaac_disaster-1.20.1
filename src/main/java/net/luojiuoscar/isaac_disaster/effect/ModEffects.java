@@ -35,6 +35,17 @@ public class ModEffects {
                     .addAttributeModifier(Attributes.JUMP_STRENGTH, UUID.randomUUID().toString(), -1.0D, AttributeModifier.Operation.MULTIPLY_TOTAL));
 
     public static final RegistryObject<MobEffect> TRANSCENDENCE = MOB_EFFECTS.register(EffectNameManager.TRANSCENDENCE,
-            () -> new Transcendence(MobEffectCategory.BENEFICIAL, 0xFFFFFF));
+            () -> new TranscendenceEffect(MobEffectCategory.BENEFICIAL, 0xFFFFFF));
 
+    public static final RegistryObject<MobEffect> INVINCIBLE = MOB_EFFECTS.register(EffectNameManager.INVINCIBLE,
+            () -> new InvincibleEffect(MobEffectCategory.BENEFICIAL, 0xFFD700));
+
+    public static final RegistryObject<MobEffect> FRAILTY = MOB_EFFECTS.register(EffectNameManager.FRAILTY,
+            () -> new FrailtyEffect(MobEffectCategory.BENEFICIAL, 0xFFD700));
+
+    public static final RegistryObject<MobEffect> NECRONMICON_SHIELD = MOB_EFFECTS.register(EffectNameManager.NECRONMICON_SHIELD,
+            () -> new NecronmiconShieldEffect(MobEffectCategory.BENEFICIAL, 0x000000));
+
+    public static final RegistryObject<MobEffect> HOLY_SHIELD = MOB_EFFECTS.register(EffectNameManager.HOLY_SHIELD,
+            () -> new HolyShieldEffect(MobEffectCategory.BENEFICIAL, 0x87CEEB));
 }

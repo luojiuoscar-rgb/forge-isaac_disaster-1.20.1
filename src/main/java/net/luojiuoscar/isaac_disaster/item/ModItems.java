@@ -4,6 +4,8 @@ import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.item.item.ActiveItem;
 import net.luojiuoscar.isaac_disaster.item.item.PassiveItem;
 import net.luojiuoscar.isaac_disaster.item.pickup.Bomb;
+import net.luojiuoscar.isaac_disaster.item.pickup.Heart;
+import net.luojiuoscar.isaac_disaster.item_ability.pickup.items.RedHeart;
 import net.luojiuoscar.isaac_disaster.manager.id_managers.ItemId;
 import net.luojiuoscar.isaac_disaster.manager.id_managers.PickupId;
 import net.minecraft.world.item.Item;
@@ -71,7 +73,7 @@ public class ModItems {
     static { PASSIVE_ITEM_LIST.add(CRICKETS_HEAD); }
 
     public static final RegistryObject<Item> THE_COMMON_COLD = ITEMS.register("the_common_cold",
-            () -> new PassiveItem(new Item.Properties(),1, ItemId.THE_COMMON_COLD.getId()));
+            () -> new PassiveItem(new Item.Properties(),1, ItemId.THE_COMMON_COLD.getId(), true));
     static { PASSIVE_ITEM_LIST.add(THE_COMMON_COLD); }
 
     public static final RegistryObject<Item> GLASS_EYE = ITEMS.register("glass_eye",
@@ -123,11 +125,16 @@ public class ModItems {
     static { PASSIVE_ITEM_LIST.add(HOT_BOMB); }
 
     public static final RegistryObject<Item> TRANSCENDENCE = ITEMS.register("transcendence",
-            () -> new PassiveItem(new Item.Properties(),3, ItemId.TRANSCENDENCE.getId()));
+            () -> new PassiveItem(new Item.Properties(),3, ItemId.TRANSCENDENCE.getId(), true));
     static { PASSIVE_ITEM_LIST.add(TRANSCENDENCE); }
 
+    public static final RegistryObject<Item> BLOOD_OF_THE_MARTYR = ITEMS.register("blood_of_the_martyr",
+            () -> new PassiveItem(new Item.Properties(),3, ItemId.BLOOD_OF_THE_MARTYR.getId()));
+    static { PASSIVE_ITEM_LIST.add(BLOOD_OF_THE_MARTYR); }
 
-
+    public static final RegistryObject<Item> HOLY_MANTLE = ITEMS.register("holy_mantle",
+            () -> new PassiveItem(new Item.Properties(),4, ItemId.HOLY_MANTLE.getId()));
+    static { PASSIVE_ITEM_LIST.add(HOLY_MANTLE); }
 
 
 
@@ -141,18 +148,24 @@ public class ModItems {
 
     public static final RegistryObject<Item> THE_BOOK_OF_BELIAL = ITEMS.register("the_book_of_belial",
             () -> new ActiveItem(new Item.Properties(),2, ItemId.THE_BOOK_OF_BELIAL.getId(),
-                    800, 800));
+                    800, 800, true));
     static { ACTIVE_ITEM_LIST.add(THE_BOOK_OF_BELIAL); }
 
     public static final RegistryObject<Item> BOOK_OF_SHADOW = ITEMS.register("book_of_shadow",
             () -> new ActiveItem(new Item.Properties(),3, ItemId.BOOK_OF_SHADOW.getId(),
-                    1200, 1200));
+                    1200, 1200, true));
     static { ACTIVE_ITEM_LIST.add(BOOK_OF_SHADOW); }
 
     public static final RegistryObject<Item> THE_BIBLE = ITEMS.register("the_bible",
             () -> new ActiveItem(new Item.Properties(),2, ItemId.THE_BIBLE.getId(),
-                    1, 1200));
+                    1200, 1200, true));
     static { ACTIVE_ITEM_LIST.add(THE_BIBLE); }
+
+    public static final RegistryObject<Item> THE_NECRONMICON = ITEMS.register("the_necronmicon",
+            () -> new ActiveItem(new Item.Properties(),2, ItemId.THE_NECRONMICON.getId(),
+                    600, 600));
+    static { ACTIVE_ITEM_LIST.add(THE_NECRONMICON); }
+
 
 
     // pickups
@@ -167,5 +180,33 @@ public class ModItems {
     public static final RegistryObject<Item> GOLDEN_BOMB = ITEMS.register("golden_bomb",
             () -> new Bomb(new Item.Properties().stacksTo(1).rarity(Rarity.EPIC), PickupId.GOLDEN_BOMB.getId()));
     static { PICKUP_LIST.add(GOLDEN_BOMB); }
+
+    public static final RegistryObject<Item> HALF_RED_HEART = ITEMS.register("half_red_heart",
+            () -> new Heart(new Item.Properties(), PickupId.HALF_RED_HEART.getId(), Rarity.COMMON));
+    static { PICKUP_LIST.add(HALF_RED_HEART); }
+
+    public static final RegistryObject<Item> RED_HEART = ITEMS.register("red_heart",
+            () -> new Heart(new Item.Properties(), PickupId.RED_HEART.getId(), Rarity.COMMON));
+    static { PICKUP_LIST.add(RED_HEART); }
+
+    public static final RegistryObject<Item> DOUBLE_RED_HEART = ITEMS.register("double_red_heart",
+            () -> new Heart(new Item.Properties(), PickupId.DOUBLE_RED_HEART.getId(), Rarity.COMMON));
+    static { PICKUP_LIST.add(DOUBLE_RED_HEART); }
+
+    public static final RegistryObject<Item> HALF_SOUL_HEART = ITEMS.register("half_soul_heart",
+            () -> new Heart(new Item.Properties(), PickupId.HALF_SOUL_HEART.getId(), Rarity.UNCOMMON));
+    static { PICKUP_LIST.add(HALF_SOUL_HEART); }
+
+    public static final RegistryObject<Item> SOUL_HEART = ITEMS.register("soul_heart",
+            () -> new Heart(new Item.Properties(), PickupId.SOUL_HEART.getId(), Rarity.RARE));
+    static { PICKUP_LIST.add(SOUL_HEART); }
+
+    public static final RegistryObject<Item> BLENDED_HEART = ITEMS.register("blended_heart",
+            () -> new Heart(new Item.Properties(), PickupId.BLENDED_HEART.getId(), Rarity.RARE));
+    static { PICKUP_LIST.add(BLENDED_HEART); }
+
+    public static final RegistryObject<Item> BLACK_HEART = ITEMS.register("black_heart",
+            () -> new Heart(new Item.Properties(), PickupId.BLACK_HEART.getId(), Rarity.EPIC));
+    static { PICKUP_LIST.add(BLACK_HEART); }
 
 }

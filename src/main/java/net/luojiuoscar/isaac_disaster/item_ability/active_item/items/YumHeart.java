@@ -1,5 +1,6 @@
 package net.luojiuoscar.isaac_disaster.item_ability.active_item.items;
 
+import net.luojiuoscar.isaac_disaster.client.ClientDataManager;
 import net.luojiuoscar.isaac_disaster.item_ability.active_item.IActiveItem;
 import net.luojiuoscar.isaac_disaster.item.ModItems;
 import net.luojiuoscar.isaac_disaster.manager.ColorManager;
@@ -12,6 +13,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class YumHeart implements IActiveItem {
@@ -49,10 +51,14 @@ public class YumHeart implements IActiveItem {
     }
 
     @Override
-    public List<Component> synergyDescriptionCarBattery() {
-        return List.of(
-                Component.translatable("item.isaac_disaster.car_battery").append(": ")
-                        .append(Component.translatable("item.isaac_disaster.yum_heart.synergy.car_battery.1")).withStyle(style -> style.withColor(ColorManager.SYNERGY))
-        );
+    public List<Component> synergyDescription() {
+        List<Component> description = new ArrayList<>();
+
+        if (ClientDataManager.getInstance().getCountFromId(ItemId.CAR_BATTERY.getId()) > 0){
+            description.add(Component.translatable("item.isaac_disaster.car_battery").append(": ")
+                    .append(Component.translatable("item.isaac_disaster.synergy.description.double"))
+                    .withStyle(style -> style.withColor(ColorManager.SYNERGY)));
+        }
+        return description;
     }
 }

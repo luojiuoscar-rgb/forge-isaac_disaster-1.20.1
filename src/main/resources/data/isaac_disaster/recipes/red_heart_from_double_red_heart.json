@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "isaac_disaster:double_red_heart"
+    }
+  ],
+  "result":{
+    "item": "isaac_disaster:red_heart",
+    "count": 2
+  }
+}

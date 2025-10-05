@@ -22,5 +22,41 @@
     "sounds": [
       "isaac_disaster:giga_bomb_explosion"
     ]
+  },
+  "red_heart": {
+    "subtitles": "sounds.isaac_disaster.red_heart",
+    "sounds": [
+      "isaac_disaster:red_heart"
+    ]
+  },
+  "soul_heart": {
+    "subtitles": "sounds.isaac_disaster.soul_heart",
+    "sounds": [
+      "isaac_disaster:soul_heart"
+    ]
+  },
+  "black_heart": {
+    "subtitles": "sounds.isaac_disaster.black_heart",
+    "sounds": [
+      "isaac_disaster:black_heart"
+    ]
+  },
+  "black_heart_active": {
+    "subtitles": "sounds.isaac_disaster.black_heart_active",
+    "sounds": [
+      "isaac_disaster:black_heart_active"
+    ]
+  },
+  "the_necronmicon_use": {
+    "subtitles": "sounds.isaac_disaster.the_necronmicon_use",
+    "sounds": [
+      "isaac_disaster:the_necronmicon_use"
+    ]
+  },
+  "holy_shield_broke": {
+    "subtitles": "sounds.isaac_disaster.holy_shield_broke",
+    "sounds": [
+      "isaac_disaster:holy_shield_broke"
+    ]
   }
 }

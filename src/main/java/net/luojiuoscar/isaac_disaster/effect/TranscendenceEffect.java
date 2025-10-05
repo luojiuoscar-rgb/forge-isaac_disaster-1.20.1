@@ -1,20 +1,19 @@
 package net.luojiuoscar.isaac_disaster.effect;
 
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
-import net.minecraft.client.Minecraft;
-import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 
 /**
  * 一个让玩家在药效期间可以飞行的效果。
  * Forge 1.20.1 适用
  */
-public class Transcendence extends MobEffect {
-    public Transcendence(MobEffectCategory category, int color) {
+public class TranscendenceEffect extends MobEffect {
+    public TranscendenceEffect(MobEffectCategory category, int color) {
         super(category, color);
     }
 
@@ -57,5 +56,11 @@ public class Transcendence extends MobEffect {
     @Override
     public boolean isDurationEffectTick(int duration, int amplifier) {
         return true;
+    }
+
+    @Override
+    public java.util.List<ItemStack> getCurativeItems() {
+        // 不可清除
+        return java.util.Collections.emptyList();
     }
 }

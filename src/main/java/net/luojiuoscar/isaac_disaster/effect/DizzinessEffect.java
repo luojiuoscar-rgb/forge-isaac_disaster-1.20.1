@@ -1,12 +1,17 @@
 package net.luojiuoscar.isaac_disaster.effect;
 
 
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.Set;
 
 public class DizzinessEffect extends MobEffect {
     protected DizzinessEffect(MobEffectCategory pCategory, int pColor) {
@@ -29,5 +34,11 @@ public class DizzinessEffect extends MobEffect {
     @Override
     public boolean isDurationEffectTick(int pDuration, int pAmplifier){
         return true;
+    }
+
+    @Override
+    public java.util.List<ItemStack> getCurativeItems() {
+        // 返回空列表，表示没有任何物品能清除该效果
+        return java.util.Collections.emptyList();
     }
 }

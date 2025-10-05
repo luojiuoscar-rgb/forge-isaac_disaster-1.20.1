@@ -10,7 +10,9 @@ import net.luojiuoscar.isaac_disaster.helper.EntityHelper;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.item.item.ActiveItem;
 import net.luojiuoscar.isaac_disaster.item.item.PassiveItem;
+import net.luojiuoscar.isaac_disaster.item.pickup.IOnUse;
 import net.luojiuoscar.isaac_disaster.item.pickup.Pickup;
+import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.manager.item_managers.ActiveItemManager;
 import net.luojiuoscar.isaac_disaster.manager.EffectNameManager;
 import net.luojiuoscar.isaac_disaster.manager.id_managers.ItemId;
@@ -18,12 +20,12 @@ import net.luojiuoscar.isaac_disaster.manager.item_managers.PickupManager;
 import net.luojiuoscar.isaac_disaster.networking.ModMessages;
 import net.luojiuoscar.isaac_disaster.networking.packet.PassiveItemSyncS2CPacket;
 import net.luojiuoscar.isaac_disaster.networking.packet.UseActiveItemS2CPacket;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.player.LocalPlayer;
+import net.luojiuoscar.isaac_disaster.sound.ModSounds;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
@@ -35,6 +37,7 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
+import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.living.LivingKnockBackEvent;
 import net.minecraftforge.event.entity.living.MobEffectEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
@@ -85,7 +88,7 @@ public class ModEvents {
             // stat manager
             event.getOriginal().getCapability(PlayerStatModifierProvider.PLAYER_STAT_MODIFIER).ifPresent(oldStore -> {
                 event.getEntity().getCapability(PlayerStatModifierProvider.PLAYER_STAT_MODIFIER).ifPresent(newStore -> {
-                    newStore.copyFrom(oldStore, event.getEntity()); //同时传入新生成的玩家实例
+                    newStore.copyFrom(oldStore, event.getEntity());
                 });
             });
             event.getOriginal().invalidateCaps();
@@ -123,7 +126,7 @@ public class ModEvents {
                     playerPassiveItem -> {playerPassiveItem.addItem((ServerPlayer) player, item.getItemId(), hand);
                     });
         }
-        else if(stack.getItem() instanceof Pickup item){
+        else if(stack.getItem() instanceof IOnUse && stack.getItem()  instanceof Pickup item){
             PickupManager.getInstance().getItemFromId(item.getItemId()).onUse(player, stack, hand);
         }
     }
@@ -132,7 +135,7 @@ public class ModEvents {
     private static void RCActiveItem(Player player, ActiveItem item, ItemStack stack, InteractionHand hand){
         // 如果当前物品的耐久度不足且没有过载则无法使用物品
         if (!ActiveItem.getOverCharged(stack) &&
-                stack.getMaxDamage() - stack.getDamageValue() < ActiveItem.getDamagePerUse(player)){
+                stack.getMaxDamage() - stack.getDamageValue() < item.getDamagePerUse(player)){
             return;
         }
 
@@ -223,20 +226,21 @@ public class ModEvents {
     public static void onPlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
         if (event.getEntity() instanceof ServerPlayer serverPlayer) {
             // 从服务端Capability获取数据
-            syncCarBatteryDataToClient(serverPlayer);
+            syncDataToClient(ItemId.CAR_BATTERY.getId(), serverPlayer);
+            syncDataToClient(ItemId.BLOOD_OF_THE_MARTYR.getId(), serverPlayer);
         }
     }
 
     /**
-     * 同步电池数据到客户端
+     * 同步数据到客户端
      */
-    public static void syncCarBatteryDataToClient(ServerPlayer player) {
+    public static void syncDataToClient(int ItemId, ServerPlayer player) {
         // 车载电池
         AtomicInteger count = new AtomicInteger();
         player.getCapability(PlayerPassiveItemProvider.PLAYER_PASSIVE_ITEM).ifPresent(
-                playerPassiveItem -> count.set(playerPassiveItem.getItemCount(ItemId.CAR_BATTERY.getId()))
+                playerPassiveItem -> count.set(playerPassiveItem.getItemCount(ItemId))
         );
-        ModMessages.sentToPlayer(new PassiveItemSyncS2CPacket(ItemId.CAR_BATTERY.getId(), count.get()), player);
+        ModMessages.sentToPlayer(new PassiveItemSyncS2CPacket(ItemId, count.get()), player);
     }
 
 
@@ -245,8 +249,6 @@ public class ModEvents {
      */
     @SubscribeEvent
     public static void onExplosion(ExplosionEvent.Detonate event) {
-        LocalPlayer playerl = Minecraft.getInstance().player;
-        assert playerl != null;
         // 获取爆炸源实体
         Entity source = event.getExplosion().getDirectSourceEntity();
         Level level = event.getLevel();
@@ -275,22 +277,59 @@ public class ModEvents {
         }
     }
 
+
     /**
-     * 监听并取消击退
+     * 受伤
      */
     @SubscribeEvent
-    public static void onLivingKnockback(LivingKnockBackEvent event) {
-        LivingEntity entity = event.getEntity();
+    public static void onLivingHurt(LivingHurtEvent event) {
+        LivingEntity victim = event.getEntity();
+        Entity attacker = event.getSource().getEntity();
 
-        // 检查玩家是否有无敌； 取消击退
-        if (entity.hasEffect(MobEffects.DAMAGE_RESISTANCE)) {
-            int amplifier = entity.getEffect(MobEffects.DAMAGE_RESISTANCE).getAmplifier();
-            if (amplifier >= 4) {
-                // 取消击退
-                event.setCanceled(true);
+        double damage = event.getAmount();
+
+        if (victim instanceof Player victimPlayer){
+            // 黑心/死灵拥护buff
+            if (victimPlayer.hasEffect(ModEffects.NECRONMICON_SHIELD.get()) && damage > 2){
+                // 伤害来源不能是拥有死灵庇护的玩家；否则不生效
+                if (!(attacker instanceof Player attackerplayer &&
+                        attackerplayer.hasEffect(ModEffects.NECRONMICON_SHIELD.get()))){
+                    // effect
+                    ActiveItemManager.getInstance().getItemFromId(ItemId.THE_NECRONMICON.getId()).onTriggeredEffect(victimPlayer);
+                    // remove 1 amplifier
+                    PlayerHelper.removeAmplifier(victimPlayer, ModEffects.NECRONMICON_SHIELD.get());
+                    // sounds
+                    victimPlayer.level().playSound(null, victimPlayer.getX(), victimPlayer.getY(), victimPlayer.getZ(),
+                            ModSounds.BLACK_HEART_ACTIVE.get(), SoundSource.PLAYERS, 1.0f, 1.0f);
+                }
+            }
+
+            if (victimPlayer.hasEffect(ModEffects.HOLY_SHIELD.get())){
+                int amplifier = victimPlayer.getEffect(ModEffects.HOLY_SHIELD.get()).getAmplifier();
+
+                event.setAmount(0.0f);
+                victimPlayer.sendSystemMessage(Component.literal(""+(amplifier + 1) * StatManager.getHolyShieldStrength()));
+                if (damage > (amplifier + 1) * StatManager.getHolyShieldStrength()){
+                    // 只有伤害足够高的时候才移除护盾
+                    PlayerHelper.removeAmplifier(victimPlayer, ModEffects.HOLY_SHIELD.get());
+                    // sounds
+                    victimPlayer.level().playSound(null, victimPlayer.getX(), victimPlayer.getY(), victimPlayer.getZ(),
+                            ModSounds.HOLY_SHIELD_BROKE.get(), SoundSource.PLAYERS, 1.0f, 1.0f);
+                }
             }
         }
     }
 
+    @SubscribeEvent
+    public static void onEntityKnockback(LivingKnockBackEvent event) {
+        LivingEntity entity = event.getEntity();
 
+        if (entity instanceof Player player){
+            // 神圣护盾
+            if (player.hasEffect(ModEffects.HOLY_SHIELD.get())){
+                event.setCanceled(true);
+            }
+
+        }
+    }
 }

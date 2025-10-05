@@ -11,8 +11,6 @@ import net.minecraft.world.item.ItemStack;
 import java.util.List;
 
 public class CricketsHead implements IPassiveItem {
-    private final double damage_multiplier = 0.5;
-
     @Override
     public int getItemId() {
         return ItemId.CRICKETS_HEAD.getId();
@@ -27,7 +25,7 @@ public class CricketsHead implements IPassiveItem {
     public void onDirectObtain(Player player) {
         if(!player.level().isClientSide()){
             StatManager.modifyDamageAdder(player, 0.25);
-            StatManager.modifyDamageMultiplier(player, damage_multiplier);
+            StatManager.modifyDamageMultiplier(player, StatManager.getDamageMultiplier1());
         }
     }
 
@@ -35,7 +33,7 @@ public class CricketsHead implements IPassiveItem {
     public void onRemove(Player player) {
         if(!player.level().isClientSide()){
             StatManager.modifyDamageAdder(player, -0.25);
-            StatManager.modifyDamageMultiplier(player, -damage_multiplier);
+            StatManager.modifyDamageMultiplier(player, -StatManager.getDamageMultiplier1());
         }
     }
 
@@ -48,7 +46,7 @@ public class CricketsHead implements IPassiveItem {
     public List<Component> getDescription() {
         return List.of(
                 Component.translatable("item.isaac_disaster.attribute.damage", 0.25*StatManager.getDamageBonus()),
-                Component.translatable("item.isaac_disaster.attribute.damage_multiplier", damage_multiplier*100)
+                Component.translatable("item.isaac_disaster.attribute.damage_multiplier", StatManager.getDamageMultiplier1()*100)
         );
     }
 }

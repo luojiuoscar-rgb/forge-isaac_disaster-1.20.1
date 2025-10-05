@@ -11,6 +11,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import org.lwjgl.system.linux.Stat;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Transcendence implements IPassiveItem {
@@ -51,5 +52,15 @@ public class Transcendence implements IPassiveItem {
                 Component.translatable("item.isaac_disaster.attribute.fly"),
                 Component.translatable("item.isaac_disaster.special.stackable")
         );
+    }
+
+    @Override
+    public List<Component> getExplain(){
+        List<Component> description = new ArrayList<>();
+
+        description.add(Component.translatable("effect.isaac_disaster.transcendence").append(": ")
+                .append(Component.translatable("effect.isaac_disaster.transcendence.explain.1")));
+
+        return description;
     }
 }

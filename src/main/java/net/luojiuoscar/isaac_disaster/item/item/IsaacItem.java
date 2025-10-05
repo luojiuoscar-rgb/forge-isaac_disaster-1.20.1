@@ -2,6 +2,7 @@ package net.luojiuoscar.isaac_disaster.item.item;
 
 
 import net.luojiuoscar.isaac_disaster.manager.ColorManager;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
@@ -18,9 +19,10 @@ import java.util.List;
  * 仅在需要时将lore文本列表自动实现appendHoverText方法
  */
 public abstract class IsaacItem extends Item {
-    private int itemId;
-    private int itemLevel;
-    private boolean useOriginalColor;
+    private final int itemId;
+    private final int itemLevel;
+    private final boolean useOriginalColor;
+    private final boolean hasSpecialEffects;
 
     /**
      * @param properties 物品属性
@@ -28,7 +30,7 @@ public abstract class IsaacItem extends Item {
      * @param itemId 物品id（在ItemIdManager中获取）
      * @param useOriginalColor 默认为false，是否不自动替换为物品等级对应的颜色
      */
-    public IsaacItem(Properties properties, int itemLevel, int itemId, boolean useOriginalColor) {
+    public IsaacItem(Properties properties, int itemLevel, int itemId, boolean hasSpecialEffects, boolean useOriginalColor) {
         super(properties);
         this.itemId = itemId;
         if (itemLevel < 0 || itemLevel > 4) {
@@ -36,6 +38,7 @@ public abstract class IsaacItem extends Item {
         }
         this.itemLevel = itemLevel;
         this.useOriginalColor = useOriginalColor;
+        this.hasSpecialEffects = hasSpecialEffects;
     }
 
     /**
@@ -43,16 +46,26 @@ public abstract class IsaacItem extends Item {
      * 在ItemManager中获取文本
      */
     @Override
-    public void appendHoverText(@NotNull ItemStack stack, @Nullable Level level, @NotNull List<Component> tooltipComponents, @NotNull TooltipFlag isAdvanced) {
+    public final void appendHoverText(@NotNull ItemStack stack, @Nullable Level level, @NotNull List<Component> tooltipComponents, @NotNull TooltipFlag isAdvanced) {
         super.appendHoverText(stack, level, tooltipComponents, isAdvanced);
 
+        if (hasSpecialEffects && Screen.hasShiftDown()){
+            // 添加解释性文本组件
+            addExplainInfo(tooltipComponents);
+        }else{
+            // 添加描述性文本组件
+            addDescription(tooltipComponents);
+            // 添加额外信息
+            addAdditionalInfo(tooltipComponents);
+            // 添加shift提示
+            if (hasSpecialEffects){
+                tooltipComponents.add(Component.translatable("item.isaac_disaster.special.require_shift"));
+            }
+            // 添加稀有度文本组件
+            addRarityComponent(tooltipComponents);
+        }
 
-        // 添加描述性文本组件
-        addDescription(tooltipComponents);
-        // 添加稀有度文本组件
-        addAdditionalInfo(tooltipComponents);
-        // 添加稀有度文本组件
-        addRarityComponent(tooltipComponents);
+
     }
     /**
      * 添加描述性文本组件
@@ -63,6 +76,12 @@ public abstract class IsaacItem extends Item {
      * 额外信息
      */
     public abstract void addAdditionalInfo(List<Component> tooltipComponents);
+
+
+    /**
+     * 解释性信息 用于解释专有名词
+     */
+    public abstract void addExplainInfo(List<Component> tooltipComponents);
 
     /**
      * 获取Rarity

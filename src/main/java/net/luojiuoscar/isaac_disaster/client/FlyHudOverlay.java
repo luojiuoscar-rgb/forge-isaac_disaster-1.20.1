@@ -2,7 +2,6 @@ package net.luojiuoscar.isaac_disaster.client;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
-import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.GameRenderer;

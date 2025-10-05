@@ -1,5 +1,6 @@
 package net.luojiuoscar.isaac_disaster.item_ability.active_item.items;
 
+import net.luojiuoscar.isaac_disaster.client.ClientDataManager;
 import net.luojiuoscar.isaac_disaster.effect.ModEffects;
 import net.luojiuoscar.isaac_disaster.item.ModItems;
 import net.luojiuoscar.isaac_disaster.item_ability.active_item.IActiveItem;
@@ -14,6 +15,7 @@ import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class TheBible implements IActiveItem {
@@ -61,11 +63,24 @@ public class TheBible implements IActiveItem {
     }
 
     @Override
-    public List<Component> synergyDescriptionCarBattery() {
-        return List.of(
-                Component.translatable("item.isaac_disaster.car_battery").append(": ")
-                        .append(Component.translatable("item.isaac_disaster.synergy.description.increase_duration"))
-                        .withStyle(style -> style.withColor(ColorManager.SYNERGY))
-        );
+    public List<Component> synergyDescription() {
+        List<Component> description = new ArrayList<>();
+
+        if (ClientDataManager.getInstance().getCountFromId(ItemId.CAR_BATTERY.getId()) > 0){
+            description.add(Component.translatable("item.isaac_disaster.car_battery").append(": ")
+                    .append(Component.translatable("item.isaac_disaster.synergy.description.double"))
+                    .withStyle(style -> style.withColor(ColorManager.SYNERGY)));
+        }
+        return description;
+    }
+
+    @Override
+    public List<Component> getExplain(){
+        List<Component> description = new ArrayList<>();
+
+        description.add(Component.translatable("effect.isaac_disaster.transcendence").append(": ")
+                .append(Component.translatable("effect.isaac_disaster.transcendence.explain.1")));
+
+        return description;
     }
 }

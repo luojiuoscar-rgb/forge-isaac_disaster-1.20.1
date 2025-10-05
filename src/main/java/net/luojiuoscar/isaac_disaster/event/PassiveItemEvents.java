@@ -2,8 +2,9 @@ package net.luojiuoscar.isaac_disaster.event;
 
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerPassiveItemProvider;
+import net.luojiuoscar.isaac_disaster.item_ability.passive_item.IDamageTrigger;
 import net.luojiuoscar.isaac_disaster.manager.item_managers.PassiveItemManager;
-import net.luojiuoscar.isaac_disaster.item_ability.passive_item.IDamageTriggerPItem;
+import net.luojiuoscar.isaac_disaster.item_ability.passive_item.ITriggerPassiveItem;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -23,11 +24,11 @@ public class PassiveItemEvents {
 
         // 获取玩家的被动物品能力实例
         player.getCapability(PlayerPassiveItemProvider.PLAYER_PASSIVE_ITEM).ifPresent(passiveItems -> {
-            Map<Integer, Integer> interactiveItemMap = passiveItems.getPlayerInteractiveItemMap();
-            for (int itemId : interactiveItemMap.keySet())
+            Map<Integer, Integer> triggerItemMap = passiveItems.getPlayerTriggerItemMap();
+            for (int itemId : triggerItemMap.keySet())
             {
-                if (interactiveItemMap.get(itemId) > 0){
-                    IDamageTriggerPItem item = (IDamageTriggerPItem) PassiveItemManager.getInstance().getItemFromId(itemId);
+                if (triggerItemMap.get(itemId) > 0){
+                    IDamageTrigger item = (IDamageTrigger) PassiveItemManager.getInstance().getItemFromId(itemId);
                     item.onAttackEntity(player, event.getEntity());
                 }
             }

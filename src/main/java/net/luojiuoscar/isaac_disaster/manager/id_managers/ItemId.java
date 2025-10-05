@@ -29,7 +29,10 @@ public enum ItemId {
     HOT_BOMB,
     BOOK_OF_SHADOW,
     TRANSCENDENCE,
-    THE_BIBLE;
+    THE_BIBLE,
+    BLOOD_OF_THE_MARTYR,
+    THE_NECRONMICON,
+    HOLY_MANTLE;
 
 
     private final int id;

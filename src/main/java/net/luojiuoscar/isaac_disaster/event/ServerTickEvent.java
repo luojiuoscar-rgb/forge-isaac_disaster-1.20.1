@@ -1,6 +1,7 @@
 package net.luojiuoscar.isaac_disaster.event;
 
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
+import net.luojiuoscar.isaac_disaster.capability.player.PlayerPassiveItemProvider;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerStatModifierProvider;
 import net.luojiuoscar.isaac_disaster.effect.ModEffects;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
@@ -42,12 +43,20 @@ public class ServerTickEvent {
             }
             if (server == null) return;
             for (ServerPlayer player : server.getPlayerList().getPlayers()){
+                // main
                 chargeActiveItem(player);
                 updateFly(player);
+                bugsFix(player);
+                recursiveItemTick(player);
             }
         }
+    }
 
-
+    private static void bugsFix(ServerPlayer player){
+        // 防止无限无敌
+        if (player.isInvulnerable() && player.getEffect(ModEffects.INVINCIBLE.get()) == null){
+            player.setInvulnerable(false);
+        }
     }
 
     private static void chargeActiveItem(ServerPlayer player){
@@ -70,7 +79,7 @@ public class ServerTickEvent {
     private static void updateFly(ServerPlayer player){
         if (player.isCreative() || player.isSpectator() || !PlayerHelper.canFly(player)) return;
 
-        // 飞行故障修复
+        // 飞行故障修复（防止玩家可以飞但飞不起来）
         if (!player.getAbilities().mayfly){
             player.getAbilities().mayfly = true;
             player.onUpdateAbilities();
@@ -86,5 +95,11 @@ public class ServerTickEvent {
                     playerStatModifier -> playerStatModifier.addCurrentFlyTime(player, -1)
             );
         }
+    }
+
+    private static void recursiveItemTick(ServerPlayer player){
+        player.getCapability(PlayerPassiveItemProvider.PLAYER_PASSIVE_ITEM).ifPresent(
+                playerPassiveItem -> playerPassiveItem.recursiveItemTick(player, TICK_FREQUENCY)
+        );
     }
 }

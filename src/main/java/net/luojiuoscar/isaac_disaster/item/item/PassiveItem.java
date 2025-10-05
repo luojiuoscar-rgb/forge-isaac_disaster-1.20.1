@@ -9,11 +9,14 @@ import java.util.List;
 public class PassiveItem extends IsaacItem {
 
     public PassiveItem(Properties properties, int itemLevel, int itemId ) {
-        this(properties, itemLevel, itemId, false);
+        this(properties, itemLevel, itemId, false, false);
+    }
+    public PassiveItem(Properties properties, int itemLevel, int itemId, boolean hasSpecialEffect) {
+        this(properties, itemLevel, itemId, hasSpecialEffect, false);
     }
 
-    public PassiveItem(Properties properties, int itemLevel, int itemId, boolean useOriginalColor) {
-        super(properties.stacksTo(1).rarity(IsaacItem.getRarity(itemLevel)), itemLevel, itemId, useOriginalColor);
+    public PassiveItem(Properties properties, int itemLevel, int itemId, boolean hasSpecialEffect, boolean useOriginalColor) {
+        super(properties.stacksTo(1).rarity(IsaacItem.getRarity(itemLevel)), itemLevel, itemId, hasSpecialEffect, useOriginalColor);
     }
 
     @Override
@@ -26,5 +29,12 @@ public class PassiveItem extends IsaacItem {
     @Override
     public void addAdditionalInfo(List<Component> tooltipComponents){
         tooltipComponents.add(Component.literal(""));
+    }
+
+    @Override
+    public void addExplainInfo(List<Component> tooltipComponents) {
+        tooltipComponents.addAll(
+                PassiveItemManager.getInstance().getItemFromId(getItemId()).getExplain()
+        );
     }
 }

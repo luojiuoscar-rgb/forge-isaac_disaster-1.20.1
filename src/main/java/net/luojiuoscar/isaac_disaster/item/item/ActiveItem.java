@@ -17,22 +17,25 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 
 public class ActiveItem extends IsaacItem {
-    private static int DAMAGE_PER_USE;
-    private static int MAX_ITEM_DAMAGE;
+    private final int damage_per_use;
+    private final int max_item_damage;
     private static final String OVERCHARGED_TAG = "OverCharged";
 
 
 
     public ActiveItem(Properties properties, int itemLevel, int itemId, int damagePerUse, int maxItemDamage) {
-        this(properties, itemLevel, itemId, damagePerUse, maxItemDamage, false);
+        this(properties, itemLevel, itemId, damagePerUse, maxItemDamage, false, false);
     }
 
-    public ActiveItem(Properties properties, int itemLevel, int itemId, int damagePerUse, int maxItemDamage, boolean useOriginalColor) {
-        // 在父类构造前设置最大耐久
+    public ActiveItem(Properties properties, int itemLevel, int itemId, int damagePerUse, int maxItemDamage, boolean hasSpecialEffect) {
+        this(properties, itemLevel, itemId, damagePerUse, maxItemDamage, hasSpecialEffect, false);
+    }
+
+    public ActiveItem(Properties properties, int itemLevel, int itemId, int damagePerUse, int maxItemDamage, boolean hasSpecialEffect, boolean useOriginalColor) {
         super(properties.stacksTo(1).rarity(IsaacItem.getRarity(itemLevel)).durability(maxItemDamage),
-                itemLevel, itemId, useOriginalColor);
-        MAX_ITEM_DAMAGE = maxItemDamage;
-        DAMAGE_PER_USE = damagePerUse;
+                itemLevel, itemId, hasSpecialEffect, useOriginalColor);
+        this.max_item_damage = maxItemDamage;
+        this.damage_per_use = damagePerUse;
     }
 
     @Override
@@ -40,24 +43,29 @@ public class ActiveItem extends IsaacItem {
         tooltipComponents.addAll(
                 ActiveItemManager.getInstance().getItemFromId(getItemId()).getDescription()
         );
-        // 查看是否有车载电池的额外描述需求
+        // 添加协同效果
         Player player = Minecraft.getInstance().player;
-        if(player == null) return;
+        if (player == null) return;
 
-        if (ClientDataManager.getInstance().getCountFromId(ItemId.CAR_BATTERY.getId()) > 0){
-            tooltipComponents.addAll(
-                   ActiveItemManager.getInstance().getItemFromId(getItemId()).synergyDescriptionCarBattery()
-           );
-        }
+        tooltipComponents.addAll(
+                ActiveItemManager.getInstance().getItemFromId(getItemId()).synergyDescription()
+        );
     }
 
     @Override
     public void addAdditionalInfo(List<Component> tooltipComponents){
         tooltipComponents.add(Component.literal(""));
         tooltipComponents.add(
-                Component.translatable("item.isaac_disaster.special.recharge_require", (MAX_ITEM_DAMAGE / 20))
+                Component.translatable("item.isaac_disaster.special.recharge_require", (max_item_damage / 20))
                         .withStyle(style -> style.withColor(ColorManager.TRANSPARENT_GRAY)
                                 .withItalic(true))
+        );
+    }
+
+    @Override
+    public void addExplainInfo(List<Component> tooltipComponents) {
+        tooltipComponents.addAll(
+                ActiveItemManager.getInstance().getItemFromId(getItemId()).getExplain()
         );
     }
 
@@ -86,11 +94,11 @@ public class ActiveItem extends IsaacItem {
      * 需要玩家实体参与获取道具信息
      * 以便于减少消耗的道具参与
      */
-    public static int getDamagePerUse(Player player){
-        return DAMAGE_PER_USE;
+    public int getDamagePerUse(Player player){
+        return this.damage_per_use;
     }
-    public static int getOriginalDamagePerUse(){
-        return DAMAGE_PER_USE;
+    public int getOriginalDamagePerUse(){
+        return this.damage_per_use;
     }
 
     /**
@@ -146,9 +154,10 @@ public class ActiveItem extends IsaacItem {
     @Override
     public @NotNull InteractionResultHolder<ItemStack> use(@NotNull Level level, Player player, @NotNull InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
+        if (!(stack.getItem() instanceof ActiveItem item)) return InteractionResultHolder.fail(stack);
         // 如果当前物品的耐久度不足且没有过载则无法使用物品
         if (!ActiveItem.getOverCharged(stack) &&
-                stack.getMaxDamage() - stack.getDamageValue() < ActiveItem.getDamagePerUse(player)){
+                stack.getMaxDamage() - stack.getDamageValue() < item.getDamagePerUse(player)){
             return InteractionResultHolder.fail(stack);
         }
 

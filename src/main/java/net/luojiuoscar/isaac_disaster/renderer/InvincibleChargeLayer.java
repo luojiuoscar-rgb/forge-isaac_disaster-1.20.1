@@ -2,14 +2,13 @@ package net.luojiuoscar.isaac_disaster.renderer;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
+import net.luojiuoscar.isaac_disaster.effect.ModEffects;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.player.Player;
 
 public class InvincibleChargeLayer<T extends Player, M extends net.minecraft.client.model.HumanoidModel<T>>
@@ -42,7 +41,6 @@ public class InvincibleChargeLayer<T extends Player, M extends net.minecraft.cli
     private boolean shouldRenderPower(Player player) {
         if (player == null || player.isInvisible()) return false;
 
-        MobEffectInstance effect = player.getEffect(MobEffects.DAMAGE_RESISTANCE);
-        return effect != null && effect.getAmplifier() >= 4; // 即 抗性提升 V 或更高
+        return player.getEffect(ModEffects.INVINCIBLE.get()) != null;
     }
 }

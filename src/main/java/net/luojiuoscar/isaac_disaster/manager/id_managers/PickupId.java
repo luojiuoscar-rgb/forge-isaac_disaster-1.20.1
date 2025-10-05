@@ -3,7 +3,15 @@ package net.luojiuoscar.isaac_disaster.manager.id_managers;
 public enum PickupId {
     BOMB,
     GIGA_BOMB,
-    GOLDEN_BOMB;
+    GOLDEN_BOMB,
+    HALF_RED_HEART,
+    RED_HEART,
+    DOUBLE_RED_HEART,
+    HALF_SOUL_HEART,
+    SOUL_HEART,
+    BLENDED_HEART,
+    BLACK_HEART;
+
 
     private final int id;
 

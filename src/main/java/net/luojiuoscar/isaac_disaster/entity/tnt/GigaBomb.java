@@ -2,26 +2,17 @@ package net.luojiuoscar.isaac_disaster.entity.tnt;
 
 import net.luojiuoscar.isaac_disaster.sound.ModSounds;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.damagesource.DamageSources;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.entity.IEntityAdditionalSpawnData;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -41,6 +32,12 @@ public class GigaBomb extends IsaacBomb {
         Level level = this.level();
         BlockPos origin = this.blockPosition();
         int radius = this.getPower(); // 你传入的范围
+
+        // 播放音效
+        level.playSound(null, this.getX(), this.getY(), this.getZ(),
+                ModSounds.GIGA_BOMB_EXPLOSION.get(), SoundSource.BLOCKS,
+                4.0F, 1.0F);
+
 
         // 产生伤害
         dealExplosionDamage(level, this.position(), this.getPower());
@@ -75,13 +72,6 @@ public class GigaBomb extends IsaacBomb {
             }
         }
 
-
-        Minecraft.getInstance().player.sendSystemMessage(Component.literal("x: "+this.getX()+"y: "+this.getY()
-        +"z: "+this.getZ()+"level: "+level));
-
-        level.playSound(null, this.getX(), this.getY(), this.getZ(),
-                ModSounds.GIGA_BOMB_EXPLOSION.get(), SoundSource.BLOCKS,
-                4.0F, 1.0F);
 
         this.discard(); // 删除 TNT 实体
     }

@@ -26,6 +26,15 @@ public class StatManager {
     private static final UUID LUCK_MODIFIER_ADDER =
             UUID.nameUUIDFromBytes(("isaac_disaster:luck_modifier_adder").getBytes());
 
+    /**
+     * SPECIAL GETTERS
+     */
+    public static double getFlyTime(){return FLY_TIME.get();}
+    public static double getDamageMultiplier1(){return DAMAGE_MULTIPLIER_1.get();}
+    public static double getNearbyRange(){return NEARBY_RANGE.get();}
+    public static double getHolyShieldStrength(){return HOLY_SHIELD_STRENGTH.get();}
+
+
 
     /**
      * MAX HEALTH
@@ -88,8 +97,14 @@ public class StatManager {
         // 确保生命值不超过最大生命值；可以低于0，即死亡
         float newHealth = Math.min(currentHealth + amount, maxHealth);
         player.setHealth(newHealth);
-
     }
+
+    public static void gainAbsorption(Player player, float ratio){
+        player.setAbsorptionAmount(player.getAbsorptionAmount() + getHealthBonus() * ratio);
+    }
+
+
+
 
     public static void updateHealthAdder(Player player, AttributeInstance attribute, double totalBoost) {
         // 移除旧修饰符
@@ -261,10 +276,5 @@ public class StatManager {
         ));
     }
 
-    /**
-     * FLY
-     */
-    public static double getFlyTime(){
-        return FLY_TIME.get();
-    }
+
 }

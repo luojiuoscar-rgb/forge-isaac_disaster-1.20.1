@@ -29,7 +29,7 @@ public class IsaacPoisonEffect extends MobEffect {
 
     @Override
     public void applyEffectTick(@NotNull LivingEntity pLivingEntity, int pAmplifier){
-        float amount = getSourceDamage(pLivingEntity) * (0.25f + 0.05f * pAmplifier);
+        float amount = getSourceDamage(pLivingEntity) * (0.30f + 0.05f * pAmplifier);
         // 无死亡保护
         pLivingEntity.hurt(pLivingEntity.damageSources().magic(), amount);
     }

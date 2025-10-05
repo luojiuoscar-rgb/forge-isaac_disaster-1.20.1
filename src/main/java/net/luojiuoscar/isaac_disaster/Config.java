@@ -51,7 +51,9 @@ public class Config
 
     // 其他可配置项目
     public static ForgeConfigSpec.IntValue PASSIVE_ITEM_LIMIT;
-
+    public static ForgeConfigSpec.DoubleValue DAMAGE_MULTIPLIER_1;
+    public static ForgeConfigSpec.DoubleValue NEARBY_RANGE;
+    public static ForgeConfigSpec.DoubleValue HOLY_SHIELD_STRENGTH;
 
     static {
         // 配置数值的默认值和范围
@@ -90,6 +92,22 @@ public class Config
         PASSIVE_ITEM_LIMIT = BUILDER
                 .comment("How many passive items can a player carry")
                 .defineInRange("passive_item_limit", 999, 1, 99999);
+
+        // 伤害倍率提升1  默认0.5
+        DAMAGE_MULTIPLIER_1 = BUILDER
+                .comment("Determines the damage multiplier for Cricket's head & synergy of Blood of the Martyr and " +
+                        "the book of belial & Magic mushroom")
+                .defineInRange("damage_multiplier_1", 0.5, 0.0, 99999.0);
+
+        // 周围（定义周围的范围）  默认12
+        NEARBY_RANGE = BUILDER
+                .comment("Determines how many blocks is \"nearby\"")
+                .defineInRange("nearby_range", 12.0, 0.0, 99999.0);
+
+        // 神圣护盾强度  默认3
+        HOLY_SHIELD_STRENGTH = BUILDER
+                .comment("Amount * (Amplifier + 1) = The damage of the holy Shield immunity ")
+                .defineInRange("holy_shield_strength", 3.0, 0.0, 99999.0);
 
         BUILDER.pop();
     }

@@ -1,15 +1,23 @@
 package net.luojiuoscar.isaac_disaster.helper;
 
+import net.luojiuoscar.isaac_disaster.effect.ModEffects;
 import net.luojiuoscar.isaac_disaster.entity.ModEntity;
 import net.luojiuoscar.isaac_disaster.entity.fireball.TimedFireball;
 import net.luojiuoscar.isaac_disaster.entity.tnt.GigaBomb;
 import net.luojiuoscar.isaac_disaster.entity.tnt.IsaacBomb;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.MobType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.LargeFireball;
 import net.minecraft.world.entity.projectile.SmallFireball;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class EntityHelper {
     public static void spawnBomb(Vec3 position, Player player, Vec3 tntVelocity, int fuse, int power, float scale){
@@ -177,4 +185,38 @@ public class EntityHelper {
         }
     }
 
+    public static List<LivingEntity> selectBySphere(Level level, double x, double y, double z, double radius){
+        List<LivingEntity> targetEntities = new ArrayList<>();
+
+        // 计算搜索范围
+        AABB area = new AABB(
+                x - radius, y - radius, z - radius,
+                x + radius, y + radius, z + radius
+        );
+
+        // 搜索范围内所有生物实体
+        List<LivingEntity> entities = level.getEntitiesOfClass(LivingEntity.class, area);
+
+        // 遍历并记录
+        for (LivingEntity target : entities) {
+            // 精确球形检测
+            double dx = target.getX() - x;
+            double dy = target.getY() - y;
+            double dz = target.getZ() - z;
+            double distanceSq = dx * dx + dy * dy + dz * dz;
+
+            if (distanceSq > radius * radius) continue; // 不在球体内则跳过 (距离不开方)
+            targetEntities.add(target);
+        }
+        return targetEntities;
+    }
+
+    public static List<LivingEntity> selectBySquare(Level level, double x, double y, double z, double radius){
+        // 计算搜索范围
+        AABB area = new AABB(
+                x - radius, y - radius, z - radius,
+                x + radius, y + radius, z + radius
+        );
+        return level.getEntitiesOfClass(LivingEntity.class, area);
+    }
 }

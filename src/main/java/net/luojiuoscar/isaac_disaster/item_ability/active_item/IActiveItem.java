@@ -1,7 +1,6 @@
 package net.luojiuoscar.isaac_disaster.item_ability.active_item;
 
 
-import net.luojiuoscar.isaac_disaster.capability.player.PlayerPassiveItemProvider;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.item.item.ActiveItem;
 import net.luojiuoscar.isaac_disaster.manager.id_managers.ItemId;
@@ -14,8 +13,8 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 
 
 public interface IActiveItem {
@@ -23,8 +22,6 @@ public interface IActiveItem {
      * 获取物品ID
      */
     int getItemId();
-
-    
 
     default void onUse(Player player, InteractionHand hand){
         // 判断车载电池
@@ -40,22 +37,23 @@ public interface IActiveItem {
             return;
         }
 
-        // 给予物品的过载情况计算剩余充能
+        // 基于物品的过载情况计算剩余充能
         int damage = stack.getDamageValue();
         if (ActiveItem.getOverCharged(stack)){
-            damage += ActiveItem.getDamagePerUse(player) - stack.getMaxDamage();
+            damage += item.getDamagePerUse(player) - stack.getMaxDamage();
             ActiveItem.setOverCharged(stack, false);
         }else{
-            damage += ActiveItem.getDamagePerUse(player);
+            damage += item.getDamagePerUse(player);
         }
         damage = Math.max(0, damage);
 
         // 如果有9伏特，恢复20%的耐久
         if (PlayerHelper.hasItem(ItemId.VOLT_9.getId(), (ServerPlayer) player)){
-            damage -= (int) (ActiveItem.getOriginalDamagePerUse() * 0.2);
+            damage -= (int) (item.getOriginalDamagePerUse() * 0.2);
         }
 
-        stack.setDamageValue(damage);
+        // 如果不是创造模式则消耗耐久
+        if (!player.isCreative()) stack.setDamageValue(damage);
 
         // 设置0.5秒的冷却
         player.getCooldowns().addCooldown(item, 10);
@@ -119,7 +117,13 @@ public interface IActiveItem {
      */
      List<Component> getDescription();
 
+    /**
+     * 解释性文本
+     */
+     default List<Component> getExplain(){
+         return new ArrayList<>();
+     };
 
-     List<Component> synergyDescriptionCarBattery();
+     List<Component> synergyDescription();
 }
     

@@ -33,7 +33,6 @@ public class Bomb implements IPickup {
             EntityHelper.throwBomb(player, 80, 4);
         }
 
-
         // cd
         if(PlayerHelper.hasItem(ItemId.FAST_BOMB.getId(), (ServerPlayer) player)){
             player.getCooldowns().addCooldown(player.getItemInHand(hand).getItem(), 5);

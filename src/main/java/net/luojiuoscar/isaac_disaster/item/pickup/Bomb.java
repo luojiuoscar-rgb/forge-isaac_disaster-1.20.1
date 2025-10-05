@@ -8,14 +8,11 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 
-public class Bomb extends Pickup {
+public class Bomb extends Pickup implements IOnUse {
     public Bomb(Properties pProperties, int ItemId) {
         super(pProperties, ItemId);
     }
 
-    /**
-     * 右键使用方法
-     */
     @Override
     public @NotNull InteractionResultHolder<ItemStack> use(@NotNull Level level, Player player, @NotNull InteractionHand hand) {
         // 获取玩家手中的物品栈

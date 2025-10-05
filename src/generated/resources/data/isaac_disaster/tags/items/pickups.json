@@ -2,6 +2,13 @@
   "values": [
     "isaac_disaster:bomb",
     "isaac_disaster:giga_bomb",
-    "isaac_disaster:golden_bomb"
+    "isaac_disaster:golden_bomb",
+    "isaac_disaster:half_red_heart",
+    "isaac_disaster:red_heart",
+    "isaac_disaster:double_red_heart",
+    "isaac_disaster:half_soul_heart",
+    "isaac_disaster:soul_heart",
+    "isaac_disaster:blended_heart",
+    "isaac_disaster:black_heart"
   ]
 }

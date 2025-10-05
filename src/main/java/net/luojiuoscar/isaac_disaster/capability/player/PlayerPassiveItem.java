@@ -1,7 +1,8 @@
 package net.luojiuoscar.isaac_disaster.capability.player;
 
+import net.luojiuoscar.isaac_disaster.item_ability.passive_item.IRecursiveItem;
 import net.luojiuoscar.isaac_disaster.manager.item_managers.PassiveItemManager;
-import net.luojiuoscar.isaac_disaster.item_ability.passive_item.IDamageTriggerPItem;
+import net.luojiuoscar.isaac_disaster.item_ability.passive_item.ITriggerPassiveItem;
 import net.luojiuoscar.isaac_disaster.networking.ModMessages;
 import net.luojiuoscar.isaac_disaster.networking.packet.DirectObtainPassiveItemS2CPacket;
 import net.luojiuoscar.isaac_disaster.networking.packet.ObtainPassiveItemS2CPacket;
@@ -17,7 +18,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Arrays;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import static net.luojiuoscar.isaac_disaster.Config.PASSIVE_ITEM_LIMIT;
@@ -28,14 +28,16 @@ public class PlayerPassiveItem {
     private ArrayList<Integer> playerPassiveItems;
     // 键为道具ID，值为道具数量
     private Map<Integer, Integer> itemCountMap;
-    private Map<Integer, Integer> damageTriggerMap;
+    private Map<Integer, Integer> triggerItemMap;
+    private Map<Integer, Integer> recursiveItemMap; // itemId : remainTick
 
     // constructor
     public PlayerPassiveItem(){
         this.playerPassiveItems = new ArrayList<>();
 
         this.itemCountMap = new HashMap<>();
-        this.damageTriggerMap = new HashMap<>();
+        this.triggerItemMap = new HashMap<>();
+        this.recursiveItemMap = new HashMap<>();
     }
 
     /**
@@ -43,7 +45,8 @@ public class PlayerPassiveItem {
      */
     public void clearItemMap(){
         itemCountMap.clear();
-        damageTriggerMap.clear();
+        triggerItemMap.clear();
+        recursiveItemMap.clear();
     }
 
     /**
@@ -52,9 +55,20 @@ public class PlayerPassiveItem {
      */
     private void updateItemMap(int itemId, int amount) {
         itemCountMap.put(itemId, itemCountMap.getOrDefault(itemId, 0) + amount);
-        // 如果是伤害触发型道具
-        if(PassiveItemManager.getInstance().getItemFromId(itemId) instanceof IDamageTriggerPItem){
-            damageTriggerMap.put(itemId, itemCountMap.getOrDefault(itemId, 0) + amount);
+        // 如果是触发型道具
+        if(PassiveItemManager.getInstance().getItemFromId(itemId) instanceof ITriggerPassiveItem){
+            triggerItemMap.put(itemId, itemCountMap.get(itemId));
+        }
+        // 如果是循环型道具
+        if(PassiveItemManager.getInstance().getItemFromId(itemId) instanceof IRecursiveItem item){
+            // 对于循环型道具需要移除计数器
+            int itemCount = itemCountMap.get(itemId);
+            if (itemCount == 0){
+                recursiveItemMap.remove(itemId);
+                return;
+            }
+            // 初始计时
+            recursiveItemMap.put(itemId, item.getTickInterval());
         }
     }
 
@@ -79,9 +93,34 @@ public class PlayerPassiveItem {
     /**
      * @return 全部触发型道具的列表
      */
-    public Map<Integer, Integer> getPlayerInteractiveItemMap(){
-        return damageTriggerMap;
+    public Map<Integer, Integer> getPlayerTriggerItemMap(){
+        return triggerItemMap;
     }
+
+    /**
+     * @return 全部触发型道具的列表
+     */
+    public Map<Integer, Integer> getPlayerRecursiveItemMap(){
+        return recursiveItemMap;
+    }
+
+    /**
+     * 循环型道具的任务计时器
+     */
+    public void recursiveItemTick(ServerPlayer player, int tick){
+        for (Map.Entry<Integer, Integer> entry : recursiveItemMap.entrySet()) {
+            entry.setValue(entry.getValue() - tick);
+            // 计数器归零时
+            if (entry.getValue() <= 0){
+                int itemId = entry.getKey();
+                IRecursiveItem item = (IRecursiveItem) PassiveItemManager.getInstance().getItemFromId(itemId);
+                // 触发循环效果
+                item.recursiveEffect(player);
+                entry.setValue(item.getTickInterval());
+            }
+        }
+    }
+
 
     /**
      * @return 获取道具的数量
@@ -95,7 +134,7 @@ public class PlayerPassiveItem {
      * 通过循环删除最先获取的道具来清空道具列表
      */
     public void clearPlayerPassiveItems(ServerPlayer player){
-        // 循环清除最先获取的道具
+        // 循环清除最先获取的道具 （用于触发效果）
         while(removeFromIndex(player, 0));
         // 清空哈希表
         clearItemMap();
