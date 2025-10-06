@@ -3,39 +3,35 @@ package net.luojiuoscar.isaac_disaster.capability.player;
 
 import net.luojiuoscar.isaac_disaster.effect.ModEffects;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
+import net.luojiuoscar.isaac_disaster.manager.UUIDManager;
 import net.luojiuoscar.isaac_disaster.networking.ModMessages;
 import net.luojiuoscar.isaac_disaster.networking.packet.FlyUpdateS2CPacket;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.common.capabilities.AutoRegisterCapability;
-import org.checkerframework.checker.units.qual.C;
 
-import java.util.Objects;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 
 @AutoRegisterCapability
 public class PlayerStatModifier {
-    //将玩家新增的属性附加到玩家身上
-    private double maxHealthAdder;
-    private double movementSpeedAdder;
-    private double damageAdder;
-    private double damageMultiplier;
-    private double luckAdder;
+    private Map<UUID, Double> playerModifiers;
+
     private double flyTime;
     private double flyTimeCurrent;
 
+
     // constructor
     public PlayerStatModifier(){
-        maxHealthAdder = 0;
-        movementSpeedAdder = 0;
-        damageAdder = 0;
-        damageMultiplier = 0;
-        luckAdder = 0;
+        playerModifiers = new HashMap<>();
+
         flyTime = 0;
         flyTimeCurrent = 0;
     }
@@ -43,21 +39,10 @@ public class PlayerStatModifier {
     /**
      * Getter
      */
-    public double getMaxHealth(){
-        return maxHealthAdder;
+    public double getModifier(UUID uuid){
+        return playerModifiers.getOrDefault(uuid, 0.0);
     }
-    public double getMovementSpeedAdder(){
-        return movementSpeedAdder;
-    }
-    public double getDamageAdder(){
-        return damageAdder;
-    }
-    public double getDamageMultiplier(){
-        return damageMultiplier;
-    }
-    public double getLuckAdder(){
-        return luckAdder;
-    }
+
     public double getFlyTime(){
         return flyTime;
     }
@@ -68,29 +53,8 @@ public class PlayerStatModifier {
     /**
      * Setter
      */
-    public void setMaxHealthAdder(Player player, double amount){
-        maxHealthAdder = amount;
-        StatManager.updateHealthAdder(player, (Objects.requireNonNull(player.getAttribute(Attributes.MAX_HEALTH))), this.maxHealthAdder);
-    }
-
-    public void setMovementSpeedAdder(Player player, double amount){
-        movementSpeedAdder = amount;
-        StatManager.updateMovementSpeedAdder(player, (Objects.requireNonNull(player.getAttribute(Attributes.MOVEMENT_SPEED))), this.movementSpeedAdder);
-    }
-
-    public void setDamageAdder(Player player, double amount){
-        damageAdder = amount;
-        StatManager.updateDamageAdder(player, (Objects.requireNonNull(player.getAttribute(Attributes.ATTACK_DAMAGE))), this.damageAdder);
-    }
-
-    public void setDamageMultiplier(Player player, double amount){
-        damageMultiplier = amount;
-        StatManager.updateDamageMultiplier(player, (Objects.requireNonNull(player.getAttribute(Attributes.ATTACK_DAMAGE))), this.damageMultiplier);
-    }
-
-    public void setLuckAdder(Player player, double amount){
-        luckAdder = amount;
-        StatManager.updateLuckAdder(player, (Objects.requireNonNull(player.getAttribute(Attributes.LUCK))), this.luckAdder);
+    public void setModifier(UUID uuid, double amount){
+        playerModifiers.put(uuid, amount);
     }
 
     public void setFlyTime(Player player, double amount){
@@ -105,14 +69,12 @@ public class PlayerStatModifier {
         }
 
     }
-
     public void addFlyTime(Player player, double amount){
         setFlyTime(player, flyTime + amount);
         if (flyTime > 0){
             addCurrentFlyTime((ServerPlayer) player, (int) -amount);
         }
     }
-
     public void addCurrentFlyTime(ServerPlayer player, int amount){
         double pre = flyTimeCurrent % (flyTime / 20);
 
@@ -135,36 +97,74 @@ public class PlayerStatModifier {
     }
 
 
+    private void refreshAllFromSource(Player player, PlayerStatModifier source){
+        for (Map.Entry<UUID, Double> entry : source.playerModifiers.entrySet()) {
+            UUID uuid = entry.getKey();
+            AttributeInstance instance = player.getAttribute(UUIDManager.ATTRIBUTE_FROM_UUID.get(uuid));
+            if (instance == null) continue;
+
+            if (!UUIDManager.MULTIPLIER_UUID.contains(uuid)){
+                StatManager.updateAdder(
+                        player,
+                        instance,
+                        entry.getValue(),
+                        uuid,
+                        ""
+                );
+            }
+            else{
+                StatManager.updateMultiplier(
+                        player,
+                        instance,
+                        entry.getValue(),
+                        uuid,
+                        ""
+                );
+            }
+        }
+    }
+
+
+
     /**
      * 复制玩家属性
      * 复制后立刻触发属性修改；以确保玩家属性正确继承
      */
     public void copyFrom(PlayerStatModifier source, Player player) {
-        setMaxHealthAdder(player, source.maxHealthAdder);
-        setMovementSpeedAdder(player, source.movementSpeedAdder);
-        setDamageAdder(player, source.damageAdder);
-        setDamageMultiplier(player, source.damageMultiplier);
-        setLuckAdder(player, source.luckAdder);
+        refreshAllFromSource(player, source);
         setFlyTime(player, source.flyTime);
         this.flyTime = 0;
     }
 
     public void saveNBTData(CompoundTag nbt) {
-        nbt.putDouble("max_health_adder", maxHealthAdder);
-        nbt.putDouble("movement_speed_adder", movementSpeedAdder);
-        nbt.putDouble("damage_adder", damageAdder);
-        nbt.putDouble("damage_multiplier", damageMultiplier);
-        nbt.putDouble("luck_adder", luckAdder);
-        nbt.putDouble("fly_time", flyTime);
-    }
 
+        nbt.putDouble("fly_time", flyTime);
+
+        // 保存 playerModifiers
+        ListTag listTag = new ListTag();
+        for (Map.Entry<UUID, Double> entry : playerModifiers.entrySet()) {
+            CompoundTag tag = new CompoundTag();
+            tag.putUUID("uuid", entry.getKey());
+            tag.putDouble("value", entry.getValue());
+            listTag.add(tag);
+        }
+        nbt.put("player_modifiers", listTag);
+    }
     public void loadNBTData(CompoundTag nbt) {
-        this.maxHealthAdder = nbt.getDouble("max_health_adder");
-        this.movementSpeedAdder = nbt.getDouble("movement_speed_adder");
-        this.damageAdder = nbt.getDouble("damage_adder");;
-        this.damageMultiplier = nbt.getDouble("damage_multiplier");
-        this.luckAdder = nbt.getDouble("luck_adder");
+
         this.flyTime = nbt.getDouble("fly_time");
         this.flyTimeCurrent = 0;
+
+        // 读取 playerModifiers
+        this.playerModifiers.clear();
+        if (nbt.contains("player_modifiers", Tag.TAG_LIST)) {
+            ListTag listTag = nbt.getList("player_modifiers", Tag.TAG_COMPOUND);
+            for (int i = 0; i < listTag.size(); i++) {
+                CompoundTag tag = listTag.getCompound(i);
+                UUID uuid = tag.getUUID("uuid");
+                double value = tag.getDouble("value");
+                this.playerModifiers.put(uuid, value);
+            }
+        }
     }
 }

@@ -1,0 +1,40 @@
+package net.luojiuoscar.isaac_disaster.system;
+
+import net.luojiuoscar.isaac_disaster.attribute.ModAttributes;
+import net.luojiuoscar.isaac_disaster.networking.ModMessages;
+import net.luojiuoscar.isaac_disaster.networking.packet.UpdatePlayerScaleS2CPacket;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.EntityDimensions;
+import net.minecraft.world.entity.Pose;
+import net.minecraft.world.entity.ai.attributes.AttributeInstance;
+
+public class ScaleUtils {
+
+    public static float getScale(LivingEntity entity) {
+
+        if (entity == null || entity.getAttributes() == null) return 1.0F;
+
+        AttributeInstance attr = entity.getAttribute(ModAttributes.SCALE.get());
+        return attr != null ? (float) attr.getValue() : 1.0F;
+    }
+
+    public static EntityDimensions getScaledDimensions(LivingEntity entity, Pose pose) {
+        EntityDimensions base = entity.getType().getDimensions();
+        float scale = getScale(entity);
+        return base.scale(scale);
+    }
+
+    public static void setScale(LivingEntity entity, double newScale) {
+        AttributeInstance attr = entity.getAttribute(ModAttributes.SCALE.get());
+        if (attr != null) {
+            attr.setBaseValue(newScale);
+            EntityScaleSystem.refreshEntityScale(entity);
+        }
+    }
+
+    public static void updatePlayerScale(ServerPlayer player){
+        player.refreshDimensions();
+        ModMessages.sentToPlayer(new UpdatePlayerScaleS2CPacket(), player);
+    }
+}

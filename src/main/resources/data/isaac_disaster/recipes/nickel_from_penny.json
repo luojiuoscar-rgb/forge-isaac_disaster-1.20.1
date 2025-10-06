@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "isaac_disaster:penny"
+    },
+    {
+      "item": "isaac_disaster:penny"
+    },
+    {
+      "item": "isaac_disaster:penny"
+    },
+    {
+      "item": "isaac_disaster:penny"
+    },
+    {
+      "item": "isaac_disaster:penny"
+    }
+  ],
+  "result":{
+    "item": "isaac_disaster:nickel",
+    "count": 1
+  }
+}

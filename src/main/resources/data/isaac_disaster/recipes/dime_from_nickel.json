@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "isaac_disaster:nickel"
+    },
+    {
+      "item": "isaac_disaster:nickel"
+    }
+  ],
+  "result":{
+    "item": "isaac_disaster:dime",
+    "count": 1
+  }
+}

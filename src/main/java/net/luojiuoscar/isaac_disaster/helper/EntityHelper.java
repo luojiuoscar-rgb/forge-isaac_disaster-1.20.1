@@ -1,17 +1,11 @@
 package net.luojiuoscar.isaac_disaster.helper;
 
-import net.luojiuoscar.isaac_disaster.effect.ModEffects;
-import net.luojiuoscar.isaac_disaster.entity.ModEntity;
+import net.luojiuoscar.isaac_disaster.entity.ModEntities;
 import net.luojiuoscar.isaac_disaster.entity.fireball.TimedFireball;
 import net.luojiuoscar.isaac_disaster.entity.tnt.GigaBomb;
 import net.luojiuoscar.isaac_disaster.entity.tnt.IsaacBomb;
-import net.minecraft.network.chat.Component;
-import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.MobType;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.projectile.LargeFireball;
-import net.minecraft.world.entity.projectile.SmallFireball;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
@@ -31,7 +25,7 @@ public class EntityHelper {
     public static void spawnBomb(Vec3 position, Player player, Vec3 tntVelocity, int fuse, int power, float scale, Level level, boolean isOriginal){
         if (level.isClientSide()) return; // 不要在客户端生成实体
 
-        IsaacBomb tnt = ModEntity.ISAAC_BOMB.get().create(player.level());
+        IsaacBomb tnt = ModEntities.ISAAC_BOMB.get().create(player.level());
         if (tnt == null) return;
 
         tnt.moveTo(position.x, position.y, position.z, 0, 0);
@@ -48,7 +42,7 @@ public class EntityHelper {
     public static void spawnGigaBomb(Vec3 position, Player player, Vec3 tntVelocity, int fuse, Level level){
         if (level.isClientSide()) return; // 不要在客户端生成实体
 
-        IsaacBomb tnt = ModEntity.GIGA_BOMB.get().create(player.level());
+        IsaacBomb tnt = ModEntities.GIGA_BOMB.get().create(player.level());
         if (tnt == null) return;
 
         tnt.moveTo(position.x, position.y, position.z, 0, 0);

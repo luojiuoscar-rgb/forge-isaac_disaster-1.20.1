@@ -48,12 +48,26 @@ public class Config
     public static ForgeConfigSpec.DoubleValue DAMAGE_BONUS;
     public static ForgeConfigSpec.DoubleValue LUCK_BONUS;
     public static ForgeConfigSpec.IntValue FLY_TIME;
+    public static ForgeConfigSpec.DoubleValue SCALE_BONUS;
 
     // 其他可配置项目
     public static ForgeConfigSpec.IntValue PASSIVE_ITEM_LIMIT;
     public static ForgeConfigSpec.DoubleValue DAMAGE_MULTIPLIER_1;
     public static ForgeConfigSpec.DoubleValue NEARBY_RANGE;
     public static ForgeConfigSpec.DoubleValue HOLY_SHIELD_STRENGTH;
+    public static ForgeConfigSpec.DoubleValue MONEY_IS_POWER_STRENGTH;
+
+    // 钱币
+    public static ForgeConfigSpec.ConfigValue<String> COIN_TIER_1_ID;
+    public static ForgeConfigSpec.ConfigValue<String> COIN_TIER_2_ID;
+    public static ForgeConfigSpec.ConfigValue<String> COIN_TIER_3_ID;
+
+    public static ForgeConfigSpec.IntValue COIN_TIER_1_WEIGHT;
+    public static ForgeConfigSpec.IntValue COIN_TIER_2_WEIGHT;
+    public static ForgeConfigSpec.IntValue COIN_TIER_3_WEIGHT;
+    public static ForgeConfigSpec.IntValue COIN_TIER_1_VALUE;
+    public static ForgeConfigSpec.IntValue COIN_TIER_2_VALUE;
+    public static ForgeConfigSpec.IntValue COIN_TIER_3_VALUE;
 
     static {
         // 配置数值的默认值和范围
@@ -84,6 +98,11 @@ public class Config
                 .comment("Increment of fly time for each fly provided by item (tick)")
                 .defineInRange("fly_time", 100, 0, 99999);
 
+        // 体型  默认0.1
+        SCALE_BONUS = BUILDER
+                .comment("Base value of scale increment")
+                .defineInRange("scale_bonus", 0.1, 0.0, 99999.0);
+
         BUILDER.pop();
     }
     static {
@@ -108,6 +127,55 @@ public class Config
         HOLY_SHIELD_STRENGTH = BUILDER
                 .comment("Amount * (Amplifier + 1) = The damage of the holy Shield immunity ")
                 .defineInRange("holy_shield_strength", 3.0, 0.0, 99999.0);
+
+        // 钱力强度  默认0.008
+        MONEY_IS_POWER_STRENGTH = BUILDER
+                .comment("Damage increment of each coin")
+                .defineInRange("money_is_power_strength", 0.008, 0.0, 99999.0);
+
+        BUILDER.pop();
+    }
+    static {
+        BUILDER.push("Coins");
+
+        // 钱币物品 ID
+        COIN_TIER_1_ID = BUILDER
+                .comment("Item ID for Tier 1 Coin (e.g., minecraft:iron_nugget)")
+                .define("coin_tier_1_id", "isaac_disaster:penny");
+
+        COIN_TIER_2_ID = BUILDER
+                .comment("Item ID for Tier 2 Coin (e.g., minecraft:gold_nugget)")
+                .define("coin_tier_2_id", "isaac_disaster:nickel");
+
+        COIN_TIER_3_ID = BUILDER
+                .comment("Item ID for Tier 3 Coin (e.g., minecraft:diamond)")
+                .define("coin_tier_3_id", "isaac_disaster:dime");
+
+        // 权重定义（用于战利品表动态概率）
+        COIN_TIER_1_WEIGHT = BUILDER
+                .comment("Weight for Tier 1 Coin")
+                .defineInRange("coin_tier_1_weight", 93, 0, 99999);
+
+        COIN_TIER_2_WEIGHT = BUILDER
+                .comment("Weight for Tier 2 Coin")
+                .defineInRange("coin_tier_2_weight", 6, 0, 99999);
+
+        COIN_TIER_3_WEIGHT = BUILDER
+                .comment("Weight for Tier 3 Coin")
+                .defineInRange("coin_tier_3_weight", 1, 0, 99999);
+
+        // 价值定义
+        COIN_TIER_1_VALUE = BUILDER
+                .comment("Value for Tier 1 Coin")
+                .defineInRange("coin_tier_1_value", 1, 0, 99999);
+
+        COIN_TIER_2_VALUE = BUILDER
+                .comment("Value for Tier 2 Coin")
+                .defineInRange("coin_tier_2_value", 5, 0, 99999);
+
+        COIN_TIER_3_VALUE = BUILDER
+                .comment("Value for Tier 3 Coin")
+                .defineInRange("coin_tier_3_value", 10, 0, 99999);
 
         BUILDER.pop();
     }

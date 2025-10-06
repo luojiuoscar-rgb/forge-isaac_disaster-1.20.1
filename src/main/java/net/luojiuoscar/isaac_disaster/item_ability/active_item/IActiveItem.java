@@ -83,6 +83,7 @@ public interface IActiveItem {
      */
     default void onTriggerSound(Player player) {
         SoundEvent sound = getSound();
+        if (sound == null) return;
         player.playSound(sound, 1.0f, 1.0f);
     }
 

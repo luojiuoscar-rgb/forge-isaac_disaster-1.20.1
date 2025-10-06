@@ -41,8 +41,7 @@ public class HolyMantle implements IRecursiveItem {
     @Override
     public List<Component> getDescription() {
         return List.of(
-                Component.translatable("item.isaac_disaster.holy_mantle.lore.1"),
-                Component.translatable("item.isaac_disaster.special.stackable")
+                Component.translatable("item.isaac_disaster.holy_mantle.lore.1")
         );
     }
 
@@ -51,9 +50,9 @@ public class HolyMantle implements IRecursiveItem {
         List<Component> description = new ArrayList<>();
 
         description.add(Component.translatable("effect.isaac_disaster.holy_shield").append(": ")
-                .append(Component.translatable("effect.isaac_disaster.holy_shield.explain.1"))
-                .append(Component.translatable("effect.isaac_disaster.holy_shield.explain.2"))
-                .append(Component.translatable("effect.isaac_disaster.holy_shield.explain.3")));
+                .append(Component.translatable("effect.isaac_disaster.holy_shield.explain.1")));
+        description.add(Component.translatable("effect.isaac_disaster.holy_shield.explain.2"));
+        description.add(Component.translatable("effect.isaac_disaster.holy_shield.explain.3"));
 
         return description;
     }

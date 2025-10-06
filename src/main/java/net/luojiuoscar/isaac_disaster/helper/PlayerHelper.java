@@ -1,10 +1,13 @@
 package net.luojiuoscar.isaac_disaster.helper;
 
 import com.google.common.util.concurrent.AtomicDouble;
+import net.luojiuoscar.isaac_disaster.Config;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerPassiveItemProvider;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerStatModifierProvider;
 import net.luojiuoscar.isaac_disaster.effect.ModEffects;
 import net.luojiuoscar.isaac_disaster.item_ability.passive_item.items.HolyMantle;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -13,6 +16,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -67,8 +71,6 @@ public class PlayerHelper {
                 playerPassiveItem -> playerPassiveItem.removeFromIndex(player, itemId)
         );
     }
-
-
 
 
     public static boolean canFly(ServerPlayer player){
@@ -151,6 +153,48 @@ public class PlayerHelper {
         );
         player.addEffect(newEffect);
     }
+
+    public static int countMoney(Player player){
+        int money = 0;
+
+        // 从配置中读取三个钱币及其对应价值
+        Item tier1Coin = getItemFromConfig(Config.COIN_TIER_1_ID.get());
+        Item tier2Coin = getItemFromConfig(Config.COIN_TIER_2_ID.get());
+        Item tier3Coin = getItemFromConfig(Config.COIN_TIER_3_ID.get());
+
+        int value1 = Config.COIN_TIER_1_VALUE.get();
+        int value2 = Config.COIN_TIER_2_VALUE.get();
+        int value3 = Config.COIN_TIER_3_VALUE.get();
+
+        // 遍历背包所有物品
+        for (ItemStack stack : player.getInventory().items) {
+            if (stack.isEmpty()) continue;
+
+            Item item = stack.getItem();
+
+            if (item == tier1Coin) {
+                money += stack.getCount() * value1;
+            } else if (item == tier2Coin) {
+                money += stack.getCount() * value2;
+            } else if (item == tier3Coin) {
+                money += stack.getCount() * value3;
+            }
+        }
+
+        return money;
+    }
+
+    /**
+     * 根据 config 的字符串创建物品引用
+     * 例如 "minecraft:gold_nugget" → 对应物品
+     */
+    public static Item getItemFromConfig(String itemId) {
+        ResourceLocation id = ResourceLocation.tryParse(itemId);
+        if (id == null) return null;
+        return ForgeRegistries.ITEMS.getValue(id);
+    }
+
+
 
 }
 

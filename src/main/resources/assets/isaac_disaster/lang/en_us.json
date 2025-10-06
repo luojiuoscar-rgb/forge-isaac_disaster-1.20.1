@@ -111,6 +111,12 @@
   "item.isaac_disaster.the_necronmicon.lore.2": "对亡灵效果翻倍",
   "item.isaac_disaster.holy_mantle": "神圣护盾",
   "item.isaac_disaster.holy_mantle.lore.1": "每过一段时间给予1层神圣护盾",
+  "item.isaac_disaster.wooden_nickel": "木制镍币",
+  "item.isaac_disaster.wooden_nickel.lore.1": "概率给予1个随机钱币",
+  "item.isaac_disaster.the_wafer": "圣饼",
+  "item.isaac_disaster.the_wafer.lore.1": "最终伤害减免50%",
+  "item.isaac_disaster.money_is_power": "金钱=力量",
+  "item.isaac_disaster.money_is_power.lore.1": "金钱等于力量！",
 
 
   "item.isaac_disaster.bomb": "炸弹",
@@ -122,5 +128,11 @@
   "item.isaac_disaster.soul_heart": "魂心",
   "item.isaac_disaster.blended_heart": "混合心",
   "item.isaac_disaster.double_red_heart": "双红心",
-  "item.isaac_disaster.black_heart": "黑心"
+  "item.isaac_disaster.black_heart": "黑心",
+  "item.isaac_disaster.penny": "硬币",
+  "item.isaac_disaster.nickel": "镍币",
+  "item.isaac_disaster.dime": "铸币"
+
+
+
 }

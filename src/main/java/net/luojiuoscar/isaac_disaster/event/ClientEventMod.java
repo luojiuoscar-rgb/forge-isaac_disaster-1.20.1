@@ -2,13 +2,15 @@ package net.luojiuoscar.isaac_disaster.event;
 
 
 import net.luojiuoscar.isaac_disaster.client.FlyHudOverlay;
-import net.luojiuoscar.isaac_disaster.entity.ModEntity;
+import net.luojiuoscar.isaac_disaster.entity.ModEntities;
 import net.luojiuoscar.isaac_disaster.entity.tnt.CustomTntRenderer;
 import net.luojiuoscar.isaac_disaster.renderer.InvincibleChargeLayer;
+import net.luojiuoscar.isaac_disaster.system.ScaleUtils;
 import net.minecraft.client.renderer.entity.player.PlayerRenderer;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraftforge.client.event.RegisterGuiOverlaysEvent;
+import net.minecraftforge.client.event.RenderLivingEvent;
 import net.minecraftforge.client.gui.overlay.VanillaGuiOverlay;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -20,10 +22,10 @@ public class ClientEventMod {
     @SubscribeEvent
     public static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
         // 注册 IsaacBomb
-        event.registerEntityRenderer(ModEntity.ISAAC_BOMB.get(), CustomTntRenderer::new);
+        event.registerEntityRenderer(ModEntities.ISAAC_BOMB.get(), CustomTntRenderer::new);
 
         // 注册 GigaBomb
-        event.registerEntityRenderer(ModEntity.GIGA_BOMB.get(), CustomTntRenderer::new);
+        event.registerEntityRenderer(ModEntities.GIGA_BOMB.get(), CustomTntRenderer::new);
 
     }
 
@@ -38,15 +40,9 @@ public class ClientEventMod {
     }
 
     @SubscribeEvent
-    public static void registerGuiOverlays(RegisterGuiOverlaysEvent event){
+    public static void registerGuiOverlays(RegisterGuiOverlaysEvent event) {
         event.registerAbove(VanillaGuiOverlay.FOOD_LEVEL.id(), "fly", FlyHudOverlay.HUD_FLY);
     }
-
-
-
-
-
-
 
 
 

@@ -78,7 +78,9 @@ public class  PassiveItemManager {
                 new HotBomb(),
                 new Transcendence(),
                 new BloodOfTheMartyr(),
-                new HolyMantle()
+                new HolyMantle(),
+                new TheWafer(),
+                new MoneyIsPower()
         );
     }
 }

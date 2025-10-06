@@ -90,6 +90,13 @@ public class ModMessages {
                 .encoder(FlyUpdateS2CPacket::toBytes)
                 .consumerNetworkThread(FlyUpdateS2CPacket::handle)
                 .add();
+
+        // register UpdatePlayerScaleS2CPacket
+        net.messageBuilder(UpdatePlayerScaleS2CPacket.class, id(), NetworkDirection.PLAY_TO_CLIENT)
+                .decoder(UpdatePlayerScaleS2CPacket::new)
+                .encoder(UpdatePlayerScaleS2CPacket::toBytes)
+                .consumerNetworkThread(UpdatePlayerScaleS2CPacket::handle)
+                .add();
     }
 
     public static <MSG> void sendToServer(MSG message){

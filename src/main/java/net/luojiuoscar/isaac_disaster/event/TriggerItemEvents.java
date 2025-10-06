@@ -4,7 +4,6 @@ import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerPassiveItemProvider;
 import net.luojiuoscar.isaac_disaster.item_ability.passive_item.IDamageTrigger;
 import net.luojiuoscar.isaac_disaster.manager.item_managers.PassiveItemManager;
-import net.luojiuoscar.isaac_disaster.item_ability.passive_item.ITriggerPassiveItem;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -13,7 +12,7 @@ import net.minecraftforge.fml.common.Mod;
 import java.util.Map;
 
 @Mod.EventBusSubscriber(modid = IsaacDisaster.MOD_ID)
-public class PassiveItemEvents {
+public class TriggerItemEvents {
 
     @SubscribeEvent
     public static void onPlayerAttack(LivingAttackEvent event) {

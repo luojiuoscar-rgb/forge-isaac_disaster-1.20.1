@@ -32,7 +32,10 @@ public enum ItemId {
     THE_BIBLE,
     BLOOD_OF_THE_MARTYR,
     THE_NECRONMICON,
-    HOLY_MANTLE;
+    HOLY_MANTLE,
+    WOODEN_NICKEL,
+    THE_WAFER,
+    MONEY_IS_POWER;
 
 
     private final int id;

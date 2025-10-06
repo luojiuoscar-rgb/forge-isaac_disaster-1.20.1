@@ -56,7 +56,8 @@ public class ActiveItemManager {
                 new TheBookOfBelial(),
                 new BookOfShadow(),
                 new TheBible(),
-                new TheNecronmicon()
+                new TheNecronmicon(),
+                new WoodenNickel()
         );
     }
 }

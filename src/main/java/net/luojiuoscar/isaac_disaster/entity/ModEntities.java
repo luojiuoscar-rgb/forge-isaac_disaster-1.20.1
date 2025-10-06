@@ -12,23 +12,23 @@ import net.minecraftforge.registries.RegistryObject;
 
 
 
-public class ModEntity {
-    public static final DeferredRegister<EntityType<?>> MOD_ENTITY
+public class ModEntities {
+    public static final DeferredRegister<EntityType<?>> MOD_ENTITIES
             = DeferredRegister.create(ForgeRegistries.ENTITY_TYPES, IsaacDisaster.MOD_ID);
 
     public static void register(IEventBus eventBus){
-        MOD_ENTITY.register(eventBus);
+        MOD_ENTITIES.register(eventBus);
     }
 
-    public static final RegistryObject<EntityType<IsaacBomb>> ISAAC_BOMB = MOD_ENTITY.register("isaac_bomb",
+    public static final RegistryObject<EntityType<IsaacBomb>> ISAAC_BOMB = MOD_ENTITIES.register("isaac_bomb",
             () -> EntityType.Builder.<IsaacBomb>of(IsaacBomb::new, MobCategory.MISC)
-                    .sized(0.98f, 0.98f) // 碰撞箱大小，根据你的实体调整
+                    .sized(0.98f, 0.98f) // 碰撞箱大小
                     .build("isaac_bomb")
     );
 
-    public static final RegistryObject<EntityType<IsaacBomb>> GIGA_BOMB = MOD_ENTITY.register("giga_bomb",
+    public static final RegistryObject<EntityType<IsaacBomb>> GIGA_BOMB = MOD_ENTITIES.register("giga_bomb",
             () -> EntityType.Builder.<IsaacBomb>of(GigaBomb::new, MobCategory.MISC)
-                    .sized(2.5f, 2.5f) // 碰撞箱大小，根据你的实体调整
+                    .sized(2.5f, 2.5f) // 碰撞箱大小
                     .build("giga_bomb")
     );
 }

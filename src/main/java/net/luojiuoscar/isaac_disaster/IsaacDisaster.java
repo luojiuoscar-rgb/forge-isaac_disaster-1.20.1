@@ -1,19 +1,18 @@
 package net.luojiuoscar.isaac_disaster;
 
 import com.mojang.logging.LogUtils;
+import net.luojiuoscar.isaac_disaster.attribute.ModAttributes;
 import net.luojiuoscar.isaac_disaster.effect.ModEffects;
-import net.luojiuoscar.isaac_disaster.entity.ModEntity;
-import net.luojiuoscar.isaac_disaster.entity.tnt.CustomTntRenderer;
+import net.luojiuoscar.isaac_disaster.entity.ModEntities;
 import net.luojiuoscar.isaac_disaster.event.ServerTickEvent;
 import net.luojiuoscar.isaac_disaster.item.ModCreativeModeTabs;
 import net.luojiuoscar.isaac_disaster.item.ModItems;
-import net.luojiuoscar.isaac_disaster.item.pickup.Pickup;
+import net.luojiuoscar.isaac_disaster.loot.ModLootTypes;
 import net.luojiuoscar.isaac_disaster.manager.item_managers.ActiveItemManager;
 import net.luojiuoscar.isaac_disaster.manager.item_managers.PassiveItemManager;
 import net.luojiuoscar.isaac_disaster.manager.item_managers.PickupManager;
 import net.luojiuoscar.isaac_disaster.networking.ModMessages;
 import net.luojiuoscar.isaac_disaster.sound.ModSounds;
-import net.minecraft.client.renderer.entity.EntityRenderers;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
@@ -45,14 +44,16 @@ public class IsaacDisaster
         MinecraftForge.EVENT_BUS.register(this);
 
 
+        ModAttributes.register(modEventBus);
 
         ModCreativeModeTabs.register(modEventBus);
-
         ModItems.register(modEventBus);
-        ModEntity.register(modEventBus);
+        ModEntities.register(modEventBus);
 
         ModSounds.register(modEventBus);
         ModEffects.register(modEventBus);
+        ModLootTypes.register(modEventBus);
+
 
         MinecraftForge.EVENT_BUS.register(new ServerTickEvent());
         // Register the item to a creative tab

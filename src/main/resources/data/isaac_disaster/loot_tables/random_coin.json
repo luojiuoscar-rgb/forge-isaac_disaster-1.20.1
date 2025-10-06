@@ -1,0 +1,12 @@
+{
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        { "type": "isaac_disaster:coin_entry", "tier": 1 },
+        { "type": "isaac_disaster:coin_entry", "tier": 2 },
+        { "type": "isaac_disaster:coin_entry", "tier": 3 }
+      ]
+    }
+  ]
+}

@@ -133,8 +133,16 @@ public class ModItems {
     static { PASSIVE_ITEM_LIST.add(BLOOD_OF_THE_MARTYR); }
 
     public static final RegistryObject<Item> HOLY_MANTLE = ITEMS.register("holy_mantle",
-            () -> new PassiveItem(new Item.Properties(),4, ItemId.HOLY_MANTLE.getId()));
+            () -> new PassiveItem(new Item.Properties(),4, ItemId.HOLY_MANTLE.getId(), true));
     static { PASSIVE_ITEM_LIST.add(HOLY_MANTLE); }
+
+    public static final RegistryObject<Item> THE_WAFER = ITEMS.register("the_wafer",
+            () -> new PassiveItem(new Item.Properties(),4, ItemId.THE_WAFER.getId()));
+    static { PASSIVE_ITEM_LIST.add(THE_WAFER); }
+
+    public static final RegistryObject<Item> MONEY_IS_POWER = ITEMS.register("money_is_power",
+            () -> new PassiveItem(new Item.Properties(),3, ItemId.MONEY_IS_POWER.getId()));
+    static { PASSIVE_ITEM_LIST.add(MONEY_IS_POWER); }
 
 
 
@@ -165,6 +173,11 @@ public class ModItems {
             () -> new ActiveItem(new Item.Properties(),2, ItemId.THE_NECRONMICON.getId(),
                     600, 600));
     static { ACTIVE_ITEM_LIST.add(THE_NECRONMICON); }
+
+    public static final RegistryObject<Item> WOODEN_NICKEL = ITEMS.register("wooden_nickel",
+            () -> new ActiveItem(new Item.Properties(),1, ItemId.WOODEN_NICKEL.getId(),
+                    300, 300));
+    static { ACTIVE_ITEM_LIST.add(WOODEN_NICKEL); }
 
 
 
@@ -208,5 +221,17 @@ public class ModItems {
     public static final RegistryObject<Item> BLACK_HEART = ITEMS.register("black_heart",
             () -> new Heart(new Item.Properties(), PickupId.BLACK_HEART.getId(), Rarity.EPIC));
     static { PICKUP_LIST.add(BLACK_HEART); }
+
+    public static final RegistryObject<Item> PENNY = ITEMS.register("penny",
+            () -> new Item(new Item.Properties()));
+    static { PICKUP_LIST.add(PENNY); }
+
+    public static final RegistryObject<Item> NICKEL = ITEMS.register("nickel",
+            () -> new Item(new Item.Properties()));
+    static { PICKUP_LIST.add(NICKEL); }
+
+    public static final RegistryObject<Item> DIME = ITEMS.register("dime",
+            () -> new Item(new Item.Properties()));
+    static { PICKUP_LIST.add(DIME); }
 
 }

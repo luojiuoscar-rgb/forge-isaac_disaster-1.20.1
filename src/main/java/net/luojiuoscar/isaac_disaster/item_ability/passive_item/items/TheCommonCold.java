@@ -75,9 +75,8 @@ public class TheCommonCold implements IDamageTrigger {
         List<Component> description = new ArrayList<>();
 
         description.add(Component.translatable("effect.isaac_disaster.isaac_poison").append(": ")
-                .append(Component.translatable("effect.isaac_disaster.isaac_poison.explain.1")
-                        .append(Component.translatable("effect.isaac_disaster.isaac_poison.explain.2")
-                        )));
+                .append(Component.translatable("effect.isaac_disaster.isaac_poison.explain.1")));
+        description.add(Component.translatable("effect.isaac_disaster.isaac_poison.explain.2"));
 
         return description;
     }
