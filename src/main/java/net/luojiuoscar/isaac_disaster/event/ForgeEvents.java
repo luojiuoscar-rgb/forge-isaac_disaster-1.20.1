@@ -2,6 +2,8 @@ package net.luojiuoscar.isaac_disaster.event;
 
 import net.luojiuoscar.isaac_disaster.attribute.ModAttributes;
 import net.luojiuoscar.isaac_disaster.capability.entity.EntityEffectProvider;
+import net.luojiuoscar.isaac_disaster.capability.player.PlayerAbility;
+import net.luojiuoscar.isaac_disaster.capability.player.PlayerAbilityProvider;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerPassiveItemProvider;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerStatModifierProvider;
 import net.luojiuoscar.isaac_disaster.commands.*;
@@ -36,19 +38,14 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.RegisterCommandsEvent;
-import net.minecraft.world.entity.Pose;
 import net.minecraftforge.event.entity.EntityEvent;
-import net.minecraftforge.event.entity.living.LivingAttackEvent;
-import net.minecraftforge.event.entity.living.LivingHurtEvent;
-import net.minecraftforge.event.entity.living.LivingKnockBackEvent;
-import net.minecraftforge.event.entity.living.MobEffectEvent;
+import net.minecraftforge.event.entity.living.*;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.level.ExplosionEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.server.command.ConfigCommand;
-import net.minecraft.world.entity.Pose;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -70,6 +67,9 @@ public class ForgeEvents {
             //stat manager
             if(!event.getObject().getCapability(PlayerStatModifierProvider.PLAYER_STAT_MODIFIER).isPresent()){
                 event.addCapability(ResourceLocation.fromNamespaceAndPath(MOD_ID, "player_stat_manager_cap"), new PlayerStatModifierProvider());
+            }//ability
+            if(!event.getObject().getCapability(PlayerAbilityProvider.PLAYER_ABILITY).isPresent()){
+                event.addCapability(ResourceLocation.fromNamespaceAndPath(MOD_ID, "player_ability_cap"), new PlayerAbilityProvider());
             }
         }
     }
@@ -95,6 +95,13 @@ public class ForgeEvents {
                     newStore.copyFrom(oldStore, event.getEntity());
                 });
             });
+            // ability
+            event.getOriginal().getCapability(PlayerAbilityProvider.PLAYER_ABILITY).ifPresent(oldStore -> {
+                event.getEntity().getCapability(PlayerAbilityProvider.PLAYER_ABILITY).ifPresent(newStore -> {
+                    newStore.copyFrom(oldStore, event.getEntity());
+                });
+            });
+
             event.getOriginal().invalidateCaps();
         }
     }
@@ -116,7 +123,6 @@ public class ForgeEvents {
         if(player.level().isClientSide()) return;
 
 
-
         InteractionHand hand = event.getHand();
         ItemStack stack = player.getItemInHand(event.getHand());
         if(stack.isEmpty()) return;
@@ -130,7 +136,7 @@ public class ForgeEvents {
                     playerPassiveItem -> {playerPassiveItem.addItem((ServerPlayer) player, item.getItemId(), hand);
                     });
         }
-        else if(stack.getItem() instanceof IOnUse && stack.getItem()  instanceof Pickup item){
+        else if(stack.getItem() instanceof IOnUse && stack.getItem() instanceof Pickup item){
             PickupManager.getInstance().getItemFromId(item.getItemId()).onUse(player, stack, hand);
         }
     }
@@ -372,4 +378,5 @@ public class ForgeEvents {
         event.setNewSize(newSize, true);
         event.setNewEyeHeight(scaledEyeHeight);
     }
+
 }

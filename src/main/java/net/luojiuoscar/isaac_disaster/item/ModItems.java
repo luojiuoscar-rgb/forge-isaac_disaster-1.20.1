@@ -5,6 +5,8 @@ import net.luojiuoscar.isaac_disaster.item.item.ActiveItem;
 import net.luojiuoscar.isaac_disaster.item.item.PassiveItem;
 import net.luojiuoscar.isaac_disaster.item.pickup.Bomb;
 import net.luojiuoscar.isaac_disaster.item.pickup.Heart;
+import net.luojiuoscar.isaac_disaster.item.pickup.IsaacHead;
+import net.luojiuoscar.isaac_disaster.item.pickup.Pickup;
 import net.luojiuoscar.isaac_disaster.item_ability.pickup.items.RedHeart;
 import net.luojiuoscar.isaac_disaster.manager.id_managers.ItemId;
 import net.luojiuoscar.isaac_disaster.manager.id_managers.PickupId;
@@ -233,5 +235,9 @@ public class ModItems {
     public static final RegistryObject<Item> DIME = ITEMS.register("dime",
             () -> new Item(new Item.Properties()));
     static { PICKUP_LIST.add(DIME); }
+
+    public static final RegistryObject<Item> ISAAC_HEAD = ITEMS.register("isaac_head",
+            () -> new IsaacHead(new Item.Properties(), PickupId.ISAAC_HEAD.getId()));
+    static { PICKUP_LIST.add(ISAAC_HEAD); }
 
 }

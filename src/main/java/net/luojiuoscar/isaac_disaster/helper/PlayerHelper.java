@@ -2,15 +2,17 @@ package net.luojiuoscar.isaac_disaster.helper;
 
 import com.google.common.util.concurrent.AtomicDouble;
 import net.luojiuoscar.isaac_disaster.Config;
+import net.luojiuoscar.isaac_disaster.attribute.ModAttributes;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerPassiveItemProvider;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerStatModifierProvider;
 import net.luojiuoscar.isaac_disaster.effect.ModEffects;
-import net.luojiuoscar.isaac_disaster.item_ability.passive_item.items.HolyMantle;
-import net.minecraft.core.registries.BuiltInRegistries;
+import net.luojiuoscar.isaac_disaster.entity.projectile.IsaacBullet;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.entity.ai.attributes.AttributeInstance;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -192,6 +194,79 @@ public class PlayerHelper {
         ResourceLocation id = ResourceLocation.tryParse(itemId);
         if (id == null) return null;
         return ForgeRegistries.ITEMS.getValue(id);
+    }
+
+
+
+    // 子弹相关
+    public static void shotBullet(Player player){
+        IsaacBullet bullet = new IsaacBullet(
+                player.level(),
+                player,
+                PlayerHelper.getBulletLiftTime(player),
+                PlayerHelper.getBulletSpeed(player),
+                PlayerHelper.getBulletScale(player)
+        );
+        player.level().addFreshEntity(bullet);
+    }
+    // 基础
+    public static double getBulletSpeed(Player player) {
+        AttributeInstance instance = player.getAttribute(ModAttributes.BULLET_SPEED.get());
+        if (instance == null) return 1.0;
+        return 0.8*Math.max(instance.getValue(),0.1);
+    }
+    public static double getBulletRange(Player player) {
+        AttributeInstance instance = player.getAttribute(ModAttributes.BULLET_RANGE.get());
+        if (instance == null) return 18.0;
+        return  Math.min(Math.max(instance.getValue(),1), 99);
+    }
+    public static double getTears(Player player) {
+        AttributeInstance instance = player.getAttribute(ModAttributes.TEARS.get());
+        if (instance == null) return 0.0;
+
+        return  Math.max(instance.getValue(),-7);
+    }
+    public static double getTearsCorrection(Player player) {
+        AttributeInstance instance = player.getAttribute(ModAttributes.TEARS_CORRECTION.get());
+        if (instance == null) return 0.0;
+
+        return  instance.getValue();
+    }
+    public static float getBulletScale(Player player) {
+        AttributeInstance instance = player.getAttribute(Attributes.ATTACK_DAMAGE);
+        float scale = 1.0f;
+        if (instance == null) return scale;
+        double damage = Math.max(instance.getValue(), 0);
+
+        return (float) (scale * (Math.log(1 + damage)));
+    }
+
+    // 衍生
+    public static int getBulletLiftTime(Player player) {
+        double speed =  getBulletSpeed(player);
+        double range = getBulletRange(player);
+        // 计算所需 ticks
+        return (int) Math.min(Math.max(1, range / speed), 200);
+    }
+    public static double getShotDelay(Player player) {
+        double tears = getTears(player);
+        double delay;
+
+        if (tears < -(10.0/13.0)){
+            delay = (11 - 4*tears);
+        }else if(tears >= -(10.0/13.0) && tears < 0){
+            delay = (11 - 4*Math.sqrt(1.3*tears+1) - 4*tears);
+        }else if(tears >= 0 && tears < (165.0/104.0)){
+            delay = (11 - 4*Math.sqrt(1.3*tears+1));
+        }else{
+            delay =  4;
+        }
+        delay -= getTearsCorrection(player);
+
+        return Math.max(delay, 0);
+    }
+    public static double getFireRate(Player player) {
+        return 20 / getShotDelay(player);
     }
 
 

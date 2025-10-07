@@ -13,12 +13,24 @@ public class ModAttributes {
     public static final DeferredRegister<Attribute> MOD_ATTRIBUTE =
             DeferredRegister.create(ForgeRegistries.ATTRIBUTES, IsaacDisaster.MOD_ID);
 
+    public static void register(IEventBus bus) {
+        MOD_ATTRIBUTE.register(bus);
+    }
     public static final RegistryObject<Attribute> SCALE =
             MOD_ATTRIBUTE.register("scale",
                     () -> new RangedAttribute("attribute.name.generic.scale", 1.0D, 0.1D, 10.0D)
                             .setSyncable(true));
 
-    public static void register(IEventBus bus) {
-        MOD_ATTRIBUTE.register(bus);
-    }
+    public static final RegistryObject<Attribute> BULLET_SPEED = MOD_ATTRIBUTE.register("bullet_speed",
+            () -> new RangedAttribute("attribute.isaac_disaster.bullet_speed", 1.0D, -1024.0D, 1024.0D).setSyncable(true));
+
+    public static final RegistryObject<Attribute> BULLET_RANGE = MOD_ATTRIBUTE.register("bullet_range",
+            () -> new RangedAttribute("attribute.isaac_disaster.bullet_range", 18.0D, -1024.0D, 1024.0D).setSyncable(true));
+
+    public static final RegistryObject<Attribute> TEARS = MOD_ATTRIBUTE.register("tears",
+            () -> new RangedAttribute("attribute.isaac_disaster.tears", 0.0D, -1024.0D, 1024.0D).setSyncable(true));
+
+    public static final RegistryObject<Attribute> TEARS_CORRECTION = MOD_ATTRIBUTE.register("tears_correction",
+            () -> new RangedAttribute("attribute.isaac_disaster.tears_correction", 0.0D, -1024.0D, 1024.0D).setSyncable(true));
+
 }

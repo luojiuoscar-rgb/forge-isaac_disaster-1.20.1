@@ -2,17 +2,20 @@ package net.luojiuoscar.isaac_disaster.event;
 
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.attribute.ModAttributes;
+import net.luojiuoscar.isaac_disaster.capability.player.PlayerAbilityProvider;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerPassiveItemProvider;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerStatModifierProvider;
 import net.luojiuoscar.isaac_disaster.effect.ModEffects;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.item.item.ActiveItem;
+import net.luojiuoscar.isaac_disaster.item.pickup.IsaacHead;
 import net.luojiuoscar.isaac_disaster.manager.id_managers.ItemId;
-import net.luojiuoscar.isaac_disaster.system.ScaleUtils;
+import net.luojiuoscar.isaac_disaster.sound.ModSounds;
 import net.minecraft.client.Minecraft;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.Pose;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -36,15 +39,15 @@ public class ServerTickEvent {
         if (tickCounter >= Integer.MAX_VALUE - 10) {
             tickCounter = 0;
         }
+        MinecraftServer server = Minecraft.getInstance().getSingleplayerServer();
+        // 获取服务器实例
+        if (server == null) {
+            server = event.player.getServer();
+        }
+        if (server == null) return;
 
         // 每tickCounter执行一次
         if (tickCounter % ServerTickEvent.TICK_FREQUENCY == 0){
-            // 获取服务器实例
-            MinecraftServer server = Minecraft.getInstance().getSingleplayerServer();
-            if (server == null) {
-                server = event.player.getServer();
-            }
-            if (server == null) return;
             for (ServerPlayer player : server.getPlayerList().getPlayers()){
                 // main
                 chargeActiveItem(player);
@@ -52,6 +55,21 @@ public class ServerTickEvent {
                 bugsFix(player);
                 recursiveItemTick(player);
             }
+        }
+
+        // 每tick执行一次
+        for (ServerPlayer player : server.getPlayerList().getPlayers()){
+            player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY).ifPresent(
+                    playerAbility -> {
+                        if (playerAbility.isHoldRightClick()){
+                            // right click effect
+                            if (player.getMainHandItem().getItem() instanceof IsaacHead){
+                                holdRightClick(player, player.getMainHandItem());
+                            }else if(player.getOffhandItem().getItem() instanceof IsaacHead){
+                                holdRightClick(player, player.getOffhandItem());
+                            }
+                        }
+                    });
         }
     }
 
@@ -61,7 +79,6 @@ public class ServerTickEvent {
             player.setInvulnerable(false);
         }
     }
-
     private static void chargeActiveItem(ServerPlayer player){
         // 有4.5伏特时不执行充能
         if (PlayerHelper.hasItem(ItemId.VOLT_4P5.getId(), player)) return;
@@ -78,7 +95,6 @@ public class ServerTickEvent {
             }
         }
     }
-
     private static void updateFly(ServerPlayer player){
         if (player.isCreative() || player.isSpectator() || !PlayerHelper.canFly(player)) return;
 
@@ -99,10 +115,30 @@ public class ServerTickEvent {
             );
         }
     }
-
     private static void recursiveItemTick(ServerPlayer player){
         player.getCapability(PlayerPassiveItemProvider.PLAYER_PASSIVE_ITEM).ifPresent(
                 playerPassiveItem -> playerPassiveItem.recursiveItemTick(player, TICK_FREQUENCY)
+        );
+    }
+
+    private static void holdRightClick(ServerPlayer player, ItemStack stack){
+        // 若在冷却
+        if (player.getCooldowns().isOnCooldown(stack.getItem())) return;
+
+        // 发射子弹
+        PlayerHelper.shotBullet(player);
+
+        // 射击延迟
+        player.getCooldowns().addCooldown(stack.getItem(), (int) PlayerHelper.getShotDelay(player));
+
+        // SFX
+        player.level().playSound(
+                null,
+                player.blockPosition(),
+                ModSounds.ISAAC_HEAD_SHOOT.get(),
+                SoundSource.PLAYERS,
+                0.6f,
+                1.0f
         );
     }
 }

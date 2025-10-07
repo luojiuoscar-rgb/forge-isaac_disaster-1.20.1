@@ -1,4 +1,4 @@
-// 1.20.1	2025-10-06T20:40:46.197768	Item Models: isaac_disaster
+// 1.20.1	2025-10-07T15:37:08.3872304	Item Models: isaac_disaster
 b2cb238ea4779eef4f9f14cba38fabb8d6513b76 assets/isaac_disaster/models/item/a_snack.json
 8f3801139048d930841e6b7ba7c2ce51501363bf assets/isaac_disaster/models/item/black_heart.json
 e86448875dd78c8edc085d75583ece988f96c82a assets/isaac_disaster/models/item/blended_heart.json
@@ -22,6 +22,7 @@ d718ff09787ba5ef778c4e271924afbd3a3cb048 assets/isaac_disaster/models/item/half_
 bd699bcc3684bcf2026b54ecb20875c73dd4ee60 assets/isaac_disaster/models/item/half_soul_heart.json
 48ad91990a3b49ab5ff9a29fb4d80c084c450ae7 assets/isaac_disaster/models/item/holy_mantle.json
 78692ab603012d583a29acd0aac32f88e83fefda assets/isaac_disaster/models/item/hot_bomb.json
+d7d284bcc1da6341f6bb173c77dce6b7593f00dd assets/isaac_disaster/models/item/isaac_head.json
 e928ba8f2c7b2c915a81708284c379b2a538cd11 assets/isaac_disaster/models/item/lunch.json
 ea5d24e9493a10e98690d3c6aa0259c91283a6a0 assets/isaac_disaster/models/item/midnight_snack.json
 2a5f069298a74a6fb80d167e828e47d0fe930c25 assets/isaac_disaster/models/item/money_is_power.json

@@ -58,5 +58,11 @@
     "sounds": [
       "isaac_disaster:holy_shield_broke"
     ]
+  },
+  "isaac_head_shoot": {
+    "subtitles": "sounds.isaac_disaster.isaac_head_shoot",
+    "sounds": [
+      "isaac_disaster:isaac_head_shoot"
+    ]
   }
 }

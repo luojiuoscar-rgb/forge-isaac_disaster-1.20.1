@@ -97,6 +97,15 @@ public class ModMessages {
                 .encoder(UpdatePlayerScaleS2CPacket::toBytes)
                 .consumerNetworkThread(UpdatePlayerScaleS2CPacket::handle)
                 .add();
+
+        // register RightClickUpC2SPacket
+        net.messageBuilder(SetRightClickC2SPacket.class, id(), NetworkDirection.PLAY_TO_SERVER)
+                .decoder(SetRightClickC2SPacket::new)
+                .encoder(SetRightClickC2SPacket::toBytes)
+                .consumerNetworkThread(SetRightClickC2SPacket::handle)
+                .add();
+
+
     }
 
     public static <MSG> void sendToServer(MSG message){

@@ -1,6 +1,7 @@
 package net.luojiuoscar.isaac_disaster.entity;
 
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
+import net.luojiuoscar.isaac_disaster.entity.projectile.IsaacBullet;
 import net.luojiuoscar.isaac_disaster.entity.tnt.GigaBomb;
 import net.luojiuoscar.isaac_disaster.entity.tnt.IsaacBomb;
 import net.minecraft.world.entity.EntityType;
@@ -31,4 +32,14 @@ public class ModEntities {
                     .sized(2.5f, 2.5f) // 碰撞箱大小
                     .build("giga_bomb")
     );
+
+    public static final RegistryObject<EntityType<IsaacBullet>> TEAR_BULLET =
+            MOD_ENTITIES.register("tear_bullet",
+                    () -> EntityType.Builder.<IsaacBullet>of(IsaacBullet::new, MobCategory.MISC)
+                            .sized(0.25f, 0.25f) // 小一点的碰撞箱
+                            .clientTrackingRange(64) // 客户端追踪距离
+                            .updateInterval(2) // 同步tick
+                            .build("tear_bullet")
+            );
+
 }

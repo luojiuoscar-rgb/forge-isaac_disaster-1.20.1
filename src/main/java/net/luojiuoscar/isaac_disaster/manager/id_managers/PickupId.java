@@ -10,7 +10,8 @@ public enum PickupId {
     HALF_SOUL_HEART,
     SOUL_HEART,
     BLENDED_HEART,
-    BLACK_HEART;
+    BLACK_HEART,
+    ISAAC_HEAD;
 
 
     private final int id;

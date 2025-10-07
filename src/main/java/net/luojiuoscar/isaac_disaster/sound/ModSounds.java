@@ -28,6 +28,7 @@ public class ModSounds {
     public static final RegistryObject<SoundEvent> SOUL_HEART = registerSoundEvent("soul_heart");
     public static final RegistryObject<SoundEvent> BLACK_HEART = registerSoundEvent("black_heart");
     public static final RegistryObject<SoundEvent> BLACK_HEART_ACTIVE = registerSoundEvent("black_heart_active");
+    public static final RegistryObject<SoundEvent> ISAAC_HEAD_SHOOT = registerSoundEvent("isaac_head_shoot");
 
 
     private static RegistryObject<SoundEvent> registerSoundEvent(String name) {
