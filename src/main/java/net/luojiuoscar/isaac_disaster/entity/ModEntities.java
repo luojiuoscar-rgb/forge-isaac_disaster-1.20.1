@@ -1,7 +1,6 @@
 package net.luojiuoscar.isaac_disaster.entity;
 
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
-import net.luojiuoscar.isaac_disaster.entity.projectile.IsaacBullet;
 import net.luojiuoscar.isaac_disaster.entity.tnt.GigaBomb;
 import net.luojiuoscar.isaac_disaster.entity.tnt.IsaacBomb;
 import net.minecraft.world.entity.EntityType;

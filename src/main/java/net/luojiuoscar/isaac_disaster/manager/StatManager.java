@@ -1,13 +1,15 @@
 package net.luojiuoscar.isaac_disaster.manager;
 
 import net.luojiuoscar.isaac_disaster.attribute.ModAttributes;
+import net.luojiuoscar.isaac_disaster.capability.player.PlayerAbilityProvider;
+import net.luojiuoscar.isaac_disaster.capability.player.PlayerPassiveItemProvider;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerStatModifierProvider;
-import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
-import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 
+import javax.annotation.Nullable;
 import java.util.UUID;
 
 import static net.luojiuoscar.isaac_disaster.Config.*;
@@ -52,6 +54,42 @@ public class StatManager {
                     playerStatModifier.setModifier(uuid, totalBoost);
                 });
     }
+    public static void modifyAdder(Player player, UUID uuid, double amount,
+                                   @Nullable Double minValue, @Nullable Double maxvalue){
+        AttributeInstance instance = player.getAttribute(UUIDManager.ATTRIBUTE_FROM_UUID.get(uuid));
+        if (instance == null) return;
+
+        // 获取当前已有的加成 (若不存在则加值为0.0)
+        AttributeModifier adder = instance.getModifier(uuid);
+        double currentBoost = adder != null ? adder.getAmount() : 0.0;
+
+        // 计算新的加成值
+        double newBoost = currentBoost + amount;
+
+        if (minValue != null && minValue > newBoost) newBoost = minValue;
+        if (maxvalue != null && maxvalue < newBoost) newBoost = maxvalue;
+
+        updateAdder(player, instance, newBoost, uuid, "");
+    }
+    public static void modifyMultiplier(Player player, UUID uuid, double amount,
+                                        @Nullable Double minValue, @Nullable Double maxvalue){
+        AttributeInstance instance = player.getAttribute(UUIDManager.ATTRIBUTE_FROM_UUID.get(uuid));
+        if (instance == null) return;
+
+        // 获取当前已有的加成 (若不存在则加值为0.0)
+        AttributeModifier multiplier = instance.getModifier(uuid);
+        double currentBoost = multiplier != null ? multiplier.getAmount() : 0.0;
+
+        // 计算新的加成值
+        double newBoost = currentBoost + amount;
+
+        if (minValue != null && minValue > newBoost) newBoost = minValue;
+        if (maxvalue != null && maxvalue < newBoost) newBoost = maxvalue;
+
+
+        updateMultiplier(player, instance, newBoost, uuid, "");
+    }
+
 
     /**
      * MAX HEALTH
@@ -60,37 +98,11 @@ public class StatManager {
         return HEALTH_BONUS.get();
     }
     public static void modifyMaxHealth(Player player, double ratio){
-        modifyMaxHealth(player, ratio, UUIDManager.MAX_HEALTH_MODIFIER_ADDER);
+        modifyAdder(player, UUIDManager.MAX_HEALTH_MODIFIER_ADDER,getHealthBonus()*ratio,
+                -10.0, null);
+        player.setHealth(player.getHealth()); // 刷新血量
     }
-    public static void modifyMaxHealth(Player player, double ratio, UUID uuid) {
-        // 防止玩家出于某种情况没有max_health属性 | 当玩家生命值超过设定上限时
-        AttributeInstance healthAttribute = player.getAttribute(Attributes.MAX_HEALTH);
-        if (healthAttribute == null) return;
 
-        // 获取当前已有的生命值上限加成 (若不存在则加值为0.0)
-        AttributeModifier healthModifierAdder = healthAttribute.getModifier(uuid);
-        double newBoost = getFinalMaxHealthAdder(ratio, healthModifierAdder, healthAttribute);
-
-        updateAdder(player, healthAttribute, newBoost, uuid, "base_health_adder");
-        player.setHealth(player.getHealth());
-    }
-    private static double getFinalMaxHealthAdder(double ratio, AttributeModifier healthModifierAdder, AttributeInstance healthAttribute) {
-        double currentBoost = healthModifierAdder != null ? healthModifierAdder.getAmount() : 0.0;
-
-        // 计算新的加成值
-        double newBoost = currentBoost + StatManager.getHealthBonus() * ratio;
-
-        // 确保玩家的血量有保底
-        if(ratio < 0){
-            double totalMaxHealth = healthAttribute.getValue();
-            if(newBoost + totalMaxHealth <= 0){
-                newBoost = -totalMaxHealth;
-            }
-        }
-
-        // 更新healthModifier，需要在Capability中记录后运行
-        return newBoost;
-    }
     /**
      * 恢复生命；可以用来扣血
      * @param ratio 相对于*基础值*的回复量
@@ -119,20 +131,9 @@ public class StatManager {
         return MOVEMENT_SPEED_LIMIT.get();
     }
     public static void modifyMovementSpeedAdder(Player player, double ratio){
-        modifyMovementSpeedAdder(player, ratio, UUIDManager.MOVEMENT_SPEED_MODIFIER_ADDER);
+        modifyAdder(player, UUIDManager.MOVEMENT_SPEED_MODIFIER_ADDER,getMovementSpeedBonus()*ratio,
+                null, null);
     }
-    public static void modifyMovementSpeedAdder(Player player, double ratio, UUID uuid){
-        AttributeInstance movementSpeedAttribute = player.getAttribute(Attributes.MOVEMENT_SPEED);
-        if (movementSpeedAttribute == null) return;
-
-        // 获取当前已有的移速加成 (若不存在则加值为0.0)
-        AttributeModifier movementSpeedAdder = movementSpeedAttribute.getModifier(uuid);
-        double currentBoost = movementSpeedAdder != null ? movementSpeedAdder.getAmount() : 0.0;
-        double newBoost = currentBoost + StatManager.getMovementSpeedBonus() * ratio;
-
-        updateAdder(player, movementSpeedAttribute, newBoost, uuid, "base_speed_adder");
-    }
-
 
     /**
      * DAMAGE
@@ -141,44 +142,16 @@ public class StatManager {
         return DAMAGE_BONUS.get();
     }
     public static void modifyDamageAdder(Player player, double ratio) {
-        modifyDamageAdder(player, ratio, UUIDManager.DAMAGE_MODIFIER_ADDER);
+        modifyAdder(player, UUIDManager.DAMAGE_MODIFIER_ADDER,getDamageBonus()*ratio,
+                0.1, null);
     }
-    public static void modifyDamageAdder(Player player, double ratio, UUID uuid){
-        AttributeInstance damageAttribute = player.getAttribute(Attributes.ATTACK_DAMAGE);
-        if (damageAttribute == null) return;
-
-        // 获取当前已有的加成 (若不存在则加值为0.0)
-        AttributeModifier damageAdder = damageAttribute.getModifier(uuid);
-        double currentBoost = damageAdder != null ? damageAdder.getAmount() : 0.0;
-
-        // 计算新的加成值
-        double newBoost = currentBoost + StatManager.getDamageBonus() * ratio;
-
-        updateAdder(player, damageAttribute, newBoost, uuid, "base_damage_adder");
-    }
-
-
     /**
      * 直接输入数值
      * @param amount 代表乘算数值。举例：0.5为+50%；-0.3为-30%
      */
     public static void modifyDamageMultiplier(Player player, double amount){
-        modifyDamageMultiplier(player, amount, UUIDManager.DAMAGE_MODIFIER_MULTIPLIER);
+        modifyMultiplier(player, UUIDManager.DAMAGE_MODIFIER_MULTIPLIER, amount, 0.1, null);
     }
-    public static void modifyDamageMultiplier(Player player, double amount, UUID uuid){
-        AttributeInstance damageAttribute = player.getAttribute(Attributes.ATTACK_DAMAGE);
-        if (damageAttribute == null) return;
-
-        // 获取当前已有的加成 (若不存在则加值为0.0)
-        AttributeModifier damageMultiplier = damageAttribute.getModifier(uuid);
-        double currentBoost = damageMultiplier != null ? damageMultiplier.getAmount() : 0.0;
-
-        // 计算新的加成值
-        double newBoost = currentBoost + amount;
-
-        updateMultiplier(player, damageAttribute, newBoost, uuid, "base_damage_multiplier");
-    }
-
 
     /**
      * LUCK
@@ -187,23 +160,9 @@ public class StatManager {
         return LUCK_BONUS.get();
     }
     public static void modifyLuckAdder(Player player, double ratio){
-        modifyLuckAdder(player, ratio, UUIDManager.LUCK_MODIFIER_ADDER);
+        modifyAdder(player, UUIDManager.LUCK_MODIFIER_ADDER,getLuckBonus()*ratio,
+                null, null);
     }
-    public static void modifyLuckAdder(Player player, double ratio, UUID uuid){
-        AttributeInstance luckAttribute = player.getAttribute(Attributes.LUCK);
-        if (luckAttribute == null) return;
-
-        // 获取当前已有的加成 (若不存在则加值为0.0)
-        AttributeModifier luckAdder = luckAttribute.getModifier(uuid);
-        double currentBoost = luckAdder != null ? luckAdder.getAmount() : 0.0;
-
-        // 计算新的加成值
-        double newBoost = currentBoost + StatManager.getLuckBonus() * ratio;
-
-        updateAdder(player, luckAttribute, newBoost, uuid, "base_luck_adder");
-
-    }
-
 
     /**
      * SCALE
@@ -212,23 +171,160 @@ public class StatManager {
         return SCALE_BONUS.get();
     }
     public static void modifyScaleAdder(Player player, double ratio){
-        modifyScaleAdder(player, ratio, UUIDManager.SCALE_MODIFIER_ADDER);
-    }
-    public static void modifyScaleAdder(Player player, double ratio, UUID uuid){
-        AttributeInstance scaleAttribute = player.getAttribute(ModAttributes.SCALE.get());
-        if (scaleAttribute == null) return;
+        modifyAdder(player, UUIDManager.SCALE_MODIFIER_ADDER,getScaleBonus()*ratio,
+                null, null);    }
 
-        // 获取当前已有的加成 (若不存在则加值为0.0)
-        AttributeModifier scaleAdder = scaleAttribute.getModifier(uuid);
-        double currentBoost = scaleAdder != null ? scaleAdder.getAmount() : 0.0;
-
-        // 计算新的加成值
-        double newBoost = currentBoost + StatManager.getScaleBonus() * ratio;
-
-        updateAdder(player, scaleAttribute, newBoost, uuid, "base_scale_adder");
+    /**
+     * FLY
+     */
+    public static void modifyFlyTime(Player player, double ratio){
+        player.getCapability(PlayerStatModifierProvider.PLAYER_STAT_MODIFIER).ifPresent(
+                playerStatModifier -> {
+                    playerStatModifier.addFlyTime(player, ratio*StatManager.getFlyTime());
+                }
+        );
     }
 
+    /**
+     * RANGE
+     */
+    public static double getRangeBonus(){return RANGE_BONUS.get();}
+    public static void modifyRangeAdder(Player player, double ratio){
+        modifyAdder(player, UUIDManager.RANGE_MODIFIER_ADDER,getRangeBonus()*ratio,
+                null, null);    }
 
+    /**
+     * ENTITY REACH
+     */
+    public static double getEntityReachBonus(){return ENTITY_REACH_BONUS.get();}
+    public static void modifyEntityReachAdder(Player player, double ratio){
+        modifyAdder(player, UUIDManager.ENTITY_REACH_MODIFIER_ADDER, getEntityReachBonus()*ratio,
+                null, null);    }
+
+    /**
+     * BLOCK REACH
+     */
+    public static double getBlockReachBonus(){return BLOCK_REACH_BONUS.get();}
+    public static void modifyBlockReachAdder(Player player, double ratio){
+        modifyAdder(player, UUIDManager.BLOCK_REACH_MODIFIER_ADDER, getBlockReachBonus()*ratio,
+                null, null);    }
+
+    /**
+     * BULLET SPEED
+     */
+    public static double getBulletSpeed(){return BULLET_SPEED_BONUS.get();}
+    public static void modifyBulletSpeedAdder(Player player, double ratio){
+        modifyAdder(player, UUIDManager.BULLET_SPEED_MODIFIER_ADDER,getBulletSpeed()*ratio,
+                null, null);    }
+
+    /**
+     * TEARS
+     */
+    public static double getTears(){return TEARS_BONUS.get();}
+    public static void modifyTearsAdder(Player player, double ratio){
+        modifyAdder(player, UUIDManager.TEARS_MODIFIER_ADDER,getTears()*ratio,
+                null, null);    }
+
+    /**
+     * TEARS CORRECTION
+     */
+    public static double getTearsCorrectionBonus(){return TEARS_CORRECTION_BONUS.get();}
+    public static void modifyTearsCorrectionAdder(Player player, double ratio){
+        modifyAdder(player, UUIDManager.TEARS_CORRECTION_MODIFIER_ADDER, getTearsCorrectionBonus()*ratio,
+                null, null);    }
+
+    /**
+     * ATTACK SPEED
+     */
+    public static double getAttackSpeed(){return ATTACK_SPEED_BONUS.get();}
+    public static void modifyAttackSpeedAdder(Player player, double ratio){
+        modifyAdder(player, UUIDManager.ATTACK_SPEED_MODIFIER_ADDER,getAttackSpeed()*ratio,
+                null, null);    }
+
+    /**
+     * BULLET EFFECTS
+     */
+    public static void modifyPiercing(Player player, int amount){
+        player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY).ifPresent(
+                playerAbility -> playerAbility.setPiercing(playerAbility.getPiercing() + amount)
+        );
+    }
+    public static void modifyHoming(Player player, int amount){
+        player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY).ifPresent(
+                playerAbility -> playerAbility.setHoming(playerAbility.getHoming() + amount)
+        );
+    }
+    public static void modifySpectral(Player player, int amount){
+        player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY).ifPresent(
+                playerAbility -> playerAbility.setSpectral(playerAbility.getSpectral() + amount)
+        );
+    }
+    public static void modifyControllable(Player player, int amount){
+        player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY).ifPresent(
+                playerAbility -> playerAbility.setControllable(playerAbility.getControllable() + amount)
+        );
+    }
+    public static void setBulletColor(Player player, int amount){
+        AttributeInstance instance = player.getAttribute(ModAttributes.BULLET_COLOR.get());
+        if (instance != null) instance.setBaseValue(amount);
+    }
+    public static void setBulletAlpha(Player player, int amount){
+        AttributeInstance instance = player.getAttribute(ModAttributes.BULLET_ALPHA.get());
+        if (instance != null) instance.setBaseValue(amount);
+    }
+    public static void setBulletFilter(Player player, int amount){
+        AttributeInstance instance = player.getAttribute(ModAttributes.BULLET_FILTER.get());
+        if (instance != null) instance.setBaseValue(amount);
+    }
+    public static void addBulletFilter(Player player, int amount){
+        player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY).ifPresent(
+                playerAbility -> playerAbility.addFilter(amount, player)
+        );
+
+    }
+    public static void removeBulletFilter(Player player, int amount){
+        player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY).ifPresent(
+                playerAbility -> playerAbility.removeFilter(amount, player)
+        );
+    }
+
+    /**
+     * BLOCK BREAKING SPEED
+     */
+    public static double getBlockBreakingSpeed(){return BLOCK_BREAKING_SPEED_BONUS.get();}
+    public static void modifyBlockBreakingSpeedAdder(Player player, double ratio){
+        modifyAdder(player, UUIDManager.BLOCK_BREAKING_SPEED_BONUS,getBlockBreakingSpeed()*ratio,
+                null, null);
+    }
+
+    /**
+     * BLOCK SCALE
+     */
+    public static double getBulletScaleBonus(){return BULLET_SCALE_BONUS.get();}
+    public static void modifyBulletScaleAdder(Player player, double ratio){
+        modifyAdder(player, UUIDManager.BULLET_SCALE_BONUS,getBulletScaleBonus()*ratio,
+                null, null);
+    }
+
+    /**
+     * ATTACK KNOCKBACK
+     */
+    public static double getAttackKnockbackBonus(){return ATTACK_KNOCKBACK_BONUS.get();}
+    public static void modifyAttackKnockBackAdder(Player player, double ratio){
+        modifyAdder(player, UUIDManager.ATTACK_KNOCKBACK_BONUS,getAttackKnockbackBonus()*ratio,
+                null, null);
+    }
+
+    /**
+     * SET
+     */
+    public static void modifySetWithId(Player player, int setId, int amount){
+        if (player instanceof ServerPlayer serverPlayer){
+            player.getCapability(PlayerPassiveItemProvider.PLAYER_PASSIVE_ITEM).ifPresent(
+                    playerPassiveItem -> playerPassiveItem.modifySetCount(serverPlayer, setId, amount)
+            );
+        }
+    }
 
 }
 

@@ -146,6 +146,41 @@ public class ModItems {
             () -> new PassiveItem(new Item.Properties(),3, ItemId.MONEY_IS_POWER.getId()));
     static { PASSIVE_ITEM_LIST.add(MONEY_IS_POWER); }
 
+    public static final RegistryObject<Item> DEAD_DOVE = ITEMS.register("dead_dove",
+            () -> new PassiveItem(new Item.Properties(),3, ItemId.DEAD_DOVE.getId()));
+    static { PASSIVE_ITEM_LIST.add(DEAD_DOVE); }
+
+    public static final RegistryObject<Item> CUPIDS_ARROW = ITEMS.register("cupids_arrow",
+            () -> new PassiveItem(new Item.Properties(),2, ItemId.CUPIDS_ARROW.getId()));
+    static { PASSIVE_ITEM_LIST.add(CUPIDS_ARROW); }
+
+    public static final RegistryObject<Item> SPOON_BENDER = ITEMS.register("spoon_bender",
+            () -> new PassiveItem(new Item.Properties(),3, ItemId.SPOON_BENDER.getId()));
+    static { PASSIVE_ITEM_LIST.add(SPOON_BENDER); }
+
+    public static final RegistryObject<Item> ROID_RAGE = ITEMS.register("roid_rage",
+            () -> new PassiveItem(new Item.Properties(),2, ItemId.ROID_RAGE.getId()));
+    static { PASSIVE_ITEM_LIST.add(ROID_RAGE); }
+
+    public static final RegistryObject<Item> THE_SAD_ONION = ITEMS.register("the_sad_onion",
+            () -> new PassiveItem(new Item.Properties(),3, ItemId.THE_SAD_ONION.getId()));
+    static { PASSIVE_ITEM_LIST.add(THE_SAD_ONION); }
+
+    public static final RegistryObject<Item> WIRE_COAT_HANGER = ITEMS.register("wire_coat_hanger",
+            () -> new PassiveItem(new Item.Properties(),3, ItemId.WIRE_COAT_HANGER.getId()));
+    static { PASSIVE_ITEM_LIST.add(WIRE_COAT_HANGER); }
+
+    public static final RegistryObject<Item> SPEED_BALL = ITEMS.register("speed_ball",
+            () -> new PassiveItem(new Item.Properties(),2, ItemId.SPEED_BALL.getId()));
+    static { PASSIVE_ITEM_LIST.add(SPEED_BALL); }
+
+    public static final RegistryObject<Item> PISCES = ITEMS.register("pisces",
+            () -> new PassiveItem(new Item.Properties(),2, ItemId.PISCES.getId()));
+    static { PASSIVE_ITEM_LIST.add(PISCES); }
+
+    public static final RegistryObject<Item> MINI_MUSH = ITEMS.register("mini_mush",
+            () -> new PassiveItem(new Item.Properties(),2, ItemId.MINI_MUSH.getId()));
+    static { PASSIVE_ITEM_LIST.add(MINI_MUSH); }
 
 
 
@@ -184,6 +219,10 @@ public class ModItems {
 
 
     // pickups
+    public static final RegistryObject<Item> ISAAC_HEAD = ITEMS.register("isaac_head",
+            () -> new IsaacHead(new Item.Properties(), PickupId.ISAAC_HEAD.getId()));
+    static { PICKUP_LIST.add(ISAAC_HEAD); }
+
     public static final RegistryObject<Item> BOMB = ITEMS.register("bomb",
             () -> new Bomb(new Item.Properties(), PickupId.BOMB.getId()));
     static { PICKUP_LIST.add(BOMB); }
@@ -235,9 +274,5 @@ public class ModItems {
     public static final RegistryObject<Item> DIME = ITEMS.register("dime",
             () -> new Item(new Item.Properties()));
     static { PICKUP_LIST.add(DIME); }
-
-    public static final RegistryObject<Item> ISAAC_HEAD = ITEMS.register("isaac_head",
-            () -> new IsaacHead(new Item.Properties(), PickupId.ISAAC_HEAD.getId()));
-    static { PICKUP_LIST.add(ISAAC_HEAD); }
 
 }

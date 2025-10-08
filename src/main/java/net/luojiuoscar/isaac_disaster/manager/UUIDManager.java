@@ -3,6 +3,7 @@ package net.luojiuoscar.isaac_disaster.manager;
 import net.luojiuoscar.isaac_disaster.attribute.ModAttributes;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraftforge.common.ForgeMod;
 
 import java.util.*;
 
@@ -42,6 +43,60 @@ public class UUIDManager {
             UUID.nameUUIDFromBytes(("isaac_disaster:scale_modifier_adder").getBytes());
     static {
         ATTRIBUTE_FROM_UUID.put(SCALE_MODIFIER_ADDER, ModAttributes.SCALE.get());}
+
+    public static final UUID RANGE_MODIFIER_ADDER =
+            UUID.nameUUIDFromBytes(("isaac_disaster:range_modifier_adder").getBytes());
+    static {
+        ATTRIBUTE_FROM_UUID.put(RANGE_MODIFIER_ADDER, ModAttributes.BULLET_RANGE.get());}
+
+    public static final UUID ENTITY_REACH_MODIFIER_ADDER =
+            UUID.nameUUIDFromBytes(("isaac_disaster:entity_reach_modifier_adder").getBytes());
+    static {
+        ATTRIBUTE_FROM_UUID.put(ENTITY_REACH_MODIFIER_ADDER, ForgeMod.ENTITY_REACH.get());}
+
+    public static final UUID BLOCK_REACH_MODIFIER_ADDER =
+            UUID.nameUUIDFromBytes(("isaac_disaster:block_reach_modifier_adder").getBytes());
+    static {
+        ATTRIBUTE_FROM_UUID.put(BLOCK_REACH_MODIFIER_ADDER, ForgeMod.BLOCK_REACH.get());}
+
+    public static final UUID TEARS_MODIFIER_ADDER =
+            UUID.nameUUIDFromBytes(("isaac_disaster:tears_modifier_adder").getBytes());
+    static {
+        ATTRIBUTE_FROM_UUID.put(TEARS_MODIFIER_ADDER, ModAttributes.TEARS.get());}
+
+    public static final UUID TEARS_CORRECTION_MODIFIER_ADDER =
+            UUID.nameUUIDFromBytes(("isaac_disaster:tears_correction_modifier_adder").getBytes());
+    static {
+        ATTRIBUTE_FROM_UUID.put(TEARS_CORRECTION_MODIFIER_ADDER, ModAttributes.TEARS_CORRECTION.get());}
+
+    public static final UUID BULLET_SPEED_MODIFIER_ADDER =
+            UUID.nameUUIDFromBytes(("isaac_disaster:bullet_speed_modifier_adder").getBytes());
+    static {
+        ATTRIBUTE_FROM_UUID.put(BULLET_SPEED_MODIFIER_ADDER, ModAttributes.BULLET_SPEED.get());}
+
+    public static final UUID ATTACK_SPEED_MODIFIER_ADDER =
+            UUID.nameUUIDFromBytes(("isaac_disaster:attack_speed_modifier_adder").getBytes());
+    static {
+        ATTRIBUTE_FROM_UUID.put(ATTACK_SPEED_MODIFIER_ADDER, Attributes.ATTACK_SPEED);}
+
+    public static final UUID BLOCK_BREAKING_SPEED_BONUS =
+            UUID.nameUUIDFromBytes(("isaac_disaster:block_breaking_speed_bonus").getBytes());
+    static {
+        ATTRIBUTE_FROM_UUID.put(BLOCK_BREAKING_SPEED_BONUS, ModAttributes.BLOCK_BREAKING_SPEED.get());}
+
+    public static final UUID ATTACK_KNOCKBACK_BONUS =
+            UUID.nameUUIDFromBytes(("isaac_disaster:attack_knockback_bonus").getBytes());
+    static {
+        ATTRIBUTE_FROM_UUID.put(ATTACK_KNOCKBACK_BONUS, Attributes.ATTACK_KNOCKBACK);}
+
+    public static final UUID BULLET_SCALE_BONUS =
+            UUID.nameUUIDFromBytes(("isaac_disaster:bullet_scale_bonus").getBytes());
+    static {
+        ATTRIBUTE_FROM_UUID.put(BULLET_SCALE_BONUS, ModAttributes.BULLET_SCALE.get());}
+
+
+
+
 
     // passive items
     public static final UUID MONEY_IS_POWER_ADDER =

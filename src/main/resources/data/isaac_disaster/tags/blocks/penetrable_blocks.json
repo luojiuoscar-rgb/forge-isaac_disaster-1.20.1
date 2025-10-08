@@ -1,0 +1,19 @@
+{
+  "replace": false,
+  "values": [
+    "#minecraft:flowers",
+    "#minecraft:corals",
+    "#minecraft:leaves",
+    "#minecraft:saplings",
+    "#minecraft:replaceable_plants",
+    "#minecraft:small_flowers",
+    "#minecraft:tall_flowers",
+    "#minecraft:air",
+    "#minecraft:water",
+    "#minecraft:lava",
+    "minecraft:vine",
+    "minecraft:cave_vines",
+    "minecraft:seagrass",
+    "minecraft:tall_seagrass"
+  ]
+}

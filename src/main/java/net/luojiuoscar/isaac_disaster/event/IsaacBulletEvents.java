@@ -1,7 +1,6 @@
 package net.luojiuoscar.isaac_disaster.event;
 
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
-import net.luojiuoscar.isaac_disaster.entity.projectile.IsaacBullet;
 import net.luojiuoscar.isaac_disaster.event.custom.*;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;

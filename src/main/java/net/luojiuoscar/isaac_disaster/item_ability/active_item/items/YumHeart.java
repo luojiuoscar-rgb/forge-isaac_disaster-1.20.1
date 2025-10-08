@@ -51,7 +51,7 @@ public class YumHeart implements IActiveItem {
     }
 
     @Override
-    public List<Component> synergyDescription() {
+    public List<Component> getSynergyDescription() {
         List<Component> description = new ArrayList<>();
 
         if (ClientDataManager.getInstance().getCountFromId(ItemId.CAR_BATTERY.getId()) > 0){

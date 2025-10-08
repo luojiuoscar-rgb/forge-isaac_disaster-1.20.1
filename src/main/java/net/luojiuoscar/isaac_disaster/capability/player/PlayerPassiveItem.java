@@ -1,16 +1,20 @@
 package net.luojiuoscar.isaac_disaster.capability.player;
 
 import net.luojiuoscar.isaac_disaster.item_ability.passive_item.IRecursiveItem;
+import net.luojiuoscar.isaac_disaster.item_ability.set.ISet;
 import net.luojiuoscar.isaac_disaster.manager.item_managers.PassiveItemManager;
 import net.luojiuoscar.isaac_disaster.item_ability.passive_item.ITriggerPassiveItem;
+import net.luojiuoscar.isaac_disaster.manager.item_managers.SetManager;
 import net.luojiuoscar.isaac_disaster.networking.ModMessages;
 import net.luojiuoscar.isaac_disaster.networking.packet.DirectObtainPassiveItemS2CPacket;
 import net.luojiuoscar.isaac_disaster.networking.packet.ObtainPassiveItemS2CPacket;
+import net.luojiuoscar.isaac_disaster.networking.packet.SetCountSyncS2CPacket;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.common.capabilities.AutoRegisterCapability;
 
 import java.util.ArrayList;
@@ -30,6 +34,7 @@ public class PlayerPassiveItem {
     private Map<Integer, Integer> itemCountMap;
     private Map<Integer, Integer> triggerItemMap;
     private Map<Integer, Integer> recursiveItemMap; // itemId : remainTick
+    private Map<Integer, Integer> setCountMap; // 套装计数
 
     // constructor
     public PlayerPassiveItem(){
@@ -38,6 +43,7 @@ public class PlayerPassiveItem {
         this.itemCountMap = new HashMap<>();
         this.triggerItemMap = new HashMap<>();
         this.recursiveItemMap = new HashMap<>();
+        this.setCountMap = new HashMap<>();
     }
 
     /**
@@ -47,6 +53,7 @@ public class PlayerPassiveItem {
         itemCountMap.clear();
         triggerItemMap.clear();
         recursiveItemMap.clear();
+        setCountMap.clear();
     }
 
     /**
@@ -82,26 +89,32 @@ public class PlayerPassiveItem {
         }
     }
 
-
     /**
-     * @return 全部道具的列表
+     * @return 全部道具的表
      */
     public ArrayList<Integer> getPlayerPassiveItems(){
         return playerPassiveItems;
     }
 
     /**
-     * @return 全部触发型道具的列表
+     * @return 全部触发型道具的表
      */
     public Map<Integer, Integer> getPlayerTriggerItemMap(){
         return triggerItemMap;
     }
 
     /**
-     * @return 全部触发型道具的列表
+     * @return 全部触发型道具的表
      */
     public Map<Integer, Integer> getPlayerRecursiveItemMap(){
         return recursiveItemMap;
+    }
+
+    /**
+     * @return 全部触发型道具的表
+     */
+    public Map<Integer, Integer> getSetCountMap(){
+        return setCountMap;
     }
 
     /**
@@ -121,14 +134,12 @@ public class PlayerPassiveItem {
         }
     }
 
-
     /**
      * @return 获取道具的数量
      */
     public int getTotalItems(){
         return playerPassiveItems.size();
     }
-
 
     /**
      * 通过循环删除最先获取的道具来清空道具列表
@@ -146,7 +157,6 @@ public class PlayerPassiveItem {
     public int getItemCount(int itemId) {
         return itemCountMap.getOrDefault(itemId, 0);
     }
-
 
     /**
      * 将一个新的道具添加到列表。同时触发添加道具的效果和直接添加效果
@@ -215,7 +225,6 @@ public class PlayerPassiveItem {
         return true;
     }
 
-
     /**
      * 依据ID删除最先获取的一个道具
      */
@@ -234,26 +243,69 @@ public class PlayerPassiveItem {
         }
     }
 
+    public int getSetCountFromId(int setId){
+        return setCountMap.getOrDefault(setId, 0);
+    }
+
+    public void modifySetCount(ServerPlayer player, int setId, int amount){
+        int preCount = getSetCountFromId(setId);
+        int newCount = preCount + amount;
+        ISet set = SetManager.getInstance().getSetFromId(setId);
+
+        int itemRequirement = set.getRequireCount();
+
+        // 当道具数量突破套装需求时、触发对应效果
+        if (preCount < itemRequirement && newCount >= itemRequirement){
+            set.onObtain(player);
+        }else if(preCount >= itemRequirement && newCount < itemRequirement){
+            set.onRemove(player);
+        }
+
+        setCountMap.put(setId, newCount);
+        // 同步到客户端
+        ModMessages.sentToPlayer(new SetCountSyncS2CPacket(setId, newCount), player);
+    }
+
 
 
     // 从目标处复制
     public void copyFrom(PlayerPassiveItem source) {
         this.playerPassiveItems = new ArrayList<>(source.playerPassiveItems);
+        this.setCountMap = new HashMap<>(source.setCountMap);
         // 重新计算哈希表（确保与列表数据一致）
         refreshItemCountMap();
     }
 
     public void saveNBTData(CompoundTag nbt) {
         nbt.putIntArray("passive_items", playerPassiveItems);
+
+        // 保存 setCountMap
+        ListTag setList = new ListTag();
+        for (Map.Entry<Integer, Integer> entry : setCountMap.entrySet()) {
+            CompoundTag setTag = new CompoundTag();
+            setTag.putInt("SetId", entry.getKey());
+            setTag.putInt("Count", entry.getValue());
+            setList.add(setTag);
+        }
+        nbt.put("set_counts", setList);
     }
 
     public void loadNBTData(CompoundTag nbt) {
         int[] ids = nbt.getIntArray("passive_items");
-        // 将int[]转换为List<Integer>
-        playerPassiveItems = Arrays.stream(ids)
-                .boxed()
-                .collect(Collectors.toCollection(ArrayList::new));
-        // 加载后刷新哈希表
+        playerPassiveItems = Arrays.stream(ids).boxed().collect(Collectors.toCollection(ArrayList::new));
         refreshItemCountMap();
+
+        // 读取 setCountMap
+        setCountMap.clear();
+        if (nbt.contains("set_counts", Tag.TAG_LIST)) {
+            ListTag setList = nbt.getList("set_counts", Tag.TAG_COMPOUND);
+            for (Tag baseTag : setList) {
+                if (baseTag instanceof CompoundTag setTag) {
+                    int setId = setTag.getInt("SetId");
+                    int count = setTag.getInt("Count");
+                    setCountMap.put(setId, count);
+                }
+            }
+        }
     }
 }

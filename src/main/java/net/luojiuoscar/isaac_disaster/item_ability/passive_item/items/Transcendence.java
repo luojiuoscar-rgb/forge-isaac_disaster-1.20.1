@@ -27,18 +27,12 @@ public class Transcendence implements IPassiveItem {
 
     @Override
     public void onDirectObtain(Player player) {
-        player.getCapability(PlayerStatModifierProvider.PLAYER_STAT_MODIFIER).ifPresent(
-                playerStatModifier -> {
-                    playerStatModifier.addFlyTime(player, StatManager.getFlyTime());
-                }
-        );
+        StatManager.modifyFlyTime(player, 1);
     }
 
     @Override
     public void onRemove(Player player) {
-        player.getCapability(PlayerStatModifierProvider.PLAYER_STAT_MODIFIER).ifPresent(
-                playerStatModifier -> playerStatModifier.addFlyTime(player, -StatManager.getFlyTime())
-        );
+        StatManager.modifyFlyTime(player, -1);
     }
 
     @Override

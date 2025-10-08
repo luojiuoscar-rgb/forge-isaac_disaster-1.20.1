@@ -28,8 +28,11 @@ public class ModEvents {
             event.add(EntityType.PLAYER, ModAttributes.BULLET_RANGE.get());
             event.add(EntityType.PLAYER, ModAttributes.TEARS.get());
             event.add(EntityType.PLAYER, ModAttributes.TEARS_CORRECTION.get());
-
-
+            event.add(EntityType.PLAYER, ModAttributes.BULLET_ALPHA.get());
+            event.add(EntityType.PLAYER, ModAttributes.BULLET_COLOR.get());
+            event.add(EntityType.PLAYER, ModAttributes.BULLET_FILTER.get());
+            event.add(EntityType.PLAYER, ModAttributes.BLOCK_BREAKING_SPEED.get());
+            event.add(EntityType.PLAYER, ModAttributes.BULLET_SCALE .get());
         }
     }
 }

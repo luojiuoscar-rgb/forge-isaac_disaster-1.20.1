@@ -49,6 +49,18 @@ public class Config
     public static ForgeConfigSpec.DoubleValue LUCK_BONUS;
     public static ForgeConfigSpec.IntValue FLY_TIME;
     public static ForgeConfigSpec.DoubleValue SCALE_BONUS;
+    public static ForgeConfigSpec.DoubleValue RANGE_BONUS;
+    public static ForgeConfigSpec.DoubleValue BLOCK_REACH_BONUS;
+    public static ForgeConfigSpec.DoubleValue ENTITY_REACH_BONUS;
+    public static ForgeConfigSpec.DoubleValue BULLET_SPEED_BONUS;
+    public static ForgeConfigSpec.DoubleValue TEARS_BONUS;
+    public static ForgeConfigSpec.DoubleValue TEARS_CORRECTION_BONUS;
+    public static ForgeConfigSpec.DoubleValue ATTACK_SPEED_BONUS;
+    public static ForgeConfigSpec.DoubleValue BLOCK_BREAKING_SPEED_BONUS;
+    public static ForgeConfigSpec.DoubleValue ATTACK_KNOCKBACK_BONUS;
+    public static ForgeConfigSpec.DoubleValue BULLET_SCALE_BONUS;
+
+
 
     // 其他可配置项目
     public static ForgeConfigSpec.IntValue PASSIVE_ITEM_LIMIT;
@@ -102,6 +114,59 @@ public class Config
         SCALE_BONUS = BUILDER
                 .comment("Base value of scale increment")
                 .defineInRange("scale_bonus", 0.1, 0.0, 99999.0);
+
+        // 射程  默认0.1
+        RANGE_BONUS = BUILDER
+                .comment("Base value of range increment")
+                .defineInRange("range_bonus", 4.5, 0.0, 99999.0);
+
+        // 实体触及距离  默认0.1
+        ENTITY_REACH_BONUS = BUILDER
+                .comment("Base value of entity reach increment")
+                .defineInRange("entity_reach_bonus", 0.5, 0.0, 99999.0);
+
+        // 方块触及距离  默认0.1
+        BLOCK_REACH_BONUS = BUILDER
+                .comment("Base value of block reach increment")
+                .defineInRange("block_reach_bonus", 1.0, 0.0, 99999.0);
+
+        // 方块触及距离  默认0.2
+        BULLET_SPEED_BONUS = BUILDER
+                .comment("Base value of bullet speed increment")
+                .defineInRange("bullet_speed_bonus", 0.2, 0.0, 99999.0);
+
+        // 射速  默认0.7
+        TEARS_BONUS = BUILDER
+                .comment("Base value of tears increment")
+                .defineInRange("tears_bonus", 0.7, 0.0, 99999.0);
+
+        // 射速修正  默认1
+        TEARS_CORRECTION_BONUS = BUILDER
+                .comment("Base value of tears correction increment")
+                .defineInRange("tears_correction_bonus", 1.0, 0.0, 99999.0);
+
+        // 攻击速度  默认1
+        ATTACK_SPEED_BONUS = BUILDER
+                .comment("Base value of attack speed increment")
+                .defineInRange("attack_speed_bonus", 1.0, 0.0, 99999.0);
+
+        // 方块破坏速度（最终倍率）  默认5
+        BLOCK_BREAKING_SPEED_BONUS = BUILDER
+                .comment("Base value of block breaking speed increment")
+                .defineInRange("block_breaking_speed_bonus", 5, 0.0, 99999.0);
+
+        // 额外子弹大小（倍率）  默认0.5f
+        BULLET_SCALE_BONUS = BUILDER
+                .comment("Base value of bullet scale increment")
+                .defineInRange("bullet_scale_bonus", 0.5, 0.0, 99999.0);
+
+        // 攻击击退  默认0.5
+        ATTACK_KNOCKBACK_BONUS = BUILDER
+                .comment("Base value of attack knockback increment")
+                .defineInRange("attack_knockback_bonus", 0.5, 0.0, 99999.0);
+
+
+
 
         BUILDER.pop();
     }

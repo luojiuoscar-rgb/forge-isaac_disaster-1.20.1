@@ -35,7 +35,16 @@ public enum ItemId {
     HOLY_MANTLE,
     WOODEN_NICKEL,
     THE_WAFER,
-    MONEY_IS_POWER;
+    MONEY_IS_POWER,
+    DEAD_DOVE,
+    CUPIDS_ARROW,
+    SPOON_BENDER,
+    ROID_RAGE,
+    THE_SAD_ONION,
+    WIRE_COAT_HANGER,
+    SPEED_BALL,
+    PISCES,
+    MINI_MUSH;
 
 
     private final int id;

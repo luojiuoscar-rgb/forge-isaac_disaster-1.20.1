@@ -125,6 +125,6 @@ public interface IActiveItem {
          return new ArrayList<>();
      };
 
-     List<Component> synergyDescription();
+     List<Component> getSynergyDescription();
 }
     

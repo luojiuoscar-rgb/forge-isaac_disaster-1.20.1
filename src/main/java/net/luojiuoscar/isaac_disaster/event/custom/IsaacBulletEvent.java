@@ -1,6 +1,6 @@
 package net.luojiuoscar.isaac_disaster.event.custom;
 
-import net.luojiuoscar.isaac_disaster.entity.projectile.IsaacBullet;
+import net.luojiuoscar.isaac_disaster.entity.IsaacBullet;
 
 public class IsaacBulletEvent extends net.minecraftforge.eventbus.api.Event {
     private final IsaacBullet bullet;

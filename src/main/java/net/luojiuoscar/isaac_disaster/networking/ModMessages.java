@@ -105,7 +105,19 @@ public class ModMessages {
                 .consumerNetworkThread(SetRightClickC2SPacket::handle)
                 .add();
 
+        // register SetOnObtainS2CPacket
+        net.messageBuilder(SetOnObtainS2CPacket.class, id(), NetworkDirection.PLAY_TO_CLIENT)
+                .decoder(SetOnObtainS2CPacket::new)
+                .encoder(SetOnObtainS2CPacket::toBytes)
+                .consumerNetworkThread(SetOnObtainS2CPacket::handle)
+                .add();
 
+        // register SetCountSyncS2CPacket
+        net.messageBuilder(SetCountSyncS2CPacket.class, id(), NetworkDirection.PLAY_TO_CLIENT)
+                .decoder(SetCountSyncS2CPacket::new)
+                .encoder(SetCountSyncS2CPacket::toBytes)
+                .consumerNetworkThread(SetCountSyncS2CPacket::handle)
+                .add();
     }
 
     public static <MSG> void sendToServer(MSG message){

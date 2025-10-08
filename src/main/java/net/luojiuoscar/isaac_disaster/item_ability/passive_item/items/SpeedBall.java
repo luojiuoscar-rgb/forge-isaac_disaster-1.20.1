@@ -1,0 +1,68 @@
+package net.luojiuoscar.isaac_disaster.item_ability.passive_item.items;
+
+import net.luojiuoscar.isaac_disaster.client.ClientDataManager;
+import net.luojiuoscar.isaac_disaster.item.ModItems;
+import net.luojiuoscar.isaac_disaster.item_ability.passive_item.IPassiveItem;
+import net.luojiuoscar.isaac_disaster.manager.ColorManager;
+import net.luojiuoscar.isaac_disaster.manager.StatManager;
+import net.luojiuoscar.isaac_disaster.manager.id_managers.ItemId;
+import net.luojiuoscar.isaac_disaster.manager.id_managers.SetId;
+import net.luojiuoscar.isaac_disaster.manager.item_managers.SetManager;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+
+import java.util.List;
+
+public class SpeedBall implements IPassiveItem {
+    @Override
+    public int getItemId() {
+        return ItemId.SPEED_BALL.getId();
+    }
+
+    @Override
+    public void onObtain(Player player) {
+
+    }
+
+    @Override
+    public void onDirectObtain(Player player) {
+        StatManager.modifyMovementSpeedAdder(player, 1.5);
+        StatManager.modifyBulletSpeedAdder(player, 1);
+        StatManager.modifySetWithId(player, SetId.SPUN.getId(), 1);
+    }
+
+    @Override
+    public void onRemove(Player player) {
+        StatManager.modifyMovementSpeedAdder(player, -1.5);
+        StatManager.modifyBulletSpeedAdder(player, -1);
+        StatManager.modifySetWithId(player, SetId.SPUN.getId(), -1);
+    }
+
+    @Override
+    public ItemStack getItemStack() {
+        return new ItemStack(ModItems.SPEED_BALL.get());
+    }
+
+    @Override
+    public List<Component> getDescription() {
+        return List.of(
+                Component.translatable("item.isaac_disaster.attribute.movement_speed", StatManager.getMovementSpeedBonus()*1500),
+                Component.translatable("item.isaac_disaster.attribute.bullet_speed",StatManager.getBulletSpeed())
+        );
+    }
+
+    @Override
+    public List<Component> getSynergyDescription(){
+        return List.of(
+                Component.translatable("set.isaac_disaster.special.header")
+                        .append(Component.translatable("set.isaac_disaster.spun"))
+                        .append(Component.literal("("+
+                                Math.min(3,ClientDataManager.getInstance().getSetCountFromId(SetId.SPUN.getId())) + "/" +
+                                SetManager.getInstance().getSetFromId(SetId.SPUN.getId()).getRequireCount()+")"
+                        )).withStyle(
+                                style -> style.withColor(ColorManager.SYNERGY)
+                        )
+        );
+    }
+}

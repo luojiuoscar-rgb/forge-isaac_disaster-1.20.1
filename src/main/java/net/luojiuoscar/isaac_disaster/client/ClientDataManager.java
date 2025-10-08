@@ -13,11 +13,13 @@ public class ClientDataManager {
 
     private Map<Integer, Integer> itemCountMap;
     private int flyUnits;
+    private Map<Integer, Integer> setCountMap;
 
     // constructor
     private ClientDataManager() {
         itemCountMap = new HashMap<>();
         flyUnits = 0;
+        setCountMap = new HashMap<>();
     }
 
     public static ClientDataManager getInstance() {
@@ -30,9 +32,11 @@ public class ClientDataManager {
     public int getCountFromId(int itemId) {
         return itemCountMap.getOrDefault(itemId, 0);
     }
-
     public int getFlyUnits() {
         return flyUnits;
+    }
+    public int getSetCountFromId(int setId){
+        return setCountMap.getOrDefault(setId, 0);
     }
 
     /**
@@ -44,11 +48,15 @@ public class ClientDataManager {
     public void setFlyPercentage(int flyUnits) {
         this.flyUnits = flyUnits;
     }
+    public void setSetCountWithId(int setId, int count){
+        setCountMap.put(setId, count);
+    }
 
 
     // 重置数据
     public void reset() {
         itemCountMap = new HashMap<>();
         flyUnits = 0;
+        setCountMap = new HashMap<>();
     }
 }

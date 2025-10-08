@@ -8,6 +8,10 @@
   "rarity.isaac_disaster.rare": "RARE",
   "rarity.isaac_disaster.epic": "EPIC",
   "rarity.isaac_disaster.legendary": "LEGENDARY",
+  "death.attack.tear": "%1$s 被泪弹杀死了",
+  "death.attack.tear.player": "%1$s 被 %2$s 的泪弹杀死了",
+  "death.attack.tear.item": "%1$s 被 %2$s 使用 %3$s 的泪弹杀死了",
+
 
   "message.isaac_disaster.warning.too_many_items":  "[警告]携带的被动道具已达上限",
 
@@ -38,7 +42,24 @@
   "item.isaac_disaster.attribute.damage": "攻击伤害+%f",
   "item.isaac_disaster.attribute.damage_multiplier": "攻击倍率+%f%%",
   "item.isaac_disaster.attribute.luck": "幸运值+%f",
+  "item.isaac_disaster.attribute.bullet_range": "射程+%f",
+  "item.isaac_disaster.attribute.entity_reach": "实体触及距离+%f",
+  "item.isaac_disaster.attribute.block_reach": "方块触及距离+%f",
+  "item.isaac_disaster.attribute.tears": "射速+%f",
+  "item.isaac_disaster.attribute.tears_correction": "射速修正+%f",
+  "item.isaac_disaster.attribute.bullet_speed": "弹速+%f",
+  "item.isaac_disaster.attribute.attack_speed": "攻击速度+%f",
+  "item.isaac_disaster.attribute.block_breaking_speed": "挖掘速度+%f",
+  "item.isaac_disaster.attribute.bullet_scale": "泪弹大小+%f",
+  "item.isaac_disaster.attribute.attack_knockback": "击退+%f",
+
   "item.isaac_disaster.attribute.fly": "可以飞行一段时间",
+  "item.isaac_disaster.attribute.spectral_bullet": "灵体泪弹",
+  "item.isaac_disaster.attribute.homing_bullet": "跟踪泪弹",
+  "item.isaac_disaster.attribute.piercing_bullet": "穿透泪弹",
+  "item.isaac_disaster.attribute.controllable_bullet": "可控泪弹",
+  "item.isaac_disaster.attribute.scale_up": "体型变大",
+  "item.isaac_disaster.attribute.scale_down": "体型变小",
 
 
   "item.isaac_disaster.special.cannot_stack": "效果不可叠加",
@@ -117,6 +138,15 @@
   "item.isaac_disaster.the_wafer.lore.1": "最终伤害减免50%",
   "item.isaac_disaster.money_is_power": "金钱=力量",
   "item.isaac_disaster.money_is_power.lore.1": "金钱等于力量！",
+  "item.isaac_disaster.dead_dove": "死鸽",
+  "item.isaac_disaster.cupids_arrow": "丘比特之箭",
+  "item.isaac_disaster.spoon_bender": "弯勺魔术",
+  "item.isaac_disaster.roid_rage": "过量类固醇",
+  "item.isaac_disaster.the_sad_onion": "悲伤洋葱",
+  "item.isaac_disaster.wire_coat_hanger": "铁丝衣架",
+  "item.isaac_disaster.speed_ball": "混合麻药",
+  "item.isaac_disaster.pisces": "双鱼座",
+  "item.isaac_disaster.mini_mush": "小蘑菇",
 
 
   "item.isaac_disaster.bomb": "炸弹",
@@ -132,8 +162,13 @@
   "item.isaac_disaster.penny": "硬币",
   "item.isaac_disaster.nickel": "镍币",
   "item.isaac_disaster.dime": "铸币",
-  "item.isaac_disaster.isaac_head": "以撒的头"
+  "item.isaac_disaster.isaac_head": "以撒的头",
 
+
+  "set.isaac_disaster.special.header": "[套装]",
+  "set.isaac_disaster.action.obtain": "§a[套装]你获得了>",
+  "set.isaac_disaster.action.remove": "§e[套装]你失去了>",
+  "set.isaac_disaster.spun": "嗑药"
 
 
 }

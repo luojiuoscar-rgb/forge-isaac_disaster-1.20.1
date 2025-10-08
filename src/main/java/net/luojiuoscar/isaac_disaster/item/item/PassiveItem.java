@@ -1,7 +1,9 @@
 package net.luojiuoscar.isaac_disaster.item.item;
 
 import net.luojiuoscar.isaac_disaster.manager.item_managers.PassiveItemManager;
+import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.player.Player;
 
 import java.util.List;
 
@@ -23,6 +25,13 @@ public class PassiveItem extends IsaacItem {
     public void addDescription(List<Component> tooltipComponents){
         tooltipComponents.addAll(
                 PassiveItemManager.getInstance().getItemFromId(getItemId()).getDescription()
+        );
+        // 添加协同效果（套装效果也属于协同）
+        Player player = Minecraft.getInstance().player;
+        if (player == null) return;
+
+        tooltipComponents.addAll(
+                PassiveItemManager.getInstance().getItemFromId(getItemId()).getSynergyDescription()
         );
     }
 

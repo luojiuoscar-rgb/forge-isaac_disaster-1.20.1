@@ -1,0 +1,9 @@
+{
+  "message_id": "tear",
+  "scaling": "never",
+  "exhaustion": 0.0,
+  "effects": "hurt",
+  "bypass_armor": false,
+  "bypass_magic": false,
+  "bypass_invulnerability": true
+}

@@ -3,6 +3,8 @@ package net.luojiuoscar.isaac_disaster.manager.item_managers;
 import net.luojiuoscar.isaac_disaster.item_ability.passive_item.IPassiveItem;
 import net.luojiuoscar.isaac_disaster.item_ability.passive_item.items.*;
 import net.luojiuoscar.isaac_disaster.item_ability.pickup.items.Bomb;
+import org.apache.http.impl.conn.Wire;
+import org.checkerframework.checker.units.qual.Speed;
 
 import java.util.*;
 
@@ -80,7 +82,16 @@ public class  PassiveItemManager {
                 new BloodOfTheMartyr(),
                 new HolyMantle(),
                 new TheWafer(),
-                new MoneyIsPower()
+                new MoneyIsPower(),
+                new DeadDove(),
+                new CupidsArrow(),
+                new SpoonBender(),
+                new RoidRage(),
+                new TheSadOnion(),
+                new WireCoatHanger(),
+                new SpeedBall(),
+                new Pisces(),
+                new MiniMush()
         );
     }
 }

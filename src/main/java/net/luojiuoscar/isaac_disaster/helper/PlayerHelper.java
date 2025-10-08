@@ -3,10 +3,12 @@ package net.luojiuoscar.isaac_disaster.helper;
 import com.google.common.util.concurrent.AtomicDouble;
 import net.luojiuoscar.isaac_disaster.Config;
 import net.luojiuoscar.isaac_disaster.attribute.ModAttributes;
+import net.luojiuoscar.isaac_disaster.capability.player.PlayerAbilityProvider;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerPassiveItemProvider;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerStatModifierProvider;
 import net.luojiuoscar.isaac_disaster.effect.ModEffects;
-import net.luojiuoscar.isaac_disaster.entity.projectile.IsaacBullet;
+import net.luojiuoscar.isaac_disaster.entity.IsaacBullet;
+import net.luojiuoscar.isaac_disaster.manager.ColorManager;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffect;
@@ -82,7 +84,6 @@ public class PlayerHelper {
         );
         return flyTime.get() > 0;
     }
-
     public static boolean isFlyLimit(ServerPlayer player){
         return getFlyPercentage(player) >= 1;
     }
@@ -203,12 +204,66 @@ public class PlayerHelper {
         IsaacBullet bullet = new IsaacBullet(
                 player.level(),
                 player,
-                PlayerHelper.getBulletLiftTime(player),
-                PlayerHelper.getBulletSpeed(player),
-                PlayerHelper.getBulletScale(player)
+                getBulletLiftTime(player),
+                getBulletSpeed(player),
+                getBulletScale(player),
+                isSpectral(player),
+                isPiercing(player),
+                isHoming(player),
+                isControllable(player),
+                getDamage(player)
         );
+        bullet.setColor(getBulletColor(player));
+        bullet.setFilterColor(getBulletFilter(player));
+        bullet.setAlpha(getBulletAlpha(player));
+
         player.level().addFreshEntity(bullet);
     }
+
+    public static boolean isSpectral(Player player){
+        AtomicInteger count = new AtomicInteger();
+        player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY).ifPresent(
+                PlayerAbility -> count.set(PlayerAbility.getSpectral())
+        );
+        return count.get() > 0;
+    }
+    public static boolean isHoming(Player player){
+        AtomicInteger count = new AtomicInteger();
+        player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY).ifPresent(
+                PlayerAbility -> count.set(PlayerAbility.getHoming())
+        );
+        return count.get() > 0;
+    }
+    public static boolean isPiercing(Player player){
+        AtomicInteger count = new AtomicInteger();
+        player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY).ifPresent(
+                PlayerAbility -> count.set(PlayerAbility.getPiercing())
+        );
+        return count.get() > 0;
+    }
+    public static boolean isControllable(Player player){
+        AtomicInteger count = new AtomicInteger();
+        player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY).ifPresent(
+                PlayerAbility -> count.set(PlayerAbility.getControllable())
+        );
+        return count.get() > 0;
+    }
+    public static int getBulletColor(Player player){
+        AttributeInstance instance = player.getAttribute(ModAttributes.BULLET_COLOR.get());
+        if (instance != null) return (int) instance.getValue();
+        return ColorManager.COLOR_BASE;
+    }
+    public static float getBulletAlpha(Player player){
+        AttributeInstance instance = player.getAttribute(ModAttributes.BULLET_ALPHA.get());
+        if (instance != null) return (float) instance.getValue();
+        return 1.0f;
+    }
+    public static int getBulletFilter(Player player){
+        AttributeInstance instance = player.getAttribute(ModAttributes.BULLET_FILTER.get());
+        if (instance != null) return (int) instance.getValue();
+        return ColorManager.FILTER_BASE;
+    }
+
     // 基础
     public static double getBulletSpeed(Player player) {
         AttributeInstance instance = player.getAttribute(ModAttributes.BULLET_SPEED.get());
@@ -238,7 +293,19 @@ public class PlayerHelper {
         if (instance == null) return scale;
         double damage = Math.max(instance.getValue(), 0);
 
-        return (float) (scale * (Math.log(1 + damage)));
+        if (damage <= 198){
+            scale *= (float) Math.log(1 + damage / 2); // max 2
+        }else if (damage > 198 && damage < 398){
+            scale *= (float) (2 + Math.log((damage-198) / 20)); // max 3
+        }else{
+            scale = 3.0f;
+        }
+        // 额外子弹大小因子
+        AttributeInstance extraBulletScale = player.getAttribute((ModAttributes.BULLET_SCALE.get()));
+        float extraScale = 0.0f;
+        if (extraBulletScale != null) extraScale = (float) extraBulletScale.getValue();
+
+        return scale + extraScale;
     }
 
     // 衍生
@@ -269,6 +336,12 @@ public class PlayerHelper {
         return 20 / getShotDelay(player);
     }
 
+    // 属性
+    public static float getDamage(Player player){
+        AttributeInstance instance = player.getAttribute(Attributes.ATTACK_DAMAGE);
+        if (instance != null) return (float) instance.getValue();
+        return 0.0f;
+    }
 
 
 }

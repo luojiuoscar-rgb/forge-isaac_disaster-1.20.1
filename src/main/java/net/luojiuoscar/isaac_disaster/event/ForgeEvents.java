@@ -2,7 +2,6 @@ package net.luojiuoscar.isaac_disaster.event;
 
 import net.luojiuoscar.isaac_disaster.attribute.ModAttributes;
 import net.luojiuoscar.isaac_disaster.capability.entity.EntityEffectProvider;
-import net.luojiuoscar.isaac_disaster.capability.player.PlayerAbility;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerAbilityProvider;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerPassiveItemProvider;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerStatModifierProvider;
@@ -14,6 +13,7 @@ import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.item.item.ActiveItem;
 import net.luojiuoscar.isaac_disaster.item.item.PassiveItem;
 import net.luojiuoscar.isaac_disaster.item.pickup.IOnUse;
+import net.luojiuoscar.isaac_disaster.item.pickup.IsaacHead;
 import net.luojiuoscar.isaac_disaster.item.pickup.Pickup;
 import net.luojiuoscar.isaac_disaster.manager.EffectNameManager;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
@@ -22,6 +22,7 @@ import net.luojiuoscar.isaac_disaster.manager.item_managers.ActiveItemManager;
 import net.luojiuoscar.isaac_disaster.manager.item_managers.PickupManager;
 import net.luojiuoscar.isaac_disaster.networking.ModMessages;
 import net.luojiuoscar.isaac_disaster.networking.packet.PassiveItemSyncS2CPacket;
+import net.luojiuoscar.isaac_disaster.networking.packet.SetCountSyncS2CPacket;
 import net.luojiuoscar.isaac_disaster.networking.packet.UseActiveItemS2CPacket;
 import net.luojiuoscar.isaac_disaster.sound.ModSounds;
 import net.minecraft.network.chat.Component;
@@ -47,6 +48,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.server.command.ConfigCommand;
 
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static net.luojiuoscar.isaac_disaster.IsaacDisaster.MOD_ID;
@@ -235,17 +237,30 @@ public class ForgeEvents {
     @SubscribeEvent
     public static void onPlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
         if (event.getEntity() instanceof ServerPlayer serverPlayer) {
+            // 同步套装
+            syncSetDataToClient(serverPlayer);
             // 从服务端Capability获取数据
-            syncDataToClient(ItemId.CAR_BATTERY.getId(), serverPlayer);
-            syncDataToClient(ItemId.BLOOD_OF_THE_MARTYR.getId(), serverPlayer);
+            syncItemDataToClient(ItemId.CAR_BATTERY.getId(), serverPlayer);
+            syncItemDataToClient(ItemId.BLOOD_OF_THE_MARTYR.getId(), serverPlayer);
         }
+    }
+
+
+    public static void syncSetDataToClient(ServerPlayer player){
+        player.getCapability(PlayerPassiveItemProvider.PLAYER_PASSIVE_ITEM).ifPresent(
+                playerPassiveItem -> {
+                    Map<Integer,Integer> map = Map.copyOf(playerPassiveItem.getSetCountMap());
+                    for (Map.Entry<Integer, Integer> entry : map.entrySet()) {
+                        ModMessages.sentToPlayer(new SetCountSyncS2CPacket(entry.getKey(), entry.getValue()), player);
+                    }
+                }
+        );
     }
 
     /**
      * 同步数据到客户端
      */
-    public static void syncDataToClient(int ItemId, ServerPlayer player) {
-        // 车载电池
+    public static void syncItemDataToClient(int ItemId, ServerPlayer player) {
         AtomicInteger count = new AtomicInteger();
         player.getCapability(PlayerPassiveItemProvider.PLAYER_PASSIVE_ITEM).ifPresent(
                 playerPassiveItem -> count.set(playerPassiveItem.getItemCount(ItemId))
@@ -379,4 +394,49 @@ public class ForgeEvents {
         event.setNewEyeHeight(scaledEyeHeight);
     }
 
+    @SubscribeEvent
+    public static void onRightClickBlock(PlayerInteractEvent.RightClickBlock event) {
+        if (isHoldingIsaacHead(event.getEntity())) {
+            event.setCanceled(true);
+            event.setCancellationResult(net.minecraft.world.InteractionResult.FAIL);
+        }
+    }
+
+    @SubscribeEvent
+    public static void onRightClickEntity(PlayerInteractEvent.EntityInteract event) {
+        if (isHoldingIsaacHead(event.getEntity())) {
+            event.setCanceled(true);
+            event.setCancellationResult(net.minecraft.world.InteractionResult.FAIL);
+        }
+    }
+
+    @SubscribeEvent
+    public static void onRightClickEntitySpecific(PlayerInteractEvent.EntityInteractSpecific event) {
+        if (isHoldingIsaacHead(event.getEntity())) {
+            event.setCanceled(true);
+            event.setCancellationResult(net.minecraft.world.InteractionResult.FAIL);
+        }
+    }
+
+    private static boolean isHoldingIsaacHead(Player player) {
+        for (InteractionHand hand : InteractionHand.values()) {
+            ItemStack stack = player.getItemInHand(hand);
+            if (stack.getItem() instanceof IsaacHead)
+                return true;
+        }
+        return false;
+    }
+
+    @SubscribeEvent
+    public static void onBreakSpeed(PlayerEvent.BreakSpeed event) {
+        var player = event.getEntity();
+
+        double bonus = player.getAttributeValue(ModAttributes.BLOCK_BREAKING_SPEED.get());
+
+        // 计算最终破坏速度
+        float baseSpeed = event.getNewSpeed();
+        float finalSpeed = (float) (baseSpeed + bonus);
+
+        event.setNewSpeed(finalSpeed);
+    }
 }

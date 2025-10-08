@@ -11,4 +11,11 @@ public class ColorManager {
 
     public static final int TRANSPARENT_GRAY = 0x696969;
     public static final int SYNERGY = 0xFFFF00;
+
+    public static final int FILTER_BASE = 0xFFFFFF;
+    public static final int COLOR_BASE = 0xFFFFFF;
+
+    public static final int SPOON_BENDER = 0x611595;
+
+
 }

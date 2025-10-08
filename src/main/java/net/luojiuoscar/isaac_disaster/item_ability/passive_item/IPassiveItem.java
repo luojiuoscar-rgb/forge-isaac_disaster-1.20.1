@@ -81,5 +81,9 @@ public interface IPassiveItem {
         return new ArrayList<>();
     };
 
+    default List<Component> getSynergyDescription(){
+        return new ArrayList<>();
+    }
+
 
 }

@@ -1,9 +1,7 @@
 package net.luojiuoscar.isaac_disaster.item.item;
 
-import net.luojiuoscar.isaac_disaster.client.ClientDataManager;
 import net.luojiuoscar.isaac_disaster.manager.item_managers.ActiveItemManager;
 import net.luojiuoscar.isaac_disaster.manager.ColorManager;
-import net.luojiuoscar.isaac_disaster.manager.id_managers.ItemId;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
@@ -48,7 +46,7 @@ public class ActiveItem extends IsaacItem {
         if (player == null) return;
 
         tooltipComponents.addAll(
-                ActiveItemManager.getInstance().getItemFromId(getItemId()).synergyDescription()
+                ActiveItemManager.getInstance().getItemFromId(getItemId()).getSynergyDescription()
         );
     }
 
