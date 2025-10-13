@@ -57,7 +57,12 @@ public class ActiveItemManager {
                 new BookOfShadow(),
                 new TheBible(),
                 new TheNecronmicon(),
-                new WoodenNickel()
+                new WoodenNickel(),
+                new Teleport(),
+                new LemonMishap(),
+                new FreeLemonade(),
+                new TheGamekid(),
+                new UnicornStump()
         );
     }
 }

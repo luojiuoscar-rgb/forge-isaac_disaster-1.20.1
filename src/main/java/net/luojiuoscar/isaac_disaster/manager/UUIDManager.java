@@ -103,5 +103,11 @@ public class UUIDManager {
             UUID.nameUUIDFromBytes(("isaac_disaster:money_is_power_adder").getBytes());
     static {
         ATTRIBUTE_FROM_UUID.put(MONEY_IS_POWER_ADDER, Attributes.ATTACK_DAMAGE);}
+    public static final UUID DAMAGE_FROM_PILLS_ADDER =
+            UUID.nameUUIDFromBytes(("isaac_disaster:damage_from_pills_adder").getBytes());
+    static {
+        ATTRIBUTE_FROM_UUID.put(DAMAGE_FROM_PILLS_ADDER, Attributes.ATTACK_DAMAGE);}
+
+
 }
 

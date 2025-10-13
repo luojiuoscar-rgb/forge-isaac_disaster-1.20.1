@@ -155,10 +155,10 @@ public class Config
                 .comment("Base value of block breaking speed increment")
                 .defineInRange("block_breaking_speed_bonus", 5, 0.0, 99999.0);
 
-        // 额外子弹大小（倍率）  默认0.5f
+        // 额外子弹大小（倍率）  默认0.1f
         BULLET_SCALE_BONUS = BUILDER
                 .comment("Base value of bullet scale increment")
-                .defineInRange("bullet_scale_bonus", 0.5, 0.0, 99999.0);
+                .defineInRange("bullet_scale_bonus", 0.1, 0.0, 99999.0);
 
         // 攻击击退  默认0.5
         ATTACK_KNOCKBACK_BONUS = BUILDER

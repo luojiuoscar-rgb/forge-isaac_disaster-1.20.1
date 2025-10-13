@@ -1,5 +1,6 @@
 {
   "values": [
+    "isaac_disaster:isaac_head",
     "isaac_disaster:bomb",
     "isaac_disaster:giga_bomb",
     "isaac_disaster:golden_bomb",
@@ -13,6 +14,33 @@
     "isaac_disaster:penny",
     "isaac_disaster:nickel",
     "isaac_disaster:dime",
-    "isaac_disaster:isaac_head"
+    "isaac_disaster:pill1",
+    "isaac_disaster:pill2",
+    "isaac_disaster:pill3",
+    "isaac_disaster:pill4",
+    "isaac_disaster:pill5",
+    "isaac_disaster:pill6",
+    "isaac_disaster:pill7",
+    "isaac_disaster:pill8",
+    "isaac_disaster:pill9",
+    "isaac_disaster:pill10",
+    "isaac_disaster:pill11",
+    "isaac_disaster:pill12",
+    "isaac_disaster:pill13",
+    "isaac_disaster:pill1_h",
+    "isaac_disaster:pill2_h",
+    "isaac_disaster:pill3_h",
+    "isaac_disaster:pill4_h",
+    "isaac_disaster:pill5_h",
+    "isaac_disaster:pill6_h",
+    "isaac_disaster:pill7_h",
+    "isaac_disaster:pill8_h",
+    "isaac_disaster:pill9_h",
+    "isaac_disaster:pill10_h",
+    "isaac_disaster:pill11_h",
+    "isaac_disaster:pill12_h",
+    "isaac_disaster:pill13_h",
+    "isaac_disaster:golden_pill",
+    "isaac_disaster:golden_pill_h"
   ]
 }

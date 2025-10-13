@@ -1,8 +1,6 @@
 package net.luojiuoscar.isaac_disaster.client;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.network.chat.Component;
+import net.luojiuoscar.isaac_disaster.manager.item_managers.PillEffectManager;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -12,14 +10,19 @@ public class ClientDataManager {
     private static final ClientDataManager INSTANCE = new ClientDataManager();
 
     private Map<Integer, Integer> itemCountMap;
-    private int flyUnits;
     private Map<Integer, Integer> setCountMap;
+    private Map<Integer, Integer> pillRecords;
+    private int flyUnits;
+    private int pillQuality;
+
 
     // constructor
     private ClientDataManager() {
         itemCountMap = new HashMap<>();
         flyUnits = 0;
         setCountMap = new HashMap<>();
+        pillRecords = new HashMap<>();
+        pillQuality = 0;
     }
 
     public static ClientDataManager getInstance() {
@@ -38,6 +41,17 @@ public class ClientDataManager {
     public int getSetCountFromId(int setId){
         return setCountMap.getOrDefault(setId, 0);
     }
+    public boolean isPillRecordCorrectly(int pillId) {
+        if (pillRecords.containsKey(pillId)){
+            int correctEffect = PillEffectManager.getInstance().getEffectIdFromPill(pillId);
+            return pillRecords.get(pillId) == correctEffect;
+        }
+        return false;
+    }
+    public int getPillQuality(){
+        return pillQuality;
+    }
+
 
     /**
      * SETTER
@@ -51,6 +65,12 @@ public class ClientDataManager {
     public void setSetCountWithId(int setId, int count){
         setCountMap.put(setId, count);
     }
+    public void setPillRecordsWithId(int pillId, int effectId){
+        pillRecords.put(pillId, effectId);
+    }
+    public void setPillQuality(int pillQuality){
+        this.pillQuality = pillQuality;
+    }
 
 
     // 重置数据
@@ -58,5 +78,7 @@ public class ClientDataManager {
         itemCountMap = new HashMap<>();
         flyUnits = 0;
         setCountMap = new HashMap<>();
+        pillRecords = new HashMap<>();
+        pillQuality = 0;
     }
 }

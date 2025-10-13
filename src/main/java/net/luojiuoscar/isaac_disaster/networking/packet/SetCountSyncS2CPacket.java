@@ -7,8 +7,8 @@ import net.minecraftforge.network.NetworkEvent;
 import java.util.function.Supplier;
 
 public class SetCountSyncS2CPacket {
-    private int setId;
-    private int count;
+    private final int setId;
+    private final int count;
 
     //客户端构造时的函数
     public SetCountSyncS2CPacket(int itemId, int count){

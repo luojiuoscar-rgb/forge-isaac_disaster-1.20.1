@@ -3,10 +3,7 @@ package net.luojiuoscar.isaac_disaster.item;
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.item.item.ActiveItem;
 import net.luojiuoscar.isaac_disaster.item.item.PassiveItem;
-import net.luojiuoscar.isaac_disaster.item.pickup.Bomb;
-import net.luojiuoscar.isaac_disaster.item.pickup.Heart;
-import net.luojiuoscar.isaac_disaster.item.pickup.IsaacHead;
-import net.luojiuoscar.isaac_disaster.item.pickup.Pickup;
+import net.luojiuoscar.isaac_disaster.item.pickup.*;
 import net.luojiuoscar.isaac_disaster.item_ability.pickup.items.RedHeart;
 import net.luojiuoscar.isaac_disaster.manager.id_managers.ItemId;
 import net.luojiuoscar.isaac_disaster.manager.id_managers.PickupId;
@@ -159,7 +156,7 @@ public class ModItems {
     static { PASSIVE_ITEM_LIST.add(SPOON_BENDER); }
 
     public static final RegistryObject<Item> ROID_RAGE = ITEMS.register("roid_rage",
-            () -> new PassiveItem(new Item.Properties(),2, ItemId.ROID_RAGE.getId()));
+            () -> new PassiveItem(new Item.Properties(),2, ItemId.ROID_RAGE.getId(), true));
     static { PASSIVE_ITEM_LIST.add(ROID_RAGE); }
 
     public static final RegistryObject<Item> THE_SAD_ONION = ITEMS.register("the_sad_onion",
@@ -171,7 +168,7 @@ public class ModItems {
     static { PASSIVE_ITEM_LIST.add(WIRE_COAT_HANGER); }
 
     public static final RegistryObject<Item> SPEED_BALL = ITEMS.register("speed_ball",
-            () -> new PassiveItem(new Item.Properties(),2, ItemId.SPEED_BALL.getId()));
+            () -> new PassiveItem(new Item.Properties(),2, ItemId.SPEED_BALL.getId(),true));
     static { PASSIVE_ITEM_LIST.add(SPEED_BALL); }
 
     public static final RegistryObject<Item> PISCES = ITEMS.register("pisces",
@@ -182,6 +179,21 @@ public class ModItems {
             () -> new PassiveItem(new Item.Properties(),2, ItemId.MINI_MUSH.getId()));
     static { PASSIVE_ITEM_LIST.add(MINI_MUSH); }
 
+    public static final RegistryObject<Item> PHD = ITEMS.register("phd",
+            () -> new PassiveItem(new Item.Properties(),2, ItemId.PHD.getId()));
+    static { PASSIVE_ITEM_LIST.add(PHD); }
+
+    public static final RegistryObject<Item> FALSE_PHD = ITEMS.register("false_phd",
+            () -> new PassiveItem(new Item.Properties(),2, ItemId.FALSE_PHD.getId()));
+    static { PASSIVE_ITEM_LIST.add(FALSE_PHD); }
+
+    public static final RegistryObject<Item> A_QUARTER = ITEMS.register("a_quarter",
+            () -> new PassiveItem(new Item.Properties(),0, ItemId.A_QUARTER.getId()));
+    static { PASSIVE_ITEM_LIST.add(A_QUARTER); }
+
+    public static final RegistryObject<Item> A_DOLLAR = ITEMS.register("a_dollar",
+            () -> new PassiveItem(new Item.Properties(),1, ItemId.A_DOLLAR.getId()));
+    static { PASSIVE_ITEM_LIST.add(A_DOLLAR); }
 
 
 
@@ -216,6 +228,30 @@ public class ModItems {
                     300, 300));
     static { ACTIVE_ITEM_LIST.add(WOODEN_NICKEL); }
 
+    public static final RegistryObject<Item> TELEPORT = ITEMS.register("teleport",
+            () -> new ActiveItem(new Item.Properties(),0, ItemId.TELEPORT.getId(),
+                    400, 400));
+    static { ACTIVE_ITEM_LIST.add(TELEPORT); }
+
+    public static final RegistryObject<Item> LEMON_MISHAP = ITEMS.register("lemon_mishap",
+            () -> new ActiveItem(new Item.Properties(),1, ItemId.LEMON_MISHAP.getId(),
+                    400, 400));
+    static { ACTIVE_ITEM_LIST.add(LEMON_MISHAP); }
+
+    public static final RegistryObject<Item> FREE_LEMONADE = ITEMS.register("free_lemonade",
+            () -> new ActiveItem(new Item.Properties(),2, ItemId.FREE_LEMONADE.getId(),
+                    600, 600));
+    static { ACTIVE_ITEM_LIST.add(FREE_LEMONADE); }
+
+    public static final RegistryObject<Item> THE_GAMEKID = ITEMS.register("the_gamekid",
+            () -> new ActiveItem(new Item.Properties(),1, ItemId.THE_GAMEKID.getId(),
+                    1200, 1200, true));
+    static { ACTIVE_ITEM_LIST.add(THE_GAMEKID); }
+
+    public static final RegistryObject<Item> UNICORN_STUMP = ITEMS.register("unicorn_stump",
+            () -> new ActiveItem(new Item.Properties(),1, ItemId.UNICORN_STUMP.getId(),
+                    1200, 1200, true));
+    static { ACTIVE_ITEM_LIST.add(UNICORN_STUMP); }
 
 
     // pickups
@@ -274,5 +310,93 @@ public class ModItems {
     public static final RegistryObject<Item> DIME = ITEMS.register("dime",
             () -> new Item(new Item.Properties()));
     static { PICKUP_LIST.add(DIME); }
+
+    public static final RegistryObject<Item> PILL1 = ITEMS.register("pill1",
+            () -> new Pill(new Item.Properties(), 1, false));
+    public static final RegistryObject<Item> PILL2 = ITEMS.register("pill2",
+            () -> new Pill(new Item.Properties(), 2, false));
+    public static final RegistryObject<Item> PILL3 = ITEMS.register("pill3",
+            () -> new Pill(new Item.Properties(), 3, false));
+    public static final RegistryObject<Item> PILL4 = ITEMS.register("pill4",
+            () -> new Pill(new Item.Properties(), 4, false));
+    public static final RegistryObject<Item> PILL5 = ITEMS.register("pill5",
+            () -> new Pill(new Item.Properties(), 5, false));
+    public static final RegistryObject<Item> PILL6 = ITEMS.register("pill6",
+            () -> new Pill(new Item.Properties(), 6, false));
+    public static final RegistryObject<Item> PILL7 = ITEMS.register("pill7",
+            () -> new Pill(new Item.Properties(), 7, false));
+    public static final RegistryObject<Item> PILL8 = ITEMS.register("pill8",
+            () -> new Pill(new Item.Properties(), 8, false));
+    public static final RegistryObject<Item> PILL9 = ITEMS.register("pill9",
+            () -> new Pill(new Item.Properties(), 9, false));
+    public static final RegistryObject<Item> PILL10 = ITEMS.register("pill10",
+            () -> new Pill(new Item.Properties(), 10, false));
+    public static final RegistryObject<Item> PILL11 = ITEMS.register("pill11",
+            () -> new Pill(new Item.Properties(), 11, false));
+    public static final RegistryObject<Item> PILL12 = ITEMS.register("pill12",
+            () -> new Pill(new Item.Properties(), 12, false));
+    public static final RegistryObject<Item> PILL13 = ITEMS.register("pill13",
+            () -> new Pill(new Item.Properties(), 13, false));
+    public static final RegistryObject<Item> PILL1_H = ITEMS.register("pill1_h",
+            () -> new Pill(new Item.Properties().stacksTo(16), 1, true));
+    public static final RegistryObject<Item> PILL2_H = ITEMS.register("pill2_h",
+            () -> new Pill(new Item.Properties().stacksTo(16), 2, true));
+    public static final RegistryObject<Item> PILL3_H = ITEMS.register("pill3_h",
+            () -> new Pill(new Item.Properties().stacksTo(16), 3, true));
+    public static final RegistryObject<Item> PILL4_H = ITEMS.register("pill4_h",
+            () -> new Pill(new Item.Properties().stacksTo(16), 4, true));
+    public static final RegistryObject<Item> PILL5_H = ITEMS.register("pill5_h",
+            () -> new Pill(new Item.Properties().stacksTo(16), 5, true));
+    public static final RegistryObject<Item> PILL6_H = ITEMS.register("pill6_h",
+            () -> new Pill(new Item.Properties().stacksTo(16), 6, true));
+    public static final RegistryObject<Item> PILL7_H = ITEMS.register("pill7_h",
+            () -> new Pill(new Item.Properties().stacksTo(16), 7, true));
+    public static final RegistryObject<Item> PILL8_H = ITEMS.register("pill8_h",
+            () -> new Pill(new Item.Properties().stacksTo(16), 8, true));
+    public static final RegistryObject<Item> PILL9_H = ITEMS.register("pill9_h",
+            () -> new Pill(new Item.Properties().stacksTo(16), 9, true));
+    public static final RegistryObject<Item> PILL10_H = ITEMS.register("pill10_h",
+            () -> new Pill(new Item.Properties().stacksTo(16), 10, true));
+    public static final RegistryObject<Item> PILL11_H = ITEMS.register("pill11_h",
+            () -> new Pill(new Item.Properties().stacksTo(16), 11, true));
+    public static final RegistryObject<Item> PILL12_H = ITEMS.register("pill12_h",
+            () -> new Pill(new Item.Properties().stacksTo(16), 12, true));
+    public static final RegistryObject<Item> PILL13_H = ITEMS.register("pill13_h",
+            () -> new Pill(new Item.Properties().stacksTo(16), 13, true));
+    public static final RegistryObject<Item> GOLDEN_PILL = ITEMS.register("golden_pill",
+            () -> new GoldenPill(new Item.Properties(), false));
+    public static final RegistryObject<Item> GOLDEN_PILL_H = ITEMS.register("golden_pill_h",
+            () -> new GoldenPill(new Item.Properties(), true));
+    static {
+        PICKUP_LIST.add(PILL1);
+        PICKUP_LIST.add(PILL2);
+        PICKUP_LIST.add(PILL3);
+        PICKUP_LIST.add(PILL4);
+        PICKUP_LIST.add(PILL5);
+        PICKUP_LIST.add(PILL6);
+        PICKUP_LIST.add(PILL7);
+        PICKUP_LIST.add(PILL8);
+        PICKUP_LIST.add(PILL9);
+        PICKUP_LIST.add(PILL10);
+        PICKUP_LIST.add(PILL11);
+        PICKUP_LIST.add(PILL12);
+        PICKUP_LIST.add(PILL13);
+        PICKUP_LIST.add(PILL1_H);
+        PICKUP_LIST.add(PILL2_H);
+        PICKUP_LIST.add(PILL3_H);
+        PICKUP_LIST.add(PILL4_H);
+        PICKUP_LIST.add(PILL5_H);
+        PICKUP_LIST.add(PILL6_H);
+        PICKUP_LIST.add(PILL7_H);
+        PICKUP_LIST.add(PILL8_H);
+        PICKUP_LIST.add(PILL9_H);
+        PICKUP_LIST.add(PILL10_H);
+        PICKUP_LIST.add(PILL11_H);
+        PICKUP_LIST.add(PILL12_H);
+        PICKUP_LIST.add(PILL13_H);
+        PICKUP_LIST.add(GOLDEN_PILL);
+        PICKUP_LIST.add(GOLDEN_PILL_H);
+    }
+
 
 }

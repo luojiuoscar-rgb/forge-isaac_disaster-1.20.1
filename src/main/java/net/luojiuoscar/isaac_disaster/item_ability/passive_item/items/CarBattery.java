@@ -1,6 +1,7 @@
 package net.luojiuoscar.isaac_disaster.item_ability.passive_item.items;
 
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerPassiveItemProvider;
+import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.item_ability.passive_item.IPassiveItem;
 import net.luojiuoscar.isaac_disaster.item.ModItems;
 import net.luojiuoscar.isaac_disaster.manager.id_managers.ItemId;
@@ -28,21 +29,19 @@ public class CarBattery implements IPassiveItem {
     @Override
     public void onDirectObtain(Player player) {
         // 车载电池需要同步数据到客户端
-        AtomicInteger count = new AtomicInteger();
-        player.getCapability(PlayerPassiveItemProvider.PLAYER_PASSIVE_ITEM).ifPresent(
-                playerPassiveItem -> count.set(playerPassiveItem.getItemCount(ItemId.CAR_BATTERY.getId()))
-        );
-        ModMessages.sentToPlayer(new PassiveItemSyncS2CPacket(ItemId.CAR_BATTERY.getId(), count.get()), (ServerPlayer) player);
+        if (player instanceof ServerPlayer serverPlayer){
+            int count = PlayerHelper.getItemCount(ItemId.CAR_BATTERY.getId(), serverPlayer);
+            ModMessages.sentToPlayer(new PassiveItemSyncS2CPacket(ItemId.CAR_BATTERY.getId(), count), serverPlayer);
+        }
     }
 
     @Override
     public void onRemove(Player player) {
         // 车载电池需要同步数据到客户端
-        AtomicInteger count = new AtomicInteger();
-        player.getCapability(PlayerPassiveItemProvider.PLAYER_PASSIVE_ITEM).ifPresent(
-                playerPassiveItem -> count.set(playerPassiveItem.getItemCount(ItemId.CAR_BATTERY.getId()))
-        );
-        ModMessages.sentToPlayer(new PassiveItemSyncS2CPacket(ItemId.CAR_BATTERY.getId(), count.get()), (ServerPlayer) player);
+        if (player instanceof ServerPlayer serverPlayer){
+            int count = PlayerHelper.getItemCount(ItemId.CAR_BATTERY.getId(), serverPlayer);
+            ModMessages.sentToPlayer(new PassiveItemSyncS2CPacket(ItemId.CAR_BATTERY.getId(), count), serverPlayer);
+        }
     }
 
     @Override

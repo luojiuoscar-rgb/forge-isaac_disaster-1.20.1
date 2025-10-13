@@ -1,6 +1,8 @@
 package net.luojiuoscar.isaac_disaster.entity;
 
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
+import net.luojiuoscar.isaac_disaster.entity.custom.IsaacBullet;
+import net.luojiuoscar.isaac_disaster.entity.custom.LemonEffectCloud;
 import net.luojiuoscar.isaac_disaster.entity.tnt.GigaBomb;
 import net.luojiuoscar.isaac_disaster.entity.tnt.IsaacBomb;
 import net.minecraft.world.entity.EntityType;
@@ -41,4 +43,9 @@ public class ModEntities {
                             .build("tear_bullet")
             );
 
+    public static final RegistryObject<EntityType<LemonEffectCloud>> SELECTIVE_EFFECT_CLOUD =
+            MOD_ENTITIES.register("selective_effect_cloud",
+                    () -> EntityType.Builder.<LemonEffectCloud>of(LemonEffectCloud::new, MobCategory.MISC)
+                            .sized(6.0F, 0.5F) // 大概大小
+                            .build("selective_effect_cloud"));
 }

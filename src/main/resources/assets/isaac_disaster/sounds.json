@@ -1,68 +1,627 @@
 {
   "default_obtain_item": {
-    "subtitles": "sounds.isaac_disaster.default_obtain_item",
     "sounds": [
       "isaac_disaster:default_obtain_item"
     ]
   },
   "yum_heart_use": {
-    "subtitles": "sounds.isaac_disaster.yum_heart_use",
     "sounds": [
       "isaac_disaster:yum_heart_use"
     ]
   },
   "the_book_of_belial_use": {
-    "subtitles": "sounds.isaac_disaster.the_book_of_belial_use",
     "sounds": [
       "isaac_disaster:the_book_of_belial_use"
     ]
   },
   "giga_bomb_explosion": {
-    "subtitles": "sounds.isaac_disaster.giga_bomb_explosion",
     "sounds": [
       "isaac_disaster:giga_bomb_explosion"
     ]
   },
   "red_heart": {
-    "subtitles": "sounds.isaac_disaster.red_heart",
     "sounds": [
       "isaac_disaster:red_heart"
     ]
   },
   "soul_heart": {
-    "subtitles": "sounds.isaac_disaster.soul_heart",
     "sounds": [
       "isaac_disaster:soul_heart"
     ]
   },
   "black_heart": {
-    "subtitles": "sounds.isaac_disaster.black_heart",
     "sounds": [
       "isaac_disaster:black_heart"
     ]
   },
   "black_heart_active": {
-    "subtitles": "sounds.isaac_disaster.black_heart_active",
     "sounds": [
       "isaac_disaster:black_heart_active"
     ]
   },
   "the_necronmicon_use": {
-    "subtitles": "sounds.isaac_disaster.the_necronmicon_use",
     "sounds": [
       "isaac_disaster:the_necronmicon_use"
     ]
   },
   "holy_shield_broke": {
-    "subtitles": "sounds.isaac_disaster.holy_shield_broke",
     "sounds": [
       "isaac_disaster:holy_shield_broke"
     ]
   },
   "isaac_head_shoot": {
-    "subtitles": "sounds.isaac_disaster.isaac_head_shoot",
     "sounds": [
       "isaac_disaster:isaac_head_shoot"
+    ]
+  },
+  "balls_of_steel": {
+    "sounds": [
+      "isaac_disaster:balls_of_steel"
+    ]
+  },
+  "i_found_pills": {
+    "sounds": [
+      "isaac_disaster:i_found_pills"
+    ]
+  },
+  "i_found_pills_h": {
+    "sounds": [
+      "isaac_disaster:i_found_pills_h"
+    ]
+  },
+  "i_found_pills_use": {
+    "sounds": [
+      "isaac_disaster:i_found_pills_use"
+    ]
+  },
+  "pill_use_good": {
+    "sounds": [
+      "isaac_disaster:pill_use_good"
+    ]
+  },
+  "pill_use_good_h": {
+    "sounds": [
+      "isaac_disaster:pill_use_good_h"
+    ]
+  },
+  "pill_use_good_with_effect": {
+    "sounds": [
+      "isaac_disaster:pill_use_good_with_effect"
+    ]
+  },
+  "pill_use_bad": {
+    "sounds": [
+      "isaac_disaster:pill_use_bad"
+    ]
+  },
+  "pill_use_bad_h": {
+    "sounds": [
+      "isaac_disaster:pill_use_bad_h"
+    ]
+  },
+  "48_hour_energy": {
+    "sounds": [
+      "isaac_disaster:48_hour_energy"
+    ]
+  },
+  "48_hour_energy_h": {
+    "sounds": [
+      "isaac_disaster:48_hour_energy_h"
+    ]
+  },
+  "addicted": {
+    "sounds": [
+      "isaac_disaster:addicted"
+    ]
+  },
+  "addicted_h": {
+    "sounds": [
+      "isaac_disaster:addicted_h"
+    ]
+  },
+  "amnesia": {
+    "sounds": [
+      "isaac_disaster:amnesia"
+    ]
+  },
+  "amnesia_h": {
+    "sounds": [
+      "isaac_disaster:amnesia_h"
+    ]
+  },
+  "are_you_a_wizard": {
+    "sounds": [
+      "isaac_disaster:are_you_a_wizard"
+    ]
+  },
+  "are_you_a_wizard_h": {
+    "sounds": [
+      "isaac_disaster:are_you_a_wizard_h"
+    ]
+  },
+  "bad_gas": {
+    "sounds": [
+      "isaac_disaster:bad_gas"
+    ]
+  },
+  "bad_gas_h": {
+    "sounds": [
+      "isaac_disaster:bad_gas_h"
+    ]
+  },
+  "bad_trip": {
+    "sounds": [
+      "isaac_disaster:bad_trip"
+    ]
+  },
+  "bad_trip_h": {
+    "sounds": [
+      "isaac_disaster:bad_trip_h"
+    ]
+  },
+  "balls_of_steel_h": {
+    "sounds": [
+      "isaac_disaster:balls_of_steel_h"
+    ]
+  },
+  "bombs_are_key": {
+    "sounds": [
+      "isaac_disaster:bombs_are_key"
+    ]
+  },
+  "bombs_are_key_h": {
+    "sounds": [
+      "isaac_disaster:bombs_are_key_h"
+    ]
+  },
+  "experimental_pill": {
+    "sounds": [
+      "isaac_disaster:experimental_pill"
+    ]
+  },
+  "experimental_pill_h": {
+    "sounds": [
+      "isaac_disaster:experimental_pill_h"
+    ]
+  },
+  "explosive_diarrhea": {
+    "sounds": [
+      "isaac_disaster:explosive_diarrhea"
+    ]
+  },
+  "explosive_diarrhea_h": {
+    "sounds": [
+      "isaac_disaster:explosive_diarrhea_h"
+    ]
+  },
+  "feels_like_im_walking_on_sunshine": {
+    "sounds": [
+      "isaac_disaster:feels_like_im_walking_on_sunshine"
+    ]
+  },
+  "feels_like_im_walking_on_sunshine_h": {
+    "sounds": [
+      "isaac_disaster:feels_like_im_walking_on_sunshine_h"
+    ]
+  },
+  "friends_till_the_end": {
+    "sounds": [
+      "isaac_disaster:friends_till_the_end"
+    ]
+  },
+  "friends_till_the_end_h": {
+    "sounds": [
+      "isaac_disaster:friends_till_the_end_h"
+    ]
+  },
+  "full_health": {
+    "sounds": [
+      "isaac_disaster:full_health"
+    ]
+  },
+  "full_health_h": {
+    "sounds": [
+      "isaac_disaster:full_health_h"
+    ]
+  },
+  "gulp": {
+    "sounds": [
+      "isaac_disaster:gulp"
+    ]
+  },
+  "gulp_h": {
+    "sounds": [
+      "isaac_disaster:gulp_h"
+    ]
+  },
+  "health_down": {
+    "sounds": [
+      "isaac_disaster:health_down"
+    ]
+  },
+  "health_down_h": {
+    "sounds": [
+      "isaac_disaster:health_down_h"
+    ]
+  },
+  "health_up": {
+    "sounds": [
+      "isaac_disaster:health_up"
+    ]
+  },
+  "health_up_h": {
+    "sounds": [
+      "isaac_disaster:health_up_h"
+    ]
+  },
+  "hematemesis": {
+    "sounds": [
+      "isaac_disaster:hematemesis"
+    ]
+  },
+  "hematemesis_h": {
+    "sounds": [
+      "isaac_disaster:hematemesis_h"
+    ]
+  },
+  "horf": {
+    "sounds": [
+      "isaac_disaster:horf"
+    ]
+  },
+  "horf_h": {
+    "sounds": [
+      "isaac_disaster:horf_h"
+    ]
+  },
+  "i_can_see_forever": {
+    "sounds": [
+      "isaac_disaster:i_can_see_forever"
+    ]
+  },
+  "i_can_see_forever_h": {
+    "sounds": [
+      "isaac_disaster:i_can_see_forever_h"
+    ]
+  },
+  "im_drowsy": {
+    "sounds": [
+      "isaac_disaster:im_drowsy"
+    ]
+  },
+  "im_drowsy_h": {
+    "sounds": [
+      "isaac_disaster:im_drowsy_h"
+    ]
+  },
+  "im_excited": {
+    "sounds": [
+      "isaac_disaster:im_excited"
+    ]
+  },
+  "im_excited_h": {
+    "sounds": [
+      "isaac_disaster:im_excited_h"
+    ]
+  },
+  "infested_1": {
+    "sounds": [
+      "isaac_disaster:infested_1"
+    ]
+  },
+  "infested_1_h": {
+    "sounds": [
+      "isaac_disaster:infested_1_h"
+    ]
+  },
+  "infested_2": {
+    "sounds": [
+      "isaac_disaster:infested_2"
+    ]
+  },
+  "infested_2_h": {
+    "sounds": [
+      "isaac_disaster:infested_2_h"
+    ]
+  },
+  "lemon_party": {
+    "sounds": [
+      "isaac_disaster:lemon_party"
+    ]
+  },
+  "lemon_party_h": {
+    "sounds": [
+      "isaac_disaster:lemon_party_h"
+    ]
+  },
+  "luck_down": {
+    "sounds": [
+      "isaac_disaster:luck_down"
+    ]
+  },
+  "luck_down_h": {
+    "sounds": [
+      "isaac_disaster:luck_down_h"
+    ]
+  },
+  "luck_up": {
+    "sounds": [
+      "isaac_disaster:luck_up"
+    ]
+  },
+  "luck_up_h": {
+    "sounds": [
+      "isaac_disaster:luck_up_h"
+    ]
+  },
+  "one_makes_you_larger": {
+    "sounds": [
+      "isaac_disaster:one_makes_you_larger"
+    ]
+  },
+  "one_makes_you_larger_h": {
+    "sounds": [
+      "isaac_disaster:one_makes_you_larger_h"
+    ]
+  },
+  "one_makes_you_small": {
+    "sounds": [
+      "isaac_disaster:one_makes_you_small"
+    ]
+  },
+  "one_makes_you_small_h": {
+    "sounds": [
+      "isaac_disaster:one_makes_you_small_h"
+    ]
+  },
+  "paralysis":{
+    "sounds":[
+      "isaac_disaster:paralysis"
+    ]
+  },
+  "paralysis_h":{
+    "sounds":[
+      "isaac_disaster:paralysis_h"
+    ]
+  },
+  "percs":{
+    "sounds":[
+      "isaac_disaster:percs"
+    ]
+  },
+  "percs_h":{
+    "sounds":[
+      "isaac_disaster:percs_h"
+    ]
+  },
+  "pheromones":{
+    "sounds":[
+      "isaac_disaster:pheromones"
+    ]
+  },
+  "pheromones_h":{
+    "sounds":[
+      "isaac_disaster:pheromones_h"
+    ]
+  },
+  "power_pill":{
+    "sounds":[
+      "isaac_disaster:power_pill"
+    ]
+  },
+  "power_pill_h":{
+    "sounds":[
+      "isaac_disaster:power_pill_h"
+    ]
+  },
+  "pretty_fly":{
+    "sounds":[
+      "isaac_disaster:pretty_fly"
+    ]
+  },
+  "pretty_fly_h":{
+    "sounds":[
+      "isaac_disaster:pretty_fly_h"
+    ]
+  },
+  "puberty":{
+    "sounds":[
+      "isaac_disaster:puberty"
+    ]
+  },
+  "puberty_h":{
+    "sounds":[
+      "isaac_disaster:puberty_h"
+    ]
+  },
+  "question_marks":{
+    "sounds":[
+      "isaac_disaster:question_marks"
+    ]
+  },
+  "question_marks_h":{
+    "sounds":[
+      "isaac_disaster:question_marks_h"
+    ]
+  },
+  "range_down":{
+    "sounds":[
+      "isaac_disaster:range_down"
+    ]
+  },
+  "range_down_h":{
+    "sounds":[
+      "isaac_disaster:range_down_h"
+    ]
+  },
+  "range_up":{
+    "sounds":[
+      "isaac_disaster:range_up"
+    ]
+  },
+  "range_up_h":{
+    "sounds":[
+      "isaac_disaster:range_up_h"
+    ]
+  },
+  "relax":{
+    "sounds":[
+      "isaac_disaster:relax"
+    ]
+  },
+  "relax_h":{
+    "sounds":[
+      "isaac_disaster:relax_h"
+    ]
+  },
+  "retro_vision":{
+    "sounds":[
+      "isaac_disaster:retro_vision"
+    ]
+  },
+  "retro_vision_h":{
+    "sounds":[
+      "isaac_disaster:retro_vision_h"
+    ]
+  },
+  "shot_speed_down":{
+    "sounds":[
+      "isaac_disaster:shot_speed_down"
+    ]
+  },
+  "shot_speed_down_h":{
+    "sounds":[
+      "isaac_disaster:shot_speed_down_h"
+    ]
+  },
+  "shot_speed_up":{
+    "sounds":[
+      "isaac_disaster:shot_speed_up"
+    ]
+  },
+  "shot_speed_up_h":{
+    "sounds":[
+      "isaac_disaster:shot_speed_up_h"
+    ]
+  },
+  "somethings_wrong":{
+    "sounds":[
+      "isaac_disaster:somethings_wrong"
+    ]
+  },
+  "somethings_wrong_h":{
+    "sounds":[
+      "isaac_disaster:somethings_wrong_h"
+    ]
+  },
+  "speed_up":{
+    "sounds":[
+      "isaac_disaster:speed_up"
+    ]
+  },
+  "speed_up_h":{
+    "sounds":[
+      "isaac_disaster:speed_up_h"
+    ]
+  },
+  "speed_down":{
+    "sounds":[
+      "isaac_disaster:speed_down"
+    ]
+  },
+  "speed_down_h":{
+    "sounds":[
+      "isaac_disaster:speed_down_h"
+    ]
+  },
+  "tears_down":{
+    "sounds":[
+      "isaac_disaster:tears_down"
+    ]
+  },
+  "tears_down_h":{
+    "sounds":[
+      "isaac_disaster:tears_down_h"
+    ]
+  },
+  "tears_up":{
+    "sounds":[
+      "isaac_disaster:tears_up"
+    ]
+  },
+  "tears_up_h":{
+    "sounds":[
+      "isaac_disaster:tears_up_h"
+    ]
+  },
+  "telepills":{
+    "sounds":[
+      "isaac_disaster:telepills"
+    ]
+  },
+  "telepills_h":{
+    "sounds":[
+      "isaac_disaster:telepills_h"
+    ]
+  },
+  "vurp":{
+    "sounds":[
+      "isaac_disaster:vurp"
+    ]
+  },
+  "vurp_h":{
+    "sounds":[
+      "isaac_disaster:vurp_h"
+    ]
+  },
+  "x_lax":{
+    "sounds":[
+      "isaac_disaster:x_lax"
+    ]
+  },
+  "x_lax_h":{
+    "sounds":[
+      "isaac_disaster:x_lax_h"
+    ]
+  },
+  "fart_normal":{
+    "sounds":[
+      "isaac_disaster:fart1",
+      "isaac_disaster:fart2",
+      "isaac_disaster:fart3",
+      "isaac_disaster:fart4",
+      "isaac_disaster:fart5"
+    ]
+  },
+  "fart_huge":{
+    "sounds":[
+      "isaac_disaster:fart1_h",
+      "isaac_disaster:fart2_h",
+      "isaac_disaster:fart3_h",
+      "isaac_disaster:fart4_h",
+      "isaac_disaster:fart5_h",
+      "isaac_disaster:fart6_h",
+      "isaac_disaster:fart7_h"
+    ]
+  },
+  "steve_hurt_old":{
+    "sounds":[
+      "isaac_disaster:steve_hurt_old"
+    ]
+  },
+  "lemon_mishap_use":{
+    "sounds":[
+      "isaac_disaster:lemon_mishap_use"
+    ]
+  },
+  "battery":{
+    "sounds":[
+      "isaac_disaster:battery"
+    ]
+  },
+  "battery_small":{
+    "sounds":[
+      "isaac_disaster:battery_small"
     ]
   }
 }

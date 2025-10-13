@@ -1,5 +1,6 @@
 package net.luojiuoscar.isaac_disaster.capability.player;
 
+import net.luojiuoscar.isaac_disaster.item_ability.passive_item.INewBulletType;
 import net.luojiuoscar.isaac_disaster.item_ability.passive_item.IRecursiveItem;
 import net.luojiuoscar.isaac_disaster.item_ability.set.ISet;
 import net.luojiuoscar.isaac_disaster.manager.item_managers.PassiveItemManager;
@@ -31,9 +32,11 @@ public class PlayerPassiveItem {
     // 用编号代表道具。需要查询道具的时候再使用道具管理器
     private ArrayList<Integer> playerPassiveItems;
     // 键为道具ID，值为道具数量
-    private Map<Integer, Integer> itemCountMap;
-    private Map<Integer, Integer> triggerItemMap;
-    private Map<Integer, Integer> recursiveItemMap; // itemId : remainTick
+    private final Map<Integer, Integer> itemCountMap;
+    private final Map<Integer, Integer> triggerItemMap;
+    private final Map<Integer, Integer> recursiveItemMap; // itemId : remainTick
+    private final Map<Integer, Integer> hasNewBulletTypeMap;
+
     private Map<Integer, Integer> setCountMap; // 套装计数
 
     // constructor
@@ -44,6 +47,7 @@ public class PlayerPassiveItem {
         this.triggerItemMap = new HashMap<>();
         this.recursiveItemMap = new HashMap<>();
         this.setCountMap = new HashMap<>();
+        this.hasNewBulletTypeMap = new HashMap<>();
     }
 
     /**
@@ -54,7 +58,9 @@ public class PlayerPassiveItem {
         triggerItemMap.clear();
         recursiveItemMap.clear();
         setCountMap.clear();
+        hasNewBulletTypeMap.clear();
     }
+
 
     /**
      * 移除道具后更新哈希表计数
@@ -76,6 +82,10 @@ public class PlayerPassiveItem {
             }
             // 初始计时
             recursiveItemMap.put(itemId, item.getTickInterval());
+        }
+        // 如果可以射出特殊类型的子弹
+        if(PassiveItemManager.getInstance().getItemFromId(itemId) instanceof INewBulletType){
+            hasNewBulletTypeMap.put(itemId, itemCountMap.get(itemId));
         }
     }
 
@@ -104,17 +114,24 @@ public class PlayerPassiveItem {
     }
 
     /**
-     * @return 全部触发型道具的表
+     * @return 全部循环型道具的表
      */
     public Map<Integer, Integer> getPlayerRecursiveItemMap(){
         return recursiveItemMap;
     }
 
     /**
-     * @return 全部触发型道具的表
+     * @return 全部套装计数的表
      */
     public Map<Integer, Integer> getSetCountMap(){
         return setCountMap;
+    }
+
+    /**
+     * @return 全部存在特殊子弹类型的表
+     */
+    public Map<Integer, Integer> getHasNewBulletTypeMap(){
+        return hasNewBulletTypeMap;
     }
 
     /**

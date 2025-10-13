@@ -34,7 +34,7 @@ public class YumHeart implements IActiveItem {
     }
 
     @Override
-    public void onTriggerEffectStronger(Player player){
+    public void onTriggeredEffectStronger(Player player){
         StatManager.healHealth(player, 2);
     }
 

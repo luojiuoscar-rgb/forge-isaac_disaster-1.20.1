@@ -9,6 +9,8 @@ import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.EntityType;
@@ -128,58 +130,66 @@ public class IsaacBomb extends PrimedTnt {
     @Nullable
     public LivingEntity getTrackingTarget() {
         double range = 16.0;
+
         List<LivingEntity> nearby = this.level().getEntitiesOfClass(
                 LivingEntity.class,
                 this.getBoundingBox().inflate(range),
-                e -> e != this.getOwner() && e.isAlive()
+                e -> e.isAlive()
+                        && e != this.getOwner()
+                        && !e.isInvulnerable() // 排除无敌实体
         );
 
-        LivingEntity hostileAggro = null;      // 有敌意的敌对生物
-        LivingEntity hostilePassive = null;    // 没敌意的敌对生物
-        LivingEntity neutral = null;           // 中立
-        LivingEntity playerTarget = null;      // 玩家
+        LivingEntity hostileAggro = null;
+        LivingEntity hostilePassive = null;
+        LivingEntity neutral = null;
+        LivingEntity playerTarget = null;
 
         for (LivingEntity e : nearby) {
-            // ==== 敌对生物（Monster 类） ====
+            // ==== 敌对生物（Monster） ====
             if (e instanceof Monster monster) {
                 boolean hasAggro = false;
 
-                // 1. mob.getTarget() 是否指向 owner
-                if (monster.getTarget() == this.getOwner()) {
-                    hasAggro = true;
-                }
+                // 是否正盯着 owner 攻击
+                if (monster.getTarget() == this.getOwner()) hasAggro = true;
 
-                // 2. 如果是中立怪，如Enderman / Piglin / Bee等
-                if (monster instanceof NeutralMob neutralMob && this.getOwner() instanceof Player player) {
-                    if (neutralMob.isAngryAt(player)) {
-                        hasAggro = true;
-                    }
-                }
+                // 如果是中立型怪物，检测是否被激怒
+                if (monster instanceof NeutralMob neutralMob && this.getOwner() instanceof Player player)
+                    if (neutralMob.isAngryAt(player)) hasAggro = true;
 
+                // 有仇恨 -> 优先追踪
                 if (hasAggro) {
-                    if (hostileAggro == null || this.distanceToSqr(e) < this.distanceToSqr(hostileAggro)) {
+                    if (hostileAggro == null || this.distanceToSqr(e) < this.distanceToSqr(hostileAggro))
                         hostileAggro = e;
-                    }
                 } else {
-                    if (hostilePassive == null || this.distanceToSqr(e) < this.distanceToSqr(hostilePassive)) {
+                    if (hostilePassive == null || this.distanceToSqr(e) < this.distanceToSqr(hostilePassive))
                         hostilePassive = e;
-                    }
                 }
             }
-            // ==== 中立生物（不攻击不反击的） ====
+
+            // ==== 中立生物（不攻击） ====
             else if (e instanceof PathfinderMob) {
-                if (neutral == null || this.distanceToSqr(e) < this.distanceToSqr(neutral)) {
+                if (neutral == null || this.distanceToSqr(e) < this.distanceToSqr(neutral))
                     neutral = e;
-                }
             }
+
             // ==== 玩家 ====
             else if (e instanceof Player otherPlayer) {
                 if (this.getOwner() instanceof Player ownerPlayer) {
-                    if (ownerPlayer.canHarmPlayer(otherPlayer) && !ownerPlayer.isAlliedTo(otherPlayer)) {
-                        if (playerTarget == null || this.distanceToSqr(e) < this.distanceToSqr(playerTarget)) {
-                            playerTarget = e;
-                        }
+                    // 排除同队伍
+                    if (ownerPlayer.isAlliedTo(otherPlayer)) continue;
+
+                    // 排除关闭PVP的服务器
+                    if (ownerPlayer.level() instanceof ServerLevel serverLevel) {
+                        MinecraftServer server = serverLevel.getServer();
+                        if (!server.isPvpAllowed()) continue;
                     }
+
+                    // 检查是否能伤害
+                    if (!ownerPlayer.canHarmPlayer(otherPlayer)) continue;
+
+                    // 选最近的玩家
+                    if (playerTarget == null || this.distanceToSqr(e) < this.distanceToSqr(playerTarget))
+                        playerTarget = e;
                 }
             }
         }

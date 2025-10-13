@@ -25,13 +25,13 @@ public class SpoonBender implements IPassiveItem {
     @Override
     public void onDirectObtain(Player player) {
         StatManager.modifyHoming(player, 1);
-        StatManager.addBulletFilter(player, ColorManager.SPOON_BENDER);
+        StatManager.addBulletFilter(player, ColorManager.SPOON_BENDER_FILTER);
     }
 
     @Override
     public void onRemove(Player player) {
         StatManager.modifyHoming(player, -1);
-        StatManager.removeBulletFilter(player, ColorManager.SPOON_BENDER);
+        StatManager.removeBulletFilter(player, ColorManager.SPOON_BENDER_FILTER);
     }
 
     @Override

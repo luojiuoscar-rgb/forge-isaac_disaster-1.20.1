@@ -12,6 +12,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class SpeedBall implements IPassiveItem {
@@ -65,4 +66,10 @@ public class SpeedBall implements IPassiveItem {
                         )
         );
     }
+
+    @Override
+    public List<Component> getExplain(){
+        return SetManager.getInstance().getSetFromId(SetId.SPUN.getId()).getDescription();
+    }
+
 }

@@ -1,21 +1,21 @@
 package net.luojiuoscar.isaac_disaster.event;
 
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
-import net.luojiuoscar.isaac_disaster.attribute.ModAttributes;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerAbilityProvider;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerPassiveItemProvider;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerStatModifierProvider;
 import net.luojiuoscar.isaac_disaster.effect.ModEffects;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
+import net.luojiuoscar.isaac_disaster.helper.ScheduledFuncHelper;
 import net.luojiuoscar.isaac_disaster.item.item.ActiveItem;
 import net.luojiuoscar.isaac_disaster.item.pickup.IsaacHead;
 import net.luojiuoscar.isaac_disaster.manager.id_managers.ItemId;
 import net.luojiuoscar.isaac_disaster.sound.ModSounds;
 import net.minecraft.client.Minecraft;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -71,6 +71,9 @@ public class ServerTickEvent {
                         }
                     });
         }
+
+        // 更新所有scheduled function
+        ScheduledFuncHelper.tick(server);
     }
 
     private static void bugsFix(ServerPlayer player){
@@ -124,6 +127,8 @@ public class ServerTickEvent {
     private static void holdRightClick(ServerPlayer player, ItemStack stack){
         // 若在冷却
         if (player.getCooldowns().isOnCooldown(stack.getItem())) return;
+        // 若有无泪症
+        if (player.hasEffect(ModEffects.LACRIMAL_HYPOSECRETION.get())) return;
 
         // 发射子弹
         PlayerHelper.shotBullet(player);
@@ -141,4 +146,5 @@ public class ServerTickEvent {
                 1.0f
         );
     }
+
 }

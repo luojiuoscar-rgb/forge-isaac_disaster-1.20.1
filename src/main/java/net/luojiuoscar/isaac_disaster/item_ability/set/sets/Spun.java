@@ -1,10 +1,17 @@
 package net.luojiuoscar.isaac_disaster.item_ability.set.sets;
 
+import net.luojiuoscar.isaac_disaster.IsaacDisaster;
+import net.luojiuoscar.isaac_disaster.helper.LevelHelper;
 import net.luojiuoscar.isaac_disaster.item_ability.set.ISet;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.manager.id_managers.SetId;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.player.Player;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class Spun implements ISet {
     @Override
@@ -21,7 +28,8 @@ public class Spun implements ISet {
     public void onObtainEffect(Player player) {
         StatManager.modifyDamageAdder(player, 2);
         StatManager.modifyMovementSpeedAdder(player, 0.75);
-
+        LevelHelper.spawnLootAtPos((ServerLevel) player.level(), player.blockPosition().getCenter(),
+                ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "random_pills"));
     }
 
     @Override
@@ -40,5 +48,14 @@ public class Spun implements ISet {
     public Component onRemoveDescription(Player player) {
         return Component.translatable("set.isaac_disaster.action.remove")
                 .append(Component.translatable("set.isaac_disaster.spun"));
+    }
+
+    @Override
+    public List<Component> getDescription() {
+        return List.of(
+                Component.translatable("set.isaac_disaster.spun").append(": ")
+                        .append(Component.translatable("item.isaac_disaster.attribute.damage", 2*StatManager.getDamageBonus())),
+                Component.translatable("item.isaac_disaster.attribute.movement_speed", 750*StatManager.getMovementSpeedBonus())
+        );
     }
 }

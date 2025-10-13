@@ -25,7 +25,7 @@ public class Pisces implements IPassiveItem {
     public void onDirectObtain(Player player) {
         StatManager.modifyPiercing(player, 1);
         StatManager.modifyTearsCorrectionAdder(player, 1);
-        StatManager.modifyBulletScaleAdder(player, 0.75);
+        StatManager.modifyBulletScaleAdder(player, 2);
         StatManager.modifyAttackKnockBackAdder(player, 1);
     }
 
@@ -33,7 +33,7 @@ public class Pisces implements IPassiveItem {
     public void onRemove(Player player) {
         StatManager.modifyPiercing(player, -1);
         StatManager.modifyTearsCorrectionAdder(player, -1);
-        StatManager.modifyBulletScaleAdder(player, -0.75);
+        StatManager.modifyBulletScaleAdder(player, -2);
         StatManager.modifyAttackKnockBackAdder(player, -1);
     }
 
@@ -47,7 +47,7 @@ public class Pisces implements IPassiveItem {
         return List.of(
                 Component.translatable("item.isaac_disaster.attribute.piercing_bullet"),
                 Component.translatable("item.isaac_disaster.attribute.tears_correction",StatManager.getTearsCorrectionBonus()),
-                Component.translatable("item.isaac_disaster.attribute.bullet_scale",0.75*StatManager.getBulletScaleBonus()),
+                Component.translatable("item.isaac_disaster.attribute.bullet_scale",2*StatManager.getBulletScaleBonus()),
                 Component.translatable("item.isaac_disaster.attribute.attack_knockback",StatManager.getAttackKnockbackBonus())
                 );
     }

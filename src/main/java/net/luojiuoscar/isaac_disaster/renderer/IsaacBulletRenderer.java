@@ -10,7 +10,7 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.resources.ResourceLocation;
-import net.luojiuoscar.isaac_disaster.entity.IsaacBullet;
+import net.luojiuoscar.isaac_disaster.entity.custom.IsaacBullet;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 
 public class IsaacBulletRenderer extends EntityRenderer<IsaacBullet> {
@@ -34,18 +34,25 @@ public class IsaacBulletRenderer extends EntityRenderer<IsaacBullet> {
         float scale = bullet.getScale();
         poseStack.scale(scale, scale, scale);
 
-        float size = 0.15f;
+        float size = 0.2f;
 
         VertexConsumer vertexConsumer = buffer.getBuffer(RenderType.entityTranslucent(TEAR_BULLET));
 
 
-
         // 应用滤镜
-        int color = ColorHelper.blendColor(bullet.getColor(), bullet.getFilterColor(), 0.7f);
-        float r = ((color >> 16) & 0xFF) / 255f;
-        float g = ((color >> 8) & 0xFF) / 255f;
-        float b = (color & 0xFF) / 255f;
+        int color = bullet.getColor();
+        int filter = bullet.getFilterColor();
         float alpha = bullet.getAlpha();
+
+        int blended;
+        if (filter == 0xFFFFFF || filter == 0x000000) {
+            blended = color;
+        } else {
+            blended = ColorHelper.blendColor(color, filter, 0.7f);
+        }
+        float r = ((blended >> 16) & 0xFF) / 255f;
+        float g = ((blended >> 8) & 0xFF) / 255f;
+        float b = (blended & 0xFF) / 255f;
 
 
         // 绘制一个方形面片（类似粒子）

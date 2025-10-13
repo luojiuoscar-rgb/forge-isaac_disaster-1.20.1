@@ -70,4 +70,9 @@ public class RoidRage implements IPassiveItem {
                         )
         );
     }
+
+    @Override
+    public List<Component> getExplain(){
+        return SetManager.getInstance().getSetFromId(SetId.SPUN.getId()).getDescription();
+    }
 }

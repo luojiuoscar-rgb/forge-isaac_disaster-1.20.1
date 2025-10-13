@@ -4,10 +4,11 @@ package net.luojiuoscar.isaac_disaster.item_ability.active_item;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.item.item.ActiveItem;
 import net.luojiuoscar.isaac_disaster.manager.id_managers.ItemId;
+import net.luojiuoscar.isaac_disaster.sound.ModSounds;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
-import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -26,7 +27,7 @@ public interface IActiveItem {
     default void onUse(Player player, InteractionHand hand){
         // 判断车载电池
         if (PlayerHelper.hasItem(ItemId.CAR_BATTERY.getId(), (ServerPlayer) player)){
-            onTriggerEffectStronger(player);
+            onTriggeredEffectStronger(player);
         }else {
             onTriggeredEffect(player);
         }
@@ -57,6 +58,9 @@ public interface IActiveItem {
 
         // 设置0.5秒的冷却
         player.getCooldowns().addCooldown(item, 10);
+
+        // 触发音效（由于主动道具为范围音效，因此需要在服务端触发）
+        onTriggerSound(player);
     }
 
 
@@ -68,14 +72,13 @@ public interface IActiveItem {
     /**
      * 触发更强效果时的效果
      */
-    void onTriggerEffectStronger(Player player);
+    void onTriggeredEffectStronger(Player player);
 
 
     /**
      * 使用时的客户端效果
      */
     default void onUseClientEffect(Player player){
-        onTriggerSound(player);
     }
 
     /**
@@ -84,14 +87,16 @@ public interface IActiveItem {
     default void onTriggerSound(Player player) {
         SoundEvent sound = getSound();
         if (sound == null) return;
-        player.playSound(sound, 1.0f, 1.0f);
+
+        player.level().playSound(null, player.getX(), player.getY(), player.getZ(),
+                getSound(), SoundSource.PLAYERS, 1.0f, 1.0f);
     }
 
     /**
      * 决定了播放什么声音
      */
     default SoundEvent getSound(){
-        return SoundEvents.PLAYER_LEVELUP;
+        return ModSounds.BATTERY_SMALL.get();
     }
 
     /**

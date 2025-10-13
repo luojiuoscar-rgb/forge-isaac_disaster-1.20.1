@@ -118,6 +118,27 @@ public class ModMessages {
                 .encoder(SetCountSyncS2CPacket::toBytes)
                 .consumerNetworkThread(SetCountSyncS2CPacket::handle)
                 .add();
+
+        // register PillOnUseS2CPacket
+        net.messageBuilder(PillOnUseS2CPacket.class, id(), NetworkDirection.PLAY_TO_CLIENT)
+                .decoder(PillOnUseS2CPacket::new)
+                .encoder(PillOnUseS2CPacket::toBytes)
+                .consumerNetworkThread(PillOnUseS2CPacket::handle)
+                .add();
+
+        // register PillRecordsSyncS2CPacket
+        net.messageBuilder(PillRecordsSyncS2CPacket.class, id(), NetworkDirection.PLAY_TO_CLIENT)
+                .decoder(PillRecordsSyncS2CPacket::new)
+                .encoder(PillRecordsSyncS2CPacket::toBytes)
+                .consumerNetworkThread(PillRecordsSyncS2CPacket::handle)
+                .add();
+
+        // register PillQualitySyncS2CPacket
+        net.messageBuilder(PillQualitySyncS2CPacket.class, id(), NetworkDirection.PLAY_TO_CLIENT)
+                .decoder(PillQualitySyncS2CPacket::new)
+                .encoder(PillQualitySyncS2CPacket::toBytes)
+                .consumerNetworkThread(PillQualitySyncS2CPacket::handle)
+                .add();
     }
 
     public static <MSG> void sendToServer(MSG message){

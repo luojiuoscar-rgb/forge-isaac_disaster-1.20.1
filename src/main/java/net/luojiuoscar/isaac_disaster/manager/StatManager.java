@@ -8,6 +8,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.player.Player;
+import net.minecraftforge.common.capabilities.Capability;
 
 import javax.annotation.Nullable;
 import java.util.UUID;
@@ -18,13 +19,13 @@ import static net.luojiuoscar.isaac_disaster.Config.*;
  * 属性控制器，统一管理所有道具对玩家的属性修改
  */
 public class StatManager {
-    /**
-     * SPECIAL GETTERS
-     */
+
+
     public static double getFlyTime(){return FLY_TIME.get();}
     public static double getDamageMultiplier1(){return DAMAGE_MULTIPLIER_1.get();}
     public static double getNearbyRange(){return NEARBY_RANGE.get();}
     public static double getHolyShieldStrength(){return HOLY_SHIELD_STRENGTH.get();}
+
 
     public static void updateAdder(Player player, AttributeInstance attribute, double totalBoost, UUID uuid, String name) {
         attribute.removeModifier(uuid);
@@ -99,7 +100,7 @@ public class StatManager {
     }
     public static void modifyMaxHealth(Player player, double ratio){
         modifyAdder(player, UUIDManager.MAX_HEALTH_MODIFIER_ADDER,getHealthBonus()*ratio,
-                -10.0, null);
+                -20.0, null);
         player.setHealth(player.getHealth()); // 刷新血量
     }
 

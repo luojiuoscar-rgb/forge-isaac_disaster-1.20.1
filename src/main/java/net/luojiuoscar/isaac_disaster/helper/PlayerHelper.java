@@ -1,14 +1,16 @@
 package net.luojiuoscar.isaac_disaster.helper;
 
-import com.google.common.util.concurrent.AtomicDouble;
+
 import net.luojiuoscar.isaac_disaster.Config;
+import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.attribute.ModAttributes;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerAbilityProvider;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerPassiveItemProvider;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerStatModifierProvider;
 import net.luojiuoscar.isaac_disaster.effect.ModEffects;
-import net.luojiuoscar.isaac_disaster.entity.IsaacBullet;
+import net.luojiuoscar.isaac_disaster.entity.custom.IsaacBullet;
 import net.luojiuoscar.isaac_disaster.manager.ColorManager;
+import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffect;
@@ -19,10 +21,14 @@ import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.registries.ForgeRegistries;
 
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.*;
+
 
 public class PlayerHelper {
 
@@ -37,7 +43,21 @@ public class PlayerHelper {
         itemEntity.setNoPickUpDelay();
         level.addFreshEntity(itemEntity);
     }
+    public static void giveMoney(Player player, int amount){
+        int value = Config.COIN_TIER_1_VALUE.get();
+        String moneyId = Config.COIN_TIER_1_ID.get();
 
+        if (value <= 0) value = 1;
+        // 计算需要给予的数量
+        int count = (int) Math.ceil((double) amount / value);
+
+        ResourceLocation rl = ResourceLocation.tryParse(moneyId);
+        if (rl == null) return;
+        Item item = ForgeRegistries.ITEMS.getValue(rl);
+        // 检查是否有效
+        if (item == null || item == Items.AIR) return;
+        giveItem(player, item, count);
+    }
     public static void spawnItem(Player player, Item item, int count) {
         if (player.level().isClientSide()) return; // 只在服务端生成掉落物
 
@@ -47,29 +67,23 @@ public class PlayerHelper {
         ItemEntity itemEntity = new ItemEntity(level, player.getX(), player.getY(), player.getZ(), stack);
         level.addFreshEntity(itemEntity);
     }
-
     public static boolean hasItem(int itemId, ServerPlayer player){
-        AtomicInteger count = new AtomicInteger();
-        player.getCapability(PlayerPassiveItemProvider.PLAYER_PASSIVE_ITEM).ifPresent(
-                playerPassiveItem -> count.set(playerPassiveItem.getItemCount(itemId))
-        );
-        return count.get() > 0;
+        int[] count = {0};
+        player.getCapability(PlayerPassiveItemProvider.PLAYER_PASSIVE_ITEM)
+                .ifPresent(provider -> count[0] = provider.getItemCount(itemId));
+        return count[0] > 0;
     }
-
     public static int getItemCount(int itemId, ServerPlayer player){
-        AtomicInteger count = new AtomicInteger();
-        player.getCapability(PlayerPassiveItemProvider.PLAYER_PASSIVE_ITEM).ifPresent(
-                playerPassiveItem -> count.set(playerPassiveItem.getItemCount(itemId))
-        );
-        return count.get();
+        int[] count = {0};
+        player.getCapability(PlayerPassiveItemProvider.PLAYER_PASSIVE_ITEM)
+                .ifPresent(provider -> count[0] = provider.getItemCount(itemId));
+        return count[0];
     }
-
     public static void removeItemFromId(int itemId, ServerPlayer player){
         player.getCapability(PlayerPassiveItemProvider.PLAYER_PASSIVE_ITEM).ifPresent(
                 playerPassiveItem -> playerPassiveItem.removeFromId(player, itemId)
         );
     }
-
     public static void removeItemFromIndex(int itemId, ServerPlayer player){
         player.getCapability(PlayerPassiveItemProvider.PLAYER_PASSIVE_ITEM).ifPresent(
                 playerPassiveItem -> playerPassiveItem.removeFromIndex(player, itemId)
@@ -77,29 +91,31 @@ public class PlayerHelper {
     }
 
 
+    public static boolean hasSet(int itemId, ServerPlayer player){
+        int[] count = {0};
+        player.getCapability(PlayerPassiveItemProvider.PLAYER_PASSIVE_ITEM)
+                .ifPresent(provider -> count[0] = provider.getSetCountFromId(itemId));
+        return count[0] > 0;
+    }
+
+
     public static boolean canFly(ServerPlayer player){
-        AtomicDouble flyTime = new AtomicDouble();
-        player.getCapability(PlayerStatModifierProvider.PLAYER_STAT_MODIFIER).ifPresent(
-                playerStatModifier -> flyTime.set(playerStatModifier.getFlyTime())
-        );
-        return flyTime.get() > 0;
+        double[] count = {0};
+        player.getCapability(PlayerStatModifierProvider.PLAYER_STAT_MODIFIER)
+                .ifPresent(provider -> count[0] = provider.getFlyTime());
+        return count[0] > 0;
     }
     public static boolean isFlyLimit(ServerPlayer player){
         return getFlyPercentage(player) >= 1;
     }
-
     public static double getFlyPercentage(ServerPlayer player){
-        AtomicDouble flyTime = new AtomicDouble();
-        player.getCapability(PlayerStatModifierProvider.PLAYER_STAT_MODIFIER).ifPresent(
-                playerStatModifier -> flyTime.set(playerStatModifier.getFlyTime())
-        );
+        double[] count = {0, 0};
+        player.getCapability(PlayerStatModifierProvider.PLAYER_STAT_MODIFIER)
+                .ifPresent(provider -> count[0] = provider.getFlyTime());
+        player.getCapability(PlayerStatModifierProvider.PLAYER_STAT_MODIFIER)
+                .ifPresent(provider -> count[1] = provider.getFlyTimeCurrent());
 
-        AtomicDouble currentFlyTime = new AtomicDouble();
-        player.getCapability(PlayerStatModifierProvider.PLAYER_STAT_MODIFIER).ifPresent(
-                playerStatModifier -> currentFlyTime.set(playerStatModifier.getFlyTimeCurrent())
-        );
-
-        return currentFlyTime.get() / flyTime.get();
+        return count[1] / count[0];
     }
 
     /**
@@ -125,7 +141,6 @@ public class PlayerHelper {
         );
         player.addEffect(newEffect);
     }
-
     /**
      * 对于*层数*相关的药水效果；增加1层
      */
@@ -197,6 +212,90 @@ public class PlayerHelper {
         return ForgeRegistries.ITEMS.getValue(id);
     }
 
+    /**
+     * 将玩家传送到一个随机安全位置
+     */
+    public static void teleportToRandomLocation(Player player, double radius) {
+        // 只在服务端执行传送逻辑
+        if (player.level().isClientSide()) {
+            return;
+        }
+
+        Level world = player.level();
+        Vec3 currentPos = player.position();
+        int minY = world.getMinBuildHeight();
+        int maxY = world.getMaxBuildHeight();
+
+        Random random = new Random();
+        float playerHeight = player.getBbHeight();
+
+        // 最多尝试5次
+        for (int retry = 0; retry < 5; retry++) {
+            // 生成随机X和Z坐标（在半径范围内）
+            int randomX = (int) (currentPos.x + (random.nextDouble() * radius * 2 - radius));
+            int randomZ = (int) (currentPos.z + (random.nextDouble() * radius * 2 - radius));
+            // 生成初始Y坐标（在世界高度范围内）
+            int initialY = (int) (currentPos.y + (random.nextDouble() * radius * 2 - radius));
+            initialY = Math.max(minY, Math.min(maxY, initialY));
+
+            // 从初始Y位置向上寻找安全位置
+            BlockPos safePos = findSafePositionUpwards(world, randomX, randomZ, initialY, maxY, playerHeight);
+
+            if (safePos != null) {
+                // 找到安全位置，执行传送（Y坐标稍微向上偏移，避免卡进方块）
+                player.teleportTo(
+                        safePos.getX() + 0.5, // 方块中心X
+                        safePos.getY() + 0.1, // 稍微高于方块
+                        safePos.getZ() + 0.5  // 方块中心Z
+                );
+                return;
+            }
+        }
+
+        // 达到最大尝试次数仍未找到合适位置
+    }
+    private static BlockPos findSafePositionUpwards(Level world, int x, int z, int startY, int maxY, double playerHeight) {
+        BlockPos currentPos = new BlockPos(x, startY, z);
+
+        // 从初始Y向上搜索，直到达到世界高度上限
+        for (int y = startY; y <= maxY; y++) {
+            currentPos = currentPos.atY(y);
+
+            // 检查当前位置是否可以安全站立
+            if (isSafeToStand(world, currentPos, playerHeight)) {
+                return currentPos;
+            }
+        }
+
+        // 到达世界上限仍未找到安全位置
+        return null;
+    }
+    private static boolean isSafeToStand(Level world, BlockPos pos, double playerHeight) {
+        // 检查脚下是否有支撑（有碰撞箱）
+        BlockPos standPos = pos.below();
+        BlockState groundState = world.getBlockState(standPos);
+        if (groundState.getCollisionShape(world, standPos).isEmpty()) {
+            return false; // 脚下无支撑，不安全
+        }
+
+        // 计算需要检查的总高度（向上取整，确保覆盖完整碰撞箱）
+        int checkHeight = (int) Math.ceil(playerHeight);
+
+        // 检查玩家身体占据的每一格空间是否有碰撞箱
+        for (int y = 0; y < checkHeight; y++) {
+            BlockPos bodyPos = pos.offset(0, y, 0); // 当前检查的身体位置
+            BlockState bodyState = world.getBlockState(bodyPos);
+
+            // 如果身体位置存在碰撞箱，则不安全
+            if (!bodyState.getCollisionShape(world, bodyPos).isEmpty()) {
+                return false;
+            }
+        }
+
+        // 所有检查通过，位置安全
+        return true;
+    }
+
 
 
     // 子弹相关
@@ -211,42 +310,41 @@ public class PlayerHelper {
                 isPiercing(player),
                 isHoming(player),
                 isControllable(player),
-                getDamage(player)
+                getDamage(player),
+                getBulletColor(player),
+                getBulletAlpha(player),
+                getBulletFilter(player)
         );
-        bullet.setColor(getBulletColor(player));
-        bullet.setFilterColor(getBulletFilter(player));
-        bullet.setAlpha(getBulletAlpha(player));
 
         player.level().addFreshEntity(bullet);
     }
-
     public static boolean isSpectral(Player player){
-        AtomicInteger count = new AtomicInteger();
+        int[] count = {0};
         player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY).ifPresent(
-                PlayerAbility -> count.set(PlayerAbility.getSpectral())
+                PlayerAbility -> count[0] = (PlayerAbility.getSpectral())
         );
-        return count.get() > 0;
+        return count[0] > 0;
     }
     public static boolean isHoming(Player player){
-        AtomicInteger count = new AtomicInteger();
+        int[] count = {0};
         player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY).ifPresent(
-                PlayerAbility -> count.set(PlayerAbility.getHoming())
+                PlayerAbility -> count[0] = (PlayerAbility.getHoming())
         );
-        return count.get() > 0;
+        return count[0] > 0;
     }
     public static boolean isPiercing(Player player){
-        AtomicInteger count = new AtomicInteger();
+        int[] count = {0};
         player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY).ifPresent(
-                PlayerAbility -> count.set(PlayerAbility.getPiercing())
+                PlayerAbility -> count[0] = (PlayerAbility.getPiercing())
         );
-        return count.get() > 0;
+        return count[0] > 0;
     }
     public static boolean isControllable(Player player){
-        AtomicInteger count = new AtomicInteger();
+        int[] count = {0};
         player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY).ifPresent(
-                PlayerAbility -> count.set(PlayerAbility.getControllable())
+                PlayerAbility -> count[0] = (PlayerAbility.getControllable())
         );
-        return count.get() > 0;
+        return count[0] > 0;
     }
     public static int getBulletColor(Player player){
         AttributeInstance instance = player.getAttribute(ModAttributes.BULLET_COLOR.get());
@@ -342,7 +440,20 @@ public class PlayerHelper {
         if (instance != null) return (float) instance.getValue();
         return 0.0f;
     }
-
+    public static int getPillQuality(Player player){
+        int[] count = {0};
+        player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY).ifPresent(
+                PlayerAbility -> count[0] = (PlayerAbility.getPillQuality())
+        );
+        return count[0];
+    }
+    public static void modifyPillQuality(Player player, int amount){
+        if (!player.level().isClientSide && player instanceof ServerPlayer serverPlayer){
+            serverPlayer.getCapability(PlayerAbilityProvider.PLAYER_ABILITY).ifPresent(
+                    playerAbility -> playerAbility.setPillQuality(serverPlayer ,playerAbility.getPillQuality() + amount)
+            );
+        }
+    }
 
 }
 

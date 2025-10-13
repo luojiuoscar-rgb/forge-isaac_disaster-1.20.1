@@ -5,5 +5,5 @@
   "effects": "hurt",
   "bypass_armor": false,
   "bypass_magic": false,
-  "bypass_invulnerability": true
+  "bypass_invulnerability": false
 }

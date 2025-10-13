@@ -1,11 +1,12 @@
 package net.luojiuoscar.isaac_disaster.item_ability.passive_item.items;
 
 import net.luojiuoscar.isaac_disaster.effect.ModEffects;
+import net.luojiuoscar.isaac_disaster.entity.custom.IsaacBullet;
 import net.luojiuoscar.isaac_disaster.item.ModItems;
 import net.luojiuoscar.isaac_disaster.item_ability.passive_item.IDamageTrigger;
-import net.luojiuoscar.isaac_disaster.item_ability.passive_item.IPassiveItem;
+import net.luojiuoscar.isaac_disaster.item_ability.passive_item.INewBulletType;
+import net.luojiuoscar.isaac_disaster.manager.ColorManager;
 import net.luojiuoscar.isaac_disaster.manager.id_managers.ItemId;
-import net.luojiuoscar.isaac_disaster.item_ability.passive_item.ITriggerPassiveItem;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
@@ -15,7 +16,9 @@ import net.minecraft.world.item.ItemStack;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TheCommonCold implements IDamageTrigger {
+import static com.mojang.text2speech.Narrator.LOGGER;
+
+public class TheCommonCold implements IDamageTrigger, INewBulletType {
     @Override
     public int getItemId() {
         return ItemId.THE_COMMON_COLD.getId();
@@ -75,9 +78,24 @@ public class TheCommonCold implements IDamageTrigger {
         List<Component> description = new ArrayList<>();
 
         description.add(Component.translatable("effect.isaac_disaster.isaac_poison").append(": ")
-                .append(Component.translatable("effect.isaac_disaster.isaac_poison.explain.1")));
-        description.add(Component.translatable("effect.isaac_disaster.isaac_poison.explain.2"));
+                .append(Component.translatable("effect.isaac_disaster.poison.explain.1")));
+        description.add(Component.translatable("effect.isaac_disaster.poison.explain.2"));
 
         return description;
+    }
+
+    @Override
+    public int getNewColor(){
+        return ColorManager.POISON_BULLET_COLOR;
+    }
+
+    @Override
+    public void onShootEffect(Player player, IsaacBullet bullet) {
+        // 如果触发
+        if (Math.random() <= getTriggerChance(player)) {
+            bullet.setColor(getNewColor());
+            bullet.addBulletHitEffect(ItemId.THE_COMMON_COLD.getId());
+            LOGGER.info("TRIGGERED EFFECT");
+        }
     }
 }

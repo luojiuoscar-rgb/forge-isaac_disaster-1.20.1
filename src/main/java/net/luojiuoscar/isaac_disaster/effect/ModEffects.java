@@ -22,8 +22,8 @@ public class ModEffects {
         MOB_EFFECTS.register(eventBus);
     }
 
-    public static final RegistryObject<MobEffect> ISAAC_POISON = MOB_EFFECTS.register(EffectNameManager.ISAAC_POISON,
-            () -> new IsaacPoisonEffect(MobEffectCategory.HARMFUL, 8889187));
+    public static final RegistryObject<MobEffect> ISAAC_POISON = MOB_EFFECTS.register(EffectNameManager.POISON,
+            () -> new PoisonEffect(MobEffectCategory.HARMFUL, 8889187));
 
     public static final RegistryObject<MobEffect> POWER_OF_BELIAL = MOB_EFFECTS.register(EffectNameManager.POWER_OF_BELIAL,
             () -> new PowerOfBelialEffect(MobEffectCategory.BENEFICIAL, 0xee1c24)
@@ -48,4 +48,22 @@ public class ModEffects {
 
     public static final RegistryObject<MobEffect> HOLY_SHIELD = MOB_EFFECTS.register(EffectNameManager.HOLY_SHIELD,
             () -> new HolyShieldEffect(MobEffectCategory.BENEFICIAL, 0x87CEEB));
+
+    public static final RegistryObject<MobEffect> LACRIMAL_HYPOSECRETION = MOB_EFFECTS.register(EffectNameManager.LACRIMAL_HYPOSECRETION,
+            () -> new LacrimalHyposecretionEffect(MobEffectCategory.HARMFUL, 0xFFFFFF));
+
+    public static final RegistryObject<MobEffect> X_RAY_VISION = MOB_EFFECTS.register(EffectNameManager.X_RAY_VISION,
+            () -> new XRayVision(MobEffectCategory.BENEFICIAL, 0xC2FF66));
+
+    public static final RegistryObject<MobEffect> CHARM = MOB_EFFECTS.register(EffectNameManager.CHARM,
+            () -> new CharmEffect(MobEffectCategory.NEUTRAL, 0x9C27B0));
+
+    public static final RegistryObject<MobEffect> VULNERABLE = MOB_EFFECTS.register(EffectNameManager.VULNERABLE,
+            () -> new VulnerableEffect(MobEffectCategory.BENEFICIAL, 0x808080));
+
+    public static final RegistryObject<MobEffect> PANIC = MOB_EFFECTS.register(EffectNameManager.PANIC,
+            () -> new PanicEffect(MobEffectCategory.NEUTRAL, 0xFF0000));
+
+    public static final RegistryObject<MobEffect> PAC_MAN = MOB_EFFECTS.register(EffectNameManager.PAC_MAN,
+            () -> new PacManEffect(MobEffectCategory.BENEFICIAL, 0xFFFF00));
 }

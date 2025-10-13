@@ -1,7 +1,5 @@
 package net.luojiuoscar.isaac_disaster.manager;
 
-import net.minecraft.network.chat.Component;
-
 public class ColorManager {
     public static final int COMMON_WHITE = 0xFFFFFF;
     public static final int UNCOMMON_GREEN = 0x55FF55;
@@ -15,7 +13,8 @@ public class ColorManager {
     public static final int FILTER_BASE = 0xFFFFFF;
     public static final int COLOR_BASE = 0xFFFFFF;
 
-    public static final int SPOON_BENDER = 0x611595;
-
+    public static final int POISON_BULLET_COLOR = 0x5CA45C;
+    public static final int SPOON_BENDER_FILTER = 0x611595;
+    public static final int LEMON = 0xFFFF66;
 
 }

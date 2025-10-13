@@ -1,0 +1,23 @@
+{
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {"type": "minecraft:item", "name": "isaac_disaster:pill1_h", "weight": 15},
+        {"type": "minecraft:item", "name": "isaac_disaster:pill2_h", "weight": 15},
+        {"type": "minecraft:item", "name": "isaac_disaster:pill3_h", "weight": 15},
+        {"type": "minecraft:item", "name": "isaac_disaster:pill4_h", "weight": 15},
+        {"type": "minecraft:item", "name": "isaac_disaster:pill5_h", "weight": 15},
+        {"type": "minecraft:item", "name": "isaac_disaster:pill6_h", "weight": 15},
+        {"type": "minecraft:item", "name": "isaac_disaster:pill7_h", "weight": 15},
+        {"type": "minecraft:item", "name": "isaac_disaster:pill8_h", "weight": 15},
+        {"type": "minecraft:item", "name": "isaac_disaster:pill9_h", "weight": 15},
+        {"type": "minecraft:item", "name": "isaac_disaster:pill10_h", "weight": 15},
+        {"type": "minecraft:item", "name": "isaac_disaster:pill11_h", "weight": 15},
+        {"type": "minecraft:item", "name": "isaac_disaster:pill12_h", "weight": 15},
+        {"type": "minecraft:item", "name": "isaac_disaster:pill13_h", "weight": 15},
+        {"type": "minecraft:item", "name": "isaac_disaster:golden_pill_h", "weight": 2}
+      ]
+    }
+  ]
+}

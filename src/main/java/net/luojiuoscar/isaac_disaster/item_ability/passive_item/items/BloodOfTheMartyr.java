@@ -1,6 +1,7 @@
 package net.luojiuoscar.isaac_disaster.item_ability.passive_item.items;
 
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerPassiveItemProvider;
+import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.item.ModItems;
 import net.luojiuoscar.isaac_disaster.item_ability.passive_item.IPassiveItem;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
@@ -28,30 +29,24 @@ public class BloodOfTheMartyr implements IPassiveItem {
 
     @Override
     public void onDirectObtain(Player player) {
-        if(!player.level().isClientSide()){
-            StatManager.modifyDamageAdder(player, 1);
-        }
+        StatManager.modifyDamageAdder(player, 1);
 
         // 数据需要同步数据到客户端
-        AtomicInteger count = new AtomicInteger();
-        player.getCapability(PlayerPassiveItemProvider.PLAYER_PASSIVE_ITEM).ifPresent(
-                playerPassiveItem -> count.set(playerPassiveItem.getItemCount(ItemId.BLOOD_OF_THE_MARTYR.getId()))
-        );
-        ModMessages.sentToPlayer(new PassiveItemSyncS2CPacket(ItemId.BLOOD_OF_THE_MARTYR.getId(), count.get()), (ServerPlayer) player);
+        if (player instanceof ServerPlayer serverPlayer){
+            int count = PlayerHelper.getItemCount(ItemId.BLOOD_OF_THE_MARTYR.getId(), serverPlayer);
+            ModMessages.sentToPlayer(new PassiveItemSyncS2CPacket(ItemId.BLOOD_OF_THE_MARTYR.getId(), count), serverPlayer);
+        }
     }
 
     @Override
     public void onRemove(Player player) {
-        if(!player.level().isClientSide()){
-            StatManager.modifyDamageAdder(player, -1);
-        }
+        StatManager.modifyDamageAdder(player, -1);
 
         // 数据需要同步数据到客户端
-        AtomicInteger count = new AtomicInteger();
-        player.getCapability(PlayerPassiveItemProvider.PLAYER_PASSIVE_ITEM).ifPresent(
-                playerPassiveItem -> count.set(playerPassiveItem.getItemCount(ItemId.BLOOD_OF_THE_MARTYR.getId()))
-        );
-        ModMessages.sentToPlayer(new PassiveItemSyncS2CPacket(ItemId.BLOOD_OF_THE_MARTYR.getId(), count.get()), (ServerPlayer) player);
+        if (player instanceof ServerPlayer serverPlayer){
+            int count = PlayerHelper.getItemCount(ItemId.BLOOD_OF_THE_MARTYR.getId(), serverPlayer);
+            ModMessages.sentToPlayer(new PassiveItemSyncS2CPacket(ItemId.BLOOD_OF_THE_MARTYR.getId(), count), serverPlayer);
+        }
     }
 
     @Override

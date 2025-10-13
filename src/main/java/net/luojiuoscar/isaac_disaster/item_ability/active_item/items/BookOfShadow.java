@@ -49,7 +49,7 @@ public class BookOfShadow implements IActiveItem {
     }
 
     @Override
-    public void onTriggerEffectStronger(Player player){
+    public void onTriggeredEffectStronger(Player player){
         onTriggeredEffect(player);
         onTriggeredEffect(player);
     }

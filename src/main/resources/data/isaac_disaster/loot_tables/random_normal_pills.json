@@ -1,0 +1,23 @@
+{
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {"type": "minecraft:item", "name": "isaac_disaster:pill1", "weight": 15},
+        {"type": "minecraft:item", "name": "isaac_disaster:pill2", "weight": 15},
+        {"type": "minecraft:item", "name": "isaac_disaster:pill3", "weight": 15},
+        {"type": "minecraft:item", "name": "isaac_disaster:pill4", "weight": 15},
+        {"type": "minecraft:item", "name": "isaac_disaster:pill5", "weight": 15},
+        {"type": "minecraft:item", "name": "isaac_disaster:pill6", "weight": 15},
+        {"type": "minecraft:item", "name": "isaac_disaster:pill7", "weight": 15},
+        {"type": "minecraft:item", "name": "isaac_disaster:pill8", "weight": 15},
+        {"type": "minecraft:item", "name": "isaac_disaster:pill9", "weight": 15},
+        {"type": "minecraft:item", "name": "isaac_disaster:pill10", "weight": 15},
+        {"type": "minecraft:item", "name": "isaac_disaster:pill11", "weight": 15},
+        {"type": "minecraft:item", "name": "isaac_disaster:pill12", "weight": 15},
+        {"type": "minecraft:item", "name": "isaac_disaster:pill13", "weight": 15},
+        {"type": "minecraft:item", "name": "isaac_disaster:golden_pill_h", "weight": 2}
+      ]
+    }
+  ]
+}

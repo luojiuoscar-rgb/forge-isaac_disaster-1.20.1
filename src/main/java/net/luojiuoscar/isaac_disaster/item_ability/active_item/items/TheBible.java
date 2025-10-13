@@ -41,7 +41,7 @@ public class TheBible implements IActiveItem {
     }
 
     @Override
-    public void onTriggerEffectStronger(Player player){
+    public void onTriggeredEffectStronger(Player player){
         MobEffectInstance effectInstance = new MobEffectInstance(
                 ModEffects.TRANSCENDENCE.get(),
                 (int) (StatManager.getFlyTime() * 4),

@@ -9,6 +9,8 @@ import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.player.Player;
 
+import java.util.List;
+
 public interface ISet {
     int getSetId();
 
@@ -49,4 +51,6 @@ public interface ISet {
     default void onObtainClient(Player player){
         onObtainSound(player);
     }
+
+    List<Component> getDescription();
 }

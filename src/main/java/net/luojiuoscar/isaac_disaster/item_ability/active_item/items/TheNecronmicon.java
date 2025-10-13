@@ -1,8 +1,7 @@
 package net.luojiuoscar.isaac_disaster.item_ability.active_item.items;
 
 import net.luojiuoscar.isaac_disaster.client.ClientDataManager;
-import net.luojiuoscar.isaac_disaster.effect.ModEffects;
-import net.luojiuoscar.isaac_disaster.helper.EntityHelper;
+import net.luojiuoscar.isaac_disaster.helper.LevelHelper;
 import net.luojiuoscar.isaac_disaster.item.ModItems;
 import net.luojiuoscar.isaac_disaster.item_ability.active_item.IActiveItem;
 import net.luojiuoscar.isaac_disaster.manager.ColorManager;
@@ -14,14 +13,11 @@ import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
-import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.MobType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.phys.AABB;
-import org.lwjgl.system.linux.Stat;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,7 +40,7 @@ public class TheNecronmicon implements IActiveItem {
     }
 
     @Override
-    public void onTriggerEffectStronger(Player player){
+    public void onTriggeredEffectStronger(Player player){
         damageNearby(player, StatManager.getDamageBonus() * 40);
     }
 
@@ -56,7 +52,7 @@ public class TheNecronmicon implements IActiveItem {
         // 设定范围半径
         double radius = StatManager.getNearbyRange();
 
-        List<LivingEntity> entities = EntityHelper.selectBySphere(level, player.getX(), player.getY(), player.getZ(), radius);
+        List<LivingEntity> entities = LevelHelper.selectBySphere(level, player.getX(), player.getY(), player.getZ(), radius);
 
         // 遍历并造成伤害
         for (LivingEntity target : entities) {

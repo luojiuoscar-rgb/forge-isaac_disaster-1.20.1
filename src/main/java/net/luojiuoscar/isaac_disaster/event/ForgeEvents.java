@@ -2,6 +2,7 @@ package net.luojiuoscar.isaac_disaster.event;
 
 import net.luojiuoscar.isaac_disaster.attribute.ModAttributes;
 import net.luojiuoscar.isaac_disaster.capability.entity.EntityEffectProvider;
+import net.luojiuoscar.isaac_disaster.capability.player.PlayerAbility;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerAbilityProvider;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerPassiveItemProvider;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerStatModifierProvider;
@@ -18,18 +19,22 @@ import net.luojiuoscar.isaac_disaster.item.pickup.Pickup;
 import net.luojiuoscar.isaac_disaster.manager.EffectNameManager;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.manager.id_managers.ItemId;
+import net.luojiuoscar.isaac_disaster.manager.id_managers.SetId;
 import net.luojiuoscar.isaac_disaster.manager.item_managers.ActiveItemManager;
 import net.luojiuoscar.isaac_disaster.manager.item_managers.PickupManager;
+import net.luojiuoscar.isaac_disaster.manager.item_managers.PillEffectManager;
 import net.luojiuoscar.isaac_disaster.networking.ModMessages;
-import net.luojiuoscar.isaac_disaster.networking.packet.PassiveItemSyncS2CPacket;
-import net.luojiuoscar.isaac_disaster.networking.packet.SetCountSyncS2CPacket;
-import net.luojiuoscar.isaac_disaster.networking.packet.UseActiveItemS2CPacket;
+import net.luojiuoscar.isaac_disaster.networking.packet.*;
+import net.luojiuoscar.isaac_disaster.data.PillShuffleData;
 import net.luojiuoscar.isaac_disaster.sound.ModSounds;
+import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -44,6 +49,7 @@ import net.minecraftforge.event.entity.living.*;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.level.ExplosionEvent;
+import net.minecraftforge.event.level.LevelEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.server.command.ConfigCommand;
@@ -56,6 +62,20 @@ import static net.luojiuoscar.isaac_disaster.IsaacDisaster.MOD_ID;
 
 @Mod.EventBusSubscriber(modid = MOD_ID)
 public class ForgeEvents {
+    // 世界加载事件
+    @SubscribeEvent
+    public static void onWorldLoad(LevelEvent.Load event) {
+        if (event.getLevel() instanceof ServerLevel level) {
+            PillShuffleData data = PillShuffleData.get(level);
+
+            // 首次世界无数据时进行一次shuffle
+            if (data.getPillEffectMap().isEmpty()) {
+                PillEffectManager.getInstance().shufflePills(level);
+            }
+        }
+    }
+
+
     /**
      * 首次给玩家创建Capability相关数据
      */
@@ -115,6 +135,8 @@ public class ForgeEvents {
         new HasItemCommand(event.getDispatcher());
         new GetItemCountCommand(event.getDispatcher());
         new GetFlyCommand(event.getDispatcher());
+        new ShufflePillCommand(event.getDispatcher());
+        new TriggerPillEffectCount(event.getDispatcher());
 
         ConfigCommand.register(event.getDispatcher());
     }
@@ -222,7 +244,7 @@ public class ForgeEvents {
                     double damageValue = attackDamage.getValue();
                     // 保存
                     affectedEntity.getCapability(EntityEffectProvider.ENTITY_CAP).ifPresent(
-                            entityEffect -> entityEffect.setSourceDamage(EffectNameManager.ISAAC_POISON,
+                            entityEffect -> entityEffect.setSourceDamage(EffectNameManager.POISON,
                                     damageValue)
                     );
                 }
@@ -239,13 +261,20 @@ public class ForgeEvents {
         if (event.getEntity() instanceof ServerPlayer serverPlayer) {
             // 同步套装
             syncSetDataToClient(serverPlayer);
+            // 胶囊相关
+            syncPillDataToClient(serverPlayer);
+            syncPillQualityToClient(serverPlayer);
             // 从服务端Capability获取数据
             syncItemDataToClient(ItemId.CAR_BATTERY.getId(), serverPlayer);
             syncItemDataToClient(ItemId.BLOOD_OF_THE_MARTYR.getId(), serverPlayer);
+            syncItemDataToClient(ItemId.PHD.getId(), serverPlayer);
+            syncItemDataToClient(ItemId.FALSE_PHD.getId(), serverPlayer);
         }
     }
 
-
+    /**
+     * 同步数据到客户端
+     */
     public static void syncSetDataToClient(ServerPlayer player){
         player.getCapability(PlayerPassiveItemProvider.PLAYER_PASSIVE_ITEM).ifPresent(
                 playerPassiveItem -> {
@@ -256,10 +285,24 @@ public class ForgeEvents {
                 }
         );
     }
-
-    /**
-     * 同步数据到客户端
-     */
+    public static void syncPillDataToClient(ServerPlayer player){
+        player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY).ifPresent(
+                playerAbility -> {
+                    Map<Integer,Integer> map = Map.copyOf(playerAbility.getPillRecordsMap());
+                    for (Map.Entry<Integer, Integer> entry : map.entrySet()) {
+                        ModMessages.sentToPlayer(new PillRecordsSyncS2CPacket(entry.getKey(), entry.getValue()), player);
+                    }
+                }
+        );
+    }
+    public static void syncPillQualityToClient(ServerPlayer player){
+        player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY).ifPresent(
+                playerAbility -> {
+                    int quality = playerAbility.getPillQuality();
+                    ModMessages.sentToPlayer(new PillQualitySyncS2CPacket(quality), player);
+                }
+        );
+    }
     public static void syncItemDataToClient(int ItemId, ServerPlayer player) {
         AtomicInteger count = new AtomicInteger();
         player.getCapability(PlayerPassiveItemProvider.PLAYER_PASSIVE_ITEM).ifPresent(
@@ -310,6 +353,7 @@ public class ForgeEvents {
     public static void onLivingHurt(LivingHurtEvent event) {
         LivingEntity victim = event.getEntity();
         Entity attacker = event.getSource().getEntity();
+        DamageSource source = event.getSource();
 
         double damage = event.getAmount();
 
@@ -346,6 +390,20 @@ public class ForgeEvents {
             if (PlayerHelper.hasItem(ItemId.THE_WAFER.getId(), (ServerPlayer) victimPlayer)){
                 event.setAmount(event.getAmount() * 0.5f);
             }
+            // 成人套装
+            if (PlayerHelper.hasSet(SetId.ADULT.getId(), (ServerPlayer) victimPlayer)){
+                victimPlayer.level().playSound(null, BlockPos.containing(victimPlayer.blockPosition().getCenter()),
+                        ModSounds.STEVE_HURT_OLD.get(), SoundSource.PLAYERS, 1.0f, 1.0f);
+            }
+
+        }
+
+        if (victim.hasEffect(ModEffects.VULNERABLE.get())){
+            // 易伤
+            int level = victim.getEffect(ModEffects.VULNERABLE.get()).getAmplifier() + 1;
+            float newDamage = event.getAmount() * (1 + 0.3f * level);
+            event.setAmount(newDamage);
+
         }
     }
 

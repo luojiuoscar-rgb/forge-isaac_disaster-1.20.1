@@ -8,10 +8,7 @@ import net.luojiuoscar.isaac_disaster.event.ServerTickEvent;
 import net.luojiuoscar.isaac_disaster.item.ModCreativeModeTabs;
 import net.luojiuoscar.isaac_disaster.item.ModItems;
 import net.luojiuoscar.isaac_disaster.loot.ModLootTypes;
-import net.luojiuoscar.isaac_disaster.manager.item_managers.ActiveItemManager;
-import net.luojiuoscar.isaac_disaster.manager.item_managers.PassiveItemManager;
-import net.luojiuoscar.isaac_disaster.manager.item_managers.PickupManager;
-import net.luojiuoscar.isaac_disaster.manager.item_managers.SetManager;
+import net.luojiuoscar.isaac_disaster.manager.item_managers.*;
 import net.luojiuoscar.isaac_disaster.networking.ModMessages;
 import net.luojiuoscar.isaac_disaster.sound.ModSounds;
 import net.minecraftforge.api.distmarker.Dist;
@@ -71,6 +68,7 @@ public class IsaacDisaster
             ActiveItemManager.getInstance().init();
             PickupManager.getInstance().init();
             SetManager.getInstance().init();
+            PillEffectManager.getInstance().init();
         });
     }
 

@@ -1,6 +1,6 @@
 package net.luojiuoscar.isaac_disaster.event.custom;
 
-import net.luojiuoscar.isaac_disaster.entity.IsaacBullet;
+import net.luojiuoscar.isaac_disaster.entity.custom.IsaacBullet;
 import net.minecraftforge.eventbus.api.Cancelable;
 
 @Cancelable

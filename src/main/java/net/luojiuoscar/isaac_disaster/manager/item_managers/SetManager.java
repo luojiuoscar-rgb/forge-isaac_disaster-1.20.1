@@ -1,7 +1,9 @@
 package net.luojiuoscar.isaac_disaster.manager.item_managers;
 
 import net.luojiuoscar.isaac_disaster.item_ability.set.ISet;
+import net.luojiuoscar.isaac_disaster.item_ability.set.sets.Adult;
 import net.luojiuoscar.isaac_disaster.item_ability.set.sets.Spun;
+import org.checkerframework.checker.units.qual.A;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -44,7 +46,8 @@ public class SetManager {
     public void init() {
         // 注册所有道具实例
         registerItems(
-            new Spun()
+                new Spun(),
+                new Adult()
         );
     }
 }
