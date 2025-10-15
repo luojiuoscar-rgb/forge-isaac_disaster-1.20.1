@@ -2,10 +2,6 @@ package net.luojiuoscar.isaac_disaster.manager.item_managers;
 
 import net.luojiuoscar.isaac_disaster.item_ability.passive_item.IPassiveItem;
 import net.luojiuoscar.isaac_disaster.item_ability.passive_item.items.*;
-import net.luojiuoscar.isaac_disaster.item_ability.pickup.items.Bomb;
-import org.apache.http.impl.conn.Wire;
-import org.checkerframework.checker.units.qual.A;
-import org.checkerframework.checker.units.qual.Speed;
 
 import java.util.*;
 

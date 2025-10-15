@@ -32,15 +32,19 @@ public class PlayerPassiveItem {
     // 用编号代表道具。需要查询道具的时候再使用道具管理器
     private ArrayList<Integer> playerPassiveItems;
     // 键为道具ID，值为道具数量
-    private final Map<Integer, Integer> itemCountMap;
-    private final Map<Integer, Integer> triggerItemMap;
-    private final Map<Integer, Integer> recursiveItemMap; // itemId : remainTick
-    private final Map<Integer, Integer> hasNewBulletTypeMap;
+    private Map<Integer, Integer> itemCountMap;
+    private Map<Integer, Integer> triggerItemMap;
+    private Map<Integer, Integer> recursiveItemMap; // itemId : remainTick
+    private Map<Integer, Integer> hasNewBulletTypeMap;
 
     private Map<Integer, Integer> setCountMap; // 套装计数
 
     // constructor
     public PlayerPassiveItem(){
+        init();
+    }
+
+    public void init(){
         this.playerPassiveItems = new ArrayList<>();
 
         this.itemCountMap = new HashMap<>();
@@ -49,6 +53,10 @@ public class PlayerPassiveItem {
         this.setCountMap = new HashMap<>();
         this.hasNewBulletTypeMap = new HashMap<>();
     }
+
+
+
+
 
     /**
      * 清空全部的哈希表

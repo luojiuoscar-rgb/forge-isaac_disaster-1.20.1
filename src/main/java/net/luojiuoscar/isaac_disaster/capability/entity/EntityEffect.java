@@ -12,9 +12,12 @@ public class EntityEffect {
 
 
     public EntityEffect(){
-        this.sourceDamageMap = new HashMap<>();
+        init();
     }
 
+    public void init(){
+        this.sourceDamageMap = new HashMap<>();
+    }
 
     public double getSourceDamageFromName(String name){
         return sourceDamageMap.getOrDefault(name, 0.0);

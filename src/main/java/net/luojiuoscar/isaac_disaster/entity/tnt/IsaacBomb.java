@@ -1,6 +1,7 @@
 package net.luojiuoscar.isaac_disaster.entity.tnt;
 
 import net.luojiuoscar.isaac_disaster.effect.ModEffects;
+import net.luojiuoscar.isaac_disaster.helper.EntityHelper;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.manager.id_managers.ItemId;
 import net.minecraft.network.FriendlyByteBuf;
@@ -145,6 +146,10 @@ public class IsaacBomb extends PrimedTnt {
         LivingEntity playerTarget = null;
 
         for (LivingEntity e : nearby) {
+            if (EntityHelper.isFriendlyToPlayer(e, owner)){
+                continue;
+            }
+
             // ==== 敌对生物（Monster） ====
             if (e instanceof Monster monster) {
                 boolean hasAggro = false;

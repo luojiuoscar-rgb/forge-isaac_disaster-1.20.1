@@ -4,6 +4,8 @@ import net.luojiuoscar.isaac_disaster.entity.ModEntities;
 import net.luojiuoscar.isaac_disaster.entity.fireball.TimedFireball;
 import net.luojiuoscar.isaac_disaster.entity.tnt.GigaBomb;
 import net.luojiuoscar.isaac_disaster.entity.tnt.IsaacBomb;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.TamableAnimal;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
@@ -172,5 +174,20 @@ public class EntityHelper {
             fireball.setDeltaMovement(new Vec3(vx, vy, vz)); // 设速度
             level.addFreshEntity(fireball);
         }
+    }
+
+    public static boolean isFriendlyToPlayer(LivingEntity entity, LivingEntity player) {
+        if (player == null || entity == null) return false;
+
+        // 被同一玩家驯服的生物
+        if (entity instanceof TamableAnimal tamable) {
+            LivingEntity tamer = tamable.getOwner();
+            if (tamer != null && tamer.equals(player)) return true;
+        }
+
+        // 玩家之间是队友
+        if (entity instanceof Player p && player instanceof Player o && o.isAlliedTo(p)) return true;
+
+        return false;
     }
 }

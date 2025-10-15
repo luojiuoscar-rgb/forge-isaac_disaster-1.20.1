@@ -1,5 +1,6 @@
 package net.luojiuoscar.isaac_disaster.event;
 
+import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.attribute.ModAttributes;
 import net.luojiuoscar.isaac_disaster.capability.entity.EntityEffectProvider;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerAbility;
@@ -28,13 +29,16 @@ import net.luojiuoscar.isaac_disaster.networking.packet.*;
 import net.luojiuoscar.isaac_disaster.data.PillShuffleData;
 import net.luojiuoscar.isaac_disaster.sound.ModSounds;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.damagesource.DamageSources;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -137,6 +141,8 @@ public class ForgeEvents {
         new GetFlyCommand(event.getDispatcher());
         new ShufflePillCommand(event.getDispatcher());
         new TriggerPillEffectCount(event.getDispatcher());
+        new ResetPlayerCommand(event.getDispatcher());
+
 
         ConfigCommand.register(event.getDispatcher());
     }
@@ -403,7 +409,6 @@ public class ForgeEvents {
             int level = victim.getEffect(ModEffects.VULNERABLE.get()).getAmplifier() + 1;
             float newDamage = event.getAmount() * (1 + 0.3f * level);
             event.setAmount(newDamage);
-
         }
     }
 

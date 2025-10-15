@@ -4,12 +4,12 @@ package net.luojiuoscar.isaac_disaster.helper;
 import net.luojiuoscar.isaac_disaster.Config;
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.attribute.ModAttributes;
-import net.luojiuoscar.isaac_disaster.capability.player.PlayerAbilityProvider;
-import net.luojiuoscar.isaac_disaster.capability.player.PlayerPassiveItemProvider;
-import net.luojiuoscar.isaac_disaster.capability.player.PlayerStatModifierProvider;
+import net.luojiuoscar.isaac_disaster.capability.player.*;
 import net.luojiuoscar.isaac_disaster.effect.ModEffects;
 import net.luojiuoscar.isaac_disaster.entity.custom.IsaacBullet;
 import net.luojiuoscar.isaac_disaster.manager.ColorManager;
+import net.luojiuoscar.isaac_disaster.manager.StatManager;
+import net.luojiuoscar.isaac_disaster.manager.UUIDManager;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
@@ -26,6 +26,8 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.registries.ForgeRegistries;
+import org.lwjgl.system.linux.Stat;
+import org.w3c.dom.Attr;
 
 import java.util.*;
 
@@ -455,5 +457,25 @@ public class PlayerHelper {
         }
     }
 
+    public static void resetAllAttributes(ServerPlayer player){
+        // 清除被动道具
+        player.getCapability(PlayerPassiveItemProvider.PLAYER_PASSIVE_ITEM).ifPresent(
+                playerPassiveItem -> playerPassiveItem.clearPlayerPassiveItems(player)
+        );
+
+        // 清除Attribute modifiers
+        for (UUID uuid : UUIDManager.ATTRIBUTE_FROM_UUID.keySet()){
+            AttributeInstance instance = player.getAttribute(UUIDManager.ATTRIBUTE_FROM_UUID.get(uuid));
+            if (instance != null){
+                StatManager.removeModifier(instance, uuid); // 删除对应modifier
+            }
+        }
+
+        // 重置cap
+        player.getCapability(PlayerPassiveItemProvider.PLAYER_PASSIVE_ITEM).ifPresent(PlayerPassiveItem::init);
+        player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY).ifPresent(PlayerAbility::init);
+        player.getCapability(PlayerStatModifierProvider.PLAYER_STAT_MODIFIER).ifPresent(PlayerStatModifier::init);
+
+    }
 }
 

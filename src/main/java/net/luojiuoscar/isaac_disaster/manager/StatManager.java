@@ -27,6 +27,9 @@ public class StatManager {
     public static double getHolyShieldStrength(){return HOLY_SHIELD_STRENGTH.get();}
 
 
+    public static void removeModifier(AttributeInstance attribute, UUID uuid) {
+        attribute.removeModifier(uuid);
+    }
     public static void updateAdder(Player player, AttributeInstance attribute, double totalBoost, UUID uuid, String name) {
         attribute.removeModifier(uuid);
         attribute.addPermanentModifier(new AttributeModifier(

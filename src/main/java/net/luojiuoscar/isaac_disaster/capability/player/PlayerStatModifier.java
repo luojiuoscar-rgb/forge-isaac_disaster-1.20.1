@@ -30,11 +30,17 @@ public class PlayerStatModifier {
 
     // constructor
     public PlayerStatModifier(){
+        init();
+    }
+
+    public void init(){
         playerModifiers = new HashMap<>();
 
         flyTime = 0;
         flyTimeCurrent = 0;
     }
+
+
 
     /**
      * Getter

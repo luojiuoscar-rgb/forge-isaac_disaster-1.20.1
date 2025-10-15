@@ -1,7 +1,9 @@
 package net.luojiuoscar.isaac_disaster.entity.custom;
 
+import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.entity.ModEntities;
 import net.luojiuoscar.isaac_disaster.event.custom.*;
+import net.luojiuoscar.isaac_disaster.helper.EntityHelper;
 import net.luojiuoscar.isaac_disaster.manager.ColorManager;
 import net.luojiuoscar.isaac_disaster.manager.TagManager;
 import net.minecraft.core.BlockPos;
@@ -204,6 +206,14 @@ public class IsaacBullet extends Entity {
                     return;
                 }
 
+                // 友方则跳过
+                if (target instanceof LivingEntity le){
+                    if (EntityHelper.isFriendlyToPlayer(le, getOwner())){
+                        move(MoverType.SELF, motion);
+                        return;
+                    }
+                }
+
                 // 新命中目标
                 if (!MinecraftForge.EVENT_BUS.post(new IsaacBulletHitEntityEvent(this, entityHit))) {
                     if (target instanceof LivingEntity living) {
@@ -254,6 +264,12 @@ public class IsaacBullet extends Entity {
         LivingEntity playerTarget = null;      // 玩家
 
         for (LivingEntity e : nearby) {
+
+            // 友好生物
+            if (EntityHelper.isFriendlyToPlayer(e, getOwner())) {
+                continue;
+            }
+
             // 怪物
             if (e instanceof Monster monster) {
                 boolean hasAggro = false;
@@ -301,8 +317,6 @@ public class IsaacBullet extends Entity {
         if (neutral != null) return neutral;
         return playerTarget;
     }
-
-
     private void steerTowards(LivingEntity target, double steerStrength) {
         Vec3 targetPos = target.position().add(0, target.getBbHeight() * 0.5, 0);
         double distSqr = this.position().distanceToSqr(targetPos);
@@ -336,16 +350,23 @@ public class IsaacBullet extends Entity {
         this.setDeltaMovement(newVel);
     }
 
-
     private DamageSource makeDamageSource() {
         if (!(level() instanceof ServerLevel serverLevel))
             return level().damageSources().generic();
 
-        return new DamageSource(serverLevel.registryAccess()
+        var damageTypeHolder = serverLevel.registryAccess()
                 .registryOrThrow(Registries.DAMAGE_TYPE)
-                .getHolderOrThrow(ResourceKey.create(Registries.DAMAGE_TYPE,
-                        ResourceLocation.fromNamespaceAndPath("isaac_disaster", "tear"))));
+                .getHolderOrThrow(ResourceKey.create(
+                        Registries.DAMAGE_TYPE,
+                        ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "tear")
+                ));
+
+        // 包含攻击者与发射实体
+        return new DamageSource(damageTypeHolder, this, this.getOwner());
     }
+
+
+
     @Nullable
     public LivingEntity getOwner() {
         if (cachedOwner == null && ownerUUID != null)

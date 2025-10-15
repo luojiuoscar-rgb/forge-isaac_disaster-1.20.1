@@ -36,6 +36,10 @@ public class PlayerAbility {
 
 
     public PlayerAbility(){
+        init();
+    }
+
+    public void init(){
         holdRightClick = false;
         piercing = 0;
         homing = 0;
