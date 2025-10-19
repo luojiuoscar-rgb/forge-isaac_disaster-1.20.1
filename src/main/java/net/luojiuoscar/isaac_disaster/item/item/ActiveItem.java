@@ -18,7 +18,7 @@ public class ActiveItem extends IsaacItem {
     private final int damage_per_use;
     private final int max_item_damage;
     private static final String OVERCHARGED_TAG = "OverCharged";
-
+    private static final String HAS_BEEN_USED = "has_been_used";
 
 
     public ActiveItem(Properties properties, int itemLevel, int itemId, int damagePerUse, int maxItemDamage) {
@@ -124,6 +124,16 @@ public class ActiveItem extends IsaacItem {
     }
 
 
+    public static boolean hasBeenUsed(ItemStack stack) {
+        return stack.getOrCreateTag().getBoolean(HAS_BEEN_USED);
+    }
+
+
+    public static void setHasBeenUsed(ItemStack stack, boolean state) {
+        stack.getOrCreateTag().putBoolean(HAS_BEEN_USED, state);
+    }
+
+
     public static void fullCharge(ItemStack stack, boolean hasTheBattery){
         stack.setDamageValue(0);
         if(hasTheBattery){
@@ -131,6 +141,9 @@ public class ActiveItem extends IsaacItem {
         }
     }
 
+    /**
+     * 给物品添加多少正充能（恢复多少耐久度）
+     */
     public static void modifyCharge(ItemStack stack, int amount, boolean hasTheBattery){
         boolean OverCharged = ActiveItem.getOverCharged(stack);
         // 检查物品是否耐久不满 或可以过载

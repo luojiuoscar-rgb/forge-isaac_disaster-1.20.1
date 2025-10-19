@@ -7,6 +7,8 @@ import net.luojiuoscar.isaac_disaster.item_ability.active_item.IActiveItem;
 import net.luojiuoscar.isaac_disaster.manager.ColorManager;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.manager.id_managers.ItemId;
+import net.luojiuoscar.isaac_disaster.manager.id_managers.SetId;
+import net.luojiuoscar.isaac_disaster.manager.item_managers.SetManager;
 import net.luojiuoscar.isaac_disaster.sound.ModSounds;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
@@ -32,6 +34,11 @@ public class TheNecronmicon implements IActiveItem {
     @Override
     public SoundEvent getSound() {
         return ModSounds.THE_NECRONMICON_USE.get();
+    }
+
+    @Override
+    public void onFirstUse(Player player){
+        StatManager.modifySetWithId(player, SetId.BOOK.getId(), 1);
     }
 
     @Override
@@ -117,11 +124,28 @@ public class TheNecronmicon implements IActiveItem {
     public List<Component> getSynergyDescription() {
         List<Component> description = new ArrayList<>();
 
+        description.add(Component.translatable("set.isaac_disaster.special.header")
+                .append(Component.translatable("set.isaac_disaster.book"))
+                .append(Component.literal("("+
+                        Math.min(3, ClientDataManager.getInstance().getSetCountFromId(SetId.BOOK.getId())) + "/" +
+                        SetManager.getInstance().getSetFromId(SetId.BOOK.getId()).getRequireCount()+")"
+                )).withStyle(style -> style.withColor(ColorManager.SYNERGY)));
+
         if (ClientDataManager.getInstance().getCountFromId(ItemId.CAR_BATTERY.getId()) > 0){
             description.add(Component.translatable("item.isaac_disaster.car_battery").append(": ")
                     .append(Component.translatable("item.isaac_disaster.synergy.description.stronger"))
                     .withStyle(style -> style.withColor(ColorManager.SYNERGY)));
         }
+
+
+        return description;
+    }
+
+    @Override
+    public List<Component> getExplain(){
+        List<Component> description = new ArrayList<>();
+
+        description.addAll(SetManager.getInstance().getSetFromId(SetId.BOOK.getId()).getDescription());
 
         return description;
     }

@@ -11,6 +11,7 @@
     "isaac_disaster:soul_heart",
     "isaac_disaster:blended_heart",
     "isaac_disaster:black_heart",
+    "isaac_disaster:bone_heart",
     "isaac_disaster:penny",
     "isaac_disaster:nickel",
     "isaac_disaster:dime",
@@ -41,6 +42,11 @@
     "isaac_disaster:pill12_h",
     "isaac_disaster:pill13_h",
     "isaac_disaster:golden_pill",
-    "isaac_disaster:golden_pill_h"
+    "isaac_disaster:golden_pill_h",
+    "isaac_disaster:the_fool",
+    "isaac_disaster:the_magician",
+    "isaac_disaster:the_high_priestess",
+    "isaac_disaster:the_hierophant",
+    "isaac_disaster:the_empress"
   ]
 }

@@ -46,4 +46,10 @@ public class ModAttributes {
     public static final RegistryObject<Attribute> BULLET_SCALE = MOD_ATTRIBUTE.register("bullet_scale",
             () -> new RangedAttribute("attribute.isaac_disaster.bullet_scale", 0.0D, -1024.0D, 1024D).setSyncable(true));
 
+    public static final RegistryObject<Attribute> BULLET_COUNT = MOD_ATTRIBUTE.register("bullet_count",
+            () -> new RangedAttribute("attribute.isaac_disaster.bullet_count", 1.0D, 1.0D, 1024D).setSyncable(true));
+
+    public static final RegistryObject<Attribute> COLLISION_DAMAGE = MOD_ATTRIBUTE.register("collision_damage",
+            () -> new RangedAttribute("attribute.isaac_disaster.collision_damage", 0.0D, 0.0D, 1024D).setSyncable(true));
+
 }

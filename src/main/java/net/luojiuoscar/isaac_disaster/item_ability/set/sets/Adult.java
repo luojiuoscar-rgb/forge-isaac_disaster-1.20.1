@@ -1,5 +1,6 @@
 package net.luojiuoscar.isaac_disaster.item_ability.set.sets;
 
+import net.luojiuoscar.isaac_disaster.helper.TextHelper;
 import net.luojiuoscar.isaac_disaster.item_ability.set.ISet;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.manager.id_managers.SetId;
@@ -45,7 +46,7 @@ public class Adult implements ISet {
     public List<Component> getDescription() {
         return List.of(
                 Component.translatable("set.isaac_disaster.adult").append(": ")
-                        .append(Component.translatable("item.isaac_disaster.attribute.health", StatManager.getHealthBonus())),
+                        .append(TextHelper.formatAttribute("item.isaac_disaster.attribute.health", StatManager.getHealthBonus())),
                 Component.translatable("set.isaac_disaster.adult.lore.1")
         );
     }

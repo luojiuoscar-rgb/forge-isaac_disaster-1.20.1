@@ -11,8 +11,13 @@ public enum PickupId {
     SOUL_HEART,
     BLENDED_HEART,
     BLACK_HEART,
-    ISAAC_HEAD;
-
+    BONE_HEART,
+    ISAAC_HEAD,
+    THE_FOOL,
+    THE_MAGICIAN,
+    THE_HIGH_PRIESTESS,
+    THE_EMPRESS,
+    THE_HIEROPHANT;
 
     private final int id;
 

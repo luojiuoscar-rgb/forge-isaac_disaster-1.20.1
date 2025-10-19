@@ -61,7 +61,6 @@ public class Config
     public static ForgeConfigSpec.DoubleValue BULLET_SCALE_BONUS;
 
 
-
     // 其他可配置项目
     public static ForgeConfigSpec.IntValue PASSIVE_ITEM_LIMIT;
     public static ForgeConfigSpec.DoubleValue DAMAGE_MULTIPLIER_1;

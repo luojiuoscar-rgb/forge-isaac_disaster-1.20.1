@@ -34,7 +34,7 @@ public class IsaacBulletRenderer extends EntityRenderer<IsaacBullet> {
         float scale = bullet.getScale();
         poseStack.scale(scale, scale, scale);
 
-        float size = 0.2f;
+        float size = 0.1f;
 
         VertexConsumer vertexConsumer = buffer.getBuffer(RenderType.entityTranslucent(TEAR_BULLET));
 

@@ -1,61 +1,51 @@
 package net.luojiuoscar.isaac_disaster.effect;
 
-
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.attributes.AttributeMap;
+import net.minecraft.world.entity.ai.goal.AvoidEntityGoal;
 import net.minecraft.world.entity.player.Player;
 
-
+import java.util.IdentityHashMap;
+import java.util.Map;
 
 public class PanicEffect extends MobEffect {
-    private static final String PANIC_GOAL_KEY = "panicFleeGoal";
+    // 用来存储每个生物对应的 AvoidEntityGoal
+    private final Map<PathfinderMob, AvoidEntityGoal<Player>> goalMap = new IdentityHashMap<>();
 
-    protected PanicEffect(MobEffectCategory category, int color) {
+    public PanicEffect(MobEffectCategory category, int color) {
         super(category, color);
     }
 
     @Override
-    public void applyEffectTick(LivingEntity entity, int amplifier) {
-        if (!(entity instanceof PathfinderMob mob)) {
-            entity.removeEffect(this);
-            return;
-        }
+    public void addAttributeModifiers(LivingEntity entity, AttributeMap attributes, int amplifier) {
+        if (!(entity instanceof PathfinderMob mob)) return;
 
-        // 检查是否已添加过
-        if (mob.getPersistentData().getBoolean(PANIC_GOAL_KEY)) return;
+        // 已经添加过就不重复添加
+        if (goalMap.containsKey(mob)) return;
 
-        // 添加通用逃离玩家的Goal
-        mob.goalSelector.addGoal(1,
-                new net.minecraft.world.entity.ai.goal.AvoidEntityGoal<>(
-                        mob,                      // 自己
-                        Player.class,             // 要躲的类型
-                        16.0F,                    // 触发距离
-                        1.0D,                     // 远离速度
-                        1.2D                      // 惊慌速度
-                )
+        AvoidEntityGoal<Player> goal = new AvoidEntityGoal<>(
+                mob,
+                Player.class,
+                12.0F, // 感知距离
+                1.2D,  // 逃跑速度
+                1.5D   // 惊慌速度
         );
 
-        mob.getPersistentData().putBoolean(PANIC_GOAL_KEY, true);
-    }
-
-    @Override
-    public boolean isDurationEffectTick(int duration, int amplifier) {
-        return true;
+        mob.goalSelector.addGoal(1, goal);
+        goalMap.put(mob, goal);
     }
 
     @Override
     public void removeAttributeModifiers(LivingEntity entity, AttributeMap attributes, int amplifier) {
-        if (!(entity instanceof Mob mob)) return;
+        if (!(entity instanceof PathfinderMob mob)) return;
 
-        // 清空该Goal
-        mob.goalSelector.getAvailableGoals().removeIf(wrapped ->
-                wrapped.getGoal() instanceof net.minecraft.world.entity.ai.goal.AvoidEntityGoal
-        );
-
-        mob.getPersistentData().remove(PANIC_GOAL_KEY);
+        // 如果之前有保存对应 Goal，则移除
+        AvoidEntityGoal<Player> goal = goalMap.remove(mob);
+        if (goal != null) {
+            mob.goalSelector.removeGoal(goal);
+        }
     }
 }

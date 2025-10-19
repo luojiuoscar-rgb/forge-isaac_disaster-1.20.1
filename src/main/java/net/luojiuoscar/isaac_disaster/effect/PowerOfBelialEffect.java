@@ -1,5 +1,6 @@
 package net.luojiuoscar.isaac_disaster.effect;
 
+import net.luojiuoscar.isaac_disaster.attribute.ModAttributes;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.manager.id_managers.ItemId;
@@ -22,6 +23,8 @@ import java.util.UUID;
 public class PowerOfBelialEffect extends MobEffect {
     private static final UUID MARTYR_DAMAGE_BOOST_UUID =
             UUID.nameUUIDFromBytes(("isaac_disaster:synergy_of_martyr").getBytes());
+    private static final UUID POWER_OF_BELIAL_UUID =
+            UUID.nameUUIDFromBytes(("isaac_disaster:power_of_belial_uuid").getBytes());
 
     protected PowerOfBelialEffect(MobEffectCategory pCategory, int pColor) {
         super(pCategory, pColor);
@@ -30,15 +33,32 @@ public class PowerOfBelialEffect extends MobEffect {
     @Override
     public void addAttributeModifiers(@NotNull LivingEntity entity, @NotNull AttributeMap attributes, int amplifier) {
         super.addAttributeModifiers(entity, attributes, amplifier);
+        if (!(entity instanceof ServerPlayer player)) {
+            entity.removeEffect(ModEffects.TELEPATHY.get());
+            return;
+        }
 
-        if (entity instanceof ServerPlayer player) {
-            // 检查是否拥有 BLOOD_OF_THE_MARTYR
-            if (PlayerHelper.hasItem(ItemId.BLOOD_OF_THE_MARTYR.getId(), player)) {
-                AttributeInstance attackDamage = player.getAttribute(Attributes.ATTACK_DAMAGE);
-                if (attackDamage != null) {
-                    attackDamage.removeModifier(MARTYR_DAMAGE_BOOST_UUID);
-                    attackDamage.addTransientModifier(getBloodDamageBoost());
-                }
+
+        AttributeInstance attr = player.getAttribute(ModAttributes.BULLET_RANGE.get());
+        if (attr != null) {
+            attr.removeModifier(POWER_OF_BELIAL_UUID);
+            double addValue = StatManager.getDamageBonus() * (amplifier + 1);
+            AttributeModifier modifier = new AttributeModifier(
+                    POWER_OF_BELIAL_UUID,
+                    "power_of_belial.damage_bonus",
+                    addValue,
+                    AttributeModifier.Operation.ADDITION
+            );
+            attr.addPermanentModifier(modifier);
+        }
+
+
+        // 检查是否拥有 BLOOD_OF_THE_MARTYR
+        if (PlayerHelper.hasItem(ItemId.BLOOD_OF_THE_MARTYR.getId(), player)) {
+            AttributeInstance attackDamage = player.getAttribute(Attributes.ATTACK_DAMAGE);
+            if (attackDamage != null) {
+                attackDamage.removeModifier(MARTYR_DAMAGE_BOOST_UUID);
+                attackDamage.addTransientModifier(getBloodDamageBoost());
             }
         }
     }
@@ -50,7 +70,12 @@ public class PowerOfBelialEffect extends MobEffect {
         if (entity instanceof Player player) {
             AttributeInstance attackDamage = player.getAttribute(Attributes.ATTACK_DAMAGE);
             if (attackDamage != null) {
-                attackDamage.removeModifier(MARTYR_DAMAGE_BOOST_UUID);
+                attackDamage.removeModifier(POWER_OF_BELIAL_UUID);
+            }
+
+            AttributeInstance attackDamage2 = player.getAttribute(Attributes.ATTACK_DAMAGE);
+            if (attackDamage2 != null) {
+                attackDamage2.removeModifier(MARTYR_DAMAGE_BOOST_UUID);
             }
         }
     }
@@ -64,11 +89,6 @@ public class PowerOfBelialEffect extends MobEffect {
         );
     }
 
-    @Override
-    public double getAttributeModifierValue(int amplifier, AttributeModifier modifier) {
-        // 原有伤害逻辑
-        return (amplifier + 1) * net.luojiuoscar.isaac_disaster.manager.StatManager.getDamageBonus();
-    }
 
     @Override
     public List<ItemStack> getCurativeItems() {

@@ -1,6 +1,7 @@
 package net.luojiuoscar.isaac_disaster.event.custom;
 
 import net.luojiuoscar.isaac_disaster.entity.custom.IsaacBullet;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraftforge.eventbus.api.Cancelable;
 

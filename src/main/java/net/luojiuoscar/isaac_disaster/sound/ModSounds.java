@@ -15,7 +15,8 @@ public class ModSounds {
     // other
     public static final RegistryObject<SoundEvent> DEFAULT_OBTAIN_ITEM = registerSoundEvent("default_obtain_item");
     public static final RegistryObject<SoundEvent> STEVE_HURT_OLD = registerSoundEvent("steve_hurt_old");
-
+    public static final RegistryObject<SoundEvent> BATTERY = registerSoundEvent("battery");
+    public static final RegistryObject<SoundEvent> BATTERY_SMALL = registerSoundEvent("battery_small");
 
     // item sounds
     public static final RegistryObject<SoundEvent> YUM_HEART_USE = registerSoundEvent("yum_heart_use");
@@ -23,8 +24,8 @@ public class ModSounds {
     public static final RegistryObject<SoundEvent> THE_NECRONMICON_USE = registerSoundEvent("the_necronmicon_use");
     public static final RegistryObject<SoundEvent> HOLY_SHIELD_BROKE = registerSoundEvent("holy_shield_broke");
     public static final RegistryObject<SoundEvent> LEMON_MISHAP_USE = registerSoundEvent("lemon_mishap_use");
-    public static final RegistryObject<SoundEvent> BATTERY = registerSoundEvent("battery");
-    public static final RegistryObject<SoundEvent> BATTERY_SMALL = registerSoundEvent("battery_small");
+    public static final RegistryObject<SoundEvent> MAGIC_MUSHROOM_OBTAIN = registerSoundEvent("magic_mushroom_obtain");
+
 
     // pickup sounds
     public static final RegistryObject<SoundEvent> GIGA_BOMB_EXPLOSION = registerSoundEvent("giga_bomb_explosion");
@@ -35,6 +36,7 @@ public class ModSounds {
     public static final RegistryObject<SoundEvent> ISAAC_HEAD_SHOOT = registerSoundEvent("isaac_head_shoot");
     public static final RegistryObject<SoundEvent> FART_NORMAL = registerSoundEvent("fart_normal");
     public static final RegistryObject<SoundEvent> FART_HUGE = registerSoundEvent("fart_huge");
+    public static final RegistryObject<SoundEvent> BONE_HEART = registerSoundEvent("bone_heart");
 
     // pills
     public static final RegistryObject<SoundEvent> I_FOUND_PILLS_USE = registerSoundEvent("i_found_pills_use");
@@ -120,6 +122,86 @@ public class ModSounds {
     public static final RegistryObject<SoundEvent> EXPERIMENTAL_PILL = registerSoundEvent("experimental_pill");
     public static final RegistryObject<SoundEvent> EXPERIMENTAL_PILL_H = registerSoundEvent("experimental_pill_h");
 
+    // cards
+    public static final RegistryObject<SoundEvent> THE_FOOL = registerSoundEvent("the_fool");
+    public static final RegistryObject<SoundEvent> THE_FOOL_R = registerSoundEvent("the_fool_r");
+    public static final RegistryObject<SoundEvent> THE_MAGICIAN = registerSoundEvent("the_magician");
+    public static final RegistryObject<SoundEvent> THE_MAGICIAN_R = registerSoundEvent("the_magician_r");
+    public static final RegistryObject<SoundEvent> THE_HIGH_PRIESTESS = registerSoundEvent("the_high_priestess");
+    public static final RegistryObject<SoundEvent> THE_HIGH_PRIESTESS_R = registerSoundEvent("the_high_priestess_r");
+    public static final RegistryObject<SoundEvent> THE_EMPRESS = registerSoundEvent("the_empress");
+    public static final RegistryObject<SoundEvent> THE_EMPRESS_R = registerSoundEvent("the_empress_r");
+    public static final RegistryObject<SoundEvent> THE_EMPEROR = registerSoundEvent("the_emperor");
+    public static final RegistryObject<SoundEvent> THE_EMPEROR_R = registerSoundEvent("the_emperor_r");
+    public static final RegistryObject<SoundEvent> THE_HIEROPHANT = registerSoundEvent("the_hierophant");
+    public static final RegistryObject<SoundEvent> THE_HIEROPHANT_R = registerSoundEvent("the_hierophant_r");
+    public static final RegistryObject<SoundEvent> THE_LOVERS = registerSoundEvent("the_lovers");
+    public static final RegistryObject<SoundEvent> THE_LOVERS_R = registerSoundEvent("the_lovers_r");
+    public static final RegistryObject<SoundEvent> THE_CHARIOT = registerSoundEvent("the_chariot");
+    public static final RegistryObject<SoundEvent> THE_CHARIOT_R = registerSoundEvent("the_chariot_r");
+    public static final RegistryObject<SoundEvent> JUSTICE = registerSoundEvent("justice");
+    public static final RegistryObject<SoundEvent> JUSTICE_R = registerSoundEvent("justice_r");
+    public static final RegistryObject<SoundEvent> THE_HERMIT = registerSoundEvent("the_hermit");
+    public static final RegistryObject<SoundEvent> THE_HERMIT_R = registerSoundEvent("the_hermit_r");
+    public static final RegistryObject<SoundEvent> WHEEL_OF_FORTUNE = registerSoundEvent("wheel_of_fortune");
+    public static final RegistryObject<SoundEvent> WHEEL_OF_FORTUNE_R = registerSoundEvent("wheel_of_fortune_r");
+    public static final RegistryObject<SoundEvent> STRENGTH = registerSoundEvent("strength");
+    public static final RegistryObject<SoundEvent> STRENGTH_R = registerSoundEvent("strength_r");
+    public static final RegistryObject<SoundEvent> THE_HANGED_MAN = registerSoundEvent("the_hanged_man");
+    public static final RegistryObject<SoundEvent> THE_HANGED_MAN_R = registerSoundEvent("the_hanged_man_r");
+    public static final RegistryObject<SoundEvent> DEATH = registerSoundEvent("death");
+    public static final RegistryObject<SoundEvent> DEATH_R = registerSoundEvent("death_r");
+    public static final RegistryObject<SoundEvent> TEMPERANCE = registerSoundEvent("temperance");
+    public static final RegistryObject<SoundEvent> TEMPERANCE_R = registerSoundEvent("temperance_r");
+    public static final RegistryObject<SoundEvent> THE_DEVIL = registerSoundEvent("the_devil");
+    public static final RegistryObject<SoundEvent> THE_DEVIL_R = registerSoundEvent("the_devil_r");
+    public static final RegistryObject<SoundEvent> THE_TOWER = registerSoundEvent("the_tower");
+    public static final RegistryObject<SoundEvent> THE_TOWER_R = registerSoundEvent("the_tower_r");
+    public static final RegistryObject<SoundEvent> THE_STARS = registerSoundEvent("the_stars");
+    public static final RegistryObject<SoundEvent> THE_STARS_R = registerSoundEvent("the_stars_r");
+    public static final RegistryObject<SoundEvent> THE_MOON = registerSoundEvent("the_moon");
+    public static final RegistryObject<SoundEvent> THE_MOON_R = registerSoundEvent("the_moon_r");
+    public static final RegistryObject<SoundEvent> THE_SUN = registerSoundEvent("the_sun");
+    public static final RegistryObject<SoundEvent> THE_SUN_R = registerSoundEvent("the_sun_r");
+    public static final RegistryObject<SoundEvent> JUDGEMENT = registerSoundEvent("judgement");
+    public static final RegistryObject<SoundEvent> JUDGEMENT_R = registerSoundEvent("judgement_r");
+    public static final RegistryObject<SoundEvent> THE_WORLD = registerSoundEvent("the_world");
+    public static final RegistryObject<SoundEvent> THE_WORLD_R = registerSoundEvent("the_world_r");
+    public static final RegistryObject<SoundEvent> TWO_OF_CLUBS = registerSoundEvent("2_of_clubs");
+    public static final RegistryObject<SoundEvent> TWO_OF_DIAMONDS = registerSoundEvent("2_of_diamonds");
+    public static final RegistryObject<SoundEvent> TWO_OF_SPADES = registerSoundEvent("2_of_spades");
+    public static final RegistryObject<SoundEvent> TWO_OF_HEARTS = registerSoundEvent("2_of_hearts");
+    public static final RegistryObject<SoundEvent> ACE_OF_CLUBS = registerSoundEvent("ace_of_clubs");
+    public static final RegistryObject<SoundEvent> ACE_OF_DIAMONDS = registerSoundEvent("ace_of_diamonds");
+    public static final RegistryObject<SoundEvent> ACE_OF_SPADES = registerSoundEvent("ace_of_spades");
+    public static final RegistryObject<SoundEvent> ACE_OF_HEARTS = registerSoundEvent("ace_of_hearts");
+    public static final RegistryObject<SoundEvent> JOKER = registerSoundEvent("joker");
+    public static final RegistryObject<SoundEvent> HAGALAZ = registerSoundEvent("hagalaz");
+    public static final RegistryObject<SoundEvent> ALGIZ = registerSoundEvent("algiz");
+    public static final RegistryObject<SoundEvent> ANSUZ = registerSoundEvent("ansuz");
+    public static final RegistryObject<SoundEvent> BERKANO = registerSoundEvent("berkano");
+    public static final RegistryObject<SoundEvent> BLACK_RUNE = registerSoundEvent("black_rune");
+    public static final RegistryObject<SoundEvent> DAGAZ = registerSoundEvent("dagaz");
+    public static final RegistryObject<SoundEvent> EHWAZ = registerSoundEvent("ehwaz");
+    public static final RegistryObject<SoundEvent> JERA = registerSoundEvent("jera");
+    public static final RegistryObject<SoundEvent> PERTHRO = registerSoundEvent("perthro");
+    public static final RegistryObject<SoundEvent> RUNE_SHARD = registerSoundEvent("rune_shard");
+    public static final RegistryObject<SoundEvent> CHAOS_CARD = registerSoundEvent("chaos_card");
+    public static final RegistryObject<SoundEvent> CREDIT_CARD = registerSoundEvent("credit_card");
+    public static final RegistryObject<SoundEvent> RULES_CARD = registerSoundEvent("rules_card");
+    public static final RegistryObject<SoundEvent> A_CARD_AGAINST_HUMANITY = registerSoundEvent("a_card_against_humanity");
+    public static final RegistryObject<SoundEvent> SUICIDE_KING = registerSoundEvent("suicide_king");
+    public static final RegistryObject<SoundEvent> GET_OUT_OF_JAIL_CARD = registerSoundEvent("get_out_of_jail_card");
+    public static final RegistryObject<SoundEvent> QUESTION_CARD = registerSoundEvent("question_card");
+    public static final RegistryObject<SoundEvent> DICE_SHARD = registerSoundEvent("dice_shard");
+    public static final RegistryObject<SoundEvent> EMERGENCY_CONTACT = registerSoundEvent("emergency_contact");
+    public static final RegistryObject<SoundEvent> HOLY_CARD = registerSoundEvent("holy_card");
+    public static final RegistryObject<SoundEvent> HUGE_GROWTH = registerSoundEvent("huge_growth");
+    public static final RegistryObject<SoundEvent> ANCIENT_RECALL = registerSoundEvent("ancient_recall");
+    public static final RegistryObject<SoundEvent> ERA_WALK = registerSoundEvent("era_walk");
+    public static final RegistryObject<SoundEvent> CRACKED_KEY = registerSoundEvent("cracked_key");
+    public static final RegistryObject<SoundEvent> QUEEN_OF_HEARTS = registerSoundEvent("queen_of_hearts");
+    public static final RegistryObject<SoundEvent> WILD_CARD = registerSoundEvent("wild_card");
 
 
 

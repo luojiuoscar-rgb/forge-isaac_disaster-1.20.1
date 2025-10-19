@@ -1,19 +1,18 @@
 package net.luojiuoscar.isaac_disaster.item_ability.passive_item.items;
 
 import net.luojiuoscar.isaac_disaster.effect.ModEffects;
-import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
+import net.luojiuoscar.isaac_disaster.helper.EntityHelper;
 import net.luojiuoscar.isaac_disaster.item.ModItems;
-import net.luojiuoscar.isaac_disaster.item_ability.passive_item.IRecursiveItem;
+import net.luojiuoscar.isaac_disaster.item_ability.passive_item.IRecursivePassiveItem;
 import net.luojiuoscar.isaac_disaster.manager.id_managers.ItemId;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class HolyMantle implements IRecursiveItem {
+public class HolyMantle implements IRecursivePassiveItem {
     @Override
     public int getItemId() {
         return ItemId.HOLY_MANTLE.getId();
@@ -64,6 +63,6 @@ public class HolyMantle implements IRecursiveItem {
 
     @Override
     public void recursiveEffect(Player player) {
-        PlayerHelper.addAmplifier(player, ModEffects.HOLY_SHIELD.get());
+        EntityHelper.addAmplifier(player, ModEffects.HOLY_SHIELD.get());
     }
 }

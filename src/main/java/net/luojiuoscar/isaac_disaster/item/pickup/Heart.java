@@ -31,11 +31,11 @@ public class Heart extends Pickup{
         ItemStack itemstack = super.finishUsingItem(stack, level, entity);
         if (!(entity instanceof Player player)) return itemstack;
 
-        PickupManager.getInstance().getItemFromId(getItemId()).onUse(player, itemstack, null);
+        PickupManager.getInstance().getItemFromId(getPickupId()).onUse(player, itemstack, null);
 
         if (!level.isClientSide()) {
             // 播放自定义的音效
-            PickupManager.getInstance().getItemFromId(getItemId()).onUseClient(player);
+            PickupManager.getInstance().getItemFromId(getPickupId()).onUseClient(player);
         }
 
         return itemstack;

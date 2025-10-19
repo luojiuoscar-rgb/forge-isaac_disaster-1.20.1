@@ -17,10 +17,7 @@ public class GigaBomb implements IPickup {
 
     @Override
     public void onUseEffect(Player player, ItemStack stack, InteractionHand hand) {
-        // 只在服务端执行实体操作
-        if (player.level().isClientSide()) {
-            return;
-        }
+        if (player.level().isClientSide()) return;
 
         EntityHelper.throwGigaBomb(player, 120);
 

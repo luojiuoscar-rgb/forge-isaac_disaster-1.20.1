@@ -1,9 +1,12 @@
 package net.luojiuoscar.isaac_disaster.helper;
 
+import net.luojiuoscar.isaac_disaster.effect.ModEffects;
 import net.luojiuoscar.isaac_disaster.entity.ModEntities;
 import net.luojiuoscar.isaac_disaster.entity.fireball.TimedFireball;
 import net.luojiuoscar.isaac_disaster.entity.tnt.GigaBomb;
 import net.luojiuoscar.isaac_disaster.entity.tnt.IsaacBomb;
+import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.TamableAnimal;
 import net.minecraft.world.entity.player.Player;
@@ -178,6 +181,7 @@ public class EntityHelper {
 
     public static boolean isFriendlyToPlayer(LivingEntity entity, LivingEntity player) {
         if (player == null || entity == null) return false;
+        if (entity == player) return true; // 跳过本身
 
         // 被同一玩家驯服的生物
         if (entity instanceof TamableAnimal tamable) {
@@ -189,5 +193,71 @@ public class EntityHelper {
         if (entity instanceof Player p && player instanceof Player o && o.isAlliedTo(p)) return true;
 
         return false;
+    }
+
+    /**
+     * 对于*可叠加*相关的药水效果；移除1层
+     */
+    public static void applyOrStackEffect(LivingEntity entity, MobEffect effect, int duration, int amplifier){
+        applyOrStackEffect(entity, effect, duration, amplifier, false, false, true);
+    }
+    public static void applyOrStackEffect(LivingEntity entity, MobEffect effect, int duration, int amplifier, boolean isAmbient, boolean isVisible, boolean showIcon){
+        MobEffectInstance mobEffectInstance = entity.getEffect(effect);
+        if (mobEffectInstance != null){
+            amplifier += mobEffectInstance.getAmplifier() + 1; // 叠加效果
+        }
+
+        entity.addEffect(new MobEffectInstance(effect, duration, amplifier, isAmbient, isVisible, showIcon));
+    }
+
+    /**
+     * 对于*层数*相关的药水效果；移除1层
+     */
+    public static void removeAmplifier(LivingEntity entity, MobEffect effect){
+        MobEffectInstance effectI = entity.getEffect(effect);
+        if (effectI == null) return;
+
+        int amplifier = effectI.getAmplifier() - 1;
+        entity.removeEffect(effect);
+
+        if (amplifier < 0) return;
+
+
+        MobEffectInstance newEffect = new MobEffectInstance(
+                effect,
+                -1,
+                amplifier,
+                true,
+                false,
+                true
+        );
+        entity.addEffect(newEffect);
+    }
+    public static void addAmplifier(LivingEntity entity, MobEffect effect){
+        MobEffectInstance effectI = entity.getEffect(effect);
+        int amplifier = 0;
+
+        if (effectI != null) {
+            amplifier = effectI.getAmplifier() + 1;
+            entity.removeEffect(effect);
+
+            // 神圣护盾存在上限；最大层数10层
+            if (effectI.getEffect() == ModEffects.HOLY_SHIELD.get()){
+                amplifier = Math.min(9, amplifier);
+            }
+        }
+
+        // 保险起见
+        if (amplifier < 0) return;
+
+        MobEffectInstance newEffect = new MobEffectInstance(
+                effect,
+                -1,
+                amplifier,
+                false,
+                false,
+                true
+        );
+        entity.addEffect(newEffect);
     }
 }

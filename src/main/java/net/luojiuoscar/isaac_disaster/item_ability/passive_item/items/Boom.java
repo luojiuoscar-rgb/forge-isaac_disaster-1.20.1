@@ -40,7 +40,7 @@ public class Boom implements IPassiveItem {
     @Override
     public List<Component> getDescription() {
         return List.of(
-                Component.translatable("item.isaac_disaster.boom.lore.1")
+                Component.translatable("item.isaac_disaster.action.give_bomb", 10)
         );
     }
 }

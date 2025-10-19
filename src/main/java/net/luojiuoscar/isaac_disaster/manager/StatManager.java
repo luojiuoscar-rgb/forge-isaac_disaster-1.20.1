@@ -8,11 +8,11 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.player.Player;
-import net.minecraftforge.common.capabilities.Capability;
 
 import javax.annotation.Nullable;
 import java.util.UUID;
 
+import static com.mojang.text2speech.Narrator.LOGGER;
 import static net.luojiuoscar.isaac_disaster.Config.*;
 
 /**
@@ -27,10 +27,15 @@ public class StatManager {
     public static double getHolyShieldStrength(){return HOLY_SHIELD_STRENGTH.get();}
 
 
-    public static void removeModifier(AttributeInstance attribute, UUID uuid) {
+    public static void removeModifier(Player player, AttributeInstance attribute, UUID uuid) {
         attribute.removeModifier(uuid);
+        // 确保同步到cap
+        player.getCapability(PlayerStatModifierProvider.PLAYER_STAT_MODIFIER).ifPresent(
+                playerStatModifier -> {
+                    playerStatModifier.removeModifier(uuid);
+                });
     }
-    public static void updateAdder(Player player, AttributeInstance attribute, double totalBoost, UUID uuid, String name) {
+    public static void setAdder(Player player, AttributeInstance attribute, double totalBoost, UUID uuid, String name) {
         attribute.removeModifier(uuid);
         attribute.addPermanentModifier(new AttributeModifier(
                 uuid,
@@ -44,7 +49,7 @@ public class StatManager {
                     playerStatModifier.setModifier(uuid, totalBoost);
                 });
     }
-    public static void updateMultiplier(Player player, AttributeInstance attribute, double totalBoost, UUID uuid, String name) {
+    public static void setMultiplier(Player player, AttributeInstance attribute, double totalBoost, UUID uuid, String name) {
         attribute.removeModifier(uuid);
         attribute.addPermanentModifier(new AttributeModifier(
                 uuid,
@@ -59,10 +64,12 @@ public class StatManager {
                 });
     }
     public static void modifyAdder(Player player, UUID uuid, double amount,
-                                   @Nullable Double minValue, @Nullable Double maxvalue){
+                                   @Nullable Double minValue, @Nullable Double maxValue){
         AttributeInstance instance = player.getAttribute(UUIDManager.ATTRIBUTE_FROM_UUID.get(uuid));
-        if (instance == null) return;
-
+        if (instance == null) {
+            LOGGER.debug("ADDER ADD FAILED");
+            return;
+        }
         // 获取当前已有的加成 (若不存在则加值为0.0)
         AttributeModifier adder = instance.getModifier(uuid);
         double currentBoost = adder != null ? adder.getAmount() : 0.0;
@@ -70,15 +77,18 @@ public class StatManager {
         // 计算新的加成值
         double newBoost = currentBoost + amount;
 
-        if (minValue != null && minValue > newBoost) newBoost = minValue;
-        if (maxvalue != null && maxvalue < newBoost) newBoost = maxvalue;
+        if (minValue != null && newBoost < minValue) newBoost = minValue;
+        if (maxValue != null && newBoost > maxValue) newBoost = maxValue;
 
-        updateAdder(player, instance, newBoost, uuid, "");
+        setAdder(player, instance, newBoost, uuid, "");
     }
     public static void modifyMultiplier(Player player, UUID uuid, double amount,
                                         @Nullable Double minValue, @Nullable Double maxvalue){
         AttributeInstance instance = player.getAttribute(UUIDManager.ATTRIBUTE_FROM_UUID.get(uuid));
-        if (instance == null) return;
+        if (instance == null) {
+            LOGGER.debug("MULTIPLIER ADD FAILED");
+            return;
+        }
 
         // 获取当前已有的加成 (若不存在则加值为0.0)
         AttributeModifier multiplier = instance.getModifier(uuid);
@@ -87,11 +97,10 @@ public class StatManager {
         // 计算新的加成值
         double newBoost = currentBoost + amount;
 
-        if (minValue != null && minValue > newBoost) newBoost = minValue;
-        if (maxvalue != null && maxvalue < newBoost) newBoost = maxvalue;
+        if (minValue != null && newBoost < minValue) newBoost = minValue;
+        if (maxvalue != null && newBoost > maxvalue) newBoost = maxvalue;
 
-
-        updateMultiplier(player, instance, newBoost, uuid, "");
+        setMultiplier(player, instance, newBoost, uuid, "");
     }
 
 
@@ -154,7 +163,7 @@ public class StatManager {
      * @param amount 代表乘算数值。举例：0.5为+50%；-0.3为-30%
      */
     public static void modifyDamageMultiplier(Player player, double amount){
-        modifyMultiplier(player, UUIDManager.DAMAGE_MODIFIER_MULTIPLIER, amount, 0.1, null);
+        modifyMultiplier(player, UUIDManager.DAMAGE_MODIFIER_MULTIPLIER, amount, -0.9, null);
     }
 
     /**
@@ -216,17 +225,17 @@ public class StatManager {
     /**
      * BULLET SPEED
      */
-    public static double getBulletSpeed(){return BULLET_SPEED_BONUS.get();}
+    public static double getBulletSpeedBonus(){return BULLET_SPEED_BONUS.get();}
     public static void modifyBulletSpeedAdder(Player player, double ratio){
-        modifyAdder(player, UUIDManager.BULLET_SPEED_MODIFIER_ADDER,getBulletSpeed()*ratio,
+        modifyAdder(player, UUIDManager.BULLET_SPEED_MODIFIER_ADDER, getBulletSpeedBonus()*ratio,
                 null, null);    }
 
     /**
      * TEARS
      */
-    public static double getTears(){return TEARS_BONUS.get();}
+    public static double getTearsBonus(){return TEARS_BONUS.get();}
     public static void modifyTearsAdder(Player player, double ratio){
-        modifyAdder(player, UUIDManager.TEARS_MODIFIER_ADDER,getTears()*ratio,
+        modifyAdder(player, UUIDManager.TEARS_MODIFIER_ADDER, getTearsBonus()*ratio,
                 null, null);    }
 
     /**
@@ -240,9 +249,9 @@ public class StatManager {
     /**
      * ATTACK SPEED
      */
-    public static double getAttackSpeed(){return ATTACK_SPEED_BONUS.get();}
+    public static double getAttackSpeedBonus(){return ATTACK_SPEED_BONUS.get();}
     public static void modifyAttackSpeedAdder(Player player, double ratio){
-        modifyAdder(player, UUIDManager.ATTACK_SPEED_MODIFIER_ADDER,getAttackSpeed()*ratio,
+        modifyAdder(player, UUIDManager.ATTACK_SPEED_MODIFIER_ADDER, getAttackSpeedBonus()*ratio,
                 null, null);    }
 
     /**
@@ -317,6 +326,14 @@ public class StatManager {
     public static void modifyAttackKnockBackAdder(Player player, double ratio){
         modifyAdder(player, UUIDManager.ATTACK_KNOCKBACK_BONUS,getAttackKnockbackBonus()*ratio,
                 null, null);
+    }
+
+    /**
+     * BULLET COUNT
+     */
+    public static void modifyBulletCount(Player player, int amount){
+        modifyAdder(player, UUIDManager.BULLET_COUNT_BONUS, amount,
+                0.0, null);
     }
 
     /**

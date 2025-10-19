@@ -1,10 +1,9 @@
 package net.luojiuoscar.isaac_disaster.item_ability.passive_item.items;
 
 import net.luojiuoscar.isaac_disaster.Config;
-import net.luojiuoscar.isaac_disaster.attribute.ModAttributes;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.item.ModItems;
-import net.luojiuoscar.isaac_disaster.item_ability.passive_item.IRecursiveItem;
+import net.luojiuoscar.isaac_disaster.item_ability.passive_item.IRecursivePassiveItem;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.manager.UUIDManager;
 import net.luojiuoscar.isaac_disaster.manager.id_managers.ItemId;
@@ -16,7 +15,7 @@ import net.minecraft.world.item.ItemStack;
 
 import java.util.List;
 
-public class MoneyIsPower implements IRecursiveItem {
+public class MoneyIsPower implements IRecursivePassiveItem {
     @Override
     public int getTickInterval() {
         return 20; // 每秒触发
@@ -29,7 +28,7 @@ public class MoneyIsPower implements IRecursiveItem {
         double damage = money * Config.MONEY_IS_POWER_STRENGTH.get();
         AttributeInstance instance = player.getAttribute(Attributes.ATTACK_DAMAGE);
         if (instance == null) return;
-        StatManager.updateAdder(player, instance, damage, UUIDManager.MONEY_IS_POWER_ADDER, "base_damage_adder");
+        StatManager.setAdder(player, instance, damage, UUIDManager.MONEY_IS_POWER_ADDER, "base_damage_adder");
     }
 
     @Override

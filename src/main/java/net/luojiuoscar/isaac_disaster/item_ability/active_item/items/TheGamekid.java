@@ -2,16 +2,13 @@ package net.luojiuoscar.isaac_disaster.item_ability.active_item.items;
 
 import net.luojiuoscar.isaac_disaster.client.ClientDataManager;
 import net.luojiuoscar.isaac_disaster.effect.ModEffects;
-import net.luojiuoscar.isaac_disaster.entity.custom.LemonEffectCloud;
 import net.luojiuoscar.isaac_disaster.item.ModItems;
 import net.luojiuoscar.isaac_disaster.item_ability.active_item.IActiveItem;
 import net.luojiuoscar.isaac_disaster.manager.ColorManager;
-import net.luojiuoscar.isaac_disaster.manager.StatManager;
+import net.luojiuoscar.isaac_disaster.manager.id_managers.EffectId;
 import net.luojiuoscar.isaac_disaster.manager.id_managers.ItemId;
-import net.luojiuoscar.isaac_disaster.sound.ModSounds;
+import net.luojiuoscar.isaac_disaster.manager.item_managers.EffectDescriptionManager;
 import net.minecraft.network.chat.Component;
-import net.minecraft.sounds.SoundEvent;
-import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -79,15 +76,9 @@ public class TheGamekid implements IActiveItem {
     public List<Component> getExplain(){
         List<Component> description = new ArrayList<>();
 
-        description.add(Component.translatable("effect.isaac_disaster.invincible").append(": ")
-                .append(Component.translatable("effect.isaac_disaster.invincible.explain.1")));
-
-        description.add(Component.translatable("effect.isaac_disaster.pac_man").append(": ")
-                .append(Component.translatable("effect.isaac_disaster.pac_man.explain.1"))
-                .append(Component.translatable("effect.isaac_disaster.pac_man.explain.2")));
-
-        description.add(Component.translatable("effect.isaac_disaster.lacrimal_hyposecretion").append(": ")
-                .append(Component.translatable("effect.isaac_disaster.lacrimal_hyposecretion.explain.1")));
+        description.addAll(EffectDescriptionManager.getInstance().getDescriptionFromId(EffectId.INVINCIBLE.getId()));
+        description.addAll(EffectDescriptionManager.getInstance().getDescriptionFromId(EffectId.LACRIMAL_HYPOSECRETION.getId()));
+        description.addAll(EffectDescriptionManager.getInstance().getDescriptionFromId(EffectId.PAC_MAN.getId()));
 
         return description;
     }

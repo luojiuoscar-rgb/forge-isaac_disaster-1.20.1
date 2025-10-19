@@ -3,10 +3,12 @@ package net.luojiuoscar.isaac_disaster.item_ability.passive_item.items;
 import net.luojiuoscar.isaac_disaster.effect.ModEffects;
 import net.luojiuoscar.isaac_disaster.entity.custom.IsaacBullet;
 import net.luojiuoscar.isaac_disaster.item.ModItems;
-import net.luojiuoscar.isaac_disaster.item_ability.passive_item.IDamageTrigger;
+import net.luojiuoscar.isaac_disaster.item_ability.passive_item.IDamageTriggerPassiveItem;
 import net.luojiuoscar.isaac_disaster.item_ability.passive_item.INewBulletType;
 import net.luojiuoscar.isaac_disaster.manager.ColorManager;
+import net.luojiuoscar.isaac_disaster.manager.id_managers.EffectId;
 import net.luojiuoscar.isaac_disaster.manager.id_managers.ItemId;
+import net.luojiuoscar.isaac_disaster.manager.item_managers.EffectDescriptionManager;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
@@ -16,9 +18,7 @@ import net.minecraft.world.item.ItemStack;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.mojang.text2speech.Narrator.LOGGER;
-
-public class TheCommonCold implements IDamageTrigger, INewBulletType {
+public class TheCommonCold implements IDamageTriggerPassiveItem, INewBulletType {
     @Override
     public int getItemId() {
         return ItemId.THE_COMMON_COLD.getId();
@@ -31,7 +31,7 @@ public class TheCommonCold implements IDamageTrigger, INewBulletType {
 
     @Override
     public void handleAttackEntityEffect(Player player, LivingEntity target){
-        // 给目标添加中毒效果：持续5秒（100游戏刻，20刻=1秒），等级1（ amplifier=0 对应等级1）
+        // 给目标添加中毒效果：持续5秒（100游戏刻，20刻=1秒），等级1
         MobEffectInstance poisonEffect = new MobEffectInstance(
                 ModEffects.ISAAC_POISON.get(),  // 中毒效果的类型
                 70,                 // 持续时间（游戏刻）
@@ -77,9 +77,7 @@ public class TheCommonCold implements IDamageTrigger, INewBulletType {
     public List<Component> getExplain(){
         List<Component> description = new ArrayList<>();
 
-        description.add(Component.translatable("effect.isaac_disaster.isaac_poison").append(": ")
-                .append(Component.translatable("effect.isaac_disaster.poison.explain.1")));
-        description.add(Component.translatable("effect.isaac_disaster.poison.explain.2"));
+        description.addAll(EffectDescriptionManager.getInstance().getDescriptionFromId(EffectId.POISON.getId()));
 
         return description;
     }
@@ -95,7 +93,6 @@ public class TheCommonCold implements IDamageTrigger, INewBulletType {
         if (Math.random() <= getTriggerChance(player)) {
             bullet.setColor(getNewColor());
             bullet.addBulletHitEffect(ItemId.THE_COMMON_COLD.getId());
-            LOGGER.info("TRIGGERED EFFECT");
         }
     }
 }

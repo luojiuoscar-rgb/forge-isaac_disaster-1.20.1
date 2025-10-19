@@ -9,7 +9,6 @@ import net.luojiuoscar.isaac_disaster.networking.packet.FlyUpdateS2CPacket;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
-import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.player.Player;
@@ -27,6 +26,7 @@ public class PlayerStatModifier {
     private double flyTime;
     private double flyTimeCurrent;
 
+    private int doubleShotDelay;
 
     // constructor
     public PlayerStatModifier(){
@@ -38,6 +38,7 @@ public class PlayerStatModifier {
 
         flyTime = 0;
         flyTimeCurrent = 0;
+        doubleShotDelay = 0;
     }
 
 
@@ -55,12 +56,17 @@ public class PlayerStatModifier {
     public double getFlyTimeCurrent(){
         return flyTimeCurrent;
     }
-
+    public int getDoubleShotDelay(){
+        return doubleShotDelay;
+    }
     /**
      * Setter
      */
     public void setModifier(UUID uuid, double amount){
         playerModifiers.put(uuid, amount);
+    }
+    public void removeModifier(UUID uuid){
+        playerModifiers.remove(uuid);
     }
 
     public void setFlyTime(Player player, double amount){
@@ -101,6 +107,12 @@ public class PlayerStatModifier {
             ModMessages.sentToPlayer(new FlyUpdateS2CPacket(units), player);
         }
     }
+    public void setDoubleShotDelay(Player player, int amount){
+        this.doubleShotDelay = amount;
+    }
+    public void modifyDoubleShotDelay(Player player, int amount){
+        this.doubleShotDelay += amount;
+    }
 
 
     private void refreshAllFromSource(Player player, PlayerStatModifier source){
@@ -110,7 +122,7 @@ public class PlayerStatModifier {
             if (instance == null) continue;
 
             if (!UUIDManager.MULTIPLIER_UUID.contains(uuid)){
-                StatManager.updateAdder(
+                StatManager.setAdder(
                         player,
                         instance,
                         entry.getValue(),
@@ -119,7 +131,7 @@ public class PlayerStatModifier {
                 );
             }
             else{
-                StatManager.updateMultiplier(
+                StatManager.setMultiplier(
                         player,
                         instance,
                         entry.getValue(),
@@ -140,11 +152,13 @@ public class PlayerStatModifier {
         refreshAllFromSource(player, source);
         setFlyTime(player, source.flyTime);
         this.flyTime = 0;
+        this.doubleShotDelay = 0;
     }
 
     public void saveNBTData(CompoundTag nbt) {
 
         nbt.putDouble("fly_time", flyTime);
+        nbt.putInt("double_shot_delay", doubleShotDelay);
 
         // 保存 playerModifiers
         ListTag listTag = new ListTag();
@@ -160,6 +174,7 @@ public class PlayerStatModifier {
 
         this.flyTime = nbt.getDouble("fly_time");
         this.flyTimeCurrent = 0;
+        this.doubleShotDelay = nbt.getInt("double_shot_delay");
 
         // 读取 playerModifiers
         this.playerModifiers.clear();

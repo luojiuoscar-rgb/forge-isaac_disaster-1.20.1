@@ -1,7 +1,7 @@
 package net.luojiuoscar.isaac_disaster.capability.player;
 
 import net.luojiuoscar.isaac_disaster.item_ability.passive_item.INewBulletType;
-import net.luojiuoscar.isaac_disaster.item_ability.passive_item.IRecursiveItem;
+import net.luojiuoscar.isaac_disaster.item_ability.passive_item.IRecursivePassiveItem;
 import net.luojiuoscar.isaac_disaster.item_ability.set.ISet;
 import net.luojiuoscar.isaac_disaster.manager.item_managers.PassiveItemManager;
 import net.luojiuoscar.isaac_disaster.item_ability.passive_item.ITriggerPassiveItem;
@@ -81,7 +81,7 @@ public class PlayerPassiveItem {
             triggerItemMap.put(itemId, itemCountMap.get(itemId));
         }
         // 如果是循环型道具
-        if(PassiveItemManager.getInstance().getItemFromId(itemId) instanceof IRecursiveItem item){
+        if(PassiveItemManager.getInstance().getItemFromId(itemId) instanceof IRecursivePassiveItem item){
             // 对于循环型道具需要移除计数器
             int itemCount = itemCountMap.get(itemId);
             if (itemCount == 0){
@@ -151,7 +151,7 @@ public class PlayerPassiveItem {
             // 计数器归零时
             if (entry.getValue() <= 0){
                 int itemId = entry.getKey();
-                IRecursiveItem item = (IRecursiveItem) PassiveItemManager.getInstance().getItemFromId(itemId);
+                IRecursivePassiveItem item = (IRecursivePassiveItem) PassiveItemManager.getInstance().getItemFromId(itemId);
                 // 触发循环效果
                 item.recursiveEffect(player);
                 entry.setValue(item.getTickInterval());

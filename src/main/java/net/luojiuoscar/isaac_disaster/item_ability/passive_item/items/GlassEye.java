@@ -1,9 +1,10 @@
 package net.luojiuoscar.isaac_disaster.item_ability.passive_item.items;
 
+import net.luojiuoscar.isaac_disaster.helper.TextHelper;
 import net.luojiuoscar.isaac_disaster.item.ModItems;
-import net.luojiuoscar.isaac_disaster.manager.id_managers.ItemId;
-import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.item_ability.passive_item.IPassiveItem;
+import net.luojiuoscar.isaac_disaster.manager.StatManager;
+import net.luojiuoscar.isaac_disaster.manager.id_managers.ItemId;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -46,8 +47,8 @@ public class GlassEye implements IPassiveItem {
     public List<Component> getDescription() {
         return List.of(
                 //移动速度以百分比显示
-                Component.translatable("item.isaac_disaster.attribute.damage", 0.75*StatManager.getDamageBonus()),
-                Component.translatable("item.isaac_disaster.attribute.luck", StatManager.getLuckBonus())
+                TextHelper.formatAttribute("item.isaac_disaster.attribute.damage", 0.75*StatManager.getDamageBonus()),
+                TextHelper.formatAttribute("item.isaac_disaster.attribute.luck", StatManager.getLuckBonus())
         );
     }
 }

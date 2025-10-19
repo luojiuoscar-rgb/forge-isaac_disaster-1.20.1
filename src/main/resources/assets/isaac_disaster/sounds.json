@@ -623,5 +623,410 @@
     "sounds":[
       "isaac_disaster:battery_small"
     ]
+  },
+  "magic_mushroom_obtain":{
+    "sounds":[
+      "isaac_disaster:magic_mushroom_obtain"
+    ]
+  },
+  "bone_heart":{
+    "sounds":[
+      "isaac_disaster:bone_heart"
+    ]
+  },
+  "the_fool": {
+    "sounds": [
+      "isaac_disaster:the_fool"
+    ]
+  },
+  "the_fool_r": {
+    "sounds": [
+      "isaac_disaster:the_fool_r"
+    ]
+  },
+  "the_magician": {
+    "sounds": [
+      "isaac_disaster:the_magician"
+    ]
+  },
+  "the_magician_r": {
+    "sounds": [
+      "isaac_disaster:the_magician_r"
+    ]
+  },
+  "the_high_priestess": {
+    "sounds": [
+      "isaac_disaster:the_high_priestess"
+    ]
+  },
+  "the_high_priestess_r": {
+    "sounds": [
+      "isaac_disaster:the_high_priestess_r"
+    ]
+  },
+  "the_empress": {
+    "sounds": [
+      "isaac_disaster:the_empress"
+    ]
+  },
+  "the_empress_r": {
+    "sounds": [
+      "isaac_disaster:the_empress_r"
+    ]
+  },
+  "the_emperor": {
+    "sounds": [
+      "isaac_disaster:the_emperor"
+    ]
+  },
+  "the_emperor_r": {
+    "sounds": [
+      "isaac_disaster:the_emperor_r"
+    ]
+  },
+  "the_hierophant": {
+    "sounds": [
+      "isaac_disaster:the_hierophant"
+    ]
+  },
+  "the_hierophant_r": {
+    "sounds": [
+      "isaac_disaster:the_hierophant_r"
+    ]
+  },
+  "the_lovers": {
+    "sounds": [
+      "isaac_disaster:the_lovers"
+    ]
+  },
+  "the_lovers_r": {
+    "sounds": [
+      "isaac_disaster:the_lovers_r"
+    ]
+  },
+  "the_chariot": {
+    "sounds": [
+      "isaac_disaster:the_chariot"
+    ]
+  },
+  "the_chariot_r": {
+    "sounds": [
+      "isaac_disaster:the_chariot_r"
+    ]
+  },
+  "justice": {
+    "sounds": [
+      "isaac_disaster:justice"
+    ]
+  },
+  "justice_r": {
+    "sounds": [
+      "isaac_disaster:justice_r"
+    ]
+  },
+  "the_hermit": {
+    "sounds": [
+      "isaac_disaster:the_hermit"
+    ]
+  },
+  "the_hermit_r": {
+    "sounds": [
+      "isaac_disaster:the_hermit_r"
+    ]
+  },
+  "wheel_of_fortune": {
+    "sounds": [
+      "isaac_disaster:wheel_of_fortune"
+    ]
+  },
+  "wheel_of_fortune_r": {
+    "sounds": [
+      "isaac_disaster:wheel_of_fortune_r"
+    ]
+  },
+  "strength": {
+    "sounds": [
+      "isaac_disaster:strength"
+    ]
+  },
+  "strength_r": {
+    "sounds": [
+      "isaac_disaster:strength_r"
+    ]
+  },
+  "the_hanged_man": {
+    "sounds": [
+      "isaac_disaster:the_hanged_man"
+    ]
+  },
+  "the_hanged_man_r": {
+    "sounds": [
+      "isaac_disaster:the_hanged_man_r"
+    ]
+  },
+  "death": {
+    "sounds": [
+      "isaac_disaster:death"
+    ]
+  },
+  "death_r": {
+    "sounds": [
+      "isaac_disaster:death_r"
+    ]
+  },
+  "temperance": {
+    "sounds": [
+      "isaac_disaster:temperance"
+    ]
+  },
+  "temperance_r": {
+    "sounds": [
+      "isaac_disaster:temperance_r"
+    ]
+  },
+  "the_devil": {
+    "sounds": [
+      "isaac_disaster:the_devil"
+    ]
+  },
+  "the_devil_r": {
+    "sounds": [
+      "isaac_disaster:the_devil_r"
+    ]
+  },
+  "the_tower": {
+    "sounds": [
+      "isaac_disaster:the_tower"
+    ]
+  },
+  "the_tower_r": {
+    "sounds": [
+      "isaac_disaster:the_tower_r"
+    ]
+  },
+  "the_stars": {
+    "sounds": [
+      "isaac_disaster:the_stars"
+    ]
+  },
+  "the_stars_r": {
+    "sounds": [
+      "isaac_disaster:the_stars_r"
+    ]
+  },
+  "the_moon": {
+    "sounds": [
+      "isaac_disaster:the_moon"
+    ]
+  },
+  "the_moon_r": {
+    "sounds": [
+      "isaac_disaster:the_moon_r"
+    ]
+  },
+  "the_sun": {
+    "sounds": [
+      "isaac_disaster:the_sun"
+    ]
+  },
+  "the_sun_r": {
+    "sounds": [
+      "isaac_disaster:the_sun_r"
+    ]
+  },
+  "judgement": {
+    "sounds": [
+      "isaac_disaster:judgement"
+    ]
+  },
+  "judgement_r": {
+    "sounds": [
+      "isaac_disaster:judgement_r"
+    ]
+  },
+  "the_world": {
+    "sounds": [
+      "isaac_disaster:the_world"
+    ]
+  },
+  "the_world_r": {
+    "sounds": [
+      "isaac_disaster:the_world_r"
+    ]
+  },
+  "2_of_clubs": {
+    "sounds": [
+      "isaac_disaster:2_of_clubs"
+    ]
+  },
+  "2_of_diamonds": {
+    "sounds": [
+      "isaac_disaster:2_of_diamonds"
+    ]
+  },
+  "2_of_spades": {
+    "sounds": [
+      "isaac_disaster:2_of_spades"
+    ]
+  },
+  "2_of_hearts": {
+    "sounds": [
+      "isaac_disaster:2_of_hearts"
+    ]
+  },
+  "ace_of_clubs": {
+    "sounds": [
+      "isaac_disaster:ace_of_clubs"
+    ]
+  },
+  "ace_of_diamonds": {
+    "sounds": [
+      "isaac_disaster:ace_of_diamonds"
+    ]
+  },
+  "ace_of_spades": {
+    "sounds": [
+      "isaac_disaster:ace_of_spades"
+    ]
+  },
+  "ace_of_hearts": {
+    "sounds": [
+      "isaac_disaster:ace_of_hearts"
+    ]
+  },
+  "joker": {
+    "sounds": [
+      "isaac_disaster:joker"
+    ]
+  },
+  "hagalaz": {
+    "sounds": [
+      "isaac_disaster:hagalaz"
+    ]
+  },
+  "algiz": {
+    "sounds": [
+      "isaac_disaster:algiz"
+    ]
+  },
+  "ansuz": {
+    "sounds": [
+      "isaac_disaster:ansuz"
+    ]
+  },
+  "berkano": {
+    "sounds": [
+      "isaac_disaster:berkano"
+    ]
+  },
+  "black_rune": {
+    "sounds": [
+      "isaac_disaster:black_rune"
+    ]
+  },
+  "dagaz": {
+    "sounds": [
+      "isaac_disaster:dagaz"
+    ]
+  },
+  "ehwaz": {
+    "sounds": [
+      "isaac_disaster:ehwaz"
+    ]
+  },
+  "jera": {
+    "sounds": [
+      "isaac_disaster:jera"
+    ]
+  },
+  "perthro": {
+    "sounds": [
+      "isaac_disaster:perthro"
+    ]
+  },
+  "rune_shard": {
+    "sounds": [
+      "isaac_disaster:rune_shard"
+    ]
+  },
+  "chaos_card": {
+    "sounds": [
+      "isaac_disaster:chaos_card"
+    ]
+  },
+  "credit_card": {
+    "sounds": [
+      "isaac_disaster:credit_card"
+    ]
+  },
+  "rules_card": {
+    "sounds": [
+      "isaac_disaster:rules_card"
+    ]
+  },
+  "a_card_against_humanity": {
+    "sounds": [
+      "isaac_disaster:a_card_against_humanity"
+    ]
+  },
+  "suicide_king": {
+    "sounds": [
+      "isaac_disaster:suicide_king"
+    ]
+  },
+  "get_out_of_jail_card": {
+    "sounds": [
+      "isaac_disaster:get_out_of_jail_card"
+    ]
+  },
+  "question_card": {
+    "sounds": [
+      "isaac_disaster:question_card"
+    ]
+  },
+  "dice_shard": {
+    "sounds": [
+      "isaac_disaster:dice_shard"
+    ]
+  },
+  "emergency_contact": {
+    "sounds": [
+      "isaac_disaster:emergency_contact"
+    ]
+  },
+  "holy_card": {
+    "sounds": [
+      "isaac_disaster:holy_card"
+    ]
+  },
+  "huge_growth": {
+    "sounds": [
+      "isaac_disaster:huge_growth"
+    ]
+  },
+  "ancient_recall": {
+    "sounds": [
+      "isaac_disaster:ancient_recall"
+    ]
+  },
+  "era_walk": {
+    "sounds": [
+      "isaac_disaster:era_walk"
+    ]
+  },
+  "cracked_key": {
+    "sounds": [
+      "isaac_disaster:cracked_key"
+    ]
+  },
+  "queen_of_hearts": {
+    "sounds": [
+      "isaac_disaster:queen_of_hearts"
+    ]
+  },
+  "wild_card": {
+    "sounds": [
+      "isaac_disaster:wild_card"
+    ]
   }
 }

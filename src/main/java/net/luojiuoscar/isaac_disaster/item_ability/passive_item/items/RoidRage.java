@@ -1,6 +1,7 @@
 package net.luojiuoscar.isaac_disaster.item_ability.passive_item.items;
 
 import net.luojiuoscar.isaac_disaster.client.ClientDataManager;
+import net.luojiuoscar.isaac_disaster.helper.TextHelper;
 import net.luojiuoscar.isaac_disaster.item.ModItems;
 import net.luojiuoscar.isaac_disaster.item_ability.passive_item.IPassiveItem;
 import net.luojiuoscar.isaac_disaster.manager.ColorManager;
@@ -50,10 +51,10 @@ public class RoidRage implements IPassiveItem {
     @Override
     public List<Component> getDescription() {
         return List.of(
-                Component.translatable("item.isaac_disaster.attribute.movement_speed", 1.5*1000*StatManager.getMovementSpeedBonus()),
-                Component.translatable("item.isaac_disaster.attribute.bullet_range", StatManager.getRangeBonus()),
-                Component.translatable("item.isaac_disaster.attribute.entity_reach", StatManager.getEntityReachBonus()),
-                Component.translatable("item.isaac_disaster.attribute.block_reach", StatManager.getBlockReachBonus())
+                TextHelper.formatAttribute("item.isaac_disaster.attribute.movement_speed", 1.5*1000*StatManager.getMovementSpeedBonus()),
+                TextHelper.formatAttribute("item.isaac_disaster.attribute.bullet_range", StatManager.getRangeBonus()),
+                TextHelper.formatAttribute("item.isaac_disaster.attribute.entity_reach", StatManager.getEntityReachBonus()),
+                TextHelper.formatAttribute("item.isaac_disaster.attribute.block_reach", StatManager.getBlockReachBonus())
         );
     }
 

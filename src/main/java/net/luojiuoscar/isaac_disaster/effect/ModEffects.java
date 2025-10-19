@@ -1,17 +1,14 @@
 package net.luojiuoscar.isaac_disaster.effect;
 
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
+import net.luojiuoscar.isaac_disaster.manager.ColorManager;
 import net.luojiuoscar.isaac_disaster.manager.EffectNameManager;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
-import net.minecraft.world.entity.ai.attributes.AttributeModifier;
-import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
-
-import java.util.UUID;
 
 
 public class ModEffects {
@@ -26,13 +23,10 @@ public class ModEffects {
             () -> new PoisonEffect(MobEffectCategory.HARMFUL, 8889187));
 
     public static final RegistryObject<MobEffect> POWER_OF_BELIAL = MOB_EFFECTS.register(EffectNameManager.POWER_OF_BELIAL,
-            () -> new PowerOfBelialEffect(MobEffectCategory.BENEFICIAL, 0xee1c24)
-            .addAttributeModifier(Attributes.ATTACK_DAMAGE, UUID.randomUUID().toString(), 0.0D, AttributeModifier.Operation.ADDITION));
+            () -> new PowerOfBelialEffect(MobEffectCategory.BENEFICIAL, 0xee1c24));
 
     public static final RegistryObject<MobEffect> DIZZINESS = MOB_EFFECTS.register(EffectNameManager.DIZZINESS,
-            () -> new DizzinessEffect(MobEffectCategory.HARMFUL, 0xFFFFFF)
-                    .addAttributeModifier(Attributes.MOVEMENT_SPEED, UUID.randomUUID().toString(), -1.0D, AttributeModifier.Operation.MULTIPLY_TOTAL)
-                    .addAttributeModifier(Attributes.JUMP_STRENGTH, UUID.randomUUID().toString(), -1.0D, AttributeModifier.Operation.MULTIPLY_TOTAL));
+            () -> new DizzinessEffect(MobEffectCategory.HARMFUL, 0xFFFFFF));
 
     public static final RegistryObject<MobEffect> TRANSCENDENCE = MOB_EFFECTS.register(EffectNameManager.TRANSCENDENCE,
             () -> new TranscendenceEffect(MobEffectCategory.BENEFICIAL, 0xFFFFFF));
@@ -66,4 +60,16 @@ public class ModEffects {
 
     public static final RegistryObject<MobEffect> PAC_MAN = MOB_EFFECTS.register(EffectNameManager.PAC_MAN,
             () -> new PacManEffect(MobEffectCategory.BENEFICIAL, 0xFFFF00));
+
+    public static final RegistryObject<MobEffect> RAMPAGE = MOB_EFFECTS.register(EffectNameManager.RAMPAGE,
+            () -> new RampageEffect(MobEffectCategory.BENEFICIAL, 0xFFFFFF));
+
+    public static final RegistryObject<MobEffect> FRAGILE_HEART = MOB_EFFECTS.register(EffectNameManager.FRAGILE_HEART,
+            () -> new FragileHeartEffect(MobEffectCategory.BENEFICIAL, 0x7f7d70));
+
+    public static final RegistryObject<MobEffect> TELEPATHY = MOB_EFFECTS.register(EffectNameManager.TELEPATHY,
+            () -> new TelepathyEffect(MobEffectCategory.BENEFICIAL, ColorManager.SPOON_BENDER_FILTER));
+
+    public static final RegistryObject<MobEffect> BABYLON = MOB_EFFECTS.register(EffectNameManager.BABYLON,
+            () -> new BabylonEffect(MobEffectCategory.BENEFICIAL, 0x990000));
 }

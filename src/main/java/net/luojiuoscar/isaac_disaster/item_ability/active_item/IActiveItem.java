@@ -25,18 +25,9 @@ public interface IActiveItem {
     int getItemId();
 
     default void onUse(Player player, InteractionHand hand){
-        // 判断车载电池
-        if (PlayerHelper.hasItem(ItemId.CAR_BATTERY.getId(), (ServerPlayer) player)){
-            onTriggeredEffectStronger(player);
-        }else {
-            onTriggeredEffect(player);
-        }
-
         // 修改服务器端的物品耐久度
         ItemStack stack = player.getItemInHand(hand);
-        if (stack.isEmpty() || !(stack.getItem() instanceof ActiveItem item)){
-            return;
-        }
+        if (stack.isEmpty() || !(stack.getItem() instanceof ActiveItem item)) return;
 
         // 基于物品的过载情况计算剩余充能
         int damage = stack.getDamageValue();
@@ -56,13 +47,28 @@ public interface IActiveItem {
         // 如果不是创造模式则消耗耐久
         if (!player.isCreative()) stack.setDamageValue(damage);
 
-        // 设置0.5秒的冷却
-        player.getCooldowns().addCooldown(item, 10);
+        // 设置0.25秒的冷却
+        player.getCooldowns().addCooldown(item, 5);
 
+
+        // 首次使用效果
+        if (!ActiveItem.hasBeenUsed(stack)){
+            onFirstUse(player);
+            ActiveItem.setHasBeenUsed(stack, true);
+        }
+
+        // 判断车载电池
+        if (PlayerHelper.hasItem(ItemId.CAR_BATTERY.getId(), (ServerPlayer) player)){
+            onTriggeredEffectStronger(player);
+        }else {
+            onTriggeredEffect(player);
+        }
         // 触发音效（由于主动道具为范围音效，因此需要在服务端触发）
         onTriggerSound(player);
     }
 
+    default void onFirstUse(Player player){
+    }
 
     /**
      * 触发效果
@@ -73,7 +79,6 @@ public interface IActiveItem {
      * 触发更强效果时的效果
      */
     void onTriggeredEffectStronger(Player player);
-
 
     /**
      * 使用时的客户端效果

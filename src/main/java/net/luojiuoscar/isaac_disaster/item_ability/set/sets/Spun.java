@@ -2,6 +2,7 @@ package net.luojiuoscar.isaac_disaster.item_ability.set.sets;
 
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.helper.LevelHelper;
+import net.luojiuoscar.isaac_disaster.helper.TextHelper;
 import net.luojiuoscar.isaac_disaster.item_ability.set.ISet;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.manager.id_managers.SetId;
@@ -10,7 +11,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.player.Player;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class Spun implements ISet {
@@ -54,8 +54,8 @@ public class Spun implements ISet {
     public List<Component> getDescription() {
         return List.of(
                 Component.translatable("set.isaac_disaster.spun").append(": ")
-                        .append(Component.translatable("item.isaac_disaster.attribute.damage", 2*StatManager.getDamageBonus())),
-                Component.translatable("item.isaac_disaster.attribute.movement_speed", 750*StatManager.getMovementSpeedBonus())
+                        .append(TextHelper.formatAttribute("item.isaac_disaster.attribute.damage", 2*StatManager.getDamageBonus())),
+                TextHelper.formatAttribute("item.isaac_disaster.attribute.movement_speed", 750*StatManager.getMovementSpeedBonus())
         );
     }
 }

@@ -1,5 +1,6 @@
 package net.luojiuoscar.isaac_disaster.item_ability.passive_item.items;
 
+import net.luojiuoscar.isaac_disaster.helper.TextHelper;
 import net.luojiuoscar.isaac_disaster.item.ModItems;
 import net.luojiuoscar.isaac_disaster.item_ability.passive_item.IPassiveItem;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
@@ -42,8 +43,8 @@ public class WireCoatHanger implements IPassiveItem {
     @Override
     public List<Component> getDescription() {
         return List.of(
-                Component.translatable("item.isaac_disaster.attribute.tears", StatManager.getTears()),
-                Component.translatable("item.isaac_disaster.attribute.attack_speed",StatManager.getAttackSpeed())
+                TextHelper.formatAttribute("item.isaac_disaster.attribute.tears", StatManager.getTearsBonus()),
+                TextHelper.formatAttribute("item.isaac_disaster.attribute.attack_speed", StatManager.getAttackSpeedBonus())
         );
     }
 }

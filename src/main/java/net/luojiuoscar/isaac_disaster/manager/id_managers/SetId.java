@@ -2,7 +2,9 @@ package net.luojiuoscar.isaac_disaster.manager.id_managers;
 
 public enum SetId {
     SPUN,
-    ADULT;
+    ADULT,
+    FUN_GUY,
+    BOOK;
 
 
     private final int id;

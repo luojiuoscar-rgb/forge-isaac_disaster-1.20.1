@@ -1,5 +1,6 @@
 package net.luojiuoscar.isaac_disaster.item_ability.passive_item.items;
 
+import net.luojiuoscar.isaac_disaster.helper.TextHelper;
 import net.luojiuoscar.isaac_disaster.item.ModItems;
 import net.luojiuoscar.isaac_disaster.item_ability.passive_item.IPassiveItem;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
@@ -46,9 +47,9 @@ public class Pisces implements IPassiveItem {
     public List<Component> getDescription() {
         return List.of(
                 Component.translatable("item.isaac_disaster.attribute.piercing_bullet"),
-                Component.translatable("item.isaac_disaster.attribute.tears_correction",StatManager.getTearsCorrectionBonus()),
-                Component.translatable("item.isaac_disaster.attribute.bullet_scale",2*StatManager.getBulletScaleBonus()),
-                Component.translatable("item.isaac_disaster.attribute.attack_knockback",StatManager.getAttackKnockbackBonus())
+                TextHelper.formatAttribute("item.isaac_disaster.attribute.tears_correction", StatManager.getTearsCorrectionBonus()),
+                Component.translatable("item.isaac_disaster.attribute.bullet_scale_up"),
+                TextHelper.formatAttribute("item.isaac_disaster.attribute.attack_knockback", StatManager.getAttackKnockbackBonus())
                 );
     }
 }

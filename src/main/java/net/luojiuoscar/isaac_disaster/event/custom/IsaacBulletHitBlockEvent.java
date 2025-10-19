@@ -8,5 +8,5 @@ import net.minecraftforge.eventbus.api.Cancelable;
 public class IsaacBulletHitBlockEvent extends IsaacBulletEvent {
     private final BlockHitResult hit;
     public IsaacBulletHitBlockEvent(IsaacBullet b, BlockHitResult hit) { super(b); this.hit = hit; }
-    public BlockHitResult getHit() { return hit; }
+    public BlockHitResult getHitResult() { return hit; }
 }

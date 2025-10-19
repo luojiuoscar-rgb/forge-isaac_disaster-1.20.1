@@ -1,10 +1,13 @@
 package net.luojiuoscar.isaac_disaster.event;
 
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
+import net.luojiuoscar.isaac_disaster.attribute.ModAttributes;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerAbilityProvider;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerPassiveItemProvider;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerStatModifierProvider;
 import net.luojiuoscar.isaac_disaster.effect.ModEffects;
+import net.luojiuoscar.isaac_disaster.helper.EntityHelper;
+import net.luojiuoscar.isaac_disaster.helper.LevelHelper;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.helper.ScheduledFuncHelper;
 import net.luojiuoscar.isaac_disaster.item.item.ActiveItem;
@@ -12,14 +15,17 @@ import net.luojiuoscar.isaac_disaster.item.pickup.IsaacHead;
 import net.luojiuoscar.isaac_disaster.manager.id_managers.ItemId;
 import net.luojiuoscar.isaac_disaster.sound.ModSounds;
 import net.minecraft.client.Minecraft;
-import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+
+import java.util.List;
 
 @Mod.EventBusSubscriber(modid = IsaacDisaster.MOD_ID)
 public class ServerTickEvent {
@@ -54,6 +60,7 @@ public class ServerTickEvent {
                 updateFly(player);
                 bugsFix(player);
                 recursiveItemTick(player);
+                onPlayerSprint(player);
             }
         }
 
@@ -75,6 +82,7 @@ public class ServerTickEvent {
         // 更新所有scheduled function
         ScheduledFuncHelper.tick(server);
     }
+
 
     private static void bugsFix(ServerPlayer player){
         // 防止无限无敌
@@ -123,6 +131,28 @@ public class ServerTickEvent {
                 playerPassiveItem -> playerPassiveItem.recursiveItemTick(player, TICK_FREQUENCY)
         );
     }
+    private static void onPlayerSprint(ServerPlayer player){
+        // 仅限疾跑状态
+        if (!player.isSprinting() || player.isCreative() || player.isSpectator()) return;
+
+        AttributeInstance instance = player.getAttribute(ModAttributes.COLLISION_DAMAGE.get());
+        if (instance == null) return;
+
+        float damage = (float) instance.getValue();
+        if (damage == 0) return; // 无碰撞伤害属性则取消判定
+
+        double radius = player.getBbWidth() + 1; // 略大于玩家碰撞盒范围
+
+        List<LivingEntity> entities =
+                LevelHelper.selectBySquare(player.level(), player.getX(), player.getY(), player.getZ(), radius);
+
+        for (LivingEntity living : entities){
+            if (EntityHelper.isFriendlyToPlayer(living, player)) return; // 跳过友方
+
+            living.hurt(player.damageSources().playerAttack(player), damage);
+        }
+    }
+
 
     private static void holdRightClick(ServerPlayer player, ItemStack stack){
         // 若在冷却
@@ -131,7 +161,7 @@ public class ServerTickEvent {
         if (player.hasEffect(ModEffects.LACRIMAL_HYPOSECRETION.get())) return;
 
         // 发射子弹
-        PlayerHelper.shotBullet(player);
+        PlayerHelper.shotBulletFromPlayer(player);
 
         // 射击延迟
         player.getCooldowns().addCooldown(stack.getItem(), (int) PlayerHelper.getShotDelay(player));

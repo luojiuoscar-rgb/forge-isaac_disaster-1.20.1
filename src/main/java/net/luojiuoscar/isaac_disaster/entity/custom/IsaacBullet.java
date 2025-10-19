@@ -35,15 +35,17 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.network.NetworkHooks;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
-import static com.mojang.text2speech.Narrator.LOGGER;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 public class IsaacBullet extends Entity {
     private int lifeTick;
+    private int totalLifeTick;
     private UUID ownerUUID;
     private LivingEntity cachedOwner;
     private float damage;
-
+    private Double orbitAngle = null;
 
     private boolean isSpectral = false; // 灵体
     private boolean isPiercing = false; // 穿刺
@@ -98,10 +100,29 @@ public class IsaacBullet extends Entity {
     public IsaacBullet(Level level, LivingEntity shooter, int lifeTick, double bulletSpeed,
                        float scale, boolean spectral, boolean piercing, boolean homing, boolean controllable,
                        float damage, int color, float alpha, int filter) {
+        this(level, shooter, lifeTick, bulletSpeed, scale, spectral, piercing, homing, controllable, damage,
+                color, alpha, filter, shooter.getXRot(), shooter.getYRot());
+    }
+    public IsaacBullet(Level level, LivingEntity shooter, int lifeTick, double bulletSpeed,
+                       float scale, boolean spectral, boolean piercing, boolean homing, boolean controllable,
+                       float damage, int color, float alpha, int filter, float xRot, float yRot) {
+        this(level, shooter, lifeTick, bulletSpeed, scale, spectral, piercing, homing, controllable, damage,
+                color, alpha, filter, xRot, yRot, shooter.getX(), shooter.getEyeY() - 0.2, shooter.getZ());
+    }
+    public IsaacBullet(Level level, LivingEntity shooter, int lifeTick, double bulletSpeed,
+                       float scale, boolean spectral, boolean piercing, boolean homing, boolean controllable,
+                       float damage, int color, float alpha, int filter, float xRot, float yRot, Vec3 pos){
+        this(level, shooter, lifeTick, bulletSpeed, scale, spectral, piercing, homing, controllable, damage,
+                color, alpha, filter, xRot, yRot, pos.x, pos.y, pos.z);
+    }
+    public IsaacBullet(Level level, LivingEntity shooter, int lifeTick, double bulletSpeed,
+                       float scale, boolean spectral, boolean piercing, boolean homing, boolean controllable,
+                       float damage, int color, float alpha, int filter, float xRot, float yRot, double x, double y, double z) {
         this(ModEntities.TEAR_BULLET.get(), level);
         this.ownerUUID = shooter.getUUID();
         this.cachedOwner = shooter;
         this.lifeTick = lifeTick;
+        this.totalLifeTick = lifeTick; // 总生命时长
         this.isSpectral = spectral;
         this.isPiercing = piercing;
         this.isHoming = homing;
@@ -114,10 +135,9 @@ public class IsaacBullet extends Entity {
         this.setFilterColor(filter);
         this.setScale(scale);
 
-        this.moveTo(shooter.getX(), shooter.getEyeY() - 0.2, shooter.getZ(),
-                shooter.getYRot(), shooter.getXRot());
+        this.moveTo(x, y, z, yRot, xRot);
 
-        Vec3 look = Vec3.directionFromRotation(shooter.getXRot(), shooter.getYRot());
+        Vec3 look = Vec3.directionFromRotation(xRot, yRot);
         this.setDeltaMovement(look.scale(bulletSpeed));
 
         if (!level.isClientSide)
@@ -158,8 +178,8 @@ public class IsaacBullet extends Entity {
                         return;
                     }
                 }
-
             }
+
 
             // 每4tick更新方向逻辑
             if (this.tickCount % 4 == 0) {
@@ -200,41 +220,64 @@ public class IsaacBullet extends Entity {
                 Entity target = entityHit.getEntity();
                 UUID targetId = target.getUUID();
 
+                // 非生物实体则跳过
+                if (!(target instanceof LivingEntity living)) {
+                    move(MoverType.SELF, motion);
+                    return;
+                }
+
+                // 友方、玩家本身则跳过
+                if (target instanceof LivingEntity le){
+                    if (EntityHelper.isFriendlyToPlayer(le, getOwner()) || le == getOwner()){
+                        move(MoverType.SELF, motion);
+                        return;
+                    }
+                }
+
                 // 已经命中过的实体跳过
                 if (damagedEntities.contains(targetId)) {
                     move(MoverType.SELF, motion);
                     return;
                 }
 
-                // 友方则跳过
-                if (target instanceof LivingEntity le){
-                    if (EntityHelper.isFriendlyToPlayer(le, getOwner())){
-                        move(MoverType.SELF, motion);
-                        return;
-                    }
-                }
-
                 // 新命中目标
-                if (!MinecraftForge.EVENT_BUS.post(new IsaacBulletHitEntityEvent(this, entityHit))) {
-                    if (target instanceof LivingEntity living) {
-                        DamageSource src = makeDamageSource();
-                        // 暂时清除受伤无敌帧
-                        int oldHurtResistant = living.invulnerableTime;
-                        living.invulnerableTime = 0;
-
-                        // 造成伤害
-                        living.hurt(src, damage);
-                        // 恢复状态
-                        living.invulnerableTime = oldHurtResistant;
-                    }
-
-                    // 记录命中过的目标
-                    damagedEntities.add(targetId);
-
-                    // 非穿刺弹命中后立即消失
-                    if (!isPiercing)
-                        if (!MinecraftForge.EVENT_BUS.post(new IsaacBulletDiscardEvent(this))) discard();
+                IsaacBulletBeforeHitEvent beforeEvent = new IsaacBulletBeforeHitEvent(this, entityHit, this.getDamage());
+                if (MinecraftForge.EVENT_BUS.post(beforeEvent)) {
+                    // 被取消则跳过整个命中逻辑
+                    return;
                 }
+
+                // 读取可能被修改过的伤害值
+                double damageValue = beforeEvent.getDamage();
+
+                double targetHealth = living.getHealth();
+
+                DamageSource src = makeDamageSource();
+
+                // 暂时清除受伤无敌帧
+                int oldHurtResistant = living.invulnerableTime;
+                living.invulnerableTime = 0;
+
+                // 造成伤害
+                living.hurt(src, (float) damageValue);
+
+                // 恢复状态
+                living.invulnerableTime = oldHurtResistant;
+
+                // 触发命中后事件
+                IsaacBulletAfterHitEvent afterEvent = new IsaacBulletAfterHitEvent(this, entityHit, damageValue, targetHealth);
+                MinecraftForge.EVENT_BUS.post(afterEvent);
+
+                // 记录命中过的目标
+                damagedEntities.add(targetId);
+
+                // 按 afterEvent 结果决定是否销毁子弹
+                if (afterEvent.shouldDiscardAfterHit() && !isPiercing) {
+                    if (!MinecraftForge.EVENT_BUS.post(new IsaacBulletDiscardEvent(this))) {
+                        discard();
+                    }
+                }
+
 
                 if (!isPiercing)
                     return;
@@ -317,7 +360,37 @@ public class IsaacBullet extends Entity {
         if (neutral != null) return neutral;
         return playerTarget;
     }
-    private void steerTowards(LivingEntity target, double steerStrength) {
+    public void steerHorizontalOrbit(LivingEntity target, double steerStrength, double radius, double angularSpeed) {
+        if (target == null) return;
+
+        Vec3 ownerPos = target.position().add(0, target.getBbHeight() * 0.5, 0);
+
+        // 初始化角度（只做一次）
+        if (orbitAngle == null) {
+            double dx = this.getX() - ownerPos.x;
+            double dz = this.getZ() - ownerPos.z;
+            orbitAngle = Math.atan2(dz, dx);
+        }
+
+        // 当前角度随时间增加
+        double angle = orbitAngle + angularSpeed * this.tickCount;
+
+        double targetX = ownerPos.x + radius * Math.cos(angle);
+        double targetZ = ownerPos.z + radius * Math.sin(angle);
+
+        // Y轴平滑跟随玩家碰撞箱高度
+        double minY = target.getY();
+        double maxY = target.getY() + target.getBbHeight();
+        double targetY = Mth.clamp(this.getY(), minY, maxY);
+        double desiredY = target.getY() + target.getBbHeight() * 0.5;
+        targetY += (desiredY - targetY) * 0.05;
+
+        Vec3 targetPos = new Vec3(targetX, targetY, targetZ);
+
+        // 平滑转向
+        steerTowards(targetPos, steerStrength, true);
+    }
+    public void steerTowards(LivingEntity target, double steerStrength) {
         Vec3 targetPos = target.position().add(0, target.getBbHeight() * 0.5, 0);
         double distSqr = this.position().distanceToSqr(targetPos);
         if (distSqr < 1.0) return; // 太近就不再追踪
@@ -333,7 +406,7 @@ public class IsaacBullet extends Entity {
         Vec3 newVel = currentVel.add(steering).normalize().scale(currentVel.length());
         this.setDeltaMovement(newVel);
     }
-    private void steerTowards(Vec3 targetPos, double steerStrength, boolean normalizeSpeed) {
+    public void steerTowards(Vec3 targetPos, double steerStrength, boolean normalizeSpeed) {
         Vec3 currentVel = this.getDeltaMovement();
         if (currentVel.lengthSqr() < 0.0001) return;
 
@@ -477,7 +550,6 @@ public class IsaacBullet extends Entity {
     }
     public void setColor(int rgb) {
         this.entityData.set(COLOR, rgb);
-        LOGGER.info("NEW COLOR{} CLIENT:{}", getColor(), this.level().isClientSide);
     }
     public void setAlpha(float alpha) {
         this.entityData.set(ALPHA, Mth.clamp(alpha, 0.0F, 1.0F));

@@ -15,8 +15,10 @@ public class EffectNameManager {
     public static final String VULNERABLE = "vulnerable";
     public static final String PANIC = "panic";
     public static final String PAC_MAN = "pac_man";
-
-
+    public static final String RAMPAGE = "rampage";
+    public static final String FRAGILE_HEART = "fragile_heart";
+    public static final String TELEPATHY = "telepathy";
+    public static final String BABYLON = "babylon";
 
 
 

@@ -2,11 +2,26 @@ package net.luojiuoscar.isaac_disaster.event;
 
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerPassiveItemProvider;
-import net.luojiuoscar.isaac_disaster.item_ability.passive_item.IDamageTrigger;
+import net.luojiuoscar.isaac_disaster.effect.ModEffects;
+import net.luojiuoscar.isaac_disaster.helper.EntityHelper;
+import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
+import net.luojiuoscar.isaac_disaster.item_ability.passive_item.IDamageTriggerPassiveItem;
+import net.luojiuoscar.isaac_disaster.item_ability.passive_item.IHurtTriggerPassiveItem;
+import net.luojiuoscar.isaac_disaster.manager.StatManager;
+import net.luojiuoscar.isaac_disaster.manager.id_managers.ItemId;
+import net.luojiuoscar.isaac_disaster.manager.id_managers.SetId;
+import net.luojiuoscar.isaac_disaster.manager.item_managers.ActiveItemManager;
 import net.luojiuoscar.isaac_disaster.manager.item_managers.PassiveItemManager;
+import net.luojiuoscar.isaac_disaster.sound.ModSounds;
+import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
+import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
@@ -41,13 +56,102 @@ public class TriggerItemEvents {
         // 获取玩家的被动物品能力实例
         player.getCapability(PlayerPassiveItemProvider.PLAYER_PASSIVE_ITEM).ifPresent(passiveItems -> {
             Map<Integer, Integer> triggerItemMap = passiveItems.getPlayerTriggerItemMap();
-            for (int itemId : triggerItemMap.keySet())
-            {
+            for (int itemId : triggerItemMap.keySet()) {
                 if (triggerItemMap.get(itemId) > 0){
-                    IDamageTrigger item = (IDamageTrigger) PassiveItemManager.getInstance().getItemFromId(itemId);
+                    if (!(PassiveItemManager.getInstance().getItemFromId(itemId) instanceof IDamageTriggerPassiveItem item)) return;
                     item.onAttackEntity(player, event.getEntity());
                 }
             }
         });
+    }
+
+    @SubscribeEvent
+    public static void onPlayerHurt(LivingHurtEvent event) {
+        LivingEntity victim = event.getEntity();
+        Entity attacker = event.getSource().getEntity();
+        DamageSource source = event.getSource();
+        double damage = event.getAmount();
+
+        // 检测受伤者是否为玩家
+        if (!(event.getEntity() instanceof ServerPlayer player)) return;
+        // 免爆
+        if (source.getMsgId().contains("explosion") &&
+                (PlayerHelper.hasItem(ItemId.HOST_HAT.getId(), player) ||
+                PlayerHelper.hasItem(ItemId.PYROMANIAC.getId(), player))){
+            // 取消受伤事件
+            event.setCanceled(true);
+            // 如果是纵火狂  则回血
+            if (PlayerHelper.hasItem(ItemId.PYROMANIAC.getId(), player)){
+                player.setHealth(player.getHealth() + StatManager.getHealthBonus() * 0.4f);
+            }
+            return;
+        }
+
+
+        // 获取玩家的被动物品能力实例
+        player.getCapability(PlayerPassiveItemProvider.PLAYER_PASSIVE_ITEM).ifPresent(passiveItems -> {
+            Map<Integer, Integer> triggerItemMap = passiveItems.getPlayerTriggerItemMap();
+            for (int itemId : triggerItemMap.keySet()) {
+                if (triggerItemMap.get(itemId) > 0){
+                    if (!(PassiveItemManager.getInstance().getItemFromId(itemId) instanceof IHurtTriggerPassiveItem item)) return;
+                    // 如果是不触发惩罚性效果的类型
+                    if (source.getMsgId().equals("genericKill") && item.isPunishType()) continue;
+                    item.onHurt(player, event.getSource().getEntity());
+                }
+            }
+        });
+
+
+        // 常规效果（无论如何都会触发）
+        // 成人套装
+        if (PlayerHelper.hasSet(SetId.ADULT.getId(), player)){
+            player.level().playSound(null, BlockPos.containing(player.blockPosition().getCenter()),
+                    ModSounds.STEVE_HURT_OLD.get(), SoundSource.PLAYERS, 1.0f, 1.0f);
+        }
+        // 圣饼
+        if (PlayerHelper.hasItem(ItemId.THE_WAFER.getId(), player)){
+            event.setAmount(event.getAmount() * 0.5f);
+        }
+
+        // 惩罚性效果
+        if (source.getMsgId().equals("genericKill")) return;
+        // 死灵护盾
+        if (player.hasEffect(ModEffects.NECRONMICON_SHIELD.get()) && damage > Math.max(1.0f, StatManager.getHealthBonus() * 0.25f)){
+            // 伤害来源不能是拥有死灵庇护的玩家；否则不生效
+            if (!(attacker instanceof Player attackerplayer &&
+                    attackerplayer.hasEffect(ModEffects.NECRONMICON_SHIELD.get()))){
+                // effect
+                ActiveItemManager.getInstance().getItemFromId(ItemId.THE_NECRONMICON.getId()).onTriggeredEffect(player);
+                // remove 1 amplifier
+                EntityHelper.removeAmplifier(player, ModEffects.NECRONMICON_SHIELD.get());
+                // sounds
+                player.level().playSound(null, player.getX(), player.getY(), player.getZ(),
+                        ModSounds.BLACK_HEART_ACTIVE.get(), SoundSource.PLAYERS, 1.0f, 1.0f);
+            }
+        }
+        // 神圣护盾
+        if (player.hasEffect(ModEffects.HOLY_SHIELD.get())){
+            int amplifier = player.getEffect(ModEffects.HOLY_SHIELD.get()).getAmplifier();
+
+            event.setAmount(0.0f);
+            if (damage > (amplifier + 1) * StatManager.getHolyShieldStrength()){
+                // 只有伤害足够高的时候才移除护盾
+                EntityHelper.removeAmplifier(player, ModEffects.HOLY_SHIELD.get());
+                // sounds
+                player.level().playSound(null, player.getX(), player.getY(), player.getZ(),
+                        ModSounds.HOLY_SHIELD_BROKE.get(), SoundSource.PLAYERS, 1.0f, 1.0f);
+            }
+        }
+        // 脆弱的心
+        if (player.hasEffect(ModEffects.FRAGILE_HEART.get()) && damage > Math.max(1.0f, StatManager.getHealthBonus() * 0.25f)){
+            double emptyHealth = player.getMaxHealth() - player.getHealth();
+            // 当前骨心中有生命值时不消耗
+            if (emptyHealth < StatManager.getHealthBonus()) return;
+
+            EntityHelper.removeAmplifier(player, ModEffects.FRAGILE_HEART.get());
+            player.level().playSound(null, player.getX(), player.getY(), player.getZ(),
+                    ModSounds.BONE_HEART.get(), SoundSource.PLAYERS, 1.0f, 1.0f);
+            event.setAmount(0.0f); // 骨心破碎时不额外扣除生命值
+        }
     }
 }

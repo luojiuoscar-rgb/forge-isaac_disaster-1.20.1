@@ -8,7 +8,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 
-public class Bomb extends Pickup implements IOnUse {
+public class Bomb extends Pickup implements ICanUse {
     public Bomb(Properties pProperties, int ItemId) {
         super(pProperties, ItemId);
     }

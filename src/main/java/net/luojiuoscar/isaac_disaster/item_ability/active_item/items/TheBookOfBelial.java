@@ -2,16 +2,18 @@ package net.luojiuoscar.isaac_disaster.item_ability.active_item.items;
 
 import net.luojiuoscar.isaac_disaster.client.ClientDataManager;
 import net.luojiuoscar.isaac_disaster.effect.ModEffects;
-import net.luojiuoscar.isaac_disaster.item_ability.active_item.IActiveItem;
+import net.luojiuoscar.isaac_disaster.helper.EntityHelper;
+import net.luojiuoscar.isaac_disaster.helper.TextHelper;
 import net.luojiuoscar.isaac_disaster.item.ModItems;
+import net.luojiuoscar.isaac_disaster.item_ability.active_item.IActiveItem;
 import net.luojiuoscar.isaac_disaster.manager.ColorManager;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.manager.id_managers.ItemId;
+import net.luojiuoscar.isaac_disaster.manager.id_managers.SetId;
+import net.luojiuoscar.isaac_disaster.manager.item_managers.SetManager;
 import net.luojiuoscar.isaac_disaster.sound.ModSounds;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvent;
-import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
@@ -31,20 +33,13 @@ public class TheBookOfBelial implements IActiveItem {
     }
 
     @Override
-    public void onTriggeredEffect(Player player) {
-        MobEffectInstance effect = player.getEffect(ModEffects.POWER_OF_BELIAL.get());
-        int amplifier = 1;
-        if (effect != null){
-            amplifier += effect.getAmplifier();
-        }
-        amplifier = Math.min(amplifier, 255);
+    public void onFirstUse(Player player){
+        StatManager.modifySetWithId(player, SetId.BOOK.getId(), 1);
+    }
 
-        MobEffectInstance effectInstance = new MobEffectInstance(
-                ModEffects.POWER_OF_BELIAL.get(),
-                240,
-                amplifier
-        );
-        player.addEffect(effectInstance, player);
+    @Override
+    public void onTriggeredEffect(Player player) {
+        EntityHelper.applyOrStackEffect(player, ModEffects.POWER_OF_BELIAL.get(), 240, 0);
     }
 
     @Override
@@ -71,6 +66,13 @@ public class TheBookOfBelial implements IActiveItem {
     public List<Component> getSynergyDescription() {
         List<Component> description = new ArrayList<>();
 
+        description.add(Component.translatable("set.isaac_disaster.special.header")
+                .append(Component.translatable("set.isaac_disaster.book"))
+                .append(Component.literal("("+
+                        Math.min(3, ClientDataManager.getInstance().getSetCountFromId(SetId.BOOK.getId())) + "/" +
+                        SetManager.getInstance().getSetFromId(SetId.BOOK.getId()).getRequireCount()+")"
+                )).withStyle(style -> style.withColor(ColorManager.SYNERGY)));
+
         if (ClientDataManager.getInstance().getCountFromId(ItemId.CAR_BATTERY.getId()) > 0){
             description.add(Component.translatable("item.isaac_disaster.car_battery").append(": ")
                     .append(Component.translatable("item.isaac_disaster.synergy.description.double"))
@@ -81,7 +83,6 @@ public class TheBookOfBelial implements IActiveItem {
                     .append(Component.translatable("item.isaac_disaster.blood_of_the_martyr.synergy.lore.1"))
                     .withStyle(style -> style.withColor(ColorManager.SYNERGY)));
         }
-
         return description;
     }
 
@@ -89,8 +90,10 @@ public class TheBookOfBelial implements IActiveItem {
     public List<Component> getExplain(){
         List<Component> description = new ArrayList<>();
 
+        description.addAll(SetManager.getInstance().getSetFromId(SetId.BOOK.getId()).getDescription());
+
         description.add(Component.translatable("effect.isaac_disaster.power_of_belial").append(": ")
-                .append(Component.translatable("effect.isaac_disaster.power_of_belial.explain.1", StatManager.getDamageBonus())));
+                .append(TextHelper.formatAttribute("effect.isaac_disaster.power_of_belial.explain.1", StatManager.getDamageBonus())));
 
         return description;
     }

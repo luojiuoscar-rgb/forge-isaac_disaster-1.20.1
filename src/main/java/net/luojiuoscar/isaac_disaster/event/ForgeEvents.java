@@ -1,45 +1,37 @@
 package net.luojiuoscar.isaac_disaster.event;
 
-import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.attribute.ModAttributes;
 import net.luojiuoscar.isaac_disaster.capability.entity.EntityEffectProvider;
-import net.luojiuoscar.isaac_disaster.capability.player.PlayerAbility;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerAbilityProvider;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerPassiveItemProvider;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerStatModifierProvider;
 import net.luojiuoscar.isaac_disaster.commands.*;
+import net.luojiuoscar.isaac_disaster.data.PillShuffleData;
 import net.luojiuoscar.isaac_disaster.effect.ModEffects;
+import net.luojiuoscar.isaac_disaster.entity.custom.IsaacBullet;
 import net.luojiuoscar.isaac_disaster.entity.tnt.IsaacBomb;
 import net.luojiuoscar.isaac_disaster.helper.EntityHelper;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.item.item.ActiveItem;
 import net.luojiuoscar.isaac_disaster.item.item.PassiveItem;
-import net.luojiuoscar.isaac_disaster.item.pickup.IOnUse;
+import net.luojiuoscar.isaac_disaster.item.pickup.ICanUse;
 import net.luojiuoscar.isaac_disaster.item.pickup.IsaacHead;
 import net.luojiuoscar.isaac_disaster.item.pickup.Pickup;
 import net.luojiuoscar.isaac_disaster.manager.EffectNameManager;
-import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.manager.id_managers.ItemId;
-import net.luojiuoscar.isaac_disaster.manager.id_managers.SetId;
 import net.luojiuoscar.isaac_disaster.manager.item_managers.ActiveItemManager;
 import net.luojiuoscar.isaac_disaster.manager.item_managers.PickupManager;
 import net.luojiuoscar.isaac_disaster.manager.item_managers.PillEffectManager;
 import net.luojiuoscar.isaac_disaster.networking.ModMessages;
 import net.luojiuoscar.isaac_disaster.networking.packet.*;
-import net.luojiuoscar.isaac_disaster.data.PillShuffleData;
-import net.luojiuoscar.isaac_disaster.sound.ModSounds;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.registries.Registries;
-import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.sounds.SoundSource;
-import net.minecraft.tags.TagKey;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.damagesource.DamageSources;
-import net.minecraft.world.entity.*;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityDimensions;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
@@ -49,7 +41,10 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.entity.EntityEvent;
-import net.minecraftforge.event.entity.living.*;
+import net.minecraftforge.event.entity.living.LivingAttackEvent;
+import net.minecraftforge.event.entity.living.LivingHurtEvent;
+import net.minecraftforge.event.entity.living.LivingKnockBackEvent;
+import net.minecraftforge.event.entity.living.MobEffectEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.level.ExplosionEvent;
@@ -166,8 +161,8 @@ public class ForgeEvents {
                     playerPassiveItem -> {playerPassiveItem.addItem((ServerPlayer) player, item.getItemId(), hand);
                     });
         }
-        else if(stack.getItem() instanceof IOnUse && stack.getItem() instanceof Pickup item){
-            PickupManager.getInstance().getItemFromId(item.getItemId()).onUse(player, stack, hand);
+        else if(stack.getItem() instanceof Pickup item && item instanceof ICanUse){
+            PickupManager.getInstance().getItemFromId(item.getPickupId()).onUse(player, stack, hand);
         }
     }
 
@@ -360,61 +355,25 @@ public class ForgeEvents {
         LivingEntity victim = event.getEntity();
         Entity attacker = event.getSource().getEntity();
         DamageSource source = event.getSource();
-
         double damage = event.getAmount();
 
-        if (victim instanceof Player victimPlayer){
-            // 死灵护盾
-            if (victimPlayer.hasEffect(ModEffects.NECRONMICON_SHIELD.get()) && damage > 2){
-                // 伤害来源不能是拥有死灵庇护的玩家；否则不生效
-                if (!(attacker instanceof Player attackerplayer &&
-                        attackerplayer.hasEffect(ModEffects.NECRONMICON_SHIELD.get()))){
-                    // effect
-                    ActiveItemManager.getInstance().getItemFromId(ItemId.THE_NECRONMICON.getId()).onTriggeredEffect(victimPlayer);
-                    // remove 1 amplifier
-                    PlayerHelper.removeAmplifier(victimPlayer, ModEffects.NECRONMICON_SHIELD.get());
-                    // sounds
-                    victimPlayer.level().playSound(null, victimPlayer.getX(), victimPlayer.getY(), victimPlayer.getZ(),
-                            ModSounds.BLACK_HEART_ACTIVE.get(), SoundSource.PLAYERS, 1.0f, 1.0f);
-                }
-            }
-            // 神圣护盾
-            if (victimPlayer.hasEffect(ModEffects.HOLY_SHIELD.get())){
-                int amplifier = victimPlayer.getEffect(ModEffects.HOLY_SHIELD.get()).getAmplifier();
-
-                event.setAmount(0.0f);
-                victimPlayer.sendSystemMessage(Component.literal(""+(amplifier + 1) * StatManager.getHolyShieldStrength()));
-                if (damage > (amplifier + 1) * StatManager.getHolyShieldStrength()){
-                    // 只有伤害足够高的时候才移除护盾
-                    PlayerHelper.removeAmplifier(victimPlayer, ModEffects.HOLY_SHIELD.get());
-                    // sounds
-                    victimPlayer.level().playSound(null, victimPlayer.getX(), victimPlayer.getY(), victimPlayer.getZ(),
-                            ModSounds.HOLY_SHIELD_BROKE.get(), SoundSource.PLAYERS, 1.0f, 1.0f);
-                }
-            }
-            // 圣饼
-            if (PlayerHelper.hasItem(ItemId.THE_WAFER.getId(), (ServerPlayer) victimPlayer)){
-                event.setAmount(event.getAmount() * 0.5f);
-            }
-            // 成人套装
-            if (PlayerHelper.hasSet(SetId.ADULT.getId(), (ServerPlayer) victimPlayer)){
-                victimPlayer.level().playSound(null, BlockPos.containing(victimPlayer.blockPosition().getCenter()),
-                        ModSounds.STEVE_HURT_OLD.get(), SoundSource.PLAYERS, 1.0f, 1.0f);
-            }
-
-        }
-
+        // 易伤
         if (victim.hasEffect(ModEffects.VULNERABLE.get())){
-            // 易伤
             int level = victim.getEffect(ModEffects.VULNERABLE.get()).getAmplifier() + 1;
             float newDamage = event.getAmount() * (1 + 0.3f * level);
             event.setAmount(newDamage);
         }
     }
 
+
+
     @SubscribeEvent
     public static void onEntityKnockback(LivingKnockBackEvent event) {
         LivingEntity entity = event.getEntity();
+        DamageSource source = entity.getLastDamageSource();
+
+        if (source == null) return;
+        if (source.getEntity() instanceof IsaacBullet) event.setCanceled(true);
 
         if (entity instanceof Player player){
             // 神圣护盾

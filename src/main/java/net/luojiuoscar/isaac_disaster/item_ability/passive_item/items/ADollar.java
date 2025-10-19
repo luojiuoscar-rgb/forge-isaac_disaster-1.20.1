@@ -38,7 +38,6 @@ public class ADollar implements IPassiveItem {
     public List<Component> getDescription() {
         return List.of(
                 Component.translatable("item.isaac_disaster.action.give_money", 100)
-
         );
     }
 }

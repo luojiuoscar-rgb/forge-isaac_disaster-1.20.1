@@ -31,7 +31,7 @@ public class UUIDManager {
     public static final UUID DAMAGE_MODIFIER_MULTIPLIER =
             UUID.nameUUIDFromBytes(("isaac_disaster:damage_modifier_multiplier_uuid").getBytes());
     static {
-        ATTRIBUTE_FROM_UUID.put(DAMAGE_MODIFIER_ADDER, Attributes.ATTACK_DAMAGE);
+        ATTRIBUTE_FROM_UUID.put(DAMAGE_MODIFIER_MULTIPLIER, Attributes.ATTACK_DAMAGE);
         MULTIPLIER_UUID.add(DAMAGE_MODIFIER_MULTIPLIER);}
 
     public static final UUID LUCK_MODIFIER_ADDER =
@@ -94,6 +94,11 @@ public class UUIDManager {
     static {
         ATTRIBUTE_FROM_UUID.put(BULLET_SCALE_BONUS, ModAttributes.BULLET_SCALE.get());}
 
+    public static final UUID BULLET_COUNT_BONUS =
+            UUID.nameUUIDFromBytes(("isaac_disaster:bullet_count_bonus").getBytes());
+    static {
+        ATTRIBUTE_FROM_UUID.put(BULLET_COUNT_BONUS, ModAttributes.BULLET_COUNT.get());}
+
 
 
 
@@ -103,10 +108,17 @@ public class UUIDManager {
             UUID.nameUUIDFromBytes(("isaac_disaster:money_is_power_adder").getBytes());
     static {
         ATTRIBUTE_FROM_UUID.put(MONEY_IS_POWER_ADDER, Attributes.ATTACK_DAMAGE);}
+
     public static final UUID DAMAGE_FROM_PILLS_ADDER =
             UUID.nameUUIDFromBytes(("isaac_disaster:damage_from_pills_adder").getBytes());
     static {
         ATTRIBUTE_FROM_UUID.put(DAMAGE_FROM_PILLS_ADDER, Attributes.ATTACK_DAMAGE);}
+
+    public static final UUID PERFECT_VISION =
+            UUID.nameUUIDFromBytes(("isaac_disaster:perfect_vision").getBytes());
+    static {
+        ATTRIBUTE_FROM_UUID.put(PERFECT_VISION, Attributes.ATTACK_DAMAGE);
+        MULTIPLIER_UUID.add(DAMAGE_MODIFIER_MULTIPLIER);}
 
 
 }

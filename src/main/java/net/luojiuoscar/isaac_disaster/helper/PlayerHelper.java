@@ -2,22 +2,24 @@ package net.luojiuoscar.isaac_disaster.helper;
 
 
 import net.luojiuoscar.isaac_disaster.Config;
-import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.attribute.ModAttributes;
 import net.luojiuoscar.isaac_disaster.capability.player.*;
-import net.luojiuoscar.isaac_disaster.effect.ModEffects;
+import net.luojiuoscar.isaac_disaster.client.ClientDataManager;
 import net.luojiuoscar.isaac_disaster.entity.custom.IsaacBullet;
+import net.luojiuoscar.isaac_disaster.item.item.ActiveItem;
 import net.luojiuoscar.isaac_disaster.manager.ColorManager;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.manager.UUIDManager;
+import net.luojiuoscar.isaac_disaster.manager.id_managers.ItemId;
+import net.luojiuoscar.isaac_disaster.manager.id_managers.SetId;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.effect.MobEffect;
-import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -26,14 +28,22 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.registries.ForgeRegistries;
-import org.lwjgl.system.linux.Stat;
-import org.w3c.dom.Attr;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+import java.util.UUID;
 
 
 public class PlayerHelper {
 
+    public static void giveItem(Player player, ItemStack stack) {
+        Level level = player.level();
+
+        ItemEntity itemEntity = new ItemEntity(level, player.getX(), player.getY(), player.getZ(), stack);
+        itemEntity.setNoPickUpDelay();
+        level.addFreshEntity(itemEntity);
+    }
     public static void giveItem(Player player, Item item, int count) {
         if (player.level().isClientSide()) return; // 只在服务端生成掉落物
 
@@ -91,6 +101,49 @@ public class PlayerHelper {
                 playerPassiveItem -> playerPassiveItem.removeFromIndex(player, itemId)
         );
     }
+    public static void chargeAll(ServerPlayer player, int amount){
+        Inventory inv = player.getInventory();
+        List<ItemStack> invItems = new ArrayList<>();
+        invItems.addAll(inv.items);
+        invItems.addAll(inv.offhand);
+        invItems.addAll(inv.armor);
+        boolean canOverCharge = hasItem(ItemId.THE_BATTERY.getId(), player);
+        // 遍历背包 对全部物品充能
+        for (ItemStack stack : invItems) {
+            if (!stack.isEmpty() && stack.getItem() instanceof ActiveItem &&
+            !isFullCharge(stack, canOverCharge)) {
+                ActiveItem.modifyCharge(stack, amount, canOverCharge);
+            }
+        }
+    }
+    public static boolean isFullCharge(ItemStack stack, boolean canOverCharge){
+        if (canOverCharge && !ActiveItem.getOverCharged(stack)) return false;
+        return stack.getDamageValue() == 0;
+    }
+    public static void teleportPlayerToSpawn(ServerPlayer player) {
+        // 获取玩家重生位置
+        BlockPos respawnPos = player.getRespawnPosition();
+        float respawnAngle = player.getRespawnAngle();
+        ServerLevel spawnLevel = player.server.getLevel(player.getRespawnDimension());
+
+        // 如果玩家没有设置床 / 自定义重生点，则使用主世界默认出生点
+        if (respawnPos == null || spawnLevel == null) {
+            spawnLevel = player.server.getLevel(Level.OVERWORLD);
+            respawnPos = spawnLevel.getSharedSpawnPos();
+            respawnAngle = player.getYRot(); // 随便保持原角度
+        }
+
+        // 将传送坐标转换为 Vec3 中心点
+        Vec3 targetPos = Vec3.atCenterOf(respawnPos);
+
+        // 若玩家在其他维度，需切换维度
+        if (player.level() != spawnLevel) {
+            player.teleportTo(spawnLevel, targetPos.x, targetPos.y, targetPos.z, respawnAngle, player.getXRot());
+        } else {
+            player.teleportTo(targetPos.x, targetPos.y, targetPos.z);
+            player.setYRot(respawnAngle);
+        }
+    }
 
 
     public static boolean hasSet(int itemId, ServerPlayer player){
@@ -118,60 +171,6 @@ public class PlayerHelper {
                 .ifPresent(provider -> count[1] = provider.getFlyTimeCurrent());
 
         return count[1] / count[0];
-    }
-
-    /**
-     * 对于*层数*相关的药水效果；移除1层
-     */
-    public static void removeAmplifier(Player player, MobEffect effect){
-        MobEffectInstance effectI = player.getEffect(effect);
-        if (effectI == null) return;
-
-        int amplifier = effectI.getAmplifier() - 1;
-        player.removeEffect(effect);
-
-        if (amplifier < 0) return;
-
-
-        MobEffectInstance newEffect = new MobEffectInstance(
-                effect,
-                -1,
-                amplifier,
-                true,
-                false,
-                true
-        );
-        player.addEffect(newEffect);
-    }
-    /**
-     * 对于*层数*相关的药水效果；增加1层
-     */
-    public static void addAmplifier(Player player, MobEffect effect){
-        MobEffectInstance effectI = player.getEffect(effect);
-        int amplifier = 0;
-
-        if (effectI != null) {
-            amplifier = effectI.getAmplifier() + 1;
-            player.removeEffect(effect);
-
-            // 神圣护盾存在上限；最大层数10层
-            if (effectI.getEffect() == ModEffects.HOLY_SHIELD.get()){
-                amplifier = Math.min(9, amplifier);
-            }
-        }
-
-        // 保险起见
-        if (amplifier < 0) return;
-
-        MobEffectInstance newEffect = new MobEffectInstance(
-                effect,
-                -1,
-                amplifier,
-                false,
-                false,
-                true
-        );
-        player.addEffect(newEffect);
     }
 
     public static int countMoney(Player player){
@@ -301,7 +300,29 @@ public class PlayerHelper {
 
 
     // 子弹相关
-    public static void shotBullet(Player player){
+    public static void shotBulletFromPlayer(Player player){
+        int count = getBulletCount(player);
+
+        // 发射子弹
+        if (count <= 1){
+            shotBullet(player);
+        }else if(count == 2){
+            shot2Bullet(player);
+        }else {
+            count = Math.min(count, 17); // 最大子弹数17
+            float angleInterval = Math.max(11 - count, 5) * 2; // 子弹之间的间隔角度
+            float curAngle = -angleInterval * (count - 1) / 2.0f;
+
+            for (int i = 0; i < count; i++){
+                shotBullet(player, player.getXRot(), player.getYRot() + curAngle);
+                curAngle += angleInterval; // 修改角度
+            }
+        }
+    }
+    public static void shotBullet(Player player) {
+        shotBullet(player, player.getXRot(), player.getYRot());
+    }
+    public static void shotBullet(Player player, float xRot, float yRot) {
         IsaacBullet bullet = new IsaacBullet(
                 player.level(),
                 player,
@@ -315,11 +336,59 @@ public class PlayerHelper {
                 getDamage(player),
                 getBulletColor(player),
                 getBulletAlpha(player),
-                getBulletFilter(player)
+                getBulletFilter(player),
+                xRot,
+                yRot
         );
-
         player.level().addFreshEntity(bullet);
     }
+    public static void shot2Bullet(Player player){
+        Vec3 look = player.getLookAngle();
+        Vec3 right = look.cross(new Vec3(0, 1, 0)).normalize();
+        Vec3 eyePos = player.getEyePosition();
+
+        IsaacBullet bullet1 = new IsaacBullet(
+                player.level(),
+                player,
+                getBulletLiftTime(player),
+                getBulletSpeed(player),
+                getBulletScale(player),
+                isSpectral(player),
+                isPiercing(player),
+                isHoming(player),
+                isControllable(player),
+                getDamage(player),
+                getBulletColor(player),
+                getBulletAlpha(player),
+                getBulletFilter(player),
+                player.getXRot(),
+                player.getYRot(),
+                eyePos.add(right.scale(0.25))
+        );
+
+        IsaacBullet bullet2 = new IsaacBullet(
+                player.level(),
+                player,
+                getBulletLiftTime(player),
+                getBulletSpeed(player),
+                getBulletScale(player),
+                isSpectral(player),
+                isPiercing(player),
+                isHoming(player),
+                isControllable(player),
+                getDamage(player),
+                getBulletColor(player),
+                getBulletAlpha(player),
+                getBulletFilter(player),
+                player.getXRot(),
+                player.getYRot(),
+                eyePos.add(right.scale(-0.25))
+        );
+
+        player.level().addFreshEntity(bullet1);
+        player.level().addFreshEntity(bullet2);
+    }
+
     public static boolean isSpectral(Player player){
         int[] count = {0};
         player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY).ifPresent(
@@ -368,12 +437,12 @@ public class PlayerHelper {
     public static double getBulletSpeed(Player player) {
         AttributeInstance instance = player.getAttribute(ModAttributes.BULLET_SPEED.get());
         if (instance == null) return 1.0;
-        return 0.8*Math.max(instance.getValue(),0.1);
+        return Math.max(instance.getValue(),0.1);
     }
     public static double getBulletRange(Player player) {
         AttributeInstance instance = player.getAttribute(ModAttributes.BULLET_RANGE.get());
         if (instance == null) return 18.0;
-        return  Math.min(Math.max(instance.getValue(),1), 99);
+        return  Math.min(Math.max(instance.getValue(), 4), 99);
     }
     public static double getTears(Player player) {
         AttributeInstance instance = player.getAttribute(ModAttributes.TEARS.get());
@@ -387,30 +456,77 @@ public class PlayerHelper {
 
         return  instance.getValue();
     }
-    public static float getBulletScale(Player player) {
-        AttributeInstance instance = player.getAttribute(Attributes.ATTACK_DAMAGE);
-        float scale = 1.0f;
-        if (instance == null) return scale;
-        double damage = Math.max(instance.getValue(), 0);
-
-        if (damage <= 198){
-            scale *= (float) Math.log(1 + damage / 2); // max 2
-        }else if (damage > 198 && damage < 398){
-            scale *= (float) (2 + Math.log((damage-198) / 20)); // max 3
-        }else{
-            scale = 3.0f;
-        }
+    public static float getExtraBulletScale(Player player){
         // 额外子弹大小因子
         AttributeInstance extraBulletScale = player.getAttribute((ModAttributes.BULLET_SCALE.get()));
         float extraScale = 0.0f;
         if (extraBulletScale != null) extraScale = (float) extraBulletScale.getValue();
+        return extraScale;
+    }
+    public static float getBulletScale(Player player){
+        // 基于子弹伤害的体型因素
+        AttributeInstance instance = player.getAttribute(Attributes.ATTACK_DAMAGE);
+        double damage = 1.0;
+        if (instance == null) {
+            return getBulletScale(1.0, getExtraBulletScale(player));
+        };
+        return getBulletScale(Math.max(instance.getValue(), 0), getExtraBulletScale(player));
+    }
+    public static float getBulletScale(double damage, float extraScale) {
+        float scale = 1.0f;
+
+        if (damage <= 198){
+            scale *= (float) Math.log10(9 + damage / 2);
+        }else {
+            scale *= Math.min(4f, (float) (2 + Math.log10((damage-198) / 20))); // max 2.5f
+        }
 
         return scale + extraScale;
     }
+    public static int getBulletCount(Player player){
+        Random random = new Random();
+
+        AttributeInstance bullet_count = player.getAttribute(ModAttributes.BULLET_COUNT.get());
+        if (bullet_count == null) return 1;
+        // 获取子弹数量计数
+        int[] count = {0};
+        count[0] = (int) bullet_count.getValue();
+
+        // theInnerEye & mutantSpider & perfectVision
+        player.getCapability(PlayerPassiveItemProvider.PLAYER_PASSIVE_ITEM).ifPresent(
+                playerPassiveItem -> {
+                    int theInnerEye = playerPassiveItem.getItemCount(ItemId.THE_INNER_EYE.getId());
+                    int mutantSpider = playerPassiveItem.getItemCount(ItemId.MUTANT_SPIDER.getId());
+                    int perfectVision = playerPassiveItem.getItemCount(ItemId.PERFECT_VISION.getId());
+
+                    if (perfectVision >= 1){
+                        if (theInnerEye + mutantSpider == 0){
+                            count[0] += 1; // 只有c -> 子弹+1
+                        }else{
+                            count[0] += perfectVision - 1; // 子弹+ c-1
+                        }
+                    }
+
+                    if (theInnerEye + mutantSpider > 0){
+                        count[0] += theInnerEye + 2*mutantSpider + 1;
+                    }
+                }
+        );
+
+        // 书虫套装（25%概率额外子弹）
+        if (ClientDataManager.getInstance().getSetCountFromId(SetId.BOOK.getId()) >= 3 &&
+                random.nextDouble() < 0.25){
+            count[0] += 1;
+        }
+
+
+        return count[0];
+    }
+
 
     // 衍生
     public static int getBulletLiftTime(Player player) {
-        double speed =  getBulletSpeed(player);
+        double speed = getBulletSpeed(player);
         double range = getBulletRange(player);
         // 计算所需 ticks
         return (int) Math.min(Math.max(1, range / speed), 200);
@@ -429,8 +545,27 @@ public class PlayerHelper {
             delay =  4;
         }
         delay -= getTearsCorrection(player);
+        // 当拥有双倍射击延迟时
+        if (hasDoubleShotDelay(player)){
+            delay *= 2;
+        }
 
         return Math.max(delay, 0);
+    }
+    public static boolean hasDoubleShotDelay(Player player){
+        int[] count = {0};
+        player.getCapability(PlayerStatModifierProvider.PLAYER_STAT_MODIFIER)
+                .ifPresent(provider -> count[0] = provider.getDoubleShotDelay());
+
+        // 当有完美视力时；取消双倍射击延迟
+        player.getCapability(PlayerPassiveItemProvider.PLAYER_PASSIVE_ITEM).ifPresent(
+                playerPassiveItem -> {
+                    if (playerPassiveItem.getItemCount(ItemId.PERFECT_VISION.getId()) > 0){
+                        count[0] = 0;
+                    }
+                });
+
+        return count[0] > 0;
     }
     public static double getFireRate(Player player) {
         return 20 / getShotDelay(player);
@@ -467,7 +602,7 @@ public class PlayerHelper {
         for (UUID uuid : UUIDManager.ATTRIBUTE_FROM_UUID.keySet()){
             AttributeInstance instance = player.getAttribute(UUIDManager.ATTRIBUTE_FROM_UUID.get(uuid));
             if (instance != null){
-                StatManager.removeModifier(instance, uuid); // 删除对应modifier
+                StatManager.removeModifier(player, instance, uuid); // 删除对应modifier
             }
         }
 

@@ -3,7 +3,6 @@ package net.luojiuoscar.isaac_disaster.manager.item_managers;
 import net.luojiuoscar.isaac_disaster.item_ability.active_item.IActiveItem;
 import net.luojiuoscar.isaac_disaster.item_ability.active_item.items.*;
 
-import java.awt.print.Book;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -62,7 +61,13 @@ public class ActiveItemManager {
                 new LemonMishap(),
                 new FreeLemonade(),
                 new TheGamekid(),
-                new UnicornStump()
+                new UnicornStump(),
+                new MyLittleUnicorn(),
+                new Placebo(),
+                new Diplopia(),
+                new CrookedPenny(),
+                new DullRazor(),
+                new TelepathyForDummies()
         );
     }
 }

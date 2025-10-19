@@ -4,19 +4,15 @@ import net.luojiuoscar.isaac_disaster.capability.player.PlayerAbilityProvider;
 import net.luojiuoscar.isaac_disaster.client.ClientDataManager;
 import net.luojiuoscar.isaac_disaster.manager.id_managers.ItemId;
 import net.luojiuoscar.isaac_disaster.manager.item_managers.PillEffectManager;
-import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.Rarity;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
-
-import javax.annotation.Nullable;
-import java.util.List;
 
 /**
  * 与PICKUP不属于同类
@@ -26,7 +22,7 @@ public class Pill extends Item {
     private final int pillId;
 
     public Pill(Properties pProperties, int pillId, boolean isHorsePill) {
-        super(pProperties);
+        super(pProperties.rarity(Rarity.UNCOMMON));
         this.isHorsePill = isHorsePill;
         this.pillId = pillId;
         PillEffectManager.getInstance().registerNewPillId(pillId); // 在注册物品的时候，加入列表

@@ -1,6 +1,7 @@
 package net.luojiuoscar.isaac_disaster.manager.item_managers;
 
 import net.luojiuoscar.isaac_disaster.item_ability.pickup.IPickup;
+import net.luojiuoscar.isaac_disaster.item_ability.pickup.cards.*;
 import net.luojiuoscar.isaac_disaster.item_ability.pickup.items.*;
 
 import java.util.HashMap;
@@ -60,7 +61,13 @@ public class PickupManager {
                 new DoubleRedHeart(),
                 new HalfSoulHeart(),
                 new BlendedHeart(),
-                new BlackHeart()
+                new BlackHeart(),
+                new BoneHeart(),
+                new TheFool(),
+                new TheHierophant(),
+                new TheMagician(),
+                new TheHighPriestess(),
+                new TheEmpress()
         );
     }
 }

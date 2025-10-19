@@ -4,7 +4,6 @@ import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.item.item.ActiveItem;
 import net.luojiuoscar.isaac_disaster.item.item.PassiveItem;
 import net.luojiuoscar.isaac_disaster.item.pickup.*;
-import net.luojiuoscar.isaac_disaster.item_ability.pickup.items.RedHeart;
 import net.luojiuoscar.isaac_disaster.manager.id_managers.ItemId;
 import net.luojiuoscar.isaac_disaster.manager.id_managers.PickupId;
 import net.minecraft.world.item.Item;
@@ -176,7 +175,7 @@ public class ModItems {
     static { PASSIVE_ITEM_LIST.add(PISCES); }
 
     public static final RegistryObject<Item> MINI_MUSH = ITEMS.register("mini_mush",
-            () -> new PassiveItem(new Item.Properties(),2, ItemId.MINI_MUSH.getId()));
+            () -> new PassiveItem(new Item.Properties(),2, ItemId.MINI_MUSH.getId(), true));
     static { PASSIVE_ITEM_LIST.add(MINI_MUSH); }
 
     public static final RegistryObject<Item> PHD = ITEMS.register("phd",
@@ -195,8 +194,116 @@ public class ModItems {
             () -> new PassiveItem(new Item.Properties(),1, ItemId.A_DOLLAR.getId()));
     static { PASSIVE_ITEM_LIST.add(A_DOLLAR); }
 
+    public static final RegistryObject<Item> THE_INNER_EYE = ITEMS.register("the_inner_eye",
+            () -> new PassiveItem(new Item.Properties(),2, ItemId.THE_INNER_EYE.getId()));
+    static { PASSIVE_ITEM_LIST.add(THE_INNER_EYE); }
+
+    public static final RegistryObject<Item> PERFECT_VISION = ITEMS.register("perfect_vision",
+            () -> new PassiveItem(new Item.Properties(),4, ItemId.PERFECT_VISION.getId()));
+    static { PASSIVE_ITEM_LIST.add(PERFECT_VISION); }
+
+    public static final RegistryObject<Item> MUTANT_SPIDER = ITEMS.register("mutant_spider",
+            () -> new PassiveItem(new Item.Properties(),3, ItemId.MUTANT_SPIDER.getId()));
+    static { PASSIVE_ITEM_LIST.add(MUTANT_SPIDER); }
+
+    public static final RegistryObject<Item> POLYPHEMUS = ITEMS.register("polyphemus",
+            () -> new PassiveItem(new Item.Properties(),4, ItemId.POLYPHEMUS.getId()));
+    static { PASSIVE_ITEM_LIST.add(POLYPHEMUS); }
+
+    public static final RegistryObject<Item> HEART = ITEMS.register("heart",
+            () -> new PassiveItem(new Item.Properties(),1, ItemId.HEART.getId()));
+    static { PASSIVE_ITEM_LIST.add(HEART); }
+
+    public static final RegistryObject<Item> RAW_LIVER = ITEMS.register("raw_liver",
+            () -> new PassiveItem(new Item.Properties(),2, ItemId.RAW_LIVER.getId()));
+    static { PASSIVE_ITEM_LIST.add(RAW_LIVER); }
+
+    public static final RegistryObject<Item> THE_BODY = ITEMS.register("the_body",
+            () -> new PassiveItem(new Item.Properties(),3, ItemId.THE_BODY.getId()));
+    static { PASSIVE_ITEM_LIST.add(THE_BODY); }
+
+    public static final RegistryObject<Item> GROWTH_HORMONES = ITEMS.register("growth_hormones",
+            () -> new PassiveItem(new Item.Properties(),3, ItemId.GROWTH_HORMONES.getId(), true));
+    static { PASSIVE_ITEM_LIST.add(GROWTH_HORMONES); }
+
+    public static final RegistryObject<Item> SYNTHOIL = ITEMS.register("synthoil",
+            () -> new PassiveItem(new Item.Properties(),3, ItemId.SYNTHOIL.getId(), true));
+    static { PASSIVE_ITEM_LIST.add(SYNTHOIL); }
+
+    public static final RegistryObject<Item> EXPERIMENTAL_TREATMENT = ITEMS.register("experimental_treatment",
+            () -> new PassiveItem(new Item.Properties(),1, ItemId.EXPERIMENTAL_TREATMENT.getId(), true));
+    static { PASSIVE_ITEM_LIST.add(EXPERIMENTAL_TREATMENT); }
+
+    public static final RegistryObject<Item> TORN_PHOTO = ITEMS.register("torn_photo",
+            () -> new PassiveItem(new Item.Properties(),3, ItemId.TORN_PHOTO.getId()));
+    static { PASSIVE_ITEM_LIST.add(TORN_PHOTO); }
+
+    public static final RegistryObject<Item> CAFFEINE_PILL = ITEMS.register("caffeine_pill",
+            () -> new PassiveItem(new Item.Properties(),1, ItemId.CAFFEINE_PILL.getId()));
+    static { PASSIVE_ITEM_LIST.add(CAFFEINE_PILL); }
+
+    public static final RegistryObject<Item> SAFETY_PIN = ITEMS.register("safety_pin",
+            () -> new PassiveItem(new Item.Properties(),1, ItemId.SAFETY_PIN.getId()));
+    static { PASSIVE_ITEM_LIST.add(SAFETY_PIN); }
+
+    public static final RegistryObject<Item> MAGIC_MUSHROOM = ITEMS.register("magic_mushroom",
+            () -> new PassiveItem(new Item.Properties(),4, ItemId.MAGIC_MUSHROOM.getId(), true));
+    static { PASSIVE_ITEM_LIST.add(MAGIC_MUSHROOM); }
+
+    public static final RegistryObject<Item> BLUE_CAP = ITEMS.register("blue_cap",
+            () -> new PassiveItem(new Item.Properties(),3, ItemId.BLUE_CAP.getId(), true));
+    static { PASSIVE_ITEM_LIST.add(BLUE_CAP); }
+
+    public static final RegistryObject<Item> HABIT = ITEMS.register("habit",
+            () -> new PassiveItem(new Item.Properties(),3, ItemId.HABIT.getId()));
+    static { PASSIVE_ITEM_LIST.add(HABIT); }
+
+    public static final RegistryObject<Item> RUBBER_CEMENT = ITEMS.register("rubber_cement",
+            () -> new PassiveItem(new Item.Properties(),3, ItemId.RUBBER_CEMENT.getId()));
+    static { PASSIVE_ITEM_LIST.add(RUBBER_CEMENT); }
+
+    public static final RegistryObject<Item> HOST_HAT = ITEMS.register("host_hat",
+            () -> new PassiveItem(new Item.Properties(),3, ItemId.HOST_HAT.getId()));
+    static { PASSIVE_ITEM_LIST.add(HOST_HAT); }
+
+    public static final RegistryObject<Item> PYROMANIAC = ITEMS.register("pyromaniac",
+            () -> new PassiveItem(new Item.Properties(),4, ItemId.PYROMANIAC.getId()));
+    static { PASSIVE_ITEM_LIST.add(PYROMANIAC); }
+
+    public static final RegistryObject<Item> PYRO = ITEMS.register("pyro",
+            () -> new PassiveItem(new Item.Properties(),3, ItemId.PYRO.getId()));
+    static { PASSIVE_ITEM_LIST.add(PYRO); }
+
+    public static final RegistryObject<Item> PIGGY_BANK = ITEMS.register("piggy_bank",
+            () -> new PassiveItem(new Item.Properties(),2, ItemId.PIGGY_BANK.getId()));
+    static { PASSIVE_ITEM_LIST.add(PIGGY_BANK); }
+
+    public static final RegistryObject<Item> TINY_PLANET = ITEMS.register("tiny_planet",
+            () -> new PassiveItem(new Item.Properties(),0, ItemId.TINY_PLANET.getId()));
+    static { PASSIVE_ITEM_LIST.add(TINY_PLANET); }
+
+    public static final RegistryObject<Item> MAGIC_SCAB = ITEMS.register("magic_scab",
+            () -> new PassiveItem(new Item.Properties(), 1, ItemId.MAGIC_SCAB.getId()));
+    static { PASSIVE_ITEM_LIST.add(MAGIC_SCAB); }
+
+    public static final RegistryObject<Item> SCREW = ITEMS.register("screw",
+            () -> new PassiveItem(new Item.Properties(), 2, ItemId.SCREW.getId()));
+    static { PASSIVE_ITEM_LIST.add(SCREW); }
+
+    public static final RegistryObject<Item> BLACK_CANDLE = ITEMS.register("black_candle",
+            () -> new PassiveItem(new Item.Properties(), 3, ItemId.BLACK_CANDLE.getId()));
+    static { PASSIVE_ITEM_LIST.add(BLACK_CANDLE); }
+
+    public static final RegistryObject<Item> TAROT_CLOTH = ITEMS.register("tarot_cloth",
+            () -> new PassiveItem(new Item.Properties(), 2, ItemId.TAROT_CLOTH.getId()));
+    static { PASSIVE_ITEM_LIST.add(TAROT_CLOTH); }
+
+    public static final RegistryObject<Item> WHORE_OF_BABYLON = ITEMS.register("whore_of_babylon",
+            () -> new PassiveItem(new Item.Properties(), 2, ItemId.WHORE_OF_BABYLON.getId(), true));
+    static { PASSIVE_ITEM_LIST.add(WHORE_OF_BABYLON); }
 
 
+    // passive end
     // Active item
     public static final RegistryObject<Item> YUM_HEART = ITEMS.register("yum_heart",
             () -> new ActiveItem(new Item.Properties(),1, ItemId.YUM_HEART.getId(),
@@ -220,7 +327,7 @@ public class ModItems {
 
     public static final RegistryObject<Item> THE_NECRONMICON = ITEMS.register("the_necronmicon",
             () -> new ActiveItem(new Item.Properties(),2, ItemId.THE_NECRONMICON.getId(),
-                    600, 600));
+                    600, 600, true));
     static { ACTIVE_ITEM_LIST.add(THE_NECRONMICON); }
 
     public static final RegistryObject<Item> WOODEN_NICKEL = ITEMS.register("wooden_nickel",
@@ -253,7 +360,39 @@ public class ModItems {
                     1200, 1200, true));
     static { ACTIVE_ITEM_LIST.add(UNICORN_STUMP); }
 
+    public static final RegistryObject<Item> MY_LITTLE_UNICORN = ITEMS.register("my_little_unicorn",
+            () -> new ActiveItem(new Item.Properties(),1, ItemId.MY_LITTLE_UNICORN.getId(),
+                    1200, 1200, true));
+    static { ACTIVE_ITEM_LIST.add(MY_LITTLE_UNICORN); }
 
+    public static final RegistryObject<Item> PLACEBO = ITEMS.register("placebo",
+            () -> new ActiveItem(new Item.Properties(),1, ItemId.PLACEBO.getId(),
+                    2400, 2400));
+    static { ACTIVE_ITEM_LIST.add(PLACEBO); }
+
+    public static final RegistryObject<Item> DIPLOPIA = ITEMS.register("diplopia",
+            () -> new ActiveItem(new Item.Properties(),4, ItemId.DIPLOPIA.getId(),
+                    1, 1));
+    static { ACTIVE_ITEM_LIST.add(DIPLOPIA); }
+
+    public static final RegistryObject<Item> CROOKED_PENNY = ITEMS.register("crooked_penny",
+            () -> new ActiveItem(new Item.Properties(),3, ItemId.CROOKED_PENNY.getId(),
+                    3600, 3600));
+    static { ACTIVE_ITEM_LIST.add(CROOKED_PENNY); }
+
+    public static final RegistryObject<Item> DULL_RAZOR = ITEMS.register("dull_razor",
+            () -> new ActiveItem(new Item.Properties(),2, ItemId.DULL_RAZOR.getId(),
+                    200, 200));
+    static { ACTIVE_ITEM_LIST.add(DULL_RAZOR); }
+
+    public static final RegistryObject<Item> TELEPATHY_FOR_DUMMIES = ITEMS.register("telepathy_for_dummies",
+            () -> new ActiveItem(new Item.Properties(),1, ItemId.TELEPATHY_FOR_DUMMIES.getId(),
+                    800, 800, true));
+    static { ACTIVE_ITEM_LIST.add(TELEPATHY_FOR_DUMMIES); }
+
+
+
+    // active end
     // pickups
     public static final RegistryObject<Item> ISAAC_HEAD = ITEMS.register("isaac_head",
             () -> new IsaacHead(new Item.Properties(), PickupId.ISAAC_HEAD.getId()));
@@ -298,6 +437,10 @@ public class ModItems {
     public static final RegistryObject<Item> BLACK_HEART = ITEMS.register("black_heart",
             () -> new Heart(new Item.Properties(), PickupId.BLACK_HEART.getId(), Rarity.EPIC));
     static { PICKUP_LIST.add(BLACK_HEART); }
+
+    public static final RegistryObject<Item> BONE_HEART = ITEMS.register("bone_heart",
+            () -> new Heart(new Item.Properties(), PickupId.BONE_HEART.getId(), Rarity.EPIC));
+    static { PICKUP_LIST.add(BONE_HEART); }
 
     public static final RegistryObject<Item> PENNY = ITEMS.register("penny",
             () -> new Item(new Item.Properties()));
@@ -398,5 +541,36 @@ public class ModItems {
         PICKUP_LIST.add(GOLDEN_PILL_H);
     }
 
+    public static final RegistryObject<Item> THE_FOOL = ITEMS.register("the_fool",
+            () -> new Card(new Item.Properties(), PickupId.THE_FOOL.getId()));
+    static { PICKUP_LIST.add(THE_FOOL); }
+
+    public static final RegistryObject<Item> THE_MAGICIAN = ITEMS.register("the_magician",
+            () -> new Card(new Item.Properties(), PickupId.THE_MAGICIAN.getId()));
+    static { PICKUP_LIST.add(THE_MAGICIAN); }
+
+    public static final RegistryObject<Item> THE_HIGH_PRIESTESS = ITEMS.register("the_high_priestess",
+            () -> new Card(new Item.Properties(), PickupId.THE_HIGH_PRIESTESS.getId()));
+    static { PICKUP_LIST.add(THE_HIGH_PRIESTESS); }
+
+    public static final RegistryObject<Item> THE_EMPRESS = ITEMS.register("the_empress",
+            () -> new Card(new Item.Properties(), PickupId.THE_EMPRESS.getId()));
+    static { PICKUP_LIST.add(THE_EMPRESS); }
+
+    public static final RegistryObject<Item> THE_HIEROPHANT = ITEMS.register("the_hierophant",
+            () -> new Card(new Item.Properties(), PickupId.THE_HIEROPHANT.getId()));
+    static { PICKUP_LIST.add(THE_HIEROPHANT); }
+
+
+
+
+
+
+
+
+
+
+
+    // pickup end
 
 }
