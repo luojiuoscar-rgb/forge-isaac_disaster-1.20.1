@@ -46,6 +46,7 @@ public class ScheduledFuncHelper {
 
     /**
      * 调度任务
+     * 计划中的任务不会在退出游戏后保存！！会丢失！！
      * @param id       基础ID
      * @param ticks    倒计时
      * @param repeats  执行次数 (0=执行一次, >0 执行 n 次)

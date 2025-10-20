@@ -67,7 +67,8 @@ public class ActiveItemManager {
                 new Diplopia(),
                 new CrookedPenny(),
                 new DullRazor(),
-                new TelepathyForDummies()
+                new TelepathyForDummies(),
+                new AnarchistCookbook()
         );
     }
 }

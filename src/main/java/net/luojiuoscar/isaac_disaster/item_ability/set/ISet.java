@@ -1,7 +1,6 @@
 package net.luojiuoscar.isaac_disaster.item_ability.set;
 
 import net.luojiuoscar.isaac_disaster.networking.ModMessages;
-import net.luojiuoscar.isaac_disaster.networking.packet.PickupOnUseS2CPacket;
 import net.luojiuoscar.isaac_disaster.networking.packet.SetOnObtainS2CPacket;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
@@ -52,5 +51,7 @@ public interface ISet {
         onObtainSound(player);
     }
 
-    List<Component> getDescription();
+    List<Component> getExplain();
+
+    List<Component> getSynergyDescription();
 }

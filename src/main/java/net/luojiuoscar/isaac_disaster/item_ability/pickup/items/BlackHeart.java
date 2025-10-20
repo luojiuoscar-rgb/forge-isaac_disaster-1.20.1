@@ -2,7 +2,7 @@ package net.luojiuoscar.isaac_disaster.item_ability.pickup.items;
 
 import net.luojiuoscar.isaac_disaster.effect.ModEffects;
 import net.luojiuoscar.isaac_disaster.helper.EntityHelper;
-import net.luojiuoscar.isaac_disaster.item_ability.pickup.IPickup;
+import net.luojiuoscar.isaac_disaster.item_ability.pickup.IFoodPickup;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.manager.id_managers.PickupId;
 import net.luojiuoscar.isaac_disaster.sound.ModSounds;
@@ -15,7 +15,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
 
-public class BlackHeart implements IPickup {
+public class BlackHeart implements IFoodPickup {
 
     @Override
     public int getItemId() {

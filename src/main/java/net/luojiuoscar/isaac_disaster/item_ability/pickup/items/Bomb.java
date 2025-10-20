@@ -36,12 +36,6 @@ public class Bomb implements IPickup {
         }else {
             player.getCooldowns().addCooldown(player.getItemInHand(hand).getItem(), 10);
         }
-
-
-        // 物品-1
-        if (!player.isCreative()) {
-            player.getItemInHand(hand).shrink(1);
-        }
     }
 
     @Override

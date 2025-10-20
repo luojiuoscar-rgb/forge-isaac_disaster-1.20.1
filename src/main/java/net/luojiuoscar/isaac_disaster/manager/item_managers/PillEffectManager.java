@@ -6,6 +6,7 @@ import net.luojiuoscar.isaac_disaster.item_ability.pickup.pill_effects.*;
 import net.luojiuoscar.isaac_disaster.manager.id_managers.PillEffectId;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.player.Player;
 
 import java.util.*;
@@ -130,7 +131,7 @@ public class PillEffectManager {
 
     //================ 特殊方法 =================//
     public void triggerRandomEffect(Player player, boolean isHorsePill){
-        Random random = new Random();
+        RandomSource random = player.getRandom();
 
         ArrayList<Integer> keyList = new ArrayList<>(registeredEffects.keySet());
 

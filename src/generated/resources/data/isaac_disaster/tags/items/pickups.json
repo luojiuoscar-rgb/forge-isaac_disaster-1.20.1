@@ -46,7 +46,21 @@
     "isaac_disaster:the_fool",
     "isaac_disaster:the_magician",
     "isaac_disaster:the_high_priestess",
+    "isaac_disaster:the_empress",
     "isaac_disaster:the_hierophant",
-    "isaac_disaster:the_empress"
+    "isaac_disaster:the_lovers",
+    "isaac_disaster:the_chariot",
+    "isaac_disaster:the_hanged_man",
+    "isaac_disaster:death",
+    "isaac_disaster:the_devil",
+    "isaac_disaster:the_tower",
+    "isaac_disaster:the_sun",
+    "isaac_disaster:2_of_diamonds",
+    "isaac_disaster:2_of_clubs",
+    "isaac_disaster:2_of_hearts",
+    "isaac_disaster:ace_of_clubs",
+    "isaac_disaster:ace_of_diamonds",
+    "isaac_disaster:ace_of_hearts",
+    "isaac_disaster:holy_card"
   ]
 }

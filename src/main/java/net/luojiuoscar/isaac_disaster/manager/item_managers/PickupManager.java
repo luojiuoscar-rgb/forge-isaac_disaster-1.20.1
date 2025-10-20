@@ -67,7 +67,23 @@ public class PickupManager {
                 new TheHierophant(),
                 new TheMagician(),
                 new TheHighPriestess(),
-                new TheEmpress()
+                new TheEmpress(),
+                new TheLovers(),
+                new TheChariot(),
+                new Justice(),
+                new TheHangedMan(),
+                new Death(),
+                new TheDevil(),
+                new TheTower(),
+                new TheSun(),
+                new TwoOfDiamonds(),
+                new TwoOfHearts(),
+                new TowOfClubs(),
+                new AceOfClubs(),
+                new AceOfDiamonds(),
+                new AceOfHearts(),
+                new HolyCard(),
+                new QueenOfHearts()
         );
     }
 }

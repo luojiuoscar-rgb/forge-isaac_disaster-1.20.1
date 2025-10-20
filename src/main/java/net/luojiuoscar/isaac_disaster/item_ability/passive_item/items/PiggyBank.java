@@ -6,6 +6,7 @@ import net.luojiuoscar.isaac_disaster.item_ability.passive_item.IHurtTriggerPass
 import net.luojiuoscar.isaac_disaster.item_ability.passive_item.IPassiveItem;
 import net.luojiuoscar.isaac_disaster.manager.id_managers.ItemId;
 import net.minecraft.network.chat.Component;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -48,7 +49,8 @@ public class PiggyBank implements IHurtTriggerPassiveItem {
 
     @Override
     public void handleHurtEffect(Player player, Entity target) {
-        Random random = new Random();
+        RandomSource random = player.getRandom();
+
         if (random.nextDouble() < 0.5){
             PlayerHelper.giveMoney(player, 1);
         }else {

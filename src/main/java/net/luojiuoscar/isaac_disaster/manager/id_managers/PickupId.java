@@ -17,7 +17,24 @@ public enum PickupId {
     THE_MAGICIAN,
     THE_HIGH_PRIESTESS,
     THE_EMPRESS,
-    THE_HIEROPHANT;
+    THE_HIEROPHANT,
+    THE_LOVERS,
+    THE_CHARIOT,
+    JUSTICE,
+    THE_HANGED_MAN,
+    DEATH,
+    THE_DEVIL,
+    THE_TOWER,
+    THE_SUN,
+    TWO_OF_CLUBS,
+    TWO_OF_DIAMONDS,
+    TWO_OF_HEARTS,
+    ACE_OF_CLUBS,
+    ACE_OF_DIAMONDS,
+    ACE_OF_HEARTS,
+    HOLY_CARD,
+    QUEEN_OF_HEARTS;
+
 
     private final int id;
 

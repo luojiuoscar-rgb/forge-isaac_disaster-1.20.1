@@ -1,11 +1,8 @@
 package net.luojiuoscar.isaac_disaster.helper;
 
-import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -21,6 +18,11 @@ import java.util.List;
 import java.util.function.Predicate;
 
 public class LevelHelper {
+    public static void spawnLootAtPos(ServerLevel level, Vec3 pos, ResourceLocation tableId, int count){
+        for (int i = 0; i < count; i++){
+            spawnLootAtPos(level, pos, tableId);
+        }
+    }
     public static void spawnLootAtPos(ServerLevel level, Vec3 pos, ResourceLocation tableId) {
         LootTable table = level.getServer().getLootData().getLootTable(tableId);
 

@@ -23,11 +23,6 @@ public class GigaBomb implements IPickup {
 
         // cd
         player.getCooldowns().addCooldown(player.getItemInHand(hand).getItem(), 50);
-
-        // 物品-1
-        if (!player.isCreative()) {
-            player.getItemInHand(hand).shrink(1);
-        }
     }
 
     @Override

@@ -1,0 +1,12 @@
+{
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {"type": "minecraft:item", "name": "isaac_disaster:bomb", "weight": 99},
+        {"type": "minecraft:item", "name": "isaac_disaster:golden_bomb", "weight": 1}
+      ]
+    }
+  ]
+}
+

@@ -1,6 +1,7 @@
 package net.luojiuoscar.isaac_disaster.item.pickup;
 
 import net.luojiuoscar.isaac_disaster.manager.item_managers.PillEffectManager;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.player.Player;
@@ -31,7 +32,7 @@ public class GoldenPill extends Item{
 
         // 物品-1
         if (!(player.isCreative() || player.isSpectator())) {
-            Random random = new Random();
+            RandomSource random = player.getRandom();
             // 5%概率不消耗
             if (random.nextDouble() < 0.05){
                 stack.shrink(1);

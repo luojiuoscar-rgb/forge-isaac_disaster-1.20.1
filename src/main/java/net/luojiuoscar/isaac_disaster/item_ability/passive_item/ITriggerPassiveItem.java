@@ -1,6 +1,5 @@
 package net.luojiuoscar.isaac_disaster.item_ability.passive_item;
 
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 
@@ -25,7 +24,7 @@ public interface ITriggerPassiveItem extends IPassiveItem{
      */
     default boolean triggerWithChance(Player player, Runnable action) {
         if (player.level().isClientSide()) return false; // 确保在服务端处理
-        if (Math.random() <= getTriggerChance(player)) {
+        if (player.getRandom().nextDouble() <= getTriggerChance(player)) {
             action.run();
             return true;
         }

@@ -5,31 +5,47 @@ import net.luojiuoscar.isaac_disaster.entity.ModEntities;
 import net.luojiuoscar.isaac_disaster.entity.fireball.TimedFireball;
 import net.luojiuoscar.isaac_disaster.entity.tnt.GigaBomb;
 import net.luojiuoscar.isaac_disaster.entity.tnt.IsaacBomb;
+import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.TamableAnimal;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.Vec3;
 
 public class EntityHelper {
-    public static void spawnBomb(Vec3 position, Player player, Vec3 tntVelocity, int fuse, int power, float scale){
-        spawnBomb(position, player, tntVelocity, fuse, power, scale, player.level(), true);
+
+
+    /**
+     * type 0: small bomb
+     * type 1: medium bomb
+     * type 2: large bomb
+     */
+    public static IsaacBomb spawnBomb(Vec3 position, LivingEntity owner, Vec3 tntVelocity, int type){
+        return switch (type) {
+            case 1 -> spawnBomb(position, owner, tntVelocity, 80, 4, 0.98f);
+            case 2 -> spawnBomb(position, owner, tntVelocity, 80, 7, 1.4f);
+            default -> spawnBomb(position, owner, tntVelocity, 80, 1, 0.4f);
+        };
     }
-
-    public static void spawnBomb(Vec3 position, Player player, Vec3 tntVelocity, int fuse, int power, float scale, Level level){
-        spawnBomb(position, player, tntVelocity, fuse, power, scale, level, true);
+    public static IsaacBomb spawnBomb(Vec3 position, LivingEntity owner, Vec3 tntVelocity, int fuse, int power, float scale){
+        return spawnBomb(position, owner, tntVelocity, fuse, power, scale, owner.level(), true);
     }
+    public static IsaacBomb spawnBomb(Vec3 position, LivingEntity owner, Vec3 tntVelocity, int fuse, int power, float scale, Level level){
+        return spawnBomb(position, owner, tntVelocity, fuse, power, scale, level, true);
+    }
+    public static IsaacBomb spawnBomb(Vec3 position, LivingEntity owner, Vec3 tntVelocity, int fuse, int power, float scale, Level level, boolean isOriginal){
+        if (level.isClientSide()) return null;
 
-    public static void spawnBomb(Vec3 position, Player player, Vec3 tntVelocity, int fuse, int power, float scale, Level level, boolean isOriginal){
-        if (level.isClientSide()) return;
-
-        IsaacBomb tnt = ModEntities.ISAAC_BOMB.get().create(player.level());
-        if (tnt == null) return;
+        IsaacBomb tnt = ModEntities.ISAAC_BOMB.get().create(owner.level());
+        if (tnt == null) return null;
 
         tnt.moveTo(position.x, position.y, position.z, 0, 0);
-        tnt.setOwner(player);
+        tnt.setOwner(owner);
         tnt.setFuse(fuse);
         tnt.setPower(power);
         tnt.setScale(scale);
@@ -37,10 +53,12 @@ public class EntityHelper {
         tnt.setDeltaMovement(tntVelocity);
 
         level.addFreshEntity(tnt);
+
+        return tnt;
     }
 
     public static void spawnGigaBomb(Vec3 position, Player player, Vec3 tntVelocity, int fuse, Level level){
-        if (level.isClientSide()) return; // 不要在客户端生成实体
+        if (level.isClientSide) return;
 
         IsaacBomb tnt = ModEntities.GIGA_BOMB.get().create(player.level());
         if (tnt == null) return;
@@ -55,7 +73,6 @@ public class EntityHelper {
 
         level.addFreshEntity(tnt);
     }
-
     public static void throwGigaBomb(Player player, int fuse){
         // 获取玩家朝向向量
         Vec3 lookVec = player.getLookAngle();
@@ -82,7 +99,6 @@ public class EntityHelper {
     public static void throwBomb(Player player, int fuse, int power) {
         throwBomb(player, fuse, power, 0.98f);
     }
-
     public static void throwBomb(Player player, int fuse, int power, float scale){
         // 获取玩家朝向向量
         Vec3 lookVec = player.getLookAngle();
@@ -259,5 +275,14 @@ public class EntityHelper {
                 true
         );
         entity.addEffect(newEffect);
+    }
+
+    public static void setFireAtEntity(Entity entity) {
+        if (!(entity.level() instanceof ServerLevel level)) return;
+
+        BlockPos pos = entity.blockPosition();
+        if (level.isEmptyBlock(pos)) {
+            level.setBlock(pos, Blocks.FIRE.defaultBlockState(), 11);
+        }
     }
 }

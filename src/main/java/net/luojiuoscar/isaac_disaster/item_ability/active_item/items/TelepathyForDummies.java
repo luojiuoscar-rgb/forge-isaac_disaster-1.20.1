@@ -64,12 +64,7 @@ public class TelepathyForDummies implements IActiveItem {
     public List<Component> getSynergyDescription() {
         List<Component> description = new ArrayList<>();
 
-        description.add(Component.translatable("set.isaac_disaster.special.header")
-                .append(Component.translatable("set.isaac_disaster.book"))
-                .append(Component.literal("("+
-                        Math.min(3, ClientDataManager.getInstance().getSetCountFromId(SetId.BOOK.getId())) + "/" +
-                        SetManager.getInstance().getSetFromId(SetId.BOOK.getId()).getRequireCount()+")"
-                )).withStyle(style -> style.withColor(ColorManager.SYNERGY)));
+        description.addAll(SetManager.getInstance().getSetFromId(SetId.BOOK.getId()).getSynergyDescription());
 
         if (ClientDataManager.getInstance().getCountFromId(ItemId.CAR_BATTERY.getId()) > 0){
             description.add(Component.translatable("item.isaac_disaster.car_battery").append(": ")
@@ -84,7 +79,7 @@ public class TelepathyForDummies implements IActiveItem {
     public List<Component> getExplain(){
         List<Component> description = new ArrayList<>();
 
-        description.addAll(SetManager.getInstance().getSetFromId(SetId.BOOK.getId()).getDescription());
+        description.addAll(SetManager.getInstance().getSetFromId(SetId.BOOK.getId()).getExplain());
         description.addAll(EffectDescriptionManager.getInstance().getDescriptionFromId(EffectId.TELEPATHY.getId()));
 
         return description;

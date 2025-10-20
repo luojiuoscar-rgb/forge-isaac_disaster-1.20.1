@@ -7,6 +7,7 @@ import net.luojiuoscar.isaac_disaster.manager.id_managers.SetId;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Adult implements ISet {
@@ -43,11 +44,16 @@ public class Adult implements ISet {
     }
 
     @Override
-    public List<Component> getDescription() {
+    public List<Component> getExplain() {
         return List.of(
                 Component.translatable("set.isaac_disaster.adult").append(": ")
                         .append(TextHelper.formatAttribute("item.isaac_disaster.attribute.health", StatManager.getHealthBonus())),
                 Component.translatable("set.isaac_disaster.adult.lore.1")
         );
+    }
+
+    @Override
+    public List<Component> getSynergyDescription(){
+        return new ArrayList<>();
     }
 }

@@ -20,6 +20,14 @@ public interface IPickup {
 
         // 客户端效果
         ModMessages.sentToPlayer(new PickupOnUseS2CPacket(getItemId()), (ServerPlayer) player);
+
+        if (!player.isCreative()){
+            shrinkAfterUse(stack);
+        }
+    }
+
+    default void shrinkAfterUse(ItemStack stack){
+        stack.shrink(1);
     }
 
     void onUseEffect(Player player, ItemStack stack, InteractionHand hand);

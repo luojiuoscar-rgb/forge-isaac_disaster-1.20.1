@@ -6,6 +6,7 @@ import net.luojiuoscar.isaac_disaster.attribute.ModAttributes;
 import net.luojiuoscar.isaac_disaster.capability.player.*;
 import net.luojiuoscar.isaac_disaster.client.ClientDataManager;
 import net.luojiuoscar.isaac_disaster.entity.custom.IsaacBullet;
+import net.luojiuoscar.isaac_disaster.entity.tnt.IsaacBomb;
 import net.luojiuoscar.isaac_disaster.item.item.ActiveItem;
 import net.luojiuoscar.isaac_disaster.manager.ColorManager;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
@@ -16,6 +17,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -144,6 +146,73 @@ public class PlayerHelper {
             player.setYRot(respawnAngle);
         }
     }
+    public static boolean getItemFlag(ServerPlayer player, int ItemId){
+        boolean[] flag = {false};
+        player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY).ifPresent(
+                playerAbility -> flag[0] = playerAbility.getItemFlags().getOrDefault(ItemId, false)
+        );
+        return flag[0];
+    }
+    public static void setItemFlag(ServerPlayer player, int ItemId, boolean flag){
+        player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY).ifPresent(
+                playerAbility -> playerAbility.setItemFlags(player, ItemId, flag)
+        );
+    }
+    public static int countMoney(Player player) {
+        int money = 0;
+
+        // 从配置中读取三个钱币及其对应价值
+        Item tier1Coin = getItemFromConfig(Config.COIN_TIER_1_ID.get());
+        Item tier2Coin = getItemFromConfig(Config.COIN_TIER_2_ID.get());
+        Item tier3Coin = getItemFromConfig(Config.COIN_TIER_3_ID.get());
+
+        int value1 = Config.COIN_TIER_1_VALUE.get();
+        int value2 = Config.COIN_TIER_2_VALUE.get();
+        int value3 = Config.COIN_TIER_3_VALUE.get();
+
+        Inventory inv = player.getInventory();
+        List<ItemStack> items = new ArrayList<>();
+        items.addAll(inv.items);
+        items.addAll(inv.offhand);
+        items.addAll(inv.armor);
+
+        // 遍历背包所有物品
+        for (ItemStack stack : items) {
+            if (stack.isEmpty()) continue;
+
+            Item item = stack.getItem();
+
+            if (item == tier1Coin) {
+                money += stack.getCount() * value1;
+            } else if (item == tier2Coin) {
+                money += stack.getCount() * value2;
+            } else if (item == tier3Coin) {
+                money += stack.getCount() * value3;
+            }
+        }
+
+        return money;
+    }
+    public static int countInvItem(Player player, Item item){
+        int count = 0;
+
+        Inventory inv = player.getInventory();
+
+        List<ItemStack> items = new ArrayList<>();
+        items.addAll(inv.items);
+        items.addAll(inv.offhand);
+        items.addAll(inv.armor);
+
+        // 遍历背包所有物品
+        for (ItemStack stack : items) {
+            if (stack.isEmpty()) continue;
+            if (stack.getItem() == item){
+                count += stack.getCount();
+            }
+        }
+
+        return count;
+    }
 
 
     public static boolean hasSet(int itemId, ServerPlayer player){
@@ -173,35 +242,6 @@ public class PlayerHelper {
         return count[1] / count[0];
     }
 
-    public static int countMoney(Player player){
-        int money = 0;
-
-        // 从配置中读取三个钱币及其对应价值
-        Item tier1Coin = getItemFromConfig(Config.COIN_TIER_1_ID.get());
-        Item tier2Coin = getItemFromConfig(Config.COIN_TIER_2_ID.get());
-        Item tier3Coin = getItemFromConfig(Config.COIN_TIER_3_ID.get());
-
-        int value1 = Config.COIN_TIER_1_VALUE.get();
-        int value2 = Config.COIN_TIER_2_VALUE.get();
-        int value3 = Config.COIN_TIER_3_VALUE.get();
-
-        // 遍历背包所有物品
-        for (ItemStack stack : player.getInventory().items) {
-            if (stack.isEmpty()) continue;
-
-            Item item = stack.getItem();
-
-            if (item == tier1Coin) {
-                money += stack.getCount() * value1;
-            } else if (item == tier2Coin) {
-                money += stack.getCount() * value2;
-            } else if (item == tier3Coin) {
-                money += stack.getCount() * value3;
-            }
-        }
-
-        return money;
-    }
 
     /**
      * 根据 config 的字符串创建物品引用
@@ -227,7 +267,7 @@ public class PlayerHelper {
         int minY = world.getMinBuildHeight();
         int maxY = world.getMaxBuildHeight();
 
-        Random random = new Random();
+        RandomSource random = player.getRandom();
         float playerHeight = player.getBbHeight();
 
         // 最多尝试5次
@@ -484,7 +524,7 @@ public class PlayerHelper {
         return scale + extraScale;
     }
     public static int getBulletCount(Player player){
-        Random random = new Random();
+        RandomSource random = player.getRandom();
 
         AttributeInstance bullet_count = player.getAttribute(ModAttributes.BULLET_COUNT.get());
         if (bullet_count == null) return 1;
@@ -612,5 +652,53 @@ public class PlayerHelper {
         player.getCapability(PlayerStatModifierProvider.PLAYER_STAT_MODIFIER).ifPresent(PlayerStatModifier::init);
 
     }
+
+
+    public static IsaacBomb spawnBombFromPlayer(ServerPlayer player, Vec3 tntVelocity){
+        if (PlayerHelper.hasItem(ItemId.MR_MEGA.getId(), player)){
+            return EntityHelper.spawnBomb(player.blockPosition().getCenter(), player, tntVelocity, 2);
+        }else {
+            return EntityHelper.spawnBomb(player.blockPosition().getCenter(), player, tntVelocity, 1);
+        }
+    }
+    private static boolean isInsideSolidBlock(Level level, double x, double y, double z) {
+        BlockPos pos = BlockPos.containing(x, y, z);
+        BlockState state = level.getBlockState(pos);
+        return !state.getCollisionShape(level, pos).isEmpty();
+    }
+    public static void spawnRandomBombsNearby(ServerPlayer player, double range, int count){
+        final double RANGE = StatManager.getNearbyRange() * 0.5;
+        final int MAX_ATTEMPTS = 20;
+        RandomSource random = player.getRandom();
+
+        for (int i = 0; i < 6; i++) {
+            IsaacBomb tnt = PlayerHelper.spawnBombFromPlayer(player, Vec3.ZERO);
+            if (tnt == null) continue;
+
+            boolean placed = false;
+            for (int attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
+                // 随机
+                double offsetX = (random.nextDouble() * 2 * RANGE) - RANGE;
+                double offsetY = (random.nextDouble() * RANGE); // 在玩家y轴的上方
+                double offsetZ = (random.nextDouble() * 2 * RANGE) - RANGE;
+
+                double x = player.getX() + offsetX;
+                double y = player.getY() + offsetY;
+                double z = player.getZ() + offsetZ;
+
+                if (!isInsideSolidBlock(player.level(), x, y, z)) {
+                    tnt.setPos(x, y, z);
+                    placed = true;
+                    break;
+                }
+            }
+
+            // 默认放玩家脚底
+            if (!placed) {
+                tnt.setPos(player.getX(), player.getY(), player.getZ());
+            }
+        }
+    }
+
 }
 

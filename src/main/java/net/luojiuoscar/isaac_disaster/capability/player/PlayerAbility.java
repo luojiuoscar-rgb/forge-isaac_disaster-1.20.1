@@ -3,10 +3,7 @@ package net.luojiuoscar.isaac_disaster.capability.player;
 
 import net.luojiuoscar.isaac_disaster.attribute.ModAttributes;
 import net.luojiuoscar.isaac_disaster.helper.ColorHelper;
-import net.luojiuoscar.isaac_disaster.item.pickup.Pill;
-import net.luojiuoscar.isaac_disaster.item_ability.pickup.IPillEffect;
 import net.luojiuoscar.isaac_disaster.manager.ColorManager;
-import net.luojiuoscar.isaac_disaster.manager.item_managers.PillEffectManager;
 import net.luojiuoscar.isaac_disaster.networking.ModMessages;
 import net.luojiuoscar.isaac_disaster.networking.packet.PillQualitySyncS2CPacket;
 import net.luojiuoscar.isaac_disaster.networking.packet.PillRecordsSyncS2CPacket;
@@ -18,7 +15,9 @@ import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.common.capabilities.AutoRegisterCapability;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 
 @AutoRegisterCapability
@@ -30,6 +29,7 @@ public class PlayerAbility {
     private int controllable;
     private Map<Integer, Integer> bulletFilters;
     private int pillQuality;
+    private Map<Integer, Boolean> itemFlags;
 
     // 记录玩家pillId -> EffectId的序列
     private Map<Integer, Integer> pillRecords;
@@ -48,6 +48,7 @@ public class PlayerAbility {
 
         bulletFilters = new HashMap<>();
         pillRecords = new HashMap<>();
+        itemFlags = new HashMap<>();
     }
 
     public boolean isHoldRightClick(){
@@ -115,6 +116,12 @@ public class PlayerAbility {
         // 同步到客户端
         ModMessages.sentToPlayer(new PillRecordsSyncS2CPacket(pillId, effectId), player);
     }
+    public Map<Integer, Boolean> getItemFlags() {
+        return Collections.unmodifiableMap(itemFlags);
+    }
+    public void setItemFlags(ServerPlayer player, int ItemId, boolean flag){
+        itemFlags.put(ItemId, flag);
+    }
 
     /**
      * 复制玩家属性
@@ -130,6 +137,7 @@ public class PlayerAbility {
 
         this.bulletFilters = new HashMap<>(source.bulletFilters);
         this.pillRecords = new HashMap<>(source.pillRecords);
+        this.itemFlags = new HashMap<>(source.itemFlags);
     }
 
     public void saveNBTData(CompoundTag nbt) {
@@ -159,6 +167,16 @@ public class PlayerAbility {
             pillRecordsList.add(tag);
         }
         nbt.put("pill_records", pillRecordsList);
+
+        // 物品记录
+        ListTag itemFlagList = new ListTag();
+        for (Map.Entry<Integer, Boolean> entry : itemFlags.entrySet()) {
+            CompoundTag tag = new CompoundTag();
+            tag.putInt("item_id", entry.getKey());
+            tag.putBoolean("flag", entry.getValue());
+            itemFlagList.add(tag);
+        }
+        nbt.put("item_flags", itemFlagList);
     }
     public void loadNBTData(CompoundTag nbt) {
         this.holdRightClick = nbt.getBoolean("holdRightClick");
@@ -179,14 +197,25 @@ public class PlayerAbility {
             }
         }
 
-        bulletFilters.clear();
+        pillRecords.clear();
         if (nbt.contains("pill_records", Tag.TAG_LIST)) {
             ListTag list = nbt.getList("pill_records", Tag.TAG_COMPOUND);
             for (Tag t : list) {
                 CompoundTag tag = (CompoundTag) t;
                 int pillId = tag.getInt("pill_id");
                 int effectId = tag.getInt("effect_id");
-                bulletFilters.put(pillId, effectId);
+                pillRecords.put(pillId, effectId);
+            }
+        }
+
+        itemFlags.clear();
+        if (nbt.contains("item_flags", Tag.TAG_LIST)) {
+            ListTag list = nbt.getList("item_flags", Tag.TAG_COMPOUND);
+            for (Tag t : list) {
+                CompoundTag tag = (CompoundTag) t;
+                int itemId = tag.getInt("item_id");
+                boolean flag = tag.getBoolean("flag");
+                itemFlags.put(itemId, flag);
             }
         }
     }

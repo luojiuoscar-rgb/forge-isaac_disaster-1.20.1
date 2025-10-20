@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "isaac_disaster:item/ace_of_hearts"
+  }
+}

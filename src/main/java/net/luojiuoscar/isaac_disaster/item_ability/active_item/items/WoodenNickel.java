@@ -36,7 +36,7 @@ public class WoodenNickel implements IActiveItem {
         // 60%概率触发
         if (Math.random() < 0.6 && !player.level().isClientSide){
             LevelHelper.spawnLootAtPos((ServerLevel) player.level(), player.blockPosition().getCenter(),
-                    ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "random_coin"));
+                    ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "random_coins"));
         }
     }
 

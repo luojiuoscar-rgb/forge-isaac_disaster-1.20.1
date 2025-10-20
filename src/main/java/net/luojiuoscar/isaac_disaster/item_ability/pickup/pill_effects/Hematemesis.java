@@ -14,6 +14,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.RandomSource;
 import net.minecraft.util.datafix.fixes.EntityHealthFix;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -56,7 +57,7 @@ public class Hematemesis implements IPillEffect {
 
     @Override
     public void onUseEffect(Player player) {
-        Random random = new Random();
+        RandomSource random = player.getRandom();
 
         float health = player.getHealth() - 2;
         int hearts = (int) Math.ceil(health / StatManager.getHealthBonus()) + random.nextInt(0,3);
@@ -67,7 +68,7 @@ public class Hematemesis implements IPillEffect {
 
     @Override
     public void onUseEffectH(Player player) {
-        Random random = new Random();
+        RandomSource random = player.getRandom();
 
         float health = player.getHealth() - 2;
         int hearts = (int) Math.ceil(health / StatManager.getHealthBonus()+ random.nextDouble() * 1.2) + random.nextInt(2,6);

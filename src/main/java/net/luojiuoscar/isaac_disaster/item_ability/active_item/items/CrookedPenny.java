@@ -8,6 +8,7 @@ import net.luojiuoscar.isaac_disaster.manager.ColorManager;
 import net.luojiuoscar.isaac_disaster.manager.id_managers.ItemId;
 import net.luojiuoscar.isaac_disaster.manager.item_managers.ActiveItemManager;
 import net.minecraft.network.chat.Component;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -26,7 +27,8 @@ public class CrookedPenny implements IActiveItem {
 
     @Override
     public void onTriggeredEffect(Player player) {
-        Random random = new Random();
+        RandomSource random = player.getRandom();
+
         if (random.nextDouble() < 0.5){
             ActiveItemManager.getInstance().getItemFromId(ItemId.DIPLOPIA.getId()).onTriggeredEffect(player);
         }else{

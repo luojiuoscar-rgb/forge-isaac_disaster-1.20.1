@@ -50,7 +50,7 @@ public class TheMagician implements ITarot {
         // 塔罗牌桌布
         if (ClientDataManager.getInstance().getCountFromId(ItemId.TAROT_CLOTH.getId()) > 0){
             description.add(Component.translatable("item.isaac_disaster.tarot_cloth").append(": ")
-                    .append(Component.translatable("item.isaac_disaster.the_magician.synergy.lore.1"))
+                    .append(Component.translatable("item.isaac_disaster.the_magician.tarot_cloth.lore.1"))
                     .withStyle(style -> style.withColor(ColorManager.SYNERGY)));
         }
 

@@ -3,7 +3,8 @@ package net.luojiuoscar.isaac_disaster.manager.item_managers;
 import net.luojiuoscar.isaac_disaster.item_ability.passive_item.IPassiveItem;
 import net.luojiuoscar.isaac_disaster.item_ability.passive_item.items.*;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * 被动道具管理器，负责注册和管理所有道具实例
@@ -119,7 +120,8 @@ public class  PassiveItemManager {
                 new Screw(),
                 new BlackCandle(),
                 new TarotCloth(),
-                new WhoreOfBabylon()
+                new WhoreOfBabylon(),
+                new CurseOfTheTower()
         );
     }
 }

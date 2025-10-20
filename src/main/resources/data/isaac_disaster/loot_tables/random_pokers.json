@@ -1,0 +1,15 @@
+{
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {"type": "minecraft:item", "name": "isaac_disaster:2_of_clubs"},
+        {"type": "minecraft:item", "name": "isaac_disaster:2_of_diamonds"},
+        {"type": "minecraft:item", "name": "isaac_disaster:2_of_hearts"},
+        {"type": "minecraft:item", "name": "isaac_disaster:ace_of_clubs"},
+        {"type": "minecraft:item", "name": "isaac_disaster:ace_of_diamonds"},
+        {"type": "minecraft:item", "name": "isaac_disaster:ace_of_hearts"}
+      ]
+    }
+  ]
+}

@@ -30,7 +30,6 @@ public class GoldenBomb implements IPickup {
             EntityHelper.throwBomb(player, 80, 4);
         };
 
-
         // cd
         if(PlayerHelper.hasItem(ItemId.FAST_BOMB.getId(), (ServerPlayer) player)){
             player.getCooldowns().addCooldown(player.getItemInHand(hand).getItem(), 20);
@@ -43,5 +42,9 @@ public class GoldenBomb implements IPickup {
     public void onUseSound(Player player) {
         SoundEvent sound = SoundEvents.TNT_PRIMED;
         player.playSound(sound, 1.0F, 1.0F);
+    }
+
+    @Override
+    public void shrinkAfterUse(ItemStack stack){
     }
 }

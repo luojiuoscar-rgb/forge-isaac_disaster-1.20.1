@@ -8,6 +8,7 @@ import net.luojiuoscar.isaac_disaster.sound.ModSounds;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.player.Player;
 
 import java.util.ArrayList;
@@ -42,14 +43,16 @@ public class ExperimentalPill implements IPillEffect {
 
     @Override
     public void onUseEffect(Player player) {
-        Random random = new Random();
+        RandomSource random = player.getRandom();
+
         PillEffectManager.getInstance().getEffectFromEffectId(effects_good[random.nextInt(effects_bad.length)]).onUseEffect(player);
         PillEffectManager.getInstance().getEffectFromEffectId(effects_bad[random.nextInt(effects_bad.length)]).onUseEffect(player);
     }
 
     @Override
     public void onUseEffectH(Player player) {
-        Random random = new Random();
+        RandomSource random = player.getRandom();
+
         PillEffectManager.getInstance().getEffectFromEffectId(effects_good[random.nextInt(effects_bad.length)]).onUseEffectH(player);
         PillEffectManager.getInstance().getEffectFromEffectId(effects_bad[random.nextInt(effects_bad.length)]).onUseEffectH(player);
     }
