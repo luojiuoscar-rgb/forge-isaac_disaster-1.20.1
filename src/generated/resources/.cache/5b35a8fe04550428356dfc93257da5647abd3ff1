@@ -1,4 +1,4 @@
-// 1.20.1	2025-10-20T21:21:37.3038682	Item Models: isaac_disaster
+// 1.20.1	2025-10-21T16:06:16.0245333	Item Models: isaac_disaster
 6fa4b5e3c1de57af4a79a9195d10c3360a6e9f09 assets/isaac_disaster/models/item/2_of_clubs.json
 0e968e645f25420f3af05197f66e24488c64bb69 assets/isaac_disaster/models/item/2_of_diamonds.json
 3a860205c6080388d8f5c83ef9dbb835d6333176 assets/isaac_disaster/models/item/2_of_hearts.json
@@ -99,6 +99,7 @@ c71d8dcb9cf551d319d588ef7a7286220bbcc904 assets/isaac_disaster/models/item/place
 904396b02ade2a77940c4f0cd6f3759e5ca50933 assets/isaac_disaster/models/item/polyphemus.json
 10f2cb1164ef8f4346afffe3db775e0ff96b0651 assets/isaac_disaster/models/item/pyro.json
 088be7f57828c84ce359f7ecc67c67496bab9671 assets/isaac_disaster/models/item/pyromaniac.json
+08fdbfef7f551ea83e4d3e0343157e5e23319fa3 assets/isaac_disaster/models/item/queen_of_hearts.json
 e45ced68aeacb18b7d95fa6c87f559d9326dbd11 assets/isaac_disaster/models/item/raw_liver.json
 04bef593130e2f1fac010155a79c4d91ee850f49 assets/isaac_disaster/models/item/red_heart.json
 2893b8cb22bc538f4bd959f0350de8f60f1046d4 assets/isaac_disaster/models/item/roid_rage.json

@@ -17,6 +17,6 @@ public class JEIIsaacDisasterPlugin implements IModPlugin {
 
     @Override
     public ResourceLocation getPluginUid() {
-        return ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "jie_plugin");
+        return ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "jei_plugin");
     }
 }

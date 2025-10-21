@@ -22,7 +22,7 @@ public class QueenOfHearts implements IPickup {
 
     @Override
     public void onUseEffect(Player player, ItemStack stack, InteractionHand hand) {
-        PlayerHelper.giveItem(player, ModItems.QUEEN_OF_HEARTS.get(), player.getRandom().nextInt(1,21));
+        PlayerHelper.giveItem(player, ModItems.RED_HEART.get(), player.getRandom().nextInt(1,21));
     }
 
     @Override

@@ -87,6 +87,22 @@ public class TriggerItemEvents {
             return;
         }
 
+        // 神圣护盾(免疫则取消时间)
+        if (player.hasEffect(ModEffects.HOLY_SHIELD.get())){
+            int amplifier = player.getEffect(ModEffects.HOLY_SHIELD.get()).getAmplifier();
+
+            if (damage > (amplifier + 1) * StatManager.getHolyShieldStrength()){
+                // 只有伤害足够高的时候才移除护盾
+                EntityHelper.removeAmplifier(player, ModEffects.HOLY_SHIELD.get());
+                // sounds
+                player.level().playSound(null, player.getX(), player.getY(), player.getZ(),
+                        ModSounds.HOLY_SHIELD_BROKE.get(), SoundSource.PLAYERS, 1.0f, 1.0f);
+            }
+
+            event.setAmount(0.0f);
+            event.setCanceled(true);
+            return;
+        }
 
         // 获取玩家的被动物品能力实例
         player.getCapability(PlayerPassiveItemProvider.PLAYER_PASSIVE_ITEM).ifPresent(passiveItems -> {
@@ -127,19 +143,6 @@ public class TriggerItemEvents {
                 // sounds
                 player.level().playSound(null, player.getX(), player.getY(), player.getZ(),
                         ModSounds.BLACK_HEART_ACTIVE.get(), SoundSource.PLAYERS, 1.0f, 1.0f);
-            }
-        }
-        // 神圣护盾
-        if (player.hasEffect(ModEffects.HOLY_SHIELD.get())){
-            int amplifier = player.getEffect(ModEffects.HOLY_SHIELD.get()).getAmplifier();
-
-            event.setAmount(0.0f);
-            if (damage > (amplifier + 1) * StatManager.getHolyShieldStrength()){
-                // 只有伤害足够高的时候才移除护盾
-                EntityHelper.removeAmplifier(player, ModEffects.HOLY_SHIELD.get());
-                // sounds
-                player.level().playSound(null, player.getX(), player.getY(), player.getZ(),
-                        ModSounds.HOLY_SHIELD_BROKE.get(), SoundSource.PLAYERS, 1.0f, 1.0f);
             }
         }
         // 脆弱的心
