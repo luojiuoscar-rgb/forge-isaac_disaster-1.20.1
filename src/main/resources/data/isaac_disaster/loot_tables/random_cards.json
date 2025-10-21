@@ -1,0 +1,13 @@
+{
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {"type": "minecraft:loot_table", "name": "isaac_disaster:random_tarots", "weight": 24},
+        {"type": "minecraft:loot_table", "name": "isaac_disaster:random_pokers", "weight": 8},
+        {"type": "minecraft:loot_table", "name": "isaac_disaster:random_special_cards", "weight": 5}
+      ]
+    }
+  ]
+}
+

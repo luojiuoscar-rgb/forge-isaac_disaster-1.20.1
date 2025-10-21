@@ -30,6 +30,11 @@ public class ModItemModelProvider extends ItemModelProvider {
             basicItem(item);
         });
 
+        ItemListManager.TRINKET_LIST.forEach(itemRegistry -> {
+            Item item = itemRegistry.get();
+            basicItem(item);
+        });
+
         ItemListManager.PICKUP_LIST.forEach(itemRegistry -> {
             Item item = itemRegistry.get();
             if (item != ModItems.GIGA_BOMB.get()){

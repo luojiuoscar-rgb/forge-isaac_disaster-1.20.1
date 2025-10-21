@@ -1,0 +1,7 @@
+{
+  "replace": false,
+  "validators": ["curios:tag"],
+  "values": [
+    "#isaac_disaster:trinkets"
+  ]
+}

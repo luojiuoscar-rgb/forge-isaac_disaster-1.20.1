@@ -45,7 +45,7 @@ authors="${mod_authors}" #optional
 description='''${mod_description}'''
 # A dependency - use the . to indicate dependency for a specific modid. Dependencies are optional.
 [[mixins]]
-config = "yourmod.mixins.json"
+config = "isaac_disaster.mixins.json"
 
 
 [[dependencies.${mod_id}]] #optional
@@ -69,6 +69,11 @@ config = "yourmod.mixins.json"
     versionRange="${minecraft_version_range}"
     ordering="NONE"
     side="BOTH"
+# curios dependency
+[[dependencies.${mod_id}]]
+    modId="curios"
+    mandatory=true
+    versionRange="[5.9.1,)"
 
 # Features are specific properties of the game environment, that you may want to declare you require. This example declares
 # that your mod requires GL version 3.2 or higher. Other features will be added. They are side aware so declaring this won't

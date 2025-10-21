@@ -8,7 +8,6 @@ import net.luojiuoscar.isaac_disaster.event.ServerTickEvent;
 import net.luojiuoscar.isaac_disaster.item.ModCreativeModeTabs;
 import net.luojiuoscar.isaac_disaster.item.ModItems;
 import net.luojiuoscar.isaac_disaster.loot.ModLootTypes;
-import net.luojiuoscar.isaac_disaster.manager.item_managers.EffectDescriptionManager;
 import net.luojiuoscar.isaac_disaster.manager.item_managers.*;
 import net.luojiuoscar.isaac_disaster.networking.ModMessages;
 import net.luojiuoscar.isaac_disaster.sound.ModSounds;
@@ -53,7 +52,6 @@ public class IsaacDisaster
         ModEffects.register(modEventBus);
         ModLootTypes.register(modEventBus);
 
-
         MinecraftForge.EVENT_BUS.register(new ServerTickEvent());
         // Register the item to a creative tab
         modEventBus.addListener(this::addCreative);
@@ -67,6 +65,7 @@ public class IsaacDisaster
         event.enqueueWork(() -> {
             PassiveItemManager.getInstance().init();
             ActiveItemManager.getInstance().init();
+            TrinketManager.getInstance().init();
             PickupManager.getInstance().init();
             SetManager.getInstance().init();
             PillEffectManager.getInstance().init();

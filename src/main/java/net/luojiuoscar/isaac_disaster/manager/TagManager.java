@@ -17,6 +17,8 @@ public class TagManager {
             TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "active_items"));
     public static final TagKey<Item> PICKUPS =
             TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "pickups"));
+    public static final TagKey<Item> TRINKETS =
+            TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "trinkets"));
 
     public static final TagKey<Item> ITEM_CANNOT_BE_DUPLICATED =
             TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "item_cannot_be_duplicated"));

@@ -5,6 +5,7 @@ import net.luojiuoscar.isaac_disaster.helper.LevelHelper;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.item.ModItems;
 import net.luojiuoscar.isaac_disaster.item_ability.passive_item.IPassiveItem;
+import net.luojiuoscar.isaac_disaster.manager.LootTableManager;
 import net.luojiuoscar.isaac_disaster.manager.id_managers.ItemId;
 import net.luojiuoscar.isaac_disaster.networking.ModMessages;
 import net.luojiuoscar.isaac_disaster.networking.packet.PassiveItemSyncS2CPacket;
@@ -27,7 +28,7 @@ public class FalsePhd implements IPassiveItem {
     public void onObtain(Player player) {
         PlayerHelper.giveItem(player, ModItems.BLACK_HEART.get(), 1);
         LevelHelper.spawnLootAtPos((ServerLevel) player.level(), player.blockPosition().getCenter(),
-                ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "random_pills"));
+                ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, LootTableManager.RANDOM_PILLS));
     }
 
     @Override

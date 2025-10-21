@@ -3,9 +3,11 @@ package net.luojiuoscar.isaac_disaster.item;
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.item.item.ActiveItem;
 import net.luojiuoscar.isaac_disaster.item.item.PassiveItem;
+import net.luojiuoscar.isaac_disaster.item.item.Trinket;
 import net.luojiuoscar.isaac_disaster.item.pickup.*;
 import net.luojiuoscar.isaac_disaster.manager.id_managers.ItemId;
 import net.luojiuoscar.isaac_disaster.manager.id_managers.PickupId;
+import net.luojiuoscar.isaac_disaster.manager.id_managers.TrinketId;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Rarity;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -397,8 +399,28 @@ public class ModItems {
             () -> new ActiveItem(new Item.Properties(),1, ItemId.ANARCHIST_COOKBOOK.getId(),
                     600, 600, true));
     static { ACTIVE_ITEM_LIST.add(ANARCHIST_COOKBOOK); }
-
     // active end
+    // trinket
+
+    public static final RegistryObject<Item> SWALLOWED_PENNY = ITEMS.register("swallowed_penny",
+            () -> new Trinket(new Item.Properties(), TrinketId.SWALLOWED_PENNY.getId(), Rarity.RARE));
+    static { TRINKET_LIST.add(SWALLOWED_PENNY); }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    // trinket end
     // pickups
     public static final RegistryObject<Item> ISAAC_HEAD = ITEMS.register("isaac_head",
             () -> new IsaacHead(new Item.Properties(), PickupId.ISAAC_HEAD.getId()));

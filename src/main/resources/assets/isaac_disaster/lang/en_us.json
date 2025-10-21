@@ -35,9 +35,11 @@
   "item.isaac_disaster.pill13_h": "未知巨型胶囊#13",
   "item.isaac_disaster.golden_pill": "金胶囊",
   "item.isaac_disaster.golden_pill_h": "巨型金胶囊",
+  "curios.identifier.isaac_trinket": "以撒-饰品",
 
   "creativetab.isaac_disaster.passive_items": "以撒的灾难：被动道具",
   "creativetab.isaac_disaster.active_items": "以撒的灾难：主动道具",
+  "creativetab.isaac_disaster.trinkets": "以撒的灾难：饰品",
   "creativetab.isaac_disaster.pickups": "以撒的灾难：掉落物",
 
 
@@ -306,6 +308,9 @@
   "item.isaac_disaster.anarchist_cookbook.lore.1": "在周围生成6个炸弹",
 
 
+  "item.isaac_disaster.swallowed_penny": "被吞下的硬币",
+  "item.isaac_disaster.swallowed_penny.lore.1": "受伤时概率生成1个硬币",
+  "item.isaac_disaster.swallowed_penny.enchanted.lore.1": "触发概率更高",
 
 
   "item.isaac_disaster.the_fool": "0-愚者",

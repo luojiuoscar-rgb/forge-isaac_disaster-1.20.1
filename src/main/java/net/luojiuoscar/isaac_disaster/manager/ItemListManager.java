@@ -1,7 +1,6 @@
 package net.luojiuoscar.isaac_disaster.manager;
 
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.registries.RegistryObject;
 
 import java.util.ArrayList;
@@ -12,5 +11,6 @@ public class ItemListManager {
     public static final List<RegistryObject<Item>> PASSIVE_ITEM_LIST = new ArrayList<>();
     public static final List<RegistryObject<Item>> ACTIVE_ITEM_LIST = new ArrayList<>();
     public static final List<RegistryObject<Item>> PICKUP_LIST = new ArrayList<>();
+    public static final List<RegistryObject<Item>> TRINKET_LIST = new ArrayList<>();
 
 }

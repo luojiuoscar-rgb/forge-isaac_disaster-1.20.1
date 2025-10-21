@@ -1,4 +1,4 @@
-// 1.20.1	2025-10-21T16:06:16.0245333	Item Models: isaac_disaster
+// 1.20.1	2025-10-21T17:07:28.9589287	Item Models: isaac_disaster
 6fa4b5e3c1de57af4a79a9195d10c3360a6e9f09 assets/isaac_disaster/models/item/2_of_clubs.json
 0e968e645f25420f3af05197f66e24488c64bb69 assets/isaac_disaster/models/item/2_of_diamonds.json
 3a860205c6080388d8f5c83ef9dbb835d6333176 assets/isaac_disaster/models/item/2_of_hearts.json
@@ -113,6 +113,7 @@ c037197e4d2a9e1c092add8da8a5a5ce70a7d3ef assets/isaac_disaster/models/item/soul_
 204565b308015f19fa7a2c4241f78e9f52c278ba assets/isaac_disaster/models/item/spoon_bender.json
 59cae21b103ae226db647048e5923adbebbc4f70 assets/isaac_disaster/models/item/steven.json
 cc9c3b0d0c8fae39c13e7f5347a80808a29743e7 assets/isaac_disaster/models/item/supper.json
+1338b1a738c70262648a4ff0e2fd6eb2ca00d89b assets/isaac_disaster/models/item/swallowed_penny.json
 4eed5828489a0000cd8413f29d6865156a1ca8b4 assets/isaac_disaster/models/item/synthoil.json
 707f2b1e478f4f198a1a8716f63b89561a07e98f assets/isaac_disaster/models/item/tarot_cloth.json
 6876c02e107bfd0859f43b86ccd17e3db305515b assets/isaac_disaster/models/item/telepathy_for_dummies.json

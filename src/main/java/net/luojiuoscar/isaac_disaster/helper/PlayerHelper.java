@@ -1,6 +1,5 @@
 package net.luojiuoscar.isaac_disaster.helper;
 
-
 import net.luojiuoscar.isaac_disaster.Config;
 import net.luojiuoscar.isaac_disaster.attribute.ModAttributes;
 import net.luojiuoscar.isaac_disaster.capability.player.*;
@@ -33,7 +32,6 @@ import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 import java.util.UUID;
 
 
@@ -47,7 +45,7 @@ public class PlayerHelper {
         level.addFreshEntity(itemEntity);
     }
     public static void giveItem(Player player, Item item, int count) {
-        if (player.level().isClientSide()) return; // 只在服务端生成掉落物
+        if (player.level().isClientSide()) return;
 
         ItemStack stack = new ItemStack(item, count);
         Level level = player.level();
@@ -73,7 +71,7 @@ public class PlayerHelper {
         giveItem(player, item, count);
     }
     public static void spawnItem(Player player, Item item, int count) {
-        if (player.level().isClientSide()) return; // 只在服务端生成掉落物
+        if (player.level().isClientSide()) return;
 
         ItemStack stack = new ItemStack(item, count);
         Level level = player.level();

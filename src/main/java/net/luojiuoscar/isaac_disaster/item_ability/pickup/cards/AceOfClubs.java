@@ -4,6 +4,7 @@ import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.helper.EntityHelper;
 import net.luojiuoscar.isaac_disaster.helper.LevelHelper;
 import net.luojiuoscar.isaac_disaster.item_ability.pickup.IPickup;
+import net.luojiuoscar.isaac_disaster.manager.LootTableManager;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.manager.id_managers.PickupId;
 import net.luojiuoscar.isaac_disaster.sound.ModSounds;
@@ -40,7 +41,7 @@ public class AceOfClubs implements IPickup {
             entity.discard();
 
             LevelHelper.spawnLootAtPos(level, pos, ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID,
-                    "random_bombs"));
+                    LootTableManager.RANDOM_BOMBS));
         }
     }
 

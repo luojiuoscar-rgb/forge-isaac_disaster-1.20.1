@@ -4,10 +4,10 @@ package net.luojiuoscar.isaac_disaster.item.item;
 import net.luojiuoscar.isaac_disaster.manager.ColorManager;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResultHolder;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.*;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Rarity;
+import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 
@@ -64,8 +64,6 @@ public abstract class IsaacItem extends Item {
             // 添加稀有度文本组件
             addRarityComponent(tooltipComponents);
         }
-
-
     }
     /**
      * 添加描述性文本组件

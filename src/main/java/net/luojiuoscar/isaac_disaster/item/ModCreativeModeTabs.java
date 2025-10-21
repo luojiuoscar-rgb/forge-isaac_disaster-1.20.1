@@ -42,9 +42,20 @@ public class ModCreativeModeTabs {
                         );
                     }).build());
 
+    public static final RegistryObject<CreativeModeTab> TRINKETS_TAB = CREATIVE_MODE_TABS.register("trinkets_tab",
+            () -> CreativeModeTab.builder().icon(() -> new ItemStack(ModItems.SWALLOWED_PENNY.get()))
+                    .withTabsBefore(ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "active_items_tab"))
+                    .title(Component.translatable("creativetab.isaac_disaster.trinkets"))
+                    .displayItems((params, output) -> {
+                        //将道具添加进创造模式面板
+                        ItemListManager.TRINKET_LIST.forEach(itemRegistry -> {
+                            output.accept(itemRegistry.get());}
+                        );
+                    }).build());
+
     public static final RegistryObject<CreativeModeTab> PICKUPS_TAB = CREATIVE_MODE_TABS.register("pickups_tab",
             () -> CreativeModeTab.builder().icon(() -> new ItemStack(ModItems.BOMB.get()))
-                    .withTabsBefore(ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "active_items_tab"))
+                    .withTabsBefore(ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "trinkets_tab"))
                     .title(Component.translatable("creativetab.isaac_disaster.pickups"))
                     .displayItems((params, output) -> {
                         //将道具添加进创造模式面板
