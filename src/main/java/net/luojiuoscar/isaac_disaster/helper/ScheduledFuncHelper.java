@@ -12,10 +12,6 @@ public class ScheduledFuncHelper {
      * id -> (剩余tick, 初始tick, 剩余执行次数)
      */
     private static final Map<String, TaskEntry> TASKS = new HashMap<>();
-
-    /**
-     * 执行逻辑
-     */
     private static final Map<String, Runnable> RUNTIMES = new HashMap<>();
 
     private static class TaskEntry {
@@ -31,7 +27,7 @@ public class ScheduledFuncHelper {
     }
 
     /**
-     * 清除指定id以及自动编号（如 test, test1, test2）
+     * 清除指定id以及自动编号
      */
     public static void clear(String baseId) {
         Iterator<String> it = TASKS.keySet().iterator();

@@ -1,6 +1,6 @@
 package net.luojiuoscar.isaac_disaster.manager;
 
-public class LootTableManager {
+public class LootTableNameManager {
     public static String RANDOM_COINS = "random_coins";
     public static String RANDOM_PILLS = "random_pills";
     public static String RANDOM_HEARTS = "random_hearts";

@@ -11,9 +11,20 @@ public interface ITrinket {
     int getId();
 
     // effects
-    default void onEquipped(LivingEntity entity){};
-    default void onUnequipped(LivingEntity entity){};
-    default void onTick(LivingEntity entity){};
+    default void onEquipped(LivingEntity entity){
+        onEquipped(entity, false);
+    };
+    default void onEquipped(LivingEntity entity, boolean isEnchanted){};
+
+    default void onUnequipped(LivingEntity entity){
+        onUnequipped(entity, false);
+    };
+    default void onUnequipped(LivingEntity entity, boolean isEnchanted){};
+
+    default void onTick(LivingEntity entity){
+        onTick(entity, false);
+    };
+    default void onTick(LivingEntity entity, boolean isEnchanted){};
 
 
     ItemStack getItemStack();

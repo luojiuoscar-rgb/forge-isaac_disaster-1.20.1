@@ -6,7 +6,7 @@ import net.luojiuoscar.isaac_disaster.helper.LevelHelper;
 import net.luojiuoscar.isaac_disaster.helper.TextHelper;
 import net.luojiuoscar.isaac_disaster.item_ability.set.ISet;
 import net.luojiuoscar.isaac_disaster.manager.ColorManager;
-import net.luojiuoscar.isaac_disaster.manager.LootTableManager;
+import net.luojiuoscar.isaac_disaster.manager.LootTableNameManager;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.manager.id_managers.SetId;
 import net.minecraft.network.chat.Component;
@@ -32,7 +32,7 @@ public class Spun implements ISet {
         StatManager.modifyDamageAdder(player, 2);
         StatManager.modifyMovementSpeedAdder(player, 0.75);
         LevelHelper.spawnLootAtPos((ServerLevel) player.level(), player.blockPosition().getCenter(),
-                ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, LootTableManager.RANDOM_PILLS));
+                ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, LootTableNameManager.RANDOM_PILLS));
     }
 
     @Override

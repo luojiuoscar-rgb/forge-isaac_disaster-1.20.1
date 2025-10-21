@@ -2,16 +2,22 @@ package net.luojiuoscar.isaac_disaster.event;
 
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerPassiveItemProvider;
+import net.luojiuoscar.isaac_disaster.capability.player.PlayerSwallowedTrinkets;
+import net.luojiuoscar.isaac_disaster.capability.player.PlayerSwallowedTrinketsProvider;
 import net.luojiuoscar.isaac_disaster.effect.ModEffects;
+import net.luojiuoscar.isaac_disaster.helper.CuriosHelper;
 import net.luojiuoscar.isaac_disaster.helper.EntityHelper;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
+import net.luojiuoscar.isaac_disaster.item.item.Trinket;
 import net.luojiuoscar.isaac_disaster.item_ability.passive_item.IDamageTriggerPassiveItem;
 import net.luojiuoscar.isaac_disaster.item_ability.passive_item.IHurtTriggerPassiveItem;
+import net.luojiuoscar.isaac_disaster.item_ability.trinket.IHurtTriggerTrinket;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.manager.id_managers.ItemId;
 import net.luojiuoscar.isaac_disaster.manager.id_managers.SetId;
 import net.luojiuoscar.isaac_disaster.manager.item_managers.ActiveItemManager;
 import net.luojiuoscar.isaac_disaster.manager.item_managers.PassiveItemManager;
+import net.luojiuoscar.isaac_disaster.manager.item_managers.TrinketManager;
 import net.luojiuoscar.isaac_disaster.sound.ModSounds;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
@@ -20,11 +26,13 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -116,6 +124,22 @@ public class TriggerItemEvents {
                 }
             }
         });
+        // 饰品效果
+        player.getCapability(PlayerSwallowedTrinketsProvider.PLAYER_SWALLOWED_TRINKETS).ifPresent(
+                playerSwallowedTrinkets -> {
+                    List<PlayerSwallowedTrinkets.SwallowedTrinket> trinkets = playerSwallowedTrinkets.getSwallowedTrinkets();
+                    for (ItemStack s : CuriosHelper.getEquippedItemsInSlot(player, CuriosHelper.TRINKET)){
+                        if (!(s.getItem() instanceof Trinket item)) return;
+                        trinkets.add(new PlayerSwallowedTrinkets.SwallowedTrinket(item.getTrinketId(), Trinket.isEnchanted(s)));
+                    }
+                    for (PlayerSwallowedTrinkets.SwallowedTrinket t : trinkets){
+                        if (!(TrinketManager.getInstance().getTrinketFromId(t.itemId) instanceof IHurtTriggerTrinket trinket)) continue;
+                        if (source.getMsgId().equals("genericKill") && trinket.isPunishType()) continue; // 惩罚类型
+                        trinket.onHurt(player, attacker, t.enchanted);
+                    }
+                });
+
+
 
 
         // 常规效果（无论如何都会触发）

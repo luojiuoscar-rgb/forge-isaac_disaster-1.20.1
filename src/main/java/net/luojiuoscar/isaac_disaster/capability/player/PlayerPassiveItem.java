@@ -2,9 +2,9 @@ package net.luojiuoscar.isaac_disaster.capability.player;
 
 import net.luojiuoscar.isaac_disaster.item_ability.passive_item.INewBulletType;
 import net.luojiuoscar.isaac_disaster.item_ability.passive_item.IRecursivePassiveItem;
+import net.luojiuoscar.isaac_disaster.item_ability.passive_item.ITriggerPassiveItem;
 import net.luojiuoscar.isaac_disaster.item_ability.set.ISet;
 import net.luojiuoscar.isaac_disaster.manager.item_managers.PassiveItemManager;
-import net.luojiuoscar.isaac_disaster.item_ability.passive_item.ITriggerPassiveItem;
 import net.luojiuoscar.isaac_disaster.manager.item_managers.SetManager;
 import net.luojiuoscar.isaac_disaster.networking.ModMessages;
 import net.luojiuoscar.isaac_disaster.networking.packet.DirectObtainPassiveItemS2CPacket;
@@ -18,11 +18,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraftforge.common.capabilities.AutoRegisterCapability;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Arrays;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static net.luojiuoscar.isaac_disaster.Config.PASSIVE_ITEM_LIMIT;
@@ -39,6 +35,7 @@ public class PlayerPassiveItem {
 
     private Map<Integer, Integer> setCountMap; // 套装计数
 
+
     // constructor
     public PlayerPassiveItem(){
         init();
@@ -52,6 +49,7 @@ public class PlayerPassiveItem {
         this.recursiveItemMap = new HashMap<>();
         this.setCountMap = new HashMap<>();
         this.hasNewBulletTypeMap = new HashMap<>();
+
     }
 
 
@@ -107,37 +105,19 @@ public class PlayerPassiveItem {
         }
     }
 
-    /**
-     * @return 全部道具的表
-     */
+
     public ArrayList<Integer> getPlayerPassiveItems(){
         return playerPassiveItems;
     }
-
-    /**
-     * @return 全部触发型道具的表
-     */
     public Map<Integer, Integer> getPlayerTriggerItemMap(){
         return triggerItemMap;
     }
-
-    /**
-     * @return 全部循环型道具的表
-     */
     public Map<Integer, Integer> getPlayerRecursiveItemMap(){
         return recursiveItemMap;
     }
-
-    /**
-     * @return 全部套装计数的表
-     */
     public Map<Integer, Integer> getSetCountMap(){
         return setCountMap;
     }
-
-    /**
-     * @return 全部存在特殊子弹类型的表
-     */
     public Map<Integer, Integer> getHasNewBulletTypeMap(){
         return hasNewBulletTypeMap;
     }

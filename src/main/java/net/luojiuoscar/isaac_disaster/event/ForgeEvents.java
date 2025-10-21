@@ -2,9 +2,7 @@ package net.luojiuoscar.isaac_disaster.event;
 
 import net.luojiuoscar.isaac_disaster.attribute.ModAttributes;
 import net.luojiuoscar.isaac_disaster.capability.entity.EntityEffectProvider;
-import net.luojiuoscar.isaac_disaster.capability.player.PlayerAbilityProvider;
-import net.luojiuoscar.isaac_disaster.capability.player.PlayerPassiveItemProvider;
-import net.luojiuoscar.isaac_disaster.capability.player.PlayerStatModifierProvider;
+import net.luojiuoscar.isaac_disaster.capability.player.*;
 import net.luojiuoscar.isaac_disaster.commands.*;
 import net.luojiuoscar.isaac_disaster.data.PillShuffleData;
 import net.luojiuoscar.isaac_disaster.effect.ModEffects;
@@ -91,6 +89,9 @@ public class ForgeEvents {
             }//ability
             if(!event.getObject().getCapability(PlayerAbilityProvider.PLAYER_ABILITY).isPresent()){
                 event.addCapability(ResourceLocation.fromNamespaceAndPath(MOD_ID, "player_ability_cap"), new PlayerAbilityProvider());
+            }//swallowedTrinkets
+            if(!event.getObject().getCapability(PlayerSwallowedTrinketsProvider.PLAYER_SWALLOWED_TRINKETS).isPresent()){
+                event.addCapability(ResourceLocation.fromNamespaceAndPath(MOD_ID, "player_swallowed_trinkets_cap"), new PlayerSwallowedTrinketsProvider());
             }
         }
     }
@@ -122,6 +123,12 @@ public class ForgeEvents {
                     newStore.copyFrom(oldStore, event.getEntity());
                 });
             });
+            // swallowed trinkets
+            event.getOriginal().getCapability(PlayerSwallowedTrinketsProvider.PLAYER_SWALLOWED_TRINKETS).ifPresent(oldStore -> {
+                event.getEntity().getCapability(PlayerSwallowedTrinketsProvider.PLAYER_SWALLOWED_TRINKETS).ifPresent(newStore -> {
+                    newStore.copyFrom(oldStore);
+                });
+            });
 
             event.getOriginal().invalidateCaps();
         }
@@ -137,7 +144,8 @@ public class ForgeEvents {
         new ShufflePillCommand(event.getDispatcher());
         new TriggerPillEffectCount(event.getDispatcher());
         new ResetPlayerCommand(event.getDispatcher());
-
+        new ClearSwallowedTrinkets(event.getDispatcher());
+        new SetTrinketEnchanted(event.getDispatcher());
 
         ConfigCommand.register(event.getDispatcher());
     }
