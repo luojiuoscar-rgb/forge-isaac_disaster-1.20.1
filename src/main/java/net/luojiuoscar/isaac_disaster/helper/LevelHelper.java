@@ -1,10 +1,16 @@
 package net.luojiuoscar.isaac_disaster.helper;
 
+import net.luojiuoscar.isaac_disaster.Config;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.LootTable;
@@ -12,6 +18,7 @@ import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -135,4 +142,60 @@ public class LevelHelper {
         // 应用推力到生物
         entity.push(push.x, push.y + yStrength, push.z);
     }
+
+
+    /**
+     * 在世界中生成粒子（类似于 /particle 命令）
+     *
+     * @param level    世界（必须是 ServerLevel）
+     * @param particle 粒子类型（如 ParticleTypes.FLAME）
+     * @param pos      生成位置
+     * @param dx       扩散范围X
+     * @param dy       扩散范围Y
+     * @param dz       扩散范围Z
+     * @param speed    粒子速度
+     * @param count    数量
+     * @param force    是否强制显示（相当于 /particle 的 "force"）
+     * @param player   指定玩家（null 则对所有玩家可见）
+     */
+    public static void spawnParticle(ServerLevel level, ParticleOptions particle, Vec3 pos,
+                             double dx, double dy, double dz, double speed,
+                             int count, boolean force, ServerPlayer player) {
+        if (level == null) return;
+
+        if (player != null) {
+            // 仅对指定玩家可见
+            level.sendParticles(player, particle, force, pos.x, pos.y, pos.z, count, dx, dy, dz, speed);
+        } else {
+            // 对所有玩家可见
+            level.sendParticles(particle, pos.x, pos.y, pos.z, count, dx, dy, dz, speed);
+        }
+    }
+    public static void spawnParticle(ServerLevel level, ParticleOptions particle, BlockPos pos) {
+        spawnParticle(level, particle, Vec3.atCenterOf(pos), 0, 0, 0, 0, 1, false, null);
+    }
+    public static void spawnParticle(ServerLevel level, ParticleOptions particle, Vec3 pos, double dx, double dy, double dz, int count) {
+        spawnParticle(level, particle, pos, dx, dy, dz, 0, count, false, null);
+    }
+
+    public static void spawnMoney(ServerLevel level, Vec3 pos, int amount){
+        int value = Config.COIN_TIER_1_VALUE.get();
+        String moneyId = Config.COIN_TIER_1_ID.get();
+
+        if (value <= 0) value = 1;
+        // 计算需要给予的数量
+        int count = (int) Math.ceil((double) amount / value);
+
+        ResourceLocation rl = ResourceLocation.tryParse(moneyId);
+        if (rl == null) return;
+        Item item = ForgeRegistries.ITEMS.getValue(rl);
+        // 检查是否有效
+        if (item == null || item == Items.AIR) return;
+        ItemStack stack = new ItemStack(item, count);
+        ItemEntity itemEntity = new ItemEntity(level, pos.x, pos.y, pos.z, stack);
+        itemEntity.setPickUpDelay(20);
+        level.addFreshEntity(itemEntity);
+    }
+
 }
+

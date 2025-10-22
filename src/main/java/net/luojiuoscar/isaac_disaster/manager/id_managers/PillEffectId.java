@@ -38,7 +38,8 @@ public enum PillEffectId {
     FEELS_LIKE_IM_WALKING_ON_SUNSHINE,
     SHOT_SPEED_DOWN,
     SHOT_SPEED_UP,
-    EXPERIMENTAL_PILL;
+    EXPERIMENTAL_PILL,
+    GULP;
 
 
     private final int id;

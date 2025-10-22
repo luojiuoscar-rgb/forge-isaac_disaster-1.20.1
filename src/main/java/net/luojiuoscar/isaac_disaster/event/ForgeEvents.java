@@ -2,12 +2,16 @@ package net.luojiuoscar.isaac_disaster.event;
 
 import net.luojiuoscar.isaac_disaster.attribute.ModAttributes;
 import net.luojiuoscar.isaac_disaster.capability.entity.EntityEffectProvider;
-import net.luojiuoscar.isaac_disaster.capability.player.*;
+import net.luojiuoscar.isaac_disaster.capability.player.PlayerAbilityProvider;
+import net.luojiuoscar.isaac_disaster.capability.player.PlayerPassiveItemProvider;
+import net.luojiuoscar.isaac_disaster.capability.player.PlayerStatModifierProvider;
+import net.luojiuoscar.isaac_disaster.capability.player.PlayerSwallowedTrinketsProvider;
 import net.luojiuoscar.isaac_disaster.commands.*;
 import net.luojiuoscar.isaac_disaster.data.PillShuffleData;
 import net.luojiuoscar.isaac_disaster.effect.ModEffects;
 import net.luojiuoscar.isaac_disaster.entity.custom.IsaacBullet;
 import net.luojiuoscar.isaac_disaster.entity.tnt.IsaacBomb;
+import net.luojiuoscar.isaac_disaster.event.custom.ActiveItemUseEvent;
 import net.luojiuoscar.isaac_disaster.helper.EntityHelper;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.item.item.ActiveItem;
@@ -15,13 +19,17 @@ import net.luojiuoscar.isaac_disaster.item.item.PassiveItem;
 import net.luojiuoscar.isaac_disaster.item.pickup.ICanUse;
 import net.luojiuoscar.isaac_disaster.item.pickup.IsaacHead;
 import net.luojiuoscar.isaac_disaster.item.pickup.Pickup;
+import net.luojiuoscar.isaac_disaster.item_ability.trinket.ITriggerTrinket;
 import net.luojiuoscar.isaac_disaster.manager.EffectNameManager;
 import net.luojiuoscar.isaac_disaster.manager.id_managers.ItemId;
+import net.luojiuoscar.isaac_disaster.manager.id_managers.TrinketId;
 import net.luojiuoscar.isaac_disaster.manager.item_managers.ActiveItemManager;
 import net.luojiuoscar.isaac_disaster.manager.item_managers.PickupManager;
 import net.luojiuoscar.isaac_disaster.manager.item_managers.PillEffectManager;
+import net.luojiuoscar.isaac_disaster.manager.item_managers.TrinketManager;
 import net.luojiuoscar.isaac_disaster.networking.ModMessages;
 import net.luojiuoscar.isaac_disaster.networking.packet.*;
+import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -35,7 +43,10 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.Tags;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.entity.EntityEvent;
@@ -45,12 +56,14 @@ import net.minecraftforge.event.entity.living.LivingKnockBackEvent;
 import net.minecraftforge.event.entity.living.MobEffectEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
+import net.minecraftforge.event.level.BlockEvent;
 import net.minecraftforge.event.level.ExplosionEvent;
 import net.minecraftforge.event.level.LevelEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.server.command.ConfigCommand;
 
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -97,9 +110,7 @@ public class ForgeEvents {
     }
 
 
-    /**
-     * 死后保留
-     */
+
     @SubscribeEvent
     public static void onPlayerCloned(PlayerEvent.Clone event){
         if(event.isWasDeath()){
@@ -146,6 +157,8 @@ public class ForgeEvents {
         new ResetPlayerCommand(event.getDispatcher());
         new ClearSwallowedTrinkets(event.getDispatcher());
         new SetTrinketEnchanted(event.getDispatcher());
+        new addTrinketSlotsCommand(event.getDispatcher());
+        new getTrinketsCommand(event.getDispatcher());
 
         ConfigCommand.register(event.getDispatcher());
     }
@@ -176,6 +189,10 @@ public class ForgeEvents {
 
     // right-clicked active item
     private static void RCActiveItem(Player player, ActiveItem item, ItemStack stack, InteractionHand hand){
+        ActiveItemUseEvent event = new ActiveItemUseEvent(player, item, stack);
+        MinecraftForge.EVENT_BUS.post(event);
+        if (event.isCanceled()) return;
+
         // 如果当前物品的耐久度不足且没有过载则无法使用物品
         if (!ActiveItem.getOverCharged(stack) &&
                 stack.getMaxDamage() - stack.getDamageValue() < item.getDamagePerUse(player)){
@@ -468,5 +485,26 @@ public class ForgeEvents {
         float finalSpeed = (float) (baseSpeed + bonus);
 
         event.setNewSpeed(finalSpeed);
+    }
+
+    @SubscribeEvent
+    public static void onBlockBreak(BlockEvent.BreakEvent event) {
+        Player player = event.getPlayer();
+        if (!(player instanceof ServerPlayer serverPlayer)) return;
+
+        Level level = player.level();
+        BlockPos pos = event.getPos();
+        BlockState state = level.getBlockState(pos);
+
+        if (state.is(Tags.Blocks.STONE) || state.is(Tags.Blocks.COBBLESTONE)) {
+            player.getCapability(PlayerSwallowedTrinketsProvider.PLAYER_SWALLOWED_TRINKETS).ifPresent(
+                    playerSwallowedTrinkets -> {
+                        List<ItemStack> stackList = playerSwallowedTrinkets.getAllTrinketListFromId(player, TrinketId.LUCKY_ROCK.getId());
+                        if (!stackList.isEmpty() &&
+                                TrinketManager.getInstance().getTrinketFromId(TrinketId.LUCKY_ROCK.getId()) instanceof ITriggerTrinket trinket){
+                            trinket.onTrigger(player, stackList, event);
+                        }
+                    });
+        }
     }
 }

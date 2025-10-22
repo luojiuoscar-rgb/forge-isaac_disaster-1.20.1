@@ -30,6 +30,7 @@ public class PlayerAbility {
     private Map<Integer, Integer> bulletFilters;
     private int pillQuality;
     private Map<Integer, Boolean> itemFlags;
+    private int extraTrinketSlotCounts;
 
     // 记录玩家pillId -> EffectId的序列
     private Map<Integer, Integer> pillRecords;
@@ -45,11 +46,112 @@ public class PlayerAbility {
         homing = 0;
         spectral = 0;
         controllable = 0;
+        extraTrinketSlotCounts = 0;
 
         bulletFilters = new HashMap<>();
         pillRecords = new HashMap<>();
         itemFlags = new HashMap<>();
     }
+    /**
+     * 复制玩家属性
+     * 复制后立刻触发属性修改；以确保玩家属性正确继承
+     */
+    public void copyFrom(PlayerAbility source, Player player) {
+        this.holdRightClick = source.holdRightClick;
+        this.piercing = source.piercing;
+        this.homing = source.homing;
+        this.spectral = source.spectral;
+        this.controllable = source.controllable;
+        this.pillQuality = source.pillQuality;
+        this.extraTrinketSlotCounts = source.extraTrinketSlotCounts;
+
+        this.bulletFilters = new HashMap<>(source.bulletFilters);
+        this.pillRecords = new HashMap<>(source.pillRecords);
+        this.itemFlags = new HashMap<>(source.itemFlags);
+    }
+    public void saveNBTData(CompoundTag nbt) {
+        nbt.putBoolean("holdRightClick", holdRightClick);
+        nbt.putInt("piercing", piercing);
+        nbt.putInt("homing", homing);
+        nbt.putInt("spectral", spectral);
+        nbt.putInt("controllable", controllable);
+        nbt.putInt("pill_quality", pillQuality);
+        nbt.putInt("trinket_slot_counts", extraTrinketSlotCounts);
+
+        // 滤镜
+        ListTag filterList = new ListTag();
+        for (Map.Entry<Integer, Integer> entry : bulletFilters.entrySet()) {
+            CompoundTag tag = new CompoundTag();
+            tag.putInt("color", entry.getKey());
+            tag.putInt("count", entry.getValue());
+            filterList.add(tag);
+        }
+        nbt.put("bullet_filters", filterList);
+
+        // 药丸记录
+        ListTag pillRecordsList = new ListTag();
+        for (Map.Entry<Integer, Integer> entry : pillRecords.entrySet()) {
+            CompoundTag tag = new CompoundTag();
+            tag.putInt("pill_id", entry.getKey());
+            tag.putInt("effect_id", entry.getValue());
+            pillRecordsList.add(tag);
+        }
+        nbt.put("pill_records", pillRecordsList);
+
+        // 物品记录
+        ListTag itemFlagList = new ListTag();
+        for (Map.Entry<Integer, Boolean> entry : itemFlags.entrySet()) {
+            CompoundTag tag = new CompoundTag();
+            tag.putInt("item_id", entry.getKey());
+            tag.putBoolean("flag", entry.getValue());
+            itemFlagList.add(tag);
+        }
+        nbt.put("item_flags", itemFlagList);
+    }
+    public void loadNBTData(CompoundTag nbt) {
+        this.holdRightClick = nbt.getBoolean("holdRightClick");
+        this.spectral = nbt.getInt("spectral");
+        this.piercing = nbt.getInt("piercing");
+        this.homing = nbt.getInt("homing");
+        this.controllable = nbt.getInt("controllable");
+        this.pillQuality = nbt.getInt("pill_quality");
+        this.extraTrinketSlotCounts = nbt.getInt("trinket_slot_counts");
+
+        bulletFilters.clear();
+        if (nbt.contains("bullet_filters", Tag.TAG_LIST)) {
+            ListTag list = nbt.getList("bullet_filters", Tag.TAG_COMPOUND);
+            for (Tag t : list) {
+                CompoundTag tag = (CompoundTag) t;
+                int color = tag.getInt("color");
+                int count = tag.getInt("count");
+                bulletFilters.put(color, count);
+            }
+        }
+
+        pillRecords.clear();
+        if (nbt.contains("pill_records", Tag.TAG_LIST)) {
+            ListTag list = nbt.getList("pill_records", Tag.TAG_COMPOUND);
+            for (Tag t : list) {
+                CompoundTag tag = (CompoundTag) t;
+                int pillId = tag.getInt("pill_id");
+                int effectId = tag.getInt("effect_id");
+                pillRecords.put(pillId, effectId);
+            }
+        }
+
+        itemFlags.clear();
+        if (nbt.contains("item_flags", Tag.TAG_LIST)) {
+            ListTag list = nbt.getList("item_flags", Tag.TAG_COMPOUND);
+            for (Tag t : list) {
+                CompoundTag tag = (CompoundTag) t;
+                int itemId = tag.getInt("item_id");
+                boolean flag = tag.getBoolean("flag");
+                itemFlags.put(itemId, flag);
+            }
+        }
+    }
+
+
 
     public boolean isHoldRightClick(){
         return holdRightClick;
@@ -122,101 +224,6 @@ public class PlayerAbility {
     public void setItemFlags(ServerPlayer player, int ItemId, boolean flag){
         itemFlags.put(ItemId, flag);
     }
-
-    /**
-     * 复制玩家属性
-     * 复制后立刻触发属性修改；以确保玩家属性正确继承
-     */
-    public void copyFrom(PlayerAbility source, Player player) {
-        this.holdRightClick = source.holdRightClick;
-        this.piercing = source.piercing;
-        this.homing = source.homing;
-        this.spectral = source.spectral;
-        this.controllable = source.controllable;
-        this.pillQuality = source.pillQuality;
-
-        this.bulletFilters = new HashMap<>(source.bulletFilters);
-        this.pillRecords = new HashMap<>(source.pillRecords);
-        this.itemFlags = new HashMap<>(source.itemFlags);
-    }
-
-    public void saveNBTData(CompoundTag nbt) {
-        nbt.putBoolean("holdRightClick", holdRightClick);
-        nbt.putInt("piercing", piercing);
-        nbt.putInt("homing", homing);
-        nbt.putInt("spectral", spectral);
-        nbt.putInt("controllable", controllable);
-        nbt.putInt("pill_quality", pillQuality);
-
-        // 滤镜
-        ListTag filterList = new ListTag();
-        for (Map.Entry<Integer, Integer> entry : bulletFilters.entrySet()) {
-            CompoundTag tag = new CompoundTag();
-            tag.putInt("color", entry.getKey());
-            tag.putInt("count", entry.getValue());
-            filterList.add(tag);
-        }
-        nbt.put("bullet_filters", filterList);
-
-        // 药丸记录
-        ListTag pillRecordsList = new ListTag();
-        for (Map.Entry<Integer, Integer> entry : pillRecords.entrySet()) {
-            CompoundTag tag = new CompoundTag();
-            tag.putInt("pill_id", entry.getKey());
-            tag.putInt("effect_id", entry.getValue());
-            pillRecordsList.add(tag);
-        }
-        nbt.put("pill_records", pillRecordsList);
-
-        // 物品记录
-        ListTag itemFlagList = new ListTag();
-        for (Map.Entry<Integer, Boolean> entry : itemFlags.entrySet()) {
-            CompoundTag tag = new CompoundTag();
-            tag.putInt("item_id", entry.getKey());
-            tag.putBoolean("flag", entry.getValue());
-            itemFlagList.add(tag);
-        }
-        nbt.put("item_flags", itemFlagList);
-    }
-    public void loadNBTData(CompoundTag nbt) {
-        this.holdRightClick = nbt.getBoolean("holdRightClick");
-        this.spectral = nbt.getInt("spectral");
-        this.piercing = nbt.getInt("piercing");
-        this.homing = nbt.getInt("homing");
-        this.controllable = nbt.getInt("controllable");
-        this.pillQuality = nbt.getInt("pill_quality");
-
-        bulletFilters.clear();
-        if (nbt.contains("bullet_filters", Tag.TAG_LIST)) {
-            ListTag list = nbt.getList("bullet_filters", Tag.TAG_COMPOUND);
-            for (Tag t : list) {
-                CompoundTag tag = (CompoundTag) t;
-                int color = tag.getInt("color");
-                int count = tag.getInt("count");
-                bulletFilters.put(color, count);
-            }
-        }
-
-        pillRecords.clear();
-        if (nbt.contains("pill_records", Tag.TAG_LIST)) {
-            ListTag list = nbt.getList("pill_records", Tag.TAG_COMPOUND);
-            for (Tag t : list) {
-                CompoundTag tag = (CompoundTag) t;
-                int pillId = tag.getInt("pill_id");
-                int effectId = tag.getInt("effect_id");
-                pillRecords.put(pillId, effectId);
-            }
-        }
-
-        itemFlags.clear();
-        if (nbt.contains("item_flags", Tag.TAG_LIST)) {
-            ListTag list = nbt.getList("item_flags", Tag.TAG_COMPOUND);
-            for (Tag t : list) {
-                CompoundTag tag = (CompoundTag) t;
-                int itemId = tag.getInt("item_id");
-                boolean flag = tag.getBoolean("flag");
-                itemFlags.put(itemId, flag);
-            }
-        }
-    }
+    public int getExtraTrinketSlotCounts(){return extraTrinketSlotCounts;}
+    public void setExtraTrinketSlotCounts(int amount) {this.extraTrinketSlotCounts = amount;}
 }

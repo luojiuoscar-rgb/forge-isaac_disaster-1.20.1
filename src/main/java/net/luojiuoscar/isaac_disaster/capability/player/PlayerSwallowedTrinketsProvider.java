@@ -18,9 +18,9 @@ public class PlayerSwallowedTrinketsProvider implements ICapabilityProvider, INB
 
 
     private PlayerSwallowedTrinkets swallowedTrinkets = null;
-    private final LazyOptional<PlayerSwallowedTrinkets> optional = LazyOptional.of(this::createPlayerStatModifiers);
+    private final LazyOptional<PlayerSwallowedTrinkets> optional = LazyOptional.of(this::createPlayerSwallowedTrinkets);
 
-    private PlayerSwallowedTrinkets createPlayerStatModifiers(){
+    private PlayerSwallowedTrinkets createPlayerSwallowedTrinkets(){
         if(this.swallowedTrinkets == null){
             this.swallowedTrinkets = new PlayerSwallowedTrinkets();
         }
@@ -40,12 +40,12 @@ public class PlayerSwallowedTrinketsProvider implements ICapabilityProvider, INB
     @Override
     public CompoundTag serializeNBT() {
         CompoundTag nbt = new CompoundTag();
-        createPlayerStatModifiers().saveNBTData(nbt);
+        createPlayerSwallowedTrinkets().saveNBTData(nbt);
         return nbt;
     }
 
     @Override
     public void deserializeNBT(CompoundTag nbt) {
-        createPlayerStatModifiers().loadNBTData(nbt);
+        createPlayerSwallowedTrinkets().loadNBTData(nbt);
     }
 }

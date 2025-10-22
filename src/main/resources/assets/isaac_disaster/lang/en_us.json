@@ -136,7 +136,7 @@
   "item.isaac_disaster.special.cannot_duplicate": "不可复制",
 
 
-  "item.isaac_disaster.synergy.description.no_effect": "无效果",
+  "item.isaac_disaster.synergy.description.no_effect": "无额外效果",
   "item.isaac_disaster.synergy.description.double": "使用两次",
   "item.isaac_disaster.synergy.description.increase_duration": "效果持续更久",
   "item.isaac_disaster.synergy.description.stronger": "效果更强",
@@ -306,12 +306,32 @@
   "item.isaac_disaster.curse_of_the_tower.lore.1": "受伤时在周围生成6个炸弹",
   "item.isaac_disaster.anarchist_cookbook": "无政府主义者食谱",
   "item.isaac_disaster.anarchist_cookbook.lore.1": "在周围生成6个炸弹",
+  "item.isaac_disaster.smelter": "熔炉",
+  "item.isaac_disaster.smelter.lore.1": "吞噬穿戴的饰品",
 
 
   "item.isaac_disaster.swallowed_penny": "被吞下的硬币",
   "item.isaac_disaster.swallowed_penny.lore.1": "受伤时概率生成1个硬币",
   "item.isaac_disaster.swallowed_penny.enchanted.lore.1": "触发概率更高",
-
+  "item.isaac_disaster.aaa_battery": "7号电池",
+  "item.isaac_disaster.aaa_battery.lore.1": "主动道具使用时的充能消耗减少2秒",
+  "item.isaac_disaster.aaa_battery.enchanted.lore.1": "充能消耗额外减少2秒",
+  "item.isaac_disaster.broken_remote": "损坏的遥控器",
+  "item.isaac_disaster.broken_remote.lore.1": "使用主动道具时随机传送",
+  "item.isaac_disaster.broken_remote.enchanted.lore.1": "传送范围更大",
+  "item.isaac_disaster.cartridge": "游戏卡带",
+  "item.isaac_disaster.cartridge.lore.1": "受伤时小概率触发无敌",
+  "item.isaac_disaster.lucky_rock": "幸运石",
+  "item.isaac_disaster.lucky_rock.lore.1": "破坏石头有小概率获得1个硬币",
+  "item.isaac_disaster.lucky_rock.enchanted.lore.1": "概率更高",
+  "item.isaac_disaster.lucky_toe": "幸运脚趾",
+  "item.isaac_disaster.cancer": "癌症",
+  "item.isaac_disaster.blind_rage": "盲目的怒火",
+  "item.isaac_disaster.blind_rage.lore.1": "延长受伤后的无敌时间",
+  "item.isaac_disaster.blind_rage.enchanted.lore.1": "大幅延长受伤后的无敌时间",
+  "item.isaac_disaster.perfection": "满分考卷",
+  "item.isaac_disaster.perfection.lore.1": "受到伤害的时候概率丢失",
+  "item.isaac_disaster.perfection.enchanted.lore.1": "加成翻倍，但丢失概率也翻倍",
 
   "item.isaac_disaster.the_fool": "0-愚者",
   "item.isaac_disaster.the_fool.lore.1": "传送回出生点",
@@ -402,6 +422,8 @@
   "pill.isaac_disaster.effect.shot_speed_down": "弹速下降",
   "pill.isaac_disaster.effect.shot_speed_up": "弹速上升",
   "pill.isaac_disaster.effect.experimental_pill": "实验性胶囊",
+  "pill.isaac_disaster.effect.gulp": "咕噜！",
+
 
   "item.isaac_disaster.bomb": "炸弹",
   "item.isaac_disaster.giga_bomb": "炸弹",

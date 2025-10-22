@@ -30,9 +30,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.registries.ForgeRegistries;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 
 public class PlayerHelper {
@@ -89,6 +87,14 @@ public class PlayerHelper {
         int[] count = {0};
         player.getCapability(PlayerPassiveItemProvider.PLAYER_PASSIVE_ITEM)
                 .ifPresent(provider -> count[0] = provider.getItemCount(itemId));
+        return count[0];
+    }
+    public static int getTrinketCount(int itemId, ServerPlayer player){
+        int[] count = {0};
+        player.getCapability(PlayerSwallowedTrinketsProvider.PLAYER_SWALLOWED_TRINKETS)
+                .ifPresent(playerSwallowedTrinkets ->
+                    count[0] = playerSwallowedTrinkets.getAllTrinketListFromId(player, itemId).size()
+                );
         return count[0];
     }
     public static void removeItemFromId(int itemId, ServerPlayer player){
@@ -698,5 +704,17 @@ public class PlayerHelper {
         }
     }
 
+    public static int swallowAllTrinkets(Player player){
+        int[] count = {0};
+        List<ItemStack> stackList = CuriosHelper.getEquippedItemsInSlot(player, CuriosHelper.TRINKET);
+        player.getCapability(PlayerSwallowedTrinketsProvider.PLAYER_SWALLOWED_TRINKETS).ifPresent(
+                playerSwallowedTrinkets -> {
+                    for (ItemStack stack : stackList){
+                        playerSwallowedTrinkets.swallow(player, stack);
+                        count[0]++;
+                    }
+                });
+        return count[0];
+    }
 }
 

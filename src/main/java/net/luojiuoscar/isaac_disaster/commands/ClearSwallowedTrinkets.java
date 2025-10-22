@@ -16,7 +16,7 @@ public class ClearSwallowedTrinkets {
                     ServerPlayer player = context.getSource().getPlayerOrException();
                     // 移除玩家的全部道具
                     player.getCapability(PlayerSwallowedTrinketsProvider.PLAYER_SWALLOWED_TRINKETS).ifPresent(
-                            playerSwallowedTrinkets -> {playerSwallowedTrinkets.clearAll(player);
+                            playerSwallowedTrinkets -> {playerSwallowedTrinkets.clear(player);
                             });
 
                     player.sendSystemMessage(Component.literal("被吞的被动道具已经全部清除"));

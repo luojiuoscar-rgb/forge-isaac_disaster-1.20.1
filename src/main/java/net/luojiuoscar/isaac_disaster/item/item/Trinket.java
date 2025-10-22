@@ -16,9 +16,12 @@ import top.theillusivec4.curios.api.type.capability.ICurioItem;
 import javax.annotation.Nullable;
 import java.util.List;
 
+
+
 public class Trinket extends Item implements ICurioItem {
     private final int trinketId;
     private static final String ENCHANTED = "enchanted";
+    private static final String SWALLOWING = "swallowing";
     private final boolean hasSpecialEffects;
     private boolean canEquip;
     private boolean canUnequip;
@@ -37,15 +40,16 @@ public class Trinket extends Item implements ICurioItem {
 
     @Override
     public void onEquip(SlotContext slotContext, ItemStack prevStack, ItemStack stack) {
-        TrinketManager.getInstance().getTrinketFromId(getTrinketId()).onEquipped(slotContext.entity());
+        TrinketManager.getInstance().getTrinketFromId(getTrinketId()).onEquipped(slotContext.entity(), isEnchanted(stack));
     }
     @Override
     public void onUnequip(SlotContext slotContext, ItemStack prevStack, ItemStack stack) {
-        TrinketManager.getInstance().getTrinketFromId(getTrinketId()).onUnequipped(slotContext.entity());
+        if (isSwallowing(prevStack) || isSwallowing(stack)) return; // 我不知道为什么 但是这样能行
+        TrinketManager.getInstance().getTrinketFromId(getTrinketId()).onUnequipped(slotContext.entity(), isEnchanted(stack));
     }
     @Override
     public void curioTick(SlotContext slotContext, ItemStack stack) {
-        TrinketManager.getInstance().getTrinketFromId(getTrinketId()).onTick(slotContext.entity());
+        TrinketManager.getInstance().getTrinketFromId(getTrinketId()).onTick(slotContext.entity(), isEnchanted(stack));
     }
 
     @Override
@@ -102,5 +106,11 @@ public class Trinket extends Item implements ICurioItem {
     }
     public static void setEnchanted(ItemStack stack, boolean enchanted) {
         stack.getOrCreateTag().putBoolean(ENCHANTED, enchanted);
+    }
+    public static boolean isSwallowing(ItemStack stack) {
+        return stack.getOrCreateTag().getBoolean(SWALLOWING);
+    }
+    public static void setSwallowing(ItemStack stack, boolean b) {
+        stack.getOrCreateTag().putBoolean(SWALLOWING, b);
     }
 }

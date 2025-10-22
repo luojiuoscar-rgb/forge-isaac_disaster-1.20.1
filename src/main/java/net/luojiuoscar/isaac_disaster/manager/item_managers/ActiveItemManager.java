@@ -68,7 +68,8 @@ public class ActiveItemManager {
                 new CrookedPenny(),
                 new DullRazor(),
                 new TelepathyForDummies(),
-                new AnarchistCookbook()
+                new AnarchistCookbook(),
+                new Smelter()
         );
     }
 }

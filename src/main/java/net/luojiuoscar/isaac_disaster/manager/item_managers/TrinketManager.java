@@ -1,7 +1,7 @@
 package net.luojiuoscar.isaac_disaster.manager.item_managers;
 
 import net.luojiuoscar.isaac_disaster.item_ability.trinket.ITrinket;
-import net.luojiuoscar.isaac_disaster.item_ability.trinket.items.SwallowedPenny;
+import net.luojiuoscar.isaac_disaster.item_ability.trinket.items.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -39,7 +39,15 @@ public class TrinketManager {
     public void init() {
         // 注册所有道具实例
         registerItems(
-            new SwallowedPenny()
+                new SwallowedPenny(),
+                new AAABattery(),
+                new BrokenRemote(),
+                new Cartridge(),
+                new LuckyToe(),
+                new LuckyRock(),
+                new Cancer(),
+                new BlindRage(),
+                new Perfection()
         );
     }
 }

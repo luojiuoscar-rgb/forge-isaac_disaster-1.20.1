@@ -1,7 +1,9 @@
 package net.luojiuoscar.isaac_disaster.item.item;
 
-import net.luojiuoscar.isaac_disaster.manager.item_managers.ActiveItemManager;
+import net.luojiuoscar.isaac_disaster.capability.player.PlayerSwallowedTrinketsProvider;
 import net.luojiuoscar.isaac_disaster.manager.ColorManager;
+import net.luojiuoscar.isaac_disaster.manager.id_managers.TrinketId;
+import net.luojiuoscar.isaac_disaster.manager.item_managers.ActiveItemManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
@@ -11,8 +13,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 
-
 import java.util.List;
+
 
 public class ActiveItem extends IsaacItem {
     private final int damage_per_use;
@@ -93,7 +95,19 @@ public class ActiveItem extends IsaacItem {
      * 以便于减少消耗的道具参与
      */
     public int getDamagePerUse(Player player){
-        return this.damage_per_use;
+        int[] count = {0};
+        player.getCapability(PlayerSwallowedTrinketsProvider.PLAYER_SWALLOWED_TRINKETS).ifPresent(
+                playerSwallowedTrinkets -> {
+                    List<ItemStack> stackList =
+                            playerSwallowedTrinkets.getAllTrinketListFromId(player, TrinketId.AAA_BATTERY.getId());
+                    for (ItemStack stack : stackList){
+                        if (Trinket.isEnchanted(stack)){
+                            count[0] += 2;
+                        }else{
+                            count[0] += 1;
+                        }}});
+
+        return Math.max(this.damage_per_use - count[0] * 40, 0);
     }
     public int getOriginalDamagePerUse(){
         return this.damage_per_use;

@@ -3,11 +3,14 @@ package net.luojiuoscar.isaac_disaster.item_ability.trinket;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraftforge.eventbus.api.Event;
 
-import static com.mojang.text2speech.Narrator.LOGGER;
+import javax.annotation.Nullable;
+import java.util.List;
 
 public interface ITriggerTrinket extends ITrinket{
-    double getTriggerChance(Player player, boolean isEnchanted);
+    double getTriggerChance(Player player, List<ItemStack> stackList);
 
     default double getPlayerLuck(Player player){
         AttributeInstance instance = player.getAttribute(Attributes.LUCK);
@@ -21,11 +24,10 @@ public interface ITriggerTrinket extends ITrinket{
      * @param action 触发时执行的动作
      * @return 是否触发成功
      */
-    default boolean triggerWithChance(Player player, Runnable action, boolean isEnchanted) {
+    default boolean triggerWithChance(Player player, Runnable action, List<ItemStack> stackList) {
         if (player.level().isClientSide()) return false;
         double random = player.getRandom().nextDouble();
-        double target = getTriggerChance(player, isEnchanted);
-        LOGGER.info("TRIGGER WITH CHANCE {}/{}", random, target);
+        double target = getTriggerChance(player, stackList);
         if (random < target) {
 
             action.run();
@@ -33,4 +35,16 @@ public interface ITriggerTrinket extends ITrinket{
         }
         return false;
     }
+
+    default void onTrigger(Player player, List<ItemStack> stackList){
+        onTrigger(player, stackList, null);
+    }
+    default void onTrigger(Player player, List<ItemStack> stackList, @Nullable Event event) {
+        triggerWithChance(player, () -> {
+            handleTriggerEffect(player, stackList, event);
+        }, stackList);
+    }
+
+    default void handleTriggerEffect(Player player, List<ItemStack> stackList, Event event){};
+
 }

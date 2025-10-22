@@ -184,7 +184,8 @@ public class PillEffectManager {
                 new ImExcited(),
                 new ShotSpeedDown(),
                 new ShotSpeedUp(),
-                new ExperimentalPill()
+                new ExperimentalPill(),
+                new Gulp()
         );
     }
 }

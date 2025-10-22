@@ -1,112 +1,134 @@
 package net.luojiuoscar.isaac_disaster.capability.player;
 
+import net.luojiuoscar.isaac_disaster.helper.CuriosHelper;
+import net.luojiuoscar.isaac_disaster.item.item.Trinket;
 import net.luojiuoscar.isaac_disaster.manager.item_managers.TrinketManager;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.common.capabilities.AutoRegisterCapability;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 @AutoRegisterCapability
 public class PlayerSwallowedTrinkets {
 
-    // 记录每个饰品状态的内部类
-    public static class SwallowedTrinket {
-        public int itemId;
-        public boolean enchanted;
+    private List<ItemStack> swallowedTrinkets;
 
-        public SwallowedTrinket(int itemId, boolean enchanted) {
-            this.itemId = itemId;
-            this.enchanted = enchanted;
-        }
-
-        public CompoundTag toTag() {
-            CompoundTag tag = new CompoundTag();
-            tag.putInt("item_id", itemId);
-            tag.putBoolean("enchanted", enchanted);
-            return tag;
-        }
-
-        public static SwallowedTrinket fromTag(CompoundTag tag) {
-            return new SwallowedTrinket(
-                    tag.getInt("item_id"),
-                    tag.getBoolean("enchanted")
-            );
-        }
+    public PlayerSwallowedTrinkets(){
+        init();
     }
 
-    // 按顺序存储
-    private final List<SwallowedTrinket> swallowedTrinkets = new ArrayList<>();
+    public void init(){
+        swallowedTrinkets = new ArrayList<>();
+    }
 
-    // 添加饰品
-    public void swallow(int itemId, boolean enchanted) {
-        swallowedTrinkets.add(new SwallowedTrinket(itemId, enchanted));
+    /** 添加一个饰品 */
+    public void swallow(Player player, ItemStack stack) {
+        if (!(stack.getItem() instanceof Trinket)) return;
+        addToList(stack.copy());
+        Trinket.setSwallowing(stack, true);
+        stack.setCount(0);
+    }
+
+    public void addToList(ItemStack stack){
+        if (!(stack.getItem() instanceof Trinket)) return;
+
+        swallowedTrinkets.add(stack);
     }
 
 
-    public boolean removeAt(Player player, int index) {
-        if (index < 0 || index >= swallowedTrinkets.size()) return false;
-        SwallowedTrinket t = swallowedTrinkets.remove(index);
-        TrinketManager.getInstance().getTrinketFromId(t.itemId).onUnequipped(player);
-        return true;
-    }
-    public boolean removeById(Player player, int itemId) {
-        for (Iterator<SwallowedTrinket> it = swallowedTrinkets.iterator(); it.hasNext(); ) {
-            SwallowedTrinket t = it.next();
-            if (t.itemId == itemId) {
-                TrinketManager.getInstance().getTrinketFromId(t.itemId).onUnequipped(player);
-                it.remove();
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public List<SwallowedTrinket> getSwallowedTrinkets() {
+    public List<ItemStack> getSwallowedTrinkets() {
         return new ArrayList<>(swallowedTrinkets);
     }
 
-    public int getTotal() {
-        return swallowedTrinkets.size();
+    public List<ItemStack> getAllTrinkets(Player player) {
+        List<ItemStack> stackList = getSwallowedTrinkets();
+        stackList.addAll(CuriosHelper.getEquippedItemsInSlot(player, CuriosHelper.TRINKET));
+        return new ArrayList<>(stackList);
     }
 
-    public void clearAll(Player player){
-        for (int i = 0; i < getTotal(); i++){
+    public void removeAt(Player player, int index){
+        ItemStack stack = swallowedTrinkets.remove(index);
+        if (stack.getItem() instanceof Trinket item){
+            TrinketManager.getInstance().getTrinketFromId(item.getTrinketId()).onUnequipped(player, Trinket.isEnchanted(stack));
+        }
+    }
+
+    public void removeFromId(Player player, int id){
+        for (ItemStack stack : swallowedTrinkets){
+            if (stack.getItem() instanceof Trinket item &&
+                    item.getTrinketId() == id) {
+                TrinketManager.getInstance().getTrinketFromId(item.getTrinketId()).onUnequipped(player, Trinket.isEnchanted(stack));
+                swallowedTrinkets.remove(stack);
+                break;
+            }
+        }
+    }
+
+    public void clear(Player player) {
+        while (!swallowedTrinkets.isEmpty()){
             removeAt(player, 0);
         }
     }
 
+    public List<ItemStack> getCapTrinketListFromId(int id){
+        List<ItemStack> trinkets = new ArrayList<>();
+        for (ItemStack stack : swallowedTrinkets){
+            if (!(stack.getItem() instanceof Trinket trinket)) continue;
+            if (trinket.getTrinketId() != id) continue;
+            trinkets.add(stack.copy());
+        }
+        return trinkets;
+    }
+
+    public List<ItemStack> getAllTrinketListFromId(Player player, int id){
+        List<ItemStack> trinkets = getCapTrinketListFromId(id);
+        for (ItemStack stack : CuriosHelper.getEquippedItemsInSlot(player, CuriosHelper.TRINKET)){
+            if (stack.getItem() instanceof Trinket item && item.getTrinketId() == id){
+                trinkets.add(stack.copy());
+            }
+        }
+        return trinkets;
+    }
 
     public void saveNBTData(CompoundTag nbt) {
         ListTag list = new ListTag();
-        for (SwallowedTrinket trinket : swallowedTrinkets) {
-            list.add(trinket.toTag());
+
+        for (ItemStack stack : swallowedTrinkets) {
+            if (stack != null && !stack.isEmpty()) {
+                CompoundTag stackTag = new CompoundTag();
+                stack.save(stackTag);
+                list.add(stackTag);
+            }
         }
+
         nbt.put("SwallowedTrinkets", list);
     }
 
-
     public void loadNBTData(CompoundTag nbt) {
         swallowedTrinkets.clear();
-        if (nbt.contains("SwallowedTrinkets", Tag.TAG_LIST)) {
-            ListTag list = nbt.getList("SwallowedTrinkets", Tag.TAG_COMPOUND);
-            for (Tag t : list) {
-                if (t instanceof CompoundTag tag) {
-                    swallowedTrinkets.add(SwallowedTrinket.fromTag(tag));
+
+        if (!nbt.contains("SwallowedTrinkets", Tag.TAG_LIST)) {
+            return;
+        }
+
+        ListTag list = nbt.getList("SwallowedTrinkets", Tag.TAG_COMPOUND);
+        for (Tag tag : list) {
+            if (tag instanceof CompoundTag stackTag) {
+                ItemStack stack = ItemStack.of(stackTag);
+                if (!stack.isEmpty()) {
+                    addToList(stack); // 确保list和map同步更新
                 }
             }
         }
     }
 
-
     public void copyFrom(PlayerSwallowedTrinkets source) {
         this.swallowedTrinkets.clear();
-        this.swallowedTrinkets.addAll(source.swallowedTrinkets.stream()
-                .map(t -> new SwallowedTrinket(t.itemId, t.enchanted))
-                .toList());
+        this.swallowedTrinkets = new ArrayList<>(source.swallowedTrinkets);
     }
 }

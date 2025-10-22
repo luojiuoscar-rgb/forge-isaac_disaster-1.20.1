@@ -1,7 +1,15 @@
 package net.luojiuoscar.isaac_disaster.manager.id_managers;
 
 public enum TrinketId {
-    SWALLOWED_PENNY;
+    SWALLOWED_PENNY,
+    AAA_BATTERY,
+    BROKEN_REMOTE,
+    CARTRIDGE,
+    LUCKY_ROCK,
+    LUCKY_TOE,
+    CANCER,
+    BLIND_RAGE,
+    PERFECTION;
 
 
     private final int id;

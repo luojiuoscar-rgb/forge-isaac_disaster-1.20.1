@@ -2,11 +2,10 @@ package net.luojiuoscar.isaac_disaster.event;
 
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerPassiveItemProvider;
-import net.luojiuoscar.isaac_disaster.capability.player.PlayerSwallowedTrinkets;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerSwallowedTrinketsProvider;
 import net.luojiuoscar.isaac_disaster.effect.ModEffects;
-import net.luojiuoscar.isaac_disaster.helper.CuriosHelper;
 import net.luojiuoscar.isaac_disaster.helper.EntityHelper;
+import net.luojiuoscar.isaac_disaster.helper.LevelHelper;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.item.item.Trinket;
 import net.luojiuoscar.isaac_disaster.item_ability.passive_item.IDamageTriggerPassiveItem;
@@ -20,6 +19,9 @@ import net.luojiuoscar.isaac_disaster.manager.item_managers.PassiveItemManager;
 import net.luojiuoscar.isaac_disaster.manager.item_managers.TrinketManager;
 import net.luojiuoscar.isaac_disaster.sound.ModSounds;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.BlockParticleOption;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.damagesource.DamageSource;
@@ -27,6 +29,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -82,6 +85,7 @@ public class TriggerItemEvents {
 
         // 检测受伤者是否为玩家
         if (!(event.getEntity() instanceof ServerPlayer player)) return;
+        if (player.level().isClientSide) return;
         // 免爆
         if (source.getMsgId().contains("explosion") &&
                 (PlayerHelper.hasItem(ItemId.HOST_HAT.getId(), player) ||
@@ -102,6 +106,9 @@ public class TriggerItemEvents {
             if (damage > (amplifier + 1) * StatManager.getHolyShieldStrength()){
                 // 只有伤害足够高的时候才移除护盾
                 EntityHelper.removeAmplifier(player, ModEffects.HOLY_SHIELD.get());
+                LevelHelper.spawnParticle((ServerLevel) player.level(), new BlockParticleOption(ParticleTypes.BLOCK, Blocks.GLASS.defaultBlockState()),
+                        player.position(), 0.5, 0.5, 0.5, 0.05, 20, false, null);
+
                 // sounds
                 player.level().playSound(null, player.getX(), player.getY(), player.getZ(),
                         ModSounds.HOLY_SHIELD_BROKE.get(), SoundSource.PLAYERS, 1.0f, 1.0f);
@@ -127,20 +134,16 @@ public class TriggerItemEvents {
         // 饰品效果
         player.getCapability(PlayerSwallowedTrinketsProvider.PLAYER_SWALLOWED_TRINKETS).ifPresent(
                 playerSwallowedTrinkets -> {
-                    List<PlayerSwallowedTrinkets.SwallowedTrinket> trinkets = playerSwallowedTrinkets.getSwallowedTrinkets();
-                    for (ItemStack s : CuriosHelper.getEquippedItemsInSlot(player, CuriosHelper.TRINKET)){
-                        if (!(s.getItem() instanceof Trinket item)) return;
-                        trinkets.add(new PlayerSwallowedTrinkets.SwallowedTrinket(item.getTrinketId(), Trinket.isEnchanted(s)));
-                    }
-                    for (PlayerSwallowedTrinkets.SwallowedTrinket t : trinkets){
-                        if (!(TrinketManager.getInstance().getTrinketFromId(t.itemId) instanceof IHurtTriggerTrinket trinket)) continue;
+                    List<ItemStack> stackList = playerSwallowedTrinkets.getAllTrinkets(player);
+
+                    for (ItemStack stack : stackList) {
+                        if (!(stack.getItem() instanceof Trinket item)) continue;
+                        if (!(TrinketManager.getInstance().getTrinketFromId(item.getTrinketId()) instanceof IHurtTriggerTrinket trinket)) continue;
                         if (source.getMsgId().equals("genericKill") && trinket.isPunishType()) continue; // 惩罚类型
-                        trinket.onHurt(player, attacker, t.enchanted);
+
+                        trinket.onHurt(player, attacker, playerSwallowedTrinkets.getAllTrinketListFromId(player, item.getTrinketId()), event);
                     }
                 });
-
-
-
 
         // 常规效果（无论如何都会触发）
         // 成人套装

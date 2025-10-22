@@ -399,6 +399,14 @@ public class ModItems {
             () -> new ActiveItem(new Item.Properties(),1, ItemId.ANARCHIST_COOKBOOK.getId(),
                     600, 600, true));
     static { ACTIVE_ITEM_LIST.add(ANARCHIST_COOKBOOK); }
+
+    public static final RegistryObject<Item> SMELTER = ITEMS.register("smelter",
+            () -> new ActiveItem(new Item.Properties(),2, ItemId.SMELTER.getId(),
+                    1200, 1200));
+    static { ACTIVE_ITEM_LIST.add(SMELTER); }
+
+
+
     // active end
     // trinket
 
@@ -406,16 +414,37 @@ public class ModItems {
             () -> new Trinket(new Item.Properties(), TrinketId.SWALLOWED_PENNY.getId(), Rarity.RARE));
     static { TRINKET_LIST.add(SWALLOWED_PENNY); }
 
+    public static final RegistryObject<Item> AAA_BATTERY = ITEMS.register("aaa_battery",
+            () -> new Trinket(new Item.Properties(), TrinketId.AAA_BATTERY.getId(), Rarity.COMMON));
+    static { TRINKET_LIST.add(AAA_BATTERY); }
 
+    public static final RegistryObject<Item> BROKEN_REMOTE = ITEMS.register("broken_remote",
+            () -> new Trinket(new Item.Properties(), TrinketId.BROKEN_REMOTE.getId(), Rarity.COMMON));
+    static { TRINKET_LIST.add(BROKEN_REMOTE); }
 
+    public static final RegistryObject<Item> CARTRIDGE = ITEMS.register("cartridge",
+            () -> new Trinket(new Item.Properties(), TrinketId.CARTRIDGE.getId(), Rarity.COMMON));
+    static { TRINKET_LIST.add(CARTRIDGE); }
 
+    public static final RegistryObject<Item> LUCKY_ROCK = ITEMS.register("lucky_rock",
+            () -> new Trinket(new Item.Properties(), TrinketId.LUCKY_ROCK.getId(), Rarity.UNCOMMON));
+    static { TRINKET_LIST.add(LUCKY_ROCK); }
 
+    public static final RegistryObject<Item> LUCKY_TOE = ITEMS.register("lucky_toe",
+            () -> new Trinket(new Item.Properties(), TrinketId.LUCKY_TOE.getId(), Rarity.COMMON));
+    static { TRINKET_LIST.add(LUCKY_TOE); }
 
+    public static final RegistryObject<Item> CANCER = ITEMS.register("cancer",
+            () -> new Trinket(new Item.Properties(), TrinketId.CANCER.getId(), Rarity.EPIC));
+    static { TRINKET_LIST.add(CANCER); }
 
+    public static final RegistryObject<Item> BLIND_RAGE = ITEMS.register("blind_rage",
+            () -> new Trinket(new Item.Properties(), TrinketId.BLIND_RAGE.getId(), Rarity.EPIC));
+    static { TRINKET_LIST.add(BLIND_RAGE); }
 
-
-
-
+    public static final RegistryObject<Item> PERFECTION = ITEMS.register("perfection",
+            () -> new Trinket(new Item.Properties(), TrinketId.PERFECTION.getId(), Rarity.EPIC));
+    static { TRINKET_LIST.add(PERFECTION); }
 
 
 

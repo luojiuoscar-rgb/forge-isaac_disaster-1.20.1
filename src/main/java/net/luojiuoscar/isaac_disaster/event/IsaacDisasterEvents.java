@@ -2,12 +2,16 @@ package net.luojiuoscar.isaac_disaster.event;
 
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerPassiveItemProvider;
+import net.luojiuoscar.isaac_disaster.capability.player.PlayerSwallowedTrinketsProvider;
 import net.luojiuoscar.isaac_disaster.entity.custom.IsaacBullet;
 import net.luojiuoscar.isaac_disaster.event.custom.*;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
+import net.luojiuoscar.isaac_disaster.item.item.Trinket;
 import net.luojiuoscar.isaac_disaster.item_ability.passive_item.IDamageTriggerPassiveItem;
 import net.luojiuoscar.isaac_disaster.item_ability.passive_item.INewBulletType;
+import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.manager.id_managers.ItemId;
+import net.luojiuoscar.isaac_disaster.manager.id_managers.TrinketId;
 import net.luojiuoscar.isaac_disaster.manager.item_managers.PassiveItemManager;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
@@ -18,6 +22,7 @@ import net.minecraft.world.entity.monster.Creeper;
 import net.minecraft.world.entity.monster.EnderMan;
 import net.minecraft.world.entity.monster.Endermite;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
@@ -27,8 +32,6 @@ import net.minecraftforge.fml.common.Mod;
 
 import java.util.List;
 import java.util.Map;
-
-import static com.mojang.text2speech.Narrator.LOGGER;
 
 @Mod.EventBusSubscriber(modid = IsaacDisaster.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class IsaacDisasterEvents {
@@ -169,5 +172,28 @@ public class IsaacDisasterEvents {
             level.playSound(null, player.getX(), player.getY(), player.getZ(),
                     SoundEvents.ENDERMAN_TELEPORT, SoundSource.PLAYERS, 1.0f, 1.0f);
         }
+    }
+
+    @SubscribeEvent
+    public static void onActiveItemUse(ActiveItemUseEvent event){
+        Player player = event.getPlayer();
+
+        player.getCapability(PlayerSwallowedTrinketsProvider.PLAYER_SWALLOWED_TRINKETS).ifPresent(
+                playerSwallowedTrinkets -> {
+                    List<ItemStack> stackList = playerSwallowedTrinkets.getAllTrinkets(player);
+
+                    // 损坏的遥控器
+                    if (stackList.stream().anyMatch(stack -> stack.getItem() instanceof Trinket trinket &&
+                            trinket.getTrinketId() == TrinketId.BROKEN_REMOTE.getId())){
+                        List<ItemStack> s = playerSwallowedTrinkets.getAllTrinketListFromId(player, TrinketId.BROKEN_REMOTE.getId());
+                        if (s.stream().anyMatch(Trinket::isEnchanted)){
+                            PlayerHelper.teleportToRandomLocation(player, StatManager.getNearbyRange() * 6);
+                        }else{
+                            PlayerHelper.teleportToRandomLocation(player, StatManager.getNearbyRange() * 3);
+                        }
+                    }
+                });
+
+
     }
 }
