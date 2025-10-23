@@ -33,7 +33,11 @@ public enum PickupId {
     ACE_OF_DIAMONDS,
     ACE_OF_HEARTS,
     HOLY_CARD,
-    QUEEN_OF_HEARTS;
+    QUEEN_OF_HEARTS,
+    THE_MAGICIAN_R,
+    THE_HIGH_PRIESTESS_R,
+    THE_HIEROPHANT_R,
+    THE_WORLD;
 
 
     private final int id;

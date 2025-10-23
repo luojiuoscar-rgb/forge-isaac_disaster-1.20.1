@@ -121,7 +121,8 @@ public class  PassiveItemManager {
                 new BlackCandle(),
                 new TarotCloth(),
                 new WhoreOfBabylon(),
-                new CurseOfTheTower()
+                new CurseOfTheTower(),
+                new TheSoul()
         );
     }
 }

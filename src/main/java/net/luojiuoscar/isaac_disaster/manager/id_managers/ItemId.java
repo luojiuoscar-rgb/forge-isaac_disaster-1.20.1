@@ -89,7 +89,8 @@ public enum ItemId {
     WHORE_OF_BABYLON,
     CURSE_OF_THE_TOWER,
     ANARCHIST_COOKBOOK,
-    SMELTER;
+    SMELTER,
+    THE_SOUL;
 
 
 

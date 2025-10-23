@@ -1,4 +1,4 @@
-// 1.20.1	2025-10-22T21:51:16.0537035	Item Models: isaac_disaster
+// 1.20.1	2025-10-23T22:47:01.4034715	Item Models: isaac_disaster
 6fa4b5e3c1de57af4a79a9195d10c3360a6e9f09 assets/isaac_disaster/models/item/2_of_clubs.json
 0e968e645f25420f3af05197f66e24488c64bb69 assets/isaac_disaster/models/item/2_of_diamonds.json
 3a860205c6080388d8f5c83ef9dbb835d6333176 assets/isaac_disaster/models/item/2_of_hearts.json
@@ -139,15 +139,20 @@ a62003cbfab1943804ad779c49fcc813ca68a373 assets/isaac_disaster/models/item/the_f
 7d8a52ce085561e49904e892706a3aae4fa62e5c assets/isaac_disaster/models/item/the_gamekid.json
 3f14ce6a5fdcd4404b2b146f1cf27fa7d576c5a3 assets/isaac_disaster/models/item/the_hanged_man.json
 170fe1a6b58e9bf035b3d0f3661c558f1d583e48 assets/isaac_disaster/models/item/the_hierophant.json
+f2fff01a96aaf9fdb2544da0c4956adb4ec4b051 assets/isaac_disaster/models/item/the_hierophant_r.json
 2a7996c18b7d81bcc5bf657ce9d87a40f92fcafd assets/isaac_disaster/models/item/the_high_priestess.json
+625f391a08ac48212044f6307c80a7e711ddccf1 assets/isaac_disaster/models/item/the_high_priestess_r.json
 8dda231c5147f6c848801c8dbc38b9d10830eb8f assets/isaac_disaster/models/item/the_inner_eye.json
 cd7fea542bc2339882987e90c28bb332e4ad04a1 assets/isaac_disaster/models/item/the_lovers.json
 8c065c8b18e1c0ebdd571ea8f495a5b62b82a65f assets/isaac_disaster/models/item/the_magician.json
+a34170513558c7fad5824f8a4280428adcfe0790 assets/isaac_disaster/models/item/the_magician_r.json
 9a04dc83b369d677f67097ab0cb43b7d1ab365ed assets/isaac_disaster/models/item/the_necronmicon.json
 fb2a850953159b557b5ec2e83fd46008820d7eb4 assets/isaac_disaster/models/item/the_sad_onion.json
+cf1982073e8711be428a040799c8d8ec6484eb12 assets/isaac_disaster/models/item/the_soul.json
 b3216f2e5e304b8142edeafe53a95a3d00ee024c assets/isaac_disaster/models/item/the_sun.json
 75012f2db4261b9f2d8353c0fea045b196b82ea1 assets/isaac_disaster/models/item/the_tower.json
 b8c547417a08ff70a605480587be65e01753f4f1 assets/isaac_disaster/models/item/the_wafer.json
+890eaf6917f52d98abdce8aff805b187bc594c21 assets/isaac_disaster/models/item/the_world.json
 363124dd045a334b0408708b9d8aac181f965f2c assets/isaac_disaster/models/item/tiny_planet.json
 22064249d5d35ba8aead8fd44f5b454e43002452 assets/isaac_disaster/models/item/torn_photo.json
 836902b33e8e0907fa5cb314f74aab70691c7e79 assets/isaac_disaster/models/item/transcendence.json

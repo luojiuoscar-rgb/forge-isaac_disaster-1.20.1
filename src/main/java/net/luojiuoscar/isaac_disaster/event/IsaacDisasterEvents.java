@@ -3,6 +3,7 @@ package net.luojiuoscar.isaac_disaster.event;
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerPassiveItemProvider;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerSwallowedTrinketsProvider;
+import net.luojiuoscar.isaac_disaster.effect.ModEffects;
 import net.luojiuoscar.isaac_disaster.entity.custom.IsaacBullet;
 import net.luojiuoscar.isaac_disaster.event.custom.*;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
@@ -97,6 +98,12 @@ public class IsaacDisasterEvents {
     public static void beforeBulletHitEntity(IsaacBulletBeforeHitEvent event) {
         IsaacBullet bullet = event.getBullet();
         List<Integer> effects = bullet.getBulletHitEffects();
+
+        if (event.getHit().getEntity() instanceof LivingEntity living &&
+        living.hasEffect(ModEffects.SOUL_STATE.get())) {
+            event.setCanceled(true);
+            return;
+        }
 
         // 检测是否为玩家触发的效果
         if (!(bullet.getOwner() instanceof Player player && event.getHit().getEntity() instanceof LivingEntity living)) return;

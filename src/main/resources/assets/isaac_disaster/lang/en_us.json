@@ -87,6 +87,10 @@
   "effect.isaac_disaster.babylon": "巴比伦",
   "effect.isaac_disaster.babylon.explain.1": "伤害+%f*(等级+1.5)",
   "effect.isaac_disaster.babylon.explain.2": "移速+%f%%*(等级*0.5+1)",
+  "effect.isaac_disaster.soul_state": "灵魂状态",
+  "effect.isaac_disaster.soul_state.explain.1": "子弹和弹射物会无视你",
+  "effect.isaac_disaster.the_world": "世界！",
+  "effect.isaac_disaster.the_world.explain.1": "时间停止",
 
 
   "item.isaac_disaster.attribute.health": "生命上限+%f",
@@ -152,6 +156,7 @@
   "item.isaac_disaster.action.give_pill": "获得%d个胶囊",
   "item.isaac_disaster.action.give_money": "给予%d价值的钱币",
   "item.isaac_disaster.action.give_soul_heart": "获得%d个魂心",
+  "item.isaac_disaster.action.give_bone_heart": "获得%d个骨心",
 
 
 
@@ -308,6 +313,8 @@
   "item.isaac_disaster.anarchist_cookbook.lore.1": "在周围生成6个炸弹",
   "item.isaac_disaster.smelter": "熔炉",
   "item.isaac_disaster.smelter.lore.1": "吞噬穿戴的饰品",
+  "item.isaac_disaster.the_soul": "灵魂",
+  "item.isaac_disaster.the_soul.lore.1": "永久处于灵魂状态",
 
 
   "item.isaac_disaster.swallowed_penny": "被吞下的硬币",
@@ -380,6 +387,15 @@
   "item.isaac_disaster.holy_card.lore.1": "获得1层神圣护盾",
   "item.isaac_disaster.queen_of_hearts": "红桃Q",
   "item.isaac_disaster.queen_of_hearts.lore.1": "生成1-20个红心",
+  "item.isaac_disaster.the_magician_r": "I-魔术师？",
+  "item.isaac_disaster.the_magician_r.lore.1": "获得一段时间的灵体效果",
+  "item.isaac_disaster.the_high_priestess_r": "II-女祭司？",
+  "item.isaac_disaster.the_high_priestess_r.lore.1": "对周围生命值最低的生物造成高额伤害",
+  "item.isaac_disaster.the_high_priestess_r.lore.2": "不分敌我",
+  "item.isaac_disaster.the_high_priestess_r.synergy.lore.1": "造成2倍伤害",
+  "item.isaac_disaster.the_hierophant_r": "V-教皇？",
+  "item.isaac_disaster.the_world": "XXI-世界",
+  "item.isaac_disaster.the_world.lore.1": "获得时停效果",
 
 
 

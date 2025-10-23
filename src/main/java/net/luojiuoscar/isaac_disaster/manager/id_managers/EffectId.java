@@ -18,7 +18,9 @@ public enum EffectId {
     RAMPAGE,
     FRAGILE_HEART,
     TELEPATHY,
-    BABYLON;
+    BABYLON,
+    REPULSION_AURA,
+    THE_WORLD;
 
 
     private final int id;

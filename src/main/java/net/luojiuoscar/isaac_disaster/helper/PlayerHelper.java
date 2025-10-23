@@ -14,6 +14,7 @@ import net.luojiuoscar.isaac_disaster.manager.id_managers.ItemId;
 import net.luojiuoscar.isaac_disaster.manager.id_managers.SetId;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.RandomSource;
@@ -29,8 +30,12 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.server.ServerLifecycleHooks;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+import java.util.function.Predicate;
 
 
 public class PlayerHelper {
@@ -715,6 +720,12 @@ public class PlayerHelper {
                     }
                 });
         return count[0];
+    }
+
+    public static int countPlayer(Predicate<ServerPlayer> filter){
+        MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
+        if (server == null) return 0;
+        return (int) server.getPlayerList().getPlayers().stream().filter(filter).count();
     }
 }
 

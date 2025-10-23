@@ -72,4 +72,11 @@ public class ModEffects {
 
     public static final RegistryObject<MobEffect> BABYLON = MOB_EFFECTS.register(EffectNameManager.BABYLON,
             () -> new BabylonEffect(MobEffectCategory.BENEFICIAL, 0x990000));
+
+    public static final RegistryObject<MobEffect> SOUL_STATE = MOB_EFFECTS.register(EffectNameManager.SOUL_STATE,
+            () -> new SoulStateEffect(MobEffectCategory.BENEFICIAL, 0x3b6bcb));
+
+    public static final RegistryObject<MobEffect> THE_WORLD = MOB_EFFECTS.register(EffectNameManager.THE_WORLD,
+            () -> new TheWorldEffect(MobEffectCategory.BENEFICIAL, 0xFDFF00));
+
 }

@@ -1,15 +1,14 @@
 package net.luojiuoscar.isaac_disaster.item_ability.passive_item.items;
 
-import net.luojiuoscar.isaac_disaster.capability.player.PlayerStatModifierProvider;
 import net.luojiuoscar.isaac_disaster.item.ModItems;
 import net.luojiuoscar.isaac_disaster.item_ability.passive_item.IPassiveItem;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
+import net.luojiuoscar.isaac_disaster.manager.id_managers.EffectId;
 import net.luojiuoscar.isaac_disaster.manager.id_managers.ItemId;
+import net.luojiuoscar.isaac_disaster.manager.item_managers.EffectDescriptionManager;
 import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import org.lwjgl.system.linux.Stat;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -52,8 +51,7 @@ public class Transcendence implements IPassiveItem {
     public List<Component> getExplain(){
         List<Component> description = new ArrayList<>();
 
-        description.add(Component.translatable("effect.isaac_disaster.transcendence").append(": ")
-                .append(Component.translatable("effect.isaac_disaster.transcendence.explain.1")));
+        description.addAll(EffectDescriptionManager.getInstance().getDescriptionFromId(EffectId.TRANSCENDENCE.getId()));
 
         return description;
     }

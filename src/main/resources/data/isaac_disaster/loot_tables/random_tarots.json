@@ -15,7 +15,8 @@
         {"type": "minecraft:item", "name": "isaac_disaster:death"},
         {"type": "minecraft:item", "name": "isaac_disaster:the_devil"},
         {"type": "minecraft:item", "name": "isaac_disaster:the_tower"},
-        {"type": "minecraft:item", "name": "isaac_disaster:the_sun"}
+        {"type": "minecraft:item", "name": "isaac_disaster:the_sun"},
+        {"type": "minecraft:item", "name": "isaac_disaster:the_world"}
       ]
     }
   ]

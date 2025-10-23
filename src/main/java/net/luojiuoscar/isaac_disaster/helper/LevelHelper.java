@@ -6,6 +6,7 @@ import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.Item;
@@ -20,6 +21,7 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.registries.ForgeRegistries;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
@@ -47,39 +49,51 @@ public class LevelHelper {
         }
     }
 
-    public static List<LivingEntity> selectBySphere(Level level, double x, double y, double z, double radius){
-        List<LivingEntity> targetEntities = new ArrayList<>();
 
-        // 计算搜索范围
+    public static List<LivingEntity> selectBySphere(Level level, double x, double y, double z, double radius) {
+        List<Entity> entities = selectBySphere(level, x, y, z, radius, e -> e instanceof LivingEntity);
+        return entities.stream().map(e -> (LivingEntity) e).toList();
+    }
+    public static List<LivingEntity> selectBySquare(Level level, double x, double y, double z, double radius) {
+        List<Entity> entities = selectBySquare(level, x, y, z, radius, e -> e instanceof LivingEntity);
+        return entities.stream().map(e -> (LivingEntity) e).toList();
+    }
+    public static List<Entity> selectBySphere(Level level, double x, double y, double z, double radius,
+                                              @Nullable Predicate<Entity> filter) {
+        List<Entity> targetEntities = new ArrayList<>();
+
         AABB area = new AABB(
                 x - radius, y - radius, z - radius,
                 x + radius, y + radius, z + radius
         );
 
-        // 搜索范围内所有生物实体
-        List<LivingEntity> entities = level.getEntitiesOfClass(LivingEntity.class, area);
+        List<Entity> entities = level.getEntitiesOfClass(Entity.class, area);
 
-        // 遍历并记录
-        for (LivingEntity target : entities) {
-            // 精确球形检测
+        for (Entity target : entities) {
             double dx = target.getX() - x;
             double dy = target.getY() - y;
             double dz = target.getZ() - z;
             double distanceSq = dx * dx + dy * dy + dz * dz;
 
-            if (distanceSq > radius * radius) continue; // 不在球体内则跳过 (距离不开方)
+            if (distanceSq > radius * radius) continue;
+            if (filter != null && !filter.test(target)) continue;
             targetEntities.add(target);
         }
+
         return targetEntities;
     }
-    public static List<LivingEntity> selectBySquare(Level level, double x, double y, double z, double radius){
-        // 计算搜索范围
+    public static List<Entity> selectBySquare(Level level, double x, double y, double z, double radius,
+                                              @Nullable Predicate<Entity> filter) {
         AABB area = new AABB(
                 x - radius, y - radius, z - radius,
                 x + radius, y + radius, z + radius
         );
-        return level.getEntitiesOfClass(LivingEntity.class, area);
+
+        List<Entity> entities = level.getEntitiesOfClass(Entity.class, area);
+        if (filter == null) return entities;
+        return entities.stream().filter(filter).toList();
     }
+
     public static LivingEntity findNearestLivingEntity(Level level, double x, double y, double z, double radius, Predicate<LivingEntity> filter) {
         List<LivingEntity> entities = level.getEntitiesOfClass(LivingEntity.class,
                 new AABB(x - radius, y - radius, z - radius, x + radius, y + radius, z + radius),

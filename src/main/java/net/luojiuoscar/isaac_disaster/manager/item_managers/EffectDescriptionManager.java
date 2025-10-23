@@ -107,6 +107,16 @@ public class EffectDescriptionManager {
                         .append(TextHelper.formatAttribute("effect.isaac_disaster.babylon.explain.1", StatManager.getDamageBonus())),
                 TextHelper.formatAttribute("effect.isaac_disaster.babylon.explain.2", 1000*StatManager.getMovementSpeedBonus())
         ));
+        register(EffectId.REPULSION_AURA.getId(), List.of(
+                Component.translatable("effect.isaac_disaster.soul_state").append(": ")
+                        .append(Component.translatable("effect.isaac_disaster.soul_state.explain.1"))
+        ));
+        register(EffectId.THE_WORLD.getId(), List.of(
+                Component.translatable("effect.isaac_disaster.the_world").append(": ")
+                        .append(Component.translatable("effect.isaac_disaster.the_world.explain.1"))
+        ));
+
+
     }
 
 

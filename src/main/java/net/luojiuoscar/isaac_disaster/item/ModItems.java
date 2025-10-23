@@ -308,6 +308,12 @@ public class ModItems {
             () -> new PassiveItem(new Item.Properties(), 0, ItemId.CURSE_OF_THE_TOWER.getId()));
     static { PASSIVE_ITEM_LIST.add(CURSE_OF_THE_TOWER); }
 
+    public static final RegistryObject<Item> THE_SOUL = ITEMS.register("the_soul",
+            () -> new PassiveItem(new Item.Properties(), 2, ItemId.THE_SOUL.getId(), true));
+    static { PASSIVE_ITEM_LIST.add(THE_SOUL); }
+
+
+
     // passive end
     // Active item
     public static final RegistryObject<Item> YUM_HEART = ITEMS.register("yum_heart",
@@ -645,6 +651,30 @@ public class ModItems {
     public static final RegistryObject<Item> THE_SUN = ITEMS.register("the_sun",
             () -> new Card(new Item.Properties(), PickupId.THE_SUN.getId()));
     static { PICKUP_LIST.add(THE_SUN); }
+
+    public static final RegistryObject<Item> THE_WORLD = ITEMS.register("the_world",
+            () -> new Card(new Item.Properties(), PickupId.THE_WORLD.getId()));
+    static { PICKUP_LIST.add(THE_WORLD); }
+
+    public static final RegistryObject<Item> THE_MAGICIAN_R = ITEMS.register("the_magician_r",
+            () -> new Card(new Item.Properties(), PickupId.THE_MAGICIAN_R.getId()));
+    static { PICKUP_LIST.add(THE_MAGICIAN_R); }
+
+    public static final RegistryObject<Item> THE_HIGH_PRIESTESS_R = ITEMS.register("the_high_priestess_r",
+            () -> new Card(new Item.Properties(), PickupId.THE_HIGH_PRIESTESS_R.getId()));
+    static { PICKUP_LIST.add(THE_HIGH_PRIESTESS_R); }
+
+    public static final RegistryObject<Item> THE_HIEROPHANT_R = ITEMS.register("the_hierophant_r",
+            () -> new Card(new Item.Properties(), PickupId.THE_HIEROPHANT_R.getId()));
+    static { PICKUP_LIST.add(THE_HIEROPHANT_R); }
+
+
+
+
+
+
+
+
 
     public static final RegistryObject<Item> TWO_OF_DIAMONDS = ITEMS.register("2_of_diamonds",
             () -> new Card(new Item.Properties(), PickupId.TWO_OF_DIAMONDS.getId()));

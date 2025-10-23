@@ -1,0 +1,12 @@
+{
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {"type": "minecraft:item", "name": "isaac_disaster:the_magician_r"},
+        {"type": "minecraft:item", "name": "isaac_disaster:the_high_priestess_r"},
+        {"type": "minecraft:item", "name": "isaac_disaster:the_hierophant_r"}
+      ]
+    }
+  ]
+}

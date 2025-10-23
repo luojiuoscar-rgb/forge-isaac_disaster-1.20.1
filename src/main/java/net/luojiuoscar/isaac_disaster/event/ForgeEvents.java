@@ -38,22 +38,25 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityDimensions;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.ai.goal.WrappedGoal;
+import net.minecraft.world.entity.monster.Creeper;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.Tags;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.entity.EntityEvent;
-import net.minecraftforge.event.entity.living.LivingAttackEvent;
-import net.minecraftforge.event.entity.living.LivingHurtEvent;
-import net.minecraftforge.event.entity.living.LivingKnockBackEvent;
-import net.minecraftforge.event.entity.living.MobEffectEvent;
+import net.minecraftforge.event.entity.ProjectileImpactEvent;
+import net.minecraftforge.event.entity.living.*;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.level.BlockEvent;
@@ -507,4 +510,59 @@ public class ForgeEvents {
                     });
         }
     }
+
+
+    @SubscribeEvent
+    public static void onProjectileImpact(ProjectileImpactEvent event) {
+        Projectile projectile = event.getProjectile();
+        if (!(event.getRayTraceResult() instanceof EntityHitResult entityHit)) return;
+
+        Entity hitEntity = entityHit.getEntity();
+        if (!(hitEntity instanceof LivingEntity living)) return;
+
+        if (living.hasEffect(ModEffects.SOUL_STATE.get())) {
+            // 取消命中事件
+            event.setCanceled(true);
+        }
+    }
+
+    @SubscribeEvent
+    public static void onLivingTick(LivingEvent.LivingTickEvent event){
+        LivingEntity entity = event.getEntity();
+        if (entity.level().isClientSide()) return;
+
+        if (PlayerHelper.countPlayer(p -> p.hasEffect(ModEffects.THE_WORLD.get())) > 0){
+            boolean timeStop = theWorldEffect(entity);
+            if (timeStop) {
+                event.setCanceled(true);
+                if (entity instanceof Mob mob) {
+                    // 清空当前执行的 Goal
+                    mob.goalSelector.getRunningGoals().forEach(WrappedGoal::stop);
+                    mob.targetSelector.getRunningGoals().forEach(WrappedGoal::stop);
+                }
+                if (entity instanceof Creeper creeper){
+                    creeper.setSwellDir(0);
+                }
+                return;
+            }
+        }
+    }
+    private static boolean theWorldEffect(LivingEntity entity){
+        if (entity.isDeadOrDying() || entity.hasEffect(ModEffects.THE_WORLD.get())) return false;
+
+        if (entity.invulnerableTime > 0) {
+            entity.invulnerableTime = 0;
+            entity.hurtDuration = 0;
+            entity.hurtTime = 0;
+            entity.hurtMarked = false;
+        }
+        return true;
+    }
+
+
+
+
+
+
+
 }

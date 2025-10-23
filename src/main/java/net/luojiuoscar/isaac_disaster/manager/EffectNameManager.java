@@ -19,7 +19,8 @@ public class EffectNameManager {
     public static final String FRAGILE_HEART = "fragile_heart";
     public static final String TELEPATHY = "telepathy";
     public static final String BABYLON = "babylon";
-
+    public static final String SOUL_STATE = "soul_state";
+    public static final String THE_WORLD = "the_world";
 
 
 

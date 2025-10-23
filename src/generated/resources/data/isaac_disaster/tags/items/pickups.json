@@ -55,12 +55,17 @@
     "isaac_disaster:the_devil",
     "isaac_disaster:the_tower",
     "isaac_disaster:the_sun",
+    "isaac_disaster:the_world",
+    "isaac_disaster:the_magician_r",
+    "isaac_disaster:the_high_priestess_r",
+    "isaac_disaster:the_hierophant_r",
     "isaac_disaster:2_of_diamonds",
     "isaac_disaster:2_of_clubs",
     "isaac_disaster:2_of_hearts",
     "isaac_disaster:ace_of_clubs",
     "isaac_disaster:ace_of_diamonds",
     "isaac_disaster:ace_of_hearts",
+    "isaac_disaster:queen_of_hearts",
     "isaac_disaster:holy_card"
   ]
 }

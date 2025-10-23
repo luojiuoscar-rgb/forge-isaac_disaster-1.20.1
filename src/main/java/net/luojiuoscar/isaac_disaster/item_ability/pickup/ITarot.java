@@ -23,6 +23,10 @@ public interface ITarot extends IPickup {
 
         // 客户端效果
         ModMessages.sentToPlayer(new PickupOnUseS2CPacket(getItemId()), (ServerPlayer) player);
+
+        if (!player.isCreative()){
+            shrinkAfterUse(stack);
+        }
     }
 
     void onUseEffectStronger(Player player, ItemStack stack, InteractionHand hand);

@@ -83,7 +83,11 @@ public class PickupManager {
                 new AceOfDiamonds(),
                 new AceOfHearts(),
                 new HolyCard(),
-                new QueenOfHearts()
+                new QueenOfHearts(),
+                new TheMagicianR(),
+                new TheHighPriestessR(),
+                new TheHierophantR(),
+                new TheWorld()
         );
     }
 }
