@@ -5,7 +5,6 @@ import net.luojiuoscar.isaac_disaster.attribute.ModAttributes;
 import net.luojiuoscar.isaac_disaster.helper.ColorHelper;
 import net.luojiuoscar.isaac_disaster.manager.ColorManager;
 import net.luojiuoscar.isaac_disaster.networking.ModMessages;
-import net.luojiuoscar.isaac_disaster.networking.packet.PillQualitySyncS2CPacket;
 import net.luojiuoscar.isaac_disaster.networking.packet.PillRecordsSyncS2CPacket;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -23,12 +22,13 @@ import java.util.Map;
 @AutoRegisterCapability
 public class PlayerAbility {
     private boolean holdRightClick;
+
     private int piercing;
     private int homing;
     private int spectral;
     private int controllable;
+
     private Map<Integer, Integer> bulletFilters;
-    private int pillQuality;
     private Map<Integer, Boolean> itemFlags;
     private int extraTrinketSlotCounts;
 
@@ -62,7 +62,6 @@ public class PlayerAbility {
         this.homing = source.homing;
         this.spectral = source.spectral;
         this.controllable = source.controllable;
-        this.pillQuality = source.pillQuality;
         this.extraTrinketSlotCounts = source.extraTrinketSlotCounts;
 
         this.bulletFilters = new HashMap<>(source.bulletFilters);
@@ -75,7 +74,6 @@ public class PlayerAbility {
         nbt.putInt("homing", homing);
         nbt.putInt("spectral", spectral);
         nbt.putInt("controllable", controllable);
-        nbt.putInt("pill_quality", pillQuality);
         nbt.putInt("trinket_slot_counts", extraTrinketSlotCounts);
 
         // 滤镜
@@ -114,7 +112,6 @@ public class PlayerAbility {
         this.piercing = nbt.getInt("piercing");
         this.homing = nbt.getInt("homing");
         this.controllable = nbt.getInt("controllable");
-        this.pillQuality = nbt.getInt("pill_quality");
         this.extraTrinketSlotCounts = nbt.getInt("trinket_slot_counts");
 
         bulletFilters.clear();
@@ -204,11 +201,6 @@ public class PlayerAbility {
         AttributeInstance instance = player.getAttribute(ModAttributes.BULLET_FILTER.get());
         if (instance != null) instance.setBaseValue(ColorHelper.blendFilters(ColorManager.FILTER_BASE,
                 bulletFilters.keySet().stream().toList()));
-    }
-    public int getPillQuality(){return pillQuality;}
-    public void setPillQuality(ServerPlayer player, int quality){
-        this.pillQuality = quality;
-        ModMessages.sentToPlayer(new PillQualitySyncS2CPacket(this.pillQuality), player);
     }
     public Map<Integer, Integer> getPillRecordsMap() {
         return Collections.unmodifiableMap(pillRecords);

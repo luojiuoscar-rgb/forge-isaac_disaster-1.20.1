@@ -118,13 +118,6 @@ public class ModMessages {
                 .encoder(PillRecordsSyncS2CPacket::toBytes)
                 .consumerNetworkThread(PillRecordsSyncS2CPacket::handle)
                 .add();
-
-        // register PillQualitySyncS2CPacket
-        net.messageBuilder(PillQualitySyncS2CPacket.class, id(), NetworkDirection.PLAY_TO_CLIENT)
-                .decoder(PillQualitySyncS2CPacket::new)
-                .encoder(PillQualitySyncS2CPacket::toBytes)
-                .consumerNetworkThread(PillQualitySyncS2CPacket::handle)
-                .add();
     }
 
     public static <MSG> void sendToServer(MSG message){

@@ -4,6 +4,7 @@ import net.luojiuoscar.isaac_disaster.attribute.ModAttributes;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerAbilityProvider;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerPassiveItemProvider;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerStatModifierProvider;
+import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
@@ -21,7 +22,6 @@ import static net.luojiuoscar.isaac_disaster.Config.*;
 public class StatManager {
 
 
-    public static double getFlyTime(){return FLY_TIME.get();}
     public static double getDamageMultiplier1(){return DAMAGE_MULTIPLIER_1.get();}
     public static double getNearbyRange(){return NEARBY_RANGE.get();}
     public static double getHolyShieldStrength(){return HOLY_SHIELD_STRENGTH.get();}
@@ -224,13 +224,23 @@ public class StatManager {
     /**
      * FLY
      */
-    public static void modifyFlyTime(Player player, double ratio, boolean isPermanent){
-        if (!isPermanent) return;
-        player.getCapability(PlayerStatModifierProvider.PLAYER_STAT_MODIFIER).ifPresent(
-                playerStatModifier -> {
-                    playerStatModifier.addFlyTime(player, ratio*StatManager.getFlyTime());
-                }
-        );
+    public static double getFlyTime(){return FLY_TIME.get();}
+    public static void modifyFlyTimeAdder(Player player, double ratio, boolean isPermanent){
+        modifyAdder(player, UUIDManager.FLY_TIME,getFlyTime()*ratio,
+                null, null, isPermanent);
+        // 检测是否飞行结束
+        if (!PlayerHelper.canFly(player)){
+            player.getAbilities().mayfly = false;
+            player.getAbilities().flying = false;
+        }
+    }
+
+    /**
+     * PILL QUALITY
+     */
+    public static void modifyPillQuality(Player player, int amount, boolean isPermanent){
+        modifyAdder(player, UUIDManager.PILL_QUALITY,amount,
+                null, null, isPermanent);
     }
 
     /**

@@ -23,13 +23,13 @@ public class DeadDove implements IPassiveItem {
 
     @Override
     public void onObtain(Player player, boolean isPermanent) {
-        StatManager.modifyFlyTime(player, 1, isPermanent);
+        StatManager.modifyFlyTimeAdder(player, 1, isPermanent);
         StatManager.modifySpectral(player, 1, isPermanent);
     }
 
     @Override
     public void onRemove(Player player, boolean isPermanent) {
-        StatManager.modifyFlyTime(player, -1, isPermanent);
+        StatManager.modifyFlyTimeAdder(player, -1, isPermanent);
         StatManager.modifySpectral(player, -1, isPermanent);
     }
 

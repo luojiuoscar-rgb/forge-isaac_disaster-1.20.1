@@ -35,6 +35,8 @@ public class ModEvents {
             event.add(EntityType.PLAYER, ModAttributes.BULLET_SCALE.get());
             event.add(EntityType.PLAYER, ModAttributes.BULLET_COUNT.get());
             event.add(EntityType.PLAYER, ModAttributes.COLLISION_DAMAGE.get());
+            event.add(EntityType.PLAYER, ModAttributes.FLY_TIME.get());
+            event.add(EntityType.PLAYER, ModAttributes.PILL_QUALITY.get());
         }
     }
 }

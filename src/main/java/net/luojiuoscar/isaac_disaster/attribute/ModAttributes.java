@@ -52,4 +52,20 @@ public class ModAttributes {
     public static final RegistryObject<Attribute> COLLISION_DAMAGE = MOD_ATTRIBUTE.register("collision_damage",
             () -> new RangedAttribute("attribute.isaac_disaster.collision_damage", 0.0D, 0.0D, 1024D).setSyncable(true));
 
+    public static final RegistryObject<Attribute> PILL_QUALITY = MOD_ATTRIBUTE.register("pill_quality",
+            () -> new RangedAttribute("attribute.isaac_disaster.pill_quality", 0.0D, -1024.0D, 1024D).setSyncable(true));
+
+    public static final RegistryObject<Attribute> FLY_TIME = MOD_ATTRIBUTE.register("fly_time",
+            () -> new RangedAttribute("attribute.isaac_disaster.fly_time", 0.0D, 0.0D, 1024D).setSyncable(true));
+
+
+
+
+
+
+
+
+
+
+
 }

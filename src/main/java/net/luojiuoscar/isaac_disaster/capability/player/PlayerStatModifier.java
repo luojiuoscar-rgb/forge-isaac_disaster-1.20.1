@@ -2,6 +2,7 @@ package net.luojiuoscar.isaac_disaster.capability.player;
 
 
 import net.luojiuoscar.isaac_disaster.effect.ModEffects;
+import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.manager.UUIDManager;
 import net.luojiuoscar.isaac_disaster.networking.ModMessages;
@@ -22,8 +23,6 @@ import java.util.UUID;
 @AutoRegisterCapability
 public class PlayerStatModifier {
     private Map<UUID, Double> playerModifiers;
-
-    private double flyTime;
     private double flyTimeCurrent;
 
     private int doubleShotDelay;
@@ -36,7 +35,6 @@ public class PlayerStatModifier {
     public void init(){
         playerModifiers = new HashMap<>();
 
-        flyTime = 0;
         flyTimeCurrent = 0;
         doubleShotDelay = 0;
     }
@@ -50,9 +48,6 @@ public class PlayerStatModifier {
         return playerModifiers.getOrDefault(uuid, 0.0);
     }
 
-    public double getFlyTime(){
-        return flyTime;
-    }
     public double getFlyTimeCurrent(){
         return flyTimeCurrent;
     }
@@ -69,25 +64,10 @@ public class PlayerStatModifier {
         playerModifiers.remove(uuid);
     }
 
-    public void setFlyTime(Player player, double amount){
-        flyTime = amount;
-        if (flyTime > 0){
-            player.getAbilities().mayfly = true;
-            player.onUpdateAbilities();
-        }else{
-            player.getAbilities().flying = false;
-            player.getAbilities().mayfly = false;
-            player.onUpdateAbilities();
-        }
 
-    }
-    public void addFlyTime(Player player, double amount){
-        setFlyTime(player, flyTime + amount);
-        if (flyTime > 0){
-            addCurrentFlyTime((ServerPlayer) player, (int) -amount);
-        }
-    }
     public void addCurrentFlyTime(ServerPlayer player, int amount){
+        double flyTime = PlayerHelper.getFly(player);
+
         double pre = flyTimeCurrent % (flyTime / 20);
 
         flyTimeCurrent = Math.max(0, flyTimeCurrent + amount);
@@ -151,14 +131,11 @@ public class PlayerStatModifier {
      */
     public void copyFrom(PlayerStatModifier source, Player player) {
         refreshAllFromSource(player, source);
-        setFlyTime(player, source.flyTime);
-        this.flyTime = 0;
         this.doubleShotDelay = 0;
     }
 
     public void saveNBTData(CompoundTag nbt) {
 
-        nbt.putDouble("fly_time", flyTime);
         nbt.putInt("double_shot_delay", doubleShotDelay);
 
         // 保存 playerModifiers
@@ -173,7 +150,6 @@ public class PlayerStatModifier {
     }
     public void loadNBTData(CompoundTag nbt) {
 
-        this.flyTime = nbt.getDouble("fly_time");
         this.flyTimeCurrent = 0;
         this.doubleShotDelay = nbt.getInt("double_shot_delay");
 

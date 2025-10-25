@@ -99,7 +99,15 @@ public class UUIDManager {
     static {
         ATTRIBUTE_FROM_UUID.put(BULLET_COUNT_BONUS, ModAttributes.BULLET_COUNT.get());}
 
+    public static final UUID PILL_QUALITY =
+            UUID.nameUUIDFromBytes(("isaac_disaster:pill_quality").getBytes());
+    static {
+        ATTRIBUTE_FROM_UUID.put(PILL_QUALITY, ModAttributes.PILL_QUALITY.get());}
 
+    public static final UUID FLY_TIME =
+            UUID.nameUUIDFromBytes(("isaac_disaster:fly_time").getBytes());
+    static {
+        ATTRIBUTE_FROM_UUID.put(FLY_TIME, ModAttributes.FLY_TIME.get());}
 
 
 

@@ -294,7 +294,6 @@ public class ForgeEvents {
             syncSetDataToClient(serverPlayer);
             // 胶囊相关
             syncPillDataToClient(serverPlayer);
-            syncPillQualityToClient(serverPlayer);
             // 从服务端Capability获取数据
             syncItemDataToClient(ItemId.CAR_BATTERY.getId(), serverPlayer);
             syncItemDataToClient(ItemId.BLOOD_OF_THE_MARTYR.getId(), serverPlayer);
@@ -323,14 +322,6 @@ public class ForgeEvents {
                     for (Map.Entry<Integer, Integer> entry : map.entrySet()) {
                         ModMessages.sentToPlayer(new PillRecordsSyncS2CPacket(entry.getKey(), entry.getValue()), player);
                     }
-                }
-        );
-    }
-    public static void syncPillQualityToClient(ServerPlayer player){
-        player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY).ifPresent(
-                playerAbility -> {
-                    int quality = playerAbility.getPillQuality();
-                    ModMessages.sentToPlayer(new PillQualitySyncS2CPacket(quality), player);
                 }
         );
     }

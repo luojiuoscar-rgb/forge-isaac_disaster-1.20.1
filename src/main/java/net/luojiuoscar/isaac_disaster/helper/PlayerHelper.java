@@ -236,23 +236,15 @@ public class PlayerHelper {
     }
 
 
-    public static boolean canFly(ServerPlayer player){
-        double[] count = {0};
-        player.getCapability(PlayerStatModifierProvider.PLAYER_STAT_MODIFIER)
-                .ifPresent(provider -> count[0] = provider.getFlyTime());
-        return count[0] > 0;
+    public static double getFly(Player player){
+        AttributeInstance instance = player.getAttribute(ModAttributes.FLY_TIME.get());
+        if (instance == null) return 0;
+        return instance.getValue();
     }
-    public static boolean isFlyLimit(ServerPlayer player){
-        return getFlyPercentage(player) >= 1;
-    }
-    public static double getFlyPercentage(ServerPlayer player){
-        double[] count = {0, 0};
-        player.getCapability(PlayerStatModifierProvider.PLAYER_STAT_MODIFIER)
-                .ifPresent(provider -> count[0] = provider.getFlyTime());
-        player.getCapability(PlayerStatModifierProvider.PLAYER_STAT_MODIFIER)
-                .ifPresent(provider -> count[1] = provider.getFlyTimeCurrent());
-
-        return count[1] / count[0];
+    public static boolean canFly(Player player){
+        AttributeInstance instance = player.getAttribute(ModAttributes.FLY_TIME.get());
+        if (instance == null) return false;
+        return instance.getValue() > 0;
     }
 
 
@@ -631,18 +623,9 @@ public class PlayerHelper {
         return 0.0f;
     }
     public static int getPillQuality(Player player){
-        int[] count = {0};
-        player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY).ifPresent(
-                PlayerAbility -> count[0] = (PlayerAbility.getPillQuality())
-        );
-        return count[0];
-    }
-    public static void modifyPillQuality(Player player, int amount){
-        if (!player.level().isClientSide && player instanceof ServerPlayer serverPlayer){
-            serverPlayer.getCapability(PlayerAbilityProvider.PLAYER_ABILITY).ifPresent(
-                    playerAbility -> playerAbility.setPillQuality(serverPlayer ,playerAbility.getPillQuality() + amount)
-            );
-        }
+        AttributeInstance instance = player.getAttribute(ModAttributes.PILL_QUALITY.get());
+        if (instance == null) return 0;
+        return (int) instance.getValue();
     }
 
     public static void resetAllAttributes(ServerPlayer player){

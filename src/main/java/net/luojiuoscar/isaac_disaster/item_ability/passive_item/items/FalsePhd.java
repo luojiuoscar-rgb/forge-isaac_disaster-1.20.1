@@ -6,6 +6,7 @@ import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.item.ModItems;
 import net.luojiuoscar.isaac_disaster.item_ability.passive_item.IPassiveItem;
 import net.luojiuoscar.isaac_disaster.manager.LootTableNameManager;
+import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.manager.id_managers.ItemId;
 import net.luojiuoscar.isaac_disaster.networking.ModMessages;
 import net.luojiuoscar.isaac_disaster.networking.packet.PassiveItemSyncS2CPacket;
@@ -37,7 +38,7 @@ public class FalsePhd implements IPassiveItem {
             int count = PlayerHelper.getItemCount(ItemId.FALSE_PHD.getId(), serverPlayer);
             ModMessages.sentToPlayer(new PassiveItemSyncS2CPacket(ItemId.FALSE_PHD.getId(), count), serverPlayer);
         }
-        PlayerHelper.modifyPillQuality(player, -1);
+        StatManager.modifyPillQuality(player, -1, isPermanent);
     }
 
     @Override
@@ -46,7 +47,7 @@ public class FalsePhd implements IPassiveItem {
             int count = PlayerHelper.getItemCount(ItemId.FALSE_PHD.getId(), serverPlayer);
             ModMessages.sentToPlayer(new PassiveItemSyncS2CPacket(ItemId.FALSE_PHD.getId(), count), serverPlayer);
         }
-        PlayerHelper.modifyPillQuality(player, 1);
+        StatManager.modifyPillQuality(player, 1, isPermanent);
     }
 
     @Override

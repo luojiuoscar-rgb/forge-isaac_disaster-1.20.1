@@ -1,8 +1,6 @@
 package net.luojiuoscar.isaac_disaster.commands;
 
-import com.google.common.util.concurrent.AtomicDouble;
 import com.mojang.brigadier.CommandDispatcher;
-import net.luojiuoscar.isaac_disaster.capability.player.PlayerPassiveItemProvider;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerStatModifierProvider;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.minecraft.commands.CommandSourceStack;
@@ -17,18 +15,16 @@ public class GetFlyCommand {
                 .executes(context -> {
                     // 获取命令执行者（玩家）
                     ServerPlayer player = context.getSource().getPlayerOrException();
+
                     // 移除玩家的全部道具
-                    AtomicDouble flyTime = new AtomicDouble();
-                    player.getCapability(PlayerStatModifierProvider.PLAYER_STAT_MODIFIER).ifPresent(
-                            playerStatModifier -> flyTime.set(playerStatModifier.getFlyTime())
-                    );
+                    double flyTime = PlayerHelper.getFly(player);
                     player.sendSystemMessage(Component.literal("FlyTime: " + flyTime));
 
-                    AtomicDouble currentFlyTime = new AtomicDouble();
+                    double[] currentFlyTime = {0};
                     player.getCapability(PlayerStatModifierProvider.PLAYER_STAT_MODIFIER).ifPresent(
-                            playerStatModifier -> currentFlyTime.set(playerStatModifier.getFlyTimeCurrent())
+                            playerStatModifier -> currentFlyTime[0] = playerStatModifier.getFlyTimeCurrent()
                     );
-                    player.sendSystemMessage(Component.literal("CurrentFlyTime: " + currentFlyTime));
+                    player.sendSystemMessage(Component.literal("CurrentFlyTime: " + currentFlyTime[0]));
 
                     return 1;
                 })));
