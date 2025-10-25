@@ -9,7 +9,7 @@ import net.luojiuoscar.isaac_disaster.event.custom.*;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.item.item.Trinket;
 import net.luojiuoscar.isaac_disaster.item_ability.passive_item.IDamageTriggerPassiveItem;
-import net.luojiuoscar.isaac_disaster.item_ability.passive_item.INewBulletType;
+import net.luojiuoscar.isaac_disaster.item_ability.passive_item.INewBulletTypePassiveItem;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.manager.id_managers.ItemId;
 import net.luojiuoscar.isaac_disaster.manager.id_managers.TrinketId;
@@ -44,11 +44,11 @@ public class IsaacDisasterEvents {
 
         // 按概率、顺序修改可能的子弹类型
         player.getCapability(PlayerPassiveItemProvider.PLAYER_PASSIVE_ITEM).ifPresent(passiveItems -> {
-            Map<Integer, Integer> bulletTypeMap = passiveItems.getHasNewBulletTypeMap();
+            Map<Integer, Integer> bulletTypeMap = passiveItems.getAllNewBulletTypeItems(player);
             for (int itemId : bulletTypeMap.keySet())
             {
                 if (bulletTypeMap.get(itemId) > 0){
-                    INewBulletType item = (INewBulletType) PassiveItemManager.getInstance().getItemFromId(itemId);
+                    INewBulletTypePassiveItem item = (INewBulletTypePassiveItem) PassiveItemManager.getInstance().getItemFromId(itemId);
                     item.onShootEffect(player, event.getBullet());
                 }
             }

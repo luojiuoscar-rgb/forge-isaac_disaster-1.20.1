@@ -20,28 +20,28 @@ public class BlueCap implements IPassiveItem {
     }
 
     @Override
-    public void onObtain(Player player) {
-
-    }
-
-    @Override
-    public void onDirectObtain(Player player) {
-        StatManager.modifyMaxHealth(player, 1);
+    public void onFirstObtain(Player player, boolean isPermanent) {
         StatManager.healHealth(player, 1);
-        StatManager.modifyTearsAdder(player, 1);
-        StatManager.modifyAttackSpeedAdder(player, -0.1);
-        StatManager.modifyBlockBreakingSpeedAdder(player, 1);
-        StatManager.modifyBulletSpeedAdder(player, -0.8);
     }
 
     @Override
-    public void onRemove(Player player) {
-        StatManager.modifyMaxHealth(player, -1);
-        StatManager.healHealth(player, -1);
-        StatManager.modifyTearsAdder(player, -1);
-        StatManager.modifyAttackSpeedAdder(player, 0.1);
-        StatManager.modifyBlockBreakingSpeedAdder(player, -1);
-        StatManager.modifyBulletSpeedAdder(player, 0.8);
+    public void onObtain(Player player, boolean isPermanent) {
+        StatManager.modifyMaxHealth(player, 1, isPermanent);
+        StatManager.modifyTearsAdder(player, 1, isPermanent);
+        StatManager.modifyAttackSpeedAdder(player, -0.1, isPermanent);
+        StatManager.modifyBlockBreakingSpeedAdder(player, 1, isPermanent);
+        StatManager.modifyBulletSpeedAdder(player, -0.8, isPermanent);
+        StatManager.modifySetWithId(player, SetId.FUN_GUY.getId(), 1, isPermanent);
+    }
+
+    @Override
+    public void onRemove(Player player, boolean isPermanent) {
+        StatManager.modifyMaxHealth(player, -1, isPermanent);
+        StatManager.modifyTearsAdder(player, -1, isPermanent);
+        StatManager.modifyAttackSpeedAdder(player, 0.1, isPermanent);
+        StatManager.modifyBlockBreakingSpeedAdder(player, -1, isPermanent);
+        StatManager.modifyBulletSpeedAdder(player, 0.8, isPermanent);
+        StatManager.modifySetWithId(player, SetId.FUN_GUY.getId(), -1, isPermanent);
     }
 
     @Override
@@ -58,8 +58,6 @@ public class BlueCap implements IPassiveItem {
                 TextHelper.formatAttribute("item.isaac_disaster.attribute.block_breaking_speed", StatManager.getBlockBreakingSpeed()),
                 TextHelper.formatAttribute("item.isaac_disaster.attribute.attack_speed_remove",0.1*StatManager.getAttackSpeedBonus()),
                 TextHelper.formatAttribute("item.isaac_disaster.attribute.bullet_speed_remove", StatManager.getBulletSpeedBonus())
-
-
         );
     }
 

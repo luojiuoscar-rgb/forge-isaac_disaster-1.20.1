@@ -3,7 +3,6 @@ package net.luojiuoscar.isaac_disaster.item_ability.passive_item.items;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.item.ModItems;
 import net.luojiuoscar.isaac_disaster.item_ability.passive_item.IHurtTriggerPassiveItem;
-import net.luojiuoscar.isaac_disaster.item_ability.passive_item.IPassiveItem;
 import net.luojiuoscar.isaac_disaster.manager.id_managers.ItemId;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.RandomSource;
@@ -12,7 +11,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
 import java.util.List;
-import java.util.Random;
 
 public class PiggyBank implements IHurtTriggerPassiveItem {
 
@@ -22,16 +20,16 @@ public class PiggyBank implements IHurtTriggerPassiveItem {
     }
 
     @Override
-    public void onObtain(Player player) {
+    public void onFirstObtain(Player player, boolean isPermanent) {
         PlayerHelper.giveMoney(player, 3);
     }
 
     @Override
-    public void onDirectObtain(Player player) {
+    public void onObtain(Player player, boolean isPermanent) {
     }
 
     @Override
-    public void onRemove(Player player) {
+    public void onRemove(Player player, boolean isPermanent) {
     }
 
     @Override

@@ -121,23 +121,24 @@ public class PlayerStatModifier {
             AttributeInstance instance = player.getAttribute(UUIDManager.ATTRIBUTE_FROM_UUID.get(uuid));
             if (instance == null) continue;
 
+            // 重新设置uuid 并且通过这个设置函数更新玩家的attribute记录
             if (!UUIDManager.MULTIPLIER_UUID.contains(uuid)){
-                StatManager.setAdder(
+                StatManager.setModifierAdder(
                         player,
                         instance,
                         entry.getValue(),
                         uuid,
-                        ""
-                );
+                        "",
+                        true);
             }
             else{
-                StatManager.setMultiplier(
+                StatManager.setModifierMultiplier(
                         player,
                         instance,
                         entry.getValue(),
                         uuid,
-                        ""
-                );
+                        "",
+                        true);
             }
         }
     }

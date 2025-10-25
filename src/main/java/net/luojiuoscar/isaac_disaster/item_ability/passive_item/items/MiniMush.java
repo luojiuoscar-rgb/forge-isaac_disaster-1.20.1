@@ -20,24 +20,26 @@ public class MiniMush implements IPassiveItem {
     }
 
     @Override
-    public void onObtain(Player player) {
+    public void onFirstObtain(Player player, boolean isPermanent) {
 
     }
 
     @Override
-    public void onDirectObtain(Player player) {
-        StatManager.modifyScaleAdder(player, -2);
-        StatManager.modifyMovementSpeedAdder(player, 1.5);
-        StatManager.modifyRangeAdder(player, 1);
-        StatManager.modifyBlockReachAdder(player, 1);
+    public void onObtain(Player player, boolean isPermanent) {
+        StatManager.modifyScaleAdder(player, -2, isPermanent);
+        StatManager.modifyMovementSpeedAdder(player, 1.5, isPermanent);
+        StatManager.modifyRangeAdder(player, 1, isPermanent);
+        StatManager.modifyBlockReachAdder(player, 1, isPermanent);
+        StatManager.modifySetWithId(player, SetId.FUN_GUY.getId(), 1, isPermanent);
     }
 
     @Override
-    public void onRemove(Player player) {
-        StatManager.modifyScaleAdder(player, 2);
-        StatManager.modifyMovementSpeedAdder(player, -1.5);
-        StatManager.modifyRangeAdder(player, -1);
-        StatManager.modifyBlockReachAdder(player, -1);
+    public void onRemove(Player player, boolean isPermanent) {
+        StatManager.modifyScaleAdder(player, 2, isPermanent);
+        StatManager.modifyMovementSpeedAdder(player, -1.5, isPermanent);
+        StatManager.modifyRangeAdder(player, -1, isPermanent);
+        StatManager.modifyBlockReachAdder(player, -1, isPermanent);
+        StatManager.modifySetWithId(player, SetId.FUN_GUY.getId(), -1, isPermanent);
     }
 
     @Override

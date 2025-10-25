@@ -1,5 +1,6 @@
 package net.luojiuoscar.isaac_disaster.event;
 
+import net.luojiuoscar.isaac_disaster.Config;
 import net.luojiuoscar.isaac_disaster.attribute.ModAttributes;
 import net.luojiuoscar.isaac_disaster.capability.entity.EntityEffectProvider;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerAbilityProvider;
@@ -180,9 +181,10 @@ public class ForgeEvents {
         if(stack.getItem() instanceof ActiveItem item){
             RCActiveItem(player, item, stack, hand);
         }
-        else if(stack.getItem() instanceof PassiveItem item){
+        else if(stack.getItem() instanceof PassiveItem){
+            if (!Config.USABLE_PASSIVE_ITEM.get()) return; // 从config获取是否可以右键使用的数据
             player.getCapability(PlayerPassiveItemProvider.PLAYER_PASSIVE_ITEM).ifPresent(
-                    playerPassiveItem -> {playerPassiveItem.addItem((ServerPlayer) player, item.getItemId(), hand);
+                    playerPassiveItem -> {playerPassiveItem.addItem((ServerPlayer) player, stack, hand);
                     });
         }
         else if(stack.getItem() instanceof Pickup item && item instanceof ICanUse){
@@ -335,7 +337,7 @@ public class ForgeEvents {
     public static void syncItemDataToClient(int ItemId, ServerPlayer player) {
         AtomicInteger count = new AtomicInteger();
         player.getCapability(PlayerPassiveItemProvider.PLAYER_PASSIVE_ITEM).ifPresent(
-                playerPassiveItem -> count.set(playerPassiveItem.getItemCount(ItemId))
+                playerPassiveItem -> count.set(playerPassiveItem.getItemCountFromAll(player, ItemId))
         );
         ModMessages.sentToPlayer(new PassiveItemSyncS2CPacket(ItemId, count.get()), player);
     }

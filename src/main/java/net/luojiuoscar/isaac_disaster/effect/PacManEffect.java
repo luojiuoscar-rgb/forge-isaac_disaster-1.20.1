@@ -4,8 +4,6 @@ package net.luojiuoscar.isaac_disaster.effect;
 import net.luojiuoscar.isaac_disaster.event.custom.PacManEatEvent;
 import net.luojiuoscar.isaac_disaster.helper.LevelHelper;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
-import net.luojiuoscar.isaac_disaster.sound.ModSounds;
-import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.effect.MobEffect;
@@ -20,8 +18,6 @@ import net.minecraftforge.common.MinecraftForge;
 
 import java.util.List;
 
-import static com.mojang.text2speech.Narrator.LOGGER;
-
 public class PacManEffect extends MobEffect {
     protected PacManEffect(MobEffectCategory pCategory, int pColor) {
         super(pCategory, pColor);
@@ -29,14 +25,16 @@ public class PacManEffect extends MobEffect {
 
     @Override
     public java.util.List<ItemStack> getCurativeItems() {
-        // 不可清除
         return java.util.Collections.emptyList();
     }
 
 
     @Override
     public void applyEffectTick(LivingEntity entity, int amplifier) {
-        if (!(entity instanceof Player player)) return;
+        if (!(entity instanceof Player player)) {
+            entity.removeEffect(this);
+            return;
+        }
 
         List<LivingEntity> entities = LevelHelper.selectBySphere(
                 player.level(), player.getX(), player.getY(), player.getZ(), StatManager.getNearbyRange() * 0.8f);

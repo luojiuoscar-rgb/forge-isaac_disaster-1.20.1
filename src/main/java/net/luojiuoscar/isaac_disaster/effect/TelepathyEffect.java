@@ -30,11 +30,11 @@ public class TelepathyEffect extends MobEffect {
     public void addAttributeModifiers(@NotNull LivingEntity entity, @NotNull AttributeMap attributes, int amplifier) {
         super.addAttributeModifiers(entity, attributes, amplifier);
         if (!(entity instanceof ServerPlayer player)) {
-            entity.removeEffect(ModEffects.TELEPATHY.get());
+            entity.removeEffect(this);
             return;
         }
 
-        StatManager.modifyHoming(player, 1);
+        StatManager.modifyHoming(player, 1, true);
         player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY).ifPresent(
                 playerAbility -> playerAbility.addFilter(ColorManager.SPOON_BENDER_FILTER, player)
         );
@@ -60,7 +60,7 @@ public class TelepathyEffect extends MobEffect {
         super.removeAttributeModifiers(entity, attributes, amplifier);
         if (!(entity instanceof ServerPlayer player)) return;
 
-        StatManager.modifyHoming(player, -1);
+        StatManager.modifyHoming(player, -1, true);
         player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY).ifPresent(
                 playerAbility -> playerAbility.removeFilter(ColorManager.SPOON_BENDER_FILTER, player)
         );

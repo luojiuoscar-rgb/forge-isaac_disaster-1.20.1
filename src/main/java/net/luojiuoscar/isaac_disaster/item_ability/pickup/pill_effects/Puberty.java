@@ -5,7 +5,6 @@ import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.manager.id_managers.PillEffectId;
 import net.luojiuoscar.isaac_disaster.manager.id_managers.SetId;
 import net.luojiuoscar.isaac_disaster.sound.ModSounds;
-import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 
 
@@ -17,12 +16,12 @@ public class Puberty implements IPillEffect {
 
     @Override
     public void onUseEffect(Player player) {
-        StatManager.modifySetWithId(player, SetId.ADULT.getId(), 1);
+        StatManager.modifySetWithId(player, SetId.ADULT.getId(), 1, true);
     }
 
     @Override
     public void onUseEffectH(Player player) {
-        StatManager.modifySetWithId(player, SetId.ADULT.getId(), 2);
+        StatManager.modifySetWithId(player, SetId.ADULT.getId(), 2, true);
     }
 
     @Override

@@ -20,15 +20,15 @@ public class Habit implements IHurtTriggerPassiveItem {
     }
 
     @Override
-    public void onObtain(Player player) {
+    public void onFirstObtain(Player player, boolean isPermanent) {
     }
 
     @Override
-    public void onDirectObtain(Player player) {
+    public void onObtain(Player player, boolean isPermanent) {
     }
 
     @Override
-    public void onRemove(Player player) {
+    public void onRemove(Player player, boolean isPermanent) {
     }
 
     @Override

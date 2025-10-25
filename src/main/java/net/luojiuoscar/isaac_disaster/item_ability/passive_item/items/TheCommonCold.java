@@ -4,7 +4,7 @@ import net.luojiuoscar.isaac_disaster.effect.ModEffects;
 import net.luojiuoscar.isaac_disaster.entity.custom.IsaacBullet;
 import net.luojiuoscar.isaac_disaster.item.ModItems;
 import net.luojiuoscar.isaac_disaster.item_ability.passive_item.IDamageTriggerPassiveItem;
-import net.luojiuoscar.isaac_disaster.item_ability.passive_item.INewBulletType;
+import net.luojiuoscar.isaac_disaster.item_ability.passive_item.INewBulletTypePassiveItem;
 import net.luojiuoscar.isaac_disaster.manager.ColorManager;
 import net.luojiuoscar.isaac_disaster.manager.id_managers.EffectId;
 import net.luojiuoscar.isaac_disaster.manager.id_managers.ItemId;
@@ -18,7 +18,7 @@ import net.minecraft.world.item.ItemStack;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TheCommonCold implements IDamageTriggerPassiveItem, INewBulletType {
+public class TheCommonCold implements IDamageTriggerPassiveItem, INewBulletTypePassiveItem {
     @Override
     public int getItemId() {
         return ItemId.THE_COMMON_COLD.getId();
@@ -47,17 +47,17 @@ public class TheCommonCold implements IDamageTriggerPassiveItem, INewBulletType 
 
 
     @Override
-    public void onObtain(Player player) {
+    public void onFirstObtain(Player player, boolean isPermanent) {
 
     }
 
     @Override
-    public void onDirectObtain(Player player) {
+    public void onObtain(Player player, boolean isPermanent) {
 
     }
 
     @Override
-    public void onRemove(Player player) {
+    public void onRemove(Player player, boolean isPermanent) {
 
     }
 

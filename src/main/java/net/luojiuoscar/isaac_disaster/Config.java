@@ -67,6 +67,7 @@ public class Config
     public static ForgeConfigSpec.DoubleValue NEARBY_RANGE;
     public static ForgeConfigSpec.DoubleValue HOLY_SHIELD_STRENGTH;
     public static ForgeConfigSpec.DoubleValue MONEY_IS_POWER_STRENGTH;
+    public static ForgeConfigSpec.BooleanValue USABLE_PASSIVE_ITEM;
 
     // 钱币
     public static ForgeConfigSpec.ConfigValue<String> COIN_TIER_1_ID;
@@ -170,11 +171,17 @@ public class Config
         BUILDER.pop();
     }
     static {
-        BUILDER.push("Other");
+        BUILDER.push("Item relevant");
         // 可携带的道具总数  默认999
         PASSIVE_ITEM_LIMIT = BUILDER
-                .comment("How many passive items can a player carry")
+                .comment("How many passive items a player can carry." +
+                        "If item is not usable then this option is invalid")
                 .defineInRange("passive_item_limit", 999, 1, 99999);
+
+        USABLE_PASSIVE_ITEM = BUILDER
+                .comment("If the item can be added to player's backpack with a rightClick. " +
+                        "If you want to enable passive item's curios slot ONLY, then you should disable this option.")
+                .define("usable_passive_item", true);
 
         // 伤害倍率提升1  默认0.5
         DAMAGE_MULTIPLIER_1 = BUILDER
@@ -184,18 +191,21 @@ public class Config
 
         // 周围（定义周围的范围）  默认12
         NEARBY_RANGE = BUILDER
-                .comment("Determines how many blocks is \"nearby\"")
+                .comment("Defines the range of NEARBY." +
+                        "Affects most items with a description of NEARBY")
                 .defineInRange("nearby_range", 12.0, 0.0, 99999.0);
 
         // 神圣护盾强度  默认3
         HOLY_SHIELD_STRENGTH = BUILDER
-                .comment("Amount * (Amplifier + 1) = The damage of the holy Shield immunity ")
+                .comment("Amount * (Amplifier + 1);" +
+                        "Damages that holy shield effect can immune.")
                 .defineInRange("holy_shield_strength", 3.0, 0.0, 99999.0);
 
         // 钱力强度  默认0.008
         MONEY_IS_POWER_STRENGTH = BUILDER
-                .comment("Damage increment of each coin")
+                .comment("Damage increment of money is power. (each coin)")
                 .defineInRange("money_is_power_strength", 0.008, 0.0, 99999.0);
+
 
         BUILDER.pop();
     }

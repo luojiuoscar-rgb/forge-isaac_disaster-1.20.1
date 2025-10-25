@@ -18,22 +18,18 @@ public class WoodenSpoon implements IPassiveItem {
     }
 
     @Override
-    public void onObtain(Player player) {
+    public void onFirstObtain(Player player, boolean isPermanent) {
 
     }
 
     @Override
-    public void onDirectObtain(Player player) {
-        if(!player.level().isClientSide()){
-            StatManager.modifyMovementSpeedAdder(player, 1.5);
-        }
+    public void onObtain(Player player, boolean isPermanent) {
+        StatManager.modifyMovementSpeedAdder(player, 1.5, isPermanent);
     }
 
     @Override
-    public void onRemove(Player player) {
-        if(!player.level().isClientSide()){
-            StatManager.modifyMovementSpeedAdder(player, -1.5);
-        }
+    public void onRemove(Player player, boolean isPermanent) {
+        StatManager.modifyMovementSpeedAdder(player, -1.5, isPermanent);
     }
 
     @Override
@@ -44,7 +40,6 @@ public class WoodenSpoon implements IPassiveItem {
     @Override
     public List<Component> getDescription() {
         return List.of(
-                //移动速度以百分比显示
                 TextHelper.formatAttribute("item.isaac_disaster.attribute.movement_speed", 1.5*StatManager.getMovementSpeedBonus()*1000)
         );
     }

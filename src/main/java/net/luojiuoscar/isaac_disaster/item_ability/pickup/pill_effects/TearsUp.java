@@ -9,7 +9,6 @@ import net.luojiuoscar.isaac_disaster.manager.item_managers.PillEffectManager;
 import net.luojiuoscar.isaac_disaster.networking.ModMessages;
 import net.luojiuoscar.isaac_disaster.networking.packet.PillOnUseS2CPacket;
 import net.luojiuoscar.isaac_disaster.sound.ModSounds;
-import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 
@@ -50,12 +49,12 @@ public class TearsUp implements IPillEffect {
 
     @Override
     public void onUseEffect(Player player) {
-        StatManager.modifyTearsAdder(player, 0.5);
+        StatManager.modifyTearsAdder(player, 0.5, true);
     }
 
     @Override
     public void onUseEffectH(Player player) {
-        StatManager.modifyTearsAdder(player, 1);
+        StatManager.modifyTearsAdder(player, 1, true);
     }
 
     @Override

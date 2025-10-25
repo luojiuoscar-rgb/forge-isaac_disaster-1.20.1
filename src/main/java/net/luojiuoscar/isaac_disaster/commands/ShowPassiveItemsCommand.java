@@ -2,16 +2,18 @@ package net.luojiuoscar.isaac_disaster.commands;
 
 import com.mojang.brigadier.CommandDispatcher;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerPassiveItemProvider;
-import net.luojiuoscar.isaac_disaster.manager.item_managers.PassiveItemManager;
+import net.luojiuoscar.isaac_disaster.item.item.PassiveItem;
 import net.luojiuoscar.isaac_disaster.item_ability.passive_item.IPassiveItem;
+import net.luojiuoscar.isaac_disaster.manager.item_managers.PassiveItemManager;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 
-import java.util.ArrayList;
+import java.util.List;
 
 
 public class ShowPassiveItemsCommand {
@@ -23,7 +25,7 @@ public class ShowPassiveItemsCommand {
 
                     // 从Capability获取被动物品列表
                     player.getCapability(PlayerPassiveItemProvider.PLAYER_PASSIVE_ITEM).ifPresent(passiveItems -> {
-                        ArrayList<Integer> items = passiveItems.getPlayerPassiveItems();
+                        List<ItemStack> items = passiveItems.getPassiveItems();
 
                         // 构建消息组件
                         MutableComponent message = Component.empty();
@@ -34,7 +36,8 @@ public class ShowPassiveItemsCommand {
                         }
 
                         for (int i = 0; i < items.size(); i++) {
-                            IPassiveItem item = PassiveItemManager.getInstance().getItemFromId(items.get(i));
+                            int itemId = ((PassiveItem) items.get(i).getItem()).getItemId();
+                            IPassiveItem item = PassiveItemManager.getInstance().getItemFromId(itemId);
 
                             // 创建带悬浮文本的显示名称组件
                             Component itemComponent = Component.literal("").append(item.getDisplayName()).withStyle(

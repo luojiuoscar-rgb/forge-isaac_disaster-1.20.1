@@ -40,12 +40,12 @@ public class Trinket extends Item implements ICurioItem {
 
     @Override
     public void onEquip(SlotContext slotContext, ItemStack prevStack, ItemStack stack) {
-        TrinketManager.getInstance().getTrinketFromId(getTrinketId()).onEquipped(slotContext.entity(), isEnchanted(stack));
+        TrinketManager.getInstance().getTrinketFromId(getTrinketId()).onEquipped(slotContext.entity(), isEnchanted(stack), false);
     }
     @Override
     public void onUnequip(SlotContext slotContext, ItemStack prevStack, ItemStack stack) {
         if (isSwallowing(prevStack) || isSwallowing(stack)) return; // 我不知道为什么 但是这样能行
-        TrinketManager.getInstance().getTrinketFromId(getTrinketId()).onUnequipped(slotContext.entity(), isEnchanted(stack));
+        TrinketManager.getInstance().getTrinketFromId(getTrinketId()).onUnequipped(slotContext.entity(), isEnchanted(stack), false);
     }
     @Override
     public void curioTick(SlotContext slotContext, ItemStack stack) {

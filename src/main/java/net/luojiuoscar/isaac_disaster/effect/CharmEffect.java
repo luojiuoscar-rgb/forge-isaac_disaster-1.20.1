@@ -18,11 +18,11 @@ public class CharmEffect extends MobEffect {
 
     @Override
     public void applyEffectTick(LivingEntity entity, int amplifier) {
+        if (entity.level().isClientSide) return;
         if (entity instanceof Player player) {
             player.removeEffect(this);
             return;
         }
-        if (entity.level().isClientSide) return;
 
         if (entity instanceof Mob mob) {
             // 跳过无攻击属性的被动生物

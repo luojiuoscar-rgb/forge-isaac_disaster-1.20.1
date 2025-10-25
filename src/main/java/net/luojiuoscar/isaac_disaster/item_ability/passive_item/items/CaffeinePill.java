@@ -24,7 +24,7 @@ public class CaffeinePill implements IPassiveItem {
     }
 
     @Override
-    public void onObtain(Player player) {
+    public void onFirstObtain(Player player, boolean isPermanent) {
         if (player.level() instanceof ServerLevel level){
             LevelHelper.spawnLootAtPos(level, player.blockPosition().getCenter(),
                     ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, LootTableNameManager.RANDOM_PILLS));
@@ -32,15 +32,15 @@ public class CaffeinePill implements IPassiveItem {
     }
 
     @Override
-    public void onDirectObtain(Player player) {
-        StatManager.modifyMovementSpeedAdder(player, 1.5);
-        StatManager.modifyScaleAdder(player, -1);
+    public void onObtain(Player player, boolean isPermanent) {
+        StatManager.modifyMovementSpeedAdder(player, 1.5, isPermanent);
+        StatManager.modifyScaleAdder(player, -1, isPermanent);
     }
 
     @Override
-    public void onRemove(Player player) {
-        StatManager.modifyMovementSpeedAdder(player, -1.5);
-        StatManager.modifyScaleAdder(player, 1);
+    public void onRemove(Player player, boolean isPermanent) {
+        StatManager.modifyMovementSpeedAdder(player, -1.5, isPermanent);
+        StatManager.modifyScaleAdder(player, 1, isPermanent);
     }
 
     @Override

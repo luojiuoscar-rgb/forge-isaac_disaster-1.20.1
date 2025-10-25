@@ -12,6 +12,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
@@ -53,7 +54,7 @@ public class ActiveItem extends IsaacItem {
     }
 
     @Override
-    public void addAdditionalInfo(List<Component> tooltipComponents){
+    public void addAdditionalInfo(List<Component> tooltipComponents, @Nullable ItemStack stack){
         tooltipComponents.add(Component.literal(""));
         tooltipComponents.add(
                 Component.translatable("item.isaac_disaster.special.recharge_require", (max_item_damage / 20))

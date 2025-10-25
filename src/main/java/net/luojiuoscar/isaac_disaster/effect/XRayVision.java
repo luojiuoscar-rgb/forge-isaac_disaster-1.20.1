@@ -21,14 +21,16 @@ public class XRayVision extends MobEffect {
 
     @Override
     public List<ItemStack> getCurativeItems() {
-        // 不可清除
         return java.util.Collections.emptyList();
     }
 
 
     @Override
     public void applyEffectTick(LivingEntity entity, int amplifier) {
-        if (!(entity instanceof Player player)) return;
+        if (!(entity instanceof Player player)) {
+            entity.removeEffect(this);
+            return;
+        }
 
         List<LivingEntity> entities = LevelHelper.selectBySphere(
                 player.level(), player.getX(), player.getY(), player.getZ(), StatManager.getNearbyRange() * Math.min((2 + amplifier * 0.5f), 10));

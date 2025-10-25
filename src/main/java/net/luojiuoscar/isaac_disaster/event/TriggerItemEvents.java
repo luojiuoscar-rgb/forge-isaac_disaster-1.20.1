@@ -66,7 +66,7 @@ public class TriggerItemEvents {
 
         // 获取玩家的被动物品能力实例
         player.getCapability(PlayerPassiveItemProvider.PLAYER_PASSIVE_ITEM).ifPresent(passiveItems -> {
-            Map<Integer, Integer> triggerItemMap = passiveItems.getPlayerTriggerItemMap();
+            Map<Integer, Integer> triggerItemMap = passiveItems.getAllTriggerItems(player);
             for (int itemId : triggerItemMap.keySet()) {
                 if (triggerItemMap.get(itemId) > 0){
                     if (!(PassiveItemManager.getInstance().getItemFromId(itemId) instanceof IDamageTriggerPassiveItem item)) return;
@@ -121,7 +121,7 @@ public class TriggerItemEvents {
 
         // 获取玩家的被动物品能力实例
         player.getCapability(PlayerPassiveItemProvider.PLAYER_PASSIVE_ITEM).ifPresent(passiveItems -> {
-            Map<Integer, Integer> triggerItemMap = passiveItems.getPlayerTriggerItemMap();
+            Map<Integer, Integer> triggerItemMap = passiveItems.getAllTriggerItems(player);
             for (int itemId : triggerItemMap.keySet()) {
                 if (triggerItemMap.get(itemId) > 0){
                     if (!(PassiveItemManager.getInstance().getItemFromId(itemId) instanceof IHurtTriggerPassiveItem item)) return;

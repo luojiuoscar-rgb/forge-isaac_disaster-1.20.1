@@ -29,16 +29,16 @@ public class Spun implements ISet {
 
     @Override
     public void onObtainEffect(Player player) {
-        StatManager.modifyDamageAdder(player, 2);
-        StatManager.modifyMovementSpeedAdder(player, 0.75);
+        StatManager.modifyDamageAdder(player, 2, true);
+        StatManager.modifyMovementSpeedAdder(player, 0.75, true);
         LevelHelper.spawnLootAtPos((ServerLevel) player.level(), player.blockPosition().getCenter(),
                 ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, LootTableNameManager.RANDOM_PILLS));
     }
 
     @Override
     public void onRemoveEffect(Player player) {
-        StatManager.modifyDamageAdder(player, -2);
-        StatManager.modifyMovementSpeedAdder(player, -0.75);
+        StatManager.modifyDamageAdder(player, -2, true);
+        StatManager.modifyMovementSpeedAdder(player, -0.75, true);
     }
 
     @Override

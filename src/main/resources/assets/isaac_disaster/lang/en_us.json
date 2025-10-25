@@ -36,6 +36,7 @@
   "item.isaac_disaster.golden_pill": "金胶囊",
   "item.isaac_disaster.golden_pill_h": "巨型金胶囊",
   "curios.identifier.isaac_trinket": "以撒-饰品",
+  "curios.identifier.isaac_passive_item": "以撒-被动道具",
 
   "creativetab.isaac_disaster.passive_items": "以撒的灾难：被动道具",
   "creativetab.isaac_disaster.active_items": "以撒的灾难：主动道具",
@@ -157,7 +158,7 @@
   "item.isaac_disaster.action.give_money": "给予%d价值的钱币",
   "item.isaac_disaster.action.give_soul_heart": "获得%d个魂心",
   "item.isaac_disaster.action.give_bone_heart": "获得%d个骨心",
-
+  "item.isaac_disaster.action.consumed": "[已消耗]",
 
 
   "item.isaac_disaster.breakfast": "早餐",

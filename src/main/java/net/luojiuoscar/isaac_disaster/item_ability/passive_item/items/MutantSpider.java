@@ -17,11 +17,11 @@ public class MutantSpider implements IPassiveItem {
     }
 
     @Override
-    public void onObtain(Player player) {
+    public void onFirstObtain(Player player, boolean isPermanent) {
     }
 
     @Override
-    public void onDirectObtain(Player player) {
+    public void onObtain(Player player, boolean isPermanent) {
         // 增加一层“双倍延迟”
         player.getCapability(PlayerStatModifierProvider.PLAYER_STAT_MODIFIER).ifPresent(
                 playerStatModifier -> playerStatModifier.modifyDoubleShotDelay(player, 1)
@@ -29,7 +29,7 @@ public class MutantSpider implements IPassiveItem {
     }
 
     @Override
-    public void onRemove(Player player) {
+    public void onRemove(Player player, boolean isPermanent) {
         player.getCapability(PlayerStatModifierProvider.PLAYER_STAT_MODIFIER).ifPresent(
                 playerStatModifier -> playerStatModifier.modifyDoubleShotDelay(player, -1)
         );

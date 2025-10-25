@@ -45,22 +45,22 @@ public class Perfection implements IHurtTriggerTrinket {
     }
 
     @Override
-    public void onEquipped(LivingEntity entity, boolean isEnchanted){
+    public void onEquipped(LivingEntity entity, boolean isEnchanted, boolean isPermanent){
         if (!(entity instanceof Player player)) return;
         if (isEnchanted) {
-            StatManager.modifyLuckAdder(player, 20);
+            StatManager.modifyLuckAdder(player, 20, isEnchanted);
         } else {
-            StatManager.modifyLuckAdder(player, 10);
+            StatManager.modifyLuckAdder(player, 10, isEnchanted);
         }
 
     };
     @Override
-    public void onUnequipped(LivingEntity entity, boolean isEnchanted){
+    public void onUnequipped(LivingEntity entity, boolean isEnchanted, boolean isPermanent){
         if (!(entity instanceof Player player)) return;
         if (isEnchanted) {
-            StatManager.modifyLuckAdder(player, -20);
+            StatManager.modifyLuckAdder(player, -20, isEnchanted);
         } else {
-            StatManager.modifyLuckAdder(player, -10);
+            StatManager.modifyLuckAdder(player, -10, isEnchanted);
         }
     };
 

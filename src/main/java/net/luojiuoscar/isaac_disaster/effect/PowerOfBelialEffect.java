@@ -34,7 +34,7 @@ public class PowerOfBelialEffect extends MobEffect {
     public void addAttributeModifiers(@NotNull LivingEntity entity, @NotNull AttributeMap attributes, int amplifier) {
         super.addAttributeModifiers(entity, attributes, amplifier);
         if (!(entity instanceof ServerPlayer player)) {
-            entity.removeEffect(ModEffects.TELEPATHY.get());
+            entity.removeEffect(this);
             return;
         }
 

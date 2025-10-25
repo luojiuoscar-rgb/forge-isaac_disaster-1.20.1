@@ -1,6 +1,5 @@
 package net.luojiuoscar.isaac_disaster.item_ability.passive_item.items;
 
-import net.luojiuoscar.isaac_disaster.capability.player.PlayerPassiveItemProvider;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.helper.TextHelper;
 import net.luojiuoscar.isaac_disaster.item.ModItems;
@@ -15,7 +14,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class BloodOfTheMartyr implements IPassiveItem {
     @Override
@@ -24,13 +22,13 @@ public class BloodOfTheMartyr implements IPassiveItem {
     }
 
     @Override
-    public void onObtain(Player player) {
+    public void onFirstObtain(Player player, boolean isPermanent) {
 
     }
 
     @Override
-    public void onDirectObtain(Player player) {
-        StatManager.modifyDamageAdder(player, 1);
+    public void onObtain(Player player, boolean isPermanent) {
+        StatManager.modifyDamageAdder(player, 1, isPermanent);
 
         // 数据需要同步数据到客户端
         if (player instanceof ServerPlayer serverPlayer){
@@ -40,8 +38,8 @@ public class BloodOfTheMartyr implements IPassiveItem {
     }
 
     @Override
-    public void onRemove(Player player) {
-        StatManager.modifyDamageAdder(player, -1);
+    public void onRemove(Player player, boolean isPermanent) {
+        StatManager.modifyDamageAdder(player, -1, isPermanent);
 
         // 数据需要同步数据到客户端
         if (player instanceof ServerPlayer serverPlayer){

@@ -18,11 +18,16 @@ public interface IPassiveItem {
     int getItemId();
 
 
+    /** 不会被remove的效果 */
+    void onFirstObtain(Player player, boolean isPermanent);
+
+    void onObtain(Player player, boolean isPermanent);
+
+
     /**
-     * 获取道具时的部分效果。不包含直接获取道具时的效果
-     * 由服务端触发
+     * 移除道具时触发
      */
-    void onObtain(Player player);
+    void onRemove(Player player, boolean isPermanent);
 
 
     default void onObtainClient(Player player){
@@ -39,22 +44,6 @@ public interface IPassiveItem {
     }
 
 
-
-    /**
-     * 直接给予道具时触发、不会生成部分掉落物、部分效果不触发
-     * 由服务端触发
-     */
-    void onDirectObtain(Player player);
-
-
-    default void onDirectObtainClient(Player player){
-
-    }
-
-    /**
-     * 移除道具时触发
-     */
-    void onRemove(Player player);
 
 
     /**

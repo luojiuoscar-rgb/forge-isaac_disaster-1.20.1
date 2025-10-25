@@ -1,17 +1,10 @@
 package net.luojiuoscar.isaac_disaster.item_ability.passive_item.items;
 
-import net.luojiuoscar.isaac_disaster.IsaacDisaster;
-import net.luojiuoscar.isaac_disaster.helper.LevelHelper;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.item.ModItems;
 import net.luojiuoscar.isaac_disaster.item_ability.passive_item.IPassiveItem;
 import net.luojiuoscar.isaac_disaster.manager.id_managers.ItemId;
-import net.luojiuoscar.isaac_disaster.networking.ModMessages;
-import net.luojiuoscar.isaac_disaster.networking.packet.PassiveItemSyncS2CPacket;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
@@ -24,16 +17,16 @@ public class AQuarter implements IPassiveItem {
     }
 
     @Override
-    public void onObtain(Player player) {
+    public void onFirstObtain(Player player, boolean isPermanent) {
         PlayerHelper.giveMoney(player, 25);
     }
 
     @Override
-    public void onDirectObtain(Player player) {
+    public void onObtain(Player player, boolean isPermanent) {
     }
 
     @Override
-    public void onRemove(Player player) {
+    public void onRemove(Player player, boolean isPermanent) {
     }
 
     @Override

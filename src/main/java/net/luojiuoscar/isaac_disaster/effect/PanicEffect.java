@@ -21,7 +21,10 @@ public class PanicEffect extends MobEffect {
 
     @Override
     public void addAttributeModifiers(LivingEntity entity, AttributeMap attributes, int amplifier) {
-        if (!(entity instanceof PathfinderMob mob)) return;
+        if (!(entity instanceof PathfinderMob mob)) {
+            entity.removeEffect(this);
+            return;
+        };
 
         // 已经添加过就不重复添加
         if (goalMap.containsKey(mob)) return;

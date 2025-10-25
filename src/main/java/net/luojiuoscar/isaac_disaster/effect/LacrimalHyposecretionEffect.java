@@ -11,7 +11,6 @@ public class LacrimalHyposecretionEffect extends MobEffect {
 
     @Override
     public java.util.List<ItemStack> getCurativeItems() {
-        // 不可清除
         return java.util.Collections.emptyList();
     }
 }

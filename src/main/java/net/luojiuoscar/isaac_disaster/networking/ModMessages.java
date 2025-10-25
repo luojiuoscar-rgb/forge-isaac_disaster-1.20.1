@@ -35,20 +35,6 @@ public class ModMessages {
                 .consumerNetworkThread(ObtainPassiveItemS2CPacket::handle)
                 .add();
 
-        // register DirectObtainPassiveItemC2SPacket
-        net.messageBuilder(DirectObtainPassiveItemC2SPacket.class, id(), NetworkDirection.PLAY_TO_SERVER)
-                .decoder(DirectObtainPassiveItemC2SPacket::new)
-                .encoder(DirectObtainPassiveItemC2SPacket::toBytes)
-                .consumerNetworkThread(DirectObtainPassiveItemC2SPacket::handle)
-                .add();
-
-        // register DirectObtainPassiveItemS2CPacket
-        net.messageBuilder(DirectObtainPassiveItemS2CPacket.class, id(), NetworkDirection.PLAY_TO_CLIENT)
-                .decoder(DirectObtainPassiveItemS2CPacket::new)
-                .encoder(DirectObtainPassiveItemS2CPacket::toBytes)
-                .consumerNetworkThread(DirectObtainPassiveItemS2CPacket::handle)
-                .add();
-
         // register RemoveItemFromId
         net.messageBuilder(RemovePassiveItemFromIdC2SPacket.class, id(), NetworkDirection.PLAY_TO_SERVER)
                 .decoder(RemovePassiveItemFromIdC2SPacket::new)

@@ -18,22 +18,19 @@ public class Dessert implements IPassiveItem {
     }
 
     @Override
-    public void onObtain(Player player) {
+    public void onFirstObtain(Player player, boolean isPermanent) {
+        StatManager.healHealth(player, 1.0f);
     }
 
     @Override
-    public void onDirectObtain(Player player) {
-        if(!player.level().isClientSide()){
-            StatManager.modifyMaxHealth(player, 1);
-            StatManager.healHealth(player, 1.0f);
-        }
+    public void onObtain(Player player, boolean isPermanent) {
+        StatManager.modifyMaxHealth(player, 1, isPermanent);
+
     }
 
     @Override
-    public void onRemove(Player player) {
-        if(!player.level().isClientSide()) {
-            StatManager.modifyMaxHealth(player, -1);
-        }
+    public void onRemove(Player player, boolean isPermanent) {
+        StatManager.modifyMaxHealth(player, -1, isPermanent);
     }
 
     @Override

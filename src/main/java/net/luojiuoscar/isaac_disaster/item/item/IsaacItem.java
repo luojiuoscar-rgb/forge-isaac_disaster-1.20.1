@@ -56,7 +56,7 @@ public abstract class IsaacItem extends Item {
             // 添加描述性文本组件
             addDescription(tooltipComponents);
             // 添加额外信息
-            addAdditionalInfo(tooltipComponents);
+            addAdditionalInfo(tooltipComponents, stack);
             // 添加shift提示
             if (hasSpecialEffects){
                 tooltipComponents.add(Component.translatable("item.isaac_disaster.special.require_shift"));
@@ -65,25 +65,16 @@ public abstract class IsaacItem extends Item {
             addRarityComponent(tooltipComponents);
         }
     }
-    /**
-     * 添加描述性文本组件
-     */
+    /** 添加描述性文本组件 */
     public abstract void addDescription(List<Component> tooltipComponents);
 
-    /**
-     * 额外信息
-     */
-    public abstract void addAdditionalInfo(List<Component> tooltipComponents);
-
-
-    /**
-     * 解释性信息 用于解释专有名词
-     */
+    /** 额外信息 */
+    public abstract void addAdditionalInfo(List<Component> tooltipComponents, @Nullable ItemStack stack);
+    
+    /** 解释性信息 用于解释专有名词 */
     public abstract void addExplainInfo(List<Component> tooltipComponents);
 
-    /**
-     * 获取Rarity
-     */
+    /** 获取Rarity */
     public static Rarity getRarity(int itemLevel){
         return switch (itemLevel) {
             case 0 -> Rarity.COMMON;
@@ -93,9 +84,7 @@ public abstract class IsaacItem extends Item {
         };
     }
 
-    /**
-     * 添加稀有度文本组件
-     */
+    /** 添加稀有度文本组件 */
     public void addRarityComponent(List<Component> tooltipComponents){
 
         String itemIdMarker = "-" + itemId;

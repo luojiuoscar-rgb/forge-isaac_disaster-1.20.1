@@ -9,7 +9,6 @@ import net.luojiuoscar.isaac_disaster.manager.item_managers.PillEffectManager;
 import net.luojiuoscar.isaac_disaster.networking.ModMessages;
 import net.luojiuoscar.isaac_disaster.networking.packet.PillOnUseS2CPacket;
 import net.luojiuoscar.isaac_disaster.sound.ModSounds;
-import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 
@@ -49,12 +48,12 @@ public class LuckUp implements IPillEffect {
 
     @Override
     public void onUseEffect(Player player) {
-        StatManager.modifyLuckAdder(player, 1);
+        StatManager.modifyLuckAdder(player, 1, true);
     }
 
     @Override
     public void onUseEffectH(Player player) {
-        StatManager.modifyLuckAdder(player, 2);
+        StatManager.modifyLuckAdder(player, 2, true);
     }
 
     @Override

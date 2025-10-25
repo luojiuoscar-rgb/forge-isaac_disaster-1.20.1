@@ -18,17 +18,17 @@ public class BomberBoy implements IPassiveItem {
     }
 
     @Override
-    public void onObtain(Player player) {
+    public void onFirstObtain(Player player, boolean isPermanent) {
         PlayerHelper.giveItem(player, ModItems.BOMB.get(), 5);
         PlayerHelper.giveItem(player, ModItems.GIGA_BOMB.get(), 1);
     }
 
     @Override
-    public void onDirectObtain(Player player) {
+    public void onObtain(Player player, boolean isPermanent) {
     }
 
     @Override
-    public void onRemove(Player player) {
+    public void onRemove(Player player, boolean isPermanent) {
     }
 
     @Override

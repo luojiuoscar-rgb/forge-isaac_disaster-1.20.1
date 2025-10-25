@@ -9,7 +9,6 @@ import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeMap;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
@@ -72,16 +71,18 @@ public class BabylonEffect extends MobEffect {
     public void removeAttributeModifiers(@NotNull LivingEntity entity, @NotNull AttributeMap attributes, int amplifier) {
         super.removeAttributeModifiers(entity, attributes, amplifier);
 
-        if (entity instanceof Player player) {
-            AttributeInstance instance1 = player.getAttribute(Attributes.ATTACK_DAMAGE);
-            if (instance1 != null) {
-                instance1.removeModifier(BABYLON_DAMAGE_UUID);
-            }
+        if (!(entity instanceof ServerPlayer player)){
+            return;
+        }
 
-            AttributeInstance instance2 = player.getAttribute(Attributes.MOVEMENT_SPEED);
-            if (instance2 != null) {
-                instance2.removeModifier(BABYLON_SPEED_UUID);
-            }
+        AttributeInstance instance1 = player.getAttribute(Attributes.ATTACK_DAMAGE);
+        if (instance1 != null) {
+            instance1.removeModifier(BABYLON_DAMAGE_UUID);
+        }
+
+        AttributeInstance instance2 = player.getAttribute(Attributes.MOVEMENT_SPEED);
+        if (instance2 != null) {
+            instance2.removeModifier(BABYLON_SPEED_UUID);
         }
     }
 

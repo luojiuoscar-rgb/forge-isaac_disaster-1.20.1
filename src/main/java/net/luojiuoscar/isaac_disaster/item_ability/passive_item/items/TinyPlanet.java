@@ -19,19 +19,19 @@ public class TinyPlanet implements IPassiveItem {
     }
 
     @Override
-    public void onObtain(Player player) {
+    public void onFirstObtain(Player player, boolean isPermanent) {
     }
 
     @Override
-    public void onDirectObtain(Player player) {
-        StatManager.modifyRangeAdder(player, 2.5);
-        StatManager.modifySpectral(player, 1);
+    public void onObtain(Player player, boolean isPermanent) {
+        StatManager.modifyRangeAdder(player, 2.5, isPermanent);
+        StatManager.modifySpectral(player, 1, isPermanent);
     }
 
     @Override
-    public void onRemove(Player player) {
-        StatManager.modifyRangeAdder(player, -2.5);
-        StatManager.modifySpectral(player, -1);
+    public void onRemove(Player player, boolean isPermanent) {
+        StatManager.modifyRangeAdder(player, -2.5, isPermanent);
+        StatManager.modifySpectral(player, -1, isPermanent);
     }
 
     @Override

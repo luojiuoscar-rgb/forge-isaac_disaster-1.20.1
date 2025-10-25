@@ -16,6 +16,7 @@ import java.util.UUID;
 
 public class CuriosHelper {
     public static final String TRINKET = "isaac_trinket";
+    public static final String PASSIVE_ITEM = "isaac_passive_item";
 
     public static final UUID ISAAC_TRINKET_SLOT_MODIFIER_UUID =
             UUID.nameUUIDFromBytes((IsaacDisaster.MOD_ID + ":" + TRINKET).getBytes());

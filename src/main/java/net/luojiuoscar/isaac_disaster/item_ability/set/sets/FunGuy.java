@@ -24,12 +24,12 @@ public class FunGuy implements ISet {
 
     @Override
     public void onObtainEffect(Player player) {
-        StatManager.modifyMaxHealth(player, 1);
+        StatManager.modifyMaxHealth(player, 1, true);
     }
 
     @Override
     public void onRemoveEffect(Player player) {
-        StatManager.modifyMaxHealth(player, -1);
+        StatManager.modifyMaxHealth(player, -1, true);
     }
 
     @Override

@@ -31,6 +31,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.server.ServerLifecycleHooks;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -85,13 +86,13 @@ public class PlayerHelper {
     public static boolean hasItem(int itemId, ServerPlayer player){
         int[] count = {0};
         player.getCapability(PlayerPassiveItemProvider.PLAYER_PASSIVE_ITEM)
-                .ifPresent(provider -> count[0] = provider.getItemCount(itemId));
+                .ifPresent(provider -> count[0] = provider.getItemCountFromAll(player, itemId));
         return count[0] > 0;
     }
     public static int getItemCount(int itemId, ServerPlayer player){
         int[] count = {0};
         player.getCapability(PlayerPassiveItemProvider.PLAYER_PASSIVE_ITEM)
-                .ifPresent(provider -> count[0] = provider.getItemCount(itemId));
+                .ifPresent(provider -> count[0] = provider.getItemCountFromAll(player, itemId));
         return count[0];
     }
     public static int getTrinketCount(int itemId, ServerPlayer player){
@@ -112,7 +113,8 @@ public class PlayerHelper {
                 playerPassiveItem -> playerPassiveItem.removeFromIndex(player, itemId)
         );
     }
-    public static void chargeAll(ServerPlayer player, int amount){
+    /**若amount为null则代表直接充满*/
+    public static void chargeAll(ServerPlayer player, @Nullable Integer amount){
         Inventory inv = player.getInventory();
         List<ItemStack> invItems = new ArrayList<>();
         invItems.addAll(inv.items);
@@ -123,6 +125,8 @@ public class PlayerHelper {
         for (ItemStack stack : invItems) {
             if (!stack.isEmpty() && stack.getItem() instanceof ActiveItem &&
             !isFullCharge(stack, canOverCharge)) {
+                if (amount == null) amount = stack.getMaxDamage() * 2; // 确保可以充满
+
                 ActiveItem.modifyCharge(stack, amount, canOverCharge);
             }
         }
@@ -544,9 +548,9 @@ public class PlayerHelper {
         // theInnerEye & mutantSpider & perfectVision
         player.getCapability(PlayerPassiveItemProvider.PLAYER_PASSIVE_ITEM).ifPresent(
                 playerPassiveItem -> {
-                    int theInnerEye = playerPassiveItem.getItemCount(ItemId.THE_INNER_EYE.getId());
-                    int mutantSpider = playerPassiveItem.getItemCount(ItemId.MUTANT_SPIDER.getId());
-                    int perfectVision = playerPassiveItem.getItemCount(ItemId.PERFECT_VISION.getId());
+                    int theInnerEye = playerPassiveItem.getItemCountFromAll(player, ItemId.THE_INNER_EYE.getId());
+                    int mutantSpider = playerPassiveItem.getItemCountFromAll(player, ItemId.MUTANT_SPIDER.getId());
+                    int perfectVision = playerPassiveItem.getItemCountFromAll(player, ItemId.PERFECT_VISION.getId());
 
                     if (perfectVision >= 1){
                         if (theInnerEye + mutantSpider == 0){
@@ -609,7 +613,7 @@ public class PlayerHelper {
         // 当有完美视力时；取消双倍射击延迟
         player.getCapability(PlayerPassiveItemProvider.PLAYER_PASSIVE_ITEM).ifPresent(
                 playerPassiveItem -> {
-                    if (playerPassiveItem.getItemCount(ItemId.PERFECT_VISION.getId()) > 0){
+                    if (playerPassiveItem.getItemCountFromAll(player, ItemId.PERFECT_VISION.getId()) > 0){
                         count[0] = 0;
                     }
                 });

@@ -1,4 +1,4 @@
 {
   "entities": ["player"],
-  "slots": ["isaac_trinket"]
+  "slots": ["isaac_trinket", "isaac_passive_item"]
 }

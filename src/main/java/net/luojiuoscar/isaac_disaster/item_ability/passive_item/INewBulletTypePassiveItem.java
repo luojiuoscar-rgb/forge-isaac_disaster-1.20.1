@@ -9,7 +9,7 @@ import net.minecraft.world.entity.player.Player;
  * 有n%概率射出特殊子弹的类型（非全局修改）
  * 或在某些情况下射出新贴图的类型
  */
-public interface INewBulletType {
+public interface INewBulletTypePassiveItem {
 
     default int getNewColor(){
         return ColorManager.COLOR_BASE;

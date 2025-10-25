@@ -19,18 +19,18 @@ public class RawLiver implements IPassiveItem {
     }
 
     @Override
-    public void onObtain(Player player) {
-    }
-
-    @Override
-    public void onDirectObtain(Player player) {
-        StatManager.modifyMaxHealth(player, 2);
+    public void onFirstObtain(Player player, boolean isPermanent) {
         player.setHealth(player.getMaxHealth());
     }
 
     @Override
-    public void onRemove(Player player) {
-        StatManager.modifyMaxHealth(player, -2);
+    public void onObtain(Player player, boolean isPermanent) {
+        StatManager.modifyMaxHealth(player, 2, isPermanent);
+    }
+
+    @Override
+    public void onRemove(Player player, boolean isPermanent) {
+        StatManager.modifyMaxHealth(player, -2, isPermanent);
     }
 
     @Override

@@ -25,7 +25,7 @@ public class GetItemCountCommand {
 
                                             AtomicInteger count = new AtomicInteger();
                                             player.getCapability(PlayerPassiveItemProvider.PLAYER_PASSIVE_ITEM).ifPresent(
-                                                    playerPassiveItem -> count.set(playerPassiveItem.getItemCount(itemId))
+                                                    playerPassiveItem -> count.set(playerPassiveItem.getItemCountFromAll(player, itemId))
                                             );
 
                                             // 可以根据返回结果执行后续操作，例如输出调试信息

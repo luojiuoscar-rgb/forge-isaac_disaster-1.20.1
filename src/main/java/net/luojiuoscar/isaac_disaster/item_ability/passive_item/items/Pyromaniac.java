@@ -1,9 +1,7 @@
 package net.luojiuoscar.isaac_disaster.item_ability.passive_item.items;
 
 import net.luojiuoscar.isaac_disaster.item.ModItems;
-import net.luojiuoscar.isaac_disaster.item_ability.passive_item.IPassiveItem;
 import net.luojiuoscar.isaac_disaster.item_ability.passive_item.IRecursivePassiveItem;
-import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.manager.id_managers.ItemId;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -21,15 +19,15 @@ public class Pyromaniac implements IRecursivePassiveItem {
     }
 
     @Override
-    public void onObtain(Player player) {}
+    public void onFirstObtain(Player player, boolean isPermanent) {}
 
     @Override
-    public void onDirectObtain(Player player) {
+    public void onObtain(Player player, boolean isPermanent) {
         recursiveEffect(player); // 获取时触发一次
     }
 
     @Override
-    public void onRemove(Player player) {}
+    public void onRemove(Player player, boolean isPermanent) {}
 
     @Override
     public ItemStack getItemStack(){
@@ -51,6 +49,6 @@ public class Pyromaniac implements IRecursivePassiveItem {
     @Override
     public void recursiveEffect(Player player) {
         // 防火
-        player.addEffect(new MobEffectInstance(MobEffects.FIRE_RESISTANCE, -1, 0, false, false, true));
+        player.addEffect(new MobEffectInstance(MobEffects.FIRE_RESISTANCE, 200, 0, false, false, true));
     }
 }

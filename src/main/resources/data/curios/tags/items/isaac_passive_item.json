@@ -1,6 +1,6 @@
 {
   "validators": ["curios:tag"],
   "values": [
-    "#isaac_disaster:trinkets"
+    "#isaac_disaster:passive_items"
   ]
 }

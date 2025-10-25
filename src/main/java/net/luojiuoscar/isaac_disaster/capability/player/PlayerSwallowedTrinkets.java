@@ -54,7 +54,7 @@ public class PlayerSwallowedTrinkets {
     public void removeAt(Player player, int index){
         ItemStack stack = swallowedTrinkets.remove(index);
         if (stack.getItem() instanceof Trinket item){
-            TrinketManager.getInstance().getTrinketFromId(item.getTrinketId()).onUnequipped(player, Trinket.isEnchanted(stack));
+            TrinketManager.getInstance().getTrinketFromId(item.getTrinketId()).onUnequipped(player, Trinket.isEnchanted(stack), true);
         }
     }
 
@@ -62,7 +62,7 @@ public class PlayerSwallowedTrinkets {
         for (ItemStack stack : swallowedTrinkets){
             if (stack.getItem() instanceof Trinket item &&
                     item.getTrinketId() == id) {
-                TrinketManager.getInstance().getTrinketFromId(item.getTrinketId()).onUnequipped(player, Trinket.isEnchanted(stack));
+                TrinketManager.getInstance().getTrinketFromId(item.getTrinketId()).onUnequipped(player, Trinket.isEnchanted(stack), true);
                 swallowedTrinkets.remove(stack);
                 break;
             }

@@ -25,14 +25,14 @@ public class Phd implements IPassiveItem {
     }
 
     @Override
-    public void onObtain(Player player) {
+    public void onFirstObtain(Player player, boolean isPermanent) {
         PlayerHelper.giveItem(player, ModItems.RED_HEART.get(), 2);
         LevelHelper.spawnLootAtPos((ServerLevel) player.level(), player.blockPosition().getCenter(),
                 ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, LootTableNameManager.RANDOM_PILLS));
     }
 
     @Override
-    public void onDirectObtain(Player player) {
+    public void onObtain(Player player, boolean isPermanent) {
         if (player instanceof ServerPlayer serverPlayer){
             int count = PlayerHelper.getItemCount(ItemId.PHD.getId(), serverPlayer);
             ModMessages.sentToPlayer(new PassiveItemSyncS2CPacket(ItemId.PHD.getId(), count), serverPlayer);
@@ -41,7 +41,7 @@ public class Phd implements IPassiveItem {
     }
 
     @Override
-    public void onRemove(Player player) {
+    public void onRemove(Player player, boolean isPermanent) {
         if (player instanceof ServerPlayer serverPlayer){
             int count = PlayerHelper.getItemCount(ItemId.PHD.getId(), serverPlayer);
             ModMessages.sentToPlayer(new PassiveItemSyncS2CPacket(ItemId.PHD.getId(), count), serverPlayer);

@@ -7,7 +7,6 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeMap;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 
 public class InvincibleEffect extends MobEffect {
@@ -17,7 +16,6 @@ public class InvincibleEffect extends MobEffect {
 
     @Override
     public java.util.List<ItemStack> getCurativeItems() {
-        // 不可清除
         return java.util.Collections.emptyList();
     }
 

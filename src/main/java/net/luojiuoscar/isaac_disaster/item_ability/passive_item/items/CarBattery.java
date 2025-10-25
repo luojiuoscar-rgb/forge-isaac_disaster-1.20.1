@@ -1,6 +1,5 @@
 package net.luojiuoscar.isaac_disaster.item_ability.passive_item.items;
 
-import net.luojiuoscar.isaac_disaster.capability.player.PlayerPassiveItemProvider;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.item_ability.passive_item.IPassiveItem;
 import net.luojiuoscar.isaac_disaster.item.ModItems;
@@ -13,7 +12,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class CarBattery implements IPassiveItem {
 
@@ -23,11 +21,11 @@ public class CarBattery implements IPassiveItem {
     }
 
     @Override
-    public void onObtain(Player player) {
+    public void onFirstObtain(Player player, boolean isPermanent) {
     }
 
     @Override
-    public void onDirectObtain(Player player) {
+    public void onObtain(Player player, boolean isPermanent) {
         // 车载电池需要同步数据到客户端
         if (player instanceof ServerPlayer serverPlayer){
             int count = PlayerHelper.getItemCount(ItemId.CAR_BATTERY.getId(), serverPlayer);
@@ -36,7 +34,7 @@ public class CarBattery implements IPassiveItem {
     }
 
     @Override
-    public void onRemove(Player player) {
+    public void onRemove(Player player, boolean isPermanent) {
         // 车载电池需要同步数据到客户端
         if (player instanceof ServerPlayer serverPlayer){
             int count = PlayerHelper.getItemCount(ItemId.CAR_BATTERY.getId(), serverPlayer);
