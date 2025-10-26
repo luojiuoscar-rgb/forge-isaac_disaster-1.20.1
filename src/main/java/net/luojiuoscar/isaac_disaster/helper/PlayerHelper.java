@@ -363,11 +363,20 @@ public class PlayerHelper {
             }
         }
     }
-    public static void shotBullet(Player player) {
-        shotBullet(player, player.getXRot(), player.getYRot());
-    }
-    public static void shotBullet(Player player, float xRot, float yRot) {
-        IsaacBullet bullet = new IsaacBullet(
+
+    private static IsaacBullet createBullet(Player player, Vec3 spawnPos, float xRot, float yRot) {
+        // 获取玩家当前体型缩放比
+        double width = player.getBbWidth();
+
+        // 子弹生成位置前移距离
+        double forwardOffset = 0.4 * (width / 0.6); // 正常玩家宽度约0.6
+
+        // 生成点 朝向偏移
+        Vec3 look = player.getLookAngle();
+        Vec3 adjustedPos = spawnPos.add(look.scale(forwardOffset));
+
+        // 创建子弹
+        return new IsaacBullet(
                 player.level(),
                 player,
                 getBulletLiftTime(player),
@@ -382,56 +391,32 @@ public class PlayerHelper {
                 getBulletAlpha(player),
                 getBulletFilter(player),
                 xRot,
-                yRot
+                yRot,
+                adjustedPos
         );
+    }
+    public static void shotBullet(Player player) {
+        shotBullet(player, player.getXRot(), player.getYRot());
+    }
+    public static void shotBullet(Player player, float xRot, float yRot) {
+        Vec3 eyePos = player.getEyePosition().add(0, player.getBbHeight() * -0.15, 0);
+        IsaacBullet bullet = createBullet(player, eyePos, xRot, yRot);
         player.level().addFreshEntity(bullet);
     }
-    public static void shot2Bullet(Player player){
+    public static void shot2Bullet(Player player) {
+        if (player.level().isClientSide()) return;
+
         Vec3 look = player.getLookAngle();
         Vec3 right = look.cross(new Vec3(0, 1, 0)).normalize();
-        Vec3 eyePos = player.getEyePosition();
+        Vec3 eyePos = player.getEyePosition().add(0, player.getBbHeight() * -0.15, 0);
 
-        IsaacBullet bullet1 = new IsaacBullet(
-                player.level(),
-                player,
-                getBulletLiftTime(player),
-                getBulletSpeed(player),
-                getBulletScale(player),
-                isSpectral(player),
-                isPiercing(player),
-                isHoming(player),
-                isControllable(player),
-                getDamage(player),
-                getBulletColor(player),
-                getBulletAlpha(player),
-                getBulletFilter(player),
-                player.getXRot(),
-                player.getYRot(),
-                eyePos.add(right.scale(0.25))
-        );
-
-        IsaacBullet bullet2 = new IsaacBullet(
-                player.level(),
-                player,
-                getBulletLiftTime(player),
-                getBulletSpeed(player),
-                getBulletScale(player),
-                isSpectral(player),
-                isPiercing(player),
-                isHoming(player),
-                isControllable(player),
-                getDamage(player),
-                getBulletColor(player),
-                getBulletAlpha(player),
-                getBulletFilter(player),
-                player.getXRot(),
-                player.getYRot(),
-                eyePos.add(right.scale(-0.25))
-        );
+        IsaacBullet bullet1 = createBullet(player, eyePos.add(right.scale(0.25)), player.getXRot(), player.getYRot());
+        IsaacBullet bullet2 = createBullet(player, eyePos.add(right.scale(-0.25)), player.getXRot(), player.getYRot());
 
         player.level().addFreshEntity(bullet1);
         player.level().addFreshEntity(bullet2);
     }
+
 
     public static boolean isSpectral(Player player){
         int[] count = {0};
@@ -511,10 +496,10 @@ public class PlayerHelper {
         // 基于子弹伤害的体型因素
         AttributeInstance instance = player.getAttribute(Attributes.ATTACK_DAMAGE);
         double damage = 1.0;
-        if (instance == null) {
-            return getBulletScale(1.0, getExtraBulletScale(player));
+        if (instance != null) {
+            damage = instance.getValue();
         };
-        return getBulletScale(Math.max(instance.getValue(), 0), getExtraBulletScale(player));
+        return getBulletScale(Math.max(damage, 0), getExtraBulletScale(player));
     }
     public static float getBulletScale(double damage, float extraScale) {
         float scale = 1.0f;

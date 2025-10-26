@@ -107,7 +107,7 @@ public class IsaacBullet extends Entity {
                        float scale, boolean spectral, boolean piercing, boolean homing, boolean controllable,
                        float damage, int color, float alpha, int filter, float xRot, float yRot) {
         this(level, shooter, lifeTick, bulletSpeed, scale, spectral, piercing, homing, controllable, damage,
-                color, alpha, filter, xRot, yRot, shooter.getX(), shooter.getEyeY() - 0.2, shooter.getZ());
+                color, alpha, filter, xRot, yRot, shooter.getX(), shooter.getEyeY(), shooter.getZ());
     }
     public IsaacBullet(Level level, LivingEntity shooter, int lifeTick, double bulletSpeed,
                        float scale, boolean spectral, boolean piercing, boolean homing, boolean controllable,
@@ -563,6 +563,7 @@ public class IsaacBullet extends Entity {
     public float getDamage() {
         return damage;
     }
+
 
     /**
      * 存储着具有触发效果的道具

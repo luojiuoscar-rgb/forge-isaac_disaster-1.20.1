@@ -558,6 +558,8 @@ public class ForgeEvents {
 
     @SubscribeEvent
     public static void onCurioUnequipEvent(CurioUnequipEvent event){
+        if (event.getEntity().level().isClientSide) return;
+
         // item类中的onUnequip方法获取到的不是原stack，故而需要通过事件修改
         ItemStack stack = event.getStack();
 

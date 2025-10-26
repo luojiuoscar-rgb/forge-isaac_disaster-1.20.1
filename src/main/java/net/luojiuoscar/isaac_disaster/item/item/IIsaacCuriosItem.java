@@ -25,7 +25,6 @@ public interface IIsaacCuriosItem extends ICurioItem {
             CuriosHelper.addPermanentSlotModifier(slotContext.entity(), CuriosHelper.PASSIVE_ITEM, CuriosHelper.ISAAC_PASSIVE_ITEM_SLOT_MODIFIER_UUID,
                     "", 1);
         }
-
         tryEquip(slotContext, prevStack, stack);
     }
 

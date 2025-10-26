@@ -3,6 +3,7 @@ package net.luojiuoscar.isaac_disaster.helper;
 import net.luojiuoscar.isaac_disaster.Config;
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerAbilityProvider;
+import net.luojiuoscar.isaac_disaster.item.item.IIsaacCuriosItem;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.player.Player;
@@ -15,7 +16,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import static com.mojang.text2speech.Narrator.LOGGER;
 
 
 
@@ -100,20 +100,14 @@ public class CuriosHelper {
                 }
 
                 // 在减少槽位前清理溢出的装备
-                LOGGER.info("NEW: " + newAmount + " CURR: " + current);
-                if (newAmount < current) {
+                if (amount < 0) {
                     ICurioStacksHandler handler = inv.getCurios().get(slotId);
                     if (handler != null) {
                         int totalSlots = handler.getSlots();
-                        LOGGER.info("TOTAL SLOTS: " + totalSlots);
-                        LOGGER.info("STACK SLOT: " + handler.getStacks().getSlots());
+
                         ItemStack stack = handler.getStacks().getStackInSlot(totalSlots - 1);
-                        if (!stack.isEmpty()) {
-                            // 尝试放回背包，否则掉落
-                            if (!player.getInventory().add(stack)) {
-                                player.drop(stack, false);
-                            }
-                            stack.shrink(1); // 删除道具并触发unequip效果
+                        if (stack.getItem() instanceof IIsaacCuriosItem){
+                            IIsaacCuriosItem.setOnCurios(stack, false);
                         }
                     }
                 }
