@@ -49,12 +49,12 @@ public class RangeUp implements IPillEffect {
 
     @Override
     public void onUseEffect(Player player) {
-        StatManager.modifyRangeAdder(player, 0.5);
+        StatManager.RANGE.apply(player, 0.75);
     }
 
     @Override
     public void onUseEffectH(Player player) {
-        StatManager.modifyRangeAdder(player, 1);
+        StatManager.RANGE.apply(player, 1.5);
     }
 
     @Override

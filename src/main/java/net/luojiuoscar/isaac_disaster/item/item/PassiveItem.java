@@ -35,14 +35,18 @@ public class PassiveItem extends IsaacItem implements IIsaacCuriosItem {
         tooltipComponents.addAll(
                 PassiveItemManager.getInstance().getItemFromId(getItemId()).getDescription()
         );
-        // 添加协同效果（套装效果也属于协同）
+
+    }
+
+    @Override
+    public void addSynergyDescription(List<Component> tooltipComponents){
         Player player = Minecraft.getInstance().player;
         if (player == null) return;
 
         tooltipComponents.addAll(
                 PassiveItemManager.getInstance().getItemFromId(getItemId()).getSynergyDescription()
         );
-    }
+    };
 
     @Override
     public void addAdditionalInfo(List<Component> tooltipComponents, @Nullable ItemStack stack){

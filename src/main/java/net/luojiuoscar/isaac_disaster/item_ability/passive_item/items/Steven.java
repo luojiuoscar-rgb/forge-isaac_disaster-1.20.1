@@ -1,9 +1,8 @@
 package net.luojiuoscar.isaac_disaster.item_ability.passive_item.items;
 
-import net.luojiuoscar.isaac_disaster.helper.TextHelper;
 import net.luojiuoscar.isaac_disaster.item.ModItems;
-import net.luojiuoscar.isaac_disaster.manager.id_managers.ItemId;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
+import net.luojiuoscar.isaac_disaster.manager.id_managers.ItemId;
 import net.luojiuoscar.isaac_disaster.item_ability.passive_item.IPassiveItem;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
@@ -24,12 +23,12 @@ public class Steven implements IPassiveItem {
 
     @Override
     public void onObtain(Player player) {
-        StatManager.modifyDamageAdder(player, 1);
+        StatManager.DAMAGE.apply(player, 1);
     }
 
     @Override
     public void onRemove(Player player) {
-        StatManager.modifyDamageAdder(player, -1);
+        StatManager.DAMAGE.apply(player, -1);
     }
 
     @Override
@@ -40,7 +39,7 @@ public class Steven implements IPassiveItem {
     @Override
     public List<Component> getDescription() {
         return List.of(
-                TextHelper.formatAttribute("item.isaac_disaster.attribute.damage", StatManager.getDamageBonus())
+                StatManager.DAMAGE.description(1)
         );
     }
 }

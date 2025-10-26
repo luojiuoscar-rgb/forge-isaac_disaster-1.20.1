@@ -1,6 +1,5 @@
 package net.luojiuoscar.isaac_disaster.item_ability.set.sets;
 
-import net.luojiuoscar.isaac_disaster.helper.TextHelper;
 import net.luojiuoscar.isaac_disaster.item_ability.set.ISet;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.manager.id_managers.SetId;
@@ -23,12 +22,12 @@ public class Adult implements ISet {
 
     @Override
     public void onObtainEffect(Player player) {
-        StatManager.modifyMaxHealth(player, 1);
+        StatManager.MAX_HEALTH.apply(player, 1);
     }
 
     @Override
     public void onRemoveEffect(Player player) {
-        StatManager.modifyMaxHealth(player, -1);
+        StatManager.MAX_HEALTH.apply(player, -1);
     }
 
     @Override
@@ -47,7 +46,7 @@ public class Adult implements ISet {
     public List<Component> getExplain() {
         return List.of(
                 Component.translatable("set.isaac_disaster.adult").append(": ")
-                        .append(TextHelper.formatAttribute("item.isaac_disaster.attribute.health", StatManager.getHealthBonus())),
+                        .append(StatManager.MAX_HEALTH.description(1)),
                 Component.translatable("set.isaac_disaster.adult.lore.1")
         );
     }

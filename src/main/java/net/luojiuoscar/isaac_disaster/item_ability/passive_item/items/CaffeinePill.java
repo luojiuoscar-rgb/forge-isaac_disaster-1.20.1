@@ -2,7 +2,6 @@ package net.luojiuoscar.isaac_disaster.item_ability.passive_item.items;
 
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.helper.LevelHelper;
-import net.luojiuoscar.isaac_disaster.helper.TextHelper;
 import net.luojiuoscar.isaac_disaster.item.ModItems;
 import net.luojiuoscar.isaac_disaster.item_ability.passive_item.IPassiveItem;
 import net.luojiuoscar.isaac_disaster.manager.LootTableNameManager;
@@ -33,14 +32,14 @@ public class CaffeinePill implements IPassiveItem {
 
     @Override
     public void onObtain(Player player) {
-        StatManager.modifyMovementSpeedAdder(player, 1.5);
-        StatManager.modifyScaleAdder(player, -1);
+        StatManager.MOVEMENT_SPEED.apply(player, 1.5);
+        StatManager.SCALE.apply(player, -1);
     }
 
     @Override
     public void onRemove(Player player) {
-        StatManager.modifyMovementSpeedAdder(player, -1.5);
-        StatManager.modifyScaleAdder(player, 1);
+        StatManager.MOVEMENT_SPEED.apply(player, -1.5);
+        StatManager.SCALE.apply(player, 1);
     }
 
     @Override
@@ -51,11 +50,9 @@ public class CaffeinePill implements IPassiveItem {
     @Override
     public List<Component> getDescription() {
         return List.of(
-                TextHelper.formatAttribute("item.isaac_disaster.attribute.movement_speed", 1500*StatManager.getMovementSpeedBonus()),
-                Component.translatable("item.isaac_disaster.attribute.scale_down"),
+                StatManager.MOVEMENT_SPEED.description(1.5),
+                Component.translatable("attribute.isaac_disaster.scale_down"),
                 Component.translatable("item.isaac_disaster.action.give_pill", 1)
-
-
         );
     }
 }

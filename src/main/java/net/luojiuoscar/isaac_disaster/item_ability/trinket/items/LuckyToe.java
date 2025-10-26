@@ -1,6 +1,5 @@
 package net.luojiuoscar.isaac_disaster.item_ability.trinket.items;
 
-import net.luojiuoscar.isaac_disaster.helper.TextHelper;
 import net.luojiuoscar.isaac_disaster.item.ModItems;
 import net.luojiuoscar.isaac_disaster.item_ability.trinket.ITrinket;
 import net.luojiuoscar.isaac_disaster.manager.ColorManager;
@@ -26,7 +25,7 @@ public class LuckyToe implements ITrinket {
 
     @Override
     public List<Component> getDescription() {
-        return List.of(TextHelper.formatAttribute("item.isaac_disaster.attribute.luck", StatManager.getLuckBonus()));
+        return List.of(StatManager.LUCK.description(1));
     }
 
     @Override
@@ -39,9 +38,9 @@ public class LuckyToe implements ITrinket {
     public void onEquipped(LivingEntity entity, boolean isEnchanted, boolean isPermanent){
         if (!(entity instanceof Player player)) return;
         if (isEnchanted) {
-            StatManager.modifyLuckAdder(player, 2);
+            StatManager.LUCK.apply(player, 2);
         } else {
-            StatManager.modifyLuckAdder(player, 1);
+            StatManager.LUCK.apply(player, 1);
         }
 
     };
@@ -49,9 +48,9 @@ public class LuckyToe implements ITrinket {
     public void onUnequipped(LivingEntity entity, boolean isEnchanted, boolean isPermanent){
         if (!(entity instanceof Player player)) return;
         if (isEnchanted) {
-            StatManager.modifyLuckAdder(player, -2);
+            StatManager.LUCK.apply(player, -2);
         } else {
-            StatManager.modifyLuckAdder(player, -1);
+            StatManager.LUCK.apply(player, -1);
         }
     };
 

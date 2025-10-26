@@ -33,8 +33,8 @@ public class FreeLemonade implements IActiveItem {
 
         // 创建药水云
         LemonEffectCloud cloud = new LemonEffectCloud(player.level(), player.getX(), player.getY(), player.getZ(),
-        player, (float)StatManager.getNearbyRange() * 0.8f, 100, 0, 10,
-                (float) StatManager.getDamageBonus() * 4f);
+        player, (float) StatManager.getNearbyRange() * 0.8f, 100, 0, 10,
+                (float) StatManager.DAMAGE.getBonus() * 4f);
 
         // 生成实体
         player.level().addFreshEntity(cloud);

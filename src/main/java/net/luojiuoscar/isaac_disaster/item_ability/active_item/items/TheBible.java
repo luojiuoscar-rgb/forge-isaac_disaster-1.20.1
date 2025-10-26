@@ -42,7 +42,7 @@ public class TheBible implements IActiveItem {
     public void onTriggeredEffect(Player player) {
         MobEffectInstance effectInstance = new MobEffectInstance(
                 ModEffects.TRANSCENDENCE.get(),
-                (int) (StatManager.getFlyTime() * 2),
+                (int) (StatManager.FLY_TIME.getBonus() * 2),
                 0
         );
         player.addEffect(effectInstance, player);
@@ -52,7 +52,7 @@ public class TheBible implements IActiveItem {
     public void onTriggeredEffectStronger(Player player){
         MobEffectInstance effectInstance = new MobEffectInstance(
                 ModEffects.TRANSCENDENCE.get(),
-                (int) (StatManager.getFlyTime() * 4),
+                (int) (StatManager.FLY_TIME.getBonus() * 4),
                 0
         );
         player.addEffect(effectInstance, player);

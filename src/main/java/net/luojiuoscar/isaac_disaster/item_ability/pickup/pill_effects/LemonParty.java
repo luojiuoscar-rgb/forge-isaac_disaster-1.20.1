@@ -10,11 +10,8 @@ import net.luojiuoscar.isaac_disaster.manager.item_managers.PillEffectManager;
 import net.luojiuoscar.isaac_disaster.networking.ModMessages;
 import net.luojiuoscar.isaac_disaster.networking.packet.PillOnUseS2CPacket;
 import net.luojiuoscar.isaac_disaster.sound.ModSounds;
-import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.level.Level;
 
 
 public class LemonParty implements IPillEffect {
@@ -53,7 +50,7 @@ public class LemonParty implements IPillEffect {
     public void onUseEffect(Player player) {
         LemonEffectCloud cloud = new LemonEffectCloud(player.level(), player.getX(), player.getY(), player.getZ(),
                 player, (float) StatManager.getNearbyRange() * 0.4f, 200, 0, 10,
-                (float) StatManager.getDamageBonus() * 2.5f);
+                (float) StatManager.DAMAGE.getBonus() * 2.5f);
         player.level().addFreshEntity(cloud);
     }
 
@@ -61,7 +58,7 @@ public class LemonParty implements IPillEffect {
     public void onUseEffectH(Player player) {
         LemonEffectCloud cloud = new LemonEffectCloud(player.level(), player.getX(), player.getY(), player.getZ(),
                 player, (float) StatManager.getNearbyRange() * 0.8f, 400, 0, 10,
-                (float) StatManager.getDamageBonus() * 4f);
+                (float) StatManager.DAMAGE.getBonus() * 4f);
         player.level().addFreshEntity(cloud);
     }
 

@@ -1,6 +1,5 @@
 package net.luojiuoscar.isaac_disaster.item_ability.passive_item.items;
 
-import net.luojiuoscar.isaac_disaster.helper.TextHelper;
 import net.luojiuoscar.isaac_disaster.item.ModItems;
 import net.luojiuoscar.isaac_disaster.item_ability.passive_item.IPassiveItem;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
@@ -24,14 +23,15 @@ public class GlassEye implements IPassiveItem {
 
     @Override
     public void onObtain(Player player) {
-        StatManager.modifyDamageAdder(player, 0.75);
-        StatManager.modifyLuckAdder(player, 1);
+        StatManager.DAMAGE.apply(player, 0.75);
+        StatManager.LUCK.apply(player, 1);
+
     }
 
     @Override
     public void onRemove(Player player) {
-        StatManager.modifyDamageAdder(player, -0.75);
-        StatManager.modifyLuckAdder(player, -1);
+        StatManager.DAMAGE.apply(player, -0.75);
+        StatManager.LUCK.apply(player, -1);
     }
 
     @Override
@@ -42,9 +42,8 @@ public class GlassEye implements IPassiveItem {
     @Override
     public List<Component> getDescription() {
         return List.of(
-                //移动速度以百分比显示
-                TextHelper.formatAttribute("item.isaac_disaster.attribute.damage", 0.75*StatManager.getDamageBonus()),
-                TextHelper.formatAttribute("item.isaac_disaster.attribute.luck", StatManager.getLuckBonus())
+                StatManager.DAMAGE.description(0.75),
+                StatManager.LUCK.description(1)
         );
     }
 }

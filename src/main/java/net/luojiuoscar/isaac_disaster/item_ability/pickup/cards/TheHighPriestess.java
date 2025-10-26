@@ -38,7 +38,7 @@ public class TheHighPriestess implements ITarot {
             }
         }
 
-        target.hurt(player.damageSources().generic(), (float) StatManager.getDamageBonus() * 100f);
+        target.hurt(player.damageSources().generic(), (float) StatManager.DAMAGE.getBonus() * 100f);
     }
 
     @Override
@@ -55,7 +55,7 @@ public class TheHighPriestess implements ITarot {
             }
         }
 
-        target.hurt(player.damageSources().generic(), (float) StatManager.getDamageBonus() * 200f);
+        target.hurt(player.damageSources().generic(), (float) StatManager.DAMAGE.getBonus() * 200f);
     }
 
     @Override

@@ -1,7 +1,6 @@
 package net.luojiuoscar.isaac_disaster.item_ability.active_item.items;
 
 import net.luojiuoscar.isaac_disaster.client.ClientDataManager;
-import net.luojiuoscar.isaac_disaster.helper.TextHelper;
 import net.luojiuoscar.isaac_disaster.item.ModItems;
 import net.luojiuoscar.isaac_disaster.item_ability.active_item.IActiveItem;
 import net.luojiuoscar.isaac_disaster.manager.ColorManager;
@@ -46,7 +45,7 @@ public class YumHeart implements IActiveItem {
     @Override
     public List<Component> getDescription() {
         return List.of(
-                TextHelper.formatAttribute("item.isaac_disaster.action.heal_health", StatManager.getHealthBonus())
+                StatManager.healHealthDescription(1)
         );
     }
 

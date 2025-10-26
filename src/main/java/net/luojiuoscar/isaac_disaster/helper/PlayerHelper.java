@@ -9,7 +9,6 @@ import net.luojiuoscar.isaac_disaster.entity.tnt.IsaacBomb;
 import net.luojiuoscar.isaac_disaster.item.item.ActiveItem;
 import net.luojiuoscar.isaac_disaster.manager.ColorManager;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
-import net.luojiuoscar.isaac_disaster.manager.UUIDManager;
 import net.luojiuoscar.isaac_disaster.manager.id_managers.ItemId;
 import net.luojiuoscar.isaac_disaster.manager.id_managers.SetId;
 import net.minecraft.core.BlockPos;
@@ -635,8 +634,8 @@ public class PlayerHelper {
         );
 
         // 清除Attribute modifiers
-        for (UUID uuid : UUIDManager.ATTRIBUTE_FROM_UUID.keySet()){
-            AttributeInstance instance = player.getAttribute(UUIDManager.ATTRIBUTE_FROM_UUID.get(uuid));
+        for (UUID uuid : StatManager.getAllUUID()){
+            AttributeInstance instance = player.getAttribute(StatManager.fromUUID(uuid).getAttribute());
             if (instance != null){
                 StatManager.removeModifier(player, instance, uuid); // 删除对应modifier
             }

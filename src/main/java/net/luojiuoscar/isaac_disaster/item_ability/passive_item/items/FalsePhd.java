@@ -38,7 +38,7 @@ public class FalsePhd implements IPassiveItem {
             int count = PlayerHelper.getItemCount(ItemId.FALSE_PHD.getId(), serverPlayer);
             ModMessages.sentToPlayer(new PassiveItemSyncS2CPacket(ItemId.FALSE_PHD.getId(), count), serverPlayer);
         }
-        StatManager.modifyPillQuality(player, -1);
+        StatManager.PILL_QUALITY.apply(player, -1);
     }
 
     @Override
@@ -47,7 +47,7 @@ public class FalsePhd implements IPassiveItem {
             int count = PlayerHelper.getItemCount(ItemId.FALSE_PHD.getId(), serverPlayer);
             ModMessages.sentToPlayer(new PassiveItemSyncS2CPacket(ItemId.FALSE_PHD.getId(), count), serverPlayer);
         }
-        StatManager.modifyPillQuality(player, 1);
+        StatManager.PILL_QUALITY.apply(player, 1);
     }
 
     @Override

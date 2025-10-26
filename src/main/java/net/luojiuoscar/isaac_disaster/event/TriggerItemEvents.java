@@ -94,7 +94,7 @@ public class TriggerItemEvents {
             event.setCanceled(true);
             // 如果是纵火狂  则回血
             if (PlayerHelper.hasItem(ItemId.PYROMANIAC.getId(), player)){
-                player.setHealth(player.getHealth() + StatManager.getHealthBonus() * 0.4f);
+                player.setHealth(player.getHealth() + (float) StatManager.MAX_HEALTH.getBonus() * 0.4f);
             }
             return;
         }
@@ -159,7 +159,7 @@ public class TriggerItemEvents {
         // 惩罚性效果
         if (source.getMsgId().equals("genericKill")) return;
         // 死灵护盾
-        if (player.hasEffect(ModEffects.NECRONMICON_SHIELD.get()) && damage > Math.max(1.0f, StatManager.getHealthBonus() * 0.25f)){
+        if (player.hasEffect(ModEffects.NECRONMICON_SHIELD.get()) && damage > Math.max(1.0f, StatManager.MAX_HEALTH.getBonus() * 0.25f)){
             // 伤害来源不能是拥有死灵庇护的玩家；否则不生效
             if (!(attacker instanceof Player attackerplayer &&
                     attackerplayer.hasEffect(ModEffects.NECRONMICON_SHIELD.get()))){
@@ -173,10 +173,10 @@ public class TriggerItemEvents {
             }
         }
         // 脆弱的心
-        if (player.hasEffect(ModEffects.FRAGILE_HEART.get()) && damage > Math.max(1.0f, StatManager.getHealthBonus() * 0.25f)){
+        if (player.hasEffect(ModEffects.FRAGILE_HEART.get()) && damage > Math.max(1.0f, StatManager.MAX_HEALTH.getBonus() * 0.25f)){
             double emptyHealth = player.getMaxHealth() - player.getHealth();
             // 当前骨心中有生命值时不消耗
-            if (emptyHealth < StatManager.getHealthBonus()) return;
+            if (emptyHealth < StatManager.MAX_HEALTH.getBonus()) return;
 
             EntityHelper.removeAmplifier(player, ModEffects.FRAGILE_HEART.get());
             player.level().playSound(null, player.getX(), player.getY(), player.getZ(),

@@ -43,12 +43,12 @@ public class TheNecronmicon implements IActiveItem {
 
     @Override
     public void onTriggeredEffect(Player player) {
-        damageNearby(player, StatManager.getDamageBonus() * 20);
+        damageNearby(player, StatManager.DAMAGE.getBonus() * 20);
     }
 
     @Override
     public void onTriggeredEffectStronger(Player player){
-        damageNearby(player, StatManager.getDamageBonus() * 40);
+        damageNearby(player, StatManager.DAMAGE.getBonus() * 40);
     }
 
     private void damageNearby(Player player, double amount){

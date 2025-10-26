@@ -1,7 +1,6 @@
 package net.luojiuoscar.isaac_disaster.item_ability.passive_item.items;
 
 import net.luojiuoscar.isaac_disaster.client.ClientDataManager;
-import net.luojiuoscar.isaac_disaster.helper.TextHelper;
 import net.luojiuoscar.isaac_disaster.item.ModItems;
 import net.luojiuoscar.isaac_disaster.item_ability.passive_item.IPassiveItem;
 import net.luojiuoscar.isaac_disaster.manager.ColorManager;
@@ -27,19 +26,19 @@ public class Synthoil implements IPassiveItem {
 
     @Override
     public void onObtain(Player player) {
-        StatManager.modifyDamageAdder(player, 1);
-        StatManager.modifyRangeAdder(player, 1);
-        StatManager.modifyBlockReachAdder(player, 1);
-        StatManager.modifyEntityReachAdder(player, 1);
+        StatManager.DAMAGE.apply(player, 1);
+        StatManager.RANGE.apply(player, 1);
+        StatManager.BLOCK_REACH.apply(player, 1);
+        StatManager.ENTITY_REACH.apply(player, 1);
         StatManager.modifySetWithId(player, SetId.SPUN.getId(), 1);
     }
 
     @Override
     public void onRemove(Player player) {
-        StatManager.modifyDamageAdder(player, -1);
-        StatManager.modifyRangeAdder(player, -1);
-        StatManager.modifyBlockReachAdder(player, -1);
-        StatManager.modifyEntityReachAdder(player, -1);
+        StatManager.DAMAGE.apply(player, -1);
+        StatManager.RANGE.apply(player, -1);
+        StatManager.BLOCK_REACH.apply(player, -1);
+        StatManager.ENTITY_REACH.apply(player, -1);
         StatManager.modifySetWithId(player, SetId.SPUN.getId(), -1);
     }
 
@@ -51,10 +50,10 @@ public class Synthoil implements IPassiveItem {
     @Override
     public List<Component> getDescription() {
         return List.of(
-                TextHelper.formatAttribute("item.isaac_disaster.attribute.damage", StatManager.getDamageBonus()),
-                TextHelper.formatAttribute("item.isaac_disaster.attribute.bullet_range", StatManager.getRangeBonus()),
-                TextHelper.formatAttribute("item.isaac_disaster.attribute.block_reach", StatManager.getBlockReachBonus()),
-                TextHelper.formatAttribute("item.isaac_disaster.attribute.entity_reach", StatManager.getEntityReachBonus())
+                StatManager.DAMAGE.description(1),
+                StatManager.RANGE.description(1),
+                StatManager.BLOCK_REACH.description(1),
+                StatManager.ENTITY_REACH.description(1)
         );
     }
 

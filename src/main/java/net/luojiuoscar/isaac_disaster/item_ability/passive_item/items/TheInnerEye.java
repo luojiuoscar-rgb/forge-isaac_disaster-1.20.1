@@ -44,7 +44,7 @@ public class TheInnerEye implements IPassiveItem {
     public List<Component> getDescription() {
         return List.of(
                 Component.translatable("item.isaac_disaster.the_inner_eye.lore.1"),
-                Component.translatable("item.isaac_disaster.attribute.double_shot_delay")
+                Component.translatable("attribute.isaac_disaster.double_shot_delay")
         );
     }
 }

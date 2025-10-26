@@ -1,6 +1,5 @@
 package net.luojiuoscar.isaac_disaster.item_ability.passive_item.items;
 
-import net.luojiuoscar.isaac_disaster.helper.TextHelper;
 import net.luojiuoscar.isaac_disaster.item.ModItems;
 import net.luojiuoscar.isaac_disaster.item_ability.passive_item.IPassiveItem;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
@@ -25,19 +24,19 @@ public class RoidRage implements IPassiveItem {
 
     @Override
     public void onObtain(Player player) {
-        StatManager.modifyRangeAdder(player, 1);
-        StatManager.modifyEntityReachAdder(player, 1);
-        StatManager.modifyBlockReachAdder(player, 1);
-        StatManager.modifyMovementSpeedAdder(player, 1.5);
+        StatManager.RANGE.apply(player, 1);
+        StatManager.ENTITY_REACH.apply(player, 1);
+        StatManager.BLOCK_REACH.apply(player, 1);
+        StatManager.MOVEMENT_SPEED.apply(player, 1.5);
         StatManager.modifySetWithId(player, SetId.SPUN.getId(), 1);
     }
 
     @Override
     public void onRemove(Player player) {
-        StatManager.modifyRangeAdder(player, -1);
-        StatManager.modifyEntityReachAdder(player, -1);
-        StatManager.modifyBlockReachAdder(player, -1);
-        StatManager.modifyMovementSpeedAdder(player, -1.5);
+        StatManager.RANGE.apply(player, -1);
+        StatManager.ENTITY_REACH.apply(player, -1);
+        StatManager.BLOCK_REACH.apply(player, -1);
+        StatManager.MOVEMENT_SPEED.apply(player, -1.5);
         StatManager.modifySetWithId(player, SetId.SPUN.getId(), -1);
     }
 
@@ -49,10 +48,10 @@ public class RoidRage implements IPassiveItem {
     @Override
     public List<Component> getDescription() {
         return List.of(
-                TextHelper.formatAttribute("item.isaac_disaster.attribute.movement_speed", 1.5*1000*StatManager.getMovementSpeedBonus()),
-                TextHelper.formatAttribute("item.isaac_disaster.attribute.bullet_range", StatManager.getRangeBonus()),
-                TextHelper.formatAttribute("item.isaac_disaster.attribute.entity_reach", StatManager.getEntityReachBonus()),
-                TextHelper.formatAttribute("item.isaac_disaster.attribute.block_reach", StatManager.getBlockReachBonus())
+                StatManager.MOVEMENT_SPEED.description(1.5),
+                StatManager.RANGE.description(1),
+                StatManager.ENTITY_REACH.description(1),
+                StatManager.BLOCK_REACH.description(1)
         );
     }
 

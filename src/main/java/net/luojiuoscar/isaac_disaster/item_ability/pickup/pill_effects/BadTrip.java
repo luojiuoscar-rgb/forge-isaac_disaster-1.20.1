@@ -10,7 +10,6 @@ import net.luojiuoscar.isaac_disaster.manager.item_managers.PillEffectManager;
 import net.luojiuoscar.isaac_disaster.networking.ModMessages;
 import net.luojiuoscar.isaac_disaster.networking.packet.PillOnUseS2CPacket;
 import net.luojiuoscar.isaac_disaster.sound.ModSounds;
-import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 
@@ -27,7 +26,7 @@ public class BadTrip implements IPillEffect {
             PillEffectManager.getInstance().getEffectFromEffectId(PillEffectId.BALLS_OF_STEEL.getId()).onUse(player);
             return;
         }
-        if (player.getHealth() <= StatManager.getHealthBonus()){
+        if (player.getHealth() <= StatManager.MAX_HEALTH.getBonus()){
             if (PlayerHelper.getPillQuality(player) < 0){
                 PillEffectManager.getInstance().getEffectFromEffectId(PillEffectId.I_FOUND_PILLS.getId()).onUse(player);
                 return;
@@ -50,7 +49,7 @@ public class BadTrip implements IPillEffect {
             PillEffectManager.getInstance().getEffectFromEffectId(PillEffectId.BALLS_OF_STEEL.getId()).onUseH(player);
             return;
         }
-        if (player.getHealth() <= StatManager.getHealthBonus() * 2){
+        if (player.getHealth() <= StatManager.MAX_HEALTH.getBonus() * 2){
             if (PlayerHelper.getPillQuality(player) < 0){
                 PillEffectManager.getInstance().getEffectFromEffectId(PillEffectId.I_FOUND_PILLS.getId()).onUseH(player);
                 return;

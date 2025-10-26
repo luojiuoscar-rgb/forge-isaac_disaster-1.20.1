@@ -1,6 +1,5 @@
 package net.luojiuoscar.isaac_disaster.item_ability.passive_item.items;
 
-import net.luojiuoscar.isaac_disaster.helper.TextHelper;
 import net.luojiuoscar.isaac_disaster.item.ModItems;
 import net.luojiuoscar.isaac_disaster.item_ability.passive_item.IPassiveItem;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
@@ -26,19 +25,19 @@ public class MiniMush implements IPassiveItem {
 
     @Override
     public void onObtain(Player player) {
-        StatManager.modifyScaleAdder(player, -2);
-        StatManager.modifyMovementSpeedAdder(player, 1.5);
-        StatManager.modifyRangeAdder(player, 1);
-        StatManager.modifyBlockReachAdder(player, 1);
+        StatManager.SCALE.apply(player, -2);
+        StatManager.MOVEMENT_SPEED.apply(player,  1.5);
+        StatManager.RANGE.apply(player,  1);
+        StatManager.BLOCK_BREAKING.apply(player,  1);
         StatManager.modifySetWithId(player, SetId.FUN_GUY.getId(), 1);
     }
 
     @Override
     public void onRemove(Player player) {
-        StatManager.modifyScaleAdder(player, 2);
-        StatManager.modifyMovementSpeedAdder(player, -1.5);
-        StatManager.modifyRangeAdder(player, -1);
-        StatManager.modifyBlockReachAdder(player, -1);
+        StatManager.SCALE.apply(player, 2);
+        StatManager.MOVEMENT_SPEED.apply(player,  -1.5);
+        StatManager.RANGE.apply(player,  -1);
+        StatManager.BLOCK_BREAKING.apply(player,  -1);
         StatManager.modifySetWithId(player, SetId.FUN_GUY.getId(), -1);
     }
 
@@ -50,10 +49,10 @@ public class MiniMush implements IPassiveItem {
     @Override
     public List<Component> getDescription() {
         return List.of(
-                Component.translatable("item.isaac_disaster.attribute.scale_down"),
-                TextHelper.formatAttribute("item.isaac_disaster.attribute.movement_speed",1500*StatManager.getMovementSpeedBonus()),
-                TextHelper.formatAttribute("item.isaac_disaster.attribute.bullet_range", StatManager.getRangeBonus()),
-                TextHelper.formatAttribute("item.isaac_disaster.attribute.block_reach", StatManager.getBlockReachBonus())
+                Component.translatable("attribute.isaac_disaster.scale_down"),
+                StatManager.MOVEMENT_SPEED.description(1.5),
+                StatManager.RANGE.description(1),
+                StatManager.BLOCK_REACH.description(1)
 
 
         );

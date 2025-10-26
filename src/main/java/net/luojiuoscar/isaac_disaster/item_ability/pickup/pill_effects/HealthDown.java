@@ -4,7 +4,6 @@ import net.luojiuoscar.isaac_disaster.client.ClientDataManager;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.item_ability.pickup.IPillEffect;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
-import net.luojiuoscar.isaac_disaster.manager.UUIDManager;
 import net.luojiuoscar.isaac_disaster.manager.id_managers.PillEffectId;
 import net.luojiuoscar.isaac_disaster.manager.item_managers.PillEffectManager;
 import net.luojiuoscar.isaac_disaster.networking.ModMessages;
@@ -26,7 +25,7 @@ public class HealthDown implements IPillEffect {
             PillEffectManager.getInstance().getEffectFromEffectId(PillEffectId.HEALTH_UP.getId()).onUse(player);
             return;
         }
-        if (player.getMaxHealth() <= StatManager.getHealthBonus() * 0.5){
+        if (player.getMaxHealth() <= StatManager.MAX_HEALTH.getBonus() * 0.5){
             if (PlayerHelper.getPillQuality(player) < 0){
                 PillEffectManager.getInstance().getEffectFromEffectId(PillEffectId.I_FOUND_PILLS.getId()).onUse(player);
                 return;
@@ -48,7 +47,7 @@ public class HealthDown implements IPillEffect {
             PillEffectManager.getInstance().getEffectFromEffectId(PillEffectId.HEALTH_UP.getId()).onUseH(player);
             return;
         }
-        if (player.getMaxHealth() <= StatManager.getHealthBonus()){
+        if (player.getMaxHealth() <= StatManager.MAX_HEALTH.getBonus()){
             if (PlayerHelper.getPillQuality(player) < 0){
                 PillEffectManager.getInstance().getEffectFromEffectId(PillEffectId.I_FOUND_PILLS.getId()).onUseH(player);
                 return;
@@ -68,20 +67,18 @@ public class HealthDown implements IPillEffect {
     @Override
     public void onUseEffect(Player player) {
         if (PlayerHelper.getPillQuality(player) < 0){
-            StatManager.modifyAdder(player, UUIDManager.DAMAGE_FROM_PILLS_ADDER, 0.4 * StatManager.getDamageBonus(),
-                    null, null);
+            StatManager.DAMAGE.apply(player, 0.4);
         }
 
-        StatManager.modifyMaxHealth(player, -0.5);
+        StatManager.MAX_HEALTH.apply(player, -0.5);
     }
 
     @Override
     public void onUseEffectH(Player player) {
         if (PlayerHelper.getPillQuality(player) < 0){
-            StatManager.modifyAdder(player, UUIDManager.DAMAGE_FROM_PILLS_ADDER, 0.8 * StatManager.getDamageBonus(),
-                    null, null);
+            StatManager.DAMAGE.apply(player, 0.8);
         }
-        StatManager.modifyMaxHealth(player, -1);
+        StatManager.MAX_HEALTH.apply(player, -1);
     }
 
     @Override

@@ -55,6 +55,7 @@ public abstract class IsaacItem extends Item {
         }else{
             // 添加描述性文本组件
             addDescription(tooltipComponents);
+            addSynergyDescription(tooltipComponents);
             // 添加额外信息
             addAdditionalInfo(tooltipComponents, stack);
             // 添加shift提示
@@ -67,6 +68,8 @@ public abstract class IsaacItem extends Item {
     }
     /** 添加描述性文本组件 */
     public abstract void addDescription(List<Component> tooltipComponents);
+
+    public abstract void addSynergyDescription(List<Component> tooltipComponents);
 
     /** 额外信息 */
     public abstract void addAdditionalInfo(List<Component> tooltipComponents, @Nullable ItemStack stack);

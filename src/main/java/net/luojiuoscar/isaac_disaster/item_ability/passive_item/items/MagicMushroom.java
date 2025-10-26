@@ -1,6 +1,5 @@
 package net.luojiuoscar.isaac_disaster.item_ability.passive_item.items;
 
-import net.luojiuoscar.isaac_disaster.helper.TextHelper;
 import net.luojiuoscar.isaac_disaster.item.ModItems;
 import net.luojiuoscar.isaac_disaster.item_ability.passive_item.IPassiveItem;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
@@ -34,27 +33,27 @@ public class MagicMushroom implements IPassiveItem {
 
     @Override
     public void onObtain(Player player) {
-        StatManager.modifyMaxHealth(player, 1);
-        StatManager.modifyScaleAdder(player, 2.5);
-        StatManager.modifyMovementSpeedAdder(player, 1.5);
-        StatManager.modifyDamageAdder(player, 0.25);
-        StatManager.modifyDamageMultiplier(player, StatManager.getDamageMultiplier1());
-        StatManager.modifyRangeAdder(player, 1);
-        StatManager.modifyBlockReachAdder(player, 1);
-        StatManager.modifyEntityReachAdder(player, 1);
+        StatManager.MAX_HEALTH.apply(player, 1);
+        StatManager.SCALE.apply(player, 2.5);
+        StatManager.MOVEMENT_SPEED.apply(player, 1.5);
+        StatManager.DAMAGE.apply(player, 0.25);
+        StatManager.DAMAGE_MULTIPLY_BASE.apply(player, 0.5);
+        StatManager.RANGE.apply(player, 1);
+        StatManager.BLOCK_REACH.apply(player, 1);
+        StatManager.ENTITY_REACH.apply(player, 1);
         StatManager.modifySetWithId(player, SetId.FUN_GUY.getId(), 1);
     }
 
     @Override
     public void onRemove(Player player) {
-        StatManager.modifyMaxHealth(player, -1);
-        StatManager.modifyScaleAdder(player, -2.5);
-        StatManager.modifyMovementSpeedAdder(player, -1.5);
-        StatManager.modifyDamageAdder(player, -0.25);
-        StatManager.modifyDamageMultiplier(player, -StatManager.getDamageMultiplier1());
-        StatManager.modifyRangeAdder(player, -1);
-        StatManager.modifyBlockReachAdder(player, -1);
-        StatManager.modifyEntityReachAdder(player, -1);
+        StatManager.MAX_HEALTH.apply(player, -1);
+        StatManager.SCALE.apply(player, -2.5);
+        StatManager.MOVEMENT_SPEED.apply(player, -1.5);
+        StatManager.DAMAGE.apply(player, -0.25);
+        StatManager.DAMAGE_MULTIPLY_BASE.apply(player, -0.5);
+        StatManager.RANGE.apply(player, -1);
+        StatManager.BLOCK_REACH.apply(player, -1);
+        StatManager.ENTITY_REACH.apply(player, -1);
         StatManager.modifySetWithId(player, SetId.FUN_GUY.getId(), -1);
     }
 
@@ -66,15 +65,15 @@ public class MagicMushroom implements IPassiveItem {
     @Override
     public List<Component> getDescription() {
         return List.of(
-                Component.translatable("item.isaac_disaster.attribute.scale_up"),
-                TextHelper.formatAttribute("item.isaac_disaster.attribute.health", StatManager.getHealthBonus()),
+                Component.translatable("attribute.isaac_disaster.scale_up"),
+                StatManager.MAX_HEALTH.description(1),
                 Component.translatable("item.isaac_disaster.action.full_health"),
-                TextHelper.formatAttribute("item.isaac_disaster.attribute.movement_speed",1500*StatManager.getMovementSpeedBonus()),
-                TextHelper.formatAttribute("item.isaac_disaster.attribute.damage", 0.25*StatManager.getDamageBonus()),
-                TextHelper.formatAttribute("item.isaac_disaster.attribute.damage_multiplier", 100*StatManager.getDamageMultiplier1()),
-                TextHelper.formatAttribute("item.isaac_disaster.attribute.bullet_range", StatManager.getRangeBonus()),
-                TextHelper.formatAttribute("item.isaac_disaster.attribute.block_reach", StatManager.getBlockReachBonus()),
-                TextHelper.formatAttribute("item.isaac_disaster.attribute.entity_reach", StatManager.getEntityReachBonus())
+                StatManager.MOVEMENT_SPEED.description(1.5),
+                StatManager.DAMAGE.description(0.25),
+                StatManager.DAMAGE_MULTIPLY_BASE.description(0.5),
+                StatManager.RANGE.description(1),
+                StatManager.BLOCK_REACH.description(1),
+                StatManager.ENTITY_REACH.description(1)
         );
     }
 

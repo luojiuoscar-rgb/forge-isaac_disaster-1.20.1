@@ -1,6 +1,5 @@
 package net.luojiuoscar.isaac_disaster.manager.item_managers;
 
-import net.luojiuoscar.isaac_disaster.helper.TextHelper;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.manager.id_managers.EffectId;
 import net.minecraft.network.chat.Component;
@@ -36,7 +35,7 @@ public class EffectDescriptionManager {
         ));
         register(EffectId.POWER_OF_BELIAL.getId(), List.of(
                 Component.translatable("effect.isaac_disaster.power_of_belial").append(": ")
-                        .append(TextHelper.formatAttribute("effect.isaac_disaster.power_of_belial.explain.1", StatManager.getDamageBonus()))
+                        .append(StatManager.DAMAGE.description(1))
         ));
         register(EffectId.DIZZINESS.getId(), List.of(
                 Component.translatable("effect.isaac_disaster.dizziness").append(": ")
@@ -100,12 +99,11 @@ public class EffectDescriptionManager {
         ));
         register(EffectId.TELEPATHY.getId(), List.of(
                 Component.translatable("effect.isaac_disaster.telepathy").append(": ")
-                        .append(TextHelper.formatAttribute("effect.isaac_disaster.telepathy.explain.1", StatManager.getRangeBonus()))
+                        .append(Component.translatable("effect.isaac_disaster.telepathy.explain.1"))
         ));
         register(EffectId.BABYLON.getId(), List.of(
                 Component.translatable("effect.isaac_disaster.babylon").append(": ")
-                        .append(TextHelper.formatAttribute("effect.isaac_disaster.babylon.explain.1", StatManager.getDamageBonus())),
-                TextHelper.formatAttribute("effect.isaac_disaster.babylon.explain.2", 1000*StatManager.getMovementSpeedBonus())
+                        .append(Component.translatable("effect.isaac_disaster.babylon.explain.1"))
         ));
         register(EffectId.REPULSION_AURA.getId(), List.of(
                 Component.translatable("effect.isaac_disaster.soul_state").append(": ")

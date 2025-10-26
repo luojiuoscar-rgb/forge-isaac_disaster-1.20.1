@@ -65,7 +65,7 @@ public class PacManEffect extends MobEffect {
         // 对免疫恐惧的生物不生效
         if (!entity.hasEffect(ModEffects.PANIC.get())) return;
 
-        float damage = (amplifier * 2f + 4f) * (float) StatManager.getDamageBonus();
+        float damage = (amplifier * 2f + 4f) * (float) StatManager.DAMAGE.getBonus();
 
 
         if (entity.getHealth() > damage){
@@ -77,8 +77,8 @@ public class PacManEffect extends MobEffect {
                 // 直接移除生物，不等同于死亡
                 entity.remove(Entity.RemovalReason.DISCARDED);
                 // 恢复生命
-                float newHealth = Math.min(player.getMaxHealth(),
-                        Math.max(1, StatManager.getHealthBonus() * 0.1f) + player.getHealth());
+                float newHealth = (float) Math.min(player.getMaxHealth(),
+                        Math.max(1, StatManager.MAX_HEALTH.getBonus()) + player.getHealth());
                 player.setHealth(newHealth);
                 // 恢复饥饿
                 player.getFoodData().setFoodLevel(20);

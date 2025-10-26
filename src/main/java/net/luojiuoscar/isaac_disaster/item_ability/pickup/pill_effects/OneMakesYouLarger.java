@@ -47,12 +47,12 @@ public class OneMakesYouLarger implements IPillEffect {
 
     @Override
     public void onUseEffect(Player player) {
-        StatManager.modifyScaleAdder(player, 1);
+        StatManager.SCALE.apply(player, 1);
     }
 
     @Override
     public void onUseEffectH(Player player) {
-        StatManager.modifyScaleAdder(player, 2);
+        StatManager.SCALE.apply(player, 2);
     }
 
     @Override

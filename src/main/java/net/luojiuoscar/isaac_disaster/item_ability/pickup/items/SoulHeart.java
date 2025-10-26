@@ -1,11 +1,9 @@
 package net.luojiuoscar.isaac_disaster.item_ability.pickup.items;
 
 import net.luojiuoscar.isaac_disaster.item_ability.pickup.IFoodPickup;
-import net.luojiuoscar.isaac_disaster.item_ability.pickup.IPickup;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.manager.id_managers.PickupId;
 import net.luojiuoscar.isaac_disaster.sound.ModSounds;
-import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;

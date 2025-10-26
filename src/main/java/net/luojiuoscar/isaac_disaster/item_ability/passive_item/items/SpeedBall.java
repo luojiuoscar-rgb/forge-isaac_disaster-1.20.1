@@ -1,6 +1,5 @@
 package net.luojiuoscar.isaac_disaster.item_ability.passive_item.items;
 
-import net.luojiuoscar.isaac_disaster.helper.TextHelper;
 import net.luojiuoscar.isaac_disaster.item.ModItems;
 import net.luojiuoscar.isaac_disaster.item_ability.passive_item.IPassiveItem;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
@@ -26,15 +25,15 @@ public class SpeedBall implements IPassiveItem {
 
     @Override
     public void onObtain(Player player) {
-        StatManager.modifyMovementSpeedAdder(player, 1.5);
-        StatManager.modifyBulletSpeedAdder(player, 1);
+        StatManager.MOVEMENT_SPEED.apply(player, 1.5);
+        StatManager.BULLET_SPEED.apply(player, 1);
         StatManager.modifySetWithId(player, SetId.SPUN.getId(), 1);
     }
 
     @Override
     public void onRemove(Player player) {
-        StatManager.modifyMovementSpeedAdder(player, -1.5);
-        StatManager.modifyBulletSpeedAdder(player, -1);
+        StatManager.MOVEMENT_SPEED.apply(player, -1.5);
+        StatManager.BULLET_SPEED.apply(player, -1);
         StatManager.modifySetWithId(player, SetId.SPUN.getId(), -1);
     }
 
@@ -46,8 +45,8 @@ public class SpeedBall implements IPassiveItem {
     @Override
     public List<Component> getDescription() {
         return List.of(
-                TextHelper.formatAttribute("item.isaac_disaster.attribute.movement_speed", StatManager.getMovementSpeedBonus()*1500),
-                TextHelper.formatAttribute("item.isaac_disaster.attribute.bullet_speed", StatManager.getBulletSpeedBonus())
+                StatManager.MOVEMENT_SPEED.description(1.5),
+                StatManager.BULLET_SPEED.description(1)
         );
     }
 

@@ -1,6 +1,5 @@
 package net.luojiuoscar.isaac_disaster.item_ability.trinket.items;
 
-import net.luojiuoscar.isaac_disaster.helper.TextHelper;
 import net.luojiuoscar.isaac_disaster.item.ModItems;
 import net.luojiuoscar.isaac_disaster.item_ability.trinket.ITrinket;
 import net.luojiuoscar.isaac_disaster.manager.ColorManager;
@@ -26,7 +25,7 @@ public class Cancer implements ITrinket {
 
     @Override
     public List<Component> getDescription() {
-        return List.of(TextHelper.formatAttribute("item.isaac_disaster.attribute.tears_correction", StatManager.getTearsCorrectionBonus()));
+        return List.of(StatManager.TEARS_CORRECTION.description(1));
     }
 
     @Override
@@ -39,9 +38,9 @@ public class Cancer implements ITrinket {
     public void onEquipped(LivingEntity entity, boolean isEnchanted, boolean isPermanent){
         if (!(entity instanceof Player player)) return;
         if (isEnchanted) {
-            StatManager.modifyTearsCorrectionAdder(player, 2);
+            StatManager.TEARS_CORRECTION.apply(player, 2);
         } else {
-            StatManager.modifyTearsCorrectionAdder(player, 1);
+            StatManager.TEARS_CORRECTION.apply(player, 1);
         }
 
     };
@@ -49,9 +48,9 @@ public class Cancer implements ITrinket {
     public void onUnequipped(LivingEntity entity, boolean isEnchanted, boolean isPermanent){
         if (!(entity instanceof Player player)) return;
         if (isEnchanted) {
-            StatManager.modifyTearsCorrectionAdder(player, -2);
+            StatManager.TEARS_CORRECTION.apply(player, -2);
         } else {
-            StatManager.modifyTearsCorrectionAdder(player, -1);
+            StatManager.TEARS_CORRECTION.apply(player, -1);
         }
     };
 

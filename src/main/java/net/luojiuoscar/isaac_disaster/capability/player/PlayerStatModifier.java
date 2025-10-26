@@ -4,7 +4,6 @@ package net.luojiuoscar.isaac_disaster.capability.player;
 import net.luojiuoscar.isaac_disaster.effect.ModEffects;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
-import net.luojiuoscar.isaac_disaster.manager.UUIDManager;
 import net.luojiuoscar.isaac_disaster.networking.ModMessages;
 import net.luojiuoscar.isaac_disaster.networking.packet.FlyUpdateS2CPacket;
 import net.minecraft.nbt.CompoundTag;
@@ -98,12 +97,12 @@ public class PlayerStatModifier {
     private void refreshAllFromSource(Player player, PlayerStatModifier source){
         for (Map.Entry<UUID, Double> entry : source.playerModifiers.entrySet()) {
             UUID uuid = entry.getKey();
-            AttributeInstance instance = player.getAttribute(UUIDManager.ATTRIBUTE_FROM_UUID.get(uuid));
+            AttributeInstance instance = player.getAttribute(StatManager.fromUUID(uuid).getAttribute());
             if (instance == null) continue;
 
             // 重新设置uuid 并且通过这个设置函数更新玩家的attribute记录
-            if (!UUIDManager.MULTIPLIER_UUID.contains(uuid)){
-                StatManager.setModifierAdder(
+            if (!StatManager.fromUUID(uuid).isMultiplyBase()){
+                StatManager.setModifierAdd(
                         player,
                         instance,
                         entry.getValue(),
@@ -112,7 +111,7 @@ public class PlayerStatModifier {
                 );
             }
             else{
-                StatManager.setModifierMultiplier(
+                StatManager.setModifierMultiplyBase(
                         player,
                         instance,
                         entry.getValue(),

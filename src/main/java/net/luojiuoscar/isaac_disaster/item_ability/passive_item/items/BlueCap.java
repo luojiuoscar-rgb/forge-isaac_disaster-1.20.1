@@ -1,6 +1,5 @@
 package net.luojiuoscar.isaac_disaster.item_ability.passive_item.items;
 
-import net.luojiuoscar.isaac_disaster.helper.TextHelper;
 import net.luojiuoscar.isaac_disaster.item.ModItems;
 import net.luojiuoscar.isaac_disaster.item_ability.passive_item.IPassiveItem;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
@@ -26,21 +25,21 @@ public class BlueCap implements IPassiveItem {
 
     @Override
     public void onObtain(Player player) {
-        StatManager.modifyMaxHealth(player, 1);
-        StatManager.modifyTearsAdder(player, 1);
-        StatManager.modifyAttackSpeedAdder(player, -0.1);
-        StatManager.modifyBlockBreakingSpeedAdder(player, 1);
-        StatManager.modifyBulletSpeedAdder(player, -0.8);
+        StatManager.MAX_HEALTH.apply(player, 1);
+        StatManager.TEARS.apply(player, 1);
+        StatManager.ATTACK_SPEED.apply(player, 0.1);
+        StatManager.BLOCK_BREAKING.apply(player, 1);
+        StatManager.BULLET_SPEED.apply(player, -0.8);
         StatManager.modifySetWithId(player, SetId.FUN_GUY.getId(), 1);
     }
 
     @Override
     public void onRemove(Player player) {
-        StatManager.modifyMaxHealth(player, -1);
-        StatManager.modifyTearsAdder(player, -1);
-        StatManager.modifyAttackSpeedAdder(player, 0.1);
-        StatManager.modifyBlockBreakingSpeedAdder(player, -1);
-        StatManager.modifyBulletSpeedAdder(player, 0.8);
+        StatManager.MAX_HEALTH.apply(player, -1);
+        StatManager.TEARS.apply(player, -1);
+        StatManager.ATTACK_SPEED.apply(player, -0.1);
+        StatManager.BLOCK_BREAKING.apply(player, -1);
+        StatManager.BULLET_SPEED.apply(player, 0.8);
         StatManager.modifySetWithId(player, SetId.FUN_GUY.getId(), -1);
     }
 
@@ -52,12 +51,11 @@ public class BlueCap implements IPassiveItem {
     @Override
     public List<Component> getDescription() {
         return List.of(
-                TextHelper.formatAttribute("item.isaac_disaster.attribute.health", StatManager.getHealthBonus()),
-                TextHelper.formatAttribute("item.isaac_disaster.action.heal_health", StatManager.getHealthBonus()),
-                TextHelper.formatAttribute("item.isaac_disaster.attribute.tears", StatManager.getTearsBonus()),
-                TextHelper.formatAttribute("item.isaac_disaster.attribute.block_breaking_speed", StatManager.getBlockBreakingSpeed()),
-                TextHelper.formatAttribute("item.isaac_disaster.attribute.attack_speed_remove",0.1*StatManager.getAttackSpeedBonus()),
-                TextHelper.formatAttribute("item.isaac_disaster.attribute.bullet_speed_remove", StatManager.getBulletSpeedBonus())
+                StatManager.MAX_HEALTH.description(1),
+                StatManager.TEARS.description(1),
+                StatManager.ATTACK_SPEED.description(0.1),
+                StatManager.BLOCK_BREAKING.description(1),
+                StatManager.BULLET_SPEED.description(-0.8)
         );
     }
 

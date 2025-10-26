@@ -3,7 +3,6 @@ package net.luojiuoscar.isaac_disaster.item_ability.active_item.items;
 import net.luojiuoscar.isaac_disaster.client.ClientDataManager;
 import net.luojiuoscar.isaac_disaster.effect.ModEffects;
 import net.luojiuoscar.isaac_disaster.helper.EntityHelper;
-import net.luojiuoscar.isaac_disaster.helper.TextHelper;
 import net.luojiuoscar.isaac_disaster.item.ModItems;
 import net.luojiuoscar.isaac_disaster.item_ability.active_item.IActiveItem;
 import net.luojiuoscar.isaac_disaster.manager.ColorManager;
@@ -88,7 +87,7 @@ public class TheBookOfBelial implements IActiveItem {
         description.addAll(SetManager.getInstance().getSetFromId(SetId.BOOK.getId()).getExplain());
 
         description.add(Component.translatable("effect.isaac_disaster.power_of_belial").append(": ")
-                .append(TextHelper.formatAttribute("effect.isaac_disaster.power_of_belial.explain.1", StatManager.getDamageBonus())));
+                .append(StatManager.DAMAGE_MULTIPLY_BASE.description(0.5)));
 
         return description;
     }

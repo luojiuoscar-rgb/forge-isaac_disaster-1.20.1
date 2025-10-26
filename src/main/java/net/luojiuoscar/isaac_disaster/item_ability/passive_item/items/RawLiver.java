@@ -1,6 +1,5 @@
 package net.luojiuoscar.isaac_disaster.item_ability.passive_item.items;
 
-import net.luojiuoscar.isaac_disaster.helper.TextHelper;
 import net.luojiuoscar.isaac_disaster.item.ModItems;
 import net.luojiuoscar.isaac_disaster.item_ability.passive_item.IPassiveItem;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
@@ -25,12 +24,12 @@ public class RawLiver implements IPassiveItem {
 
     @Override
     public void onObtain(Player player) {
-        StatManager.modifyMaxHealth(player, 2);
+        StatManager.MAX_HEALTH.apply(player, 2);
     }
 
     @Override
     public void onRemove(Player player) {
-        StatManager.modifyMaxHealth(player, -2);
+        StatManager.MAX_HEALTH.apply(player, -2);
     }
 
     @Override
@@ -41,7 +40,7 @@ public class RawLiver implements IPassiveItem {
     @Override
     public List<Component> getDescription() {
         return List.of(
-                TextHelper.formatAttribute("item.isaac_disaster.attribute.health", 2*StatManager.getHealthBonus()),
+                StatManager.MAX_HEALTH.description(2),
                 Component.translatable("item.isaac_disaster.action.full_health")
         );
     }

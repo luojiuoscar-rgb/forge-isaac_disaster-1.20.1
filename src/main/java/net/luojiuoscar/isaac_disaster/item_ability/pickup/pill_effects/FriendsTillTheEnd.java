@@ -9,15 +9,14 @@ import net.luojiuoscar.isaac_disaster.manager.item_managers.PillEffectManager;
 import net.luojiuoscar.isaac_disaster.networking.ModMessages;
 import net.luojiuoscar.isaac_disaster.networking.packet.PillOnUseS2CPacket;
 import net.luojiuoscar.isaac_disaster.sound.ModSounds;
-import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.animal.Wolf;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
+
+import java.util.Objects;
 
 
 public class FriendsTillTheEnd implements IPillEffect {
@@ -60,8 +59,8 @@ public class FriendsTillTheEnd implements IPillEffect {
             wolf.tame(player); // 主人
             wolf.setOrderedToSit(false);
             wolf.setPos(player.blockPosition().getCenter());
-            wolf.getAttribute(Attributes.ATTACK_DAMAGE).setBaseValue(StatManager.getDamageBonus() * 5);
-            wolf.getAttribute(Attributes.MAX_HEALTH).setBaseValue(StatManager.getHealthBonus() * 5);
+            Objects.requireNonNull(wolf.getAttribute(Attributes.ATTACK_DAMAGE)).setBaseValue(StatManager.DAMAGE.getBonus() * 5);
+            Objects.requireNonNull(wolf.getAttribute(Attributes.MAX_HEALTH)).setBaseValue(StatManager.MAX_HEALTH.getBonus() * 5);
             wolf.setHealth(wolf.getMaxHealth());
 
             level.addFreshEntity(wolf);
@@ -76,8 +75,8 @@ public class FriendsTillTheEnd implements IPillEffect {
             wolf.tame(player); // 主人
             wolf.setOrderedToSit(false);
             wolf.setPos(player.blockPosition().getCenter());
-            wolf.getAttribute(Attributes.ATTACK_DAMAGE).setBaseValue(StatManager.getDamageBonus() * 12);
-            wolf.getAttribute(Attributes.MAX_HEALTH).setBaseValue(StatManager.getHealthBonus() * 12);
+            wolf.getAttribute(Attributes.ATTACK_DAMAGE).setBaseValue(StatManager.DAMAGE.getBonus() * 12);
+            wolf.getAttribute(Attributes.MAX_HEALTH).setBaseValue(StatManager.MAX_HEALTH.getBonus() * 12);
             wolf.setHealth(wolf.getMaxHealth());
 
             level.addFreshEntity(wolf);

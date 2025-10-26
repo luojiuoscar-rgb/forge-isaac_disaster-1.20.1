@@ -1,6 +1,5 @@
 package net.luojiuoscar.isaac_disaster.item_ability.passive_item.items;
 
-import net.luojiuoscar.isaac_disaster.helper.TextHelper;
 import net.luojiuoscar.isaac_disaster.item.ModItems;
 import net.luojiuoscar.isaac_disaster.item_ability.passive_item.IPassiveItem;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
@@ -25,14 +24,14 @@ public class MagicScab implements IPassiveItem {
 
     @Override
     public void onObtain(Player player) {
-        StatManager.modifyMaxHealth(player, 1);
-        StatManager.modifyLuckAdder(player, 1);
+        StatManager.MAX_HEALTH.apply(player, 1);
+        StatManager.LUCK.apply(player, 1);
     }
 
     @Override
     public void onRemove(Player player) {
-        StatManager.modifyMaxHealth(player, -1);
-        StatManager.modifyLuckAdder(player, -1);
+        StatManager.MAX_HEALTH.apply(player, -1);
+        StatManager.LUCK.apply(player, -1);
     }
 
     @Override
@@ -43,8 +42,8 @@ public class MagicScab implements IPassiveItem {
     @Override
     public List<Component> getDescription() {
         return List.of(
-                TextHelper.formatAttribute("item.isaac_disaster.attribute.health", StatManager.getHealthBonus()),
-                TextHelper.formatAttribute("item.isaac_disaster.attribute.luck", StatManager.getLuckBonus())
+                StatManager.MAX_HEALTH.description(1),
+                StatManager.LUCK.description(1)
         );
     }
 }

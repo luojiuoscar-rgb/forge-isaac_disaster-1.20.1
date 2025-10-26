@@ -4,7 +4,6 @@ import net.luojiuoscar.isaac_disaster.client.ClientDataManager;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.item_ability.pickup.IPillEffect;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
-import net.luojiuoscar.isaac_disaster.manager.UUIDManager;
 import net.luojiuoscar.isaac_disaster.manager.id_managers.PillEffectId;
 import net.luojiuoscar.isaac_disaster.manager.item_managers.PillEffectManager;
 import net.luojiuoscar.isaac_disaster.networking.ModMessages;
@@ -50,19 +49,17 @@ public class TearsDown implements IPillEffect {
     @Override
     public void onUseEffect(Player player) {
         if (PlayerHelper.getPillQuality(player) < 0){
-            StatManager.modifyAdder(player, UUIDManager.DAMAGE_FROM_PILLS_ADDER, 0.4 * StatManager.getDamageBonus(),
-                    null, null);
+            StatManager.MAX_HEALTH.apply(player, 0.4);
         }
-        StatManager.modifyTearsAdder(player, -0.4);
+        StatManager.TEARS.apply(player, -0.4);
     }
 
     @Override
     public void onUseEffectH(Player player) {
         if (PlayerHelper.getPillQuality(player) < 0){
-            StatManager.modifyAdder(player, UUIDManager.DAMAGE_FROM_PILLS_ADDER, 0.8 * StatManager.getDamageBonus(),
-                    null, null);
+            StatManager.MAX_HEALTH.apply(player, 0.8);
         }
-        StatManager.modifyTearsAdder(player, -0.8);
+        StatManager.TEARS.apply(player, -0.8);
     }
 
     @Override

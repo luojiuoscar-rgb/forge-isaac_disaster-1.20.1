@@ -1,6 +1,5 @@
 package net.luojiuoscar.isaac_disaster.item_ability.passive_item.items;
 
-import net.luojiuoscar.isaac_disaster.helper.TextHelper;
 import net.luojiuoscar.isaac_disaster.item.ModItems;
 import net.luojiuoscar.isaac_disaster.item_ability.passive_item.IPassiveItem;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
@@ -24,14 +23,14 @@ public class CricketsHead implements IPassiveItem {
 
     @Override
     public void onObtain(Player player) {
-        StatManager.modifyDamageAdder(player, 0.5);
-        StatManager.modifyDamageMultiplier(player, StatManager.getDamageMultiplier1());
+        StatManager.DAMAGE.apply(player, 0.5);
+        StatManager.DAMAGE_MULTIPLY_BASE.apply(player, 0.5);
     }
 
     @Override
     public void onRemove(Player player) {
-        StatManager.modifyDamageAdder(player, -0.5);
-        StatManager.modifyDamageMultiplier(player, -StatManager.getDamageMultiplier1());
+        StatManager.DAMAGE.apply(player, 0.5);
+        StatManager.DAMAGE_MULTIPLY_BASE.apply(player, -0.5);
     }
 
     @Override
@@ -42,8 +41,8 @@ public class CricketsHead implements IPassiveItem {
     @Override
     public List<Component> getDescription() {
         return List.of(
-                TextHelper.formatAttribute("item.isaac_disaster.attribute.damage", 0.5*StatManager.getDamageBonus()),
-                TextHelper.formatAttribute("item.isaac_disaster.attribute.damage_multiplier", StatManager.getDamageMultiplier1()*100)
+                StatManager.DAMAGE.description(0.5),
+                StatManager.DAMAGE_MULTIPLY_BASE.description(0.5)
         );
     }
 }

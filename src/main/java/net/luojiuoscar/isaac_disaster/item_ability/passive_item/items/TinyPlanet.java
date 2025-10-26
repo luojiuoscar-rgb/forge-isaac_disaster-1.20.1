@@ -1,6 +1,5 @@
 package net.luojiuoscar.isaac_disaster.item_ability.passive_item.items;
 
-import net.luojiuoscar.isaac_disaster.helper.TextHelper;
 import net.luojiuoscar.isaac_disaster.item.ModItems;
 import net.luojiuoscar.isaac_disaster.item_ability.passive_item.IPassiveItem;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
@@ -24,13 +23,13 @@ public class TinyPlanet implements IPassiveItem {
 
     @Override
     public void onObtain(Player player) {
-        StatManager.modifyRangeAdder(player, 2.5);
+        StatManager.RANGE.apply(player, 2.5);
         StatManager.modifySpectral(player, 1);
     }
 
     @Override
     public void onRemove(Player player) {
-        StatManager.modifyRangeAdder(player, -2.5);
+        StatManager.RANGE.apply(player, -2.5);
         StatManager.modifySpectral(player, -1);
     }
 
@@ -42,7 +41,7 @@ public class TinyPlanet implements IPassiveItem {
     @Override
     public List<Component> getDescription() {
         return List.of(
-                TextHelper.formatAttribute("item.isaac_disaster.attribute.bullet_range", 2.5*StatManager.getRangeBonus()),
+                StatManager.RANGE.description(2.5),
                 Component.translatable("item.isaac_disaster.attribute.spectral_bullet"),
                 Component.translatable("item.isaac_disaster.tiny_planet.lore.1")
                 );

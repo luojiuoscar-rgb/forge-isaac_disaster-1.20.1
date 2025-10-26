@@ -49,12 +49,12 @@ public class TearsUp implements IPillEffect {
 
     @Override
     public void onUseEffect(Player player) {
-        StatManager.modifyTearsAdder(player, 0.5);
+        StatManager.TEARS.apply(player, 0.5);
     }
 
     @Override
     public void onUseEffectH(Player player) {
-        StatManager.modifyTearsAdder(player, 1);
+        StatManager.TEARS.apply(player, 1);
     }
 
     @Override

@@ -1,6 +1,5 @@
 package net.luojiuoscar.isaac_disaster.item_ability.passive_item.items;
 
-import net.luojiuoscar.isaac_disaster.helper.TextHelper;
 import net.luojiuoscar.isaac_disaster.item.ModItems;
 import net.luojiuoscar.isaac_disaster.item_ability.passive_item.IPassiveItem;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
@@ -24,12 +23,12 @@ public class WoodenSpoon implements IPassiveItem {
 
     @Override
     public void onObtain(Player player) {
-        StatManager.modifyMovementSpeedAdder(player, 1.5);
+        StatManager.MOVEMENT_SPEED.apply(player, 1.5);
     }
 
     @Override
     public void onRemove(Player player) {
-        StatManager.modifyMovementSpeedAdder(player, -1.5);
+        StatManager.MOVEMENT_SPEED.apply(player, -1.5);
     }
 
     @Override
@@ -40,7 +39,7 @@ public class WoodenSpoon implements IPassiveItem {
     @Override
     public List<Component> getDescription() {
         return List.of(
-                TextHelper.formatAttribute("item.isaac_disaster.attribute.movement_speed", 1.5*StatManager.getMovementSpeedBonus()*1000)
+                StatManager.MOVEMENT_SPEED.description(1.5)
         );
     }
 }

@@ -41,7 +41,7 @@ public class BabylonEffect extends MobEffect {
             // 先移除旧的同 UUID 的 modifier
             attr.removeModifier(BABYLON_DAMAGE_UUID);
             // 计算要增加的数值
-            double addValue = StatManager.getDamageBonus() * (1.5 + amplifier);
+            double addValue = StatManager.DAMAGE.getBonus() * (1.5 + amplifier);
             AttributeModifier modifier = new AttributeModifier(
                     BABYLON_DAMAGE_UUID,
                     "babylon.damage_bonus",
@@ -56,7 +56,7 @@ public class BabylonEffect extends MobEffect {
             // 先移除旧的同 UUID 的 modifier
             attr2.removeModifier(BABYLON_SPEED_UUID);
             // 计算要增加的数值
-            double addValue = StatManager.getMovementSpeedBonus()  * (1 + amplifier * 0.5);
+            double addValue = StatManager.MOVEMENT_SPEED.getBonus()  * (1 + amplifier * 0.5);
             AttributeModifier modifier = new AttributeModifier(
                     BABYLON_SPEED_UUID,
                     "babylon.speed_bonus",
@@ -90,7 +90,7 @@ public class BabylonEffect extends MobEffect {
     @Override
     public double getAttributeModifierValue(int amplifier, AttributeModifier modifier) {
         // 原有伤害逻辑
-        return (amplifier + 1) * StatManager.getDamageBonus();
+        return (amplifier + 1) * StatManager.DAMAGE.getBonus();
     }
 
     @Override

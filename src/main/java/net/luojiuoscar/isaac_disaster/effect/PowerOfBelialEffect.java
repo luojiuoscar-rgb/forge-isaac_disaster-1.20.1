@@ -42,7 +42,7 @@ public class PowerOfBelialEffect extends MobEffect {
         AttributeInstance attr = player.getAttribute(ModAttributes.BULLET_RANGE.get());
         if (attr != null) {
             attr.removeModifier(POWER_OF_BELIAL_UUID);
-            double addValue = StatManager.getDamageBonus() * (amplifier + 1);
+            double addValue = StatManager.DAMAGE.getBonus() * (amplifier + 1);
             AttributeModifier modifier = new AttributeModifier(
                     POWER_OF_BELIAL_UUID,
                     "power_of_belial.damage_bonus",
@@ -84,7 +84,7 @@ public class PowerOfBelialEffect extends MobEffect {
         return new AttributeModifier(
                 MARTYR_DAMAGE_BOOST_UUID,
                 "Blood of the Martyr bonus",
-                StatManager.getDamageMultiplier1(),
+                StatManager.DAMAGE.getBonus(),
                 AttributeModifier.Operation.MULTIPLY_BASE
         );
     }

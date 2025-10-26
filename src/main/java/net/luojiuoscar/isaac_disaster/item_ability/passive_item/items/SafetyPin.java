@@ -1,7 +1,6 @@
 package net.luojiuoscar.isaac_disaster.item_ability.passive_item.items;
 
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
-import net.luojiuoscar.isaac_disaster.helper.TextHelper;
 import net.luojiuoscar.isaac_disaster.item.ModItems;
 import net.luojiuoscar.isaac_disaster.item_ability.passive_item.IPassiveItem;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
@@ -26,16 +25,16 @@ public class SafetyPin implements IPassiveItem {
 
     @Override
     public void onObtain(Player player) {
-        StatManager.modifyRangeAdder(player, 1);
-        StatManager.modifyBlockReachAdder(player, 1);
-        StatManager.modifyBulletSpeedAdder(player, 0.8);
+        StatManager.RANGE.apply(player, 1);
+        StatManager.BLOCK_REACH.apply(player, 1);
+        StatManager.BULLET_SPEED.apply(player, 0.8);
     }
 
     @Override
     public void onRemove(Player player) {
-        StatManager.modifyRangeAdder(player, -1);
-        StatManager.modifyBlockReachAdder(player, -1);
-        StatManager.modifyBulletSpeedAdder(player, -0.8);
+        StatManager.RANGE.apply(player, -1);
+        StatManager.BLOCK_REACH.apply(player, -1);
+        StatManager.BULLET_SPEED.apply(player, -0.8);
     }
 
     @Override
@@ -46,9 +45,9 @@ public class SafetyPin implements IPassiveItem {
     @Override
     public List<Component> getDescription() {
         return List.of(
-                TextHelper.formatAttribute("item.isaac_disaster.attribute.bullet_range", StatManager.getRangeBonus()),
-                TextHelper.formatAttribute("item.isaac_disaster.attribute.block_reach", StatManager.getBlockReachBonus()),
-                TextHelper.formatAttribute("item.isaac_disaster.attribute.bullet_speed", StatManager.getBulletSpeedBonus()),
+                StatManager.RANGE.description(1),
+                StatManager.BLOCK_REACH.description(1),
+                StatManager.BULLET_SPEED.description(1),
                 Component.translatable("item.isaac_disaster.action.give_black_heart", 1)
 
 

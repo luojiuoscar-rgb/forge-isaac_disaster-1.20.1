@@ -1,7 +1,6 @@
 package net.luojiuoscar.isaac_disaster.item_ability.active_item.items;
 
 import net.luojiuoscar.isaac_disaster.client.ClientDataManager;
-import net.luojiuoscar.isaac_disaster.effect.ModEffects;
 import net.luojiuoscar.isaac_disaster.entity.custom.LemonEffectCloud;
 import net.luojiuoscar.isaac_disaster.item.ModItems;
 import net.luojiuoscar.isaac_disaster.item_ability.active_item.IActiveItem;
@@ -11,8 +10,6 @@ import net.luojiuoscar.isaac_disaster.manager.id_managers.ItemId;
 import net.luojiuoscar.isaac_disaster.sound.ModSounds;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvent;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
@@ -36,8 +33,8 @@ public class LemonMishap implements IActiveItem {
 
         // 创建药水云
         LemonEffectCloud cloud = new LemonEffectCloud(player.level(), player.getX(), player.getY(), player.getZ(),
-        player, (float)StatManager.getNearbyRange() * 0.4f, 100, 0, 10,
-                (float) StatManager.getDamageBonus() * 2.5f);
+        player, (float) StatManager.getNearbyRange() * 0.4f, 100, 0, 10,
+                (float) StatManager.DAMAGE.getBonus() * 2.5f);
 
         // 生成实体
         player.level().addFreshEntity(cloud);

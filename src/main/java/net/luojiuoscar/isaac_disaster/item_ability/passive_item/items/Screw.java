@@ -1,6 +1,5 @@
 package net.luojiuoscar.isaac_disaster.item_ability.passive_item.items;
 
-import net.luojiuoscar.isaac_disaster.helper.TextHelper;
 import net.luojiuoscar.isaac_disaster.item.ModItems;
 import net.luojiuoscar.isaac_disaster.item_ability.passive_item.IPassiveItem;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
@@ -24,16 +23,16 @@ public class Screw implements IPassiveItem {
 
     @Override
     public void onObtain(Player player) {
-        StatManager.modifyTearsAdder(player, 0.75);
-        StatManager.modifyAttackSpeedAdder(player, 0.75);
-        StatManager.modifyBulletSpeedAdder(player, 1);
+        StatManager.TEARS.apply(player, 0.75);
+        StatManager.ATTACK_SPEED.apply(player, 0.75);
+        StatManager.BULLET_SPEED.apply(player, 1);
     }
 
     @Override
     public void onRemove(Player player) {
-        StatManager.modifyTearsAdder(player, -0.75);
-        StatManager.modifyAttackSpeedAdder(player, -0.75);
-        StatManager.modifyBulletSpeedAdder(player, -1);
+        StatManager.TEARS.apply(player, -0.75);
+        StatManager.ATTACK_SPEED.apply(player, -0.75);
+        StatManager.BULLET_SPEED.apply(player, -1);
     }
 
     @Override
@@ -44,9 +43,9 @@ public class Screw implements IPassiveItem {
     @Override
     public List<Component> getDescription() {
         return List.of(
-                TextHelper.formatAttribute("item.isaac_disaster.attribute.tears", 0.75*StatManager.getTearsBonus()),
-                TextHelper.formatAttribute("item.isaac_disaster.attribute.attack_speed", 0.75*StatManager.getAttackSpeedBonus()),
-                TextHelper.formatAttribute("item.isaac_disaster.attribute.bullet_speed", StatManager.getBulletSpeedBonus())
+                StatManager.TEARS.description(0.75),
+                StatManager.ATTACK_SPEED.description(0.75),
+                StatManager.BULLET_SPEED.description(1)
         );
     }
 }

@@ -1,12 +1,9 @@
 package net.luojiuoscar.isaac_disaster.item_ability.pickup.pill_effects;
 
-import net.luojiuoscar.isaac_disaster.client.ClientDataManager;
 import net.luojiuoscar.isaac_disaster.item_ability.pickup.IPillEffect;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.manager.id_managers.PillEffectId;
 import net.luojiuoscar.isaac_disaster.sound.ModSounds;
-import net.minecraft.network.chat.Component;
-import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.AreaEffectCloud;
@@ -28,7 +25,7 @@ public class SomethingsWrong implements IPillEffect {
         cloud.setPotion(new Potion(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 400, 0)));
         cloud.setDuration(600);
         cloud.setOwner(player);
-        cloud.setRadius((float) StatManager.getRangeBonus() * 2.5f);
+        cloud.setRadius((float) StatManager.RANGE.getBonus() * 2.5f);
         player.level().addFreshEntity(cloud);
     }
 
@@ -39,7 +36,7 @@ public class SomethingsWrong implements IPillEffect {
         cloud.setPotion(new Potion(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 600, 2)));
         cloud.setDuration(1500);
         cloud.setOwner(player);
-        cloud.setRadius((float) StatManager.getRangeBonus() * 4f);
+        cloud.setRadius((float) StatManager.RANGE.getBonus() * 4f);
         player.level().addFreshEntity(cloud);
     }
 

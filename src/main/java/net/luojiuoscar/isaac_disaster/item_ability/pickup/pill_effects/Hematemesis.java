@@ -10,17 +10,9 @@ import net.luojiuoscar.isaac_disaster.manager.item_managers.PillEffectManager;
 import net.luojiuoscar.isaac_disaster.networking.ModMessages;
 import net.luojiuoscar.isaac_disaster.networking.packet.PillOnUseS2CPacket;
 import net.luojiuoscar.isaac_disaster.sound.ModSounds;
-import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
-import net.minecraft.util.datafix.fixes.EntityHealthFix;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
-import org.lwjgl.system.linux.Stat;
-
-import java.util.Random;
 
 
 public class Hematemesis implements IPillEffect {
@@ -60,7 +52,7 @@ public class Hematemesis implements IPillEffect {
         RandomSource random = player.getRandom();
 
         float health = player.getHealth() - 2;
-        int hearts = (int) Math.ceil(health / StatManager.getHealthBonus()) + random.nextInt(0,3);
+        int hearts = (int) Math.ceil(health / StatManager.MAX_HEALTH.getBonus()) + random.nextInt(0,3);
         // 转换成红心
         PlayerHelper.spawnItem(player, ModItems.RED_HEART.get(), hearts);
         player.setHealth(2);
@@ -71,7 +63,7 @@ public class Hematemesis implements IPillEffect {
         RandomSource random = player.getRandom();
 
         float health = player.getHealth() - 2;
-        int hearts = (int) Math.ceil(health / StatManager.getHealthBonus()+ random.nextDouble() * 1.2) + random.nextInt(2,6);
+        int hearts = (int) Math.ceil(health / StatManager.MAX_HEALTH.getBonus()+ random.nextDouble() * 1.2) + random.nextInt(2,6);
         // 转换成红心
         PlayerHelper.spawnItem(player, ModItems.RED_HEART.get(), hearts);
         player.setHealth(2);

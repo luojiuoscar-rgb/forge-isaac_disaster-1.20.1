@@ -1,6 +1,5 @@
 package net.luojiuoscar.isaac_disaster.item_ability.passive_item.items;
 
-import net.luojiuoscar.isaac_disaster.helper.TextHelper;
 import net.luojiuoscar.isaac_disaster.item.ModItems;
 import net.luojiuoscar.isaac_disaster.item_ability.passive_item.IPassiveItem;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
@@ -24,15 +23,14 @@ public class WireCoatHanger implements IPassiveItem {
 
     @Override
     public void onObtain(Player player) {
-        StatManager.modifyTearsAdder(player, 1);
-        StatManager.modifyAttackSpeedAdder(player, 1);
+        StatManager.TEARS.apply(player, 1);
+        StatManager.ATTACK_SPEED.apply(player, 1);
     }
 
     @Override
     public void onRemove(Player player) {
-        StatManager.modifyTearsAdder(player, -1);
-        StatManager.modifyAttackSpeedAdder(player, -1);
-
+        StatManager.TEARS.apply(player, -1);
+        StatManager.ATTACK_SPEED.apply(player, -1);
     }
 
     @Override
@@ -43,8 +41,8 @@ public class WireCoatHanger implements IPassiveItem {
     @Override
     public List<Component> getDescription() {
         return List.of(
-                TextHelper.formatAttribute("item.isaac_disaster.attribute.tears", StatManager.getTearsBonus()),
-                TextHelper.formatAttribute("item.isaac_disaster.attribute.attack_speed", StatManager.getAttackSpeedBonus())
+                StatManager.TEARS.description(1),
+                StatManager.ATTACK_SPEED.description(1)
         );
     }
 }

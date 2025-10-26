@@ -2,7 +2,6 @@ package net.luojiuoscar.isaac_disaster.item_ability.trinket.items;
 
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerSwallowedTrinketsProvider;
 import net.luojiuoscar.isaac_disaster.helper.CuriosHelper;
-import net.luojiuoscar.isaac_disaster.helper.TextHelper;
 import net.luojiuoscar.isaac_disaster.item.ModItems;
 import net.luojiuoscar.isaac_disaster.item.item.Trinket;
 import net.luojiuoscar.isaac_disaster.item_ability.trinket.IHurtTriggerTrinket;
@@ -35,7 +34,7 @@ public class Perfection implements IHurtTriggerTrinket {
     @Override
     public List<Component> getDescription() {
         return List.of(Component.translatable("item.isaac_disaster.perfection.lore.1"),
-                TextHelper.formatAttribute("item.isaac_disaster.attribute.luck", StatManager.getLuckBonus() * 10));
+                StatManager.LUCK.description(10));
     }
 
     @Override
@@ -48,9 +47,9 @@ public class Perfection implements IHurtTriggerTrinket {
     public void onEquipped(LivingEntity entity, boolean isEnchanted, boolean isPermanent){
         if (!(entity instanceof Player player)) return;
         if (isEnchanted) {
-            StatManager.modifyLuckAdder(player, 20);
+            StatManager.LUCK.apply(player, 20);
         } else {
-            StatManager.modifyLuckAdder(player, 10);
+            StatManager.LUCK.apply(player, 10);
         }
 
     };
@@ -58,9 +57,9 @@ public class Perfection implements IHurtTriggerTrinket {
     public void onUnequipped(LivingEntity entity, boolean isEnchanted, boolean isPermanent){
         if (!(entity instanceof Player player)) return;
         if (isEnchanted) {
-            StatManager.modifyLuckAdder(player, -20);
+            StatManager.LUCK.apply(player, -20);
         } else {
-            StatManager.modifyLuckAdder(player, -10);
+            StatManager.LUCK.apply(player, -10);
         }
     };
 

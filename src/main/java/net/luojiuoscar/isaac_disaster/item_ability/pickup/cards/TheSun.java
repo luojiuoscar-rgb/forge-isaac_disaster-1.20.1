@@ -45,7 +45,7 @@ public class TheSun implements ITarot {
                     entity.fireImmune()) continue;
             // 生成火焰、造成火伤
             EntityHelper.setFireAtEntity(entity);
-            entity.hurt(player.damageSources().inFire(), (float) StatManager.getDamageBonus() * 64f);
+            entity.hurt(player.damageSources().inFire(), (float) StatManager.DAMAGE.getBonus() * 64f);
 
             damageParticle(entity);
         }
@@ -68,7 +68,7 @@ public class TheSun implements ITarot {
                     entity.fireImmune()) continue;
             // 生成火焰、造成火伤
             EntityHelper.setFireAtEntity(entity);
-            entity.hurt(player.damageSources().inFire(), (float) StatManager.getDamageBonus() * 128f);
+            entity.hurt(player.damageSources().inFire(), (float) StatManager.DAMAGE.getBonus() * 128f);
 
             damageParticle(entity);
         }

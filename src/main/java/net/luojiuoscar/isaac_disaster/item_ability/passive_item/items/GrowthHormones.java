@@ -1,6 +1,5 @@
 package net.luojiuoscar.isaac_disaster.item_ability.passive_item.items;
 
-import net.luojiuoscar.isaac_disaster.helper.TextHelper;
 import net.luojiuoscar.isaac_disaster.item.ModItems;
 import net.luojiuoscar.isaac_disaster.item_ability.passive_item.IPassiveItem;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
@@ -25,15 +24,15 @@ public class GrowthHormones implements IPassiveItem {
 
     @Override
     public void onObtain(Player player) {
-        StatManager.modifyDamageAdder(player, 1);
-        StatManager.modifyMovementSpeedAdder(player, 1);
+        StatManager.DAMAGE.apply(player, 1);
+        StatManager.MOVEMENT_SPEED.apply(player, 1);
         StatManager.modifySetWithId(player, SetId.SPUN.getId(), 1);
     }
 
     @Override
     public void onRemove(Player player) {
-        StatManager.modifyDamageAdder(player, -1);
-        StatManager.modifyMovementSpeedAdder(player, -1);
+        StatManager.DAMAGE.apply(player, -1);
+        StatManager.MOVEMENT_SPEED.apply(player, -1);
         StatManager.modifySetWithId(player, SetId.SPUN.getId(), -1);
     }
 
@@ -45,8 +44,8 @@ public class GrowthHormones implements IPassiveItem {
     @Override
     public List<Component> getDescription() {
         return List.of(
-                TextHelper.formatAttribute("item.isaac_disaster.attribute.movement_speed", 1000*StatManager.getMovementSpeedBonus()),
-                TextHelper.formatAttribute("item.isaac_disaster.attribute.damage", StatManager.getDamageBonus())
+                StatManager.MOVEMENT_SPEED.description(1),
+                StatManager.DAMAGE.description(1)
         );
     }
 

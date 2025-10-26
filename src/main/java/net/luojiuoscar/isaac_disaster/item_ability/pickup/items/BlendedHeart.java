@@ -22,7 +22,7 @@ public class BlendedHeart implements IFoodPickup {
     @Override
     public void onUseEffect(Player player, ItemStack stack, InteractionHand hand) {
         double health = player.getMaxHealth() - player.getHealth();
-        if ( health >= StatManager.getHealthBonus() * 0.5){
+        if ( health >= StatManager.MAX_HEALTH.getBonus() * 0.5){
             PickupManager.getInstance().getItemFromId(PickupId.RED_HEART.getId()).onUseEffect(player, stack, hand);
 
         } else if (health > 0) {

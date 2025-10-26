@@ -44,7 +44,7 @@ public class TelepathyEffect extends MobEffect {
             // 先移除旧的同 UUID 的 modifier（防止重复叠加）
             attr.removeModifier(TELEPATHY_EFFECT_UUID);
             // 计算要增加的数值
-            double addValue = StatManager.getRangeBonus() * (amplifier + 2);
+            double addValue = StatManager.RANGE.getBonus() * (amplifier + 2);
             AttributeModifier modifier = new AttributeModifier(
                     TELEPATHY_EFFECT_UUID,
                     "telepathy.range_bonus",

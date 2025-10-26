@@ -1,6 +1,5 @@
 package net.luojiuoscar.isaac_disaster.item_ability.passive_item.items;
 
-import net.luojiuoscar.isaac_disaster.helper.TextHelper;
 import net.luojiuoscar.isaac_disaster.item.ModItems;
 import net.luojiuoscar.isaac_disaster.item_ability.passive_item.IPassiveItem;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
@@ -25,17 +24,17 @@ public class Pisces implements IPassiveItem {
     @Override
     public void onObtain(Player player) {
         StatManager.modifyPiercing(player, 1);
-        StatManager.modifyTearsCorrectionAdder(player, 1);
-        StatManager.modifyBulletScaleAdder(player, 2);
-        StatManager.modifyAttackKnockBackAdder(player, 1);
+        StatManager.TEARS_CORRECTION.apply(player, 1);
+        StatManager.BULLET_SCALE.apply(player, 2);
+        StatManager.ATTACK_KNOCKBACK.apply(player, 1);
     }
 
     @Override
     public void onRemove(Player player) {
         StatManager.modifyPiercing(player, -1);
-        StatManager.modifyTearsCorrectionAdder(player, -1);
-        StatManager.modifyBulletScaleAdder(player, -2);
-        StatManager.modifyAttackKnockBackAdder(player, -1);
+        StatManager.TEARS_CORRECTION.apply(player, -1);
+        StatManager.BULLET_SCALE.apply(player, -2);
+        StatManager.ATTACK_KNOCKBACK.apply(player, -1);
     }
 
     @Override
@@ -47,9 +46,9 @@ public class Pisces implements IPassiveItem {
     public List<Component> getDescription() {
         return List.of(
                 Component.translatable("item.isaac_disaster.attribute.piercing_bullet"),
-                TextHelper.formatAttribute("item.isaac_disaster.attribute.tears_correction", StatManager.getTearsCorrectionBonus()),
-                Component.translatable("item.isaac_disaster.attribute.bullet_scale_up"),
-                TextHelper.formatAttribute("item.isaac_disaster.attribute.attack_knockback", StatManager.getAttackKnockbackBonus())
-                );
+                StatManager.TEARS_CORRECTION.description(1),
+                Component.translatable("attribute.isaac_disaster.bullet_scale_up"),
+                StatManager.ATTACK_KNOCKBACK.description(1)
+        );
     }
 }

@@ -42,12 +42,12 @@ public class Config
 
 
     // 可配置的属性
-    public static ForgeConfigSpec.IntValue HEALTH_BONUS;
+    public static ForgeConfigSpec.DoubleValue HEALTH_BONUS;
     public static ForgeConfigSpec.DoubleValue MOVEMENT_SPEED_BONUS;
     public static ForgeConfigSpec.DoubleValue MOVEMENT_SPEED_LIMIT;
     public static ForgeConfigSpec.DoubleValue DAMAGE_BONUS;
     public static ForgeConfigSpec.DoubleValue LUCK_BONUS;
-    public static ForgeConfigSpec.IntValue FLY_TIME;
+    public static ForgeConfigSpec.DoubleValue FLY_TIME;
     public static ForgeConfigSpec.DoubleValue SCALE_BONUS;
     public static ForgeConfigSpec.DoubleValue RANGE_BONUS;
     public static ForgeConfigSpec.DoubleValue BLOCK_REACH_BONUS;
@@ -63,7 +63,7 @@ public class Config
 
     // 其他可配置项目
     public static ForgeConfigSpec.IntValue PASSIVE_ITEM_LIMIT;
-    public static ForgeConfigSpec.DoubleValue DAMAGE_MULTIPLIER_1;
+    public static ForgeConfigSpec.DoubleValue DAMAGE_MULTIPLIER_BASE;
     public static ForgeConfigSpec.DoubleValue NEARBY_RANGE;
     public static ForgeConfigSpec.DoubleValue HOLY_SHIELD_STRENGTH;
     public static ForgeConfigSpec.DoubleValue MONEY_IS_POWER_STRENGTH;
@@ -87,7 +87,7 @@ public class Config
         // 生命值增量基准  默认10
         HEALTH_BONUS = BUILDER
                 .comment("Base value of health increment")
-                .defineInRange("health_bonus", 10, 1, 99999);
+                .defineInRange("health_bonus", 10.0, 1, 99999);
         // 移动速度基准值  默认0.02
         MOVEMENT_SPEED_BONUS = BUILDER
                 .comment("Base value of movement speed increment")
@@ -105,10 +105,10 @@ public class Config
                 .comment("Base value of luck increment")
                 .defineInRange("luck_bonus", 1.0, 0.0, 99999.0);
 
-        // 飞行时间  默认120.0
+        // 飞行时间  默认100.0
         FLY_TIME = BUILDER
                 .comment("Increment of fly time for each fly provided by item (tick)")
-                .defineInRange("fly_time", 100, 0, 99999);
+                .defineInRange("fly_time", 100.0, 0, 99999);
 
         // 体型  默认0.1
         SCALE_BONUS = BUILDER
@@ -165,7 +165,10 @@ public class Config
                 .comment("Base value of attack knockback increment")
                 .defineInRange("attack_knockback_bonus", 0.5, 0.0, 99999.0);
 
-
+        // 伤害倍率提升  默认1
+        DAMAGE_MULTIPLIER_BASE = BUILDER
+                .comment("Base value of damage multiplier base increment")
+                .defineInRange("damage_multiplier_base_bonus", 1.0, 0.0, 99999.0);
 
 
         BUILDER.pop();
@@ -182,12 +185,6 @@ public class Config
                 .comment("If the item can be added to player's backpack with a rightClick. " +
                         "If you want to enable passive item's curios slot ONLY, then you should disable this option.")
                 .define("usable_passive_item", true);
-
-        // 伤害倍率提升1  默认0.5
-        DAMAGE_MULTIPLIER_1 = BUILDER
-                .comment("Determines the damage multiplier for Cricket's head & synergy of Blood of the Martyr and " +
-                        "the book of belial & Magic mushroom")
-                .defineInRange("damage_multiplier_1", 0.5, 0.0, 99999.0);
 
         // 周围（定义周围的范围）  默认12
         NEARBY_RANGE = BUILDER

@@ -44,14 +44,17 @@ public class ActiveItem extends IsaacItem {
         tooltipComponents.addAll(
                 ActiveItemManager.getInstance().getItemFromId(getItemId()).getDescription()
         );
-        // 添加协同效果
+    }
+
+    @Override
+    public void addSynergyDescription(List<Component> tooltipComponents){
         Player player = Minecraft.getInstance().player;
         if (player == null) return;
 
         tooltipComponents.addAll(
                 ActiveItemManager.getInstance().getItemFromId(getItemId()).getSynergyDescription()
         );
-    }
+    };
 
     @Override
     public void addAdditionalInfo(List<Component> tooltipComponents, @Nullable ItemStack stack){

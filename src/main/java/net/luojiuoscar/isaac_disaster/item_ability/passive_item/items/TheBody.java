@@ -1,6 +1,5 @@
 package net.luojiuoscar.isaac_disaster.item_ability.passive_item.items;
 
-import net.luojiuoscar.isaac_disaster.helper.TextHelper;
 import net.luojiuoscar.isaac_disaster.item.ModItems;
 import net.luojiuoscar.isaac_disaster.item_ability.passive_item.IPassiveItem;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
@@ -25,12 +24,12 @@ public class TheBody implements IPassiveItem {
 
     @Override
     public void onObtain(Player player) {
-        StatManager.modifyMaxHealth(player, 3);
+        StatManager.MAX_HEALTH.apply(player, 3);
     }
 
     @Override
     public void onRemove(Player player) {
-        StatManager.modifyMaxHealth(player, -3);
+        StatManager.MAX_HEALTH.apply(player, -3);
     }
 
     @Override
@@ -41,8 +40,8 @@ public class TheBody implements IPassiveItem {
     @Override
     public List<Component> getDescription() {
         return List.of(
-                TextHelper.formatAttribute("item.isaac_disaster.attribute.health", 3*StatManager.getHealthBonus()),
-                Component.translatable("item.isaac_disaster.action.heal_health", 3*StatManager.getHealthBonus())
+                StatManager.MAX_HEALTH.description(3),
+                Component.translatable("item.isaac_disaster.action.heal_health", 3*StatManager.MAX_HEALTH.getBonus())
         );
     }
 }

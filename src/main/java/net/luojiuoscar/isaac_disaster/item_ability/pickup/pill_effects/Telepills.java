@@ -2,18 +2,11 @@ package net.luojiuoscar.isaac_disaster.item_ability.pickup.pill_effects;
 
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.item_ability.pickup.IPillEffect;
-import net.luojiuoscar.isaac_disaster.manager.StatManager;
-import net.luojiuoscar.isaac_disaster.manager.id_managers.ItemId;
 import net.luojiuoscar.isaac_disaster.manager.id_managers.PillEffectId;
-import net.luojiuoscar.isaac_disaster.manager.item_managers.ActiveItemManager;
 import net.luojiuoscar.isaac_disaster.sound.ModSounds;
-import net.minecraft.network.chat.Component;
-import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.player.Player;
-
-import static com.mojang.text2speech.Narrator.LOGGER;
 
 
 public class Telepills implements IPillEffect {

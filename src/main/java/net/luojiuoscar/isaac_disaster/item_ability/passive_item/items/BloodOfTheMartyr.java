@@ -1,7 +1,6 @@
 package net.luojiuoscar.isaac_disaster.item_ability.passive_item.items;
 
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
-import net.luojiuoscar.isaac_disaster.helper.TextHelper;
 import net.luojiuoscar.isaac_disaster.item.ModItems;
 import net.luojiuoscar.isaac_disaster.item_ability.passive_item.IPassiveItem;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
@@ -28,7 +27,7 @@ public class BloodOfTheMartyr implements IPassiveItem {
 
     @Override
     public void onObtain(Player player) {
-        StatManager.modifyDamageAdder(player, 1);
+        StatManager.DAMAGE.apply(player, 1);
 
         // 数据需要同步数据到客户端
         if (player instanceof ServerPlayer serverPlayer){
@@ -39,7 +38,7 @@ public class BloodOfTheMartyr implements IPassiveItem {
 
     @Override
     public void onRemove(Player player) {
-        StatManager.modifyDamageAdder(player, -1);
+        StatManager.DAMAGE.apply(player, -1);
 
         // 数据需要同步数据到客户端
         if (player instanceof ServerPlayer serverPlayer){
@@ -56,7 +55,7 @@ public class BloodOfTheMartyr implements IPassiveItem {
     @Override
     public List<Component> getDescription() {
         return List.of(
-                TextHelper.formatAttribute("item.isaac_disaster.attribute.damage", StatManager.getDamageBonus())
+                StatManager.DAMAGE.description(1)
         );
     }
 }

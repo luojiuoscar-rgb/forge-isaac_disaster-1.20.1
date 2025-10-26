@@ -48,12 +48,12 @@ public class ShotSpeedUp implements IPillEffect {
 
     @Override
     public void onUseEffect(Player player) {
-        StatManager.modifyBulletSpeedAdder(player, 0.5);
+        StatManager.BULLET_SPEED.apply(player, 0.5);
     }
 
     @Override
     public void onUseEffectH(Player player) {
-        StatManager.modifyBulletSpeedAdder(player, 1);
+        StatManager.BULLET_SPEED.apply(player, 1);
     }
 
     @Override

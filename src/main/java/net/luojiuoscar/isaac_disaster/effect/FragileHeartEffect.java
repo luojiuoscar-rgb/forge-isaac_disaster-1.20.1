@@ -28,7 +28,7 @@ public class FragileHeartEffect extends MobEffect {
             return;
         }
 
-        double healthBonus = StatManager.getHealthBonus() * (amplifier + 1);
+        double healthBonus = StatManager.MAX_HEALTH.getBonus() * (amplifier + 1);
 
         AttributeInstance instance = entity.getAttribute(Attributes.MAX_HEALTH);
         if (instance == null) return;

@@ -48,12 +48,12 @@ public class SpeedUp implements IPillEffect {
 
     @Override
     public void onUseEffect(Player player) {
-        StatManager.modifyMovementSpeedAdder(player, 0.75);
+        StatManager.MOVEMENT_SPEED.apply(player, 0.75);
     }
 
     @Override
     public void onUseEffectH(Player player) {
-        StatManager.modifyMovementSpeedAdder(player, 1.5);
+        StatManager.MOVEMENT_SPEED.apply(player, 1.5);
     }
 
     @Override
