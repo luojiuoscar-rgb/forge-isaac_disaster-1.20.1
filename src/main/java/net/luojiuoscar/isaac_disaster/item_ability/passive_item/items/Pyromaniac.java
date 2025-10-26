@@ -37,7 +37,8 @@ public class Pyromaniac implements IRecursivePassiveItem {
     @Override
     public List<Component> getDescription() {
         return List.of(
-                Component.translatable("item.isaac_disaster.pyromaniac.lore.1")
+                Component.translatable("item.isaac_disaster.pyromaniac.lore.1"),
+                Component.translatable("item.isaac_disaster.pyromaniac.lore.2")
         );
     }
 

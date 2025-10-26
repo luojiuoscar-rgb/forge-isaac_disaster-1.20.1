@@ -64,7 +64,6 @@
   "effect.isaac_disaster.holy_shield": "神圣护盾",
   "effect.isaac_disaster.holy_shield.explain.1": "受到的伤害较低时，免疫伤害",
   "effect.isaac_disaster.holy_shield.explain.2": "受到的伤害较高时，阻挡一次",
-  "effect.isaac_disaster.holy_shield.explain.3": "均与等级相关",
   "effect.isaac_disaster.lacrimal_hyposecretion": "无泪症",
   "effect.isaac_disaster.lacrimal_hyposecretion.explain.1": "无法发射眼泪",
   "effect.isaac_disaster.x_ray_vision": "X光视觉",
@@ -110,7 +109,7 @@
   "attribute.isaac_disaster.bullet_scale_down": "泪弹变小",
   "attribute.isaac_disaster.attack_knockback": "击退",
   "attribute.isaac_disaster.double_shot_delay": "射击间隔翻倍",
-  "attribute.isaac_disaster.fly": "可以飞行一段时间",
+  "attribute.isaac_disaster.fly_time": "飞行时间",
   "attribute.isaac_disaster.scale_up": "体型变大",
   "attribute.isaac_disaster.scale_down": "体型变小",
 
@@ -118,7 +117,7 @@
   "item.isaac_disaster.attribute.homing_bullet": "跟踪泪弹",
   "item.isaac_disaster.attribute.piercing_bullet": "穿透泪弹",
   "item.isaac_disaster.attribute.controllable_bullet": "可控泪弹",
-  
+
   "item.isaac_disaster.special.cannot_stack": "效果不可叠加",
   "item.isaac_disaster.special.stackable": "效果可叠加",
   "item.isaac_disaster.special.recharge_require": "需要%d秒重新充能",

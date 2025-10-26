@@ -1,6 +1,5 @@
-package net.luojiuoscar.isaac_disaster.manager.item_managers;
+package net.luojiuoscar.isaac_disaster.manager;
 
-import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.manager.id_managers.EffectId;
 import net.minecraft.network.chat.Component;
 
@@ -60,8 +59,7 @@ public class EffectDescriptionManager {
         register(EffectId.HOLY_SHIELD.getId(), List.of(
                 Component.translatable("effect.isaac_disaster.holy_shield").append(": ")
                         .append(Component.translatable("effect.isaac_disaster.holy_shield.explain.1")),
-                Component.translatable("effect.isaac_disaster.holy_shield.explain.2"),
-                Component.translatable("effect.isaac_disaster.holy_shield.explain.3")
+                Component.translatable("effect.isaac_disaster.holy_shield.explain.2")
         ));
         register(EffectId.LACRIMAL_HYPOSECRETION.getId(), List.of(
                 Component.translatable("effect.isaac_disaster.lacrimal_hyposecretion").append(": ")

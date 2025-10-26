@@ -5,7 +5,7 @@ import net.luojiuoscar.isaac_disaster.item_ability.passive_item.IPassiveItem;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.manager.id_managers.EffectId;
 import net.luojiuoscar.isaac_disaster.manager.id_managers.ItemId;
-import net.luojiuoscar.isaac_disaster.manager.item_managers.EffectDescriptionManager;
+import net.luojiuoscar.isaac_disaster.manager.EffectDescriptionManager;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -42,7 +42,7 @@ public class Transcendence implements IPassiveItem {
     @Override
     public List<Component> getDescription() {
         return List.of(
-                Component.translatable("item.isaac_disaster.attribute.fly"),
+                StatManager.FLY_TIME.description(1),
                 Component.translatable("item.isaac_disaster.special.stackable")
         );
     }

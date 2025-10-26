@@ -41,7 +41,7 @@ public class DeadDove implements IPassiveItem {
     @Override
     public List<Component> getDescription() {
         return List.of(
-                Component.translatable("item.isaac_disaster.attribute.fly"),
+                StatManager.FLY_TIME.description(1),
                 Component.translatable("item.isaac_disaster.attribute.spectral_bullet")
         );
     }

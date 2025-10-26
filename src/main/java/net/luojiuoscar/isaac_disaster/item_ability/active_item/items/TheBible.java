@@ -9,7 +9,7 @@ import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.manager.id_managers.EffectId;
 import net.luojiuoscar.isaac_disaster.manager.id_managers.ItemId;
 import net.luojiuoscar.isaac_disaster.manager.id_managers.SetId;
-import net.luojiuoscar.isaac_disaster.manager.item_managers.EffectDescriptionManager;
+import net.luojiuoscar.isaac_disaster.manager.EffectDescriptionManager;
 import net.luojiuoscar.isaac_disaster.manager.item_managers.SetManager;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvent;
