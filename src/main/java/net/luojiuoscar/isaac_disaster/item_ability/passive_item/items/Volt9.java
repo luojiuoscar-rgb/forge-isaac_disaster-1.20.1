@@ -8,6 +8,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
@@ -19,17 +20,17 @@ public class Volt9 implements IPassiveItem {
     }
 
     @Override
-    public void onFirstObtain(Player player) {
+    public void onFirstObtain(Player player, @Nullable ItemStack stack) {
         // 满电
         PlayerHelper.chargeAll((ServerPlayer) player, null);
     }
 
     @Override
-    public void onObtain(Player player) {
+    public void onObtainEffect(Player player, @Nullable ItemStack stack) {
     }
 
     @Override
-    public void onRemove(Player player) {
+    public void onRemove(Player player, @Nullable ItemStack stack) {
     }
 
     @Override

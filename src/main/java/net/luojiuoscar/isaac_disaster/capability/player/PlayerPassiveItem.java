@@ -252,11 +252,8 @@ public class PlayerPassiveItem {
         // 更新哈希表：数量+1
         updateItemMap(item.getItemId(), 1);
 
-        // 触发效果 Obtain效果仅触发一次
-        if (!PassiveItem.isConsumed(stack)) {
-            PassiveItemManager.getInstance().getItemFromId(itemId).onFirstObtain(player);
-        }
-        PassiveItemManager.getInstance().getItemFromId(itemId).onObtain(player);
+        // 触发效果
+        PassiveItemManager.getInstance().getItemFromId(itemId).onObtain(player, stack);
         ModMessages.sentToPlayer(new ObtainPassiveItemS2CPacket(itemId), player);
         PassiveItem.setConsumed(stack, true);
 
@@ -281,7 +278,7 @@ public class PlayerPassiveItem {
         // 更新哈希表：数量+1
         updateItemMap(itemId, 1);
 
-        PassiveItemManager.getInstance().getItemFromId(itemId).onObtain(player);
+        PassiveItemManager.getInstance().getItemFromId(itemId).onObtainEffect(player, stack);
         ModMessages.sentToPlayer(new ObtainPassiveItemS2CPacket(itemId), player);
     }
 
@@ -299,7 +296,7 @@ public class PlayerPassiveItem {
         updateItemMap(removeId, -1);
 
         //移除效果
-        PassiveItemManager.getInstance().getItemFromId(removeId).onRemove(player);
+        PassiveItemManager.getInstance().getItemFromId(removeId).onRemove(player, stack);
         return true;
     }
 
@@ -314,7 +311,7 @@ public class PlayerPassiveItem {
                 // 更新哈希表：数量-1（若数量为0则移除键）
                 updateItemMap(itemId, -1);
 
-                PassiveItemManager.getInstance().getItemFromId(itemId).onRemove(player);
+                PassiveItemManager.getInstance().getItemFromId(itemId).onRemove(player, stack);
                 break;
             }
         }

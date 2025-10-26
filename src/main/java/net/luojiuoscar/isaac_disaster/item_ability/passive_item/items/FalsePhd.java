@@ -16,6 +16,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
@@ -26,14 +27,14 @@ public class FalsePhd implements IPassiveItem {
     }
 
     @Override
-    public void onFirstObtain(Player player) {
+    public void onFirstObtain(Player player, @Nullable ItemStack stack) {
         PlayerHelper.giveItem(player, ModItems.BLACK_HEART.get(), 1);
         LevelHelper.spawnLootAtPos((ServerLevel) player.level(), player.blockPosition().getCenter(),
                 ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, LootTableNameManager.RANDOM_PILLS));
     }
 
     @Override
-    public void onObtain(Player player) {
+    public void onObtainEffect(Player player, @Nullable ItemStack stack) {
         if (player instanceof ServerPlayer serverPlayer){
             int count = PlayerHelper.getItemCount(ItemId.FALSE_PHD.getId(), serverPlayer);
             ModMessages.sentToPlayer(new PassiveItemSyncS2CPacket(ItemId.FALSE_PHD.getId(), count), serverPlayer);
@@ -42,7 +43,7 @@ public class FalsePhd implements IPassiveItem {
     }
 
     @Override
-    public void onRemove(Player player) {
+    public void onRemove(Player player, @Nullable ItemStack stack) {
         if (player instanceof ServerPlayer serverPlayer){
             int count = PlayerHelper.getItemCount(ItemId.FALSE_PHD.getId(), serverPlayer);
             ModMessages.sentToPlayer(new PassiveItemSyncS2CPacket(ItemId.FALSE_PHD.getId(), count), serverPlayer);

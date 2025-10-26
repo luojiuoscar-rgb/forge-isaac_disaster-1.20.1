@@ -9,6 +9,7 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
@@ -20,16 +21,16 @@ public class PiggyBank implements IHurtTriggerPassiveItem {
     }
 
     @Override
-    public void onFirstObtain(Player player) {
+    public void onFirstObtain(Player player, @Nullable ItemStack stack) {
         PlayerHelper.giveMoney(player, 3);
     }
 
     @Override
-    public void onObtain(Player player) {
+    public void onObtainEffect(Player player, @Nullable ItemStack stack) {
     }
 
     @Override
-    public void onRemove(Player player) {
+    public void onRemove(Player player, @Nullable ItemStack stack) {
     }
 
     @Override

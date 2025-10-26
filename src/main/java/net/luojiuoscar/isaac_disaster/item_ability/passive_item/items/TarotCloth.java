@@ -10,6 +10,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
@@ -21,11 +22,11 @@ public class TarotCloth implements IPassiveItem {
     }
 
     @Override
-    public void onFirstObtain(Player player) {
+    public void onFirstObtain(Player player, @Nullable ItemStack stack) {
     }
 
     @Override
-    public void onObtain(Player player) {
+    public void onObtainEffect(Player player, @Nullable ItemStack stack) {
         if (player instanceof ServerPlayer serverPlayer){
             int count = PlayerHelper.getItemCount(ItemId.TAROT_CLOTH.getId(), serverPlayer);
             ModMessages.sentToPlayer(new PassiveItemSyncS2CPacket(ItemId.TAROT_CLOTH.getId(), count), serverPlayer);
@@ -33,7 +34,7 @@ public class TarotCloth implements IPassiveItem {
     }
 
     @Override
-    public void onRemove(Player player) {
+    public void onRemove(Player player, @Nullable ItemStack stack) {
         if (player instanceof ServerPlayer serverPlayer){
             int count = PlayerHelper.getItemCount(ItemId.TAROT_CLOTH.getId(), serverPlayer);
             ModMessages.sentToPlayer(new PassiveItemSyncS2CPacket(ItemId.TAROT_CLOTH.getId(), count), serverPlayer);

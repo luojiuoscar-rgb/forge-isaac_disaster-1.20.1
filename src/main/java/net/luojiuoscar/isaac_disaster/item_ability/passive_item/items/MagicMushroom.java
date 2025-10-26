@@ -11,6 +11,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
@@ -27,12 +28,12 @@ public class MagicMushroom implements IPassiveItem {
     }
 
     @Override
-    public void onFirstObtain(Player player) {
+    public void onFirstObtain(Player player, @Nullable ItemStack stack) {
         player.setHealth(player.getMaxHealth());
     }
 
     @Override
-    public void onObtain(Player player) {
+    public void onObtainEffect(Player player, @Nullable ItemStack stack) {
         StatManager.MAX_HEALTH.apply(player, 1);
         StatManager.SCALE.apply(player, 2.5);
         StatManager.MOVEMENT_SPEED.apply(player, 1.5);
@@ -45,7 +46,7 @@ public class MagicMushroom implements IPassiveItem {
     }
 
     @Override
-    public void onRemove(Player player) {
+    public void onRemove(Player player, @Nullable ItemStack stack) {
         StatManager.MAX_HEALTH.apply(player, -1);
         StatManager.SCALE.apply(player, -2.5);
         StatManager.MOVEMENT_SPEED.apply(player, -1.5);

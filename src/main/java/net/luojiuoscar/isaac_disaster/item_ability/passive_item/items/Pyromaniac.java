@@ -8,6 +8,7 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
@@ -19,15 +20,15 @@ public class Pyromaniac implements IRecursivePassiveItem {
     }
 
     @Override
-    public void onFirstObtain(Player player) {}
+    public void onFirstObtain(Player player, @Nullable ItemStack stack) {}
 
     @Override
-    public void onObtain(Player player) {
+    public void onObtainEffect(Player player, @Nullable ItemStack stack) {
         recursiveEffect(player); // 获取时触发一次
     }
 
     @Override
-    public void onRemove(Player player) {}
+    public void onRemove(Player player, @Nullable ItemStack stack) {}
 
     @Override
     public ItemStack getItemStack(){

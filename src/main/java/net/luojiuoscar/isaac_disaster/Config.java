@@ -68,6 +68,8 @@ public class Config
     public static ForgeConfigSpec.DoubleValue HOLY_SHIELD_STRENGTH;
     public static ForgeConfigSpec.DoubleValue MONEY_IS_POWER_STRENGTH;
     public static ForgeConfigSpec.BooleanValue USABLE_PASSIVE_ITEM;
+    public static ForgeConfigSpec.BooleanValue ALLOW_CURIO_UNEQUIP;
+    public static ForgeConfigSpec.BooleanValue AUTO_ADAPT_CURIO_SLOT;
 
     // 钱币
     public static ForgeConfigSpec.ConfigValue<String> COIN_TIER_1_ID;
@@ -177,14 +179,21 @@ public class Config
         BUILDER.push("Item relevant");
         // 可携带的道具总数  默认999
         PASSIVE_ITEM_LIMIT = BUILDER
-                .comment("How many passive items a player can carry." +
-                        "If item is not usable then this option is invalid")
+                .comment("How many passive items a player can carry. (NOT CURIOS)")
                 .defineInRange("passive_item_limit", 999, 1, 99999);
 
         USABLE_PASSIVE_ITEM = BUILDER
                 .comment("If the item can be added to player's backpack with a rightClick. " +
                         "If you want to enable passive item's curios slot ONLY, then you should disable this option.")
                 .define("usable_passive_item", true);
+
+        ALLOW_CURIO_UNEQUIP = BUILDER
+                .comment("If the item can be unequipped")
+                .define("allow_curio_unequip", true);
+
+        AUTO_ADAPT_CURIO_SLOT = BUILDER
+                .comment("Equip curio passive item will also add 1 passive item slot. (NEED to enable at least one slot)")
+                .define("auto_adapt_curio_slot", true);
 
         // 周围（定义周围的范围）  默认12
         NEARBY_RANGE = BUILDER

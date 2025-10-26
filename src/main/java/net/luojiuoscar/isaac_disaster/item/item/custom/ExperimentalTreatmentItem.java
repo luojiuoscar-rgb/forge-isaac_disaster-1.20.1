@@ -2,62 +2,58 @@ package net.luojiuoscar.isaac_disaster.item.item.custom;
 
 import net.luojiuoscar.isaac_disaster.item.item.PassiveItem;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
+import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.util.RandomSource;
-import net.minecraft.world.entity.player.Player;
+import net.minecraft.network.chat.Style;
 import net.minecraft.world.item.ItemStack;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 
-public class ExperimentalTreatment extends PassiveItem {
+public class ExperimentalTreatmentItem extends PassiveItem {
     private static final String NBT_MODIFIERS = "Modifiers";
 
-    public ExperimentalTreatment(Properties properties, int itemLevel, int itemId) {
-        super(properties, itemLevel, itemId);
+    public ExperimentalTreatmentItem(Properties properties, int itemLevel, int itemId, boolean hasSpecialEffect) {
+        super(properties, itemLevel, itemId, hasSpecialEffect);
     }
 
-    /** 当玩家首次获得该物品时触发，生成若干随机属性。 */
-    public static void shuffle(Player player, ItemStack stack) {
-        RandomSource random = player.getRandom();
-        // 随机 3~8 条属性
-        int total = random.nextInt(3, 9);
-        List<UUID> uuidList = new ArrayList<>(StatManager.getAllNormalTypeUUID().stream().toList());
-        Collections.shuffle(uuidList);
-        Set<UUID> picked = new HashSet<>(uuidList.subList(0, total));
 
-        for (UUID uuid : picked){
-            double radio = random.nextDouble() * 2.2 - 1;
-            setModifier(stack, uuid, radio); // 记录筛选出来的内容
+    @Override
+    public void addDescription(List<Component> tooltipComponents, ItemStack stack){
+        Map<UUID, Double> map = getModifierMap(stack);
+        if (map.isEmpty()) {
+            super.addDescription(tooltipComponents, stack);
+            return;
+        }
+
+        for (Map.Entry<UUID, Double> entry : map.entrySet()) {
+            UUID key = entry.getKey();
+            Double value = entry.getValue();
+
+            if (value < 0){
+                tooltipComponents.add(StatManager.fromUUID(key).description(value, Style.EMPTY.withColor(ChatFormatting.RED)));
+            }else if (value <= 1){
+                tooltipComponents.add(StatManager.fromUUID(key).description(value, Style.EMPTY.withColor(ChatFormatting.GREEN)));
+            }else {
+                tooltipComponents.add(StatManager.fromUUID(key).description(value, Style.EMPTY.withColor(ChatFormatting.LIGHT_PURPLE)));
+            }
         }
     }
 
     /** 将指定修正值写入 NBT */
     public static void setModifier(ItemStack stack, UUID uuid, double ratio) {
-        Map<UUID, Double> modifiers = loadNBT(stack);
+        Map<UUID, Double> modifiers = getModifierMap(stack);
         modifiers.put(uuid, ratio);
         saveNBT(stack, modifiers);
     }
 
-
-    @Override
-    public void addDescription(List<Component> tooltipComponents){
-
-    }
-
-
-
-
-
-
-
-
-
-
-    public static Map<UUID, Double> loadNBT(ItemStack stack) {
+    public static Map<UUID, Double> getModifierMap(ItemStack stack) {
         Map<UUID, Double> map = new HashMap<>();
         CompoundTag tag = stack.getTag();
         if (tag == null || !tag.contains(NBT_MODIFIERS, Tag.TAG_LIST)) return map;

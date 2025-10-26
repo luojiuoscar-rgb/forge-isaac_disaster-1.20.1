@@ -68,6 +68,9 @@ public class BadGas implements IPillEffect {
             LevelHelper.pushEntity(level, entity, pos, 2, 0.2);
             entity.addEffect(effect);
         }
+
+        player.level().playSound(null, BlockPos.containing(player.blockPosition().getCenter()),
+                ModSounds.FART_NORMAL.get(), SoundSource.PLAYERS, 1.0f, 1.0f);
     }
 
     @Override
@@ -83,21 +86,19 @@ public class BadGas implements IPillEffect {
             LevelHelper.pushEntity(level, entity, pos, 5.5, 0.4);
             entity.addEffect(effect);
         }
+
+        player.level().playSound(null, BlockPos.containing(player.blockPosition().getCenter()),
+                ModSounds.FART_HUGE.get(), SoundSource.PLAYERS, 1.0f, 1.0f);
     }
 
     @Override
     public void onUseSound(Player player) {
         player.playSound(ModSounds.BAD_GAS.get(), 1.0f, 1.0f);
-        player.level().playSound(null, BlockPos.containing(player.blockPosition().getCenter()),
-                ModSounds.FART_NORMAL.get(), SoundSource.PLAYERS, 1.0f, 1.0f);
     }
 
     @Override
     public void onUseSoundH(Player player) {
         player.playSound(ModSounds.BAD_GAS_H.get(), 1.0f, 1.0f);
-        player.level().playSound(null, BlockPos.containing(player.blockPosition().getCenter()),
-                ModSounds.FART_HUGE.get(), SoundSource.PLAYERS, 1.0f, 1.0f);
-
     }
 
     @Override

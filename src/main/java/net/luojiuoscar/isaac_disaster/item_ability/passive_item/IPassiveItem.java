@@ -1,11 +1,12 @@
 package net.luojiuoscar.isaac_disaster.item_ability.passive_item;
 
+import net.luojiuoscar.isaac_disaster.item.item.PassiveItem;
 import net.luojiuoscar.isaac_disaster.sound.ModSounds;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,15 +20,20 @@ public interface IPassiveItem {
 
 
     /** 不会被remove的效果 */
-    void onFirstObtain(Player player);
+    void onFirstObtain(Player player, @Nullable ItemStack stack);
 
-    void onObtain(Player player);
+    void onObtainEffect(Player player, @Nullable ItemStack stack);
+
+    default void onObtain(Player player, @Nullable ItemStack stack){
+        onObtainEffect(player, stack);
+        if (stack != null && !PassiveItem.isConsumed(stack)) onFirstObtain(player, stack);
+    }
 
 
     /**
      * 移除道具时触发
      */
-    void onRemove(Player player);
+    void onRemove(Player player, @Nullable ItemStack stack);
 
 
     default void onObtainClient(Player player){

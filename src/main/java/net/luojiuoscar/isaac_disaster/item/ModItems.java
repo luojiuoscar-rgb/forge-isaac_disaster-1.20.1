@@ -4,6 +4,7 @@ import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.item.item.ActiveItem;
 import net.luojiuoscar.isaac_disaster.item.item.PassiveItem;
 import net.luojiuoscar.isaac_disaster.item.item.Trinket;
+import net.luojiuoscar.isaac_disaster.item.item.custom.ExperimentalTreatmentItem;
 import net.luojiuoscar.isaac_disaster.item.pickup.*;
 import net.luojiuoscar.isaac_disaster.manager.id_managers.ItemId;
 import net.luojiuoscar.isaac_disaster.manager.id_managers.PickupId;
@@ -233,7 +234,7 @@ public class ModItems {
     static { PASSIVE_ITEM_LIST.add(SYNTHOIL); }
 
     public static final RegistryObject<Item> EXPERIMENTAL_TREATMENT = ITEMS.register("experimental_treatment",
-            () -> new PassiveItem(new Item.Properties(),1, ItemId.EXPERIMENTAL_TREATMENT.getId(), true));
+            () -> new ExperimentalTreatmentItem(new Item.Properties(),2, ItemId.EXPERIMENTAL_TREATMENT.getId(), true));
     static { PASSIVE_ITEM_LIST.add(EXPERIMENTAL_TREATMENT); }
 
     public static final RegistryObject<Item> TORN_PHOTO = ITEMS.register("torn_photo",

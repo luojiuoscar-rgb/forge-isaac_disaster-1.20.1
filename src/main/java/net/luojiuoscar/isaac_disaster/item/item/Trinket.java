@@ -42,10 +42,11 @@ public class Trinket extends Item implements IIsaacCuriosItem {
         TrinketManager.getInstance().getTrinketFromId(getTrinketId()).onEquipped(slotContext.entity(), isEnchanted(stack), false);
     }
     @Override
-    public void onUnequip(SlotContext slotContext, ItemStack prevStack, ItemStack stack) {
+    public void tryUnequip(SlotContext slotContext, ItemStack prevStack, ItemStack stack) {
         if (isSwallowing(prevStack) || isSwallowing(stack)) return; // 不知道为什么 但是这样可以
         TrinketManager.getInstance().getTrinketFromId(getTrinketId()).onUnequipped(slotContext.entity(), isEnchanted(stack), false);
     }
+
     @Override
     public void curioTick(SlotContext slotContext, ItemStack stack) {
         TrinketManager.getInstance().getTrinketFromId(getTrinketId()).onTick(slotContext.entity(), isEnchanted(stack));

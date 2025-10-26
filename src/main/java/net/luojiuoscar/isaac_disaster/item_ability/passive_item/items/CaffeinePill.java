@@ -12,6 +12,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
@@ -23,7 +24,7 @@ public class CaffeinePill implements IPassiveItem {
     }
 
     @Override
-    public void onFirstObtain(Player player) {
+    public void onFirstObtain(Player player, @Nullable ItemStack stack) {
         if (player.level() instanceof ServerLevel level){
             LevelHelper.spawnLootAtPos(level, player.blockPosition().getCenter(),
                     ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, LootTableNameManager.RANDOM_PILLS));
@@ -31,13 +32,13 @@ public class CaffeinePill implements IPassiveItem {
     }
 
     @Override
-    public void onObtain(Player player) {
+    public void onObtainEffect(Player player, @Nullable ItemStack stack) {
         StatManager.MOVEMENT_SPEED.apply(player, 1.5);
         StatManager.SCALE.apply(player, -1);
     }
 
     @Override
-    public void onRemove(Player player) {
+    public void onRemove(Player player, @Nullable ItemStack stack) {
         StatManager.MOVEMENT_SPEED.apply(player, -1.5);
         StatManager.SCALE.apply(player, 1);
     }

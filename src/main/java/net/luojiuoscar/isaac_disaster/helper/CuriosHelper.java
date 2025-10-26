@@ -1,5 +1,6 @@
 package net.luojiuoscar.isaac_disaster.helper;
 
+import net.luojiuoscar.isaac_disaster.Config;
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerAbilityProvider;
 import net.minecraft.world.entity.LivingEntity;
@@ -8,11 +9,15 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import top.theillusivec4.curios.api.CuriosApi;
 import top.theillusivec4.curios.api.type.capability.ICuriosItemHandler;
+import top.theillusivec4.curios.api.type.inventory.ICurioStacksHandler;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import static com.mojang.text2speech.Narrator.LOGGER;
+
+
 
 public class CuriosHelper {
     public static final String TRINKET = "isaac_trinket";
@@ -20,6 +25,8 @@ public class CuriosHelper {
 
     public static final UUID ISAAC_TRINKET_SLOT_MODIFIER_UUID =
             UUID.nameUUIDFromBytes((IsaacDisaster.MOD_ID + ":" + TRINKET).getBytes());
+    public static final UUID ISAAC_PASSIVE_ITEM_SLOT_MODIFIER_UUID =
+            UUID.nameUUIDFromBytes((IsaacDisaster.MOD_ID + ":" + PASSIVE_ITEM).getBytes());
 
     /**
      * 获取玩家在指定 Curios 槽位中装备的所有物品
@@ -82,16 +89,39 @@ public class CuriosHelper {
     }
     public static void addPermanentSlotModifier(LivingEntity entity, String slotId, UUID uuid, String name, double amount) {
         if (!(entity instanceof Player player)) return;
+
         CuriosApi.getCuriosInventory(entity).ifPresent(inv -> {
-            inv.removeSlotModifier(slotId, uuid);
-            player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY).ifPresent(
-                    playerAbility -> {
-                        int count = playerAbility.getExtraTrinketSlotCounts();
-                        int newAmount = count + (int) amount;
-                        inv.addPermanentSlotModifier(slotId, uuid, name, newAmount, AttributeModifier.Operation.ADDITION);
-                        playerAbility.setExtraTrinketSlotCounts(newAmount);
+            player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY).ifPresent(playerAbility -> {
+                int current = playerAbility.getExtraTrinketSlotCounts();
+                int newAmount = current + (int) amount;
+
+                if (newAmount < 0 && Config.AUTO_ADAPT_CURIO_SLOT.get()) {
+                    newAmount = 0;
+                }
+
+                // 在减少槽位前清理溢出的装备
+                LOGGER.info("NEW: " + newAmount + " CURR: " + current);
+                if (newAmount < current) {
+                    ICurioStacksHandler handler = inv.getCurios().get(slotId);
+                    if (handler != null) {
+                        int totalSlots = handler.getSlots();
+                        LOGGER.info("TOTAL SLOTS: " + totalSlots);
+                        LOGGER.info("STACK SLOT: " + handler.getStacks().getSlots());
+                        ItemStack stack = handler.getStacks().getStackInSlot(totalSlots - 1);
+                        if (!stack.isEmpty()) {
+                            // 尝试放回背包，否则掉落
+                            if (!player.getInventory().add(stack)) {
+                                player.drop(stack, false);
+                            }
+                            stack.shrink(1); // 删除道具并触发unequip效果
+                        }
                     }
-            );
+                }
+
+                inv.removeSlotModifier(slotId, uuid);
+                inv.addPermanentSlotModifier(slotId, uuid, name, newAmount, AttributeModifier.Operation.ADDITION);
+                playerAbility.setExtraTrinketSlotCounts(newAmount);
+            });
         });
     }
 

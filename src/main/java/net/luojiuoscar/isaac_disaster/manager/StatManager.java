@@ -29,7 +29,13 @@ import static net.luojiuoscar.isaac_disaster.Config.NEARBY_RANGE;
 
 public enum StatManager {
     MAX_HEALTH("max_health", Attributes.MAX_HEALTH, false, true,
-            () -> Config.HEALTH_BONUS.get(), -20.0, null),
+            () -> Config.HEALTH_BONUS.get(), -20.0, null){
+        @Override
+        public void apply(Player player, double ratio){
+            StatManager.modifyAdd(player, getUUID(), ratio * getBonus(), getMinVal(), getMaxVal());
+            player.setHealth(player.getHealth()); // 刷新血量状态，避免显示溢出
+        }
+    },
     MOVEMENT_SPEED("movement_speed", Attributes.MOVEMENT_SPEED, false, true,
             () -> Config.MOVEMENT_SPEED_BONUS.get(), null, null) {
         @Override
@@ -143,8 +149,8 @@ public enum StatManager {
         if (bonus == null) return 1;
         return bonus.get();
     }
-    public double getMinVal() {return minVal; }
-    public double getMaxVal() {return maxVal; }
+    public Double getMinVal() {return minVal; }
+    public Double getMaxVal() {return maxVal; }
 
     /** 通用 apply 方法，可被 override */
     public void apply(Player player, double ratio){
@@ -173,7 +179,7 @@ public enum StatManager {
             formatted = String.format("%.2f", rounded);
         }
 
-        if (ratio > 0){ // 正数+
+        if (ratio >= 0){ // 正数+
             formatted = "+" + formatted;
         }
         return Component.translatable("attribute." + IsaacDisaster.MOD_ID + "." + getKey())

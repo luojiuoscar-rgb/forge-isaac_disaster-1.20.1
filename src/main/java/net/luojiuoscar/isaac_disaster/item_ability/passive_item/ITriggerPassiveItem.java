@@ -16,16 +16,14 @@ public interface ITriggerPassiveItem extends IPassiveItem{
 
     /**
      * 概率触发处理器
+     *
      * @param player 玩家
      * @param action 触发时执行的动作
-     * @return 是否触发成功
      */
-    default boolean triggerWithChance(Player player, Runnable action) {
-        if (player.level().isClientSide()) return false;
+    default void triggerWithChance(Player player, Runnable action) {
+        if (player.level().isClientSide()) return;
         if (player.getRandom().nextDouble() < getTriggerChance(player)) {
             action.run();
-            return true;
         }
-        return false;
     }
 }

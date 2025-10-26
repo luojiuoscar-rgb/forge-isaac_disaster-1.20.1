@@ -40,7 +40,7 @@ public class ActiveItem extends IsaacItem {
     }
 
     @Override
-    public void addDescription(List<Component> tooltipComponents){
+    public void addDescription(List<Component> tooltipComponents, ItemStack stack){
         tooltipComponents.addAll(
                 ActiveItemManager.getInstance().getItemFromId(getItemId()).getDescription()
         );
