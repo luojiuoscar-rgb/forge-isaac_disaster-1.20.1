@@ -19,21 +19,21 @@ public class Screw implements IPassiveItem {
     }
 
     @Override
-    public void onFirstObtain(Player player, boolean isPermanent) {
+    public void onFirstObtain(Player player) {
     }
 
     @Override
-    public void onObtain(Player player, boolean isPermanent) {
-        StatManager.modifyTearsAdder(player, 0.75, isPermanent);
-        StatManager.modifyAttackSpeedAdder(player, 0.75, isPermanent);
-        StatManager.modifyBulletSpeedAdder(player, 1, isPermanent);
+    public void onObtain(Player player) {
+        StatManager.modifyTearsAdder(player, 0.75);
+        StatManager.modifyAttackSpeedAdder(player, 0.75);
+        StatManager.modifyBulletSpeedAdder(player, 1);
     }
 
     @Override
-    public void onRemove(Player player, boolean isPermanent) {
-        StatManager.modifyTearsAdder(player, -0.75, isPermanent);
-        StatManager.modifyAttackSpeedAdder(player, -0.75, isPermanent);
-        StatManager.modifyBulletSpeedAdder(player, -1, isPermanent);
+    public void onRemove(Player player) {
+        StatManager.modifyTearsAdder(player, -0.75);
+        StatManager.modifyAttackSpeedAdder(player, -0.75);
+        StatManager.modifyBulletSpeedAdder(player, -1);
     }
 
     @Override

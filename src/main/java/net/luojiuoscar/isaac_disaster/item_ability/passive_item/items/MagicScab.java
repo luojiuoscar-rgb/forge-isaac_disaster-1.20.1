@@ -19,20 +19,20 @@ public class MagicScab implements IPassiveItem {
     }
 
     @Override
-    public void onFirstObtain(Player player, boolean isPermanent) {
+    public void onFirstObtain(Player player) {
         StatManager.healHealth(player, 1.0f);
     }
 
     @Override
-    public void onObtain(Player player, boolean isPermanent) {
-        StatManager.modifyMaxHealth(player, 1, isPermanent);
-        StatManager.modifyLuckAdder(player, 1, isPermanent);
+    public void onObtain(Player player) {
+        StatManager.modifyMaxHealth(player, 1);
+        StatManager.modifyLuckAdder(player, 1);
     }
 
     @Override
-    public void onRemove(Player player, boolean isPermanent) {
-        StatManager.modifyMaxHealth(player, -1, isPermanent);
-        StatManager.modifyLuckAdder(player, -1, isPermanent);
+    public void onRemove(Player player) {
+        StatManager.modifyMaxHealth(player, -1);
+        StatManager.modifyLuckAdder(player, -1);
     }
 
     @Override

@@ -18,20 +18,20 @@ public class GlassEye implements IPassiveItem {
     }
 
     @Override
-    public void onFirstObtain(Player player, boolean isPermanent) {
+    public void onFirstObtain(Player player) {
 
     }
 
     @Override
-    public void onObtain(Player player, boolean isPermanent) {
-        StatManager.modifyDamageAdder(player, 0.75, isPermanent);
-        StatManager.modifyLuckAdder(player, 1, isPermanent);
+    public void onObtain(Player player) {
+        StatManager.modifyDamageAdder(player, 0.75);
+        StatManager.modifyLuckAdder(player, 1);
     }
 
     @Override
-    public void onRemove(Player player, boolean isPermanent) {
-        StatManager.modifyDamageAdder(player, -0.75, isPermanent);
-        StatManager.modifyLuckAdder(player, -1, isPermanent);
+    public void onRemove(Player player) {
+        StatManager.modifyDamageAdder(player, -0.75);
+        StatManager.modifyLuckAdder(player, -1);
     }
 
     @Override

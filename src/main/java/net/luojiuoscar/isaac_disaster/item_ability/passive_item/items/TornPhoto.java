@@ -19,21 +19,21 @@ public class TornPhoto implements IPassiveItem {
     }
 
     @Override
-    public void onFirstObtain(Player player, boolean isPermanent) {
+    public void onFirstObtain(Player player) {
     }
 
     @Override
-    public void onObtain(Player player, boolean isPermanent) {
-        StatManager.modifyTearsAdder(player, 1, isPermanent);
-        StatManager.modifyBlockBreakingSpeedAdder(player, 1, isPermanent);
-        StatManager.modifyBulletSpeedAdder(player, 0.8, isPermanent);
+    public void onObtain(Player player) {
+        StatManager.modifyTearsAdder(player, 1);
+        StatManager.modifyBlockBreakingSpeedAdder(player, 1);
+        StatManager.modifyBulletSpeedAdder(player, 0.8);
     }
 
     @Override
-    public void onRemove(Player player, boolean isPermanent) {
-        StatManager.modifyTearsAdder(player, -1, isPermanent);
-        StatManager.modifyBlockBreakingSpeedAdder(player, -1, isPermanent);
-        StatManager.modifyBulletSpeedAdder(player, -0.8, isPermanent);
+    public void onRemove(Player player) {
+        StatManager.modifyTearsAdder(player, -1);
+        StatManager.modifyBlockBreakingSpeedAdder(player, -1);
+        StatManager.modifyBulletSpeedAdder(player, -0.8);
     }
 
     @Override

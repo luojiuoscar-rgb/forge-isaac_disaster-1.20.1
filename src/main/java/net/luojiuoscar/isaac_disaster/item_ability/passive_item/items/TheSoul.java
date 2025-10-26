@@ -22,16 +22,16 @@ public class TheSoul implements IRecursivePassiveItem {
     }
 
     @Override
-    public void onFirstObtain(Player player, boolean isPermanent) {
+    public void onFirstObtain(Player player) {
         PlayerHelper.giveItem(player, ModItems.SOUL_HEART.get(), 2);
     }
 
     @Override
-    public void onObtain(Player player, boolean isPermanent) {
+    public void onObtain(Player player) {
     }
 
     @Override
-    public void onRemove(Player player, boolean isPermanent) {
+    public void onRemove(Player player) {
     }
 
     @Override

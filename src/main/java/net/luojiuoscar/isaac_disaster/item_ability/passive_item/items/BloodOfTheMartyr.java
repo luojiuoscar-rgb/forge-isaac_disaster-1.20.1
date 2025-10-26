@@ -22,13 +22,13 @@ public class BloodOfTheMartyr implements IPassiveItem {
     }
 
     @Override
-    public void onFirstObtain(Player player, boolean isPermanent) {
+    public void onFirstObtain(Player player) {
 
     }
 
     @Override
-    public void onObtain(Player player, boolean isPermanent) {
-        StatManager.modifyDamageAdder(player, 1, isPermanent);
+    public void onObtain(Player player) {
+        StatManager.modifyDamageAdder(player, 1);
 
         // 数据需要同步数据到客户端
         if (player instanceof ServerPlayer serverPlayer){
@@ -38,8 +38,8 @@ public class BloodOfTheMartyr implements IPassiveItem {
     }
 
     @Override
-    public void onRemove(Player player, boolean isPermanent) {
-        StatManager.modifyDamageAdder(player, -1, isPermanent);
+    public void onRemove(Player player) {
+        StatManager.modifyDamageAdder(player, -1);
 
         // 数据需要同步数据到客户端
         if (player instanceof ServerPlayer serverPlayer){

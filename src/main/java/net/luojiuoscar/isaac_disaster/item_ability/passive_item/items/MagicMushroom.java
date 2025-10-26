@@ -28,34 +28,34 @@ public class MagicMushroom implements IPassiveItem {
     }
 
     @Override
-    public void onFirstObtain(Player player, boolean isPermanent) {
+    public void onFirstObtain(Player player) {
         player.setHealth(player.getMaxHealth());
     }
 
     @Override
-    public void onObtain(Player player, boolean isPermanent) {
-        StatManager.modifyMaxHealth(player, 1, isPermanent);
-        StatManager.modifyScaleAdder(player, 2.5, isPermanent);
-        StatManager.modifyMovementSpeedAdder(player, 1.5, isPermanent);
-        StatManager.modifyDamageAdder(player, 0.25, isPermanent);
-        StatManager.modifyDamageMultiplier(player, StatManager.getDamageMultiplier1(), isPermanent);
-        StatManager.modifyRangeAdder(player, 1, isPermanent);
-        StatManager.modifyBlockReachAdder(player, 1, isPermanent);
-        StatManager.modifyEntityReachAdder(player, 1, isPermanent);
-        StatManager.modifySetWithId(player, SetId.FUN_GUY.getId(), 1, isPermanent);
+    public void onObtain(Player player) {
+        StatManager.modifyMaxHealth(player, 1);
+        StatManager.modifyScaleAdder(player, 2.5);
+        StatManager.modifyMovementSpeedAdder(player, 1.5);
+        StatManager.modifyDamageAdder(player, 0.25);
+        StatManager.modifyDamageMultiplier(player, StatManager.getDamageMultiplier1());
+        StatManager.modifyRangeAdder(player, 1);
+        StatManager.modifyBlockReachAdder(player, 1);
+        StatManager.modifyEntityReachAdder(player, 1);
+        StatManager.modifySetWithId(player, SetId.FUN_GUY.getId(), 1);
     }
 
     @Override
-    public void onRemove(Player player, boolean isPermanent) {
-        StatManager.modifyMaxHealth(player, -1, isPermanent);
-        StatManager.modifyScaleAdder(player, -2.5, isPermanent);
-        StatManager.modifyMovementSpeedAdder(player, -1.5, isPermanent);
-        StatManager.modifyDamageAdder(player, -0.25, isPermanent);
-        StatManager.modifyDamageMultiplier(player, -StatManager.getDamageMultiplier1(), isPermanent);
-        StatManager.modifyRangeAdder(player, -1, isPermanent);
-        StatManager.modifyBlockReachAdder(player, -1, isPermanent);
-        StatManager.modifyEntityReachAdder(player, -1, isPermanent);
-        StatManager.modifySetWithId(player, SetId.FUN_GUY.getId(), -1, isPermanent);
+    public void onRemove(Player player) {
+        StatManager.modifyMaxHealth(player, -1);
+        StatManager.modifyScaleAdder(player, -2.5);
+        StatManager.modifyMovementSpeedAdder(player, -1.5);
+        StatManager.modifyDamageAdder(player, -0.25);
+        StatManager.modifyDamageMultiplier(player, -StatManager.getDamageMultiplier1());
+        StatManager.modifyRangeAdder(player, -1);
+        StatManager.modifyBlockReachAdder(player, -1);
+        StatManager.modifyEntityReachAdder(player, -1);
+        StatManager.modifySetWithId(player, SetId.FUN_GUY.getId(), -1);
     }
 
     @Override

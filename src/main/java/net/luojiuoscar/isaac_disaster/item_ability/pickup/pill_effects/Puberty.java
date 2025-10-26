@@ -16,12 +16,12 @@ public class Puberty implements IPillEffect {
 
     @Override
     public void onUseEffect(Player player) {
-        StatManager.modifySetWithId(player, SetId.ADULT.getId(), 1, true);
+        StatManager.modifySetWithId(player, SetId.ADULT.getId(), 1);
     }
 
     @Override
     public void onUseEffectH(Player player) {
-        StatManager.modifySetWithId(player, SetId.ADULT.getId(), 2, true);
+        StatManager.modifySetWithId(player, SetId.ADULT.getId(), 2);
     }
 
     @Override

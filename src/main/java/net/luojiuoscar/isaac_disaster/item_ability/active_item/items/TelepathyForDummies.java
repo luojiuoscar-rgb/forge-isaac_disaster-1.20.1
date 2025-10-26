@@ -35,7 +35,7 @@ public class TelepathyForDummies implements IActiveItem {
 
     @Override
     public void onFirstUse(Player player){
-        StatManager.modifySetWithId(player, SetId.BOOK.getId(), 1, true);
+        StatManager.modifySetWithId(player, SetId.BOOK.getId(), 1);
     }
 
     @Override

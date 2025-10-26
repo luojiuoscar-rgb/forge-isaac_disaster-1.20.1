@@ -51,18 +51,18 @@ public class RangeDown implements IPillEffect {
     public void onUseEffect(Player player) {
         if (PlayerHelper.getPillQuality(player) < 0){
             StatManager.modifyAdder(player, UUIDManager.DAMAGE_FROM_PILLS_ADDER, 0.4 * StatManager.getDamageBonus(),
-                    null, null, true);
+                    null, null);
         }
-        StatManager.modifyRangeAdder(player, -0.4, true);
+        StatManager.modifyRangeAdder(player, -0.4);
     }
 
     @Override
     public void onUseEffectH(Player player) {
         if (PlayerHelper.getPillQuality(player) < 0){
             StatManager.modifyAdder(player, UUIDManager.DAMAGE_FROM_PILLS_ADDER, 0.8 * StatManager.getDamageBonus(),
-                    null, null, true);
+                    null, null);
         }
-        StatManager.modifyRangeAdder(player, -0.8, true);
+        StatManager.modifyRangeAdder(player, -0.8);
     }
 
     @Override

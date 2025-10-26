@@ -69,19 +69,19 @@ public class HealthDown implements IPillEffect {
     public void onUseEffect(Player player) {
         if (PlayerHelper.getPillQuality(player) < 0){
             StatManager.modifyAdder(player, UUIDManager.DAMAGE_FROM_PILLS_ADDER, 0.4 * StatManager.getDamageBonus(),
-                    null, null, true);
+                    null, null);
         }
 
-        StatManager.modifyMaxHealth(player, -0.5, true);
+        StatManager.modifyMaxHealth(player, -0.5);
     }
 
     @Override
     public void onUseEffectH(Player player) {
         if (PlayerHelper.getPillQuality(player) < 0){
             StatManager.modifyAdder(player, UUIDManager.DAMAGE_FROM_PILLS_ADDER, 0.8 * StatManager.getDamageBonus(),
-                    null, null, true);
+                    null, null);
         }
-        StatManager.modifyMaxHealth(player, -1, true);
+        StatManager.modifyMaxHealth(player, -1);
     }
 
     @Override

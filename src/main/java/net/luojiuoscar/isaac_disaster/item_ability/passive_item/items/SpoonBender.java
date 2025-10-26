@@ -18,20 +18,20 @@ public class SpoonBender implements IPassiveItem {
     }
 
     @Override
-    public void onFirstObtain(Player player, boolean isPermanent) {
+    public void onFirstObtain(Player player) {
 
     }
 
     @Override
-    public void onObtain(Player player, boolean isPermanent) {
-        StatManager.modifyHoming(player, 1, isPermanent);
-        StatManager.addBulletFilter(player, ColorManager.SPOON_BENDER_FILTER, isPermanent);
+    public void onObtain(Player player) {
+        StatManager.modifyHoming(player, 1);
+        StatManager.addBulletFilter(player, ColorManager.SPOON_BENDER_FILTER);
     }
 
     @Override
-    public void onRemove(Player player, boolean isPermanent) {
-        StatManager.modifyHoming(player, -1, isPermanent);
-        StatManager.removeBulletFilter(player, ColorManager.SPOON_BENDER_FILTER, isPermanent);
+    public void onRemove(Player player) {
+        StatManager.modifyHoming(player, -1);
+        StatManager.removeBulletFilter(player, ColorManager.SPOON_BENDER_FILTER);
     }
 
     @Override

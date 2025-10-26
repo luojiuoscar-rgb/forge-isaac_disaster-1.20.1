@@ -48,12 +48,12 @@ public class LuckUp implements IPillEffect {
 
     @Override
     public void onUseEffect(Player player) {
-        StatManager.modifyLuckAdder(player, 1, true);
+        StatManager.modifyLuckAdder(player, 1);
     }
 
     @Override
     public void onUseEffectH(Player player) {
-        StatManager.modifyLuckAdder(player, 2, true);
+        StatManager.modifyLuckAdder(player, 2);
     }
 
     @Override

@@ -18,24 +18,24 @@ public class Pisces implements IPassiveItem {
     }
 
     @Override
-    public void onFirstObtain(Player player, boolean isPermanent) {
+    public void onFirstObtain(Player player) {
 
     }
 
     @Override
-    public void onObtain(Player player, boolean isPermanent) {
-        StatManager.modifyPiercing(player, 1, isPermanent);
-        StatManager.modifyTearsCorrectionAdder(player, 1, isPermanent);
-        StatManager.modifyBulletScaleAdder(player, 2, isPermanent);
-        StatManager.modifyAttackKnockBackAdder(player, 1, isPermanent);
+    public void onObtain(Player player) {
+        StatManager.modifyPiercing(player, 1);
+        StatManager.modifyTearsCorrectionAdder(player, 1);
+        StatManager.modifyBulletScaleAdder(player, 2);
+        StatManager.modifyAttackKnockBackAdder(player, 1);
     }
 
     @Override
-    public void onRemove(Player player, boolean isPermanent) {
-        StatManager.modifyPiercing(player, -1, isPermanent);
-        StatManager.modifyTearsCorrectionAdder(player, -1, isPermanent);
-        StatManager.modifyBulletScaleAdder(player, -2, isPermanent);
-        StatManager.modifyAttackKnockBackAdder(player, -1, isPermanent);
+    public void onRemove(Player player) {
+        StatManager.modifyPiercing(player, -1);
+        StatManager.modifyTearsCorrectionAdder(player, -1);
+        StatManager.modifyBulletScaleAdder(player, -2);
+        StatManager.modifyAttackKnockBackAdder(player, -1);
     }
 
     @Override

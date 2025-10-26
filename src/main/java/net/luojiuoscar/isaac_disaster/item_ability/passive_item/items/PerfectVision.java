@@ -23,19 +23,19 @@ public class PerfectVision implements IPassiveItem {
     }
 
     @Override
-    public void onFirstObtain(Player player, boolean isPermanent) {
+    public void onFirstObtain(Player player) {
     }
 
     @Override
-    public void onObtain(Player player, boolean isPermanent) {
+    public void onObtain(Player player) {
         // 伤害修正
         AttributeInstance instance = player.getAttribute(Attributes.ATTACK_DAMAGE);
         if (instance == null) return;
-        StatManager.setModifierMultiplier(player, instance, -0.2, UUIDManager.PERFECT_VISION, "perfect_vision", isPermanent);
+        StatManager.setModifierMultiplier(player, instance, -0.2, UUIDManager.PERFECT_VISION, "perfect_vision");
     }
 
     @Override
-    public void onRemove(Player player, boolean isPermanent) {
+    public void onRemove(Player player) {
         // 伤害修正
         player.getCapability(PlayerPassiveItemProvider.PLAYER_PASSIVE_ITEM).ifPresent(
                 playerPassiveItem -> {

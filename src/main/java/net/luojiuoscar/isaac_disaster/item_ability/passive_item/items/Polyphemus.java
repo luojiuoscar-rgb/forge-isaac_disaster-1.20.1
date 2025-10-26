@@ -19,13 +19,13 @@ public class Polyphemus implements IPassiveItem {
     }
 
     @Override
-    public void onFirstObtain(Player player, boolean isPermanent) {
+    public void onFirstObtain(Player player) {
     }
 
     @Override
-    public void onObtain(Player player, boolean isPermanent) {
-        StatManager.modifyDamageMultiplier(player, StatManager.getDamageMultiplier1(), isPermanent);
-        StatManager.modifyDamageAdder(player, 4 * StatManager.getDamageBonus(), isPermanent);
+    public void onObtain(Player player) {
+        StatManager.modifyDamageMultiplier(player, StatManager.getDamageMultiplier1());
+        StatManager.modifyDamageAdder(player, 4 * StatManager.getDamageBonus());
 
         // 增加一层“双倍延迟”
         player.getCapability(PlayerStatModifierProvider.PLAYER_STAT_MODIFIER).ifPresent(
@@ -34,9 +34,9 @@ public class Polyphemus implements IPassiveItem {
     }
 
     @Override
-    public void onRemove(Player player, boolean isPermanent) {
-        StatManager.modifyDamageMultiplier(player, -StatManager.getDamageMultiplier1(), isPermanent);
-        StatManager.modifyDamageAdder(player, -4 * StatManager.getDamageBonus(), isPermanent);
+    public void onRemove(Player player) {
+        StatManager.modifyDamageMultiplier(player, -StatManager.getDamageMultiplier1());
+        StatManager.modifyDamageAdder(player, -4 * StatManager.getDamageBonus());
 
         player.getCapability(PlayerStatModifierProvider.PLAYER_STAT_MODIFIER).ifPresent(
                 playerStatModifier -> playerStatModifier.modifyDoubleShotDelay(player, -1)

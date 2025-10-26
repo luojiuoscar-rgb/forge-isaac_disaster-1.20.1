@@ -22,22 +22,22 @@ public class ExperimentalTreatment implements IPassiveItem {
     }
 
     @Override
-    public void onFirstObtain(Player player, boolean isPermanent) {
+    public void onFirstObtain(Player player) {
     }
 
     @Override
-    public void onObtain(Player player, boolean isPermanent) {
-        StatManager.modifySetWithId(player, SetId.SPUN.getId(), 1, isPermanent);
+    public void onObtain(Player player) {
+        StatManager.modifySetWithId(player, SetId.SPUN.getId(), 1);
         RandomSource random = player.getRandom();
 
         // health
         if (random.nextDouble() < 0.6){
-            StatManager.modifyMaxHealth(player, 1, isPermanent);
+            StatManager.modifyMaxHealth(player, 1);
             player.sendSystemMessage(Component.translatable("item.isaac_disaster.experimental_treatment")
                     .append(">").append(TextHelper.formatAttribute("item.isaac_disaster.attribute.health", StatManager.getHealthBonus()))
                     .withStyle(style -> style.withColor(ColorManager.UNCOMMON_GREEN)));
         }else {
-            StatManager.modifyMaxHealth(player, -1, isPermanent);
+            StatManager.modifyMaxHealth(player, -1);
             player.sendSystemMessage(Component.translatable("item.isaac_disaster.experimental_treatment")
                     .append(">").append(TextHelper.formatAttribute("item.isaac_disaster.attribute.health_remove", StatManager.getHealthBonus()))
                     .withStyle(style -> style.withColor(ColorManager.LEGEND_RED)));
@@ -45,12 +45,12 @@ public class ExperimentalTreatment implements IPassiveItem {
 
         // damage
         if (random.nextDouble() < 0.6){
-            StatManager.modifyDamageAdder(player, 1, isPermanent);
+            StatManager.modifyDamageAdder(player, 1);
             player.sendSystemMessage(Component.translatable("item.isaac_disaster.experimental_treatment")
                     .append(">").append(TextHelper.formatAttribute("item.isaac_disaster.attribute.damage", StatManager.getDamageBonus()))
                     .withStyle(style -> style.withColor(ColorManager.UNCOMMON_GREEN)));
         }else {
-            StatManager.modifyDamageAdder(player, -1, isPermanent);
+            StatManager.modifyDamageAdder(player, -1);
             player.sendSystemMessage(Component.translatable("item.isaac_disaster.experimental_treatment")
                     .append(">").append(TextHelper.formatAttribute("item.isaac_disaster.attribute.damage_remove", StatManager.getDamageBonus()))
                     .withStyle(style -> style.withColor(ColorManager.LEGEND_RED)));
@@ -58,12 +58,12 @@ public class ExperimentalTreatment implements IPassiveItem {
 
         // tears correction
         if (random.nextDouble() < 0.6){
-            StatManager.modifyTearsCorrectionAdder(player, 1, isPermanent);
+            StatManager.modifyTearsCorrectionAdder(player, 1);
             player.sendSystemMessage(Component.translatable("item.isaac_disaster.experimental_treatment")
                     .append(">").append(TextHelper.formatAttribute("item.isaac_disaster.attribute.tears_correction", StatManager.getTearsCorrectionBonus()))
                     .withStyle(style -> style.withColor(ColorManager.UNCOMMON_GREEN)));
         }else {
-            StatManager.modifyTearsCorrectionAdder(player, -1, isPermanent);
+            StatManager.modifyTearsCorrectionAdder(player, -1);
             player.sendSystemMessage(Component.translatable("item.isaac_disaster.experimental_treatment")
                     .append(">").append(TextHelper.formatAttribute("item.isaac_disaster.attribute.tears_correction_remove", StatManager.getTearsCorrectionBonus()))
                     .withStyle(style -> style.withColor(ColorManager.LEGEND_RED)));
@@ -71,12 +71,12 @@ public class ExperimentalTreatment implements IPassiveItem {
 
         // speed
         if (random.nextDouble() < 0.6){
-            StatManager.modifyMovementSpeedAdder(player, 1, isPermanent);
+            StatManager.modifyMovementSpeedAdder(player, 1);
             player.sendSystemMessage(Component.translatable("item.isaac_disaster.experimental_treatment")
                     .append(">").append(TextHelper.formatAttribute("item.isaac_disaster.attribute.movement_speed", 1000*StatManager.getMovementSpeedBonus()))
                     .withStyle(style -> style.withColor(ColorManager.UNCOMMON_GREEN)));
         }else {
-            StatManager.modifyMovementSpeedAdder(player, -1, isPermanent);
+            StatManager.modifyMovementSpeedAdder(player, -1);
             player.sendSystemMessage(Component.translatable("item.isaac_disaster.experimental_treatment")
                     .append(">").append(TextHelper.formatAttribute("item.isaac_disaster.attribute.movement_speed_remove", 1000*StatManager.getMovementSpeedBonus()))
                     .withStyle(style -> style.withColor(ColorManager.LEGEND_RED)));
@@ -84,12 +84,12 @@ public class ExperimentalTreatment implements IPassiveItem {
 
         // luck
         if (random.nextDouble() < 0.6){
-            StatManager.modifyLuckAdder(player, 1, isPermanent);
+            StatManager.modifyLuckAdder(player, 1);
             player.sendSystemMessage(Component.translatable("item.isaac_disaster.experimental_treatment")
                     .append(">").append(TextHelper.formatAttribute("item.isaac_disaster.attribute.luck", StatManager.getLuckBonus()))
                     .withStyle(style -> style.withColor(ColorManager.UNCOMMON_GREEN)));
         }else {
-            StatManager.modifyLuckAdder(player, -1, isPermanent);
+            StatManager.modifyLuckAdder(player, -1);
             player.sendSystemMessage(Component.translatable("item.isaac_disaster.experimental_treatment")
                     .append(">").append(TextHelper.formatAttribute("item.isaac_disaster.attribute.luck_remove", StatManager.getLuckBonus()))
                     .withStyle(style -> style.withColor(ColorManager.LEGEND_RED)));
@@ -97,12 +97,12 @@ public class ExperimentalTreatment implements IPassiveItem {
 
         // shot speed
         if (random.nextDouble() < 0.6){
-            StatManager.modifyBulletSpeedAdder(player, 1, isPermanent);
+            StatManager.modifyBulletSpeedAdder(player, 1);
             player.sendSystemMessage(Component.translatable("item.isaac_disaster.experimental_treatment")
                     .append(">").append(TextHelper.formatAttribute("item.isaac_disaster.attribute.bullet_speed", StatManager.getBulletSpeedBonus()))
                     .withStyle(style -> style.withColor(ColorManager.UNCOMMON_GREEN)));
         }else {
-            StatManager.modifyBulletSpeedAdder(player, -1, isPermanent);
+            StatManager.modifyBulletSpeedAdder(player, -1);
             player.sendSystemMessage(Component.translatable("item.isaac_disaster.experimental_treatment")
                     .append(">").append(TextHelper.formatAttribute("item.isaac_disaster.attribute.bullet_speed_remove", StatManager.getBulletSpeedBonus()))
                     .withStyle(style -> style.withColor(ColorManager.LEGEND_RED)));
@@ -112,8 +112,8 @@ public class ExperimentalTreatment implements IPassiveItem {
     }
 
     @Override
-    public void onRemove(Player player, boolean isPermanent) {
-        StatManager.modifySetWithId(player, SetId.SPUN.getId(), -1, isPermanent);
+    public void onRemove(Player player) {
+        StatManager.modifySetWithId(player, SetId.SPUN.getId(), -1);
     }
 
     @Override

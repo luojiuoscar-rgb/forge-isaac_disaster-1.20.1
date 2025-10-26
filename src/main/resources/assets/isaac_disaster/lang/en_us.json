@@ -158,7 +158,7 @@
   "item.isaac_disaster.action.give_money": "给予%d价值的钱币",
   "item.isaac_disaster.action.give_soul_heart": "获得%d个魂心",
   "item.isaac_disaster.action.give_bone_heart": "获得%d个骨心",
-  "item.isaac_disaster.action.consumed": "[已消耗]",
+  "item.isaac_disaster.action.consumed": "[已使用]",
 
 
   "item.isaac_disaster.breakfast": "早餐",

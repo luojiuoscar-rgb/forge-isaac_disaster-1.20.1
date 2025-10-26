@@ -19,18 +19,18 @@ public class TheBody implements IPassiveItem {
     }
 
     @Override
-    public void onFirstObtain(Player player, boolean isPermanent) {
+    public void onFirstObtain(Player player) {
         StatManager.healHealth(player, 3);
     }
 
     @Override
-    public void onObtain(Player player, boolean isPermanent) {
-        StatManager.modifyMaxHealth(player, 3, isPermanent);
+    public void onObtain(Player player) {
+        StatManager.modifyMaxHealth(player, 3);
     }
 
     @Override
-    public void onRemove(Player player, boolean isPermanent) {
-        StatManager.modifyMaxHealth(player, -3, isPermanent);
+    public void onRemove(Player player) {
+        StatManager.modifyMaxHealth(player, -3);
     }
 
     @Override

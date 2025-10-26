@@ -39,9 +39,9 @@ public class LuckyToe implements ITrinket {
     public void onEquipped(LivingEntity entity, boolean isEnchanted, boolean isPermanent){
         if (!(entity instanceof Player player)) return;
         if (isEnchanted) {
-            StatManager.modifyLuckAdder(player, 2, isEnchanted);
+            StatManager.modifyLuckAdder(player, 2);
         } else {
-            StatManager.modifyLuckAdder(player, 1, isEnchanted);
+            StatManager.modifyLuckAdder(player, 1);
         }
 
     };
@@ -49,9 +49,9 @@ public class LuckyToe implements ITrinket {
     public void onUnequipped(LivingEntity entity, boolean isEnchanted, boolean isPermanent){
         if (!(entity instanceof Player player)) return;
         if (isEnchanted) {
-            StatManager.modifyLuckAdder(player, -2, isEnchanted);
+            StatManager.modifyLuckAdder(player, -2);
         } else {
-            StatManager.modifyLuckAdder(player, -1, isEnchanted);
+            StatManager.modifyLuckAdder(player, -1);
         }
     };
 

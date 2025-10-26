@@ -28,7 +28,7 @@ public class MoneyIsPower implements IRecursivePassiveItem {
         double damage = money * Config.MONEY_IS_POWER_STRENGTH.get();
         AttributeInstance instance = player.getAttribute(Attributes.ATTACK_DAMAGE);
         if (instance == null) return;
-        StatManager.setModifierAdder(player, instance, damage, UUIDManager.MONEY_IS_POWER_ADDER, "base_damage_adder", true);
+        StatManager.setModifierAdder(player, instance, damage, UUIDManager.MONEY_IS_POWER_ADDER, "base_damage_adder");
     }
 
     @Override
@@ -37,16 +37,16 @@ public class MoneyIsPower implements IRecursivePassiveItem {
     }
 
     @Override
-    public void onFirstObtain(Player player, boolean isPermanent) {
+    public void onFirstObtain(Player player) {
     }
 
     @Override
-    public void onObtain(Player player, boolean isPermanent) {
+    public void onObtain(Player player) {
         recursiveEffect(player);
     }
 
     @Override
-    public void onRemove(Player player, boolean isPermanent) {
+    public void onRemove(Player player) {
         AttributeInstance instance = player.getAttribute(Attributes.ATTACK_DAMAGE);
         if (instance == null) return;
         instance.removeModifier(UUIDManager.MONEY_IS_POWER_ADDER);

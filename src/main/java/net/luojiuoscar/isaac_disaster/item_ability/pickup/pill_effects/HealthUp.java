@@ -48,12 +48,12 @@ public class HealthUp implements IPillEffect {
 
     @Override
     public void onUseEffect(Player player) {
-        StatManager.modifyMaxHealth(player, 0.5, true);
+        StatManager.modifyMaxHealth(player, 0.5);
     }
 
     @Override
     public void onUseEffectH(Player player) {
-        StatManager.modifyMaxHealth(player, 1, true);
+        StatManager.modifyMaxHealth(player, 1);
     }
 
     @Override

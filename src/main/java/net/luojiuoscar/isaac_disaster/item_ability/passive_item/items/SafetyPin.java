@@ -20,22 +20,22 @@ public class SafetyPin implements IPassiveItem {
     }
 
     @Override
-    public void onFirstObtain(Player player, boolean isPermanent) {
+    public void onFirstObtain(Player player) {
         PlayerHelper.giveItem(player, ModItems.BLACK_HEART.get(), 1);
     }
 
     @Override
-    public void onObtain(Player player, boolean isPermanent) {
-        StatManager.modifyRangeAdder(player, 1, isPermanent);
-        StatManager.modifyBlockReachAdder(player, 1, isPermanent);
-        StatManager.modifyBulletSpeedAdder(player, 0.8, isPermanent);
+    public void onObtain(Player player) {
+        StatManager.modifyRangeAdder(player, 1);
+        StatManager.modifyBlockReachAdder(player, 1);
+        StatManager.modifyBulletSpeedAdder(player, 0.8);
     }
 
     @Override
-    public void onRemove(Player player, boolean isPermanent) {
-        StatManager.modifyRangeAdder(player, -1, isPermanent);
-        StatManager.modifyBlockReachAdder(player, -1, isPermanent);
-        StatManager.modifyBulletSpeedAdder(player, -0.8, isPermanent);
+    public void onRemove(Player player) {
+        StatManager.modifyRangeAdder(player, -1);
+        StatManager.modifyBlockReachAdder(player, -1);
+        StatManager.modifyBulletSpeedAdder(player, -0.8);
     }
 
     @Override

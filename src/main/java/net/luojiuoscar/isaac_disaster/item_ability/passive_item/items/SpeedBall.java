@@ -20,22 +20,22 @@ public class SpeedBall implements IPassiveItem {
     }
 
     @Override
-    public void onFirstObtain(Player player, boolean isPermanent) {
+    public void onFirstObtain(Player player) {
 
     }
 
     @Override
-    public void onObtain(Player player, boolean isPermanent) {
-        StatManager.modifyMovementSpeedAdder(player, 1.5, isPermanent);
-        StatManager.modifyBulletSpeedAdder(player, 1, isPermanent);
-        StatManager.modifySetWithId(player, SetId.SPUN.getId(), 1, isPermanent);
+    public void onObtain(Player player) {
+        StatManager.modifyMovementSpeedAdder(player, 1.5);
+        StatManager.modifyBulletSpeedAdder(player, 1);
+        StatManager.modifySetWithId(player, SetId.SPUN.getId(), 1);
     }
 
     @Override
-    public void onRemove(Player player, boolean isPermanent) {
-        StatManager.modifyMovementSpeedAdder(player, -1.5, isPermanent);
-        StatManager.modifyBulletSpeedAdder(player, -1, isPermanent);
-        StatManager.modifySetWithId(player, SetId.SPUN.getId(), -1, isPermanent);
+    public void onRemove(Player player) {
+        StatManager.modifyMovementSpeedAdder(player, -1.5);
+        StatManager.modifyBulletSpeedAdder(player, -1);
+        StatManager.modifySetWithId(player, SetId.SPUN.getId(), -1);
     }
 
     @Override

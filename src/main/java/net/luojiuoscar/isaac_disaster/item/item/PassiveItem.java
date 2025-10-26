@@ -9,11 +9,10 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 import top.theillusivec4.curios.api.SlotContext;
-import top.theillusivec4.curios.api.type.capability.ICurioItem;
 
 import java.util.List;
 
-public class PassiveItem extends IsaacItem implements ICurioItem {
+public class PassiveItem extends IsaacItem implements IIsaacCuriosItem {
     private static final String CONSUMED = "consumed";
     private boolean canEquip;
     private boolean canUnequip;
@@ -84,19 +83,17 @@ public class PassiveItem extends IsaacItem implements ICurioItem {
     }
 
     @Override
-    public void onEquip(SlotContext slotContext, ItemStack prevStack, ItemStack stack) {
+    public void tryEquip(SlotContext slotContext, ItemStack prevStack, ItemStack stack) {
         if (!(slotContext.entity() instanceof Player player)) return;
-        if (!isConsumed(stack)){
-            PassiveItemManager.getInstance().getItemFromId(getItemId()).onFirstObtain(player, true);
-        }
-        PassiveItemManager.getInstance().getItemFromId(getItemId()).onObtain(player, false);
+        PassiveItemManager.getInstance().getItemFromId(getItemId()).onObtain(player);
+        if (!isConsumed(stack)) PassiveItemManager.getInstance().getItemFromId(getItemId()).onFirstObtain(player);
         setConsumed(stack, true);
     }
 
     @Override
     public void onUnequip(SlotContext slotContext, ItemStack prevStack, ItemStack stack) {
         if (!(slotContext.entity() instanceof Player player)) return;
-        PassiveItemManager.getInstance().getItemFromId(getItemId()).onRemove(player, false);
+        PassiveItemManager.getInstance().getItemFromId(getItemId()).onRemove(player);
     }
 
     @Override

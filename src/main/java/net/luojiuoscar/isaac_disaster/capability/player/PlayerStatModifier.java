@@ -108,8 +108,8 @@ public class PlayerStatModifier {
                         instance,
                         entry.getValue(),
                         uuid,
-                        "",
-                        true);
+                        ""
+                );
             }
             else{
                 StatManager.setModifierMultiplier(
@@ -117,8 +117,8 @@ public class PlayerStatModifier {
                         instance,
                         entry.getValue(),
                         uuid,
-                        "",
-                        true);
+                        ""
+                );
             }
         }
     }

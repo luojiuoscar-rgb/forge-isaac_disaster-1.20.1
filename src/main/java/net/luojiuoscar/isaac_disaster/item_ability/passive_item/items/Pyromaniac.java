@@ -19,15 +19,15 @@ public class Pyromaniac implements IRecursivePassiveItem {
     }
 
     @Override
-    public void onFirstObtain(Player player, boolean isPermanent) {}
+    public void onFirstObtain(Player player) {}
 
     @Override
-    public void onObtain(Player player, boolean isPermanent) {
+    public void onObtain(Player player) {
         recursiveEffect(player); // 获取时触发一次
     }
 
     @Override
-    public void onRemove(Player player, boolean isPermanent) {}
+    public void onRemove(Player player) {}
 
     @Override
     public ItemStack getItemStack(){

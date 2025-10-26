@@ -19,17 +19,17 @@ public class HolyMantle implements IRecursivePassiveItem {
     }
 
     @Override
-    public void onFirstObtain(Player player, boolean isPermanent) {
+    public void onFirstObtain(Player player) {
 
     }
 
     @Override
-    public void onObtain(Player player, boolean isPermanent) {
+    public void onObtain(Player player) {
         // 考虑到可能可拆装，不会在获取时立刻给予一层神圣护盾
     }
 
     @Override
-    public void onRemove(Player player, boolean isPermanent) {
+    public void onRemove(Player player) {
     }
 
     @Override

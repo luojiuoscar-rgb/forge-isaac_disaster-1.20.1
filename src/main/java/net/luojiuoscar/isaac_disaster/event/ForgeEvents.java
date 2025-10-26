@@ -16,6 +16,7 @@ import net.luojiuoscar.isaac_disaster.event.custom.ActiveItemUseEvent;
 import net.luojiuoscar.isaac_disaster.helper.EntityHelper;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.item.item.ActiveItem;
+import net.luojiuoscar.isaac_disaster.item.item.IIsaacCuriosItem;
 import net.luojiuoscar.isaac_disaster.item.item.PassiveItem;
 import net.luojiuoscar.isaac_disaster.item.pickup.ICanUse;
 import net.luojiuoscar.isaac_disaster.item.pickup.IsaacHead;
@@ -29,7 +30,10 @@ import net.luojiuoscar.isaac_disaster.manager.item_managers.PickupManager;
 import net.luojiuoscar.isaac_disaster.manager.item_managers.PillEffectManager;
 import net.luojiuoscar.isaac_disaster.manager.item_managers.TrinketManager;
 import net.luojiuoscar.isaac_disaster.networking.ModMessages;
-import net.luojiuoscar.isaac_disaster.networking.packet.*;
+import net.luojiuoscar.isaac_disaster.networking.packet.PassiveItemSyncS2CPacket;
+import net.luojiuoscar.isaac_disaster.networking.packet.PillRecordsSyncS2CPacket;
+import net.luojiuoscar.isaac_disaster.networking.packet.SetCountSyncS2CPacket;
+import net.luojiuoscar.isaac_disaster.networking.packet.UseActiveItemS2CPacket;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
@@ -66,6 +70,7 @@ import net.minecraftforge.event.level.LevelEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.server.command.ConfigCommand;
+import top.theillusivec4.curios.api.event.CurioUnequipEvent;
 
 import java.util.List;
 import java.util.Map;
@@ -536,7 +541,6 @@ public class ForgeEvents {
                 if (entity instanceof Creeper creeper){
                     creeper.setSwellDir(0);
                 }
-                return;
             }
         }
     }
@@ -552,6 +556,16 @@ public class ForgeEvents {
         return true;
     }
 
+    @SubscribeEvent
+    public static void onCurioUnequipEvent(CurioUnequipEvent event){
+        // item类中的onUnequip方法获取到的不是原stack，故而需要通过事件修改
+        ItemStack stack = event.getStack();
+
+        if (stack.getItem() instanceof IIsaacCuriosItem){
+            IIsaacCuriosItem.setOnCurios(stack, false);
+        }
+
+    }
 
 
 

@@ -18,18 +18,18 @@ public class WoodenSpoon implements IPassiveItem {
     }
 
     @Override
-    public void onFirstObtain(Player player, boolean isPermanent) {
+    public void onFirstObtain(Player player) {
 
     }
 
     @Override
-    public void onObtain(Player player, boolean isPermanent) {
-        StatManager.modifyMovementSpeedAdder(player, 1.5, isPermanent);
+    public void onObtain(Player player) {
+        StatManager.modifyMovementSpeedAdder(player, 1.5);
     }
 
     @Override
-    public void onRemove(Player player, boolean isPermanent) {
-        StatManager.modifyMovementSpeedAdder(player, -1.5, isPermanent);
+    public void onRemove(Player player) {
+        StatManager.modifyMovementSpeedAdder(player, -1.5);
     }
 
     @Override

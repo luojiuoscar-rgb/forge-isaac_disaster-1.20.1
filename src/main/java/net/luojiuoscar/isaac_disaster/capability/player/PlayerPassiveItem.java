@@ -36,7 +36,6 @@ public class PlayerPassiveItem {
     private Map<Integer, Integer> newBulletTypeMap;
 
     private Map<Integer, Integer> setCountMap; // 当前套装计数
-    private Map<Integer, Integer> permanentSetCountMap; // 被cap记录的set数量（由永久效果给予的套装数量）
 
 
     // constructor
@@ -51,7 +50,6 @@ public class PlayerPassiveItem {
         this.triggerItemMap = new HashMap<>();
         this.recursiveItemMap = new HashMap<>();
         this.setCountMap = new HashMap<>();
-        this.permanentSetCountMap = new HashMap<>();
         this.newBulletTypeMap = new HashMap<>();
     }
 
@@ -67,7 +65,6 @@ public class PlayerPassiveItem {
         triggerItemMap.clear();
         recursiveItemMap.clear();
         setCountMap.clear();
-        permanentSetCountMap.clear();
         newBulletTypeMap.clear();
     }
 
@@ -257,9 +254,9 @@ public class PlayerPassiveItem {
 
         // 触发效果 Obtain效果仅触发一次
         if (!PassiveItem.isConsumed(stack)) {
-            PassiveItemManager.getInstance().getItemFromId(itemId).onFirstObtain(player, true);
+            PassiveItemManager.getInstance().getItemFromId(itemId).onFirstObtain(player);
         }
-        PassiveItemManager.getInstance().getItemFromId(itemId).onObtain(player, true);
+        PassiveItemManager.getInstance().getItemFromId(itemId).onObtain(player);
         ModMessages.sentToPlayer(new ObtainPassiveItemS2CPacket(itemId), player);
         PassiveItem.setConsumed(stack, true);
 
@@ -284,7 +281,7 @@ public class PlayerPassiveItem {
         // 更新哈希表：数量+1
         updateItemMap(itemId, 1);
 
-        PassiveItemManager.getInstance().getItemFromId(itemId).onObtain(player, true);
+        PassiveItemManager.getInstance().getItemFromId(itemId).onObtain(player);
         ModMessages.sentToPlayer(new ObtainPassiveItemS2CPacket(itemId), player);
     }
 
@@ -302,7 +299,7 @@ public class PlayerPassiveItem {
         updateItemMap(removeId, -1);
 
         //移除效果
-        PassiveItemManager.getInstance().getItemFromId(removeId).onRemove(player, true);
+        PassiveItemManager.getInstance().getItemFromId(removeId).onRemove(player);
         return true;
     }
 
@@ -317,7 +314,7 @@ public class PlayerPassiveItem {
                 // 更新哈希表：数量-1（若数量为0则移除键）
                 updateItemMap(itemId, -1);
 
-                PassiveItemManager.getInstance().getItemFromId(itemId).onRemove(player, true);
+                PassiveItemManager.getInstance().getItemFromId(itemId).onRemove(player);
                 break;
             }
         }
@@ -327,11 +324,8 @@ public class PlayerPassiveItem {
         return setCountMap.getOrDefault(setId, 0);
     }
 
-    public int getPermanentSetCountFromId(int setId){
-        return permanentSetCountMap.getOrDefault(setId, 0);
-    }
 
-    public void modifySetCount(ServerPlayer player, int setId, int amount, boolean isPermanent){
+    public void modifySetCount(ServerPlayer player, int setId, int amount){
         int preCount = getSetCountFromId(setId);
         int newCount = preCount + amount;
         ISet set = SetManager.getInstance().getSetFromId(setId);
@@ -346,9 +340,7 @@ public class PlayerPassiveItem {
         }
 
         setCountMap.put(setId, newCount);
-        if (isPermanent){
-            permanentSetCountMap.put(setId, getPermanentSetCountFromId(setId) + amount);
-        }
+
         // 同步到客户端
         ModMessages.sentToPlayer(new SetCountSyncS2CPacket(setId, newCount), player);
     }
@@ -358,8 +350,7 @@ public class PlayerPassiveItem {
     // 从目标处复制
     public void copyFrom(PlayerPassiveItem source) {
         this.playerPassiveItems = new ArrayList<>(source.playerPassiveItems);
-        this.permanentSetCountMap = new HashMap<>(source.permanentSetCountMap);
-        this.setCountMap = new HashMap<>(source.permanentSetCountMap);
+        this.setCountMap = new HashMap<>(source.setCountMap);
         // 重新计算各类item map
         refreshItemCountMap();
         // set的客户端计数会在event重置
@@ -377,7 +368,7 @@ public class PlayerPassiveItem {
 
         // 保存 setCountMap
         ListTag setList = new ListTag();
-        for (Map.Entry<Integer, Integer> entry : permanentSetCountMap.entrySet()) {
+        for (Map.Entry<Integer, Integer> entry : setCountMap.entrySet()) {
             CompoundTag setTag = new CompoundTag();
             setTag.putInt("SetId", entry.getKey());
             setTag.putInt("Count", entry.getValue());
@@ -404,7 +395,6 @@ public class PlayerPassiveItem {
 
         // 读取 setCountMap
         setCountMap.clear();
-        permanentSetCountMap.clear();
         if (nbt.contains("SetCounts", Tag.TAG_LIST)) {
             ListTag setList = nbt.getList("SetCounts", Tag.TAG_COMPOUND);
             for (Tag baseTag : setList) {
@@ -412,7 +402,6 @@ public class PlayerPassiveItem {
                     int setId = setTag.getInt("SetId");
                     int count = setTag.getInt("Count");
                     setCountMap.put(setId, count);
-                    permanentSetCountMap.put(setId, count);
                 }
             }
         }

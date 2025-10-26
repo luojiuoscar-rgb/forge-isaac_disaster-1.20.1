@@ -11,14 +11,13 @@ import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 import top.theillusivec4.curios.api.SlotContext;
-import top.theillusivec4.curios.api.type.capability.ICurioItem;
 
 import javax.annotation.Nullable;
 import java.util.List;
 
 
 
-public class Trinket extends Item implements ICurioItem {
+public class Trinket extends Item implements IIsaacCuriosItem {
     private final int trinketId;
     private static final String ENCHANTED = "enchanted";
     private static final String SWALLOWING = "swallowing";
@@ -39,12 +38,12 @@ public class Trinket extends Item implements ICurioItem {
     }
 
     @Override
-    public void onEquip(SlotContext slotContext, ItemStack prevStack, ItemStack stack) {
+    public void tryEquip(SlotContext slotContext, ItemStack prevStack, ItemStack stack) {
         TrinketManager.getInstance().getTrinketFromId(getTrinketId()).onEquipped(slotContext.entity(), isEnchanted(stack), false);
     }
     @Override
     public void onUnequip(SlotContext slotContext, ItemStack prevStack, ItemStack stack) {
-        if (isSwallowing(prevStack) || isSwallowing(stack)) return; // 我不知道为什么 但是这样能行
+        if (isSwallowing(prevStack) || isSwallowing(stack)) return; // 不知道为什么 但是这样可以
         TrinketManager.getInstance().getTrinketFromId(getTrinketId()).onUnequipped(slotContext.entity(), isEnchanted(stack), false);
     }
     @Override

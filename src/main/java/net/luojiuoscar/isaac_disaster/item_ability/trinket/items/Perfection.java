@@ -48,9 +48,9 @@ public class Perfection implements IHurtTriggerTrinket {
     public void onEquipped(LivingEntity entity, boolean isEnchanted, boolean isPermanent){
         if (!(entity instanceof Player player)) return;
         if (isEnchanted) {
-            StatManager.modifyLuckAdder(player, 20, isEnchanted);
+            StatManager.modifyLuckAdder(player, 20);
         } else {
-            StatManager.modifyLuckAdder(player, 10, isEnchanted);
+            StatManager.modifyLuckAdder(player, 10);
         }
 
     };
@@ -58,9 +58,9 @@ public class Perfection implements IHurtTriggerTrinket {
     public void onUnequipped(LivingEntity entity, boolean isEnchanted, boolean isPermanent){
         if (!(entity instanceof Player player)) return;
         if (isEnchanted) {
-            StatManager.modifyLuckAdder(player, -20, isEnchanted);
+            StatManager.modifyLuckAdder(player, -20);
         } else {
-            StatManager.modifyLuckAdder(player, -10, isEnchanted);
+            StatManager.modifyLuckAdder(player, -10);
         }
     };
 
@@ -107,6 +107,6 @@ public class Perfection implements IHurtTriggerTrinket {
 
     @Override
     public double getTriggerChance(Player player, List<ItemStack> stackList) {
-        return stackList.stream().anyMatch(Trinket::isEnchanted) ? 0.3 : 1;
+        return stackList.stream().anyMatch(Trinket::isEnchanted) ? 0.4 : 0.2;
     }
 }

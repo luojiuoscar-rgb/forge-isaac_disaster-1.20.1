@@ -19,15 +19,15 @@ public interface IPassiveItem {
 
 
     /** 不会被remove的效果 */
-    void onFirstObtain(Player player, boolean isPermanent);
+    void onFirstObtain(Player player);
 
-    void onObtain(Player player, boolean isPermanent);
+    void onObtain(Player player);
 
 
     /**
      * 移除道具时触发
      */
-    void onRemove(Player player, boolean isPermanent);
+    void onRemove(Player player);
 
 
     default void onObtainClient(Player player){

@@ -18,20 +18,20 @@ public class CricketsHead implements IPassiveItem {
     }
 
     @Override
-    public void onFirstObtain(Player player, boolean isPermanent) {
+    public void onFirstObtain(Player player) {
 
     }
 
     @Override
-    public void onObtain(Player player, boolean isPermanent) {
-        StatManager.modifyDamageAdder(player, 0.5, isPermanent);
-        StatManager.modifyDamageMultiplier(player, StatManager.getDamageMultiplier1(), isPermanent);
+    public void onObtain(Player player) {
+        StatManager.modifyDamageAdder(player, 0.5);
+        StatManager.modifyDamageMultiplier(player, StatManager.getDamageMultiplier1());
     }
 
     @Override
-    public void onRemove(Player player, boolean isPermanent) {
-        StatManager.modifyDamageAdder(player, -0.5, isPermanent);
-        StatManager.modifyDamageMultiplier(player, -StatManager.getDamageMultiplier1(), isPermanent);
+    public void onRemove(Player player) {
+        StatManager.modifyDamageAdder(player, -0.5);
+        StatManager.modifyDamageMultiplier(player, -StatManager.getDamageMultiplier1());
     }
 
     @Override

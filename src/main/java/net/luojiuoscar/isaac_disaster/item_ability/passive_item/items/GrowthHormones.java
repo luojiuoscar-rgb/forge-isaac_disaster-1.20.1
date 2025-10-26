@@ -20,21 +20,21 @@ public class GrowthHormones implements IPassiveItem {
     }
 
     @Override
-    public void onFirstObtain(Player player, boolean isPermanent) {
+    public void onFirstObtain(Player player) {
     }
 
     @Override
-    public void onObtain(Player player, boolean isPermanent) {
-        StatManager.modifyDamageAdder(player, 1, isPermanent);
-        StatManager.modifyMovementSpeedAdder(player, 1, isPermanent);
-        StatManager.modifySetWithId(player, SetId.SPUN.getId(), 1, isPermanent);
+    public void onObtain(Player player) {
+        StatManager.modifyDamageAdder(player, 1);
+        StatManager.modifyMovementSpeedAdder(player, 1);
+        StatManager.modifySetWithId(player, SetId.SPUN.getId(), 1);
     }
 
     @Override
-    public void onRemove(Player player, boolean isPermanent) {
-        StatManager.modifyDamageAdder(player, -1, isPermanent);
-        StatManager.modifyMovementSpeedAdder(player, -1, isPermanent);
-        StatManager.modifySetWithId(player, SetId.SPUN.getId(), -1, isPermanent);
+    public void onRemove(Player player) {
+        StatManager.modifyDamageAdder(player, -1);
+        StatManager.modifyMovementSpeedAdder(player, -1);
+        StatManager.modifySetWithId(player, SetId.SPUN.getId(), -1);
     }
 
     @Override

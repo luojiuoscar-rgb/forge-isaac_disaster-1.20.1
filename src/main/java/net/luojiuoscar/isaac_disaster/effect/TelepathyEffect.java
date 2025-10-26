@@ -34,7 +34,7 @@ public class TelepathyEffect extends MobEffect {
             return;
         }
 
-        StatManager.modifyHoming(player, 1, true);
+        StatManager.modifyHoming(player, 1);
         player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY).ifPresent(
                 playerAbility -> playerAbility.addFilter(ColorManager.SPOON_BENDER_FILTER, player)
         );
@@ -60,7 +60,7 @@ public class TelepathyEffect extends MobEffect {
         super.removeAttributeModifiers(entity, attributes, amplifier);
         if (!(entity instanceof ServerPlayer player)) return;
 
-        StatManager.modifyHoming(player, -1, true);
+        StatManager.modifyHoming(player, -1);
         player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY).ifPresent(
                 playerAbility -> playerAbility.removeFilter(ColorManager.SPOON_BENDER_FILTER, player)
         );

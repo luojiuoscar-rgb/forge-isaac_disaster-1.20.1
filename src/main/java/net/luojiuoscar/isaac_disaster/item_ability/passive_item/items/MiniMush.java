@@ -20,26 +20,26 @@ public class MiniMush implements IPassiveItem {
     }
 
     @Override
-    public void onFirstObtain(Player player, boolean isPermanent) {
+    public void onFirstObtain(Player player) {
 
     }
 
     @Override
-    public void onObtain(Player player, boolean isPermanent) {
-        StatManager.modifyScaleAdder(player, -2, isPermanent);
-        StatManager.modifyMovementSpeedAdder(player, 1.5, isPermanent);
-        StatManager.modifyRangeAdder(player, 1, isPermanent);
-        StatManager.modifyBlockReachAdder(player, 1, isPermanent);
-        StatManager.modifySetWithId(player, SetId.FUN_GUY.getId(), 1, isPermanent);
+    public void onObtain(Player player) {
+        StatManager.modifyScaleAdder(player, -2);
+        StatManager.modifyMovementSpeedAdder(player, 1.5);
+        StatManager.modifyRangeAdder(player, 1);
+        StatManager.modifyBlockReachAdder(player, 1);
+        StatManager.modifySetWithId(player, SetId.FUN_GUY.getId(), 1);
     }
 
     @Override
-    public void onRemove(Player player, boolean isPermanent) {
-        StatManager.modifyScaleAdder(player, 2, isPermanent);
-        StatManager.modifyMovementSpeedAdder(player, -1.5, isPermanent);
-        StatManager.modifyRangeAdder(player, -1, isPermanent);
-        StatManager.modifyBlockReachAdder(player, -1, isPermanent);
-        StatManager.modifySetWithId(player, SetId.FUN_GUY.getId(), -1, isPermanent);
+    public void onRemove(Player player) {
+        StatManager.modifyScaleAdder(player, 2);
+        StatManager.modifyMovementSpeedAdder(player, -1.5);
+        StatManager.modifyRangeAdder(player, -1);
+        StatManager.modifyBlockReachAdder(player, -1);
+        StatManager.modifySetWithId(player, SetId.FUN_GUY.getId(), -1);
     }
 
     @Override

@@ -26,28 +26,28 @@ public class FalsePhd implements IPassiveItem {
     }
 
     @Override
-    public void onFirstObtain(Player player, boolean isPermanent) {
+    public void onFirstObtain(Player player) {
         PlayerHelper.giveItem(player, ModItems.BLACK_HEART.get(), 1);
         LevelHelper.spawnLootAtPos((ServerLevel) player.level(), player.blockPosition().getCenter(),
                 ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, LootTableNameManager.RANDOM_PILLS));
     }
 
     @Override
-    public void onObtain(Player player, boolean isPermanent) {
+    public void onObtain(Player player) {
         if (player instanceof ServerPlayer serverPlayer){
             int count = PlayerHelper.getItemCount(ItemId.FALSE_PHD.getId(), serverPlayer);
             ModMessages.sentToPlayer(new PassiveItemSyncS2CPacket(ItemId.FALSE_PHD.getId(), count), serverPlayer);
         }
-        StatManager.modifyPillQuality(player, -1, isPermanent);
+        StatManager.modifyPillQuality(player, -1);
     }
 
     @Override
-    public void onRemove(Player player, boolean isPermanent) {
+    public void onRemove(Player player) {
         if (player instanceof ServerPlayer serverPlayer){
             int count = PlayerHelper.getItemCount(ItemId.FALSE_PHD.getId(), serverPlayer);
             ModMessages.sentToPlayer(new PassiveItemSyncS2CPacket(ItemId.FALSE_PHD.getId(), count), serverPlayer);
         }
-        StatManager.modifyPillQuality(player, 1, isPermanent);
+        StatManager.modifyPillQuality(player, 1);
     }
 
     @Override

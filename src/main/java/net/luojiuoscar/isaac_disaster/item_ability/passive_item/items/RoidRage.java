@@ -20,25 +20,25 @@ public class RoidRage implements IPassiveItem {
     }
 
     @Override
-    public void onFirstObtain(Player player, boolean isPermanent) {
+    public void onFirstObtain(Player player) {
     }
 
     @Override
-    public void onObtain(Player player, boolean isPermanent) {
-        StatManager.modifyRangeAdder(player, 1, isPermanent);
-        StatManager.modifyEntityReachAdder(player, 1, isPermanent);
-        StatManager.modifyBlockReachAdder(player, 1, isPermanent);
-        StatManager.modifyMovementSpeedAdder(player, 1.5, isPermanent);
-        StatManager.modifySetWithId(player, SetId.SPUN.getId(), 1, isPermanent);
+    public void onObtain(Player player) {
+        StatManager.modifyRangeAdder(player, 1);
+        StatManager.modifyEntityReachAdder(player, 1);
+        StatManager.modifyBlockReachAdder(player, 1);
+        StatManager.modifyMovementSpeedAdder(player, 1.5);
+        StatManager.modifySetWithId(player, SetId.SPUN.getId(), 1);
     }
 
     @Override
-    public void onRemove(Player player, boolean isPermanent) {
-        StatManager.modifyRangeAdder(player, -1, isPermanent);
-        StatManager.modifyEntityReachAdder(player, -1, isPermanent);
-        StatManager.modifyBlockReachAdder(player, -1, isPermanent);
-        StatManager.modifyMovementSpeedAdder(player, -1.5, isPermanent);
-        StatManager.modifySetWithId(player, SetId.SPUN.getId(), -1, isPermanent);
+    public void onRemove(Player player) {
+        StatManager.modifyRangeAdder(player, -1);
+        StatManager.modifyEntityReachAdder(player, -1);
+        StatManager.modifyBlockReachAdder(player, -1);
+        StatManager.modifyMovementSpeedAdder(player, -1.5);
+        StatManager.modifySetWithId(player, SetId.SPUN.getId(), -1);
     }
 
     @Override

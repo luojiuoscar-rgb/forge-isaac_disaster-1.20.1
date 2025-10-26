@@ -39,9 +39,9 @@ public class Cancer implements ITrinket {
     public void onEquipped(LivingEntity entity, boolean isEnchanted, boolean isPermanent){
         if (!(entity instanceof Player player)) return;
         if (isEnchanted) {
-            StatManager.modifyTearsCorrectionAdder(player, 2, isPermanent);
+            StatManager.modifyTearsCorrectionAdder(player, 2);
         } else {
-            StatManager.modifyTearsCorrectionAdder(player, 1, isPermanent);
+            StatManager.modifyTearsCorrectionAdder(player, 1);
         }
 
     };
@@ -49,9 +49,9 @@ public class Cancer implements ITrinket {
     public void onUnequipped(LivingEntity entity, boolean isEnchanted, boolean isPermanent){
         if (!(entity instanceof Player player)) return;
         if (isEnchanted) {
-            StatManager.modifyTearsCorrectionAdder(player, -2, isPermanent);
+            StatManager.modifyTearsCorrectionAdder(player, -2);
         } else {
-            StatManager.modifyTearsCorrectionAdder(player, -1, isPermanent);
+            StatManager.modifyTearsCorrectionAdder(player, -1);
         }
     };
 

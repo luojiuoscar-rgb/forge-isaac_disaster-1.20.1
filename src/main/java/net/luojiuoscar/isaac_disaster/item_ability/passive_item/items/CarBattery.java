@@ -21,11 +21,11 @@ public class CarBattery implements IPassiveItem {
     }
 
     @Override
-    public void onFirstObtain(Player player, boolean isPermanent) {
+    public void onFirstObtain(Player player) {
     }
 
     @Override
-    public void onObtain(Player player, boolean isPermanent) {
+    public void onObtain(Player player) {
         // 车载电池需要同步数据到客户端
         if (player instanceof ServerPlayer serverPlayer){
             int count = PlayerHelper.getItemCount(ItemId.CAR_BATTERY.getId(), serverPlayer);
@@ -34,7 +34,7 @@ public class CarBattery implements IPassiveItem {
     }
 
     @Override
-    public void onRemove(Player player, boolean isPermanent) {
+    public void onRemove(Player player) {
         // 车载电池需要同步数据到客户端
         if (player instanceof ServerPlayer serverPlayer){
             int count = PlayerHelper.getItemCount(ItemId.CAR_BATTERY.getId(), serverPlayer);

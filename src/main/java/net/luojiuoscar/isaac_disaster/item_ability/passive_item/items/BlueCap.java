@@ -20,28 +20,28 @@ public class BlueCap implements IPassiveItem {
     }
 
     @Override
-    public void onFirstObtain(Player player, boolean isPermanent) {
+    public void onFirstObtain(Player player) {
         StatManager.healHealth(player, 1);
     }
 
     @Override
-    public void onObtain(Player player, boolean isPermanent) {
-        StatManager.modifyMaxHealth(player, 1, isPermanent);
-        StatManager.modifyTearsAdder(player, 1, isPermanent);
-        StatManager.modifyAttackSpeedAdder(player, -0.1, isPermanent);
-        StatManager.modifyBlockBreakingSpeedAdder(player, 1, isPermanent);
-        StatManager.modifyBulletSpeedAdder(player, -0.8, isPermanent);
-        StatManager.modifySetWithId(player, SetId.FUN_GUY.getId(), 1, isPermanent);
+    public void onObtain(Player player) {
+        StatManager.modifyMaxHealth(player, 1);
+        StatManager.modifyTearsAdder(player, 1);
+        StatManager.modifyAttackSpeedAdder(player, -0.1);
+        StatManager.modifyBlockBreakingSpeedAdder(player, 1);
+        StatManager.modifyBulletSpeedAdder(player, -0.8);
+        StatManager.modifySetWithId(player, SetId.FUN_GUY.getId(), 1);
     }
 
     @Override
-    public void onRemove(Player player, boolean isPermanent) {
-        StatManager.modifyMaxHealth(player, -1, isPermanent);
-        StatManager.modifyTearsAdder(player, -1, isPermanent);
-        StatManager.modifyAttackSpeedAdder(player, 0.1, isPermanent);
-        StatManager.modifyBlockBreakingSpeedAdder(player, -1, isPermanent);
-        StatManager.modifyBulletSpeedAdder(player, 0.8, isPermanent);
-        StatManager.modifySetWithId(player, SetId.FUN_GUY.getId(), -1, isPermanent);
+    public void onRemove(Player player) {
+        StatManager.modifyMaxHealth(player, -1);
+        StatManager.modifyTearsAdder(player, -1);
+        StatManager.modifyAttackSpeedAdder(player, 0.1);
+        StatManager.modifyBlockBreakingSpeedAdder(player, -1);
+        StatManager.modifyBulletSpeedAdder(player, 0.8);
+        StatManager.modifySetWithId(player, SetId.FUN_GUY.getId(), -1);
     }
 
     @Override

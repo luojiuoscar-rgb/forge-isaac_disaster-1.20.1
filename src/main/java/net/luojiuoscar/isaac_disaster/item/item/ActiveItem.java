@@ -56,11 +56,13 @@ public class ActiveItem extends IsaacItem {
     @Override
     public void addAdditionalInfo(List<Component> tooltipComponents, @Nullable ItemStack stack){
         tooltipComponents.add(Component.literal(""));
-        tooltipComponents.add(
-                Component.translatable("item.isaac_disaster.special.recharge_require", (max_item_damage / 20))
-                        .withStyle(style -> style.withColor(ColorManager.TRANSPARENT_GRAY)
-                                .withItalic(true))
-        );
+        if (max_item_damage > 20){ // 大于1秒的才显示
+            tooltipComponents.add(
+                    Component.translatable("item.isaac_disaster.special.recharge_require", (max_item_damage / 20))
+                            .withStyle(style -> style.withColor(ColorManager.TRANSPARENT_GRAY)
+                                    .withItalic(true))
+            );
+        }
     }
 
     @Override
