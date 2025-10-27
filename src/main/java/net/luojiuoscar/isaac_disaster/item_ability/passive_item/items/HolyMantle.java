@@ -2,7 +2,6 @@ package net.luojiuoscar.isaac_disaster.item_ability.passive_item.items;
 
 import net.luojiuoscar.isaac_disaster.effect.ModEffects;
 import net.luojiuoscar.isaac_disaster.helper.EntityHelper;
-import net.luojiuoscar.isaac_disaster.item.ModItems;
 import net.luojiuoscar.isaac_disaster.item_ability.passive_item.IRecursivePassiveItem;
 import net.luojiuoscar.isaac_disaster.manager.id_managers.ItemId;
 import net.minecraft.network.chat.Component;
@@ -31,11 +30,6 @@ public class HolyMantle implements IRecursivePassiveItem {
 
     @Override
     public void onRemove(Player player, @Nullable ItemStack stack) {
-    }
-
-    @Override
-    public ItemStack getItemStack() {
-        return new ItemStack(ModItems.HOLY_MANTLE.get());
     }
 
     @Override

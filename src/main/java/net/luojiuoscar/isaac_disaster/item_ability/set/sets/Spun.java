@@ -27,11 +27,15 @@ public class Spun implements ISet {
     }
 
     @Override
+    public void onFirstObtain(Player player){
+        LevelHelper.spawnLootAtPos((ServerLevel) player.level(), player.blockPosition().getCenter(),
+                ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, LootTableNameManager.RANDOM_PILLS));
+    }
+
+    @Override
     public void onObtainEffect(Player player) {
         StatManager.DAMAGE.apply(player, 2);
         StatManager.MOVEMENT_SPEED.apply(player, 0.75);
-        LevelHelper.spawnLootAtPos((ServerLevel) player.level(), player.blockPosition().getCenter(),
-                ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, LootTableNameManager.RANDOM_PILLS));
     }
 
     @Override

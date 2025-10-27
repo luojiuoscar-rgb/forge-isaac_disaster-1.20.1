@@ -32,11 +32,6 @@ public class FastBomb implements IPassiveItem {
     }
 
     @Override
-    public ItemStack getItemStack(){
-        return new ItemStack(ModItems.FAST_BOMB.get());
-    }
-
-    @Override
     public List<Component> getDescription() {
         return List.of(
                 Component.translatable("item.isaac_disaster.action.give_bomb", 7),

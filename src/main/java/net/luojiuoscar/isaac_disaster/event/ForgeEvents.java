@@ -156,7 +156,6 @@ public class ForgeEvents {
 
     @SubscribeEvent
     public static void onCommandRegister(RegisterCommandsEvent event){
-        new ShowPassiveItemsCommand(event.getDispatcher());
         new ClearPassiveItemsCommand(event.getDispatcher());
         new HasItemCommand(event.getDispatcher());
         new GetItemCountCommand(event.getDispatcher());
@@ -568,9 +567,6 @@ public class ForgeEvents {
         }
 
     }
-
-
-
 
 
 

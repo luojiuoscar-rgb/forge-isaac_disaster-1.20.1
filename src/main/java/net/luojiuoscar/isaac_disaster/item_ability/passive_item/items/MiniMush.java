@@ -1,6 +1,5 @@
 package net.luojiuoscar.isaac_disaster.item_ability.passive_item.items;
 
-import net.luojiuoscar.isaac_disaster.item.ModItems;
 import net.luojiuoscar.isaac_disaster.item_ability.passive_item.IPassiveItem;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.manager.id_managers.ItemId;
@@ -26,7 +25,7 @@ public class MiniMush implements IPassiveItem {
 
     @Override
     public void onObtainEffect(Player player, @Nullable ItemStack stack) {
-        StatManager.SCALE.apply(player, -2);
+        StatManager.SCALE.apply(player, -1.5);
         StatManager.MOVEMENT_SPEED.apply(player,  1.5);
         StatManager.RANGE.apply(player,  1);
         StatManager.BLOCK_BREAKING.apply(player,  1);
@@ -35,16 +34,11 @@ public class MiniMush implements IPassiveItem {
 
     @Override
     public void onRemove(Player player, @Nullable ItemStack stack) {
-        StatManager.SCALE.apply(player, 2);
+        StatManager.SCALE.apply(player, 1.5);
         StatManager.MOVEMENT_SPEED.apply(player,  -1.5);
         StatManager.RANGE.apply(player,  -1);
         StatManager.BLOCK_BREAKING.apply(player,  -1);
         StatManager.modifySetWithId(player, SetId.FUN_GUY.getId(), -1);
-    }
-
-    @Override
-    public ItemStack getItemStack() {
-        return new ItemStack(ModItems.MINI_MUSH.get());
     }
 
     @Override

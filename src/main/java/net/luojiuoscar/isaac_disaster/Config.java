@@ -193,7 +193,7 @@ public class Config
 
         AUTO_ADAPT_CURIO_SLOT = BUILDER
                 .comment("Equip curio passive item will also add 1 passive item slot. (NEED to enable at least one slot)")
-                .define("auto_adapt_curio_slot", true);
+                .define("auto_adapt_curio_slot", false);
 
         // 周围（定义周围的范围）  默认12
         NEARBY_RANGE = BUILDER
@@ -210,7 +210,7 @@ public class Config
         // 钱力强度  默认0.008
         MONEY_IS_POWER_STRENGTH = BUILDER
                 .comment("Damage increment of money is power. (each coin)")
-                .defineInRange("money_is_power_strength", 0.008, 0.0, 99999.0);
+                .defineInRange("money_is_power_strength", 0.007, 0.0, 99999.0);
 
 
         BUILDER.pop();

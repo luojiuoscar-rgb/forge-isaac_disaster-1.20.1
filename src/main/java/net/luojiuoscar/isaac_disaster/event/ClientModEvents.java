@@ -2,25 +2,23 @@ package net.luojiuoscar.isaac_disaster.event;
 
 
 import net.luojiuoscar.isaac_disaster.client.FlyHudOverlay;
+import net.luojiuoscar.isaac_disaster.client.ModKeyMappings;
 import net.luojiuoscar.isaac_disaster.entity.ModEntities;
 import net.luojiuoscar.isaac_disaster.entity.tnt.CustomTntRenderer;
-import net.luojiuoscar.isaac_disaster.networking.ModMessages;
-import net.luojiuoscar.isaac_disaster.networking.packet.SetRightClickC2SPacket;
 import net.luojiuoscar.isaac_disaster.renderer.InvincibleChargeLayer;
 import net.luojiuoscar.isaac_disaster.renderer.IsaacBulletRenderer;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.entity.player.PlayerRenderer;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.EntityRenderersEvent;
-import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.client.event.RegisterGuiOverlaysEvent;
+import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
 import net.minecraftforge.client.gui.overlay.VanillaGuiOverlay;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
 
 @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
-public class ClientEventMod {
+public class ClientModEvents {
     // 订阅实体渲染器注册事件
     @SubscribeEvent
     public static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
@@ -46,7 +44,10 @@ public class ClientEventMod {
         event.registerAbove(VanillaGuiOverlay.FOOD_LEVEL.id(), "fly", FlyHudOverlay.HUD_FLY);
     }
 
-
+    @SubscribeEvent
+    public static void onRegisterKeyMappings(RegisterKeyMappingsEvent event) {
+        event.register(ModKeyMappings.OPEN_ISAAC_ITEM_SCREEN);
+    }
 
 
 

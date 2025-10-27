@@ -2,7 +2,6 @@ package net.luojiuoscar.isaac_disaster.item_ability.passive_item.items;
 
 import net.luojiuoscar.isaac_disaster.Config;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
-import net.luojiuoscar.isaac_disaster.item.ModItems;
 import net.luojiuoscar.isaac_disaster.item_ability.passive_item.IRecursivePassiveItem;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.manager.id_managers.ItemId;
@@ -55,11 +54,6 @@ public class MoneyIsPower implements IRecursivePassiveItem {
         AttributeInstance instance = player.getAttribute(Attributes.ATTACK_DAMAGE);
         if (instance == null) return;
         instance.removeModifier(MONEY_IS_POWER_ADDER);
-    }
-
-    @Override
-    public ItemStack getItemStack() {
-        return new ItemStack(ModItems.MONEY_IS_POWER.get());
     }
 
     @Override

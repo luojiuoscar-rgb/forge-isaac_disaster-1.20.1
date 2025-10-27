@@ -52,11 +52,6 @@ public class FalsePhd implements IPassiveItem {
     }
 
     @Override
-    public ItemStack getItemStack() {
-        return new ItemStack(ModItems.FALSE_PHD.get());
-    }
-
-    @Override
     public List<Component> getDescription() {
         return List.of(
                 Component.translatable("item.isaac_disaster.false_phd.lore.1"),

@@ -77,13 +77,6 @@ public class ModMessages {
                 .consumerNetworkThread(FlyUpdateS2CPacket::handle)
                 .add();
 
-        // register UpdatePlayerScaleS2CPacket
-        net.messageBuilder(UpdatePlayerScaleS2CPacket.class, id(), NetworkDirection.PLAY_TO_CLIENT)
-                .decoder(UpdatePlayerScaleS2CPacket::new)
-                .encoder(UpdatePlayerScaleS2CPacket::toBytes)
-                .consumerNetworkThread(UpdatePlayerScaleS2CPacket::handle)
-                .add();
-
         // register RightClickUpC2SPacket
         net.messageBuilder(SetRightClickC2SPacket.class, id(), NetworkDirection.PLAY_TO_SERVER)
                 .decoder(SetRightClickC2SPacket::new)
@@ -117,6 +110,20 @@ public class ModMessages {
                 .decoder(PillRecordsSyncS2CPacket::new)
                 .encoder(PillRecordsSyncS2CPacket::toBytes)
                 .consumerNetworkThread(PillRecordsSyncS2CPacket::handle)
+                .add();
+
+        // register OpenItemScreenS2CPacket
+        net.messageBuilder(OpenIsaacItemScreenS2CPacket.class, id(), NetworkDirection.PLAY_TO_CLIENT)
+                .decoder(OpenIsaacItemScreenS2CPacket::new)
+                .encoder(OpenIsaacItemScreenS2CPacket::toBytes)
+                .consumerNetworkThread(OpenIsaacItemScreenS2CPacket::handle)
+                .add();
+
+        // register OpenIsaacItemScreenC2SPacket
+        net.messageBuilder(OpenIsaacItemScreenC2SPacket.class, id(), NetworkDirection.PLAY_TO_SERVER)
+                .decoder(OpenIsaacItemScreenC2SPacket::new)
+                .encoder(OpenIsaacItemScreenC2SPacket::toBytes)
+                .consumerNetworkThread(OpenIsaacItemScreenC2SPacket::handle)
                 .add();
     }
 

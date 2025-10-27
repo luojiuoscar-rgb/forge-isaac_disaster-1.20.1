@@ -1,11 +1,8 @@
 package net.luojiuoscar.isaac_disaster.system;
 
 import net.luojiuoscar.isaac_disaster.attribute.ModAttributes;
-import net.luojiuoscar.isaac_disaster.networking.ModMessages;
-import net.luojiuoscar.isaac_disaster.networking.packet.UpdatePlayerScaleS2CPacket;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.EntityDimensions;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Pose;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 
@@ -31,10 +28,5 @@ public class ScaleUtils {
             attr.setBaseValue(newScale);
             EntityScaleSystem.refreshEntityScale(entity);
         }
-    }
-
-    public static void updatePlayerScale(ServerPlayer player){
-        player.refreshDimensions();
-        ModMessages.sentToPlayer(new UpdatePlayerScaleS2CPacket(), player);
     }
 }

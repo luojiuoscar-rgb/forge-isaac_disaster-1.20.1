@@ -21,6 +21,11 @@ public class Adult implements ISet {
     }
 
     @Override
+    public void onFirstObtain(Player player){
+        StatManager.healHealth(player, 1); // 首次获取时恢复一定血量
+    }
+
+    @Override
     public void onObtainEffect(Player player) {
         StatManager.MAX_HEALTH.apply(player, 1);
     }

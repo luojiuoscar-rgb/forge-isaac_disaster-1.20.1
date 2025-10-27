@@ -33,11 +33,6 @@ public class MrMega implements IPassiveItem {
     }
 
     @Override
-    public ItemStack getItemStack(){
-        return new ItemStack(ModItems.MR_MEGA.get());
-    }
-
-    @Override
     public List<Component> getDescription() {
         return List.of(
                 Component.translatable("item.isaac_disaster.action.give_bomb", 5),

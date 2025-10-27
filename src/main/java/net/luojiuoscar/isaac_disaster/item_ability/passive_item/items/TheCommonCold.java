@@ -2,7 +2,6 @@ package net.luojiuoscar.isaac_disaster.item_ability.passive_item.items;
 
 import net.luojiuoscar.isaac_disaster.effect.ModEffects;
 import net.luojiuoscar.isaac_disaster.entity.custom.IsaacBullet;
-import net.luojiuoscar.isaac_disaster.item.ModItems;
 import net.luojiuoscar.isaac_disaster.item_ability.passive_item.IDamageTriggerPassiveItem;
 import net.luojiuoscar.isaac_disaster.item_ability.passive_item.INewBulletTypePassiveItem;
 import net.luojiuoscar.isaac_disaster.manager.ColorManager;
@@ -60,11 +59,6 @@ public class TheCommonCold implements IDamageTriggerPassiveItem, INewBulletTypeP
     @Override
     public void onRemove(Player player, @Nullable ItemStack stack) {
 
-    }
-
-    @Override
-    public ItemStack getItemStack() {
-        return new ItemStack(ModItems.THE_COMMON_COLD.get());
     }
 
     @Override

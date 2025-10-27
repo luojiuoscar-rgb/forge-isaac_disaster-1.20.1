@@ -71,7 +71,13 @@ public enum StatManager {
     LUCK("luck", Attributes.LUCK, false, true,
             () -> Config.LUCK_BONUS.get(), null, null),
     SCALE("scale", ModAttributes.SCALE.get(), false, false,
-            () -> Config.SCALE_BONUS.get(), null, null),
+            () -> Config.SCALE_BONUS.get(), null, null){
+        @Override
+        public void apply(Player player, double ratio){
+            StatManager.modifyAdd(player, getUUID(), ratio * getBonus(), getMinVal(), getMaxVal());
+            player.refreshDimensions();
+        }
+    },
     RANGE("range", ModAttributes.BULLET_RANGE.get(), false, true,
             () -> Config.RANGE_BONUS.get(), null, null),
     ENTITY_REACH("entity_reach", ForgeMod.ENTITY_REACH.get(), false, true,

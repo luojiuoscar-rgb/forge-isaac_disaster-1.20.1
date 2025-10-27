@@ -49,21 +49,6 @@ public interface IPassiveItem {
         player.playSound(defaultSound, 1.0F, 1.0F);
     }
 
-
-
-
-    /**
-     * 获取道具实例
-     */
-    ItemStack getItemStack();
-
-    /**
-     * 获取名称
-     */
-    default Component getDisplayName(){
-        return getItemStack().getDisplayName();
-    }
-
     /**
      * 获取lore
      */

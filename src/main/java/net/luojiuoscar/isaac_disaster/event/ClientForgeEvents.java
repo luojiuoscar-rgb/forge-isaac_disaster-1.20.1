@@ -1,7 +1,9 @@
 package net.luojiuoscar.isaac_disaster.event;
 
 import net.luojiuoscar.isaac_disaster.client.ClientDataManager;
+import net.luojiuoscar.isaac_disaster.client.ModKeyMappings;
 import net.luojiuoscar.isaac_disaster.networking.ModMessages;
+import net.luojiuoscar.isaac_disaster.networking.packet.OpenIsaacItemScreenC2SPacket;
 import net.luojiuoscar.isaac_disaster.networking.packet.SetRightClickC2SPacket;
 import net.luojiuoscar.isaac_disaster.system.ScaleUtils;
 import net.minecraft.client.Minecraft;
@@ -13,7 +15,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
 @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
-public class ClientEventForge {
+public class ClientForgeEvents {
     /**
      * 玩家登出时清除客户端数据
      */
@@ -56,4 +58,14 @@ public class ClientEventForge {
             }
         }
     }
+
+    @SubscribeEvent
+    public static void onKeyInput(InputEvent.Key event) {
+        Minecraft mc = Minecraft.getInstance();
+
+        if (ModKeyMappings.OPEN_ISAAC_ITEM_SCREEN.isDown()) {
+            ModMessages.sendToServer(new OpenIsaacItemScreenC2SPacket());
+        }
+    }
+
 }

@@ -12,6 +12,7 @@ import net.luojiuoscar.isaac_disaster.networking.ModMessages;
 import net.luojiuoscar.isaac_disaster.networking.packet.ObtainPassiveItemS2CPacket;
 import net.luojiuoscar.isaac_disaster.networking.packet.SetCountSyncS2CPacket;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.IntTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
@@ -36,6 +37,7 @@ public class PlayerPassiveItem {
     private Map<Integer, Integer> newBulletTypeMap;
 
     private Map<Integer, Integer> setCountMap; // 当前套装计数
+    private Set<Integer> obtainedSets; // 已经获得过的套装
 
 
     // constructor
@@ -50,10 +52,9 @@ public class PlayerPassiveItem {
         this.triggerItemMap = new HashMap<>();
         this.recursiveItemMap = new HashMap<>();
         this.setCountMap = new HashMap<>();
+        this.obtainedSets = new HashSet<>();
         this.newBulletTypeMap = new HashMap<>();
     }
-
-
 
 
 
@@ -65,6 +66,7 @@ public class PlayerPassiveItem {
         triggerItemMap.clear();
         recursiveItemMap.clear();
         setCountMap.clear();
+        obtainedSets.clear();
         newBulletTypeMap.clear();
     }
 
@@ -110,10 +112,10 @@ public class PlayerPassiveItem {
 
 
     public List<ItemStack> getPassiveItems(){
-        return Collections.unmodifiableList(playerPassiveItems);
+        return new ArrayList<>(playerPassiveItems);
     }
     public Map<Integer, Integer> getCapTriggerItems(){
-        return Collections.unmodifiableMap(triggerItemMap);
+        return new HashMap<>(triggerItemMap);
     }
 
     /** 包含cap和curios在内的所有触发型道具 */
@@ -134,7 +136,7 @@ public class PlayerPassiveItem {
     }
 
     public Map<Integer, Integer> getCapRecursiveItems(){
-        return Collections.unmodifiableMap(recursiveItemMap);
+        return new HashMap<>(recursiveItemMap);
     }
     /** 包含cap和curios在内的所有循环型道具 */
     public Map<Integer, Integer> getAllRecursiveItems(Player player){
@@ -154,7 +156,14 @@ public class PlayerPassiveItem {
     }
 
     public Map<Integer, Integer> getSetCountMap(){
-        return Collections.unmodifiableMap(setCountMap);
+        return new HashMap<>(setCountMap);
+    }
+
+    public boolean isObtainedSet(int setId){
+        return this.obtainedSets.contains(setId);
+    }
+    public void setObtainedSet(int setId){
+        this.obtainedSets.add(setId);
     }
 
     /** 包含cap和curios在内的所有子弹类型改变道具 */
@@ -247,18 +256,20 @@ public class PlayerPassiveItem {
         if (!(stack.getItem() instanceof PassiveItem item)) return;
         int itemId = item.getItemId();
 
+
+        // 触发效果 (先触发效果以适配会对stack本身产生变化的道具；确保后续正确存入)
+        PassiveItemManager.getInstance().getItemFromId(itemId).onObtain(player, stack);
+        ModMessages.sentToPlayer(new ObtainPassiveItemS2CPacket(itemId), player);
+        PassiveItem.setConsumed(stack, true);
+
         // 增加被动道具到列表
         playerPassiveItems.add(stack.copy());
         // 更新哈希表：数量+1
         updateItemMap(item.getItemId(), 1);
 
-        // 触发效果
-        PassiveItemManager.getInstance().getItemFromId(itemId).onObtain(player, stack);
-        ModMessages.sentToPlayer(new ObtainPassiveItemS2CPacket(itemId), player);
-        PassiveItem.setConsumed(stack, true);
 
-        // 删除手持的道具原型(不论是否为创造模式)
-        player.getItemInHand(hand).shrink(1);
+        // 删除道具(不论是否为创造模式)
+        stack.shrink(1);
     }
 
     /** 将一个新的道具添加到列表。同时无视首次添加效果 */
@@ -348,6 +359,7 @@ public class PlayerPassiveItem {
     public void copyFrom(PlayerPassiveItem source) {
         this.playerPassiveItems = new ArrayList<>(source.playerPassiveItems);
         this.setCountMap = new HashMap<>(source.setCountMap);
+        this.obtainedSets = new HashSet<>(source.obtainedSets);
         // 重新计算各类item map
         refreshItemCountMap();
         // set的客户端计数会在event重置
@@ -372,6 +384,13 @@ public class PlayerPassiveItem {
             setList.add(setTag);
         }
         nbt.put("SetCounts", setList);
+
+        // 保存 obtainedSets
+        ListTag obtainedList = new ListTag();
+        for (int setId : obtainedSets) {
+            obtainedList.add(IntTag.valueOf(setId));
+        }
+        nbt.put("ObtainedSets", obtainedList);
     }
 
 
@@ -399,6 +418,17 @@ public class PlayerPassiveItem {
                     int setId = setTag.getInt("SetId");
                     int count = setTag.getInt("Count");
                     setCountMap.put(setId, count);
+                }
+            }
+        }
+
+        // 读取 obtainedSets
+        obtainedSets.clear();
+        if (nbt.contains("ObtainedSets", Tag.TAG_LIST)) {
+            ListTag obtainedList = nbt.getList("ObtainedSets", Tag.TAG_INT);
+            for (Tag tag : obtainedList) {
+                if (tag instanceof IntTag intTag) {
+                    obtainedSets.add(intTag.getAsInt());
                 }
             }
         }

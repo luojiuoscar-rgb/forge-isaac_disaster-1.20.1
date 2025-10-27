@@ -1,6 +1,5 @@
 package net.luojiuoscar.isaac_disaster.item_ability.passive_item.items;
 
-import net.luojiuoscar.isaac_disaster.item.ModItems;
 import net.luojiuoscar.isaac_disaster.item_ability.passive_item.IPassiveItem;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.manager.id_managers.ItemId;
@@ -30,11 +29,6 @@ public class CupidsArrow implements IPassiveItem {
     @Override
     public void onRemove(Player player, @Nullable ItemStack stack) {
         StatManager.modifyPiercing(player, -1);
-    }
-
-    @Override
-    public ItemStack getItemStack() {
-        return new ItemStack(ModItems.CUPIDS_ARROW.get());
     }
 
     @Override

@@ -1,7 +1,6 @@
 package net.luojiuoscar.isaac_disaster.item_ability.passive_item.items;
 
 import net.luojiuoscar.isaac_disaster.item_ability.passive_item.IPassiveItem;
-import net.luojiuoscar.isaac_disaster.item.ModItems;
 import net.luojiuoscar.isaac_disaster.manager.id_managers.ItemId;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
@@ -27,11 +26,6 @@ public class TheBattery implements IPassiveItem {
 
     @Override
     public void onRemove(Player player, @Nullable ItemStack stack) {
-    }
-
-    @Override
-    public ItemStack getItemStack(){
-        return new ItemStack(ModItems.THE_BATTERY.get());
     }
 
     @Override

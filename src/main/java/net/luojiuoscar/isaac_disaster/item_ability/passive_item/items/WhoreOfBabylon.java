@@ -1,7 +1,6 @@
 package net.luojiuoscar.isaac_disaster.item_ability.passive_item.items;
 
 import net.luojiuoscar.isaac_disaster.effect.ModEffects;
-import net.luojiuoscar.isaac_disaster.item.ModItems;
 import net.luojiuoscar.isaac_disaster.item_ability.passive_item.IRecursivePassiveItem;
 import net.luojiuoscar.isaac_disaster.manager.id_managers.EffectId;
 import net.luojiuoscar.isaac_disaster.manager.id_managers.ItemId;
@@ -32,11 +31,6 @@ public class WhoreOfBabylon implements IRecursivePassiveItem {
 
     @Override
     public void onRemove(Player player, @Nullable ItemStack stack) {
-    }
-
-    @Override
-    public ItemStack getItemStack(){
-        return new ItemStack(ModItems.WHORE_OF_BABYLON.get());
     }
 
     @Override

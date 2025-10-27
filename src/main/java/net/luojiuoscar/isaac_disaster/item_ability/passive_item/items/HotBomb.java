@@ -32,11 +32,6 @@ public class HotBomb implements IPassiveItem {
     }
 
     @Override
-    public ItemStack getItemStack(){
-        return new ItemStack(ModItems.HOT_BOMB.get());
-    }
-
-    @Override
     public List<Component> getDescription() {
         return List.of(
                 Component.translatable("item.isaac_disaster.action.give_bomb", 5),

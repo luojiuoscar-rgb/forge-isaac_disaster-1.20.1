@@ -36,11 +36,6 @@ public class TheSoul implements IRecursivePassiveItem {
     }
 
     @Override
-    public ItemStack getItemStack() {
-        return new ItemStack(ModItems.THE_SOUL.get());
-    }
-
-    @Override
     public List<Component> getDescription() {
         return List.of(
                 Component.translatable("item.isaac_disaster.action.give_soul_heart", 2),

@@ -36,11 +36,6 @@ public class BlackCandle implements IRecursivePassiveItem {
     }
 
     @Override
-    public ItemStack getItemStack(){
-        return new ItemStack(ModItems.BLACK_CANDLE.get());
-    }
-
-    @Override
     public List<Component> getDescription() {
         return List.of(
                 Component.translatable("item.isaac_disaster.black_candle.lore.1"),

@@ -1,7 +1,6 @@
 package net.luojiuoscar.isaac_disaster.item_ability.passive_item.items;
 
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
-import net.luojiuoscar.isaac_disaster.item.ModItems;
 import net.luojiuoscar.isaac_disaster.item_ability.passive_item.IPassiveItem;
 import net.luojiuoscar.isaac_disaster.manager.id_managers.ItemId;
 import net.luojiuoscar.isaac_disaster.networking.ModMessages;
@@ -39,11 +38,6 @@ public class TarotCloth implements IPassiveItem {
             int count = PlayerHelper.getItemCount(ItemId.TAROT_CLOTH.getId(), serverPlayer);
             ModMessages.sentToPlayer(new PassiveItemSyncS2CPacket(ItemId.TAROT_CLOTH.getId(), count), serverPlayer);
         }
-    }
-
-    @Override
-    public ItemStack getItemStack(){
-        return new ItemStack(ModItems.TAROT_CLOTH.get());
     }
 
     @Override

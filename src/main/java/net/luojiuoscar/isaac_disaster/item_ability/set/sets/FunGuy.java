@@ -22,6 +22,11 @@ public class FunGuy implements ISet {
     }
 
     @Override
+    public void onFirstObtain(Player player){
+        player.setHealth(player.getMaxHealth()); // 首次获取时满血
+    }
+
+    @Override
     public void onObtainEffect(Player player) {
         StatManager.MAX_HEALTH.apply(player, 1);
     }

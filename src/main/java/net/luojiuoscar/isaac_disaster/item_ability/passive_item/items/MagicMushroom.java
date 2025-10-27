@@ -1,6 +1,5 @@
 package net.luojiuoscar.isaac_disaster.item_ability.passive_item.items;
 
-import net.luojiuoscar.isaac_disaster.item.ModItems;
 import net.luojiuoscar.isaac_disaster.item_ability.passive_item.IPassiveItem;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.manager.id_managers.ItemId;
@@ -56,11 +55,6 @@ public class MagicMushroom implements IPassiveItem {
         StatManager.BLOCK_REACH.apply(player, -1);
         StatManager.ENTITY_REACH.apply(player, -1);
         StatManager.modifySetWithId(player, SetId.FUN_GUY.getId(), -1);
-    }
-
-    @Override
-    public ItemStack getItemStack() {
-        return new ItemStack(ModItems.MAGIC_MUSHROOM.get());
     }
 
     @Override

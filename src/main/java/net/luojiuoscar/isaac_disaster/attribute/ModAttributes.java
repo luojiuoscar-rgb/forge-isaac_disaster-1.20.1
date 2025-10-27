@@ -17,7 +17,7 @@ public class ModAttributes {
         MOD_ATTRIBUTE.register(bus);
     }
     public static final RegistryObject<Attribute> SCALE = MOD_ATTRIBUTE.register("scale",
-            () -> new RangedAttribute("attribute.name.generic.scale", 1.0D, 0.1D, 10.0D).setSyncable(true));
+            () -> new RangedAttribute("attribute.name.generic.scale", 1.0D, 0.2D, 8.0D).setSyncable(true));
 
     public static final RegistryObject<Attribute> BULLET_SPEED = MOD_ATTRIBUTE.register("bullet_speed",
             () -> new RangedAttribute("attribute.isaac_disaster.bullet_speed", 1.0D, -1024.0D, 1024.0D).setSyncable(true));

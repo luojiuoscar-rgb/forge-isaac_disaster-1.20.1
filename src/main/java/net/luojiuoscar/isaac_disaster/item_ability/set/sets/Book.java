@@ -22,6 +22,10 @@ public class Book implements ISet {
     }
 
     @Override
+    public void onFirstObtain(Player player){
+    }
+
+    @Override
     public void onObtainEffect(Player player) {
     }
 

@@ -1,7 +1,6 @@
 package net.luojiuoscar.isaac_disaster.item_ability.passive_item.items;
 
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
-import net.luojiuoscar.isaac_disaster.item.ModItems;
 import net.luojiuoscar.isaac_disaster.item_ability.passive_item.IHurtTriggerPassiveItem;
 import net.luojiuoscar.isaac_disaster.manager.id_managers.ItemId;
 import net.minecraft.network.chat.Component;
@@ -30,11 +29,6 @@ public class Habit implements IHurtTriggerPassiveItem {
 
     @Override
     public void onRemove(Player player, @Nullable ItemStack stack) {
-    }
-
-    @Override
-    public ItemStack getItemStack(){
-        return new ItemStack(ModItems.HABIT.get());
     }
 
     @Override

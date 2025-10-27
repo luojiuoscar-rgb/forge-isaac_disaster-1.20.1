@@ -39,11 +39,6 @@ public class SafetyPin implements IPassiveItem {
     }
 
     @Override
-    public ItemStack getItemStack(){
-        return new ItemStack(ModItems.SAFETY_PIN.get());
-    }
-
-    @Override
     public List<Component> getDescription() {
         return List.of(
                 StatManager.RANGE.description(1),

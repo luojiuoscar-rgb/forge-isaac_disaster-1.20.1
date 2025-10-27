@@ -2,7 +2,6 @@ package net.luojiuoscar.isaac_disaster.item_ability.passive_item.items;
 
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.item_ability.passive_item.IPassiveItem;
-import net.luojiuoscar.isaac_disaster.item.ModItems;
 import net.luojiuoscar.isaac_disaster.manager.id_managers.ItemId;
 import net.luojiuoscar.isaac_disaster.networking.ModMessages;
 import net.luojiuoscar.isaac_disaster.networking.packet.PassiveItemSyncS2CPacket;
@@ -41,11 +40,6 @@ public class CarBattery implements IPassiveItem {
             int count = PlayerHelper.getItemCount(ItemId.CAR_BATTERY.getId(), serverPlayer);
             ModMessages.sentToPlayer(new PassiveItemSyncS2CPacket(ItemId.CAR_BATTERY.getId(), count), serverPlayer);
         }
-    }
-
-    @Override
-    public ItemStack getItemStack(){
-        return new ItemStack(ModItems.CAR_BATTERY.get());
     }
 
     @Override

@@ -2,6 +2,7 @@ package net.luojiuoscar.isaac_disaster.item.item;
 
 import net.luojiuoscar.isaac_disaster.item_ability.trinket.ITrinket;
 import net.luojiuoscar.isaac_disaster.manager.item_managers.TrinketManager;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;
@@ -26,11 +27,11 @@ public class Trinket extends Item implements IIsaacCuriosItem {
     private boolean canUnequip;
 
 
-    public Trinket(Properties pProperties, int trinketId, Rarity rarity){
-        this(pProperties, trinketId, rarity, false);
+    public Trinket(Properties pProperties, int trinketId){
+        this(pProperties, trinketId, false);
     }
-    public Trinket(Properties pProperties, int trinketId, Rarity rarity, boolean hasSpecialEffect) {
-        super(pProperties.stacksTo(1).rarity(rarity));
+    public Trinket(Properties pProperties, int trinketId, boolean hasSpecialEffect) {
+        super(pProperties.stacksTo(1).rarity(Rarity.RARE));
         this.trinketId = trinketId;
         this.hasSpecialEffects = hasSpecialEffect;
         this.canEquip = true;
@@ -59,6 +60,15 @@ public class Trinket extends Item implements IIsaacCuriosItem {
     @Override
     public boolean canUnequip(SlotContext slotContext, ItemStack stack) {
         return this.canUnequip;
+    }
+
+    @Override
+    public @NotNull Component getName(@NotNull ItemStack stack) {
+        if (isEnchanted(stack)){
+            return Component.translatable(this.getDescriptionId(stack)).withStyle(
+                    style -> style.withColor(ChatFormatting.LIGHT_PURPLE));
+        }
+        return Component.translatable(this.getDescriptionId(stack));
     }
 
 

@@ -1,6 +1,5 @@
 package net.luojiuoscar.isaac_disaster.item_ability.passive_item.items;
 
-import net.luojiuoscar.isaac_disaster.item.ModItems;
 import net.luojiuoscar.isaac_disaster.item_ability.passive_item.IPassiveItem;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.manager.id_managers.ItemId;
@@ -42,11 +41,6 @@ public class BlueCap implements IPassiveItem {
         StatManager.BLOCK_BREAKING.apply(player, -1);
         StatManager.BULLET_SPEED.apply(player, 0.8);
         StatManager.modifySetWithId(player, SetId.FUN_GUY.getId(), -1);
-    }
-
-    @Override
-    public ItemStack getItemStack() {
-        return new ItemStack(ModItems.BLUE_CAP.get());
     }
 
     @Override

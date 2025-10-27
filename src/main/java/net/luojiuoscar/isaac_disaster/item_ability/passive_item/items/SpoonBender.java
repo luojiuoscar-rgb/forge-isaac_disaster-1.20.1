@@ -1,6 +1,5 @@
 package net.luojiuoscar.isaac_disaster.item_ability.passive_item.items;
 
-import net.luojiuoscar.isaac_disaster.item.ModItems;
 import net.luojiuoscar.isaac_disaster.item_ability.passive_item.IPassiveItem;
 import net.luojiuoscar.isaac_disaster.manager.ColorManager;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
@@ -33,11 +32,6 @@ public class SpoonBender implements IPassiveItem {
     public void onRemove(Player player, @Nullable ItemStack stack) {
         StatManager.modifyHoming(player, -1);
         StatManager.removeBulletFilter(player, ColorManager.SPOON_BENDER_FILTER);
-    }
-
-    @Override
-    public ItemStack getItemStack() {
-        return new ItemStack(ModItems.SPOON_BENDER.get());
     }
 
     @Override

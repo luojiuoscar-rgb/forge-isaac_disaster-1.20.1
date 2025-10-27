@@ -418,39 +418,39 @@ public class ModItems {
     // trinket
 
     public static final RegistryObject<Item> SWALLOWED_PENNY = ITEMS.register("swallowed_penny",
-            () -> new Trinket(new Item.Properties(), TrinketId.SWALLOWED_PENNY.getId(), Rarity.RARE));
+            () -> new Trinket(new Item.Properties(), TrinketId.SWALLOWED_PENNY.getId()));
     static { TRINKET_LIST.add(SWALLOWED_PENNY); }
 
     public static final RegistryObject<Item> AAA_BATTERY = ITEMS.register("aaa_battery",
-            () -> new Trinket(new Item.Properties(), TrinketId.AAA_BATTERY.getId(), Rarity.COMMON));
+            () -> new Trinket(new Item.Properties(), TrinketId.AAA_BATTERY.getId()));
     static { TRINKET_LIST.add(AAA_BATTERY); }
 
     public static final RegistryObject<Item> BROKEN_REMOTE = ITEMS.register("broken_remote",
-            () -> new Trinket(new Item.Properties(), TrinketId.BROKEN_REMOTE.getId(), Rarity.COMMON));
+            () -> new Trinket(new Item.Properties(), TrinketId.BROKEN_REMOTE.getId()));
     static { TRINKET_LIST.add(BROKEN_REMOTE); }
 
     public static final RegistryObject<Item> CARTRIDGE = ITEMS.register("cartridge",
-            () -> new Trinket(new Item.Properties(), TrinketId.CARTRIDGE.getId(), Rarity.COMMON));
+            () -> new Trinket(new Item.Properties(), TrinketId.CARTRIDGE.getId()));
     static { TRINKET_LIST.add(CARTRIDGE); }
 
     public static final RegistryObject<Item> LUCKY_ROCK = ITEMS.register("lucky_rock",
-            () -> new Trinket(new Item.Properties(), TrinketId.LUCKY_ROCK.getId(), Rarity.UNCOMMON));
+            () -> new Trinket(new Item.Properties(), TrinketId.LUCKY_ROCK.getId()));
     static { TRINKET_LIST.add(LUCKY_ROCK); }
 
     public static final RegistryObject<Item> LUCKY_TOE = ITEMS.register("lucky_toe",
-            () -> new Trinket(new Item.Properties(), TrinketId.LUCKY_TOE.getId(), Rarity.COMMON));
+            () -> new Trinket(new Item.Properties(), TrinketId.LUCKY_TOE.getId()));
     static { TRINKET_LIST.add(LUCKY_TOE); }
 
     public static final RegistryObject<Item> CANCER = ITEMS.register("cancer",
-            () -> new Trinket(new Item.Properties(), TrinketId.CANCER.getId(), Rarity.EPIC));
+            () -> new Trinket(new Item.Properties(), TrinketId.CANCER.getId()));
     static { TRINKET_LIST.add(CANCER); }
 
     public static final RegistryObject<Item> BLIND_RAGE = ITEMS.register("blind_rage",
-            () -> new Trinket(new Item.Properties(), TrinketId.BLIND_RAGE.getId(), Rarity.EPIC));
+            () -> new Trinket(new Item.Properties(), TrinketId.BLIND_RAGE.getId()));
     static { TRINKET_LIST.add(BLIND_RAGE); }
 
     public static final RegistryObject<Item> PERFECTION = ITEMS.register("perfection",
-            () -> new Trinket(new Item.Properties(), TrinketId.PERFECTION.getId(), Rarity.EPIC));
+            () -> new Trinket(new Item.Properties(), TrinketId.PERFECTION.getId()));
     static { TRINKET_LIST.add(PERFECTION); }
 
 
