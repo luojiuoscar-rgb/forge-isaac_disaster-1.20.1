@@ -36,7 +36,6 @@ public class PassiveItem extends IsaacItem implements IIsaacCuriosItem {
         tooltipComponents.addAll(
                 PassiveItemManager.getInstance().getItemFromId(getItemId()).getDescription()
         );
-
     }
 
     @Override
@@ -56,7 +55,6 @@ public class PassiveItem extends IsaacItem implements IIsaacCuriosItem {
             tooltipComponents.add(Component.translatable("item.isaac_disaster.action.consumed")
                     .withStyle(style -> style.withColor(ColorManager.SYNERGY)));
         }
-
     }
 
     @Override
