@@ -291,21 +291,7 @@ public enum StatManager {
         // 四舍五入到两位小数
         double rounded = Math.round(ratio * 100 * MAX_HEALTH.getBonus()) / 100.0;
 
-        // 判断是否为整数/一位/两位小数
-        String formatted;
-        if (Math.abs(rounded - Math.floor(rounded)) < 0.0001) {
-            formatted = String.format("%.0f", rounded);
-        } else if (Math.abs(rounded * 10 - Math.floor(rounded * 10)) < 0.0001) {
-            formatted = String.format("%.1f", rounded);
-        } else {
-            formatted = String.format("%.2f", rounded);
-        }
-
-        if (ratio > 0){ // 正数+
-            formatted = "+" + formatted;
-        }
-        return Component.translatable("item." + IsaacDisaster.MOD_ID + ".action.heal_health")
-                .append(formatted).withStyle(style);
+        return Component.translatable("item." + IsaacDisaster.MOD_ID + ".action.heal_health", rounded).withStyle(style);
     }
 
     public static void gainAbsorption(Player player, float ratio){

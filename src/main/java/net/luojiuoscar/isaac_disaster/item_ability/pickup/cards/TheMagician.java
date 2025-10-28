@@ -25,13 +25,13 @@ public class TheMagician implements ITarot {
 
     @Override
     public void onUseEffect(Player player, ItemStack stack, InteractionHand hand) {
-        EntityHelper.applyOrStackEffect(player, ModEffects.TELEPATHY.get(), 600, 1);
+        EntityHelper.applyOrStackEffect(player, ModEffects.TELEPATHY.get(), 600, 1, false, true);
     }
 
     @Override
     public void onUseEffectStronger(Player player, ItemStack stack, InteractionHand hand) {
-        EntityHelper.applyOrStackEffect(player, ModEffects.TELEPATHY.get(), 1200, 1);
-        EntityHelper.applyOrStackEffect(player, ModEffects.POWER_OF_BELIAL.get(), 1200, 1);
+        EntityHelper.applyOrStackEffect(player, ModEffects.TELEPATHY.get(), 1200, 1, false, true);
+        EntityHelper.applyOrStackEffect(player, ModEffects.POWER_OF_BELIAL.get(), 1200, 1, false, true);
     }
 
     @Override

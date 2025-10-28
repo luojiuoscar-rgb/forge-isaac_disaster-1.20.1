@@ -2,20 +2,19 @@ package net.luojiuoscar.isaac_disaster.item_ability.active_item.items;
 
 import net.luojiuoscar.isaac_disaster.client.ClientDataManager;
 import net.luojiuoscar.isaac_disaster.effect.ModEffects;
+import net.luojiuoscar.isaac_disaster.helper.EntityHelper;
 import net.luojiuoscar.isaac_disaster.item.ModItems;
 import net.luojiuoscar.isaac_disaster.item_ability.active_item.IActiveItem;
 import net.luojiuoscar.isaac_disaster.manager.ColorManager;
+import net.luojiuoscar.isaac_disaster.manager.EffectDescriptionManager;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.manager.id_managers.EffectId;
 import net.luojiuoscar.isaac_disaster.manager.id_managers.ItemId;
 import net.luojiuoscar.isaac_disaster.manager.id_managers.SetId;
-import net.luojiuoscar.isaac_disaster.manager.EffectDescriptionManager;
 import net.luojiuoscar.isaac_disaster.manager.item_managers.SetManager;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
-import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
@@ -41,24 +40,15 @@ public class BookOfShadow implements IActiveItem {
 
     @Override
     public void onTriggeredEffect(Player player) {
-        MobEffectInstance resistance = player.getEffect(MobEffects.DAMAGE_RESISTANCE);
-        int duration = 200;
-        if (resistance != null && resistance.getAmplifier() >= 4){
-            duration += resistance.getDuration();
-        }
-
-        MobEffectInstance effectInstance = new MobEffectInstance(
-                ModEffects.INVINCIBLE.get(),
-                duration,
-                0
-        );
-        player.addEffect(effectInstance, player);
+        EntityHelper.applyOrStackEffect(player,
+                ModEffects.INVINCIBLE.get(), 200, 0, true, false);
     }
 
     @Override
     public void onTriggeredEffectStronger(Player player){
-        onTriggeredEffect(player);
-        onTriggeredEffect(player);
+        EntityHelper.applyOrStackEffect(player,
+                ModEffects.INVINCIBLE.get(), 400, 0, true, false);
+
     }
 
     @Override

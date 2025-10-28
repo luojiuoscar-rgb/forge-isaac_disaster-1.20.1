@@ -142,7 +142,7 @@
   "item.isaac_disaster.synergy.description.stronger": "效果更强",
 
 
-  "item.isaac_disaster.action.heal_health": "恢复%f点生命值",
+  "item.isaac_disaster.action.heal_health": "恢复%.1f点生命值",
   "item.isaac_disaster.action.full_health": "满血",
   "item.isaac_disaster.action.full_charge": "立刻为背包全部主动道具充能",
   "item.isaac_disaster.action.give_bomb": "炸弹+%d",

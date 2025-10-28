@@ -193,7 +193,7 @@ public class Config
 
         AUTO_ADAPT_CURIO_SLOT = BUILDER
                 .comment("Equip curio passive item will also add 1 passive item slot. (NEED to enable at least one slot)")
-                .define("auto_adapt_curio_slot", false);
+                .define("auto_adapt_curio_slot", true);
 
         // 周围（定义周围的范围）  默认12
         NEARBY_RANGE = BUILDER

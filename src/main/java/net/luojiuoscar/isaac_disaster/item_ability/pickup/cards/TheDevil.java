@@ -25,12 +25,12 @@ public class TheDevil implements ITarot {
 
     @Override
     public void onUseEffect(Player player, ItemStack stack, InteractionHand hand) {
-        EntityHelper.applyOrStackEffect(player, ModEffects.POWER_OF_BELIAL.get(), 600, 0);
+        EntityHelper.applyOrStackEffect(player, ModEffects.POWER_OF_BELIAL.get(), 600, 0, false, true);
     }
 
     @Override
     public void onUseEffectStronger(Player player, ItemStack stack, InteractionHand hand) {
-        EntityHelper.applyOrStackEffect(player, ModEffects.POWER_OF_BELIAL.get(), 600, 1);
+        EntityHelper.applyOrStackEffect(player, ModEffects.POWER_OF_BELIAL.get(), 600, 1, false, true);
     }
 
     @Override

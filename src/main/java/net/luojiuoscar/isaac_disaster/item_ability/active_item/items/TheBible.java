@@ -66,7 +66,7 @@ public class TheBible implements IActiveItem {
     @Override
     public List<Component> getDescription() {
         return List.of(
-                Component.translatable("item.isaac_disaster.attribute.fly")
+                Component.translatable("attribute.isaac_disaster.fly_time")
         );
     }
 

@@ -212,15 +212,22 @@ public class EntityHelper {
     }
 
     /**
-     * 对于*可叠加*相关的药水效果；移除1层
+     * 对于*可叠加*相关的药水效果
+     * 其他参数均以最后一个执行的函数为准
+     *
+     * @param stackDuration 是否叠加时间
+     * @param stackAmplifier 是否叠加药水等级
      */
-    public static void applyOrStackEffect(LivingEntity entity, MobEffect effect, int duration, int amplifier){
-        applyOrStackEffect(entity, effect, duration, amplifier, false, false, true);
+    public static void applyOrStackEffect(LivingEntity entity, MobEffect effect, int duration, int amplifier, boolean stackDuration, boolean stackAmplifier){
+        applyOrStackEffect(entity, effect, duration, amplifier, false, false, true, stackDuration, stackAmplifier);
     }
-    public static void applyOrStackEffect(LivingEntity entity, MobEffect effect, int duration, int amplifier, boolean isAmbient, boolean isVisible, boolean showIcon){
+    public static void applyOrStackEffect(LivingEntity entity, MobEffect effect, int duration, int amplifier, boolean isAmbient, boolean isVisible, boolean showIcon, boolean stackDuration, boolean stackAmplifier){
         MobEffectInstance mobEffectInstance = entity.getEffect(effect);
-        if (mobEffectInstance != null){
-            amplifier += mobEffectInstance.getAmplifier() + 1; // 叠加效果
+        if (stackAmplifier && mobEffectInstance != null){
+            amplifier += mobEffectInstance.getAmplifier() + 1;
+        }
+        if (stackDuration && mobEffectInstance != null){
+            duration += mobEffectInstance.getDuration();
         }
 
         entity.addEffect(new MobEffectInstance(effect, duration, amplifier, isAmbient, isVisible, showIcon));

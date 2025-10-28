@@ -40,12 +40,12 @@ public class TelepathyForDummies implements IActiveItem {
 
     @Override
     public void onTriggeredEffect(Player player) {
-        EntityHelper.applyOrStackEffect(player, ModEffects.TELEPATHY.get(), 200, 0);
+        EntityHelper.applyOrStackEffect(player, ModEffects.TELEPATHY.get(), 200, 0, false, true);
     }
 
     @Override
     public void onTriggeredEffectStronger(Player player){
-        EntityHelper.applyOrStackEffect(player, ModEffects.TELEPATHY.get(), 400, 0);
+        EntityHelper.applyOrStackEffect(player, ModEffects.TELEPATHY.get(), 400, 0, false, true);
     }
 
     @Override

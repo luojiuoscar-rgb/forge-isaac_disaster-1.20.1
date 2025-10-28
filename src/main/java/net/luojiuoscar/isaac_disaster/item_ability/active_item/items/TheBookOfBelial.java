@@ -38,7 +38,7 @@ public class TheBookOfBelial implements IActiveItem {
 
     @Override
     public void onTriggeredEffect(Player player) {
-        EntityHelper.applyOrStackEffect(player, ModEffects.POWER_OF_BELIAL.get(), 240, 0);
+        EntityHelper.applyOrStackEffect(player, ModEffects.POWER_OF_BELIAL.get(), 240, 0, false, true);
     }
 
     @Override
