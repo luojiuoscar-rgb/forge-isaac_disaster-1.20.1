@@ -78,7 +78,7 @@ public enum StatManager {
             player.refreshDimensions();
         }
     },
-    RANGE("range", ModAttributes.BULLET_RANGE.get(), false, true,
+    RANGE("bullet_range", ModAttributes.BULLET_RANGE.get(), false, true,
             () -> Config.RANGE_BONUS.get(), null, null),
     ENTITY_REACH("entity_reach", ForgeMod.ENTITY_REACH.get(), false, true,
             () -> Config.ENTITY_REACH_BONUS.get(), -2.0, null),
@@ -92,7 +92,7 @@ public enum StatManager {
             () -> Config.BULLET_SPEED_BONUS.get(), null, null),
     ATTACK_SPEED("attack_speed", Attributes.ATTACK_SPEED, false, true,
             () -> Config.ATTACK_SPEED_BONUS.get(), null, null),
-    BLOCK_BREAKING("block_breaking", ModAttributes.BLOCK_BREAKING_SPEED.get(), false, true,
+    BLOCK_BREAKING("block_breaking_speed", ModAttributes.BLOCK_BREAKING_SPEED.get(), false, true,
             () -> Config.BLOCK_BREAKING_SPEED_BONUS.get(), 0.0, null),
     ATTACK_KNOCKBACK("attack_knockback", Attributes.ATTACK_KNOCKBACK, false, false,
             () -> Config.ATTACK_KNOCKBACK_BONUS.get(), null, null),
@@ -321,18 +321,6 @@ public enum StatManager {
         );
     }
 
-    public static void setBulletColor(Player player, int amount){
-        AttributeInstance instance = player.getAttribute(ModAttributes.BULLET_COLOR.get());
-        if (instance != null) instance.setBaseValue(amount);
-    }
-    public static void setBulletAlpha(Player player, int amount){
-        AttributeInstance instance = player.getAttribute(ModAttributes.BULLET_ALPHA.get());
-        if (instance != null) instance.setBaseValue(amount);
-    }
-    public static void setBulletFilter(Player player, int amount){
-        AttributeInstance instance = player.getAttribute(ModAttributes.BULLET_FILTER.get());
-        if (instance != null) instance.setBaseValue(amount);
-    }
     public static void addBulletFilter(Player player, int amount){
         player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY).ifPresent(
                 playerAbility -> playerAbility.addFilter(amount, player)

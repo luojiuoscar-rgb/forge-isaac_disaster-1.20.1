@@ -447,19 +447,18 @@ public class PlayerHelper {
         return count[0] > 0;
     }
     public static int getBulletColor(Player player){
-        AttributeInstance instance = player.getAttribute(ModAttributes.BULLET_COLOR.get());
-        if (instance != null) return (int) instance.getValue();
         return ColorManager.COLOR_BASE;
     }
     public static float getBulletAlpha(Player player){
-        AttributeInstance instance = player.getAttribute(ModAttributes.BULLET_ALPHA.get());
-        if (instance != null) return (float) instance.getValue();
         return 1.0f;
     }
     public static int getBulletFilter(Player player){
-        AttributeInstance instance = player.getAttribute(ModAttributes.BULLET_FILTER.get());
-        if (instance != null) return (int) instance.getValue();
-        return ColorManager.FILTER_BASE;
+        int[] color = {0};
+        player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY).ifPresent(
+                playerAbility -> color[0] = playerAbility.getFilters().getOrDefault(-1, ColorManager.FILTER_BASE)
+        );
+
+        return color[0];
     }
 
     // 基础

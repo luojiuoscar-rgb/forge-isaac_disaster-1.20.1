@@ -31,15 +31,6 @@ public class ModAttributes {
     public static final RegistryObject<Attribute> TEARS_CORRECTION = MOD_ATTRIBUTE.register("tears_correction",
             () -> new RangedAttribute("attribute.isaac_disaster.tears_correction", 0.0D, -1024.0D, 1024.0D).setSyncable(true));
 
-    public static final RegistryObject<Attribute> BULLET_COLOR = MOD_ATTRIBUTE.register("bullet_color",
-            () -> new RangedAttribute("attribute.isaac_disaster.bullet_color", 16777215D, 0.0D, 16777215D).setSyncable(true));
-
-    public static final RegistryObject<Attribute> BULLET_ALPHA = MOD_ATTRIBUTE.register("bullet_alpha",
-            () -> new RangedAttribute("attribute.isaac_disaster.bullet_alpha", 1.0D, 0.1D, 1.0D).setSyncable(true));
-
-    public static final RegistryObject<Attribute> BULLET_FILTER = MOD_ATTRIBUTE.register("bullet_filter",
-            () -> new RangedAttribute("attribute.isaac_disaster.bullet_filter", 16777215D, 0.0D, 16777215D).setSyncable(true));
-
     public static final RegistryObject<Attribute> BLOCK_BREAKING_SPEED = MOD_ATTRIBUTE.register("block_breaking_speed",
             () -> new RangedAttribute("attribute.isaac_disaster.block_breaking_speed", 0.0D, -1024.0D, 1024D).setSyncable(true));
 

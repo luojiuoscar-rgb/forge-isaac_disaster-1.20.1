@@ -30,5 +30,8 @@ public class DataGenerators {
                 existingFileHelper
         ));
 
+
+        generator.addProvider(event.includeServer(), new ModWorldGenProvider(packOutput, lookupProvider));
+
     }
 }

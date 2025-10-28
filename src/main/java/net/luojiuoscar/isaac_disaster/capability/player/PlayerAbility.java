@@ -1,7 +1,6 @@
 package net.luojiuoscar.isaac_disaster.capability.player;
 
 
-import net.luojiuoscar.isaac_disaster.attribute.ModAttributes;
 import net.luojiuoscar.isaac_disaster.helper.ColorHelper;
 import net.luojiuoscar.isaac_disaster.manager.ColorManager;
 import net.luojiuoscar.isaac_disaster.networking.ModMessages;
@@ -10,7 +9,6 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.common.capabilities.AutoRegisterCapability;
 
@@ -29,6 +27,7 @@ public class PlayerAbility {
     private int controllable;
 
     private Map<Integer, Integer> bulletFilters;
+
     private Map<Integer, Boolean> itemFlags;
     private int extraTrinketSlotCounts;
 
@@ -49,6 +48,8 @@ public class PlayerAbility {
         extraTrinketSlotCounts = 0;
 
         bulletFilters = new HashMap<>();
+        bulletFilters.put(-1, ColorManager.FILTER_BASE); // -1视为当前颜色
+
         pillRecords = new HashMap<>();
         itemFlags = new HashMap<>();
     }
@@ -193,14 +194,14 @@ public class PlayerAbility {
     }
     public void clearFilters() {
         bulletFilters.clear();
+        bulletFilters.put(-1, ColorManager.FILTER_BASE);
     }
     public Map<Integer, Integer> getFilters() {
         return Collections.unmodifiableMap(bulletFilters);
     }
     public void resetFilter(Player player){
-        AttributeInstance instance = player.getAttribute(ModAttributes.BULLET_FILTER.get());
-        if (instance != null) instance.setBaseValue(ColorHelper.blendFilters(ColorManager.FILTER_BASE,
-                bulletFilters.keySet().stream().toList()));
+        bulletFilters.put(-1, ColorHelper.blendFilters(ColorManager.FILTER_BASE,
+                bulletFilters.keySet().stream().toList())); // 放到-1位置视为当前filter颜色
     }
     public Map<Integer, Integer> getPillRecordsMap() {
         return Collections.unmodifiableMap(pillRecords);

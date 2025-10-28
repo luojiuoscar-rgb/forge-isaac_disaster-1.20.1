@@ -1,11 +1,16 @@
 package net.luojiuoscar.isaac_disaster.item_ability.passive_item.items;
 
+import net.luojiuoscar.isaac_disaster.IsaacDisaster;
+import net.luojiuoscar.isaac_disaster.helper.LevelHelper;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.item_ability.passive_item.IPassiveItem;
+import net.luojiuoscar.isaac_disaster.manager.LootTableNameManager;
 import net.luojiuoscar.isaac_disaster.manager.id_managers.ItemId;
 import net.luojiuoscar.isaac_disaster.networking.ModMessages;
 import net.luojiuoscar.isaac_disaster.networking.packet.PassiveItemSyncS2CPacket;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -22,6 +27,9 @@ public class TarotCloth implements IPassiveItem {
 
     @Override
     public void onFirstObtain(Player player, @Nullable ItemStack stack) {
+        ServerLevel level = (ServerLevel) player.level();
+        LevelHelper.spawnLootAtPos(level, player.position(),
+                ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, LootTableNameManager.RANDOM_CARDS));
     }
 
     @Override
@@ -43,7 +51,8 @@ public class TarotCloth implements IPassiveItem {
     @Override
     public List<Component> getDescription() {
         return List.of(
-                Component.translatable("item.isaac_disaster.tarot_cloth.lore.1")
+                Component.translatable("item.isaac_disaster.tarot_cloth.lore.1"),
+                Component.translatable("item.isaac_disaster.tarot_cloth.lore.2")
         );
     }
 }
