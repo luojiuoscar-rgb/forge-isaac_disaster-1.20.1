@@ -8,8 +8,8 @@ import net.minecraft.commands.Commands;
 import net.minecraft.server.level.ServerPlayer;
 
 
-public class addTrinketSlotsCommand {
-    public addTrinketSlotsCommand(CommandDispatcher<CommandSourceStack> dispatcher) {
+public class AddTrinketSlotsCommand {
+    public AddTrinketSlotsCommand(CommandDispatcher<CommandSourceStack> dispatcher) {
         dispatcher.register(Commands.literal("isd").then(Commands.literal("trinket").then(Commands.literal("add_slots")
                 .then(Commands.argument("amount", IntegerArgumentType.integer())
                 .executes(context -> {

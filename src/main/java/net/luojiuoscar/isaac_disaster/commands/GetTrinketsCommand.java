@@ -8,8 +8,8 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 
-public class getTrinketsCommand {
-    public getTrinketsCommand(CommandDispatcher<CommandSourceStack> dispatcher) {
+public class GetTrinketsCommand {
+    public GetTrinketsCommand(CommandDispatcher<CommandSourceStack> dispatcher) {
         dispatcher.register(Commands.literal("isd")
                 .then(Commands.literal("trinket")
                         .then(Commands.literal("get_all")

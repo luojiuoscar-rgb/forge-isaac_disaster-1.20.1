@@ -165,8 +165,10 @@ public class ForgeEvents {
         new ResetPlayerCommand(event.getDispatcher());
         new ClearSwallowedTrinkets(event.getDispatcher());
         new SetTrinketEnchanted(event.getDispatcher());
-        new addTrinketSlotsCommand(event.getDispatcher());
-        new getTrinketsCommand(event.getDispatcher());
+        new AddTrinketSlotsCommand(event.getDispatcher());
+        new GetTrinketsCommand(event.getDispatcher());
+        new DimensionCommands(event.getDispatcher());
+
 
         ConfigCommand.register(event.getDispatcher());
     }
