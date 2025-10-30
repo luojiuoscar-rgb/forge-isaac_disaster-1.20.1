@@ -1,6 +1,8 @@
 package net.luojiuoscar.isaac_disaster.item;
 
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
+import net.luojiuoscar.isaac_disaster.block.ModBlocks;
+import net.luojiuoscar.isaac_disaster.item.custom.DebugStick;
 import net.luojiuoscar.isaac_disaster.item.item.ActiveItem;
 import net.luojiuoscar.isaac_disaster.item.item.PassiveItem;
 import net.luojiuoscar.isaac_disaster.item.item.Trinket;
@@ -9,6 +11,7 @@ import net.luojiuoscar.isaac_disaster.item.pickup.*;
 import net.luojiuoscar.isaac_disaster.manager.id_managers.ItemId;
 import net.luojiuoscar.isaac_disaster.manager.id_managers.PickupId;
 import net.luojiuoscar.isaac_disaster.manager.id_managers.TrinketId;
+import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Rarity;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -710,5 +713,18 @@ public class ModItems {
     static { PICKUP_LIST.add(HOLY_CARD); }
 
     // pickup end
+    // misc
+    public static final RegistryObject<Item> PEDESTAL_ITEM = ITEMS.register("pedestal",
+            () -> new BlockItem(ModBlocks.PEDESTAL_BLOCK.get(), new Item.Properties()));
+    static { MISC_LIST.add(PEDESTAL_ITEM); }
+
+
+    public static final RegistryObject<Item> DEBUG_STICK = ITEMS.register("debug_stick",
+            () -> new DebugStick(new Item.Properties()));
+    static { MISC_LIST.add(DEBUG_STICK); }
+
+
+    // misc end
+
 
 }

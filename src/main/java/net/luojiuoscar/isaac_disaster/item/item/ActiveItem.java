@@ -39,6 +39,7 @@ public class ActiveItem extends IsaacItem {
         this.damage_per_use = damagePerUse;
     }
 
+
     @Override
     public void addDescription(List<Component> tooltipComponents, ItemStack stack){
         tooltipComponents.addAll(

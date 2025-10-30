@@ -1,12 +1,14 @@
 package net.luojiuoscar.isaac_disaster.event;
 
 
+import net.luojiuoscar.isaac_disaster.block.entity.ModBlockEntities;
 import net.luojiuoscar.isaac_disaster.client.FlyHudOverlay;
 import net.luojiuoscar.isaac_disaster.client.ModKeyMappings;
 import net.luojiuoscar.isaac_disaster.entity.ModEntities;
 import net.luojiuoscar.isaac_disaster.entity.tnt.CustomTntRenderer;
 import net.luojiuoscar.isaac_disaster.renderer.InvincibleChargeLayer;
 import net.luojiuoscar.isaac_disaster.renderer.IsaacBulletRenderer;
+import net.luojiuoscar.isaac_disaster.block.block_entity.renderer.PedestalBlockRenderer;
 import net.minecraft.client.renderer.entity.player.PlayerRenderer;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.EntityRenderersEvent;
@@ -27,6 +29,7 @@ public class ClientModEvents {
         event.registerEntityRenderer(ModEntities.GIGA_BOMB.get(), CustomTntRenderer::new);
         event.registerEntityRenderer(ModEntities.TEAR_BULLET.get(), IsaacBulletRenderer::new);
 
+        event.registerBlockEntityRenderer(ModBlockEntities.PEDESTAL_BLOCK_ENTITY.get(), PedestalBlockRenderer::new);
     }
 
     @SubscribeEvent

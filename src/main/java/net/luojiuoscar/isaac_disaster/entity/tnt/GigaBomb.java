@@ -1,9 +1,7 @@
 package net.luojiuoscar.isaac_disaster.entity.tnt;
 
 import net.luojiuoscar.isaac_disaster.sound.ModSounds;
-import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -43,7 +41,7 @@ public class GigaBomb extends IsaacBomb {
         dealExplosionDamage(level, this.position(), this.getPower());
 
         // 破坏方块
-        float threshold = 3600000.0F; // 黑曜石是 3600000F，低于这个就可破坏
+        float threshold = 1200f;
 
         for (int x = -radius; x <= radius; x++) {
             for (int y = -radius; y <= radius; y++) {

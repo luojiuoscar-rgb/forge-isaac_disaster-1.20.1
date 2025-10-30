@@ -51,6 +51,7 @@
   "creativetab.isaac_disaster.active_items": "以撒的灾难：主动道具",
   "creativetab.isaac_disaster.trinkets": "以撒的灾难：饰品",
   "creativetab.isaac_disaster.pickups": "以撒的灾难：掉落物",
+  "creativetab.isaac_disaster.misc": "以撒的灾难：杂项",
 
 
   "message.isaac_disaster.warning.too_many_items":  "[警告]携带的被动道具已达上限",
@@ -417,6 +418,16 @@
   "item.isaac_disaster.the_hierophant_r": "V-教皇？",
   "item.isaac_disaster.the_world": "XXI-世界",
   "item.isaac_disaster.the_world.lore.1": "获得时停效果",
+
+
+  "item.isaac_disaster.debug_stick": "调试棒",
+  "message.isaac_disaster.debug_stick.clear": "§e已清空调试棒数据",
+  "message.isaac_disaster.debug_stick.pedestal.save": "已保存当前底座坐标！",
+  "message.isaac_disaster.debug_stick.pedestal.link": "底座已连接",
+  "message.isaac_disaster.debug_stick.pedestal.decoration_state": "装饰性底座:%s",
+
+
+  "block.isaac_disaster.pedestal": "底座",
 
 
 

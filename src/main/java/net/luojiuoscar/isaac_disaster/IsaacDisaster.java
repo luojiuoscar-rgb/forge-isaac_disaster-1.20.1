@@ -2,6 +2,8 @@ package net.luojiuoscar.isaac_disaster;
 
 import com.mojang.logging.LogUtils;
 import net.luojiuoscar.isaac_disaster.attribute.ModAttributes;
+import net.luojiuoscar.isaac_disaster.block.ModBlocks;
+import net.luojiuoscar.isaac_disaster.block.entity.ModBlockEntities;
 import net.luojiuoscar.isaac_disaster.effect.ModEffects;
 import net.luojiuoscar.isaac_disaster.entity.ModEntities;
 import net.luojiuoscar.isaac_disaster.event.ServerTickEvent;
@@ -47,6 +49,8 @@ public class IsaacDisaster
 
         ModCreativeModeTabs.register(modEventBus);
         ModItems.register(modEventBus);
+        ModBlocks.register(modEventBus);
+        ModBlockEntities.register(modEventBus);
         ModEntities.register(modEventBus);
 
         ModSounds.register(modEventBus);

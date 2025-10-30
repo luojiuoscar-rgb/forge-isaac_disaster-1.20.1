@@ -1,0 +1,7 @@
+{
+  "type": "minecraft:stonecutter",
+  "ingredient": {
+    "item": "minecraft:smooth_stone"
+  },
+  "result": "isaac_disaster:pedestal"
+}

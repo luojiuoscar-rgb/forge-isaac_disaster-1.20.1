@@ -63,4 +63,16 @@ public class ModCreativeModeTabs {
                             output.accept(itemRegistry.get());}
                         );
                     }).build());
+
+    public static final RegistryObject<CreativeModeTab> OTHER_ITEMS_TAB = CREATIVE_MODE_TABS.register("other_items_tab",
+            () -> CreativeModeTab.builder().icon(() -> new ItemStack(ModItems.PEDESTAL_ITEM.get()))
+                    .withTabsBefore(ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "pickups_tab"))
+                    .title(Component.translatable("creativetab.isaac_disaster.misc"))
+                    .displayItems((params, output) -> {
+                        //将道具添加进创造模式面板
+                        ItemListManager.MISC_LIST.forEach(itemRegistry -> {
+                            output.accept(itemRegistry.get());}
+                        );
+                    }).build());
+
 }
