@@ -1,4 +1,4 @@
-package net.luojiuoscar.isaac_disaster.data;
+package net.luojiuoscar.isaac_disaster.manager.data;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;

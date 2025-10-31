@@ -1,5 +1,6 @@
 package net.luojiuoscar.isaac_disaster.screen;
 
+import net.luojiuoscar.isaac_disaster.client.ModKeyMappings;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
@@ -247,5 +248,17 @@ public class IsaacItemScreen extends Screen {
 
     private int getStartY() {
         return 30;
+    }
+
+    // 关闭页面
+    @Override
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        if (this.mc.options.keyInventory.matches(keyCode, scanCode)
+                || ModKeyMappings.OPEN_ISAAC_ITEM_SCREEN.matches(keyCode, scanCode))
+        {
+            this.onClose();
+            return true;
+        }
+        return super.keyPressed(keyCode, scanCode, modifiers);
     }
 }

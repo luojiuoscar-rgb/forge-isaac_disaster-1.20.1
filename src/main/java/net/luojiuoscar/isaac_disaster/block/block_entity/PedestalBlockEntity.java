@@ -1,6 +1,7 @@
 package net.luojiuoscar.isaac_disaster.block.block_entity;
 
 import net.luojiuoscar.isaac_disaster.block.entity.ModBlockEntities;
+import net.luojiuoscar.isaac_disaster.manager.data.PedestalData;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -9,21 +10,32 @@ import net.minecraft.network.Connection;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.Containers;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.loot.LootParams;
+import net.minecraft.world.level.storage.loot.LootTable;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraftforge.items.ItemStackHandler;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class PedestalBlockEntity extends BlockEntity {
     public final ItemStackHandler inventory = new ItemStackHandler(1){
+        @Override
+        protected int getStackLimit(int slot, @NotNull ItemStack stack) {
+            return 1;
+        }
+
         @Override
         protected void onContentsChanged(int slot){
             if (level == null) return;
@@ -37,10 +49,21 @@ public class PedestalBlockEntity extends BlockEntity {
     private float rotation;
     private Set<BlockPos> linkedOffsets = new HashSet<>();
     private boolean isDecoration = true;
+    private String lootTable = "";
+    private boolean locked = false;
 
     public PedestalBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.PEDESTAL_BLOCK_ENTITY.get(), pos, state);
     }
+
+    public void copyFromOriginal(PedestalBlockEntity original){
+        this.isDecoration = original.isDecoration();
+        this.lootTable = original.getLootTable();
+        this.locked = original.isLocked();
+        fillFromLootTable((ServerLevel) level);
+        setChanged();
+    }
+
 
     public float getRenderingRotation(){
         rotation += 0.5f;
@@ -49,7 +72,21 @@ public class PedestalBlockEntity extends BlockEntity {
     }
 
     public boolean isDecoration(){ return isDecoration; }
-    public void setDecoration(boolean isDecoration){ this.isDecoration = isDecoration; }
+    public void setDecoration(boolean isDecoration){
+        this.isDecoration = isDecoration;
+        setChanged();
+    }
+    public boolean isLocked() {return locked; }
+    public void setLocked(boolean locked){
+        this.locked = locked;
+        setChanged();
+    }
+
+    public String getLootTable() { return lootTable; }
+    public void setLootTable(String lootTable) {
+        this.lootTable = lootTable;
+        setChanged();
+    }
 
     /** 返回绝对坐标集合 */
     public Set<BlockPos> getLinkedPedestals() {
@@ -67,6 +104,13 @@ public class PedestalBlockEntity extends BlockEntity {
         for(BlockPos pos : absolutePos){
             linkedOffsets.add(pos.subtract(this.worldPosition));
         }
+        isDecoration = false;
+        setChanged();
+    }
+
+    public void addLinkedPedestals(BlockPos pos){
+        linkedOffsets.add(pos);
+        setChanged();
     }
 
     public void clearLinkedPedestals(){ linkedOffsets.clear(); }
@@ -74,6 +118,7 @@ public class PedestalBlockEntity extends BlockEntity {
     public static void linkPedestals(BlockPos originalPos, BlockPos pos, ServerLevel level){
         BlockEntity originalBe = level.getBlockEntity(originalPos);
         BlockEntity be = level.getBlockEntity(pos);
+        boolean locked = false;
 
         if (originalBe instanceof PedestalBlockEntity originalPedestal &&
                 be instanceof PedestalBlockEntity pedestal) {
@@ -82,11 +127,32 @@ public class PedestalBlockEntity extends BlockEntity {
             allLinked.addAll(originalPedestal.getLinkedPedestals());
             allLinked.addAll(pedestal.getLinkedPedestals());
 
+            // 连接底座
             for (BlockPos p : allLinked){
                 if (level.getBlockEntity(p) instanceof PedestalBlockEntity pbe){
+                    locked = pbe.isLocked() || locked; // 记录上锁状态
                     pbe.setLinkedPedestals(allLinked);
-                    pbe.setDecoration(false);
+                    level.sendBlockUpdated(p, pbe.getBlockState(), pbe.getBlockState(), 3);
                 }
+            }
+
+            // 设置上锁状态
+            for (BlockPos p : allLinked){
+                if (level.getBlockEntity(p) instanceof PedestalBlockEntity pbe){
+                    pbe.setLocked(locked);
+                }
+            }
+        }
+    }
+
+    public void unlockAll(){
+        if (level == null) return;
+        // 同时解锁全部链接的底座
+        Set<BlockPos> allLinked = new HashSet<>(getLinkedPedestals());
+        for (BlockPos pos : allLinked){
+            if (level.getBlockEntity(pos) instanceof PedestalBlockEntity be){
+                be.setLocked(false);
+                level.sendBlockUpdated(pos, be.getBlockState(), be.getBlockState(), 3); // update
             }
         }
     }
@@ -94,7 +160,7 @@ public class PedestalBlockEntity extends BlockEntity {
     public void clearContents(){ inventory.setStackInSlot(0, ItemStack.EMPTY); }
 
     public void drops(){
-        if(level == null || !isDecoration) return;
+        if(level == null || !isDecoration || isLocked()) return;
         SimpleContainer inv = new SimpleContainer(inventory.getSlots());
         for(int i=0;i<inventory.getSlots();i++) inv.setItem(i, inventory.getStackInSlot(i));
         Containers.dropContents(this.level, this.worldPosition, inv);
@@ -104,10 +170,49 @@ public class PedestalBlockEntity extends BlockEntity {
     public void setItem(ItemStack stack){ inventory.setStackInSlot(0, stack); }
 
     @Override
+    public void onLoad() {
+        if (level == null) return;
+        if (!level.isClientSide) {
+            PedestalData manager = PedestalData.get((ServerLevel) level);
+            manager.addPedestal(worldPosition);
+
+            // loot table
+            if (inventory.getStackInSlot(0).isEmpty() && !lootTable.isEmpty() && !isDecoration) {
+                fillFromLootTable((ServerLevel) level);
+            }
+        }
+    }
+
+    public void fillFromLootTable(ServerLevel serverLevel) {
+        try {
+            ResourceLocation lootLoc = ResourceLocation.parse(lootTable);
+            LootTable table = serverLevel.getServer().getLootData().getLootTable(lootLoc);
+
+            LootParams.Builder builder = new LootParams.Builder(serverLevel)
+                    .withParameter(LootContextParams.ORIGIN, this.getBlockPos().getCenter());
+
+            List<ItemStack> items = table.getRandomItems(builder.create(LootContextParamSets.EMPTY));
+
+            if (!items.isEmpty()) {
+                ItemStack stack = items.get(0).copy();
+                stack.setCount(1);
+                inventory.setStackInSlot(0, stack);
+            }
+        } catch (Exception e) {
+            lootTable = "";
+            isDecoration = true;
+        }
+    }
+
+    @Override
     protected void saveAdditional(@NotNull CompoundTag tag){
         super.saveAdditional(tag);
         tag.put("inventory", inventory.serializeNBT());
         tag.putBoolean("isDecoration", isDecoration);
+        tag.putBoolean("locked", locked);
+
+        if (!lootTable.isEmpty())
+            tag.putString("lootTable", lootTable);
 
         ListTag listTag = new ListTag();
         for(BlockPos offset : linkedOffsets){
@@ -125,6 +230,9 @@ public class PedestalBlockEntity extends BlockEntity {
         super.load(tag);
         if(tag.contains("inventory")) inventory.deserializeNBT(tag.getCompound("inventory"));
         isDecoration = tag.getBoolean("isDecoration");
+        locked = tag.getBoolean("locked");
+
+        lootTable = tag.contains("lootTable") ? tag.getString("lootTable") : "";
 
         linkedOffsets.clear();
         if(tag.contains("linkedOffsets")){

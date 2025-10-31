@@ -3,6 +3,7 @@ package net.luojiuoscar.isaac_disaster.block.block_entity.renderer;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import net.luojiuoscar.isaac_disaster.block.block_entity.PedestalBlockEntity;
+import net.luojiuoscar.isaac_disaster.item.ModItems;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -29,7 +30,11 @@ public class PedestalBlockRenderer implements BlockEntityRenderer<PedestalBlockE
     public void render(@NotNull PedestalBlockEntity pedestal, float partialTicks, @NotNull PoseStack poseStack,
                        @NotNull MultiBufferSource bufferSource, int packedLight, int packedOverlay) {
         ItemRenderer itemRenderer = Minecraft.getInstance().getItemRenderer();
-        ItemStack stack = pedestal.getItem();
+        // 如果上锁，则显示一个锁的外观
+        ItemStack stack = pedestal.isLocked()
+                ? new ItemStack(ModItems.LOCK.get())
+                : pedestal.getItem();
+
 
         poseStack.pushPose();
         poseStack.translate(0.5f, 0.75, 0.5f);

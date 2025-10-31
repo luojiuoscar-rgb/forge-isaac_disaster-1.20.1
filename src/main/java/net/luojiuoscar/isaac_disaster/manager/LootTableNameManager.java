@@ -6,4 +6,5 @@ public class LootTableNameManager {
     public static String RANDOM_HEARTS = "random_hearts";
     public static String RANDOM_BOMBS = "random_bombs";
     public static String RANDOM_CARDS = "random_cards";
+    public static String RANDOM_KEYS = "random_keys";
 }

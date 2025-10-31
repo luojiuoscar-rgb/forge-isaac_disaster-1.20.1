@@ -388,6 +388,9 @@
   "item.isaac_disaster.the_tower": "XVI-塔",
   "item.isaac_disaster.the_tower.lore.1": "在周围生成6个炸弹",
   "item.isaac_disaster.the_tower.tarot_cloth.lore.1": "在周围生成12个炸弹",
+  "item.isaac_disaster.the_stars": "XVII-星星",
+  "item.isaac_disaster.the_stars.lore.1": "传送到任意一个非装饰性底座",
+  "item.isaac_disaster.the_stars.tarot_cloth.lore.1": "生成一个链接了的底座",
   "item.isaac_disaster.the_sun": "XIX-太阳",
   "item.isaac_disaster.the_sun.lore.1": "调整时间为正午",
   "item.isaac_disaster.the_sun.lore.2": "对大范围生物造成大量伤害",
@@ -422,13 +425,12 @@
 
   "item.isaac_disaster.debug_stick": "调试棒",
   "message.isaac_disaster.debug_stick.clear": "§e已清空调试棒数据",
-  "message.isaac_disaster.debug_stick.pedestal.save": "已保存当前底座坐标！",
-  "message.isaac_disaster.debug_stick.pedestal.link": "底座已连接",
-  "message.isaac_disaster.debug_stick.pedestal.decoration_state": "装饰性底座:%s",
-
+  "item.isaac_disaster.lock": "锁",
 
   "block.isaac_disaster.pedestal": "底座",
-
+  "message.isaac_disaster.debug_stick.pedestal.save": "已保存当前底座坐标！",
+  "message.isaac_disaster.debug_stick.pedestal.link": "底座已连接",
+  "message.isaac_disaster.debug_stick.pedestal.locked": "需要用钥匙解锁",
 
 
   "pill.isaac_disaster.effect.unknown": "???",
@@ -488,6 +490,8 @@
   "item.isaac_disaster.dime": "铸币",
   "item.isaac_disaster.isaac_head": "以撒的头",
   "item.isaac_disaster.bone_heart": "骨心",
+  "item.isaac_disaster.key": "钥匙",
+  "item.isaac_disaster.golden_key": "金钥匙",
 
 
   "set.isaac_disaster.special.header": "[套装]",

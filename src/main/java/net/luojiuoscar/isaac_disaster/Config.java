@@ -70,6 +70,9 @@ public class Config
     public static ForgeConfigSpec.BooleanValue USABLE_PASSIVE_ITEM;
     public static ForgeConfigSpec.BooleanValue ALLOW_CURIO_UNEQUIP;
     public static ForgeConfigSpec.BooleanValue AUTO_ADAPT_CURIO_SLOT;
+    public static ForgeConfigSpec.IntValue ACTIVE_ITEM_DURABILITY_RESTORE_RATE;
+    public static ForgeConfigSpec.BooleanValue ACTIVE_ITEM_AUTO_RESTORE;
+
 
     // 钱币
     public static ForgeConfigSpec.ConfigValue<String> COIN_TIER_1_ID;
@@ -172,11 +175,42 @@ public class Config
                 .comment("Base value of damage multiplier base increment")
                 .defineInRange("damage_multiplier_base_bonus", 1.0, 0.0, 99999.0);
 
+        // 周围（定义周围的范围）  默认12
+        NEARBY_RANGE = BUILDER
+                .comment("Defines the range of NEARBY." +
+                        "Affects most items with a description of NEARBY")
+                .defineInRange("nearby_range", 12.0, 0.0, 99999.0);
+
 
         BUILDER.pop();
     }
     static {
         BUILDER.push("Item relevant");
+
+        ACTIVE_ITEM_DURABILITY_RESTORE_RATE = BUILDER
+                .comment("How many durability is restored every 4 ticks (0.2 seconds)")
+                .defineInRange("active_item_durability_restore_rate", 4, 0, 99999);
+
+        ACTIVE_ITEM_AUTO_RESTORE = BUILDER
+                .comment("Active item will auto restore durability with time.")
+                .define("active_item_auto_restore", true);
+
+        // 神圣护盾强度  默认3
+        HOLY_SHIELD_STRENGTH = BUILDER
+                .comment("Amount * (Amplifier + 1);" +
+                        "Damages that holy shield effect can immune.")
+                .defineInRange("holy_shield_strength", 3.0, 0.0, 99999.0);
+
+        // 钱力强度  默认0.008
+        MONEY_IS_POWER_STRENGTH = BUILDER
+                .comment("Damage increment of money is power. (each coin)")
+                .defineInRange("money_is_power_strength", 0.007, 0.0, 99999.0);
+
+
+        BUILDER.pop();
+    }
+    static {
+        BUILDER.push("Misc");
         // 可携带的道具总数  默认999
         PASSIVE_ITEM_LIMIT = BUILDER
                 .comment("How many passive items a player can carry. (NOT CURIOS)")
@@ -194,23 +228,6 @@ public class Config
         AUTO_ADAPT_CURIO_SLOT = BUILDER
                 .comment("Equip curio passive item will also add 1 passive item slot. (NEED to enable at least one slot)")
                 .define("auto_adapt_curio_slot", true);
-
-        // 周围（定义周围的范围）  默认12
-        NEARBY_RANGE = BUILDER
-                .comment("Defines the range of NEARBY." +
-                        "Affects most items with a description of NEARBY")
-                .defineInRange("nearby_range", 12.0, 0.0, 99999.0);
-
-        // 神圣护盾强度  默认3
-        HOLY_SHIELD_STRENGTH = BUILDER
-                .comment("Amount * (Amplifier + 1);" +
-                        "Damages that holy shield effect can immune.")
-                .defineInRange("holy_shield_strength", 3.0, 0.0, 99999.0);
-
-        // 钱力强度  默认0.008
-        MONEY_IS_POWER_STRENGTH = BUILDER
-                .comment("Damage increment of money is power. (each coin)")
-                .defineInRange("money_is_power_strength", 0.007, 0.0, 99999.0);
 
 
         BUILDER.pop();

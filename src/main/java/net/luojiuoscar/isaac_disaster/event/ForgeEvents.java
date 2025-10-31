@@ -8,7 +8,6 @@ import net.luojiuoscar.isaac_disaster.capability.player.PlayerPassiveItemProvide
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerStatModifierProvider;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerSwallowedTrinketsProvider;
 import net.luojiuoscar.isaac_disaster.commands.*;
-import net.luojiuoscar.isaac_disaster.data.PillShuffleData;
 import net.luojiuoscar.isaac_disaster.effect.ModEffects;
 import net.luojiuoscar.isaac_disaster.entity.custom.IsaacBullet;
 import net.luojiuoscar.isaac_disaster.entity.tnt.IsaacBomb;
@@ -23,6 +22,7 @@ import net.luojiuoscar.isaac_disaster.item.pickup.IsaacHead;
 import net.luojiuoscar.isaac_disaster.item.pickup.Pickup;
 import net.luojiuoscar.isaac_disaster.item_ability.trinket.ITriggerTrinket;
 import net.luojiuoscar.isaac_disaster.manager.EffectNameManager;
+import net.luojiuoscar.isaac_disaster.manager.data.PillShuffleData;
 import net.luojiuoscar.isaac_disaster.manager.id_managers.ItemId;
 import net.luojiuoscar.isaac_disaster.manager.id_managers.TrinketId;
 import net.luojiuoscar.isaac_disaster.manager.item_managers.ActiveItemManager;
@@ -40,6 +40,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityDimensions;
 import net.minecraft.world.entity.LivingEntity;
@@ -218,6 +219,7 @@ public class ForgeEvents {
     }
 
 
+
     @SubscribeEvent
     public static void onPlayerAttack(LivingAttackEvent event){
         // 检查攻击者是否为玩家
@@ -235,8 +237,15 @@ public class ForgeEvents {
 
             // 检查物品是否为NormalActiveItem类型且不为空
             if (!stack.isEmpty() && stack.getItem() instanceof ActiveItem) {
+                int rate = Config.ACTIVE_ITEM_DURABILITY_RESTORE_RATE.get() / 2;
+                // 近战伤害获取额外充能数值
+                if (event.getSource().is(DamageTypes.PLAYER_ATTACK)){
+                    rate *= 4;
+                }
                 // 充电（传入蓄电池参数）
-                ActiveItem.modifyCharge(stack, Math.max((int) event.getAmount() * 2, 1),PlayerHelper.hasItem(ItemId.THE_BATTERY.getId(), (ServerPlayer) player));
+                ActiveItem.modifyCharge(stack,
+                        Math.max((int) event.getAmount() * rate, 1),
+                        PlayerHelper.hasItem(ItemId.THE_BATTERY.getId(), (ServerPlayer) player));
             }
         }
     }

@@ -322,97 +322,97 @@ public class ModItems {
     // Active item
     public static final RegistryObject<Item> YUM_HEART = ITEMS.register("yum_heart",
             () -> new ActiveItem(new Item.Properties(),1, ItemId.YUM_HEART.getId(),
-                    800, 800));
+                    8, 8));
     static { ACTIVE_ITEM_LIST.add(YUM_HEART); }
 
     public static final RegistryObject<Item> THE_BOOK_OF_BELIAL = ITEMS.register("the_book_of_belial",
             () -> new ActiveItem(new Item.Properties(),2, ItemId.THE_BOOK_OF_BELIAL.getId(),
-                    800, 800, true));
+                    8, 8, true));
     static { ACTIVE_ITEM_LIST.add(THE_BOOK_OF_BELIAL); }
 
     public static final RegistryObject<Item> BOOK_OF_SHADOW = ITEMS.register("book_of_shadow",
             () -> new ActiveItem(new Item.Properties(),3, ItemId.BOOK_OF_SHADOW.getId(),
-                    1200, 1200, true));
+                    12, 12, true));
     static { ACTIVE_ITEM_LIST.add(BOOK_OF_SHADOW); }
 
     public static final RegistryObject<Item> THE_BIBLE = ITEMS.register("the_bible",
             () -> new ActiveItem(new Item.Properties(),2, ItemId.THE_BIBLE.getId(),
-                    1200, 1200, true));
+                    12, 12, true));
     static { ACTIVE_ITEM_LIST.add(THE_BIBLE); }
 
     public static final RegistryObject<Item> THE_NECRONMICON = ITEMS.register("the_necronmicon",
             () -> new ActiveItem(new Item.Properties(),2, ItemId.THE_NECRONMICON.getId(),
-                    600, 600, true));
+                    6, 6, true));
     static { ACTIVE_ITEM_LIST.add(THE_NECRONMICON); }
 
     public static final RegistryObject<Item> WOODEN_NICKEL = ITEMS.register("wooden_nickel",
             () -> new ActiveItem(new Item.Properties(),1, ItemId.WOODEN_NICKEL.getId(),
-                    300, 300));
+                    3, 3));
     static { ACTIVE_ITEM_LIST.add(WOODEN_NICKEL); }
 
     public static final RegistryObject<Item> TELEPORT = ITEMS.register("teleport",
             () -> new ActiveItem(new Item.Properties(),0, ItemId.TELEPORT.getId(),
-                    400, 400));
+                    4, 4));
     static { ACTIVE_ITEM_LIST.add(TELEPORT); }
 
     public static final RegistryObject<Item> LEMON_MISHAP = ITEMS.register("lemon_mishap",
             () -> new ActiveItem(new Item.Properties(),1, ItemId.LEMON_MISHAP.getId(),
-                    400, 400));
+                    4, 4));
     static { ACTIVE_ITEM_LIST.add(LEMON_MISHAP); }
 
     public static final RegistryObject<Item> FREE_LEMONADE = ITEMS.register("free_lemonade",
             () -> new ActiveItem(new Item.Properties(),2, ItemId.FREE_LEMONADE.getId(),
-                    600, 600));
+                    6, 6));
     static { ACTIVE_ITEM_LIST.add(FREE_LEMONADE); }
 
     public static final RegistryObject<Item> THE_GAMEKID = ITEMS.register("the_gamekid",
             () -> new ActiveItem(new Item.Properties(),1, ItemId.THE_GAMEKID.getId(),
-                    1200, 1200, true));
+                    12, 12, true));
     static { ACTIVE_ITEM_LIST.add(THE_GAMEKID); }
 
     public static final RegistryObject<Item> UNICORN_STUMP = ITEMS.register("unicorn_stump",
             () -> new ActiveItem(new Item.Properties(),1, ItemId.UNICORN_STUMP.getId(),
-                    1200, 1200, true));
+                    12, 12, true));
     static { ACTIVE_ITEM_LIST.add(UNICORN_STUMP); }
 
     public static final RegistryObject<Item> MY_LITTLE_UNICORN = ITEMS.register("my_little_unicorn",
             () -> new ActiveItem(new Item.Properties(),1, ItemId.MY_LITTLE_UNICORN.getId(),
-                    1200, 1200, true));
+                    12, 12, true));
     static { ACTIVE_ITEM_LIST.add(MY_LITTLE_UNICORN); }
 
     public static final RegistryObject<Item> PLACEBO = ITEMS.register("placebo",
             () -> new ActiveItem(new Item.Properties(),1, ItemId.PLACEBO.getId(),
-                    2400, 2400));
+                    24, 24));
     static { ACTIVE_ITEM_LIST.add(PLACEBO); }
 
     public static final RegistryObject<Item> DIPLOPIA = ITEMS.register("diplopia",
             () -> new ActiveItem(new Item.Properties(),4, ItemId.DIPLOPIA.getId(),
-                    1, 1));
+                    0, 0));
     static { ACTIVE_ITEM_LIST.add(DIPLOPIA); }
 
     public static final RegistryObject<Item> CROOKED_PENNY = ITEMS.register("crooked_penny",
             () -> new ActiveItem(new Item.Properties(),3, ItemId.CROOKED_PENNY.getId(),
-                    3600, 3600));
+                    36, 36));
     static { ACTIVE_ITEM_LIST.add(CROOKED_PENNY); }
 
     public static final RegistryObject<Item> DULL_RAZOR = ITEMS.register("dull_razor",
             () -> new ActiveItem(new Item.Properties(),2, ItemId.DULL_RAZOR.getId(),
-                    200, 200));
+                    2, 2));
     static { ACTIVE_ITEM_LIST.add(DULL_RAZOR); }
 
     public static final RegistryObject<Item> TELEPATHY_FOR_DUMMIES = ITEMS.register("telepathy_for_dummies",
             () -> new ActiveItem(new Item.Properties(),1, ItemId.TELEPATHY_FOR_DUMMIES.getId(),
-                    800, 800, true));
+                    8, 8, true));
     static { ACTIVE_ITEM_LIST.add(TELEPATHY_FOR_DUMMIES); }
 
     public static final RegistryObject<Item> ANARCHIST_COOKBOOK = ITEMS.register("anarchist_cookbook",
             () -> new ActiveItem(new Item.Properties(),1, ItemId.ANARCHIST_COOKBOOK.getId(),
-                    600, 600, true));
+                    6, 6, true));
     static { ACTIVE_ITEM_LIST.add(ANARCHIST_COOKBOOK); }
 
     public static final RegistryObject<Item> SMELTER = ITEMS.register("smelter",
             () -> new ActiveItem(new Item.Properties(),2, ItemId.SMELTER.getId(),
-                    1200, 1200));
+                    12, 12));
     static { ACTIVE_ITEM_LIST.add(SMELTER); }
 
 
@@ -465,18 +465,6 @@ public class ModItems {
             () -> new IsaacHead(new Item.Properties(), PickupId.ISAAC_HEAD.getId()));
     static { PICKUP_LIST.add(ISAAC_HEAD); }
 
-    public static final RegistryObject<Item> BOMB = ITEMS.register("bomb",
-            () -> new Bomb(new Item.Properties(), PickupId.BOMB.getId()));
-    static { PICKUP_LIST.add(BOMB); }
-
-    public static final RegistryObject<Item> GIGA_BOMB = ITEMS.register("giga_bomb",
-            () -> new Bomb(new Item.Properties().stacksTo(16).rarity(Rarity.RARE), PickupId.GIGA_BOMB.getId()));
-    static { PICKUP_LIST.add(GIGA_BOMB); }
-
-    public static final RegistryObject<Item> GOLDEN_BOMB = ITEMS.register("golden_bomb",
-            () -> new Bomb(new Item.Properties().stacksTo(1).rarity(Rarity.EPIC), PickupId.GOLDEN_BOMB.getId()));
-    static { PICKUP_LIST.add(GOLDEN_BOMB); }
-
     public static final RegistryObject<Item> HALF_RED_HEART = ITEMS.register("half_red_heart",
             () -> new Heart(new Item.Properties(), PickupId.HALF_RED_HEART.getId(), Rarity.COMMON));
     static { PICKUP_LIST.add(HALF_RED_HEART); }
@@ -509,6 +497,26 @@ public class ModItems {
             () -> new Heart(new Item.Properties(), PickupId.BONE_HEART.getId(), Rarity.EPIC));
     static { PICKUP_LIST.add(BONE_HEART); }
 
+    public static final RegistryObject<Item> BOMB = ITEMS.register("bomb",
+            () -> new Bomb(new Item.Properties(), PickupId.BOMB.getId()));
+    static { PICKUP_LIST.add(BOMB); }
+
+    public static final RegistryObject<Item> GIGA_BOMB = ITEMS.register("giga_bomb",
+            () -> new Bomb(new Item.Properties().stacksTo(16).rarity(Rarity.RARE), PickupId.GIGA_BOMB.getId()));
+    static { PICKUP_LIST.add(GIGA_BOMB); }
+
+    public static final RegistryObject<Item> GOLDEN_BOMB = ITEMS.register("golden_bomb",
+            () -> new Bomb(new Item.Properties().stacksTo(1).rarity(Rarity.EPIC), PickupId.GOLDEN_BOMB.getId()));
+    static { PICKUP_LIST.add(GOLDEN_BOMB); }
+
+    public static final RegistryObject<Item> KEY = ITEMS.register("key",
+            () -> new Item(new Item.Properties()));
+    static { PICKUP_LIST.add(KEY); }
+
+    public static final RegistryObject<Item> GOLDEN_KEY = ITEMS.register("golden_key",
+            () -> new Item(new Item.Properties().rarity(Rarity.EPIC).stacksTo(1)));
+    static { PICKUP_LIST.add(GOLDEN_KEY); }
+
     public static final RegistryObject<Item> PENNY = ITEMS.register("penny",
             () -> new Item(new Item.Properties()));
     static { PICKUP_LIST.add(PENNY); }
@@ -520,6 +528,113 @@ public class ModItems {
     public static final RegistryObject<Item> DIME = ITEMS.register("dime",
             () -> new Item(new Item.Properties()));
     static { PICKUP_LIST.add(DIME); }
+
+
+    public static final RegistryObject<Item> THE_FOOL = ITEMS.register("the_fool",
+            () -> new Card(new Item.Properties(), PickupId.THE_FOOL.getId()));
+    static { PICKUP_LIST.add(THE_FOOL); }
+
+    public static final RegistryObject<Item> THE_MAGICIAN = ITEMS.register("the_magician",
+            () -> new Card(new Item.Properties(), PickupId.THE_MAGICIAN.getId()));
+    static { PICKUP_LIST.add(THE_MAGICIAN); }
+
+    public static final RegistryObject<Item> THE_HIGH_PRIESTESS = ITEMS.register("the_high_priestess",
+            () -> new Card(new Item.Properties(), PickupId.THE_HIGH_PRIESTESS.getId()));
+    static { PICKUP_LIST.add(THE_HIGH_PRIESTESS); }
+
+    public static final RegistryObject<Item> THE_EMPRESS = ITEMS.register("the_empress",
+            () -> new Card(new Item.Properties(), PickupId.THE_EMPRESS.getId()));
+    static { PICKUP_LIST.add(THE_EMPRESS); }
+
+    public static final RegistryObject<Item> THE_HIEROPHANT = ITEMS.register("the_hierophant",
+            () -> new Card(new Item.Properties(), PickupId.THE_HIEROPHANT.getId()));
+    static { PICKUP_LIST.add(THE_HIEROPHANT); }
+
+    public static final RegistryObject<Item> THE_LOVERS = ITEMS.register("the_lovers",
+            () -> new Card(new Item.Properties(), PickupId.THE_LOVERS.getId()));
+    static { PICKUP_LIST.add(THE_LOVERS); }
+
+    public static final RegistryObject<Item> THE_CHARIOT = ITEMS.register("the_chariot",
+            () -> new Card(new Item.Properties(), PickupId.THE_CHARIOT.getId()));
+    static { PICKUP_LIST.add(THE_CHARIOT); }
+
+    public static final RegistryObject<Item> THE_HANGED_MAN = ITEMS.register("the_hanged_man",
+            () -> new Card(new Item.Properties(), PickupId.THE_HANGED_MAN.getId()));
+    static { PICKUP_LIST.add(THE_HANGED_MAN); }
+
+    public static final RegistryObject<Item> DEATH = ITEMS.register("death",
+            () -> new Card(new Item.Properties(), PickupId.DEATH.getId()));
+    static { PICKUP_LIST.add(DEATH); }
+
+    public static final RegistryObject<Item> THE_DEVIL = ITEMS.register("the_devil",
+            () -> new Card(new Item.Properties(), PickupId.THE_DEVIL.getId()));
+    static { PICKUP_LIST.add(THE_DEVIL); }
+
+    public static final RegistryObject<Item> THE_TOWER = ITEMS.register("the_tower",
+            () -> new Card(new Item.Properties(), PickupId.THE_TOWER.getId()));
+    static { PICKUP_LIST.add(THE_TOWER); }
+
+    public static final RegistryObject<Item> THE_STARS = ITEMS.register("the_stars",
+            () -> new Card(new Item.Properties(), PickupId.THE_STARS.getId()));
+    static { PICKUP_LIST.add(THE_STARS); }
+
+    public static final RegistryObject<Item> THE_SUN = ITEMS.register("the_sun",
+            () -> new Card(new Item.Properties(), PickupId.THE_SUN.getId()));
+    static { PICKUP_LIST.add(THE_SUN); }
+
+    public static final RegistryObject<Item> THE_WORLD = ITEMS.register("the_world",
+            () -> new Card(new Item.Properties(), PickupId.THE_WORLD.getId()));
+    static { PICKUP_LIST.add(THE_WORLD); }
+
+    public static final RegistryObject<Item> THE_MAGICIAN_R = ITEMS.register("the_magician_r",
+            () -> new Card(new Item.Properties(), PickupId.THE_MAGICIAN_R.getId()));
+    static { PICKUP_LIST.add(THE_MAGICIAN_R); }
+
+    public static final RegistryObject<Item> THE_HIGH_PRIESTESS_R = ITEMS.register("the_high_priestess_r",
+            () -> new Card(new Item.Properties(), PickupId.THE_HIGH_PRIESTESS_R.getId()));
+    static { PICKUP_LIST.add(THE_HIGH_PRIESTESS_R); }
+
+    public static final RegistryObject<Item> THE_HIEROPHANT_R = ITEMS.register("the_hierophant_r",
+            () -> new Card(new Item.Properties(), PickupId.THE_HIEROPHANT_R.getId()));
+    static { PICKUP_LIST.add(THE_HIEROPHANT_R); }
+
+
+
+
+
+
+
+    public static final RegistryObject<Item> TWO_OF_DIAMONDS = ITEMS.register("2_of_diamonds",
+            () -> new Card(new Item.Properties(), PickupId.TWO_OF_DIAMONDS.getId()));
+    static { PICKUP_LIST.add(TWO_OF_DIAMONDS); }
+
+    public static final RegistryObject<Item> TWO_OF_CLUBS = ITEMS.register("2_of_clubs",
+            () -> new Card(new Item.Properties(), PickupId.TWO_OF_CLUBS.getId()));
+    static { PICKUP_LIST.add(TWO_OF_CLUBS); }
+
+    public static final RegistryObject<Item> TWO_OF_HEARTS = ITEMS.register("2_of_hearts",
+            () -> new Card(new Item.Properties(), PickupId.TWO_OF_HEARTS.getId()));
+    static { PICKUP_LIST.add(TWO_OF_HEARTS); }
+
+    public static final RegistryObject<Item> ACE_OF_CLUBS = ITEMS.register("ace_of_clubs",
+            () -> new Card(new Item.Properties(), PickupId.ACE_OF_CLUBS.getId()));
+    static { PICKUP_LIST.add(ACE_OF_CLUBS); }
+
+    public static final RegistryObject<Item> ACE_OF_DIAMONDS = ITEMS.register("ace_of_diamonds",
+            () -> new Card(new Item.Properties(), PickupId.ACE_OF_DIAMONDS.getId()));
+    static { PICKUP_LIST.add(ACE_OF_DIAMONDS); }
+
+    public static final RegistryObject<Item> ACE_OF_HEARTS = ITEMS.register("ace_of_hearts",
+            () -> new Card(new Item.Properties(), PickupId.ACE_OF_HEARTS.getId()));
+    static { PICKUP_LIST.add(ACE_OF_HEARTS); }
+
+    public static final RegistryObject<Item> QUEEN_OF_HEARTS = ITEMS.register("queen_of_hearts",
+            () -> new Card(new Item.Properties(), PickupId.QUEEN_OF_HEARTS.getId()));
+    static { PICKUP_LIST.add(QUEEN_OF_HEARTS); }
+
+    public static final RegistryObject<Item> HOLY_CARD = ITEMS.register("holy_card",
+            () -> new Card(new Item.Properties(), PickupId.HOLY_CARD.getId()));
+    static { PICKUP_LIST.add(HOLY_CARD); }
 
     public static final RegistryObject<Item> PILL1 = ITEMS.register("pill1",
             () -> new Pill(new Item.Properties(), 1, false));
@@ -608,116 +723,15 @@ public class ModItems {
         PICKUP_LIST.add(GOLDEN_PILL_H);
     }
 
-    public static final RegistryObject<Item> THE_FOOL = ITEMS.register("the_fool",
-            () -> new Card(new Item.Properties(), PickupId.THE_FOOL.getId()));
-    static { PICKUP_LIST.add(THE_FOOL); }
-
-    public static final RegistryObject<Item> THE_MAGICIAN = ITEMS.register("the_magician",
-            () -> new Card(new Item.Properties(), PickupId.THE_MAGICIAN.getId()));
-    static { PICKUP_LIST.add(THE_MAGICIAN); }
-
-    public static final RegistryObject<Item> THE_HIGH_PRIESTESS = ITEMS.register("the_high_priestess",
-            () -> new Card(new Item.Properties(), PickupId.THE_HIGH_PRIESTESS.getId()));
-    static { PICKUP_LIST.add(THE_HIGH_PRIESTESS); }
-
-    public static final RegistryObject<Item> THE_EMPRESS = ITEMS.register("the_empress",
-            () -> new Card(new Item.Properties(), PickupId.THE_EMPRESS.getId()));
-    static { PICKUP_LIST.add(THE_EMPRESS); }
-
-    public static final RegistryObject<Item> THE_HIEROPHANT = ITEMS.register("the_hierophant",
-            () -> new Card(new Item.Properties(), PickupId.THE_HIEROPHANT.getId()));
-    static { PICKUP_LIST.add(THE_HIEROPHANT); }
-
-    public static final RegistryObject<Item> THE_LOVERS = ITEMS.register("the_lovers",
-            () -> new Card(new Item.Properties(), PickupId.THE_LOVERS.getId()));
-    static { PICKUP_LIST.add(THE_LOVERS); }
-
-    public static final RegistryObject<Item> THE_CHARIOT = ITEMS.register("the_chariot",
-            () -> new Card(new Item.Properties(), PickupId.THE_CHARIOT.getId()));
-    static { PICKUP_LIST.add(THE_CHARIOT); }
-
-    public static final RegistryObject<Item> THE_HANGED_MAN = ITEMS.register("the_hanged_man",
-            () -> new Card(new Item.Properties(), PickupId.THE_HANGED_MAN.getId()));
-    static { PICKUP_LIST.add(THE_HANGED_MAN); }
-
-    public static final RegistryObject<Item> DEATH = ITEMS.register("death",
-            () -> new Card(new Item.Properties(), PickupId.DEATH.getId()));
-    static { PICKUP_LIST.add(DEATH); }
-
-    public static final RegistryObject<Item> THE_DEVIL = ITEMS.register("the_devil",
-            () -> new Card(new Item.Properties(), PickupId.THE_DEVIL.getId()));
-    static { PICKUP_LIST.add(THE_DEVIL); }
-
-    public static final RegistryObject<Item> THE_TOWER = ITEMS.register("the_tower",
-            () -> new Card(new Item.Properties(), PickupId.THE_TOWER.getId()));
-    static { PICKUP_LIST.add(THE_TOWER); }
-
-    public static final RegistryObject<Item> THE_SUN = ITEMS.register("the_sun",
-            () -> new Card(new Item.Properties(), PickupId.THE_SUN.getId()));
-    static { PICKUP_LIST.add(THE_SUN); }
-
-    public static final RegistryObject<Item> THE_WORLD = ITEMS.register("the_world",
-            () -> new Card(new Item.Properties(), PickupId.THE_WORLD.getId()));
-    static { PICKUP_LIST.add(THE_WORLD); }
-
-    public static final RegistryObject<Item> THE_MAGICIAN_R = ITEMS.register("the_magician_r",
-            () -> new Card(new Item.Properties(), PickupId.THE_MAGICIAN_R.getId()));
-    static { PICKUP_LIST.add(THE_MAGICIAN_R); }
-
-    public static final RegistryObject<Item> THE_HIGH_PRIESTESS_R = ITEMS.register("the_high_priestess_r",
-            () -> new Card(new Item.Properties(), PickupId.THE_HIGH_PRIESTESS_R.getId()));
-    static { PICKUP_LIST.add(THE_HIGH_PRIESTESS_R); }
-
-    public static final RegistryObject<Item> THE_HIEROPHANT_R = ITEMS.register("the_hierophant_r",
-            () -> new Card(new Item.Properties(), PickupId.THE_HIEROPHANT_R.getId()));
-    static { PICKUP_LIST.add(THE_HIEROPHANT_R); }
-
-
-
-
-
-
-
-
-
-    public static final RegistryObject<Item> TWO_OF_DIAMONDS = ITEMS.register("2_of_diamonds",
-            () -> new Card(new Item.Properties(), PickupId.TWO_OF_DIAMONDS.getId()));
-    static { PICKUP_LIST.add(TWO_OF_DIAMONDS); }
-
-    public static final RegistryObject<Item> TWO_OF_CLUBS = ITEMS.register("2_of_clubs",
-            () -> new Card(new Item.Properties(), PickupId.TWO_OF_CLUBS.getId()));
-    static { PICKUP_LIST.add(TWO_OF_CLUBS); }
-
-    public static final RegistryObject<Item> TWO_OF_HEARTS = ITEMS.register("2_of_hearts",
-            () -> new Card(new Item.Properties(), PickupId.TWO_OF_HEARTS.getId()));
-    static { PICKUP_LIST.add(TWO_OF_HEARTS); }
-
-    public static final RegistryObject<Item> ACE_OF_CLUBS = ITEMS.register("ace_of_clubs",
-            () -> new Card(new Item.Properties(), PickupId.ACE_OF_CLUBS.getId()));
-    static { PICKUP_LIST.add(ACE_OF_CLUBS); }
-
-    public static final RegistryObject<Item> ACE_OF_DIAMONDS = ITEMS.register("ace_of_diamonds",
-            () -> new Card(new Item.Properties(), PickupId.ACE_OF_DIAMONDS.getId()));
-    static { PICKUP_LIST.add(ACE_OF_DIAMONDS); }
-
-    public static final RegistryObject<Item> ACE_OF_HEARTS = ITEMS.register("ace_of_hearts",
-            () -> new Card(new Item.Properties(), PickupId.ACE_OF_HEARTS.getId()));
-    static { PICKUP_LIST.add(ACE_OF_HEARTS); }
-
-    public static final RegistryObject<Item> QUEEN_OF_HEARTS = ITEMS.register("queen_of_hearts",
-            () -> new Card(new Item.Properties(), PickupId.QUEEN_OF_HEARTS.getId()));
-    static { PICKUP_LIST.add(QUEEN_OF_HEARTS); }
-
-    public static final RegistryObject<Item> HOLY_CARD = ITEMS.register("holy_card",
-            () -> new Card(new Item.Properties(), PickupId.HOLY_CARD.getId()));
-    static { PICKUP_LIST.add(HOLY_CARD); }
-
     // pickup end
     // misc
     public static final RegistryObject<Item> PEDESTAL_ITEM = ITEMS.register("pedestal",
             () -> new BlockItem(ModBlocks.PEDESTAL_BLOCK.get(), new Item.Properties()));
     static { MISC_LIST.add(PEDESTAL_ITEM); }
 
+    public static final RegistryObject<Item> LOCK = ITEMS.register("lock",
+            () -> new Item(new Item.Properties()));
+    static { MISC_LIST.add(LOCK); }
 
     public static final RegistryObject<Item> DEBUG_STICK = ITEMS.register("debug_stick",
             () -> new DebugStick(new Item.Properties()));

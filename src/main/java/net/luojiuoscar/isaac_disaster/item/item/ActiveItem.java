@@ -1,5 +1,6 @@
 package net.luojiuoscar.isaac_disaster.item.item;
 
+import net.luojiuoscar.isaac_disaster.Config;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerSwallowedTrinketsProvider;
 import net.luojiuoscar.isaac_disaster.manager.ColorManager;
 import net.luojiuoscar.isaac_disaster.manager.id_managers.TrinketId;
@@ -18,25 +19,28 @@ import java.util.List;
 
 
 public class ActiveItem extends IsaacItem {
+    public static final int DAMAGE_PER_CHARGE = 100;
+
     private final int damage_per_use;
     private final int max_item_damage;
     private static final String OVERCHARGED_TAG = "OverCharged";
     private static final String HAS_BEEN_USED = "has_been_used";
 
 
-    public ActiveItem(Properties properties, int itemLevel, int itemId, int damagePerUse, int maxItemDamage) {
-        this(properties, itemLevel, itemId, damagePerUse, maxItemDamage, false, false);
+    public ActiveItem(Properties properties, int itemLevel, int itemId, int chargePerUse, int maxCharge) {
+        this(properties, itemLevel, itemId, chargePerUse, maxCharge, false, false);
     }
 
-    public ActiveItem(Properties properties, int itemLevel, int itemId, int damagePerUse, int maxItemDamage, boolean hasSpecialEffect) {
-        this(properties, itemLevel, itemId, damagePerUse, maxItemDamage, hasSpecialEffect, false);
+    public ActiveItem(Properties properties, int itemLevel, int itemId, int chargePerUse, int maxCharge, boolean hasSpecialEffect) {
+        this(properties, itemLevel, itemId, chargePerUse, maxCharge, hasSpecialEffect, false);
     }
 
-    public ActiveItem(Properties properties, int itemLevel, int itemId, int damagePerUse, int maxItemDamage, boolean hasSpecialEffect, boolean useOriginalColor) {
-        super(properties.stacksTo(1).rarity(IsaacItem.getRarity(itemLevel)).durability(maxItemDamage),
+    public ActiveItem(Properties properties, int itemLevel, int itemId, int chargePerUse, int maxCharge, boolean hasSpecialEffect, boolean useOriginalColor) {
+        super(properties.stacksTo(1).rarity(IsaacItem.getRarity(itemLevel))
+                        .durability(maxCharge * DAMAGE_PER_CHARGE),
                 itemLevel, itemId, hasSpecialEffect, useOriginalColor);
-        this.max_item_damage = maxItemDamage;
-        this.damage_per_use = damagePerUse;
+        this.max_item_damage = maxCharge * DAMAGE_PER_CHARGE;
+        this.damage_per_use = chargePerUse * DAMAGE_PER_CHARGE;
     }
 
 
@@ -64,7 +68,7 @@ public class ActiveItem extends IsaacItem {
             tooltipComponents.add(Component.translatable("item.isaac_disaster.action.consumed")
                     .withStyle(style -> style.withColor(ColorManager.SYNERGY)));
         }
-        if (max_item_damage > 20){ // 大于1秒的才显示
+        if (max_item_damage > 0 || !Config.ACTIVE_ITEM_AUTO_RESTORE.get()){
             tooltipComponents.add(
                     Component.translatable("item.isaac_disaster.special.recharge_require", (max_item_damage / 20))
                             .withStyle(style -> style.withColor(ColorManager.TRANSPARENT_GRAY)

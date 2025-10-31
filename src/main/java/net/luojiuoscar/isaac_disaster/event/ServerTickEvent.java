@@ -1,5 +1,6 @@
 package net.luojiuoscar.isaac_disaster.event;
 
+import net.luojiuoscar.isaac_disaster.Config;
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.attribute.ModAttributes;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerAbilityProvider;
@@ -91,6 +92,9 @@ public class ServerTickEvent {
         }
     }
     private static void chargeActiveItem(ServerPlayer player){
+        // 是否启用自动回复
+        if (!Config.ACTIVE_ITEM_AUTO_RESTORE.get()) return;
+
         // 有4.5伏特时不执行充能
         if (PlayerHelper.hasItem(ItemId.VOLT_4P5.getId(), player)) return;
 
@@ -101,7 +105,7 @@ public class ServerTickEvent {
 
             // 检查物品是否为NormalActiveItem类型且不为空
             if (!stack.isEmpty() && stack.getItem() instanceof ActiveItem) {
-                ActiveItem.modifyCharge(stack, ServerTickEvent.TICK_FREQUENCY,
+                ActiveItem.modifyCharge(stack, Config.ACTIVE_ITEM_DURABILITY_RESTORE_RATE.get(),
                         PlayerHelper.hasItem(ItemId.THE_BATTERY.getId(), player));
             }
         }

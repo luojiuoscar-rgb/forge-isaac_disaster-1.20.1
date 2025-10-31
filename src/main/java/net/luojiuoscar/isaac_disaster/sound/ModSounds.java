@@ -37,6 +37,7 @@ public class ModSounds {
     public static final RegistryObject<SoundEvent> FART_NORMAL = registerSoundEvent("fart_normal");
     public static final RegistryObject<SoundEvent> FART_HUGE = registerSoundEvent("fart_huge");
     public static final RegistryObject<SoundEvent> BONE_HEART = registerSoundEvent("bone_heart");
+    public static final RegistryObject<SoundEvent> UNLOCK = registerSoundEvent("unlock");
 
     // pills
     public static final RegistryObject<SoundEvent> I_FOUND_PILLS_USE = registerSoundEvent("i_found_pills_use");

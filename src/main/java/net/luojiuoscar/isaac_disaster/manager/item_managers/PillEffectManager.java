@@ -1,6 +1,6 @@
 package net.luojiuoscar.isaac_disaster.manager.item_managers;
 
-import net.luojiuoscar.isaac_disaster.data.PillShuffleData;
+import net.luojiuoscar.isaac_disaster.manager.data.PillShuffleData;
 import net.luojiuoscar.isaac_disaster.item_ability.pickup.IPillEffect;
 import net.luojiuoscar.isaac_disaster.item_ability.pickup.pill_effects.*;
 import net.luojiuoscar.isaac_disaster.manager.id_managers.PillEffectId;

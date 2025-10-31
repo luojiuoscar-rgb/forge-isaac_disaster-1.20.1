@@ -25,6 +25,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -126,7 +127,7 @@ public class TriggerItemEvents {
                 if (triggerItemMap.get(itemId) > 0){
                     if (!(PassiveItemManager.getInstance().getItemFromId(itemId) instanceof IHurtTriggerPassiveItem item)) return;
                     // 如果是不触发惩罚性效果的类型
-                    if (source.getMsgId().equals("genericKill") && item.isPunishType()) continue;
+                    if (source.is(DamageTypes.GENERIC_KILL) && item.isPunishType()) continue;
                     item.onHurt(player, event.getSource().getEntity());
                 }
             }
@@ -139,7 +140,7 @@ public class TriggerItemEvents {
                     for (ItemStack stack : stackList) {
                         if (!(stack.getItem() instanceof Trinket item)) continue;
                         if (!(TrinketManager.getInstance().getTrinketFromId(item.getTrinketId()) instanceof IHurtTriggerTrinket trinket)) continue;
-                        if (source.getMsgId().equals("genericKill") && trinket.isPunishType()) continue; // 惩罚类型
+                        if (source.is(DamageTypes.GENERIC_KILL) && trinket.isPunishType()) continue; // 惩罚类型
 
                         trinket.onHurt(player, attacker, playerSwallowedTrinkets.getAllTrinketListFromId(player, item.getTrinketId()), event);
                     }
@@ -157,7 +158,7 @@ public class TriggerItemEvents {
         }
 
         // 惩罚性效果
-        if (source.getMsgId().equals("genericKill")) return;
+        if (source.is(DamageTypes.GENERIC_KILL)) return;
         // 死灵护盾
         if (player.hasEffect(ModEffects.NECRONMICON_SHIELD.get()) && damage > Math.max(1.0f, StatManager.MAX_HEALTH.getBonus() * 0.25f)){
             // 伤害来源不能是拥有死灵庇护的玩家；否则不生效

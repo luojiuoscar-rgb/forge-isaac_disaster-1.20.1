@@ -1028,5 +1028,10 @@
     "sounds": [
       "isaac_disaster:wild_card"
     ]
+  },
+  "unlock": {
+    "sounds": [
+      "isaac_disaster:unlock"
+    ]
   }
 }

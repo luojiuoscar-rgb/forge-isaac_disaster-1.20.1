@@ -87,7 +87,8 @@ public class PickupManager {
                 new TheMagicianR(),
                 new TheHighPriestessR(),
                 new TheHierophantR(),
-                new TheWorld()
+                new TheWorld(),
+                new TheStars()
         );
     }
 }

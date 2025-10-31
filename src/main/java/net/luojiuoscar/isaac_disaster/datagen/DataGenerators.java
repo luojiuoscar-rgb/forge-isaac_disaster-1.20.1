@@ -30,6 +30,8 @@ public class DataGenerators {
                 existingFileHelper
         ));
 
-
+        // Loot tables
+        event.getGenerator().addProvider(event.includeServer(),
+                new ModLootTableProvider(packOutput));
     }
 }
