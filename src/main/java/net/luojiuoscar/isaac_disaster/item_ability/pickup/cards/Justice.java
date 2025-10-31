@@ -35,6 +35,7 @@ public class Justice implements ITarot {
         LevelHelper.spawnLootAtPos(level, pos, ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, LootTableNameManager.RANDOM_COINS));
         LevelHelper.spawnLootAtPos(level, pos, ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, LootTableNameManager.RANDOM_HEARTS));
         LevelHelper.spawnLootAtPos(level, pos, ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, LootTableNameManager.RANDOM_BOMBS));
+        LevelHelper.spawnLootAtPos(level, pos, ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, LootTableNameManager.RANDOM_KEYS));
     }
 
     @Override
