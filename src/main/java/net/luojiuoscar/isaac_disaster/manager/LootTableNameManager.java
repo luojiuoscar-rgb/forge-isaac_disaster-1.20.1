@@ -1,10 +1,12 @@
 package net.luojiuoscar.isaac_disaster.manager;
 
 public class LootTableNameManager {
-    public static String RANDOM_COINS = "random_coins";
-    public static String RANDOM_PILLS = "random_pills";
-    public static String RANDOM_HEARTS = "random_hearts";
-    public static String RANDOM_BOMBS = "random_bombs";
-    public static String RANDOM_CARDS = "random_cards";
-    public static String RANDOM_KEYS = "random_keys";
+    public static String RANDOM_COINS = "pickups/random_coins";
+    public static String RANDOM_PILLS = "pickups/random_pills";
+    public static String RANDOM_HEARTS = "pickups/random_hearts";
+    public static String RANDOM_BOMBS = "pickups/random_bombs";
+    public static String RANDOM_CARDS = "pickups/random_cards";
+    public static String RANDOM_KEYS = "pickups/random_keys";
+
+    public static String CHEST = "chests/chest";
 }

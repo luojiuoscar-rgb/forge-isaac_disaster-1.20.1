@@ -431,6 +431,8 @@
   "message.isaac_disaster.debug_stick.pedestal.save": "已保存当前底座坐标！",
   "message.isaac_disaster.debug_stick.pedestal.link": "底座已连接",
   "message.isaac_disaster.debug_stick.pedestal.locked": "需要用钥匙解锁",
+  "block.isaac_disaster.chest": "箱子",
+  "block.isaac_disaster.chest.locked": "该箱子已上锁！",
 
 
   "pill.isaac_disaster.effect.unknown": "???",

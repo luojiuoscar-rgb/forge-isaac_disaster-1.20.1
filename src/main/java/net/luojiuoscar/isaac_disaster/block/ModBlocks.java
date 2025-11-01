@@ -1,10 +1,10 @@
 package net.luojiuoscar.isaac_disaster.block;
 
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
-import net.luojiuoscar.isaac_disaster.block.custom.PedestalBlock;
+import net.luojiuoscar.isaac_disaster.block.custom.*;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockBehaviour;
-import net.minecraft.world.level.material.MapColor;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -19,11 +19,11 @@ public class ModBlocks {
         BLOCKS.register(eventBus);
     }
 
-
     public static final RegistryObject<Block> PEDESTAL_BLOCK = BLOCKS.register("pedestal",
-            () -> new PedestalBlock(BlockBehaviour.Properties.of()
-                    .mapColor(MapColor.STONE)
+            () -> new PedestalBlock(BlockBehaviour.Properties.copy(Blocks.STONE)
                     .strength(0.5f, 1200f)
                     .noOcclusion()));
 
+    public static final RegistryObject<Block> CHEST_BLOCK = BLOCKS.register("chest",
+            () -> new IsaacChestBlock(BlockBehaviour.Properties.copy(Blocks.CHEST)));
 }

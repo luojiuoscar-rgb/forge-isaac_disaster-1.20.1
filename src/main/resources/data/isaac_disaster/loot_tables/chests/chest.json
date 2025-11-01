@@ -1,0 +1,15 @@
+{
+  "pools": [
+    {
+      "rolls": {
+        "min": 3,
+        "max": 5
+      },
+      "entries": [
+        {"type": "minecraft:item", "name": "minecraft:diamond"},
+        {"type": "minecraft:item", "name": "minecraft:emerald"}
+      ]
+    }
+  ]
+}
+

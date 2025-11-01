@@ -20,9 +20,9 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
 
-public class PedestalBlockRenderer implements BlockEntityRenderer<PedestalBlockEntity> {
+public class PedestalRenderer implements BlockEntityRenderer<PedestalBlockEntity> {
 
-    public PedestalBlockRenderer(BlockEntityRendererProvider.Context context) {
+    public PedestalRenderer(BlockEntityRendererProvider.Context context) {
 
     }
 

@@ -1,6 +1,8 @@
 package net.luojiuoscar.isaac_disaster.event;
 
 
+import net.luojiuoscar.isaac_disaster.IsaacDisaster;
+import net.luojiuoscar.isaac_disaster.block.block_entity.renderer.*;
 import net.luojiuoscar.isaac_disaster.block.entity.ModBlockEntities;
 import net.luojiuoscar.isaac_disaster.client.FlyHudOverlay;
 import net.luojiuoscar.isaac_disaster.client.ModKeyMappings;
@@ -8,10 +10,11 @@ import net.luojiuoscar.isaac_disaster.entity.ModEntities;
 import net.luojiuoscar.isaac_disaster.entity.tnt.CustomTntRenderer;
 import net.luojiuoscar.isaac_disaster.renderer.InvincibleChargeLayer;
 import net.luojiuoscar.isaac_disaster.renderer.IsaacBulletRenderer;
-import net.luojiuoscar.isaac_disaster.block.block_entity.renderer.PedestalBlockRenderer;
 import net.minecraft.client.renderer.entity.player.PlayerRenderer;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.EntityRenderersEvent;
+import net.minecraftforge.client.event.ModelEvent;
 import net.minecraftforge.client.event.RegisterGuiOverlaysEvent;
 import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
 import net.minecraftforge.client.gui.overlay.VanillaGuiOverlay;
@@ -29,7 +32,16 @@ public class ClientModEvents {
         event.registerEntityRenderer(ModEntities.GIGA_BOMB.get(), CustomTntRenderer::new);
         event.registerEntityRenderer(ModEntities.TEAR_BULLET.get(), IsaacBulletRenderer::new);
 
-        event.registerBlockEntityRenderer(ModBlockEntities.PEDESTAL_BLOCK_ENTITY.get(), PedestalBlockRenderer::new);
+        event.registerBlockEntityRenderer(ModBlockEntities.PEDESTAL_BLOCK_ENTITY.get(), PedestalRenderer::new);
+        event.registerBlockEntityRenderer(ModBlockEntities.CHEST_BLOCK_ENTITY.get(), IsaacChestRenderer::new);
+    }
+
+    // 注册自定义的模型
+    @SubscribeEvent
+    public static void registerAdditionalModels(ModelEvent.RegisterAdditional event) {
+        event.register(ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "block/chest_base"));
+        event.register(ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "block/chest_lid"));
+
     }
 
     @SubscribeEvent

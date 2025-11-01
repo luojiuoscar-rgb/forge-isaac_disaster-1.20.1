@@ -723,6 +723,14 @@ public class ModItems {
         PICKUP_LIST.add(GOLDEN_PILL_H);
     }
 
+    public static final RegistryObject<Item> CHEST_ITEM = ITEMS.register("chest",
+            () -> new BlockItem(ModBlocks.CHEST_BLOCK.get(), new Item.Properties()));
+    static { MISC_LIST.add(CHEST_ITEM); }
+
+
+
+
+
     // pickup end
     // misc
     public static final RegistryObject<Item> PEDESTAL_ITEM = ITEMS.register("pedestal",
