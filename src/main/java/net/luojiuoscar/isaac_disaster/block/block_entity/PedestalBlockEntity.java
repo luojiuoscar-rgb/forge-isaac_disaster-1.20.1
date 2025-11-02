@@ -192,7 +192,8 @@ public class PedestalBlockEntity extends BlockEntity {
         if (blockEntity.isGenerated() || blockEntity.isDecoration()) return;
 
         int range = 5;
-        Player player = LevelHelper.findNearestOfType(level, pos.getX()+0.5, pos.getY()+0.5, pos.getZ()+0.5, range, Player.class);
+        Player player = LevelHelper.findNearestOfType(level, pos.getX()+0.5, pos.getY()+0.5, pos.getZ()+0.5, range, Player.class,
+                e -> e instanceof Player p && !p.isCreative() && !p.isSpectator()); // 排除创造玩家和观察者
 
         if (player == null) return;
 
@@ -222,6 +223,7 @@ public class PedestalBlockEntity extends BlockEntity {
             IsaacDisaster.LOGGER.error("Failed to generate loot for pedestal at {} with table {}", worldPosition, lootTable, e);
             lootTable = "";
             isDecoration = true;
+            generated = true;
         }
     }
 

@@ -114,9 +114,17 @@ public class LevelHelper {
         }
         return nearest;
     }
-    public static <T extends LivingEntity> T findNearestOfType(Level level, double x, double y, double z, double radius, Class<T> type) {
+
+
+    public static <T extends Entity> T findNearestOfType(Level level, double x, double y, double z, double radius, Class<T> type){
+        return findNearestOfType(level, x, y, z, radius, type, null);
+    }
+    public static <T extends Entity> T findNearestOfType(Level level, double x, double y, double z, double radius, Class<T> type, @Nullable Predicate<Entity> filter) {
         List<T> entities = level.getEntitiesOfClass(type,
                 new AABB(x - radius, y - radius, z - radius, x + radius, y + radius, z + radius));
+        if (filter != null){
+            entities = entities.stream().filter(filter).toList();
+        }
 
         T nearest = null;
         double nearestDistSq = Double.MAX_VALUE;

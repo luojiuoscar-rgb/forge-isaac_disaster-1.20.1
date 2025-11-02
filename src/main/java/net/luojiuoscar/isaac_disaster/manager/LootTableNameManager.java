@@ -11,5 +11,5 @@ public class LootTableNameManager {
     public static String CHEST = "chests/chest";
 
 
-    public static String DEFAULT_ITEM_POOL = "pools/passive_items";
+    public static String DEFAULT_ITEM_POOL = "pools/item/passive_items";
 }
