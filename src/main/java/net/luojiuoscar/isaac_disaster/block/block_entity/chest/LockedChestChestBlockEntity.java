@@ -1,7 +1,7 @@
 package net.luojiuoscar.isaac_disaster.block.block_entity.chest;
 
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
-import net.luojiuoscar.isaac_disaster.block.entity.ModBlockEntities;
+import net.luojiuoscar.isaac_disaster.block.block_entity.ModBlockEntities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;

@@ -1,6 +1,7 @@
 package net.luojiuoscar.isaac_disaster.block.custom;
 
 import net.luojiuoscar.isaac_disaster.block.block_entity.PedestalBlockEntity;
+import net.luojiuoscar.isaac_disaster.block.block_entity.ModBlockEntities;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.item.custom.DebugStick;
 import net.luojiuoscar.isaac_disaster.manager.data.PedestalData;
@@ -21,6 +22,8 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BaseEntityBlock;
 import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityTicker;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
@@ -30,7 +33,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Set;
-
 
 public class PedestalBlock extends BaseEntityBlock {
 
@@ -98,7 +100,7 @@ public class PedestalBlock extends BaseEntityBlock {
 
         else if (pedestal.isDecoration() || player.isCreative()){
             // 如果是装饰性的，则交换物品
-            if (held.isEmpty()){
+            if (held.isEmpty() && !stored.isEmpty()){
                 player.setItemInHand(hand, stored);
                 pedestal.clearContents();
                 level.playSound(null, pos.getX(), pos.getY(), pos.getZ(),
@@ -159,18 +161,21 @@ public class PedestalBlock extends BaseEntityBlock {
         super.onRemove(state, level, pos, newState, isMoving);
     }
 
+    @Nullable
+    @Override
+    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(
+            Level level, BlockState state, BlockEntityType<T> type) {
+        return createTickerHelper(type, ModBlockEntities.PEDESTAL_BLOCK_ENTITY.get(),
+                PedestalBlockEntity::tick);
+    }
 
     @Override
     public void setPlacedBy(Level level, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack) {
         BlockEntity be = level.getBlockEntity(pos);
             if (be instanceof PedestalBlockEntity pedestal && stack.hasTag()) {
                 pedestal.load(stack.getTag().getCompound("BlockEntityTag"));
-
-                if (!level.isClientSide && pedestal.getItem().isEmpty() &&
-                        !pedestal.getLootTable().isEmpty() && !pedestal.isDecoration()) {
-                pedestal.fillFromLootTable((ServerLevel) level);
             }
-        }
     }
+
 
 }

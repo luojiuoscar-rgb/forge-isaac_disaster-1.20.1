@@ -3,12 +3,13 @@ package net.luojiuoscar.isaac_disaster;
 import com.mojang.logging.LogUtils;
 import net.luojiuoscar.isaac_disaster.attribute.ModAttributes;
 import net.luojiuoscar.isaac_disaster.block.ModBlocks;
-import net.luojiuoscar.isaac_disaster.block.entity.ModBlockEntities;
+import net.luojiuoscar.isaac_disaster.block.block_entity.ModBlockEntities;
 import net.luojiuoscar.isaac_disaster.effect.ModEffects;
 import net.luojiuoscar.isaac_disaster.entity.ModEntities;
 import net.luojiuoscar.isaac_disaster.event.ServerTickEvent;
 import net.luojiuoscar.isaac_disaster.item.ModCreativeModeTabs;
 import net.luojiuoscar.isaac_disaster.item.ModItems;
+import net.luojiuoscar.isaac_disaster.loot.ModLootModifiers;
 import net.luojiuoscar.isaac_disaster.loot.ModLootTypes;
 import net.luojiuoscar.isaac_disaster.manager.EffectDescriptionManager;
 import net.luojiuoscar.isaac_disaster.manager.item_managers.*;
@@ -32,7 +33,7 @@ public class IsaacDisaster
 {
     public static final String MOD_ID = "isaac_disaster";
     // Directly reference a slf4j logger
-    private static final Logger LOGGER = LogUtils.getLogger();
+    public static final Logger LOGGER = LogUtils.getLogger();
 
 
 
@@ -56,6 +57,7 @@ public class IsaacDisaster
         ModSounds.register(modEventBus);
         ModEffects.register(modEventBus);
         ModLootTypes.register(modEventBus);
+        ModLootModifiers.register(modEventBus);
 
         MinecraftForge.EVENT_BUS.register(new ServerTickEvent());
         // Register the item to a creative tab

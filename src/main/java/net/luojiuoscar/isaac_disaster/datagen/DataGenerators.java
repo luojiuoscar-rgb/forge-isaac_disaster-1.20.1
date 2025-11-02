@@ -31,7 +31,8 @@ public class DataGenerators {
         ));
 
         // Loot tables
-        event.getGenerator().addProvider(event.includeServer(),
-                new ModLootTableProvider(packOutput));
+        generator.addProvider(event.includeServer(), new ModLootTableProvider(packOutput));
+        generator.addProvider(event.includeServer(), new ModGlobalLootModifiersProvider(packOutput));
+
     }
 }

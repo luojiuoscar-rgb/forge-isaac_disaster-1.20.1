@@ -76,7 +76,7 @@ public abstract class ItemChestBlockEntity extends IsaacChestBlockEntity {
 
     abstract public double getLootChance();
 
-    public void tryLootItem(ServerLevel serverLevel){
+    public void tryLootItem(ServerLevel serverLevel, Player player){
         try {
             if (serverLevel.getRandom().nextDouble() >= getLootChance() || opened){
                 setOpened(true);
@@ -89,9 +89,10 @@ public abstract class ItemChestBlockEntity extends IsaacChestBlockEntity {
             LootTable table = serverLevel.getServer().getLootData().getLootTable(lootLoc);
 
             LootParams.Builder builder = new LootParams.Builder(serverLevel)
-                    .withParameter(LootContextParams.ORIGIN, this.getBlockPos().getCenter());
+                    .withParameter(LootContextParams.ORIGIN, this.getBlockPos().getCenter())
+                    .withOptionalParameter(LootContextParams.THIS_ENTITY, player);
 
-            List<ItemStack> items = table.getRandomItems(builder.create(LootContextParamSets.EMPTY));
+            List<ItemStack> items = table.getRandomItems(builder.create(LootContextParamSets.CHEST));
 
             ItemStack stack = items.get(0);
             if (!stack.isEmpty()){

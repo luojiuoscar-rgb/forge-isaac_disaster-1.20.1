@@ -48,8 +48,9 @@ public class TheStars implements ITarot {
 
         for (BlockPos pos : posSet){
             //非空、非装饰性
-            if (level.getBlockEntity(pos) instanceof PedestalBlockEntity be &&
-                    !be.isDecoration() && !be.getItem().isEmpty()){
+            if (level.getBlockEntity(pos) instanceof PedestalBlockEntity be && !be.isDecoration() &&
+                    ((be.getItem().isEmpty() && !be.isGenerated()) || !be.getItem().isEmpty())
+            ){
 
                 player.teleportTo(pos.getX()+0.5, pos.getY()+0.5, pos.getZ()+0.5); // 传送
 

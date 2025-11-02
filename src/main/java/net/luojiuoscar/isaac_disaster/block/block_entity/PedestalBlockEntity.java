@@ -1,6 +1,7 @@
 package net.luojiuoscar.isaac_disaster.block.block_entity;
 
-import net.luojiuoscar.isaac_disaster.block.entity.ModBlockEntities;
+import net.luojiuoscar.isaac_disaster.IsaacDisaster;
+import net.luojiuoscar.isaac_disaster.helper.LevelHelper;
 import net.luojiuoscar.isaac_disaster.manager.data.PedestalData;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -14,7 +15,9 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.Containers;
 import net.minecraft.world.SimpleContainer;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.loot.LootParams;
@@ -50,6 +53,7 @@ public class PedestalBlockEntity extends BlockEntity {
     private Set<BlockPos> linkedOffsets = new HashSet<>();
     private boolean isDecoration = true;
     private String lootTable = "";
+    private boolean generated = false;
     private boolean locked = false;
 
     public PedestalBlockEntity(BlockPos pos, BlockState state) {
@@ -60,7 +64,6 @@ public class PedestalBlockEntity extends BlockEntity {
         this.isDecoration = original.isDecoration();
         this.lootTable = original.getLootTable();
         this.locked = original.isLocked();
-        fillFromLootTable((ServerLevel) level);
         setChanged();
     }
 
@@ -69,6 +72,11 @@ public class PedestalBlockEntity extends BlockEntity {
         rotation += 0.5f;
         if (rotation >= 360) rotation = 0;
         return rotation;
+    }
+    public boolean isGenerated() {return generated; }
+    public void setGenerated(boolean generated) {
+        this.generated = generated;
+        setChanged();
     }
 
     public boolean isDecoration(){ return isDecoration; }
@@ -176,23 +184,34 @@ public class PedestalBlockEntity extends BlockEntity {
         if (!level.isClientSide) {
             PedestalData manager = PedestalData.get((ServerLevel) level);
             manager.addPedestal(worldPosition);
-
-            // loot table
-            if (inventory.getStackInSlot(0).isEmpty() && !lootTable.isEmpty() && !isDecoration) {
-                fillFromLootTable((ServerLevel) level);
-            }
         }
     }
 
-    public void fillFromLootTable(ServerLevel serverLevel) {
+    public static <T extends PedestalBlockEntity> void tick(Level level, BlockPos pos, BlockState state, T blockEntity) {
+        if (level.isClientSide) return;
+        if (blockEntity.isGenerated() || blockEntity.isDecoration()) return;
+
+        int range = 5;
+        Player player = LevelHelper.findNearestOfType(level, pos.getX()+0.5, pos.getY()+0.5, pos.getZ()+0.5, range, Player.class);
+
+        if (player == null) return;
+
+        blockEntity.fillFromLootTable((ServerLevel) level, player);
+        blockEntity.setGenerated(true);
+    }
+
+
+
+    public void fillFromLootTable(ServerLevel serverLevel, Player player) {
         try {
             ResourceLocation lootLoc = ResourceLocation.parse(lootTable);
             LootTable table = serverLevel.getServer().getLootData().getLootTable(lootLoc);
 
             LootParams.Builder builder = new LootParams.Builder(serverLevel)
-                    .withParameter(LootContextParams.ORIGIN, this.getBlockPos().getCenter());
+                    .withParameter(LootContextParams.ORIGIN, this.getBlockPos().getCenter())
+                    .withOptionalParameter(LootContextParams.THIS_ENTITY, player);
 
-            List<ItemStack> items = table.getRandomItems(builder.create(LootContextParamSets.EMPTY));
+            List<ItemStack> items = table.getRandomItems(builder.create(LootContextParamSets.CHEST));
 
             if (!items.isEmpty()) {
                 ItemStack stack = items.get(0).copy();
@@ -200,6 +219,7 @@ public class PedestalBlockEntity extends BlockEntity {
                 inventory.setStackInSlot(0, stack);
             }
         } catch (Exception e) {
+            IsaacDisaster.LOGGER.error("Failed to generate loot for pedestal at {} with table {}", worldPosition, lootTable, e);
             lootTable = "";
             isDecoration = true;
         }
@@ -211,6 +231,7 @@ public class PedestalBlockEntity extends BlockEntity {
         tag.put("inventory", inventory.serializeNBT());
         tag.putBoolean("isDecoration", isDecoration);
         tag.putBoolean("locked", locked);
+        tag.putBoolean("generated", generated);
 
         if (!lootTable.isEmpty())
             tag.putString("LootTable", lootTable);
@@ -232,6 +253,7 @@ public class PedestalBlockEntity extends BlockEntity {
         if(tag.contains("inventory")) inventory.deserializeNBT(tag.getCompound("inventory"));
         isDecoration = tag.getBoolean("isDecoration");
         locked = tag.getBoolean("locked");
+        generated = tag.getBoolean("generated");
 
         lootTable = tag.contains("LootTable") ? tag.getString("LootTable") : "";
 

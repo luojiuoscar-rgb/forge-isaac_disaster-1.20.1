@@ -6,7 +6,13 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "isaac_disaster:pedestal"
+          "name": "isaac_disaster:pedestal",
+          "functions": [
+            {
+              "function": "minecraft:set_nbt",
+              "tag": "{BlockEntityTag:{generated:1b}}"
+            }
+          ]
         }
       ]
     }

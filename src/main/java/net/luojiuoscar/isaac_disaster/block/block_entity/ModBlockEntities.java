@@ -1,10 +1,9 @@
-package net.luojiuoscar.isaac_disaster.block.entity;
+package net.luojiuoscar.isaac_disaster.block.block_entity;
 
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.block.ModBlocks;
 import net.luojiuoscar.isaac_disaster.block.block_entity.chest.NormalChestBlockEntity;
 import net.luojiuoscar.isaac_disaster.block.block_entity.chest.LockedChestChestBlockEntity;
-import net.luojiuoscar.isaac_disaster.block.block_entity.PedestalBlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.registries.DeferredRegister;

@@ -43,7 +43,7 @@ public abstract class ItemChestBlock extends IsaacChestBlock{
 
             if (!chest.isLocked()){
                 chest.unpackLootTable(player); // 尝试掉落物
-                chest.tryLootItem(serverLevel); // 尝试生成道具
+                chest.tryLootItem(serverLevel, player); // 尝试生成道具
             }
 
         } else if (chest.isDisplayingItem()){ // 获取物品
