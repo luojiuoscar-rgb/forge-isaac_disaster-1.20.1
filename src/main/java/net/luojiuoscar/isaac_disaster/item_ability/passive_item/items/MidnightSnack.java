@@ -1,5 +1,6 @@
 package net.luojiuoscar.isaac_disaster.item_ability.passive_item.items;
 
+import net.luojiuoscar.isaac_disaster.item.ModItems;
 import net.luojiuoscar.isaac_disaster.item_ability.passive_item.IPassiveItem;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.manager.id_managers.ItemId;
@@ -15,6 +16,11 @@ public class MidnightSnack implements IPassiveItem {
     @Override
     public int getItemId() {
         return ItemId.MIDNIGHT_SNACK.getId();
+    }
+
+    @Override
+    public ItemStack getItemStack(){
+        return new ItemStack(ModItems.MIDNIGHT_SNACK.get());
     }
 
     @Override

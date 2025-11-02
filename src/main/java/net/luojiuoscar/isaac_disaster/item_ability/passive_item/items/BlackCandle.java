@@ -22,6 +22,11 @@ public class BlackCandle implements IRecursivePassiveItem {
     }
 
     @Override
+    public ItemStack getItemStack(){
+        return new ItemStack(ModItems.A_QUARTER.get());
+    }
+
+    @Override
     public void onFirstObtain(Player player, @Nullable ItemStack stack) {
         PlayerHelper.giveItem(player, ModItems.BLACK_HEART.get(), 1);
     }
@@ -64,4 +69,5 @@ public class BlackCandle implements IRecursivePassiveItem {
             player.removeEffect(effect.getEffect());
         }
     }
+
 }

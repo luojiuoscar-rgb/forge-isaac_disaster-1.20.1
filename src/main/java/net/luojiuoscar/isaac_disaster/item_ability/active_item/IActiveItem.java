@@ -3,6 +3,7 @@ package net.luojiuoscar.isaac_disaster.item_ability.active_item;
 
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.item.item.ActiveItem;
+import net.luojiuoscar.isaac_disaster.item.item.IsaacItem;
 import net.luojiuoscar.isaac_disaster.manager.id_managers.ItemId;
 import net.luojiuoscar.isaac_disaster.sound.ModSounds;
 import net.minecraft.network.chat.Component;
@@ -115,6 +116,14 @@ public interface IActiveItem {
      * 获取物品实例
      */
     ItemStack getItemStack();
+
+
+    default int getItemLevel(){
+        if (getItemStack().getItem() instanceof IsaacItem item){
+            return item.getItemLevel();
+        }
+        return 0;
+    }
 
     /**
      * 获取名称

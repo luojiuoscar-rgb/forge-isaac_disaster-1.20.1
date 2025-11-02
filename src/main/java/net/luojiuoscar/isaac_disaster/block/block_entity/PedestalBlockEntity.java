@@ -76,6 +76,7 @@ public class PedestalBlockEntity extends BlockEntity {
         this.isDecoration = isDecoration;
         setChanged();
     }
+
     public boolean isLocked() {return locked; }
     public void setLocked(boolean locked){
         this.locked = locked;
@@ -212,7 +213,7 @@ public class PedestalBlockEntity extends BlockEntity {
         tag.putBoolean("locked", locked);
 
         if (!lootTable.isEmpty())
-            tag.putString("lootTable", lootTable);
+            tag.putString("LootTable", lootTable);
 
         ListTag listTag = new ListTag();
         for(BlockPos offset : linkedOffsets){
@@ -232,7 +233,7 @@ public class PedestalBlockEntity extends BlockEntity {
         isDecoration = tag.getBoolean("isDecoration");
         locked = tag.getBoolean("locked");
 
-        lootTable = tag.contains("lootTable") ? tag.getString("lootTable") : "";
+        lootTable = tag.contains("LootTable") ? tag.getString("LootTable") : "";
 
         linkedOffsets.clear();
         if(tag.contains("linkedOffsets")){

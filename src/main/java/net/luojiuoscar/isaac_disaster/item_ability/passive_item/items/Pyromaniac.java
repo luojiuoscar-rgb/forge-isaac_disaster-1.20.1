@@ -1,5 +1,6 @@
 package net.luojiuoscar.isaac_disaster.item_ability.passive_item.items;
 
+import net.luojiuoscar.isaac_disaster.item.ModItems;
 import net.luojiuoscar.isaac_disaster.item_ability.passive_item.IRecursivePassiveItem;
 import net.luojiuoscar.isaac_disaster.manager.id_managers.ItemId;
 import net.minecraft.network.chat.Component;
@@ -16,6 +17,11 @@ public class Pyromaniac implements IRecursivePassiveItem {
     @Override
     public int getItemId() {
         return ItemId.PYROMANIAC.getId();
+    }
+
+    @Override
+    public ItemStack getItemStack(){
+        return new ItemStack(ModItems.PYROMANIAC.get());
     }
 
     @Override

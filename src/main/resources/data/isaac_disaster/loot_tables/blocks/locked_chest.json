@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:item",
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "isaac_disaster:locked_chest",
+          "functions": [
+            {
+              "function": "minecraft:set_nbt",
+              "tag": "{BlockEntityTag:{opened:1b,locked:0b}}"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

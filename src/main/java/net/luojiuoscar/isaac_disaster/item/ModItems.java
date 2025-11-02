@@ -723,11 +723,13 @@ public class ModItems {
         PICKUP_LIST.add(GOLDEN_PILL_H);
     }
 
-    public static final RegistryObject<Item> CHEST_ITEM = ITEMS.register("chest",
-            () -> new BlockItem(ModBlocks.CHEST_BLOCK.get(), new Item.Properties()));
-    static { MISC_LIST.add(CHEST_ITEM); }
+    public static final RegistryObject<Item> NORMAL_CHEST_ITEM = ITEMS.register("chest",
+            () -> new BlockItem(ModBlocks.NORMAL_CHEST_BLOCK.get(), new Item.Properties()));
+    static { PICKUP_LIST.add(NORMAL_CHEST_ITEM); }
 
-
+    public static final RegistryObject<Item> LOCKED_CHEST_ITEM = ITEMS.register("locked_chest",
+            () -> new BlockItem(ModBlocks.LOCKED_CHEST_BLOCK.get(), new Item.Properties().rarity(Rarity.UNCOMMON)));
+    static { PICKUP_LIST.add(LOCKED_CHEST_ITEM); }
 
 
 

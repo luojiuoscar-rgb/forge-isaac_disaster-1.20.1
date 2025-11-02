@@ -2,8 +2,9 @@ package net.luojiuoscar.isaac_disaster.event;
 
 
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
-import net.luojiuoscar.isaac_disaster.block.block_entity.renderer.*;
 import net.luojiuoscar.isaac_disaster.block.entity.ModBlockEntities;
+import net.luojiuoscar.isaac_disaster.block.renderer.chest.IsaacChestRenderer;
+import net.luojiuoscar.isaac_disaster.block.renderer.chest.PedestalRenderer;
 import net.luojiuoscar.isaac_disaster.client.FlyHudOverlay;
 import net.luojiuoscar.isaac_disaster.client.ModKeyMappings;
 import net.luojiuoscar.isaac_disaster.entity.ModEntities;
@@ -33,15 +34,16 @@ public class ClientModEvents {
         event.registerEntityRenderer(ModEntities.TEAR_BULLET.get(), IsaacBulletRenderer::new);
 
         event.registerBlockEntityRenderer(ModBlockEntities.PEDESTAL_BLOCK_ENTITY.get(), PedestalRenderer::new);
-        event.registerBlockEntityRenderer(ModBlockEntities.CHEST_BLOCK_ENTITY.get(), IsaacChestRenderer::new);
+        event.registerBlockEntityRenderer(ModBlockEntities.NORMAL_CHEST_BLOCK_ENTITY.get(), IsaacChestRenderer::new);
+        event.registerBlockEntityRenderer(ModBlockEntities.LOCKED_CHEST_BLOCK_ENTITY.get(), IsaacChestRenderer::new);
+
     }
 
     // 注册自定义的模型
     @SubscribeEvent
     public static void registerAdditionalModels(ModelEvent.RegisterAdditional event) {
-        event.register(ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "block/chest_base"));
         event.register(ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "block/chest_lid"));
-
+        event.register(ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "block/locked_chest_lid"));
     }
 
     @SubscribeEvent

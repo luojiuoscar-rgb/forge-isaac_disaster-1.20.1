@@ -2,6 +2,7 @@ package net.luojiuoscar.isaac_disaster.item_ability.passive_item.items;
 
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.helper.ScheduledFuncHelper;
+import net.luojiuoscar.isaac_disaster.item.ModItems;
 import net.luojiuoscar.isaac_disaster.item_ability.passive_item.IHurtTriggerPassiveItem;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.manager.id_managers.ItemId;
@@ -19,6 +20,11 @@ public class CurseOfTheTower implements IHurtTriggerPassiveItem {
     @Override
     public int getItemId() {
         return ItemId.CURSE_OF_THE_TOWER.getId();
+    }
+
+    @Override
+    public ItemStack getItemStack(){
+        return new ItemStack(ModItems.CURSE_OF_THE_TOWER.get());
     }
 
     @Override

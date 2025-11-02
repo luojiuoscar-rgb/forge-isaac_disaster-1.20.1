@@ -27,6 +27,11 @@ public class FalsePhd implements IPassiveItem {
     }
 
     @Override
+    public ItemStack getItemStack(){
+        return new ItemStack(ModItems.FALSE_PHD.get());
+    }
+
+    @Override
     public void onFirstObtain(Player player, @Nullable ItemStack stack) {
         PlayerHelper.giveItem(player, ModItems.BLACK_HEART.get(), 1);
         LevelHelper.spawnLootAtPos((ServerLevel) player.level(), player.blockPosition().getCenter(),

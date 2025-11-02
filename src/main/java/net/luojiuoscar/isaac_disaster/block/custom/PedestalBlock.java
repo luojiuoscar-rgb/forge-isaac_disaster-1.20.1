@@ -1,7 +1,7 @@
 package net.luojiuoscar.isaac_disaster.block.custom;
 
 import net.luojiuoscar.isaac_disaster.block.block_entity.PedestalBlockEntity;
-import net.luojiuoscar.isaac_disaster.item.ModItems;
+import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.item.custom.DebugStick;
 import net.luojiuoscar.isaac_disaster.manager.data.PedestalData;
 import net.luojiuoscar.isaac_disaster.sound.ModSounds;
@@ -91,23 +91,9 @@ public class PedestalBlock extends BaseEntityBlock {
                     ModSounds.BATTERY_SMALL.get(), SoundSource.BLOCKS, 1.0f, 1.0f);
             player.setItemInHand(hand, held); // refresh
         }
-        // lock
+
         else if (pedestal.isLocked()){
-
-            if (held.is(ModItems.KEY.get()) || held.is(ModItems.GOLDEN_KEY.get())){ // 钥匙 or 金钥匙
-                pedestal.unlockAll();
-
-                if (held.is(ModItems.KEY.get()) && !player.isCreative()){
-                    player.getItemInHand(hand).shrink(1); // 钥匙-1
-                }
-                level.playSound(null, pos.getX(), pos.getY(), pos.getZ(),
-                        ModSounds.UNLOCK.get(), SoundSource.BLOCKS, 0.7f, 1.0f);
-            }else{
-                player.displayClientMessage(
-                        Component.translatable("message.isaac_disaster.debug_stick.pedestal.locked"), true);
-                level.playSound(null, pos.getX(), pos.getY(), pos.getZ(), SoundEvents.CHEST_LOCKED,
-                        SoundSource.BLOCKS, 1.0f ,1.0f);
-            }
+            PlayerHelper.unlockBlock(player, hand, pos, pedestal::unlockAll);
         }
 
         else if (pedestal.isDecoration() || player.isCreative()){

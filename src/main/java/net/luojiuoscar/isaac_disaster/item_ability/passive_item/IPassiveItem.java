@@ -1,5 +1,6 @@
 package net.luojiuoscar.isaac_disaster.item_ability.passive_item;
 
+import net.luojiuoscar.isaac_disaster.item.item.IsaacItem;
 import net.luojiuoscar.isaac_disaster.item.item.PassiveItem;
 import net.luojiuoscar.isaac_disaster.sound.ModSounds;
 import net.minecraft.network.chat.Component;
@@ -17,7 +18,6 @@ public interface IPassiveItem {
      * 获取道具ID
      */
     int getItemId();
-
 
     /** 不会被remove的效果 */
     void onFirstObtain(Player player, @Nullable ItemStack stack);
@@ -65,5 +65,13 @@ public interface IPassiveItem {
         return new ArrayList<>();
     }
 
+    ItemStack getItemStack();
+
+    default int getItemLevel(){
+        if (getItemStack().getItem() instanceof IsaacItem item){
+            return item.getItemLevel();
+        }
+        return 0;
+    }
 
 }

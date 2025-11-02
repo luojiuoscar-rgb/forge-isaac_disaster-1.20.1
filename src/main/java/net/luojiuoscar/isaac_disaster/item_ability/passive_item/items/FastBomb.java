@@ -19,6 +19,11 @@ public class FastBomb implements IPassiveItem {
     }
 
     @Override
+    public ItemStack getItemStack(){
+        return new ItemStack(ModItems.FAST_BOMB.get());
+    }
+
+    @Override
     public void onFirstObtain(Player player, @Nullable ItemStack stack) {
         PlayerHelper.giveItem(player, ModItems.BOMB.get(), 7);
     }

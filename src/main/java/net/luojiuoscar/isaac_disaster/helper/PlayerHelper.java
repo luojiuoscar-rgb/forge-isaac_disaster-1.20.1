@@ -6,17 +6,23 @@ import net.luojiuoscar.isaac_disaster.capability.player.*;
 import net.luojiuoscar.isaac_disaster.client.ClientDataManager;
 import net.luojiuoscar.isaac_disaster.entity.custom.IsaacBullet;
 import net.luojiuoscar.isaac_disaster.entity.tnt.IsaacBomb;
+import net.luojiuoscar.isaac_disaster.item.ModItems;
 import net.luojiuoscar.isaac_disaster.item.item.ActiveItem;
 import net.luojiuoscar.isaac_disaster.manager.ColorManager;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.manager.id_managers.ItemId;
 import net.luojiuoscar.isaac_disaster.manager.id_managers.SetId;
+import net.luojiuoscar.isaac_disaster.sound.ModSounds;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -697,5 +703,27 @@ public class PlayerHelper {
         if (server == null) return 0;
         return (int) server.getPlayerList().getPlayers().stream().filter(filter).count();
     }
+
+    public static void unlockBlock(Player player, InteractionHand hand, BlockPos pos, Runnable onUnlock){
+        Level level = player.level();
+        ItemStack held = player.getItemInHand(hand);
+
+        if (held.is(ModItems.KEY.get()) || held.is(ModItems.GOLDEN_KEY.get())){ // 钥匙 or 金钥匙
+            onUnlock.run(); // behaviour
+
+            if (held.is(ModItems.KEY.get()) && !player.isCreative()){
+                player.getItemInHand(hand).shrink(1); // 钥匙-1
+            }
+            level.playSound(null, pos.getX(), pos.getY(), pos.getZ(),
+                    ModSounds.UNLOCK.get(), SoundSource.BLOCKS, 0.7f, 1.0f);
+        }else{
+            player.displayClientMessage(
+                    Component.translatable("block.isaac_disaster.message.locked"), true);
+            level.playSound(null, pos.getX(), pos.getY(), pos.getZ(), SoundEvents.CHEST_LOCKED,
+                    SoundSource.BLOCKS, 1.0f ,1.0f);
+        }
+    }
+
+
 }
 

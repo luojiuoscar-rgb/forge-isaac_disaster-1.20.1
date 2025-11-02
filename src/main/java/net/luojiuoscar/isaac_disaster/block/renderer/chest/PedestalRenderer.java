@@ -1,4 +1,4 @@
-package net.luojiuoscar.isaac_disaster.block.block_entity.renderer;
+package net.luojiuoscar.isaac_disaster.block.renderer.chest;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;

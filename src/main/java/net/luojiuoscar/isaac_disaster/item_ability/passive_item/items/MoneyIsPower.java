@@ -2,6 +2,7 @@ package net.luojiuoscar.isaac_disaster.item_ability.passive_item.items;
 
 import net.luojiuoscar.isaac_disaster.Config;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
+import net.luojiuoscar.isaac_disaster.item.ModItems;
 import net.luojiuoscar.isaac_disaster.item_ability.passive_item.IRecursivePassiveItem;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.manager.id_managers.ItemId;
@@ -19,6 +20,11 @@ import java.util.UUID;
 public class MoneyIsPower implements IRecursivePassiveItem {
     private static final UUID MONEY_IS_POWER_ADDER =
             UUID.nameUUIDFromBytes(("isaac_disaster:money_is_power_adder").getBytes(StandardCharsets.UTF_8));
+
+    @Override
+    public ItemStack getItemStack(){
+        return new ItemStack(ModItems.MONEY_IS_POWER.get());
+    }
 
     @Override
     public int getTickInterval() {

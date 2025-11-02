@@ -336,7 +336,7 @@
   "item.isaac_disaster.smelter": "熔炉",
   "item.isaac_disaster.smelter.lore.1": "吞噬穿戴的饰品",
   "item.isaac_disaster.the_soul": "灵魂",
-  "item.isaac_disaster.the_soul.lore.1": "永久处于灵魂状态",
+  "item.isaac_disaster.the_soul.lore.1": "每过一段时间，进入灵魂状态",
 
 
   "item.isaac_disaster.swallowed_penny": "被吞下的硬币",
@@ -428,11 +428,11 @@
   "item.isaac_disaster.lock": "锁",
 
   "block.isaac_disaster.pedestal": "底座",
+  "block.isaac_disaster.message.locked": "需要用钥匙解锁",
   "message.isaac_disaster.debug_stick.pedestal.save": "已保存当前底座坐标！",
   "message.isaac_disaster.debug_stick.pedestal.link": "底座已连接",
-  "message.isaac_disaster.debug_stick.pedestal.locked": "需要用钥匙解锁",
   "block.isaac_disaster.chest": "箱子",
-  "block.isaac_disaster.chest.locked": "该箱子已上锁！",
+  "block.isaac_disaster.locked_chest": "金箱子",
 
 
   "pill.isaac_disaster.effect.unknown": "???",

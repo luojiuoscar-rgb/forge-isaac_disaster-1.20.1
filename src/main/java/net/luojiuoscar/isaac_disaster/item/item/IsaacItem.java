@@ -134,5 +134,6 @@ public abstract class IsaacItem extends Item {
         return this.itemId;
     }
 
+    public int getItemLevel() {return this.itemLevel; }
 
 }

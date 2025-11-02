@@ -9,4 +9,7 @@ public class LootTableNameManager {
     public static String RANDOM_KEYS = "pickups/random_keys";
 
     public static String CHEST = "chests/chest";
+
+
+    public static String DEFAULT_ITEM_POOL = "pool/passive_items";
 }

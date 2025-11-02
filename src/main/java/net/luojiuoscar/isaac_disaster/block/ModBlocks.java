@@ -2,6 +2,8 @@ package net.luojiuoscar.isaac_disaster.block;
 
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.block.custom.*;
+import net.luojiuoscar.isaac_disaster.block.custom.chest.LockedChestBlock;
+import net.luojiuoscar.isaac_disaster.block.custom.chest.NormalChestBlock;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockBehaviour;
@@ -24,6 +26,9 @@ public class ModBlocks {
                     .strength(0.5f, 1200f)
                     .noOcclusion()));
 
-    public static final RegistryObject<Block> CHEST_BLOCK = BLOCKS.register("chest",
-            () -> new IsaacChestBlock(BlockBehaviour.Properties.copy(Blocks.CHEST)));
+    public static final RegistryObject<Block> NORMAL_CHEST_BLOCK = BLOCKS.register("chest",
+            () -> new NormalChestBlock(BlockBehaviour.Properties.copy(Blocks.CHEST)));
+
+    public static final RegistryObject<Block> LOCKED_CHEST_BLOCK = BLOCKS.register("locked_chest",
+            () -> new LockedChestBlock(BlockBehaviour.Properties.copy(Blocks.CHEST)));
 }

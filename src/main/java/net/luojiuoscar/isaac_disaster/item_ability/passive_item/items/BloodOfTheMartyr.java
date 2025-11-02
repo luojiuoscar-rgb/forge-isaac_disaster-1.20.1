@@ -1,6 +1,7 @@
 package net.luojiuoscar.isaac_disaster.item_ability.passive_item.items;
 
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
+import net.luojiuoscar.isaac_disaster.item.ModItems;
 import net.luojiuoscar.isaac_disaster.item_ability.passive_item.IPassiveItem;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.manager.id_managers.ItemId;
@@ -18,6 +19,11 @@ public class BloodOfTheMartyr implements IPassiveItem {
     @Override
     public int getItemId() {
         return ItemId.BLOOD_OF_THE_MARTYR.getId();
+    }
+
+    @Override
+    public ItemStack getItemStack(){
+        return new ItemStack(ModItems.BLOOD_OF_THE_MARTYR.get());
     }
 
     @Override
@@ -53,4 +59,5 @@ public class BloodOfTheMartyr implements IPassiveItem {
                 StatManager.DAMAGE.description(1)
         );
     }
+
 }

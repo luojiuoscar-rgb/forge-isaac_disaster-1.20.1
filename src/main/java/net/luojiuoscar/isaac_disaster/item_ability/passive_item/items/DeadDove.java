@@ -1,5 +1,6 @@
 package net.luojiuoscar.isaac_disaster.item_ability.passive_item.items;
 
+import net.luojiuoscar.isaac_disaster.item.ModItems;
 import net.luojiuoscar.isaac_disaster.item_ability.passive_item.IPassiveItem;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.manager.id_managers.ItemId;
@@ -14,6 +15,11 @@ public class DeadDove implements IPassiveItem {
     @Override
     public int getItemId() {
         return ItemId.DEAD_DOVE.getId();
+    }
+
+    @Override
+    public ItemStack getItemStack(){
+        return new ItemStack(ModItems.DEAD_DOVE.get());
     }
 
     @Override

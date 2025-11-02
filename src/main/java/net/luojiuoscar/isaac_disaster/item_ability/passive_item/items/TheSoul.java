@@ -23,6 +23,11 @@ public class TheSoul implements IRecursivePassiveItem {
     }
 
     @Override
+    public ItemStack getItemStack(){
+        return new ItemStack(ModItems.THE_SOUL.get());
+    }
+
+    @Override
     public void onFirstObtain(Player player, @Nullable ItemStack stack) {
         PlayerHelper.giveItem(player, ModItems.SOUL_HEART.get(), 2);
     }
@@ -54,12 +59,12 @@ public class TheSoul implements IRecursivePassiveItem {
 
     @Override
     public int getTickInterval() {
-        return 20;
+        return 200;
     }
 
     @Override
     public void recursiveEffect(Player player) {
         player.addEffect(new MobEffectInstance(
-                ModEffects.SOUL_STATE.get(), -1, 0, false, false, true));
+                ModEffects.SOUL_STATE.get(), 120, 0, false, false, true));
     }
 }
