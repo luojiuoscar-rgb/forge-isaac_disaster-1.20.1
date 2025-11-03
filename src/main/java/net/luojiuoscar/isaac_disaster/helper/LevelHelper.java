@@ -13,10 +13,6 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.storage.loot.LootParams;
-import net.minecraft.world.level.storage.loot.LootTable;
-import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
-import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -27,29 +23,6 @@ import java.util.List;
 import java.util.function.Predicate;
 
 public class LevelHelper {
-    public static void spawnLootAtPos(ServerLevel level, Vec3 pos, ResourceLocation tableId, int count){
-        for (int i = 0; i < count; i++){
-            spawnLootAtPos(level, pos, tableId);
-        }
-    }
-    public static void spawnLootAtPos(ServerLevel level, Vec3 pos, ResourceLocation tableId) {
-        LootTable table = level.getServer().getLootData().getLootTable(tableId);
-
-        // LootParams 中至少需要 Origin
-        LootParams params = new LootParams.Builder(level)
-                .withParameter(LootContextParams.ORIGIN, pos)
-                .create(LootContextParamSets.EMPTY);
-
-        // 获取掉落结果
-        List<ItemStack> generated = table.getRandomItems(params);
-
-        // 生成到世界中
-        for (ItemStack stack : generated) {
-            level.addFreshEntity(new ItemEntity(level, pos.x, pos.y, pos.z, stack));
-        }
-    }
-
-
     public static List<LivingEntity> selectBySphere(Level level, double x, double y, double z, double radius) {
         List<Entity> entities = selectBySphere(level, x, y, z, radius, e -> e instanceof LivingEntity);
         return entities.stream().map(e -> (LivingEntity) e).toList();
@@ -218,6 +191,16 @@ public class LevelHelper {
         itemEntity.setPickUpDelay(20);
         level.addFreshEntity(itemEntity);
     }
+
+    public static boolean isCoin(Item item){
+        ResourceLocation id = ForgeRegistries.ITEMS.getKey(item);
+        if (id == null) return false;
+
+        return id.toString().equals(Config.COIN_TIER_1_ID.get())
+                || id.toString().equals(Config.COIN_TIER_2_ID.get())
+                || id.toString().equals(Config.COIN_TIER_3_ID.get());
+    }
+
 
 }
 

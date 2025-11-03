@@ -2,6 +2,7 @@ package net.luojiuoscar.isaac_disaster.item.pickup;
 
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerAbilityProvider;
 import net.luojiuoscar.isaac_disaster.client.ClientDataManager;
+import net.luojiuoscar.isaac_disaster.item.pickup.interfaces.ICommonPickup;
 import net.luojiuoscar.isaac_disaster.manager.id_managers.ItemId;
 import net.luojiuoscar.isaac_disaster.manager.item_managers.PillEffectManager;
 import net.minecraft.server.level.ServerPlayer;
@@ -17,7 +18,7 @@ import org.jetbrains.annotations.NotNull;
 /**
  * 与PICKUP不属于同类
  */
-public class Pill extends Item {
+public class Pill extends Item implements ICommonPickup {
     private final boolean isHorsePill;
     private final int pillId;
 

@@ -14,9 +14,9 @@ import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.item.item.ActiveItem;
 import net.luojiuoscar.isaac_disaster.item.item.IIsaacCuriosItem;
 import net.luojiuoscar.isaac_disaster.item.item.PassiveItem;
-import net.luojiuoscar.isaac_disaster.item.pickup.ICanUse;
 import net.luojiuoscar.isaac_disaster.item.pickup.IsaacHead;
 import net.luojiuoscar.isaac_disaster.item.pickup.Pickup;
+import net.luojiuoscar.isaac_disaster.item.pickup.interfaces.IUsablePickup;
 import net.luojiuoscar.isaac_disaster.item_ability.trinket.ITriggerTrinket;
 import net.luojiuoscar.isaac_disaster.manager.EffectNameManager;
 import net.luojiuoscar.isaac_disaster.manager.data.PillShuffleData;
@@ -200,7 +200,7 @@ public class ForgeEvents {
                     playerPassiveItem -> {playerPassiveItem.addItem((ServerPlayer) player, stack, hand);
                     });
         }
-        else if(stack.getItem() instanceof Pickup item && item instanceof ICanUse){
+        else if(stack.getItem() instanceof Pickup item && item instanceof IUsablePickup){
             PickupManager.getInstance().getItemFromId(item.getPickupId()).onUse(player, stack, hand);
         }
     }

@@ -1,7 +1,7 @@
 package net.luojiuoscar.isaac_disaster.item_ability.passive_item.items;
 
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
-import net.luojiuoscar.isaac_disaster.helper.LevelHelper;
+import net.luojiuoscar.isaac_disaster.helper.EntityHelper;
 import net.luojiuoscar.isaac_disaster.item.ModItems;
 import net.luojiuoscar.isaac_disaster.item_ability.passive_item.IPassiveItem;
 import net.luojiuoscar.isaac_disaster.manager.LootTableNameManager;
@@ -31,7 +31,7 @@ public class CaffeinePill implements IPassiveItem {
     @Override
     public void onFirstObtain(Player player, @Nullable ItemStack stack) {
         if (player.level() instanceof ServerLevel level){
-            LevelHelper.spawnLootAtPos(level, player.blockPosition().getCenter(),
+            EntityHelper.spawnLootAtPos(player, player.blockPosition().getCenter(),
                     ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, LootTableNameManager.RANDOM_PILLS));
         }
     }

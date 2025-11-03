@@ -45,7 +45,6 @@ import java.util.function.Predicate;
 
 
 public class PlayerHelper {
-
     public static void giveItem(Player player, ItemStack stack) {
         Level level = player.level();
 

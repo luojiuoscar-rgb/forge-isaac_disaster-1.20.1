@@ -54,7 +54,7 @@ public class PedestalBlockEntity extends BlockEntity {
     private float rotation;
     private Set<BlockPos> linkedOffsets = new HashSet<>();
     private boolean isDecoration = true;
-    private String lootTable = "";
+    private String itemLootTable = "";
     private boolean generated = false;
     private boolean locked = false;
 
@@ -64,7 +64,7 @@ public class PedestalBlockEntity extends BlockEntity {
 
     public void copyFromOriginal(PedestalBlockEntity original){
         this.isDecoration = original.isDecoration();
-        this.lootTable = original.getLootTable();
+        this.itemLootTable = original.getItemLootTable();
         this.locked = original.isLocked();
         setChanged();
     }
@@ -93,9 +93,9 @@ public class PedestalBlockEntity extends BlockEntity {
         setChanged();
     }
 
-    public String getLootTable() { return lootTable; }
-    public void setLootTable(String lootTable) {
-        this.lootTable = lootTable;
+    public String getItemLootTable() { return itemLootTable; }
+    public void setItemLootTable(String itemLootTable) {
+        this.itemLootTable = itemLootTable;
         setChanged();
     }
 
@@ -207,7 +207,7 @@ public class PedestalBlockEntity extends BlockEntity {
 
     public void fillFromLootTable(ServerLevel serverLevel, Player player) {
         try {
-            ResourceLocation lootLoc = ResourceLocation.parse(lootTable);
+            ResourceLocation lootLoc = ResourceLocation.parse(itemLootTable);
             LootTable table = serverLevel.getServer().getLootData().getLootTable(lootLoc);
 
             LootParams.Builder builder = new LootParams.Builder(serverLevel)
@@ -225,8 +225,8 @@ public class PedestalBlockEntity extends BlockEntity {
                 PoolHelper.markAsRemoval(player, lootLoc, itemId); // 移出道具池
             }
         } catch (Exception e) {
-            IsaacDisaster.LOGGER.error("Failed to generate loot for pedestal at {} with table {}", worldPosition, lootTable, e);
-            lootTable = "";
+            IsaacDisaster.LOGGER.error("Failed to generate loot for pedestal at {} with table {}", worldPosition, itemLootTable, e);
+            itemLootTable = "";
             isDecoration = true;
             generated = true;
         }
@@ -240,8 +240,8 @@ public class PedestalBlockEntity extends BlockEntity {
         tag.putBoolean("locked", locked);
         tag.putBoolean("generated", generated);
 
-        if (!lootTable.isEmpty())
-            tag.putString("LootTable", lootTable);
+        if (!itemLootTable.isEmpty())
+            tag.putString("itemLootTable", itemLootTable);
 
         ListTag listTag = new ListTag();
         for(BlockPos offset : linkedOffsets){
@@ -262,7 +262,7 @@ public class PedestalBlockEntity extends BlockEntity {
         locked = tag.getBoolean("locked");
         generated = tag.getBoolean("generated");
 
-        lootTable = tag.contains("LootTable") ? tag.getString("LootTable") : "";
+        itemLootTable = tag.contains("itemLootTable") ? tag.getString("itemLootTable") : "";
 
         linkedOffsets.clear();
         if(tag.contains("linkedOffsets")){

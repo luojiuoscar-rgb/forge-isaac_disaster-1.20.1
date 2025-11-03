@@ -97,7 +97,9 @@ public enum ItemId {
     ANARCHIST_COOKBOOK,
     SMELTER,
     THE_SOUL,
-    SACRED_ORB;
+    SACRED_ORB,
+    SACK_HEAD,
+    MITRE;
 
     private final int id;
     private static final Map<Integer, RegistryObject<Item>> ID_TO_ITEM = new HashMap<>();

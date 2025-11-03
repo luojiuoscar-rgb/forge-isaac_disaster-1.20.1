@@ -1,7 +1,7 @@
 package net.luojiuoscar.isaac_disaster.item_ability.passive_item.items;
 
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
-import net.luojiuoscar.isaac_disaster.helper.LevelHelper;
+import net.luojiuoscar.isaac_disaster.helper.EntityHelper;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.item.ModItems;
 import net.luojiuoscar.isaac_disaster.item_ability.passive_item.IPassiveItem;
@@ -34,7 +34,7 @@ public class TarotCloth implements IPassiveItem {
     @Override
     public void onFirstObtain(Player player, @Nullable ItemStack stack) {
         ServerLevel level = (ServerLevel) player.level();
-        LevelHelper.spawnLootAtPos(level, player.position(),
+        EntityHelper.spawnLootAtPos(player, player.position(),
                 ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, LootTableNameManager.RANDOM_CARDS));
     }
 

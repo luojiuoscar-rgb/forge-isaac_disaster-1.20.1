@@ -1,0 +1,12 @@
+{
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {"type": "minecraft:item", "name": "isaac_disaster:grab_bag", "weight": 99},
+        {"type": "minecraft:item", "name": "isaac_disaster:black_sack", "weight": 1}
+      ]
+    }
+  ]
+}
+

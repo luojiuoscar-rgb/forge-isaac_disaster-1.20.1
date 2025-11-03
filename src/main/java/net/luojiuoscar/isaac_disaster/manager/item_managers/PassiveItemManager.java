@@ -123,7 +123,9 @@ public class  PassiveItemManager {
                 new WhoreOfBabylon(),
                 new CurseOfTheTower(),
                 new TheSoul(),
-                new SacredOrb()
+                new SacredOrb(),
+                new SackHead(),
+                new Mitre()
         );
     }
 }

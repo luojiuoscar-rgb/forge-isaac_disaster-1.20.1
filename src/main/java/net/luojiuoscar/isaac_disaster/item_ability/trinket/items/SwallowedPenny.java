@@ -1,7 +1,7 @@
 package net.luojiuoscar.isaac_disaster.item_ability.trinket.items;
 
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
-import net.luojiuoscar.isaac_disaster.helper.LevelHelper;
+import net.luojiuoscar.isaac_disaster.helper.EntityHelper;
 import net.luojiuoscar.isaac_disaster.item.ModItems;
 import net.luojiuoscar.isaac_disaster.item.item.Trinket;
 import net.luojiuoscar.isaac_disaster.item_ability.trinket.IHurtTriggerTrinket;
@@ -43,7 +43,7 @@ public class SwallowedPenny implements IHurtTriggerTrinket {
     @Override
     public void handleHurtEffect(Player player, Entity attacker, List<ItemStack> stackList, LivingHurtEvent event) {
         if (!(player.level() instanceof ServerLevel serverLevel)) return;
-        LevelHelper.spawnLootAtPos(serverLevel, player.blockPosition().getCenter(), ResourceLocation.fromNamespaceAndPath(
+        EntityHelper.spawnLootAtPos(player, player.blockPosition().getCenter(), ResourceLocation.fromNamespaceAndPath(
                 IsaacDisaster.MOD_ID,LootTableNameManager.RANDOM_COINS));
     }
 

@@ -1,6 +1,7 @@
 package net.luojiuoscar.isaac_disaster.item.pickup;
 
 import net.luojiuoscar.isaac_disaster.client.ClientDataManager;
+import net.luojiuoscar.isaac_disaster.item.pickup.interfaces.IUsablePickup;
 import net.luojiuoscar.isaac_disaster.manager.id_managers.ItemId;
 import net.luojiuoscar.isaac_disaster.manager.item_managers.PickupManager;
 import net.minecraft.network.chat.Component;
@@ -16,7 +17,7 @@ import org.jetbrains.annotations.NotNull;
 import javax.annotation.Nullable;
 import java.util.List;
 
-public class Card extends Pickup implements ICanUse{
+public class Card extends Pickup implements IUsablePickup {
     public Card(Properties pProperties, int pickupId) {
         super(pProperties.rarity(Rarity.UNCOMMON), pickupId);
     }

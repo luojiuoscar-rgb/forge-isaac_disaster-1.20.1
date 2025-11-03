@@ -129,10 +129,12 @@ public class ModItems {
     public static final RegistryObject<Item> CURSE_OF_THE_TOWER = registerPassiveItem("curse_of_the_tower", 0, ItemId.CURSE_OF_THE_TOWER);
     public static final RegistryObject<Item> THE_SOUL           = registerPassiveItem("the_soul", 2, ItemId.THE_SOUL, true);
     public static final RegistryObject<Item> SACRED_ORB         = registerPassiveItem("sacred_orb", 4, ItemId.SACRED_ORB);
-
     public static final RegistryObject<Item> EXPERIMENTAL_TREATMENT = ITEMS.register("experimental_treatment",
             () -> new ExperimentalTreatmentItem(new Item.Properties(),2, ItemId.EXPERIMENTAL_TREATMENT.getId()));
     static { PASSIVE_ITEM_LIST.add(EXPERIMENTAL_TREATMENT); ItemId.registerItem(ItemId.EXPERIMENTAL_TREATMENT.getId(), EXPERIMENTAL_TREATMENT);}
+    public static final RegistryObject<Item> SACK_HEAD          = registerPassiveItem("sack_head", 3, ItemId.SACK_HEAD);
+    public static final RegistryObject<Item> MITRE              = registerPassiveItem("mitre", 2, ItemId.MITRE);
+
 
 
     // passive end
@@ -375,6 +377,25 @@ public class ModItems {
             () -> new Card(new Item.Properties(), PickupId.HOLY_CARD.getId()));
     static { PICKUP_LIST.add(HOLY_CARD); }
 
+    public static final RegistryObject<Item> GRAB_BAG = ITEMS.register("grab_bag",
+            () -> new Sack(new Item.Properties(), PickupId.GRAB_BAG.getId()));
+    static { PICKUP_LIST.add(GRAB_BAG); }
+
+    public static final RegistryObject<Item> BLACK_SACK = ITEMS.register("black_sack",
+            () -> new Sack(new Item.Properties(), PickupId.BLACK_SACK.getId()));
+    static { PICKUP_LIST.add(BLACK_SACK); }
+
+
+
+    public static final RegistryObject<Item> NORMAL_CHEST_ITEM = ITEMS.register("chest",
+            () -> new BlockItem(ModBlocks.NORMAL_CHEST_BLOCK.get(), new Item.Properties()));
+    static { PICKUP_LIST.add(NORMAL_CHEST_ITEM); }
+
+    public static final RegistryObject<Item> LOCKED_CHEST_ITEM = ITEMS.register("locked_chest",
+            () -> new BlockItem(ModBlocks.LOCKED_CHEST_BLOCK.get(), new Item.Properties().rarity(Rarity.UNCOMMON)));
+    static { PICKUP_LIST.add(LOCKED_CHEST_ITEM); }
+
+
     public static final RegistryObject<Item> PILL1 = ITEMS.register("pill1",
             () -> new Pill(new Item.Properties(), 1, false));
     public static final RegistryObject<Item> PILL2 = ITEMS.register("pill2",
@@ -439,13 +460,7 @@ public class ModItems {
         ));
     }
 
-    public static final RegistryObject<Item> NORMAL_CHEST_ITEM = ITEMS.register("chest",
-            () -> new BlockItem(ModBlocks.NORMAL_CHEST_BLOCK.get(), new Item.Properties()));
-    static { PICKUP_LIST.add(NORMAL_CHEST_ITEM); }
 
-    public static final RegistryObject<Item> LOCKED_CHEST_ITEM = ITEMS.register("locked_chest",
-            () -> new BlockItem(ModBlocks.LOCKED_CHEST_BLOCK.get(), new Item.Properties().rarity(Rarity.UNCOMMON)));
-    static { PICKUP_LIST.add(LOCKED_CHEST_ITEM); }
 
 
 

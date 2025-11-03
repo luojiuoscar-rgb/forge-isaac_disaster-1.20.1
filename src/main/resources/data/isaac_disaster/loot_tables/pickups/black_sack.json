@@ -1,0 +1,17 @@
+{
+  "pools": [
+    {
+      "rolls": {
+        "min": 2,
+        "max": 3
+      },
+      "entries": [
+        {"type": "minecraft:loot_table", "name": "isaac_disaster:pickups/random/bombs", "weight": 15},
+        {"type": "minecraft:loot_table", "name": "isaac_disaster:pickups/random/pills", "weight": 15},
+        {"type": "minecraft:item", "name": "isaac_disaster:bone_heart", "weight": 5},
+        {"type": "minecraft:item", "name": "isaac_disaster:black_heart", "weight": 10}
+      ]
+    }
+  ]
+}
+

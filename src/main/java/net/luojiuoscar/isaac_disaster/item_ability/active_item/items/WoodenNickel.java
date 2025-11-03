@@ -2,7 +2,7 @@ package net.luojiuoscar.isaac_disaster.item_ability.active_item.items;
 
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.client.ClientDataManager;
-import net.luojiuoscar.isaac_disaster.helper.LevelHelper;
+import net.luojiuoscar.isaac_disaster.helper.EntityHelper;
 import net.luojiuoscar.isaac_disaster.item.ModItems;
 import net.luojiuoscar.isaac_disaster.item_ability.active_item.IActiveItem;
 import net.luojiuoscar.isaac_disaster.manager.ColorManager;
@@ -10,7 +10,6 @@ import net.luojiuoscar.isaac_disaster.manager.LootTableNameManager;
 import net.luojiuoscar.isaac_disaster.manager.id_managers.ItemId;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -34,7 +33,7 @@ public class WoodenNickel implements IActiveItem {
     public void onTriggeredEffect(Player player) {
         // 60%概率触发
         if (Math.random() < 0.6 && !player.level().isClientSide){
-            LevelHelper.spawnLootAtPos((ServerLevel) player.level(), player.blockPosition().getCenter(),
+            EntityHelper.spawnLootAtPos(player, player.blockPosition().getCenter(),
                     ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, LootTableNameManager.RANDOM_COINS));
         }
     }

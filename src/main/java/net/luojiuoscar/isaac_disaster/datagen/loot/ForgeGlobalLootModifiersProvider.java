@@ -34,19 +34,11 @@ public class ForgeGlobalLootModifiersProvider implements DataProvider {
 
     @Override
     public CompletableFuture<?> run(CachedOutput cache) {
-        IsaacDisaster.LOGGER.info("[ForgeGlobalLootModifiersProvider] 开始生成 global_loot_modifiers.json ...");
-
         Map<String, LootModifier> map = LootModifierManager.getAll();
         List<ResourceLocation> entries = new ArrayList<>();
 
-        if (map.isEmpty()) {
-            IsaacDisaster.LOGGER.warn("[ForgeGlobalLootModifiersProvider] ⚠ LootModifierManager 内没有注册任何 LootModifier！");
-        } else {
-            IsaacDisaster.LOGGER.info("[ForgeGlobalLootModifiersProvider] 已注册的 LootModifier 列表：");
-            for (Map.Entry<String, LootModifier> entry : map.entrySet()) {
-                IsaacDisaster.LOGGER.info("  - " + entry.getKey() + " -> " + entry.getValue().getClass().getSimpleName());
-                entries.add(ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, entry.getKey()));
-            }
+        for (Map.Entry<String, LootModifier> entry : map.entrySet()) {
+            entries.add(ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, entry.getKey()));
         }
 
         // Forge 的 JSON 结构
@@ -59,11 +51,7 @@ public class ForgeGlobalLootModifiersProvider implements DataProvider {
                 .resolve("loot_modifiers")
                 .resolve("global_loot_modifiers.json");
 
-        IsaacDisaster.LOGGER.info("[ForgeGlobalLootModifiersProvider] 输出路径：" + forgePath.toAbsolutePath());
-
         CompletableFuture<?> future = DataProvider.saveStable(cache, forgeJson, forgePath);
-
-        IsaacDisaster.LOGGER.info("[ForgeGlobalLootModifiersProvider] ✅ 成功生成 global_loot_modifiers.json 文件！");
         return future;
     }
 

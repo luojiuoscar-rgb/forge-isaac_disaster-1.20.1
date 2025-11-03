@@ -1,8 +1,6 @@
 package net.luojiuoscar.isaac_disaster.datagen;
 
-import net.luojiuoscar.isaac_disaster.loot.modifier.ItemPoolLootModifier;
-import net.luojiuoscar.isaac_disaster.loot.modifier.SacredOrbLootModifier;
-import net.luojiuoscar.isaac_disaster.loot.modifier.TrinketEnchantmentLootModifier;
+import net.luojiuoscar.isaac_disaster.loot.modifier.*;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 import net.minecraftforge.common.loot.LootModifier;
 
@@ -21,10 +19,19 @@ public class LootModifierManager {
     }
 
     static {
+        // item
         register("item_pool", new ItemPoolLootModifier(new LootItemCondition[0]));
         register("sacred_orb", new SacredOrbLootModifier(new LootItemCondition[0]));
+
+        register("after_item_spawned", new AfterItemSpawnedModifier(new LootItemCondition[0]));
+
+
+        // trinket
         register("trinket_enchantment", new TrinketEnchantmentLootModifier(new LootItemCondition[0]));
 
+        // pickups
+        register("sack_head", new SackheadLootModifier(new LootItemCondition[0]));
+        register("mitre", new MitreLootModifier(new LootItemCondition[0]));
 
 
     }

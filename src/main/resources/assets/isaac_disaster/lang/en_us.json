@@ -340,8 +340,10 @@
   "item.isaac_disaster.sacred_orb": "十字圣球",
   "item.isaac_disaster.sacred_orb.lore.1": "你遇见的道具质量更好",
   "item.isaac_disaster.sacred_orb.lore.2": "注定伟大！",
-
-
+  "item.isaac_disaster.sack_head": "福袋头",
+  "item.isaac_disaster.sack_head.lore.1": "使以撒掉落物有概率变成福袋",
+  "item.isaac_disaster.mitre": "主教冠",
+  "item.isaac_disaster.mitre.lore.1": "红心有概率转化为魂心",
 
 
 
@@ -368,6 +370,7 @@
   "item.isaac_disaster.perfection": "满分考卷",
   "item.isaac_disaster.perfection.lore.1": "受到伤害的时候概率丢失",
   "item.isaac_disaster.perfection.enchanted.lore.1": "加成翻倍，但丢失概率也翻倍",
+
 
   "item.isaac_disaster.the_fool": "0-愚者",
   "item.isaac_disaster.the_fool.lore.1": "传送回出生点",
@@ -501,6 +504,8 @@
   "item.isaac_disaster.bone_heart": "骨心",
   "item.isaac_disaster.key": "钥匙",
   "item.isaac_disaster.golden_key": "金钥匙",
+  "item.isaac_disaster.grab_bag": "福袋",
+  "item.isaac_disaster.black_sack": "黑福袋",
 
 
   "set.isaac_disaster.special.header": "[套装]",

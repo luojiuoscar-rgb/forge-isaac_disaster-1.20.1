@@ -2,9 +2,7 @@ package net.luojiuoscar.isaac_disaster.loot;
 
 import com.mojang.serialization.Codec;
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
-import net.luojiuoscar.isaac_disaster.loot.modifier.ItemPoolLootModifier;
-import net.luojiuoscar.isaac_disaster.loot.modifier.SacredOrbLootModifier;
-import net.luojiuoscar.isaac_disaster.loot.modifier.TrinketEnchantmentLootModifier;
+import net.luojiuoscar.isaac_disaster.loot.modifier.*;
 import net.minecraftforge.common.loot.IGlobalLootModifier;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.registries.DeferredRegister;
@@ -19,14 +17,23 @@ public class ModLootModifiers {
         LOOT_MODIFIER_SERIALIZERS.register(eventBus);
     }
 
-
-    public static final RegistryObject<Codec<? extends IGlobalLootModifier>> TRINKET_ENCHANTMENT =
-            LOOT_MODIFIER_SERIALIZERS.register("trinket_enchantment", () -> TrinketEnchantmentLootModifier.CODEC);
+    // item
     public static final RegistryObject<Codec<? extends IGlobalLootModifier>> ITEM_POOL =
             LOOT_MODIFIER_SERIALIZERS.register("item_pool", () -> ItemPoolLootModifier.CODEC);
 
     public static final RegistryObject<Codec<? extends IGlobalLootModifier>> SACRED_ORB =
             LOOT_MODIFIER_SERIALIZERS.register("sacred_orb", () -> SacredOrbLootModifier.CODEC);
 
+    public static final RegistryObject<Codec<? extends IGlobalLootModifier>> AFTER_ITEM_SPAWNED =
+            LOOT_MODIFIER_SERIALIZERS.register("after_item_spawned", () -> AfterItemSpawnedModifier.CODEC);
 
+    // trinket
+    public static final RegistryObject<Codec<? extends IGlobalLootModifier>> TRINKET_ENCHANTMENT =
+            LOOT_MODIFIER_SERIALIZERS.register("trinket_enchantment", () -> TrinketEnchantmentLootModifier.CODEC);
+
+    // pickup
+    public static final RegistryObject<Codec<? extends IGlobalLootModifier>> SACK_HEAD =
+            LOOT_MODIFIER_SERIALIZERS.register("sack_head", () -> SackheadLootModifier.CODEC);
+    public static final RegistryObject<Codec<? extends IGlobalLootModifier>> MITRE =
+            LOOT_MODIFIER_SERIALIZERS.register("mitre", () -> MitreLootModifier.CODEC);
 }

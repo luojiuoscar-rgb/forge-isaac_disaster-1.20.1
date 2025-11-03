@@ -23,6 +23,7 @@ public abstract class IsaacItem extends Item {
     private final int itemLevel;
     private final boolean useOriginalColor;
     private final boolean hasSpecialEffects;
+    private static final String ITEM_POOL = "pool";
 
     /**
      * @param properties 物品属性
@@ -106,8 +107,6 @@ public abstract class IsaacItem extends Item {
     }
 
 
-
-
     /**
      * 重写该方法使所有自定义物品名称的显示颜色根据等级变化
      * 此Item的名称将被ItemStack.getHoverName()调用
@@ -135,5 +134,14 @@ public abstract class IsaacItem extends Item {
     }
 
     public int getItemLevel() {return this.itemLevel; }
+
+
+    public static @NotNull String getPool(ItemStack stack) {
+        return stack.getOrCreateTag().getString(ITEM_POOL);
+    }
+    public static void setPool(ItemStack stack, String pool) {
+        stack.getOrCreateTag().putString(ITEM_POOL, pool);
+    }
+
 
 }

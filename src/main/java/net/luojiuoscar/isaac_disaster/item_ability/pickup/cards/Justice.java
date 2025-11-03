@@ -2,7 +2,7 @@ package net.luojiuoscar.isaac_disaster.item_ability.pickup.cards;
 
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.client.ClientDataManager;
-import net.luojiuoscar.isaac_disaster.helper.LevelHelper;
+import net.luojiuoscar.isaac_disaster.helper.EntityHelper;
 import net.luojiuoscar.isaac_disaster.item_ability.pickup.ITarot;
 import net.luojiuoscar.isaac_disaster.manager.ColorManager;
 import net.luojiuoscar.isaac_disaster.manager.LootTableNameManager;
@@ -32,10 +32,10 @@ public class Justice implements ITarot {
         ServerLevel level = (ServerLevel) player.level();
         Vec3 pos = player.blockPosition().getCenter();
 
-        LevelHelper.spawnLootAtPos(level, pos, ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, LootTableNameManager.RANDOM_COINS));
-        LevelHelper.spawnLootAtPos(level, pos, ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, LootTableNameManager.RANDOM_HEARTS));
-        LevelHelper.spawnLootAtPos(level, pos, ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, LootTableNameManager.RANDOM_BOMBS));
-        LevelHelper.spawnLootAtPos(level, pos, ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, LootTableNameManager.RANDOM_KEYS));
+        EntityHelper.spawnLootAtPos(player, pos, ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, LootTableNameManager.RANDOM_COINS));
+        EntityHelper.spawnLootAtPos(player, pos, ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, LootTableNameManager.RANDOM_HEARTS));
+        EntityHelper.spawnLootAtPos(player, pos, ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, LootTableNameManager.RANDOM_BOMBS));
+        EntityHelper.spawnLootAtPos(player, pos, ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, LootTableNameManager.RANDOM_KEYS));
     }
 
     @Override

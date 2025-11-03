@@ -31,8 +31,6 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
-import static net.luojiuoscar.isaac_disaster.IsaacDisaster.LOGGER;
-
 public class ItemPoolLootModifier extends LootModifier {
     public static final Codec<ItemPoolLootModifier> CODEC = RecordCodecBuilder.create(inst -> codecStart(inst)
             .apply(inst, ItemPoolLootModifier::new));
@@ -42,34 +40,41 @@ public class ItemPoolLootModifier extends LootModifier {
     }
 
     @Override
-    protected @NotNull ObjectArrayList<ItemStack> doApply(ObjectArrayList<ItemStack> generatedLoot, LootContext context) {
-        LOGGER.info("ENTERED ITEM POOL LOOT MODIFIER");
-        if (generatedLoot.isEmpty() ||
-                !(context.getParamOrNull(LootContextParams.THIS_ENTITY) instanceof ServerPlayer player))
-            return generatedLoot;
+    protected @NotNull ObjectArrayList<ItemStack> doApply(ObjectArrayList<ItemStack> objectArrayList, LootContext lootContext) {
+        if (objectArrayList.isEmpty()) return objectArrayList;
 
-        ResourceLocation tableId = context.getQueriedLootTableId();
-        ItemStack stack = generatedLoot.get(0);
+        ServerPlayer player;
+        if (lootContext.getParamOrNull(LootContextParams.THIS_ENTITY) instanceof ServerPlayer thisPlayer) {
+            player = thisPlayer;
+        } else if (lootContext.getParamOrNull(LootContextParams.KILLER_ENTITY) instanceof ServerPlayer killerPlayer) {
+            player = killerPlayer;
+        } else {
+            player = null;
+            return objectArrayList;
+        }
 
-        if (!(stack.getItem() instanceof IsaacItem) || generatedLoot.size() > 1 ||
+        ResourceLocation tableId = lootContext.getQueriedLootTableId();
+        ItemStack stack = objectArrayList.get(0);
+
+        if (!(stack.getItem() instanceof IsaacItem) || objectArrayList.size() > 1 ||
                 !tableId.getNamespace().equals("isaac_disaster") || !tableId.getPath().startsWith("pools/item/"))
-            return generatedLoot;
+            return objectArrayList;
 
         // 获取原表
-        LootTable originalTable = context.getLevel().getServer().getLootData().getLootTable(tableId);
+        LootTable originalTable = lootContext.getLevel().getServer().getLootData().getLootTable(tableId);
 
         // 新的临时 entries
         List<LootPoolEntryContainer.Builder<?>> newEntries = new ArrayList<>();
 
         LootPool pool = originalTable.pools.get(0); // 假设只有一个 pool
-        if (pool == null) return generatedLoot;
+        if (pool == null) return objectArrayList;
 
         // 遍历原 pool entries
         for (LootPoolEntryContainer entry : pool.entries) {
             if (entry instanceof LootItem lootItem) {
                 // LootItem 直接保留
                 ItemStack[] tempStack = new ItemStack[1];
-                lootItem.createItemStack(s -> tempStack[0] = s, context);
+                lootItem.createItemStack(s -> tempStack[0] = s, lootContext);
                 Item item = tempStack[0].getItem();
                 if (item instanceof IsaacItem isaacItem && !PoolHelper.isRemoved(player, tableId, isaacItem.getItemId())) {
                     newEntries.add(LootItem.lootTableItem(item));
@@ -81,7 +86,7 @@ public class ItemPoolLootModifier extends LootModifier {
                     String tagName = path.substring(path.lastIndexOf('/') + 1); // passive_items
                     TagKey<Item> tagKey = TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath(tableId.getNamespace(), tagName));
 
-                    context.getLevel().registryAccess().registryOrThrow(Registries.ITEM).getTag(tagKey).ifPresent(tagItems -> {
+                    lootContext.getLevel().registryAccess().registryOrThrow(Registries.ITEM).getTag(tagKey).ifPresent(tagItems -> {
                         for (Holder<Item> holder : tagItems) {
                             Item item = holder.value();
                             if (item instanceof IsaacItem isaacItem && !PoolHelper.isRemoved(player, tableId, isaacItem.getItemId())) {
@@ -119,7 +124,7 @@ public class ItemPoolLootModifier extends LootModifier {
 
         // 生成物品
         ObjectArrayList<ItemStack> result = new ObjectArrayList<>();
-        tempPool.addRandomItems(result::add, context);
+        tempPool.addRandomItems(result::add, lootContext);
 
         return result;
     }

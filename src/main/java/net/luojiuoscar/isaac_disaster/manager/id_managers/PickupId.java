@@ -38,7 +38,9 @@ public enum PickupId {
     THE_HIGH_PRIESTESS_R,
     THE_HIEROPHANT_R,
     THE_WORLD,
-    THE_STARS;
+    THE_STARS,
+    GRAB_BAG,
+    BLACK_SACK;
 
 
     private final int id;

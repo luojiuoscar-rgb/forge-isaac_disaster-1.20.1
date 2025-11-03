@@ -1,7 +1,9 @@
 package net.luojiuoscar.isaac_disaster.manager.item_managers;
 
+import net.luojiuoscar.isaac_disaster.item.pickup.Sack;
 import net.luojiuoscar.isaac_disaster.item_ability.active_item.IActiveItem;
 import net.luojiuoscar.isaac_disaster.item_ability.active_item.items.*;
+import net.luojiuoscar.isaac_disaster.item_ability.passive_item.items.SackHead;
 
 import java.util.HashMap;
 import java.util.Map;

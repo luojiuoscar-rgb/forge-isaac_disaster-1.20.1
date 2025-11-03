@@ -32,9 +32,14 @@ public class SacredOrbLootModifier extends LootModifier {
 
     @Override
     protected @NotNull ObjectArrayList<ItemStack> doApply(ObjectArrayList<ItemStack> objectArrayList, LootContext lootContext) {
-        LOGGER.info("ENTERED SACRED ORB LOOT MODIFIER");
-        if (objectArrayList.isEmpty() ||
-                !(lootContext.getParamOrNull(LootContextParams.THIS_ENTITY) instanceof ServerPlayer player)) return objectArrayList;
+        if (objectArrayList.isEmpty()) return objectArrayList;
+
+        ServerPlayer player = null;
+        if (lootContext.getParamOrNull(LootContextParams.THIS_ENTITY) instanceof ServerPlayer thisPlayer) {
+            player = thisPlayer;
+        } else if (lootContext.getParamOrNull(LootContextParams.KILLER_ENTITY) instanceof ServerPlayer killerPlayer) {
+            player = killerPlayer;
+        }
 
         ResourceLocation tableId = lootContext.getQueriedLootTableId();
         RandomSource rand = lootContext.getRandom();
@@ -48,9 +53,7 @@ public class SacredOrbLootModifier extends LootModifier {
         if (PlayerHelper.getItemCount(ItemId.SACRED_ORB.getId(), player) == 0) return objectArrayList;
 
         LootPool tempPool = TempPoolManager.get(player);
-        LOGGER.info("TEMP POOL GET");
         if (tempPool == null) return objectArrayList;
-        LOGGER.info("TEMP POOL PASSED");
 
         ObjectArrayList<ItemStack> generated = new ObjectArrayList<>();
 

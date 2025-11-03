@@ -3,10 +3,10 @@
     {
       "rolls": 1,
       "entries": [
-        {"type": "minecraft:item", "name": "isaac_disaster:red_heart", "weight": 20},
-        {"type": "minecraft:item", "name": "isaac_disaster:half_red_heart", "weight": 20},
-        {"type": "minecraft:item", "name": "isaac_disaster:double_red_heart", "weight": 2},
-        {"type": "minecraft:item", "name": "isaac_disaster:soul_heart", "weight": 5},
+        {"type": "minecraft:item", "name": "isaac_disaster:red_heart", "weight": 80},
+        {"type": "minecraft:item", "name": "isaac_disaster:half_red_heart", "weight": 80},
+        {"type": "minecraft:item", "name": "isaac_disaster:double_red_heart", "weight": 8},
+        {"type": "minecraft:item", "name": "isaac_disaster:soul_heart", "weight": 13},
         {"type": "minecraft:item", "name": "isaac_disaster:half_soul_heart", "weight": 5},
         {"type": "minecraft:item", "name": "isaac_disaster:blended_heart", "weight": 2},
         {"type": "minecraft:item", "name": "isaac_disaster:black_heart", "weight": 1},

@@ -40,7 +40,7 @@ public class AceOfClubs implements IPickup {
             Vec3 pos = entity.blockPosition().getCenter();
             entity.discard();
 
-            LevelHelper.spawnLootAtPos(level, pos, ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID,
+            EntityHelper.spawnLootAtPos(player, pos, ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID,
                     LootTableNameManager.RANDOM_BOMBS));
         }
     }
