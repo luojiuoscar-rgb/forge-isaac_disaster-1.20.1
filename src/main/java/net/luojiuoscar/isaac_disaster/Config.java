@@ -72,7 +72,9 @@ public class Config
     public static ForgeConfigSpec.BooleanValue AUTO_ADAPT_CURIO_SLOT;
     public static ForgeConfigSpec.IntValue ACTIVE_ITEM_DURABILITY_RESTORE_RATE;
     public static ForgeConfigSpec.BooleanValue ACTIVE_ITEM_AUTO_RESTORE;
-
+    public static ForgeConfigSpec.BooleanValue ITEM_REMOVAL_FROM_POOL;
+    public static ForgeConfigSpec.BooleanValue ITEM_REMOVAL_FROM_ALL_POOL;
+    public static ForgeConfigSpec.BooleanValue PLAYERS_SHARE_ITEM_POOLS;
 
     // 钱币
     public static ForgeConfigSpec.ConfigValue<String> COIN_TIER_1_ID;
@@ -228,6 +230,18 @@ public class Config
         AUTO_ADAPT_CURIO_SLOT = BUILDER
                 .comment("Equip curio passive item will also add 1 passive item slot. (NEED to enable at least one slot)")
                 .define("auto_adapt_curio_slot", true);
+
+        ITEM_REMOVAL_FROM_POOL = BUILDER
+                .comment("Item will be removed from the exact pool when spawns.")
+                .define("item_removal_from_pool", false);
+
+        ITEM_REMOVAL_FROM_ALL_POOL = BUILDER
+                .comment("Item will be removed from the ALL pools when spawns. (this will disable item_removal_from_pool)")
+                .define("item_removal_from_all_pool", true);
+
+        PLAYERS_SHARE_ITEM_POOLS = BUILDER
+                .comment("All player shares the same item pool.")
+                .define("players_share_item_pools", false);
 
 
         BUILDER.pop();

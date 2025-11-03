@@ -3,10 +3,7 @@ package net.luojiuoscar.isaac_disaster.event;
 import net.luojiuoscar.isaac_disaster.Config;
 import net.luojiuoscar.isaac_disaster.attribute.ModAttributes;
 import net.luojiuoscar.isaac_disaster.capability.entity.EntityEffectProvider;
-import net.luojiuoscar.isaac_disaster.capability.player.PlayerAbilityProvider;
-import net.luojiuoscar.isaac_disaster.capability.player.PlayerPassiveItemProvider;
-import net.luojiuoscar.isaac_disaster.capability.player.PlayerStatModifierProvider;
-import net.luojiuoscar.isaac_disaster.capability.player.PlayerSwallowedTrinketsProvider;
+import net.luojiuoscar.isaac_disaster.capability.player.*;
 import net.luojiuoscar.isaac_disaster.commands.*;
 import net.luojiuoscar.isaac_disaster.effect.ModEffects;
 import net.luojiuoscar.isaac_disaster.entity.custom.IsaacBullet;
@@ -115,6 +112,9 @@ public class ForgeEvents {
             }//swallowedTrinkets
             if(!event.getObject().getCapability(PlayerSwallowedTrinketsProvider.PLAYER_SWALLOWED_TRINKETS).isPresent()){
                 event.addCapability(ResourceLocation.fromNamespaceAndPath(MOD_ID, "player_swallowed_trinkets_cap"), new PlayerSwallowedTrinketsProvider());
+            }//itemPools
+            if(!event.getObject().getCapability(PlayerItemPoolsProvider.PLAYER_ITEM_POOL).isPresent()){
+                event.addCapability(ResourceLocation.fromNamespaceAndPath(MOD_ID, "player_item_pools_cap"), new PlayerItemPoolsProvider());
             }
         }
     }
@@ -147,6 +147,12 @@ public class ForgeEvents {
             // swallowed trinkets
             event.getOriginal().getCapability(PlayerSwallowedTrinketsProvider.PLAYER_SWALLOWED_TRINKETS).ifPresent(oldStore -> {
                 event.getEntity().getCapability(PlayerSwallowedTrinketsProvider.PLAYER_SWALLOWED_TRINKETS).ifPresent(newStore -> {
+                    newStore.copyFrom(oldStore);
+                });
+            });
+            // item Pools
+            event.getOriginal().getCapability(PlayerItemPoolsProvider.PLAYER_ITEM_POOL).ifPresent(oldStore -> {
+                event.getEntity().getCapability(PlayerItemPoolsProvider.PLAYER_ITEM_POOL).ifPresent(newStore -> {
                     newStore.copyFrom(oldStore);
                 });
             });

@@ -1,4 +1,4 @@
-package net.luojiuoscar.isaac_disaster.loot;
+package net.luojiuoscar.isaac_disaster.loot.type;
 
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;

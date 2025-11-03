@@ -2,6 +2,8 @@ package net.luojiuoscar.isaac_disaster.block.block_entity;
 
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.helper.LevelHelper;
+import net.luojiuoscar.isaac_disaster.helper.PoolHelper;
+import net.luojiuoscar.isaac_disaster.item.item.IsaacItem;
 import net.luojiuoscar.isaac_disaster.manager.data.PedestalData;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -213,11 +215,14 @@ public class PedestalBlockEntity extends BlockEntity {
                     .withOptionalParameter(LootContextParams.THIS_ENTITY, player);
 
             List<ItemStack> items = table.getRandomItems(builder.create(LootContextParamSets.CHEST));
+            ItemStack stack = items.get(0).copy();
 
-            if (!items.isEmpty()) {
-                ItemStack stack = items.get(0).copy();
+            if (!items.isEmpty() && stack.getItem() instanceof IsaacItem isaacItem) {
                 stack.setCount(1);
                 inventory.setStackInSlot(0, stack);
+
+                int itemId = isaacItem.getItemId();
+                PoolHelper.markAsRemoval(player, lootLoc, itemId); // 移出道具池
             }
         } catch (Exception e) {
             IsaacDisaster.LOGGER.error("Failed to generate loot for pedestal at {} with table {}", worldPosition, lootTable, e);

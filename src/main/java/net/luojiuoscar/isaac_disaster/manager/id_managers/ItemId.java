@@ -1,5 +1,11 @@
 package net.luojiuoscar.isaac_disaster.manager.id_managers;
 
+import net.minecraft.world.item.Item;
+import net.minecraftforge.registries.RegistryObject;
+
+import java.util.HashMap;
+import java.util.Map;
+
 public enum ItemId {
     BREAKFAST,
     DESSERT,
@@ -90,11 +96,11 @@ public enum ItemId {
     CURSE_OF_THE_TOWER,
     ANARCHIST_COOKBOOK,
     SMELTER,
-    THE_SOUL;
-
-
+    THE_SOUL,
+    SACRED_ORB;
 
     private final int id;
+    private static final Map<Integer, RegistryObject<Item>> ID_TO_ITEM = new HashMap<>();
 
     // 构造方法：自动生成递增的ID
     ItemId() {
@@ -104,5 +110,13 @@ public enum ItemId {
     // 获取ID的方法
     public int getId() {
         return id;
+    }
+
+    public static void registerItem(ItemId itemId, RegistryObject<Item> regItem) {
+        ID_TO_ITEM.put(itemId.getId(), regItem);
+    }
+
+    public static RegistryObject<Item> getItemById(int id) {
+        return ID_TO_ITEM.get(id);
     }
 }

@@ -1,4 +1,4 @@
-package net.luojiuoscar.isaac_disaster.loot;
+package net.luojiuoscar.isaac_disaster.loot.type;
 
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.minecraft.core.registries.BuiltInRegistries;

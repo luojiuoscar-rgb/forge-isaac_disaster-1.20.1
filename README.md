@@ -1,14 +1,25 @@
 # ISAAC DISASTER
 *made by LuojiuOscar*
 
+## MIXIN
+ - LivingEntity getDimensions()
+
+## ACCESS TRANSFORMER
+ - PrimedTnt.owner
+ - LivingEntity.getEyeHeight()
+ - Creeper.explodeCreeper()
+ - LootTable.pools
+ - LootPool.entries
+
+
 ### BLOCK ENTITIES
-1. give pedestal with loots: ```/give @s isaac_disaster:pedestal{BlockEntityTag:{LootTable:"isaac_disaster:pools/item/passive_items",isDecoration:0b}}```
-2. locked_chest: 20% to spawn an item; If it spawns any item then the original drop in it will be cleared. (tag: itemLootTable)
-3. players(not creative & spectator) within **5** blocks from a pedestal will activate it and spawns item based on its lootTables.
+1. Give pedestal with loots: ```/give @s isaac_disaster:pedestal{BlockEntityTag:{LootTable:"isaac_disaster:pools/item/passive_items",isDecoration:0b}}```
+2. Locked_chest: 20% to spawn an item; If it spawns any item then the original drop in it will be cleared. (tag: itemLootTable)
+3. Players(not creative & spectator) within **5** blocks from a pedestal will activate it and spawns item based on its lootTables.
 
 ### ITEM POOLS
-1. all loot table should be located under **data/isaac_disaster/loot_tables/pools/** folder. All **item** pool should be under **data/isaac_disaster/loot_tables/pools/item/**
-2. all Item pool under the **specified folder** should contain only 1 roll result. (also trinkets)
-3. if you wants to use mixed loot tables, use loot table references.
-
+1. All loot table should be located under *data/isaac_disaster/loot_tables/pools/* folder. All **item** pool should be under *data/isaac_disaster/loot_tables/pools/item/*
+2. All Item pool under the **specified folder** should contain only 1 roll result. (also trinkets)
+3. If you wants to use mixed loot tables, use loot table references.
+4. Items generated from pedestal & chests will be marked as removal.
 

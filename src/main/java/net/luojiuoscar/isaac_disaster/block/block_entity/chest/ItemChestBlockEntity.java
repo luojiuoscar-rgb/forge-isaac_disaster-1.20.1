@@ -1,6 +1,8 @@
 package net.luojiuoscar.isaac_disaster.block.block_entity.chest;
 
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
+import net.luojiuoscar.isaac_disaster.helper.PoolHelper;
+import net.luojiuoscar.isaac_disaster.item.item.IsaacItem;
 import net.luojiuoscar.isaac_disaster.manager.LootTableNameManager;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -93,12 +95,15 @@ public abstract class ItemChestBlockEntity extends IsaacChestBlockEntity {
                     .withOptionalParameter(LootContextParams.THIS_ENTITY, player);
 
             List<ItemStack> items = table.getRandomItems(builder.create(LootContextParamSets.CHEST));
-
             ItemStack stack = items.get(0);
-            if (!stack.isEmpty()){
+
+            if (!stack.isEmpty() && stack.getItem() instanceof IsaacItem isaacItem){
                 stack.setCount(1);
                 this.clearContent(); // 如果出道具则清空内容
                 this.setItem(0, stack);
+
+                int itemId = isaacItem.getItemId();
+                PoolHelper.markAsRemoval(player, lootLoc, itemId); // 移出道具池
             }
 
         } catch (Exception e) {

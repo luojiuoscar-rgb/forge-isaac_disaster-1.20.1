@@ -1,4 +1,4 @@
-package net.luojiuoscar.isaac_disaster.loot;
+package net.luojiuoscar.isaac_disaster.loot.modifier;
 
 import com.mojang.serialization.Codec;
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
@@ -16,6 +16,14 @@ public class ModLootModifiers {
         LOOT_MODIFIER_SERIALIZERS.register(eventBus);
     }
 
+
+    public static final RegistryObject<Codec<? extends IGlobalLootModifier>> TRINKET_ENCHANTMENT =
+            LOOT_MODIFIER_SERIALIZERS.register("trinket_enchantment", () -> TrinketEnchantmentLootModifier.CODEC);
+    public static final RegistryObject<Codec<? extends IGlobalLootModifier>> ITEM_POOL =
+            LOOT_MODIFIER_SERIALIZERS.register("item_pool", () -> ItemPoolLootModifier.CODEC);
+
     public static final RegistryObject<Codec<? extends IGlobalLootModifier>> SACRED_ORB =
             LOOT_MODIFIER_SERIALIZERS.register("sacred_orb", () -> SacredOrbLootModifier.CODEC);
+
+
 }

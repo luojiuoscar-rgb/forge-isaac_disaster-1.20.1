@@ -30,15 +30,37 @@ public class ModItems {
         ITEMS.register(eventBus);
     }
 
-
     // Passive items
-    public static final RegistryObject<Item> BREAKFAST = ITEMS.register("breakfast",
-            () -> new PassiveItem(new Item.Properties(),1, ItemId.BREAKFAST.getId()));
-    static { PASSIVE_ITEM_LIST.add(BREAKFAST); }
+    private static RegistryObject<Item> registerPassiveItem(
+            String name, int itemLevel, ItemId id){
+        return registerPassiveItem(name, itemLevel, id, false, false);
+    }
+    private static RegistryObject<Item> registerPassiveItem(
+            String name, int itemLevel, ItemId id,
+            boolean hasSpecialEffect){
+        return registerPassiveItem(name, itemLevel, id, hasSpecialEffect, false);
+    }
+    private static RegistryObject<Item> registerPassiveItem(
+            String name, int itemLevel, ItemId id,
+            boolean hasSpecialEffect, boolean useOriginalColor) {
+        RegistryObject<Item> reg =
+                ITEMS.register(name, () -> new PassiveItem(
+                        new Item.Properties(),
+                        itemLevel,
+                        id.getId(),
+                        hasSpecialEffect,
+                        useOriginalColor
+        ));
+        PASSIVE_ITEM_LIST.add(reg);
+        ItemId.registerItem(id, reg);
+        return reg;
+    }
 
-    public static final RegistryObject<Item> DESSERT = ITEMS.register("dessert",
-            () -> new PassiveItem(new Item.Properties(),1, ItemId.DESSERT.getId()));
-    static { PASSIVE_ITEM_LIST.add(DESSERT); }
+    public static final RegistryObject<Item> BREAKFAST =
+            registerPassiveItem("breakfast", 1, ItemId.BREAKFAST);
+
+    public static final RegistryObject<Item> DESSERT =
+            registerPassiveItem("dessert", 1, ItemId.DESSERT);
 
     public static final RegistryObject<Item> DINNER = ITEMS.register("dinner",
             () -> new PassiveItem(new Item.Properties(),1, ItemId.DINNER.getId()));
@@ -315,6 +337,11 @@ public class ModItems {
     public static final RegistryObject<Item> THE_SOUL = ITEMS.register("the_soul",
             () -> new PassiveItem(new Item.Properties(), 2, ItemId.THE_SOUL.getId(), true));
     static { PASSIVE_ITEM_LIST.add(THE_SOUL); }
+
+    public static final RegistryObject<Item> SACRED_ORB = ITEMS.register("sacred_orb",
+            () -> new PassiveItem(new Item.Properties(), 4, ItemId.SACRED_ORB.getId()));
+    static { PASSIVE_ITEM_LIST.add(SACRED_ORB); }
+
 
 
 

@@ -1,14 +1,18 @@
-package net.luojiuoscar.isaac_disaster.loot;
+package net.luojiuoscar.isaac_disaster.loot.modifier;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.item.item.IsaacItem;
+import net.luojiuoscar.isaac_disaster.manager.id_managers.ItemId;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.LootTable;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 import net.minecraftforge.common.loot.IGlobalLootModifier;
 import net.minecraftforge.common.loot.LootModifier;
@@ -33,8 +37,14 @@ public class SacredOrbLootModifier extends LootModifier {
         ItemStack stack = objectArrayList.get(0);
 
         if (!(stack.getItem() instanceof IsaacItem item) || objectArrayList.size() > 1 ||
-                !tableId.getNamespace().equals("isaac_disaster") || !tableId.getPath().startsWith("pools/"))
+                !tableId.getNamespace().equals("isaac_disaster") || !tableId.getPath().startsWith("pools/item/"))
             return objectArrayList;
+
+        // sacred orb
+        if (lootContext.getParamOrNull(LootContextParams.THIS_ENTITY) instanceof ServerPlayer player &&
+                PlayerHelper.getItemCount(ItemId.SACRED_ORB.getId(), player) == 0) {
+            return objectArrayList;
+        }
 
         LootTable lootTable = lootContext.getLevel().getServer().getLootData().getLootTable(tableId);
 

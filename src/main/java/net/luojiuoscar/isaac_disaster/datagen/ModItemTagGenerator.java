@@ -6,10 +6,14 @@ import net.luojiuoscar.isaac_disaster.manager.TagManager;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.tags.ItemTagsProvider;
+import net.minecraft.tags.TagKey;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraftforge.common.data.ExistingFileHelper;
+import net.minecraftforge.registries.RegistryObject;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 public class ModItemTagGenerator extends ItemTagsProvider {
@@ -20,27 +24,17 @@ public class ModItemTagGenerator extends ItemTagsProvider {
     }
 
     @Override
-    protected void addTags(HolderLookup.Provider pProvider) {
-        // 从统一列表中遍历所有被动物品，自动添加到标签中
-        var passiveItemsTag = this.tag(TagManager.PASSIVE_ITEMS);
-        ItemListManager.PASSIVE_ITEM_LIST.forEach(itemRegistry -> {
-            passiveItemsTag.add(itemRegistry.get());
-        });
+    protected void addTags(HolderLookup.Provider provider) {
+        addItemTag(TagManager.PASSIVE_ITEMS, ItemListManager.PASSIVE_ITEM_LIST);
+        addItemTag(TagManager.ACTIVE_ITEMS, ItemListManager.ACTIVE_ITEM_LIST);
+        addItemTag(TagManager.TRINKETS, ItemListManager.TRINKET_LIST);
+        addItemTag(TagManager.PICKUPS, ItemListManager.PICKUP_LIST);
+    }
 
-        var activeItemsTag = this.tag(TagManager.ACTIVE_ITEMS);
-        ItemListManager.ACTIVE_ITEM_LIST.forEach(itemRegistry -> {
-            activeItemsTag.add(itemRegistry.get());
-        });
 
-        var trinketsTag = this.tag(TagManager.TRINKETS);
-        ItemListManager.TRINKET_LIST.forEach(itemRegistry -> {
-            trinketsTag.add(itemRegistry.get());
-        });
-
-        var pickupsTag = this.tag(TagManager.PICKUPS);
-        ItemListManager.PICKUP_LIST.forEach(itemRegistry -> {
-            pickupsTag.add(itemRegistry.get());
-        });
+    private void addItemTag(TagKey<Item> tagKey, List<RegistryObject<Item>> itemList) {
+        var tagAppender = this.tag(tagKey);
+        itemList.forEach(item -> tagAppender.add(item.get()));
     }
 
 }
