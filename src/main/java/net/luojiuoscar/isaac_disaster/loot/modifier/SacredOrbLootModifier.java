@@ -5,21 +5,23 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.item.item.IsaacItem;
+import net.luojiuoscar.isaac_disaster.loot.TempPoolManager;
 import net.luojiuoscar.isaac_disaster.manager.id_managers.ItemId;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.storage.loot.LootContext;
-import net.minecraft.world.level.storage.loot.LootTable;
+import net.minecraft.world.level.storage.loot.LootPool;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 import net.minecraftforge.common.loot.IGlobalLootModifier;
 import net.minecraftforge.common.loot.LootModifier;
 import org.jetbrains.annotations.NotNull;
 
+import static net.luojiuoscar.isaac_disaster.IsaacDisaster.LOGGER;
+
 public class SacredOrbLootModifier extends LootModifier {
-    public static final ThreadLocal<Boolean> IS_GENERATING = ThreadLocal.withInitial(() -> false);
 
     public static final Codec<SacredOrbLootModifier> CODEC = RecordCodecBuilder.create(inst -> codecStart(inst)
             .apply(inst, SacredOrbLootModifier::new));
@@ -30,7 +32,9 @@ public class SacredOrbLootModifier extends LootModifier {
 
     @Override
     protected @NotNull ObjectArrayList<ItemStack> doApply(ObjectArrayList<ItemStack> objectArrayList, LootContext lootContext) {
-        if (IS_GENERATING.get() || objectArrayList.isEmpty()) return objectArrayList;
+        LOGGER.info("ENTERED SACRED ORB LOOT MODIFIER");
+        if (objectArrayList.isEmpty() ||
+                !(lootContext.getParamOrNull(LootContextParams.THIS_ENTITY) instanceof ServerPlayer player)) return objectArrayList;
 
         ResourceLocation tableId = lootContext.getQueriedLootTableId();
         RandomSource rand = lootContext.getRandom();
@@ -41,37 +45,35 @@ public class SacredOrbLootModifier extends LootModifier {
             return objectArrayList;
 
         // sacred orb
-        if (lootContext.getParamOrNull(LootContextParams.THIS_ENTITY) instanceof ServerPlayer player &&
-                PlayerHelper.getItemCount(ItemId.SACRED_ORB.getId(), player) == 0) {
-            return objectArrayList;
-        }
+        if (PlayerHelper.getItemCount(ItemId.SACRED_ORB.getId(), player) == 0) return objectArrayList;
 
-        LootTable lootTable = lootContext.getLevel().getServer().getLootData().getLootTable(tableId);
+        LootPool tempPool = TempPoolManager.get(player);
+        LOGGER.info("TEMP POOL GET");
+        if (tempPool == null) return objectArrayList;
+        LOGGER.info("TEMP POOL PASSED");
 
-        // 防止递归调用
-        SacredOrbLootModifier.IS_GENERATING.set(true);
+        ObjectArrayList<ItemStack> generated = new ObjectArrayList<>();
+
         // 从当前 stack 取出等级信息
         int level = item.getItemLevel();
         int attempts = 0;
-        try {
-            while (level <= 2 && attempts < 20) {
-                ObjectArrayList<ItemStack> generated = new ObjectArrayList<>();
-                lootTable.getRandomItems(lootContext, generated::add);
+        while (level <= 2 && attempts < 20) {
+            generated.clear();
+            // 生成物品
+            tempPool.addRandomItems(generated::add, lootContext);
 
-                if (!generated.isEmpty()) {
-                    stack = generated.get(0);
-                }
-
-                if (stack.getItem() instanceof IsaacItem newItem) {
-                    level = newItem.getItemLevel();
-                    if ((level == 2 && rand.nextDouble() < 0.5) || level > 2) {
-                        break;
-                    }
-                }
-                attempts++;
+            if (!generated.isEmpty()) {
+                stack = generated.get(0);
+                LOGGER.info("NEW STACK: {}", stack);
             }
-        } finally {
-            SacredOrbLootModifier.IS_GENERATING.set(false);
+
+            if (stack.getItem() instanceof IsaacItem newItem) {
+                level = newItem.getItemLevel();
+                if ((level == 2 && rand.nextDouble() < 0.5) || level > 2) {
+                    break;
+                }
+            }
+            attempts++;
         }
 
         // 返回最终结果

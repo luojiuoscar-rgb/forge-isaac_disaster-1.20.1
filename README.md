@@ -1,6 +1,10 @@
 # ISAAC DISASTER
 *made by LuojiuOscar*
 
+## NOTES
+data/forge/loot_modifiers/global_loot_modifiers.json is overwritten by custom provider: ForgeGlobalLootModifiersProvider. 
+This will ensure that all loot modifiers are in the correct order.
+
 ## MIXIN
  - LivingEntity getDimensions()
 

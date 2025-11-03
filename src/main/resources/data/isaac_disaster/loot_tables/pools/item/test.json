@@ -1,0 +1,14 @@
+{
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {"type": "minecraft:item", "name": "isaac_disaster:breakfast"},
+        {"type": "minecraft:item", "name": "isaac_disaster:dessert"},
+        {"type": "minecraft:item", "name": "isaac_disaster:steven"},
+        {"type": "minecraft:item", "name": "isaac_disaster:roid_rage"}
+      ]
+    }
+  ]
+}
+

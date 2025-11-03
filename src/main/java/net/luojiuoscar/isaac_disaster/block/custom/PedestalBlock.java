@@ -118,6 +118,8 @@ public class PedestalBlock extends BaseEntityBlock {
             // 如果不是装饰性、且空手，则取下物品；并删除linked pedestal上的物品
             player.setItemInHand(hand, stored);
             pedestal.clearContents();
+            level.playSound(null, pos.getX(), pos.getY(), pos.getZ(),
+                    SoundEvents.ITEM_PICKUP, SoundSource.BLOCKS, 0.7f, 1.0f);
 
             Set<BlockPos> linkedPedestals = pedestal.getLinkedPedestals();
             for (BlockPos linkedPos : linkedPedestals){

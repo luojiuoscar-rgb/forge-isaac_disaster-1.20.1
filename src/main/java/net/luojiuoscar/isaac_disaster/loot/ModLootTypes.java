@@ -1,6 +1,7 @@
-package net.luojiuoscar.isaac_disaster.loot.type;
+package net.luojiuoscar.isaac_disaster.loot;
 
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
+import net.luojiuoscar.isaac_disaster.loot.type.CoinLootEntry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.level.storage.loot.entries.LootPoolEntryType;
 import net.minecraftforge.registries.DeferredRegister;

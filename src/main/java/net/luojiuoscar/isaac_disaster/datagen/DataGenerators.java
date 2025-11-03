@@ -1,6 +1,8 @@
 package net.luojiuoscar.isaac_disaster.datagen;
 
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
+import net.luojiuoscar.isaac_disaster.datagen.loot.ForgeGlobalLootModifiersProvider;
+import net.luojiuoscar.isaac_disaster.datagen.loot.ModGlobalLootModifiersProvider;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.PackOutput;
@@ -33,6 +35,7 @@ public class DataGenerators {
         // Loot tables
         generator.addProvider(event.includeServer(), new ModLootTableProvider(packOutput));
         generator.addProvider(event.includeServer(), new ModGlobalLootModifiersProvider(packOutput));
+        generator.addProvider(event.includeServer(), new ForgeGlobalLootModifiersProvider(packOutput));
 
     }
 }

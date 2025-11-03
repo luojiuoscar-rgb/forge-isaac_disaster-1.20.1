@@ -174,6 +174,7 @@ public class ForgeEvents {
         new SetTrinketEnchanted(event.getDispatcher());
         new AddTrinketSlotsCommand(event.getDispatcher());
         new GetTrinketsCommand(event.getDispatcher());
+        new RefreshItemPoolCommand(event.getDispatcher());
 
 
         ConfigCommand.register(event.getDispatcher());
