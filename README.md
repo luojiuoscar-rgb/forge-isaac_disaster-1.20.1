@@ -2,8 +2,11 @@
 *made by LuojiuOscar*
 
 ## NOTES
-data/forge/loot_modifiers/global_loot_modifiers.json is overwritten by custom provider: ForgeGlobalLootModifiersProvider. 
+1. data/forge/loot_modifiers/global_loot_modifiers.json is overwritten by custom provider: ForgeGlobalLootModifiersProvider. 
 This will ensure that all loot modifiers are in the correct order.
+2. Removal of an **ITEM** from corresponding item pool is processed manually. 
+Ensures in the future item could be generated from pool without removing it.
+**TRINKETS** will not be removed in any circumstance.
 
 ## MIXIN
  - LivingEntity getDimensions()
