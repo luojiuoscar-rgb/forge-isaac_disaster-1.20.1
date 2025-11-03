@@ -21,7 +21,7 @@ public class BlueCap implements IPassiveItem {
     
     @Override
     public ItemStack getItemStack(){
-        return new ItemStack(ModItems.BLOOD_OF_THE_MARTYR.get());
+        return new ItemStack(ModItems.BLUE_CAP.get());
     }
 
     @Override

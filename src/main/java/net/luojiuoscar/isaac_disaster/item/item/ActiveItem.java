@@ -27,14 +27,6 @@ public class ActiveItem extends IsaacItem {
     private static final String HAS_BEEN_USED = "has_been_used";
 
 
-    public ActiveItem(Properties properties, int itemLevel, int itemId, int chargePerUse, int maxCharge) {
-        this(properties, itemLevel, itemId, chargePerUse, maxCharge, false, false);
-    }
-
-    public ActiveItem(Properties properties, int itemLevel, int itemId, int chargePerUse, int maxCharge, boolean hasSpecialEffect) {
-        this(properties, itemLevel, itemId, chargePerUse, maxCharge, hasSpecialEffect, false);
-    }
-
     public ActiveItem(Properties properties, int itemLevel, int itemId, int chargePerUse, int maxCharge, boolean hasSpecialEffect, boolean useOriginalColor) {
         super(properties.stacksTo(1).rarity(IsaacItem.getRarity(itemLevel))
                         .durability(maxCharge * DAMAGE_PER_CHARGE),

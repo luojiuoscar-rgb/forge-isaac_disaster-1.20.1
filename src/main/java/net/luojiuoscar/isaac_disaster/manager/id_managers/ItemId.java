@@ -112,8 +112,8 @@ public enum ItemId {
         return id;
     }
 
-    public static void registerItem(ItemId itemId, RegistryObject<Item> regItem) {
-        ID_TO_ITEM.put(itemId.getId(), regItem);
+    public static void registerItem(int itemId, RegistryObject<Item> regItem) {
+        ID_TO_ITEM.put(itemId, regItem);
     }
 
     public static RegistryObject<Item> getItemById(int id) {

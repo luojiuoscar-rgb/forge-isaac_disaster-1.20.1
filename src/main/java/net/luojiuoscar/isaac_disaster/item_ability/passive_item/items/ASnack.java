@@ -20,7 +20,7 @@ public class ASnack implements IPassiveItem {
 
     @Override
     public ItemStack getItemStack(){
-        return new ItemStack(ModItems.A_QUARTER.get());
+        return new ItemStack(ModItems.A_SNACK.get());
     }
 
     @Override

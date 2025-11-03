@@ -23,7 +23,7 @@ public class PerfectVision implements IPassiveItem {
 
     @Override
     public ItemStack getItemStack(){
-        return new ItemStack(ModItems.PERFECTION.get());
+        return new ItemStack(ModItems.PERFECT_VISION.get());
     }
 
     @Override

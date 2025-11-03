@@ -23,7 +23,7 @@ public class BlackCandle implements IRecursivePassiveItem {
 
     @Override
     public ItemStack getItemStack(){
-        return new ItemStack(ModItems.A_QUARTER.get());
+        return new ItemStack(ModItems.BLACK_CANDLE.get());
     }
 
     @Override

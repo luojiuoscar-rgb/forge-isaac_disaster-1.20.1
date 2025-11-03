@@ -19,8 +19,8 @@ import java.util.UUID;
 public class ExperimentalTreatmentItem extends PassiveItem {
     private static final String NBT_MODIFIERS = "Modifiers";
 
-    public ExperimentalTreatmentItem(Properties properties, int itemLevel, int itemId, boolean hasSpecialEffect) {
-        super(properties, itemLevel, itemId, hasSpecialEffect);
+    public ExperimentalTreatmentItem(Properties properties, int itemLevel, int itemId) {
+        super(properties, itemLevel, itemId, true, false);
     }
 
 
