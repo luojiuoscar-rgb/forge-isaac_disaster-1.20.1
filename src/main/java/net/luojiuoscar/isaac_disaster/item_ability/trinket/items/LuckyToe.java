@@ -6,6 +6,7 @@ import net.luojiuoscar.isaac_disaster.manager.ColorManager;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.manager.id_managers.TrinketId;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.Style;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -25,13 +26,13 @@ public class LuckyToe implements ITrinket {
 
     @Override
     public List<Component> getDescription() {
-        return List.of(StatManager.LUCK.description(1));
+        return List.of(StatManager.LUCK.description(1),
+                Component.translatable("item.isaac_disaster.lucky_toe.lore.1"));
     }
 
     @Override
     public List<Component> getEnchantedDescription() {
-        return List.of(Component.translatable("item.isaac_disaster.synergy.description.double")
-                .withStyle(style -> style.withColor(ColorManager.SYNERGY)));
+        return List.of(StatManager.LUCK.description(1, Style.EMPTY.withColor(ColorManager.SYNERGY)));
     }
 
     @Override

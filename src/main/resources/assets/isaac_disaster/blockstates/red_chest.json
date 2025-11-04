@@ -1,0 +1,9 @@
+{
+  "variants": {
+    "facing=north": { "model": "isaac_disaster:block/red_chest_base", "y": 0 },
+    "facing=east":  { "model": "isaac_disaster:block/red_chest_base", "y": 90 },
+    "facing=south": { "model": "isaac_disaster:block/red_chest_base", "y": 180 },
+    "facing=west":  { "model": "isaac_disaster:block/red_chest_base", "y": 270 }
+  }
+}
+

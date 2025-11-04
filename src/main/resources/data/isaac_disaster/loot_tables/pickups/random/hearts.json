@@ -3,14 +3,16 @@
     {
       "rolls": 1,
       "entries": [
-        {"type": "minecraft:item", "name": "isaac_disaster:red_heart", "weight": 80},
-        {"type": "minecraft:item", "name": "isaac_disaster:half_red_heart", "weight": 80},
-        {"type": "minecraft:item", "name": "isaac_disaster:double_red_heart", "weight": 8},
-        {"type": "minecraft:item", "name": "isaac_disaster:soul_heart", "weight": 13},
-        {"type": "minecraft:item", "name": "isaac_disaster:half_soul_heart", "weight": 5},
-        {"type": "minecraft:item", "name": "isaac_disaster:blended_heart", "weight": 2},
-        {"type": "minecraft:item", "name": "isaac_disaster:black_heart", "weight": 1},
-        {"type": "minecraft:item", "name": "isaac_disaster:bone_heart", "weight": 1}
+        {"type": "minecraft:item", "name": "isaac_disaster:red_heart", "weight": 4085},
+        {"type": "minecraft:item", "name": "isaac_disaster:half_red_heart", "weight": 3999},
+        {"type": "minecraft:item", "name": "isaac_disaster:double_red_heart", "weight": 421},
+        {"type": "minecraft:item", "name": "isaac_disaster:soul_heart", "weight": 673},
+        {"type": "minecraft:item", "name": "isaac_disaster:half_soul_heart", "weight": 224},
+        {"type": "minecraft:item", "name": "isaac_disaster:blended_heart", "weight": 87},
+        {"type": "minecraft:item", "name": "isaac_disaster:black_heart", "weight": 50},
+        {"type": "minecraft:item", "name": "isaac_disaster:bone_heart", "weight": 47},
+        {"type": "minecraft:item", "name": "isaac_disaster:eternal_heart", "weight": 180},
+        {"type": "minecraft:item", "name": "isaac_disaster:golden_heart", "weight": 63}
       ]
     }
   ]

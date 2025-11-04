@@ -1,0 +1,14 @@
+{
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {"type": "minecraft:item", "name": "isaac_disaster:chest", "weight": 1},
+        {"type": "minecraft:item", "name": "isaac_disaster:locked_chest", "weight": 1},
+        {"type": "minecraft:item", "name": "isaac_disaster:eternal_chest", "weight": 1},
+        {"type": "minecraft:item", "name": "isaac_disaster:old_chest", "weight": 1}
+      ]
+    }
+  ]
+}
+

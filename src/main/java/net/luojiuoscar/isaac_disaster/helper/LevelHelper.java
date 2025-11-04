@@ -167,7 +167,7 @@ public class LevelHelper {
         }
     }
     public static void spawnParticle(ServerLevel level, ParticleOptions particle, BlockPos pos) {
-        spawnParticle(level, particle, Vec3.atCenterOf(pos), 0, 0, 0, 0, 1, false, null);
+        spawnParticle(level, particle, net.minecraft.world.phys.Vec3.atCenterOf(pos), 0, 0, 0, 0, 1, false, null);
     }
     public static void spawnParticle(ServerLevel level, ParticleOptions particle, Vec3 pos, double dx, double dy, double dz, int count) {
         spawnParticle(level, particle, pos, dx, dy, dz, 0, count, false, null);
@@ -201,6 +201,64 @@ public class LevelHelper {
                 || id.toString().equals(Config.COIN_TIER_3_ID.get());
     }
 
+    public static List<ItemStack> getMoney(int amount) {
+        List<ItemStack> result = new ArrayList<>();
+
+        // 从 Config 获取金币信息
+        int[] values = {
+                Config.COIN_TIER_3_VALUE.get(),
+                Config.COIN_TIER_2_VALUE.get(),
+                Config.COIN_TIER_1_VALUE.get()
+        };
+        String[] ids = {
+                Config.COIN_TIER_3_ID.get(),
+                Config.COIN_TIER_2_ID.get(),
+                Config.COIN_TIER_1_ID.get()
+        };
+
+        // 遍历金币类型，从高到低兑换
+        for (int i = 0; i < values.length; i++) {
+            int value = values[i];
+            if (value <= 0) continue;
+
+            int count = amount / value;
+            amount %= value;
+
+            if (count <= 0) continue;
+
+            ResourceLocation rl = ResourceLocation.tryParse(ids[i]);
+            if (rl == null) continue;
+
+            Item item = ForgeRegistries.ITEMS.getValue(rl);
+            if (item == null || item == Items.AIR) continue;
+
+            while (count > 0) {
+                int stackCount = Math.min(count, 64);
+                result.add(new ItemStack(item, stackCount));
+                count -= stackCount;
+            }
+        }
+
+        // 如果还有剩余的 amount（无法被任何币种整除）
+        if (amount > 0) {
+            // 默认用最小币种补足
+            ResourceLocation rl = ResourceLocation.tryParse(Config.COIN_TIER_1_ID.get());
+            if (rl != null) {
+                Item item = ForgeRegistries.ITEMS.getValue(rl);
+                if (item != null && item != Items.AIR) {
+                    int value = Config.COIN_TIER_1_VALUE.get();
+                    int count = (int) Math.ceil((double) amount / value);
+                    while (count > 0) {
+                        int stackCount = Math.min(count, 64);
+                        result.add(new ItemStack(item, stackCount));
+                        count -= stackCount;
+                    }
+                }
+            }
+        }
+
+        return result;
+    }
 
 }
 

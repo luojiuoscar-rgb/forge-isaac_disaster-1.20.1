@@ -6,11 +6,13 @@ import net.luojiuoscar.isaac_disaster.capability.player.PlayerSwallowedTrinketsP
 import net.luojiuoscar.isaac_disaster.effect.ModEffects;
 import net.luojiuoscar.isaac_disaster.helper.EntityHelper;
 import net.luojiuoscar.isaac_disaster.helper.LevelHelper;
+import net.luojiuoscar.isaac_disaster.helper.LootHelper;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.item.item.Trinket;
 import net.luojiuoscar.isaac_disaster.item_ability.passive_item.IDamageTriggerPassiveItem;
 import net.luojiuoscar.isaac_disaster.item_ability.passive_item.IHurtTriggerPassiveItem;
 import net.luojiuoscar.isaac_disaster.item_ability.trinket.IHurtTriggerTrinket;
+import net.luojiuoscar.isaac_disaster.manager.LootTableManager;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.manager.id_managers.ItemId;
 import net.luojiuoscar.isaac_disaster.manager.id_managers.SetId;
@@ -23,9 +25,11 @@ import net.minecraft.core.particles.BlockParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageTypes;
+import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -106,7 +110,7 @@ public class TriggerItemEvents {
 
             if (damage > (amplifier + 1) * StatManager.getHolyShieldStrength()){
                 // 只有伤害足够高的时候才移除护盾
-                EntityHelper.removeAmplifier(player, ModEffects.HOLY_SHIELD.get());
+                EntityHelper.addAmplifier(player, ModEffects.HOLY_SHIELD.get(), -1);
                 LevelHelper.spawnParticle((ServerLevel) player.level(), new BlockParticleOption(ParticleTypes.BLOCK, Blocks.GLASS.defaultBlockState()),
                         player.position(), 0.5, 0.5, 0.5, 0.05, 20, false, null);
 
@@ -167,11 +171,32 @@ public class TriggerItemEvents {
                 // effect
                 ActiveItemManager.getInstance().getItemFromId(ItemId.THE_NECRONMICON.getId()).onTriggeredEffect(player);
                 // remove 1 amplifier
-                EntityHelper.removeAmplifier(player, ModEffects.NECRONMICON_SHIELD.get());
+                EntityHelper.addAmplifier(player, ModEffects.NECRONMICON_SHIELD.get(), -1);
                 // sounds
                 player.level().playSound(null, player.getX(), player.getY(), player.getZ(),
                         ModSounds.BLACK_HEART_ACTIVE.get(), SoundSource.PLAYERS, 1.0f, 1.0f);
             }
+        }
+        // 永恒心
+        if (player.hasEffect(ModEffects.ETERNAL_HEART.get()) && player.getAbsorptionAmount() == 0){
+            player.removeEffect(ModEffects.ETERNAL_HEART.get());
+            event.setAmount(0.0f);
+            event.setCanceled(true);
+            player.level().playSound(null, player.getX(), player.getY(), player.getZ(),
+                    ModSounds.BLACK_HEART_ACTIVE.get(), SoundSource.PLAYERS, 1.0f, 1.0f);
+            return;
+        }
+        // 镀金
+        if (player.hasEffect(ModEffects.GILDING.get())){
+            MobEffectInstance instance = player.getEffect(ModEffects.GILDING.get());
+            if (instance == null) return;
+
+            int amplifier = instance.getAmplifier() + 1;
+            LootHelper.spawnLootAtPos(player, player.position(), LootTableManager.RANDOM_COINS, amplifier);
+            player.removeEffect(ModEffects.GILDING.get()); // 移除
+
+            player.level().playSound(null, player.getX(), player.getY(), player.getZ(),
+                    SoundEvents.GLASS_BREAK, SoundSource.PLAYERS, 1.0f, 1.0f);
         }
         // 脆弱的心
         if (player.hasEffect(ModEffects.FRAGILE_HEART.get()) && damage > Math.max(1.0f, StatManager.MAX_HEALTH.getBonus() * 0.25f)){
@@ -179,7 +204,7 @@ public class TriggerItemEvents {
             // 当前骨心中有生命值时不消耗
             if (emptyHealth < StatManager.MAX_HEALTH.getBonus()) return;
 
-            EntityHelper.removeAmplifier(player, ModEffects.FRAGILE_HEART.get());
+            EntityHelper.addAmplifier(player, ModEffects.FRAGILE_HEART.get(), -1);
             player.level().playSound(null, player.getX(), player.getY(), player.getZ(),
                     ModSounds.BONE_HEART.get(), SoundSource.PLAYERS, 1.0f, 1.0f);
             event.setAmount(0.0f); // 骨心破碎时不额外扣除生命值

@@ -40,7 +40,13 @@ public enum PickupId {
     THE_WORLD,
     THE_STARS,
     GRAB_BAG,
-    BLACK_SACK;
+    BLACK_SACK,
+    GOLDEN_HEART,
+    ETERNAL_HEART,
+    SMALL_BATTERY,
+    BATTERY,
+    MEGA_BATTERY,
+    GOLDEN_BATTERY;
 
 
     private final int id;

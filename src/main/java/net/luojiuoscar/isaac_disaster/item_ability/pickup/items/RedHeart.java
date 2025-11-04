@@ -5,8 +5,6 @@ import net.luojiuoscar.isaac_disaster.item_ability.pickup.IFoodPickup;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.manager.id_managers.PickupId;
 import net.luojiuoscar.isaac_disaster.sound.ModSounds;
-import net.minecraft.sounds.SoundEvent;
-import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.player.Player;
@@ -39,8 +37,6 @@ public class RedHeart implements IFoodPickup {
 
     @Override
     public void onUseSound(Player player) {
-        SoundEvent sound = ModSounds.RED_HEART.get();
-        player.level().playSound(null, player.blockPosition(),
-                sound, SoundSource.PLAYERS, 1.0f, 1.0f);
+        player.playSound(ModSounds.RED_HEART.get());
     }
 }

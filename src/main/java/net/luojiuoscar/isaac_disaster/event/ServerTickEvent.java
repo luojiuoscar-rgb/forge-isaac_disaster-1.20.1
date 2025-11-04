@@ -105,7 +105,7 @@ public class ServerTickEvent {
 
             // 检查物品是否为NormalActiveItem类型且不为空
             if (!stack.isEmpty() && stack.getItem() instanceof ActiveItem) {
-                ActiveItem.modifyCharge(stack, Config.ACTIVE_ITEM_DURABILITY_RESTORE_RATE.get(),
+                PlayerHelper.chargeItem(stack, Config.ACTIVE_ITEM_DURABILITY_RESTORE_RATE.get(),
                         PlayerHelper.hasItem(ItemId.THE_BATTERY.getId(), player));
             }
         }

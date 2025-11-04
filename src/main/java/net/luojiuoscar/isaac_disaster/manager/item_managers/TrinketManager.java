@@ -47,7 +47,15 @@ public class TrinketManager {
                 new LuckyRock(),
                 new Cancer(),
                 new BlindRage(),
-                new Perfection()
+                new Perfection(),
+                new DaemonsTail(),
+                new PaperClip(),
+                new SafetyCap(),
+                new AceOfSpadesTrinket(),
+                new ChildsHeart(),
+                new RustedKey(),
+                new MatchStick(),
+                new PokerChip()
         );
     }
 }

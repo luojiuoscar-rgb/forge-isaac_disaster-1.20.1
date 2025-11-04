@@ -1,0 +1,14 @@
+{
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {"type": "minecraft:item", "name": "isaac_disaster:small_battery", "weight": 6545},
+        {"type": "minecraft:item", "name": "isaac_disaster:battery", "weight": 3272},
+        {"type": "minecraft:item", "name": "isaac_disaster:mega_battery", "weight": 100},
+        {"type": "minecraft:item", "name": "isaac_disaster:golden_battery", "weight": 83}
+      ]
+    }
+  ]
+}
+

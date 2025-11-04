@@ -1,16 +1,14 @@
 package net.luojiuoscar.isaac_disaster.item_ability.pickup.cards;
 
-import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.client.ClientDataManager;
-import net.luojiuoscar.isaac_disaster.helper.EntityHelper;
+import net.luojiuoscar.isaac_disaster.helper.LootHelper;
 import net.luojiuoscar.isaac_disaster.item_ability.pickup.ITarot;
 import net.luojiuoscar.isaac_disaster.manager.ColorManager;
-import net.luojiuoscar.isaac_disaster.manager.LootTableNameManager;
+import net.luojiuoscar.isaac_disaster.manager.LootTableManager;
 import net.luojiuoscar.isaac_disaster.manager.id_managers.ItemId;
 import net.luojiuoscar.isaac_disaster.manager.id_managers.PickupId;
 import net.luojiuoscar.isaac_disaster.sound.ModSounds;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.InteractionHand;
@@ -32,10 +30,10 @@ public class Justice implements ITarot {
         ServerLevel level = (ServerLevel) player.level();
         Vec3 pos = player.blockPosition().getCenter();
 
-        EntityHelper.spawnLootAtPos(player, pos, ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, LootTableNameManager.RANDOM_COINS));
-        EntityHelper.spawnLootAtPos(player, pos, ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, LootTableNameManager.RANDOM_HEARTS));
-        EntityHelper.spawnLootAtPos(player, pos, ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, LootTableNameManager.RANDOM_BOMBS));
-        EntityHelper.spawnLootAtPos(player, pos, ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, LootTableNameManager.RANDOM_KEYS));
+        LootHelper.spawnLootAtPos(player, pos, LootTableManager.RANDOM_COINS);
+        LootHelper.spawnLootAtPos(player, pos, LootTableManager.RANDOM_HEARTS);
+        LootHelper.spawnLootAtPos(player, pos, LootTableManager.RANDOM_BOMBS);
+        LootHelper.spawnLootAtPos(player, pos, LootTableManager.RANDOM_KEYS);
     }
 
     @Override

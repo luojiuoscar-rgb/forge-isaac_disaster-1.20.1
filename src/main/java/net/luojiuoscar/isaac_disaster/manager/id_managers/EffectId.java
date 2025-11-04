@@ -20,7 +20,9 @@ public enum EffectId {
     TELEPATHY,
     BABYLON,
     REPULSION_AURA,
-    THE_WORLD;
+    THE_WORLD,
+    ETERNAL_HEART,
+    GILDING;
 
 
     private final int id;

@@ -35,7 +35,7 @@ public class MitreLootModifier extends LootModifier {
         } else if (lootContext.getParamOrNull(LootContextParams.KILLER_ENTITY) instanceof ServerPlayer killerPlayer) {
             player = killerPlayer;
         }
-        if (player == null || PlayerHelper.getItemCount(ItemId.MITRE.getId(), player) == 0) return objectArrayList;
+        if (player == null || !PlayerHelper.hasItem(ItemId.MITRE.getId(), player)) return objectArrayList;
 
 
         RandomSource rand = lootContext.getRandom();
@@ -43,24 +43,31 @@ public class MitreLootModifier extends LootModifier {
 
         int soulHeartCount = 0;
         for (ItemStack stack : objectArrayList) {
-            int originalCount = stack.getCount();
-            int count = originalCount;
+            if (stack.getItem() == ModItems.RED_HEART.get()){
+                int originalCount = stack.getCount();
+                int count = originalCount;
 
-            for (int j = 0; j < originalCount; j++) {
-                if (stack.getItem() == ModItems.RED_HEART.get() && rand.nextDouble() < 0.33) {
-
-                    soulHeartCount++;
-                    count--;
+                for (int j = 0; j < originalCount; j++) {
+                    if (rand.nextDouble() < 0.33) {
+                        soulHeartCount++;
+                        count--;
+                    }
                 }
+                stack.setCount(count);
+                if (count != 0){
+                    newList.add(stack);
+                }
+                if (soulHeartCount > 0){
+                    ItemStack soulHeart = new ItemStack(ModItems.SOUL_HEART.get());
+                    soulHeart.setCount(soulHeartCount);
+                    newList.add(soulHeart);
+                    soulHeartCount = 0;
+                }
+            }else{
+                newList.add(stack);
             }
-            stack.setCount(count);
-            newList.add(stack);
         }
-        if (soulHeartCount > 0){
-            ItemStack soulHeart = new ItemStack(ModItems.SOUL_HEART.get());
-            soulHeart.setCount(soulHeartCount);
-            newList.add(soulHeart);
-        }
+
 
         return newList;
     }

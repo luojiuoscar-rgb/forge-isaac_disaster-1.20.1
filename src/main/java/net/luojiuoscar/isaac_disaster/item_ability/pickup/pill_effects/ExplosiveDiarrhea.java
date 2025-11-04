@@ -10,10 +10,7 @@ import net.luojiuoscar.isaac_disaster.manager.item_managers.PillEffectManager;
 import net.luojiuoscar.isaac_disaster.networking.ModMessages;
 import net.luojiuoscar.isaac_disaster.networking.packet.PillOnUseS2CPacket;
 import net.luojiuoscar.isaac_disaster.sound.ModSounds;
-import net.minecraft.core.BlockPos;
-import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 
@@ -53,38 +50,14 @@ public class ExplosiveDiarrhea implements IPillEffect {
     @Override
     public void onUseEffect(Player player) {
         ScheduledFuncHelper.schedule("explosive_diarrhea", 15, 5, false,
-                () -> {
-                    EntityHelper.spawnBomb(player.blockPosition().getCenter()
-                            , player,
-                            Vec3.ZERO,
-                            40,
-                            4,
-                            0.98f,
-                            player.level());
-                    player.level().playSound(null, BlockPos.containing(player.blockPosition().getCenter()),
-                            ModSounds.FART_NORMAL.get(), SoundSource.PLAYERS, 1.0f, 1.0f);
-        });
+                () -> EntityHelper.spawnBomb(player.position(), player, player.level(), Vec3.ZERO, 1));
     }
 
     @Override
     public void onUseEffectH(Player player) {
         ScheduledFuncHelper.schedule("explosive_diarrhea_h", 15, 8, false,
-                () -> {
-                    EntityHelper.spawnBomb(player.blockPosition().getCenter()
-                            , player,
-                            Vec3.ZERO,
-                            40,
-                            7,
-                            1.4f,
-                            player.level());
-                    player.level().playSound(null, BlockPos.containing(player.blockPosition().getCenter()),
-                            ModSounds.FART_NORMAL.get(), SoundSource.PLAYERS, 1.0f, 1.0f);
-        });
+                () -> EntityHelper.spawnBomb(player.position(), player, player.level(), Vec3.ZERO, 2));
     }
-
-
-
-
 
     @Override
     public void onUseSound(Player player) {

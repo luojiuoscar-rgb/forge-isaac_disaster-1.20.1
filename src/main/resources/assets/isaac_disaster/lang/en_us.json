@@ -100,6 +100,11 @@
   "effect.isaac_disaster.soul_state.explain.1": "泪弹和弹射物会无视你",
   "effect.isaac_disaster.the_world": "世界！",
   "effect.isaac_disaster.the_world.explain.1": "时间停止",
+  "effect.isaac_disaster.eternal_heart": "永恒之心",
+  "effect.isaac_disaster.eternal_heart.explain.1": "时间结束后，转化为生命上限",
+  "effect.isaac_disaster.eternal_heart.explain.2": "受到红心伤害时会将其抵御并消失",
+  "effect.isaac_disaster.gilding": "镀金",
+  "effect.isaac_disaster.gilding.explain.1": "受伤时生成等同于镀金等级价值的钱币",
 
 
   "attribute.isaac_disaster.max_health": "生命上限",
@@ -164,6 +169,7 @@
   "item.isaac_disaster.synergy.description.double": "使用两次",
   "item.isaac_disaster.synergy.description.increase_duration": "效果持续更久",
   "item.isaac_disaster.synergy.description.stronger": "效果更强",
+  "item.isaac_disaster.synergy.description.higher_prob": "概率更高",
 
 
   "item.isaac_disaster.action.heal_health": "恢复%.1f点生命值",
@@ -363,6 +369,7 @@
   "item.isaac_disaster.lucky_rock.lore.1": "破坏石头有小概率获得1个硬币",
   "item.isaac_disaster.lucky_rock.enchanted.lore.1": "概率更高",
   "item.isaac_disaster.lucky_toe": "幸运脚趾",
+  "item.isaac_disaster.lucky_toe.lore.1": "箱子里会有额外的钱币",
   "item.isaac_disaster.cancer": "癌症",
   "item.isaac_disaster.blind_rage": "盲目的怒火",
   "item.isaac_disaster.blind_rage.lore.1": "延长受伤后的无敌时间",
@@ -370,6 +377,26 @@
   "item.isaac_disaster.perfection": "满分考卷",
   "item.isaac_disaster.perfection.lore.1": "受到伤害的时候概率丢失",
   "item.isaac_disaster.perfection.enchanted.lore.1": "加成翻倍，但丢失概率也翻倍",
+  "item.isaac_disaster.daemons_tail": "恶魔的尾巴",
+  "item.isaac_disaster.daemons_tail.lore.1": "生成心掉落物时，有大概率使其消失",
+  "item.isaac_disaster.daemons_tail.lore.2": "如果心没有消失，则将其变成黑心",
+  "item.isaac_disaster.daemons_tail.enchanted.lore.1": "使心消失的概率减少",
+  "item.isaac_disaster.paper_clip": "回形针",
+  "item.isaac_disaster.paper_clip.lore.1": "可以直接打开带锁的箱子",
+  "item.isaac_disaster.safety_cap": "安全瓶盖",
+  "item.isaac_disaster.safety_cap.lore.1": "箱子里会有额外的胶囊",
+  "item.isaac_disaster.ace_of_spades_trinket": "黑桃A",
+  "item.isaac_disaster.ace_of_spades_trinket.lore.1": "箱子里会有额外的卡牌",
+  "item.isaac_disaster.match_stick": "火柴棍",
+  "item.isaac_disaster.match_stick.lore.1": "箱子里会有额外的炸弹",
+  "item.isaac_disaster.childs_heart": "小孩的心脏",
+  "item.isaac_disaster.childs_heart.lore.1": "箱子里会有额外的心",
+  "item.isaac_disaster.rusted_key": "生锈的钥匙",
+  "item.isaac_disaster.rusted_key.lore.1": "箱子里会有额外的钥匙",
+  "item.isaac_disaster.poker_chip": "筹码",
+  "item.isaac_disaster.poker_chip.lore.1": "有概率使箱子里的物品消失或者翻倍",
+
+
 
 
   "item.isaac_disaster.the_fool": "0-愚者",
@@ -421,7 +448,7 @@
   "item.isaac_disaster.holy_card": "神圣卡",
   "item.isaac_disaster.holy_card.lore.1": "获得1层神圣护盾",
   "item.isaac_disaster.queen_of_hearts": "红桃Q",
-  "item.isaac_disaster.queen_of_hearts.lore.1": "生成1-20个红心",
+  "item.isaac_disaster.queen_of_hearts.lore.1": "给予1-20个红心",
   "item.isaac_disaster.the_magician_r": "I-魔术师？",
   "item.isaac_disaster.the_magician_r.lore.1": "获得一段时间的灵体效果",
   "item.isaac_disaster.the_high_priestess_r": "II-女祭司？",
@@ -443,6 +470,9 @@
   "message.isaac_disaster.debug_stick.pedestal.link": "底座已连接",
   "block.isaac_disaster.chest": "箱子",
   "block.isaac_disaster.locked_chest": "金箱子",
+  "block.isaac_disaster.old_chest": "旧箱子",
+  "block.isaac_disaster.eternal_chest": "永恒箱子",
+  "block.isaac_disaster.red_chest": "红箱子",
 
 
   "pill.isaac_disaster.effect.unknown": "???",
@@ -506,7 +536,12 @@
   "item.isaac_disaster.golden_key": "金钥匙",
   "item.isaac_disaster.grab_bag": "福袋",
   "item.isaac_disaster.black_sack": "黑福袋",
-
+  "item.isaac_disaster.eternal_heart": "永恒之心",
+  "item.isaac_disaster.golden_heart": "金心",
+  "item.isaac_disaster.small_battery": "迷你电池",
+  "item.isaac_disaster.battery": "电池",
+  "item.isaac_disaster.mega_battery": "巨型电池",
+  "item.isaac_disaster.golden_battery": "金电池",
 
   "set.isaac_disaster.special.header": "[套装]",
   "set.isaac_disaster.action.obtain": "§a[套装]你获得了>",

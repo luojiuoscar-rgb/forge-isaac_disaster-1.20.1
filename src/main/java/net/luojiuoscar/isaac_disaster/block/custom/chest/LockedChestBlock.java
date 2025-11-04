@@ -1,8 +1,8 @@
 package net.luojiuoscar.isaac_disaster.block.custom.chest;
 
 import net.luojiuoscar.isaac_disaster.block.block_entity.chest.ItemChestBlockEntity;
-import net.luojiuoscar.isaac_disaster.block.block_entity.chest.LockedChestChestBlockEntity;
-import net.luojiuoscar.isaac_disaster.block.block_entity.ModBlockEntities;
+import net.luojiuoscar.isaac_disaster.block.block_entity.chest.LockedChestBlockEntity;
+import net.luojiuoscar.isaac_disaster.block.ModBlockEntities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -20,7 +20,7 @@ public class LockedChestBlock extends ItemChestBlock {
     @Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
-        return new LockedChestChestBlockEntity(pos, state);
+        return new LockedChestBlockEntity(pos, state);
     }
 
     @Nullable

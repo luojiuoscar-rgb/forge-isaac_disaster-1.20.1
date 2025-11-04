@@ -1,0 +1,33 @@
+package net.luojiuoscar.isaac_disaster.item_ability.trinket.items;
+
+import net.luojiuoscar.isaac_disaster.item.ModItems;
+import net.luojiuoscar.isaac_disaster.item_ability.trinket.ITrinket;
+import net.luojiuoscar.isaac_disaster.manager.ColorManager;
+import net.luojiuoscar.isaac_disaster.manager.id_managers.TrinketId;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.ItemStack;
+
+import java.util.List;
+
+public class RustedKey implements ITrinket {
+    @Override
+    public int getId() {
+        return TrinketId.RUSTED_KEY.getId();
+    }
+
+    @Override
+    public ItemStack getItemStack() {
+        return new ItemStack(ModItems.RUSTED_KEY.get());
+    }
+
+    @Override
+    public List<Component> getDescription() {
+        return List.of(Component.translatable("item.isaac_disaster.rusted_key.lore.1"));
+    }
+
+    @Override
+    public List<Component> getEnchantedDescription() {
+        return List.of(Component.translatable("item.isaac_disaster.synergy.description.higher_prob")
+                .withStyle(style -> style.withColor(ColorManager.SYNERGY)));
+    }
+}

@@ -162,27 +162,6 @@ public class ActiveItem extends IsaacItem {
         }
     }
 
-    /**
-     * 给物品添加多少正充能（恢复多少耐久度）
-     */
-    public static void modifyCharge(ItemStack stack, int amount, boolean hasTheBattery){
-        boolean OverCharged = ActiveItem.getOverCharged(stack);
-        // 检查物品是否耐久不满 或可以过载
-        if ((stack.getDamageValue() > 0)
-                || (hasTheBattery || !OverCharged)) {
-            // 计算新的耐久值
-            int newDamage = Math.max(stack.getDamageValue() - amount, 0);
-
-            // 未过载且有蓄电池时过载
-            if (newDamage == 0 && !OverCharged && hasTheBattery){
-                newDamage = stack.getMaxDamage() - 1;
-                ActiveItem.setOverCharged(stack, true);
-            }
-
-            stack.setDamageValue(newDamage);
-        }
-    }
-
     @Override
     public @NotNull InteractionResultHolder<ItemStack> use(@NotNull Level level, Player player, @NotNull InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);

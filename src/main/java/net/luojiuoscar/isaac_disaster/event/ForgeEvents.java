@@ -250,7 +250,7 @@ public class ForgeEvents {
                     rate *= 4;
                 }
                 // 充电（传入蓄电池参数）
-                ActiveItem.modifyCharge(stack,
+                PlayerHelper.chargeItem(stack,
                         Math.max((int) event.getAmount() * rate, 1),
                         PlayerHelper.hasItem(ItemId.THE_BATTERY.getId(), (ServerPlayer) player));
             }
@@ -372,12 +372,12 @@ public class ForgeEvents {
                 Vec3 pos = new Vec3(tnt.getX(), tnt.getY(), tnt.getZ());
                 // bomber boy
                 if(PlayerHelper.hasItem(ItemId.BOMBER_BOY.getId(), player)){
-                    EntityHelper.BomberBoy(player, tnt, pos, level);
+                    EntityHelper.bomberBoy(player, tnt, pos, level);
                 }
 
                 // scatter bomb
                 if(PlayerHelper.hasItem(ItemId.SCATTER_BOMB.getId(), player)){
-                    EntityHelper.ScatterBomb(player, tnt, pos, level);
+                    EntityHelper.scatterBomb(player, tnt, pos, level);
                 }
 
                 // hot bomb

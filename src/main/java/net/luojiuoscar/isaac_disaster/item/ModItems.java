@@ -174,7 +174,7 @@ public class ModItems {
     public static final RegistryObject<Item> MY_LITTLE_UNICORN     = registerActiveItem(12, 12, "my_little_unicorn", 1, ItemId.MY_LITTLE_UNICORN, true);
     public static final RegistryObject<Item> PLACEBO               = registerActiveItem(24, 24, "placebo", 1, ItemId.PLACEBO);
     public static final RegistryObject<Item> DIPLOPIA              = registerActiveItem(0, 0, "diplopia", 4, ItemId.DIPLOPIA);
-    public static final RegistryObject<Item> CROOKED_PENNY         = registerActiveItem(36, 36, "crooked_penny", 3, ItemId.CROOKED_PENNY);
+    public static final RegistryObject<Item> CROOKED_PENNY         = registerActiveItem(18, 18, "crooked_penny", 3, ItemId.CROOKED_PENNY);
     public static final RegistryObject<Item> DULL_RAZOR            = registerActiveItem(2, 2, "dull_razor", 2, ItemId.DULL_RAZOR);
     public static final RegistryObject<Item> TELEPATHY_FOR_DUMMIES = registerActiveItem(8, 8, "telepathy_for_dummies", 1, ItemId.TELEPATHY_FOR_DUMMIES, true);
     public static final RegistryObject<Item> ANARCHIST_COOKBOOK    = registerActiveItem(6, 6, "anarchist_cookbook", 1, ItemId.ANARCHIST_COOKBOOK, true);
@@ -193,14 +193,22 @@ public class ModItems {
     }
 
     public static final RegistryObject<Item> SWALLOWED_PENNY = registerTrinket("swallowed_penny", TrinketId.SWALLOWED_PENNY);
-    public static final RegistryObject<Item> AAA_BATTERY     = registerTrinket("aaa_battery", TrinketId.AAA_BATTERY);
-    public static final RegistryObject<Item> BROKEN_REMOTE   = registerTrinket("broken_remote", TrinketId.BROKEN_REMOTE);
+    public static final RegistryObject<Item> AAA_BATTERY    = registerTrinket("aaa_battery", TrinketId.AAA_BATTERY);
+    public static final RegistryObject<Item> BROKEN_REMOTE  = registerTrinket("broken_remote", TrinketId.BROKEN_REMOTE);
     public static final RegistryObject<Item> CARTRIDGE      = registerTrinket("cartridge", TrinketId.CARTRIDGE);
     public static final RegistryObject<Item> LUCKY_ROCK     = registerTrinket("lucky_rock", TrinketId.LUCKY_ROCK);
     public static final RegistryObject<Item> LUCKY_TOE      = registerTrinket("lucky_toe", TrinketId.LUCKY_TOE);
     public static final RegistryObject<Item> CANCER         = registerTrinket("cancer", TrinketId.CANCER);
     public static final RegistryObject<Item> BLIND_RAGE     = registerTrinket("blind_rage", TrinketId.BLIND_RAGE);
     public static final RegistryObject<Item> PERFECTION     = registerTrinket("perfection", TrinketId.PERFECTION);
+    public static final RegistryObject<Item> DAEMONS_TAIL   = registerTrinket("daemons_tail", TrinketId.DAEMONS_TAIL);
+    public static final RegistryObject<Item> PAPER_CLIP     = registerTrinket("paper_clip", TrinketId.PAPER_CLIP);
+    public static final RegistryObject<Item> SAFETY_CAP     = registerTrinket("safety_cap", TrinketId.SAFETY_CAP);
+    public static final RegistryObject<Item> ACE_OF_SPADES_TRINKET = registerTrinket("ace_of_spades_trinket", TrinketId.ACE_OF_SPADES_TRINKET);
+    public static final RegistryObject<Item> CHILDS_HEART = registerTrinket("childs_heart", TrinketId.CHILDS_HEART);
+    public static final RegistryObject<Item> MATCH_STICK = registerTrinket("match_stick", TrinketId.MATCH_STICK);
+    public static final RegistryObject<Item> RUSTED_KEY = registerTrinket("rusted_key", TrinketId.RUSTED_KEY);
+    public static final RegistryObject<Item> POKER_CHIP = registerTrinket("poker_chip", TrinketId.POKER_CHIP);
 
 
     // trinket end
@@ -208,6 +216,18 @@ public class ModItems {
     public static final RegistryObject<Item> ISAAC_HEAD = ITEMS.register("isaac_head",
             () -> new IsaacHead(new Item.Properties(), PickupId.ISAAC_HEAD.getId()));
     static { PICKUP_LIST.add(ISAAC_HEAD); }
+
+    public static final RegistryObject<Item> PENNY = ITEMS.register("penny",
+            () -> new Item(new Item.Properties()));
+    static { PICKUP_LIST.add(PENNY); }
+
+    public static final RegistryObject<Item> NICKEL = ITEMS.register("nickel",
+            () -> new Item(new Item.Properties()));
+    static { PICKUP_LIST.add(NICKEL); }
+
+    public static final RegistryObject<Item> DIME = ITEMS.register("dime",
+            () -> new Item(new Item.Properties()));
+    static { PICKUP_LIST.add(DIME); }
 
     public static final RegistryObject<Item> HALF_RED_HEART = ITEMS.register("half_red_heart",
             () -> new Heart(new Item.Properties(), PickupId.HALF_RED_HEART.getId(), Rarity.COMMON));
@@ -241,6 +261,15 @@ public class ModItems {
             () -> new Heart(new Item.Properties(), PickupId.BONE_HEART.getId(), Rarity.EPIC));
     static { PICKUP_LIST.add(BONE_HEART); }
 
+    public static final RegistryObject<Item> ETERNAL_HEART = ITEMS.register("eternal_heart",
+            () -> new Heart(new Item.Properties(), PickupId.ETERNAL_HEART.getId(), Rarity.EPIC));
+    static { PICKUP_LIST.add(ETERNAL_HEART); }
+
+    public static final RegistryObject<Item> GOLDEN_HEART = ITEMS.register("golden_heart",
+            () -> new Heart(new Item.Properties(), PickupId.GOLDEN_HEART.getId(), Rarity.RARE));
+    static { PICKUP_LIST.add(GOLDEN_HEART); }
+
+
     public static final RegistryObject<Item> BOMB = ITEMS.register("bomb",
             () -> new Bomb(new Item.Properties(), PickupId.BOMB.getId()));
     static { PICKUP_LIST.add(BOMB); }
@@ -253,6 +282,7 @@ public class ModItems {
             () -> new Bomb(new Item.Properties().stacksTo(1).rarity(Rarity.EPIC), PickupId.GOLDEN_BOMB.getId()));
     static { PICKUP_LIST.add(GOLDEN_BOMB); }
 
+
     public static final RegistryObject<Item> KEY = ITEMS.register("key",
             () -> new Item(new Item.Properties()));
     static { PICKUP_LIST.add(KEY); }
@@ -261,17 +291,29 @@ public class ModItems {
             () -> new Item(new Item.Properties().rarity(Rarity.EPIC).stacksTo(1)));
     static { PICKUP_LIST.add(GOLDEN_KEY); }
 
-    public static final RegistryObject<Item> PENNY = ITEMS.register("penny",
-            () -> new Item(new Item.Properties()));
-    static { PICKUP_LIST.add(PENNY); }
+    public static final RegistryObject<Item> SMALL_BATTERY = ITEMS.register("small_battery",
+            () -> new Battery(new Item.Properties().rarity(Rarity.UNCOMMON).stacksTo(4), PickupId.SMALL_BATTERY.getId()));
+    static { PICKUP_LIST.add(SMALL_BATTERY); }
 
-    public static final RegistryObject<Item> NICKEL = ITEMS.register("nickel",
-            () -> new Item(new Item.Properties()));
-    static { PICKUP_LIST.add(NICKEL); }
+    public static final RegistryObject<Item> BATTERY = ITEMS.register("battery",
+            () -> new Battery(new Item.Properties().rarity(Rarity.UNCOMMON).stacksTo(4), PickupId.BATTERY.getId()));
+    static { PICKUP_LIST.add(BATTERY); }
 
-    public static final RegistryObject<Item> DIME = ITEMS.register("dime",
-            () -> new Item(new Item.Properties()));
-    static { PICKUP_LIST.add(DIME); }
+    public static final RegistryObject<Item> MEGA_BATTERY = ITEMS.register("mega_battery",
+            () -> new Battery(new Item.Properties().rarity(Rarity.RARE).stacksTo(1), PickupId.MEGA_BATTERY.getId()));
+    static { PICKUP_LIST.add(MEGA_BATTERY); }
+
+    public static final RegistryObject<Item> GOLDEN_BATTERY = ITEMS.register("golden_battery",
+            () -> new Battery(new Item.Properties().rarity(Rarity.RARE).stacksTo(1), PickupId.GOLDEN_BATTERY.getId()));
+    static { PICKUP_LIST.add(GOLDEN_BATTERY); }
+
+    public static final RegistryObject<Item> GRAB_BAG = ITEMS.register("grab_bag",
+            () -> new Sack(new Item.Properties(), PickupId.GRAB_BAG.getId()));
+    static { PICKUP_LIST.add(GRAB_BAG); }
+
+    public static final RegistryObject<Item> BLACK_SACK = ITEMS.register("black_sack",
+            () -> new Sack(new Item.Properties(), PickupId.BLACK_SACK.getId()));
+    static { PICKUP_LIST.add(BLACK_SACK); }
 
 
     public static final RegistryObject<Item> THE_FOOL = ITEMS.register("the_fool",
@@ -377,25 +419,6 @@ public class ModItems {
             () -> new Card(new Item.Properties(), PickupId.HOLY_CARD.getId()));
     static { PICKUP_LIST.add(HOLY_CARD); }
 
-    public static final RegistryObject<Item> GRAB_BAG = ITEMS.register("grab_bag",
-            () -> new Sack(new Item.Properties(), PickupId.GRAB_BAG.getId()));
-    static { PICKUP_LIST.add(GRAB_BAG); }
-
-    public static final RegistryObject<Item> BLACK_SACK = ITEMS.register("black_sack",
-            () -> new Sack(new Item.Properties(), PickupId.BLACK_SACK.getId()));
-    static { PICKUP_LIST.add(BLACK_SACK); }
-
-
-
-    public static final RegistryObject<Item> NORMAL_CHEST_ITEM = ITEMS.register("chest",
-            () -> new BlockItem(ModBlocks.NORMAL_CHEST_BLOCK.get(), new Item.Properties()));
-    static { PICKUP_LIST.add(NORMAL_CHEST_ITEM); }
-
-    public static final RegistryObject<Item> LOCKED_CHEST_ITEM = ITEMS.register("locked_chest",
-            () -> new BlockItem(ModBlocks.LOCKED_CHEST_BLOCK.get(), new Item.Properties().rarity(Rarity.UNCOMMON)));
-    static { PICKUP_LIST.add(LOCKED_CHEST_ITEM); }
-
-
     public static final RegistryObject<Item> PILL1 = ITEMS.register("pill1",
             () -> new Pill(new Item.Properties(), 1, false));
     public static final RegistryObject<Item> PILL2 = ITEMS.register("pill2",
@@ -466,6 +489,10 @@ public class ModItems {
 
     // pickup end
     // misc
+    public static final RegistryObject<Item> DEBUG_STICK = ITEMS.register("debug_stick",
+            () -> new DebugStick(new Item.Properties()));
+    static { MISC_LIST.add(DEBUG_STICK); }
+
     public static final RegistryObject<Item> PEDESTAL_ITEM = ITEMS.register("pedestal",
             () -> new BlockItem(ModBlocks.PEDESTAL_BLOCK.get(), new Item.Properties()));
     static { MISC_LIST.add(PEDESTAL_ITEM); }
@@ -474,10 +501,25 @@ public class ModItems {
             () -> new Item(new Item.Properties()));
     static { MISC_LIST.add(LOCK); }
 
-    public static final RegistryObject<Item> DEBUG_STICK = ITEMS.register("debug_stick",
-            () -> new DebugStick(new Item.Properties()));
-    static { MISC_LIST.add(DEBUG_STICK); }
+    public static final RegistryObject<Item> NORMAL_CHEST_ITEM = ITEMS.register("chest",
+            () -> new BlockItem(ModBlocks.NORMAL_CHEST_BLOCK.get(), new Item.Properties()));
+    static { MISC_LIST.add(NORMAL_CHEST_ITEM); }
 
+    public static final RegistryObject<Item> LOCKED_CHEST_ITEM = ITEMS.register("locked_chest",
+            () -> new BlockItem(ModBlocks.LOCKED_CHEST_BLOCK.get(), new Item.Properties().rarity(Rarity.RARE)));
+    static { MISC_LIST.add(LOCKED_CHEST_ITEM); }
+
+    public static final RegistryObject<Item> OLD_CHEST_ITEM = ITEMS.register("old_chest",
+            () -> new BlockItem(ModBlocks.OLD_CHEST_BLOCK.get(), new Item.Properties().rarity(Rarity.RARE)));
+    static { MISC_LIST.add(OLD_CHEST_ITEM); }
+
+    public static final RegistryObject<Item> ETERNAL_CHEST_ITEM = ITEMS.register("eternal_chest",
+            () -> new BlockItem(ModBlocks.ETERNAL_CHEST_BLOCK.get(), new Item.Properties().rarity(Rarity.EPIC)));
+    static { MISC_LIST.add(ETERNAL_CHEST_ITEM); }
+
+    public static final RegistryObject<Item> RED_CHEST_ITEM = ITEMS.register("red_chest",
+            () -> new BlockItem(ModBlocks.RED_CHEST_BLOCK.get(), new Item.Properties().rarity(Rarity.UNCOMMON)));
+    static { MISC_LIST.add(RED_CHEST_ITEM); }
 
     // misc end
 

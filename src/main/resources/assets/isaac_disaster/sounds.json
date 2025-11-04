@@ -1033,5 +1033,15 @@
     "sounds": [
       "isaac_disaster:unlock"
     ]
+  },
+  "eternal_heart": {
+    "sounds": [
+      "isaac_disaster:eternal_heart"
+    ]
+  },
+  "golden_heart": {
+    "sounds": [
+      "isaac_disaster:golden_heart"
+    ]
   }
 }

@@ -3,12 +3,11 @@ package net.luojiuoscar.isaac_disaster.loot.modifier;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.helper.LevelHelper;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.item.ModItems;
 import net.luojiuoscar.isaac_disaster.item.pickup.interfaces.ICommonPickup;
-import net.luojiuoscar.isaac_disaster.manager.LootTableNameManager;
+import net.luojiuoscar.isaac_disaster.manager.LootTableManager;
 import net.luojiuoscar.isaac_disaster.manager.id_managers.ItemId;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
@@ -45,8 +44,7 @@ public class SackheadLootModifier extends LootModifier {
 
         ResourceLocation tableId = lootContext.getQueriedLootTableId();
 
-        if (tableId.getNamespace().equals(IsaacDisaster.MOD_ID) &&
-                (tableId.getPath().equals(LootTableNameManager.BLACK_SACK) || tableId.getPath().equals(LootTableNameManager.GRAB_BAG))){
+        if (tableId == LootTableManager.BLACK_SACK || tableId == LootTableManager.GRAB_BAG){
             return objectArrayList;
         }
 
@@ -55,26 +53,34 @@ public class SackheadLootModifier extends LootModifier {
 
         int grabBagCount = 0;
         for (ItemStack stack : objectArrayList) {
-            int originalCount = stack.getCount();
-            int count = originalCount;
+            if (stack.getItem() instanceof ICommonPickup || LevelHelper.isCoin(stack.getItem())){
+                int originalCount = stack.getCount();
+                int count = originalCount;
 
-            for (int j = 0; j < originalCount; j++) {
-                if ((stack.getItem() instanceof ICommonPickup && rand.nextDouble() < 0.2) ||
-                        LevelHelper.isCoin(stack.getItem()) && rand.nextDouble() < 0.1) {
+                for (int j = 0; j < originalCount; j++) {
+                    if ((stack.getItem() instanceof ICommonPickup && rand.nextDouble() < 0.2) ||
+                            LevelHelper.isCoin(stack.getItem()) && rand.nextDouble() < 0.1) {
 
-                    grabBagCount++;
-                    count--;
+                        grabBagCount++;
+                        count--;
+                    }
                 }
+                stack.setCount(count);
+                if (count != 0){
+                    newList.add(stack);
+                }
+                if (grabBagCount > 0){
+                    ItemStack grabBag = new ItemStack(ModItems.GRAB_BAG.get());
+                    grabBag.setCount(grabBagCount);
+                    newList.add(grabBag);
+                    grabBagCount = 0;
+                }
+            }else{
+                newList.add(stack);
             }
-            stack.setCount(count);
-            newList.add(stack);
         }
 
-        if (grabBagCount > 0){
-            ItemStack grabBag = new ItemStack(ModItems.GRAB_BAG.get());
-            grabBag.setCount(grabBagCount);
-            newList.add(grabBag);
-        }
+
 
         return newList;
     }

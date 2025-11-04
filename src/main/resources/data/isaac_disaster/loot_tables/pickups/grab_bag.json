@@ -9,7 +9,8 @@
         {"type": "minecraft:loot_table", "name": "isaac_disaster:pickups/random/bombs", "weight": 15},
         {"type": "minecraft:loot_table", "name": "isaac_disaster:pickups/random/keys", "weight": 20},
         {"type": "minecraft:loot_table", "name": "isaac_disaster:pickups/random/coins", "weight": 15},
-        {"type": "minecraft:loot_table", "name": "isaac_disaster:pickups/random/cards", "weight": 4}
+        {"type": "minecraft:loot_table", "name": "isaac_disaster:pickups/random/cards", "weight": 4},
+        {"type": "minecraft:loot_table", "name": "isaac_disaster:pickups/random/batteries", "weight": 4}
       ]
     }
   ]

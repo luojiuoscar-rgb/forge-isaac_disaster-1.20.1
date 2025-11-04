@@ -1,9 +1,8 @@
-package net.luojiuoscar.isaac_disaster.block.block_entity;
+package net.luojiuoscar.isaac_disaster.block;
 
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
-import net.luojiuoscar.isaac_disaster.block.ModBlocks;
-import net.luojiuoscar.isaac_disaster.block.block_entity.chest.NormalChestBlockEntity;
-import net.luojiuoscar.isaac_disaster.block.block_entity.chest.LockedChestChestBlockEntity;
+import net.luojiuoscar.isaac_disaster.block.block_entity.PedestalBlockEntity;
+import net.luojiuoscar.isaac_disaster.block.block_entity.chest.*;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.registries.DeferredRegister;
@@ -29,9 +28,24 @@ public class ModBlockEntities {
                     () -> BlockEntityType.Builder.of(NormalChestBlockEntity::new,
                                     ModBlocks.NORMAL_CHEST_BLOCK.get()).build(null));
 
-    public static final RegistryObject<BlockEntityType<LockedChestChestBlockEntity>> LOCKED_CHEST_BLOCK_ENTITY =
+    public static final RegistryObject<BlockEntityType<LockedChestBlockEntity>> LOCKED_CHEST_BLOCK_ENTITY =
             BLOCK_ENTITIES.register("locked_chest_block_entity",
-                    () -> BlockEntityType.Builder.of(LockedChestChestBlockEntity::new,
+                    () -> BlockEntityType.Builder.of(LockedChestBlockEntity::new,
                             ModBlocks.LOCKED_CHEST_BLOCK.get()).build(null));
+
+    public static final RegistryObject<BlockEntityType<OldChestBlockEntity>> OLD_CHEST_BLOCK_ENTITY =
+            BLOCK_ENTITIES.register("old_chest_block_entity",
+                    () -> BlockEntityType.Builder.of(OldChestBlockEntity::new,
+                            ModBlocks.OLD_CHEST_BLOCK.get()).build(null)
+            );
+    public static final RegistryObject<BlockEntityType<EternalChestBlockEntity>> ETERNAL_CHEST_BLOCK_ENTITY =
+            BLOCK_ENTITIES.register("eternal_chest_block_entity",
+                    () -> BlockEntityType.Builder.of(EternalChestBlockEntity::new,
+                            ModBlocks.ETERNAL_CHEST_BLOCK.get()).build(null));
+
+    public static final RegistryObject<BlockEntityType<RedChestBlockEntity>> RED_CHEST_BLOCK_ENTITY =
+            BLOCK_ENTITIES.register("red_chest_block_entity",
+                    () -> BlockEntityType.Builder.of(RedChestBlockEntity::new,
+                            ModBlocks.RED_CHEST_BLOCK.get()).build(null));
 
 }

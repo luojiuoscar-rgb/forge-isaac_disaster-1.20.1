@@ -15,7 +15,15 @@ public enum TrinketId {
     LUCKY_TOE,
     CANCER,
     BLIND_RAGE,
-    PERFECTION;
+    PERFECTION,
+    DAEMONS_TAIL,
+    PAPER_CLIP,
+    ACE_OF_SPADES_TRINKET,
+    SAFETY_CAP,
+    RUSTED_KEY,
+    CHILDS_HEART,
+    MATCH_STICK,
+    POKER_CHIP;
 
 
     private final int id;

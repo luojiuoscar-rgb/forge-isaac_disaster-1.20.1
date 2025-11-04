@@ -1,7 +1,7 @@
 package net.luojiuoscar.isaac_disaster.block.custom.chest;
 
 import net.luojiuoscar.isaac_disaster.block.block_entity.chest.NormalChestBlockEntity;
-import net.luojiuoscar.isaac_disaster.block.block_entity.ModBlockEntities;
+import net.luojiuoscar.isaac_disaster.block.ModBlockEntities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;

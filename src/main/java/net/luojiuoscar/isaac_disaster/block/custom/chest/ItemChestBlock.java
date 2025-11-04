@@ -1,7 +1,6 @@
 package net.luojiuoscar.isaac_disaster.block.custom.chest;
 
 import net.luojiuoscar.isaac_disaster.block.block_entity.chest.ItemChestBlockEntity;
-import net.luojiuoscar.isaac_disaster.block.block_entity.chest.LockedChestChestBlockEntity;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
@@ -30,20 +29,29 @@ public abstract class ItemChestBlock extends IsaacChestBlock{
     @Override
     public InteractionResult use(BlockState state, Level level, BlockPos pos,
                                  Player player, InteractionHand hand, BlockHitResult hit) {
+
         if (level.isClientSide() || !(level instanceof ServerLevel serverLevel) ||
-                !(level.getBlockEntity(pos) instanceof LockedChestChestBlockEntity chest)) return InteractionResult.SUCCESS;
+                !(level.getBlockEntity(pos) instanceof ItemChestBlockEntity chest)) return InteractionResult.SUCCESS;
 
         ItemStack held = player.getItemInHand(hand).copy();
         ItemStack store = chest.getItem(0).copy();
 
         if (!chest.isOpened()){
+
             if (chest.isLocked()) {
-                PlayerHelper.unlockBlock(player, hand, pos, () -> chest.setLocked(false));
+                PlayerHelper.unlockBlock(player, hand, pos, 1, () -> chest.setLocked(false));
             }
 
             if (!chest.isLocked()){
                 chest.unpackLootTable(player); // 尝试掉落物
-                chest.tryLootItem(serverLevel, player); // 尝试生成道具
+                boolean spawnedItem = chest.tryLootItem(serverLevel, player, pos); // 尝试生成道具
+
+                if (!spawnedItem) {
+                    super.use(state, level, pos, player, hand, hit); // 打开箱子
+                }else{
+                    level.playSound(null, pos.getX(), pos.getY(), pos.getZ(),
+                            SoundEvents.CHEST_OPEN, SoundSource.BLOCKS, 1.0f, 1.0f);
+                }
             }
 
         } else if (chest.isDisplayingItem()){ // 获取物品

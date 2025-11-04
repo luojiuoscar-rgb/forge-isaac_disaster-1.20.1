@@ -12,6 +12,7 @@ import net.luojiuoscar.isaac_disaster.manager.ColorManager;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.manager.id_managers.ItemId;
 import net.luojiuoscar.isaac_disaster.manager.id_managers.SetId;
+import net.luojiuoscar.isaac_disaster.manager.id_managers.TrinketId;
 import net.luojiuoscar.isaac_disaster.sound.ModSounds;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
@@ -99,6 +100,21 @@ public class PlayerHelper {
                 .ifPresent(provider -> count[0] = provider.getItemCountFromAll(player, itemId));
         return count[0];
     }
+    public static boolean hasTrinket(int itemId, ServerPlayer player){
+        return hasTrinket(itemId, player, false);
+    }
+    public static boolean hasTrinket(int itemId, ServerPlayer player, boolean onlyEnchanted){
+        return player.getCapability(PlayerSwallowedTrinketsProvider.PLAYER_SWALLOWED_TRINKETS)
+                .map(playerSwallowedTrinkets -> {
+                    List<ItemStack> stackList = playerSwallowedTrinkets.getAllTrinketListFromId(player, itemId);
+                    if (onlyEnchanted) {
+                        return stackList.stream().anyMatch(ItemStack::isEnchanted);
+                    } else {
+                        return !stackList.isEmpty();
+                    }
+                })
+                .orElse(false);
+    }
     public static int getTrinketCount(int itemId, ServerPlayer player){
         int[] count = {0};
         player.getCapability(PlayerSwallowedTrinketsProvider.PLAYER_SWALLOWED_TRINKETS)
@@ -107,6 +123,12 @@ public class PlayerHelper {
                 );
         return count[0];
     }
+    public static double getValueFromTrinket(double normal, double enchanted, int itemId, ServerPlayer player){
+        if (!hasTrinket(itemId, player)) return 0;
+        return hasTrinket(itemId, player, true) ? normal : enchanted;
+    }
+
+
     public static void removeItemFromId(int itemId, ServerPlayer player){
         player.getCapability(PlayerPassiveItemProvider.PLAYER_PASSIVE_ITEM).ifPresent(
                 playerPassiveItem -> playerPassiveItem.removeFromId(player, itemId)
@@ -131,10 +153,11 @@ public class PlayerHelper {
             !isFullCharge(stack, canOverCharge)) {
                 if (amount == null) amount = stack.getMaxDamage() * 2; // 确保可以充满
 
-                ActiveItem.modifyCharge(stack, amount, canOverCharge);
+                chargeItem(stack, amount, canOverCharge);
             }
         }
     }
+
     public static boolean isFullCharge(ItemStack stack, boolean canOverCharge){
         if (canOverCharge && !ActiveItem.getOverCharged(stack)) return false;
         return stack.getDamageValue() == 0;
@@ -640,9 +663,9 @@ public class PlayerHelper {
 
     public static IsaacBomb spawnBombFromPlayer(ServerPlayer player, Vec3 tntVelocity){
         if (PlayerHelper.hasItem(ItemId.MR_MEGA.getId(), player)){
-            return EntityHelper.spawnBomb(player.blockPosition().getCenter(), player, tntVelocity, 2);
+            return EntityHelper.spawnBomb(player.blockPosition().getCenter(), player, player.level(), tntVelocity, 2);
         }else {
-            return EntityHelper.spawnBomb(player.blockPosition().getCenter(), player, tntVelocity, 1);
+            return EntityHelper.spawnBomb(player.blockPosition().getCenter(), player, player.level(), tntVelocity, 1);
         }
     }
     private static boolean isInsideSolidBlock(Level level, double x, double y, double z) {
@@ -703,11 +726,14 @@ public class PlayerHelper {
         return (int) server.getPlayerList().getPlayers().stream().filter(filter).count();
     }
 
-    public static void unlockBlock(Player player, InteractionHand hand, BlockPos pos, Runnable onUnlock){
+    public static void unlockBlock(Player player, InteractionHand hand, BlockPos pos, int paperClipRequirements, Runnable onUnlock){
         Level level = player.level();
         ItemStack held = player.getItemInHand(hand);
 
-        if (held.is(ModItems.KEY.get()) || held.is(ModItems.GOLDEN_KEY.get())){ // 钥匙 or 金钥匙
+
+        int paperClip = PlayerHelper.getTrinketCount(TrinketId.PAPER_CLIP.getId(), (ServerPlayer) player);
+
+        if (held.is(ModItems.KEY.get()) || held.is(ModItems.GOLDEN_KEY.get()) || (paperClip >= paperClipRequirements)){ // 钥匙 or 金钥匙 or paperClip
             onUnlock.run(); // behaviour
 
             if (held.is(ModItems.KEY.get()) && !player.isCreative()){
@@ -724,5 +750,22 @@ public class PlayerHelper {
     }
 
 
+    public static void chargeItem(ItemStack stack, int amount, boolean canOverCharge){
+        boolean OverCharged = ActiveItem.getOverCharged(stack);
+        // 检查物品是否耐久不满 或可以过载
+        if ((stack.getDamageValue() > 0)
+                || (canOverCharge || !OverCharged)) {
+            // 计算新的耐久值
+            int newDamage = Math.max(stack.getDamageValue() - amount, 0);
+
+            // 未过载且有蓄电池时过载
+            if (newDamage == 0 && !OverCharged && canOverCharge){
+                newDamage = stack.getMaxDamage() - 1;
+                ActiveItem.setOverCharged(stack, true);
+            }
+
+            stack.setDamageValue(newDamage);
+        }
+    }
 }
 

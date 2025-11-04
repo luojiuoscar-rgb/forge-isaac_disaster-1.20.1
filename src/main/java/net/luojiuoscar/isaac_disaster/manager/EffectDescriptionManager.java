@@ -111,8 +111,15 @@ public class EffectDescriptionManager {
                 Component.translatable("effect.isaac_disaster.the_world").append(": ")
                         .append(Component.translatable("effect.isaac_disaster.the_world.explain.1"))
         ));
-
-
+        register(EffectId.ETERNAL_HEART.getId(), List.of(
+                Component.translatable("effect.isaac_disaster.eternal_heart").append(": ")
+                        .append(Component.translatable("effect.isaac_disaster.eternal_heart.explain.1"))
+                        .append(Component.translatable("effect.isaac_disaster.eternal_heart.explain.2"))
+        ));
+        register(EffectId.GILDING.getId(), List.of(
+                Component.translatable("effect.isaac_disaster.gilding").append(": ")
+                        .append(Component.translatable("effect.isaac_disaster.gilding.explain.1"))
+        ));
     }
 
 

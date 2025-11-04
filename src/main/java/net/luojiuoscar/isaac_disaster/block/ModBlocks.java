@@ -2,8 +2,7 @@ package net.luojiuoscar.isaac_disaster.block;
 
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.block.custom.*;
-import net.luojiuoscar.isaac_disaster.block.custom.chest.LockedChestBlock;
-import net.luojiuoscar.isaac_disaster.block.custom.chest.NormalChestBlock;
+import net.luojiuoscar.isaac_disaster.block.custom.chest.*;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockBehaviour;
@@ -31,4 +30,14 @@ public class ModBlocks {
 
     public static final RegistryObject<Block> LOCKED_CHEST_BLOCK = BLOCKS.register("locked_chest",
             () -> new LockedChestBlock(BlockBehaviour.Properties.copy(Blocks.CHEST)));
+
+    public static final RegistryObject<Block> OLD_CHEST_BLOCK = BLOCKS.register("old_chest",
+            () -> new OldChestBlock(BlockBehaviour.Properties.copy(Blocks.CHEST)));
+
+    public static final RegistryObject<Block> ETERNAL_CHEST_BLOCK = BLOCKS.register("eternal_chest",
+            () -> new EternalChestBlock(BlockBehaviour.Properties.copy(Blocks.CHEST).lightLevel(state -> 15)));
+
+    public static final RegistryObject<Block> RED_CHEST_BLOCK = BLOCKS.register("red_chest",
+            () -> new RedChestBlock(BlockBehaviour.Properties.copy(Blocks.CHEST)));
+
 }

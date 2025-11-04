@@ -1,30 +1,20 @@
 package net.luojiuoscar.isaac_disaster.helper;
 
-import net.luojiuoscar.isaac_disaster.effect.ModEffects;
 import net.luojiuoscar.isaac_disaster.entity.ModEntities;
 import net.luojiuoscar.isaac_disaster.entity.fireball.TimedFireball;
 import net.luojiuoscar.isaac_disaster.entity.tnt.GigaBomb;
 import net.luojiuoscar.isaac_disaster.entity.tnt.IsaacBomb;
 import net.minecraft.core.BlockPos;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.TamableAnimal;
-import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.storage.loot.LootParams;
-import net.minecraft.world.level.storage.loot.LootTable;
-import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
-import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.Vec3;
-
-import java.util.List;
 
 public class EntityHelper {
 
@@ -34,37 +24,38 @@ public class EntityHelper {
      * type 1: medium bomb
      * type 2: large bomb
      */
-    public static IsaacBomb spawnBomb(Vec3 position, LivingEntity owner, Vec3 tntVelocity, int type){
+    public static IsaacBomb spawnBomb(Vec3 position, LivingEntity owner, Level level, Vec3 velocity, int type) {
         return switch (type) {
-            case 1 -> spawnBomb(position, owner, tntVelocity, 80, 4, 0.98f);
-            case 2 -> spawnBomb(position, owner, tntVelocity, 80, 7, 1.4f);
-            default -> spawnBomb(position, owner, tntVelocity, 80, 1, 0.4f);
+            case 1 -> spawnBomb(position, owner, level, velocity, 80, 4, 0.98f);
+            case 2 -> spawnBomb(position, owner, level, velocity, 80, 7, 1.4f);
+            default -> spawnBomb(position, owner, level, velocity, 80, 1, 0.4f);
         };
     }
-    public static IsaacBomb spawnBomb(Vec3 position, LivingEntity owner, Vec3 tntVelocity, int fuse, int power, float scale){
-        return spawnBomb(position, owner, tntVelocity, fuse, power, scale, owner.level(), true);
+
+
+    public static IsaacBomb spawnBomb(Vec3 position, LivingEntity owner, Level level, Vec3 velocity, int fuse, int power, float scale) {
+        return spawnBomb(position, owner, level, velocity, fuse, power, scale, true);
     }
-    public static IsaacBomb spawnBomb(Vec3 position, LivingEntity owner, Vec3 tntVelocity, int fuse, int power, float scale, Level level){
-        return spawnBomb(position, owner, tntVelocity, fuse, power, scale, level, true);
-    }
-    public static IsaacBomb spawnBomb(Vec3 position, LivingEntity owner, Vec3 tntVelocity, int fuse, int power, float scale, Level level, boolean isOriginal){
+
+    public static IsaacBomb spawnBomb(Vec3 position, LivingEntity owner, Level level, Vec3 velocity,
+                                      int fuse, int power, float scale, boolean isOriginal) {
         if (level.isClientSide()) return null;
 
-        IsaacBomb tnt = ModEntities.ISAAC_BOMB.get().create(owner.level());
-        if (tnt == null) return null;
+        IsaacBomb bomb = ModEntities.ISAAC_BOMB.get().create(level);
+        if (bomb == null) return null;
 
-        tnt.moveTo(position.x, position.y, position.z, 0, 0);
-        tnt.setOwner(owner);
-        tnt.setFuse(fuse);
-        tnt.setPower(power);
-        tnt.setScale(scale);
-        tnt.setOriginal(isOriginal);
-        tnt.setDeltaMovement(tntVelocity);
+        bomb.moveTo(position.x, position.y, position.z, 0, 0);
+        bomb.setOwner(owner);
+        bomb.setFuse(fuse);
+        bomb.setPower(power);
+        bomb.setScale(scale);
+        bomb.setOriginal(isOriginal);
+        bomb.setDeltaMovement(velocity);
 
-        level.addFreshEntity(tnt);
-
-        return tnt;
+        level.addFreshEntity(bomb);
+        return bomb;
     }
+
 
     public static void spawnGigaBomb(Vec3 position, Player player, Vec3 tntVelocity, int fuse, Level level){
         if (level.isClientSide) return;
@@ -108,81 +99,71 @@ public class EntityHelper {
     public static void throwBomb(Player player, int fuse, int power) {
         throwBomb(player, fuse, power, 0.98f);
     }
-    public static void throwBomb(Player player, int fuse, int power, float scale){
-        // 获取玩家朝向向量
-        Vec3 lookVec = player.getLookAngle();
-        // 获取玩家当前速度
-        Vec3 playerVelocity = player.getDeltaMovement();
 
-        // 计算TNT生成位置（玩家眼睛位置略微偏移）
-        Vec3 spawnPos = player.getEyePosition()
-                .add(lookVec.x * 0.5, lookVec.y * 0.5, lookVec.z * 0.5);
+    public static void throwBomb(Player player, int fuse, int power, float scale) {
+        Vec3 look = player.getLookAngle();
+        Vec3 playerVel = player.getDeltaMovement();
 
-        // 计算TNT初速度：结合玩家朝向和玩家自身速度
-        double throwStrength = 1.3; // 投掷力度
-        double velocityInheritance = 1.0; // 继承玩家速度的比例
+        // 炸弹生成点：眼睛位置略前
+        Vec3 spawnPos = player.getEyePosition().add(look.scale(0.5));
 
-        Vec3 tntVelocity = new Vec3(
-                lookVec.x * throwStrength + playerVelocity.x * velocityInheritance,
-                lookVec.y * throwStrength + playerVelocity.y * velocityInheritance + 0.25, // 略微向上
-                lookVec.z * throwStrength + playerVelocity.z * velocityInheritance
-        );
+        // 炸弹初始速度：方向 * 投掷力度 + 玩家速度
+        double throwStrength = 1.3;
+        double inherit = 1.0;
 
-        spawnBomb(spawnPos, player, tntVelocity, fuse, power, scale, player.level());
+        Vec3 velocity = look.scale(throwStrength)
+                .add(playerVel.scale(inherit))
+                .add(0, 0.25, 0); // 略微向上
+
+        spawnBomb(spawnPos, player, player.level(), velocity, fuse, power, scale);
     }
 
-    public static void BomberBoy(Player player, IsaacBomb tnt, Vec3 pos, Level level){
-        // 非“原始”tnt不触发效果
-        if(!tnt.isOriginal()) return;
-        // 巨型炸弹等不触发效果
-        if(tnt instanceof GigaBomb) return;
+    /**
+     * 炸弹四向扩散（炸弹人）
+     */
+    public static void bomberBoy(Player player, IsaacBomb source, Vec3 center, Level level) {
+        if (!isValidOrigin(source)) return;
 
-        float offset = tnt.getPower() + 1f;
+        int power = source.getPower();
+        float offset = power + 1f;
 
-        Vec3 pos1 = pos.add(offset, 0, 0);
-        spawnBomb(pos1, player, Vec3.ZERO, 0, tnt.getPower(), tnt.getScale(), level,false);
+        Vec3[] offsets = new Vec3[]{
+                new Vec3(offset, 0, 0),
+                new Vec3(-offset, 0, 0),
+                new Vec3(0, 0, offset),
+                new Vec3(0, 0, -offset)
+        };
 
-        Vec3 pos2 = pos.add(-offset, 0, 0);
-        spawnBomb(pos2, player, Vec3.ZERO, 0, tnt.getPower(), tnt.getScale(), level,false);
-
-        Vec3 pos3 = pos.add(0, 0, offset);
-        spawnBomb(pos3, player, Vec3.ZERO, 0, tnt.getPower(), tnt.getScale(), level,false);
-
-        Vec3 pos4 = pos.add(0, 0, -offset);
-        spawnBomb(pos4, player, Vec3.ZERO, 0, tnt.getPower(), tnt.getScale(), level,false);
-    }
-
-    public static void ScatterBomb(Player player, IsaacBomb tnt, Vec3 pos, Level level){
-        // 巨型炸弹、微型炸弹不触发效果
-        if(tnt instanceof GigaBomb || tnt.getPower() <= 1) return;
-        // 非“原始”不触发
-        if(!tnt.isOriginal()) return;
-
-
-        int power = tnt.getPower() - 3;
-        float scale = 0.98f;
-        if (power == 1){
-            scale = 0.4f;
+        for (Vec3 delta : offsets) {
+            spawnBomb(center.add(delta), player, level, Vec3.ZERO, 0, power, source.getScale(), false);
         }
+    }
 
-        spawnBomb(pos, player, new Vec3(Math.random() * 0.6 - 0.3, Math.random() * 0.4, Math.random() * 0.6 - 0.3),
-                30, power, scale, level);
+    /**
+     * 炸弹碎裂效果（分裂炸弹）
+     */
+    public static void scatterBomb(Player player, IsaacBomb source, Vec3 center, Level level) {
+        if (!isValidOrigin(source)) return;
 
-        spawnBomb(pos, player, new Vec3(Math.random() * 0.6 - 0.3, Math.random() * 0.4, Math.random() * 0.6 - 0.3),
-                30, power, scale, level);
+        int power = source.getPower() - 3;
+        float scale = (power == 1) ? 0.4f : 0.98f;
 
-        spawnBomb(pos, player, new Vec3(Math.random() * 0.6 - 0.3, Math.random() * 0.4, Math.random() * 0.6 - 0.3),
-                30, power, scale, level);
+        for (int i = 0; i < 4; i++) {
+            Vec3 randomVel = new Vec3(
+                    Math.random() * 0.6 - 0.3,
+                    Math.random() * 0.4,
+                    Math.random() * 0.6 - 0.3
+            );
+            spawnBomb(center, player, level, randomVel, 30, power, scale, power != 1);
+        }
+    }
 
-        spawnBomb(pos, player, new Vec3(Math.random() * 0.6 - 0.3, Math.random() * 0.4, Math.random() * 0.6 - 0.3),
-                30, power, scale, level);
+    private static boolean isValidOrigin(IsaacBomb bomb) {
+        return bomb != null && bomb.isOriginal() && !(bomb instanceof GigaBomb);
     }
 
     public static void HotBomb(Player player, IsaacBomb tnt, Vec3 pos, Level level){
-        // 非“原始”tnt不触发效果
-        if(!tnt.isOriginal()) return;
-        // 巨型炸弹等不触发效果
-        if(tnt instanceof GigaBomb) return;
+        if(!isValidOrigin(tnt)) return;
 
         int power = 0;
         if(tnt.getPower() > 4){
@@ -243,44 +224,14 @@ public class EntityHelper {
     }
 
     /**
-     * 对于*层数*相关的药水效果；移除1层
+     * 对于*层数*相关的药水效果
      */
-    public static void removeAmplifier(LivingEntity entity, MobEffect effect){
-        MobEffectInstance effectI = entity.getEffect(effect);
-        if (effectI == null) return;
-
-        int amplifier = effectI.getAmplifier() - 1;
-        entity.removeEffect(effect);
-
-        if (amplifier < 0) return;
-
-
-        MobEffectInstance newEffect = new MobEffectInstance(
-                effect,
-                -1,
-                amplifier,
-                true,
-                false,
-                true
-        );
-        entity.addEffect(newEffect);
-    }
     public static void addAmplifier(LivingEntity entity, MobEffect effect){
-        MobEffectInstance effectI = entity.getEffect(effect);
-        int amplifier = 0;
-
-        if (effectI != null) {
-            amplifier = effectI.getAmplifier() + 1;
-            entity.removeEffect(effect);
-
-            // 神圣护盾存在上限；最大层数10层
-            if (effectI.getEffect() == ModEffects.HOLY_SHIELD.get()){
-                amplifier = Math.min(9, amplifier);
-            }
-        }
-
-        // 保险起见
-        if (amplifier < 0) return;
+        addAmplifier(entity, effect, 1);
+    }
+    public static void addAmplifier(LivingEntity entity, MobEffect effect, int count){
+        int amplifier = entity.getEffect(effect) == null ? -1 : entity.getEffect(effect).getAmplifier();
+        amplifier += count;
 
         MobEffectInstance newEffect = new MobEffectInstance(
                 effect,
@@ -302,27 +253,4 @@ public class EntityHelper {
         }
     }
 
-    public static void spawnLootAtPos(LivingEntity source, Vec3 pos, ResourceLocation tableId, int count){
-        for (int i = 0; i < count; i++){
-            spawnLootAtPos(source, pos, tableId);
-        }
-    }
-    public static void spawnLootAtPos(LivingEntity source, Vec3 pos, ResourceLocation tableId) {
-        LootTable table = source.getServer().getLootData().getLootTable(tableId);
-        if (!(source.level() instanceof ServerLevel level)) return;
-
-        // LootParams 中至少需要 Origin
-        LootParams params = new LootParams.Builder(level)
-                .withParameter(LootContextParams.ORIGIN, pos)
-                .withParameter(LootContextParams.THIS_ENTITY, source)
-                .create(LootContextParamSets.EMPTY);
-
-        // 获取掉落结果
-        List<ItemStack> generated = table.getRandomItems(params);
-
-        // 生成到世界中
-        for (ItemStack stack : generated) {
-            level.addFreshEntity(new ItemEntity(level, pos.x, pos.y, pos.z, stack));
-        }
-    }
 }

@@ -1,9 +1,8 @@
 package net.luojiuoscar.isaac_disaster.block.block_entity.chest;
 
-import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.helper.PoolHelper;
 import net.luojiuoscar.isaac_disaster.item.item.IsaacItem;
-import net.luojiuoscar.isaac_disaster.manager.LootTableNameManager;
+import net.luojiuoscar.isaac_disaster.manager.LootTableManager;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.Packet;
@@ -26,6 +25,8 @@ import javax.annotation.Nullable;
 import java.util.List;
 
 public abstract class ItemChestBlockEntity extends IsaacChestBlockEntity {
+    public static final String DEFAULT_ITEM_LOOT_TABLE = LootTableManager.DEFAULT_ITEM_POOL.toString();
+
     public ItemChestBlockEntity(BlockEntityType<?> blockEntityType, BlockPos pos, BlockState state) {
         super(blockEntityType, pos, state);
     }
@@ -35,10 +36,18 @@ public abstract class ItemChestBlockEntity extends IsaacChestBlockEntity {
     private float rotation;
     public boolean clientShouldBeOpen = false;
 
+    private double itemLootChance = 0.2;
     private boolean locked = false;
     private boolean displayingItem = false;
     private boolean opened = false;
-    private String itemLootTable = IsaacDisaster.MOD_ID + ":" + LootTableNameManager.DEFAULT_ITEM_POOL;
+    private String itemLootTable = DEFAULT_ITEM_LOOT_TABLE;
+
+    public String getItemLootTable(){
+        return itemLootTable;
+    }
+    public void setItemLootTable(String itemLootTable){
+        this.itemLootTable = itemLootTable;
+    }
 
 
     public float getRenderingRotation(){
@@ -61,9 +70,10 @@ public abstract class ItemChestBlockEntity extends IsaacChestBlockEntity {
     }
     public void setDisplayingItem(boolean displayingItem){
         this.displayingItem = displayingItem;
+        setChanged();
         if (level != null && !level.isClientSide) {
             level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), 3);
-        }        setChanged();
+        }
     }
     public boolean isOpened(){
         return opened;
@@ -76,16 +86,20 @@ public abstract class ItemChestBlockEntity extends IsaacChestBlockEntity {
         }
     }
 
-    abstract public double getLootChance();
+    public double getItemLootChance(){
+        return itemLootChance;
+    }
+    public void setItemLootChance(double c){
+        this.itemLootChance = c;
+    }
 
-    public void tryLootItem(ServerLevel serverLevel, Player player){
+    public boolean tryLootItem(ServerLevel serverLevel, Player player, BlockPos pos){
         try {
-            if (serverLevel.getRandom().nextDouble() >= getLootChance() || opened){
+            if (serverLevel.getRandom().nextDouble() >= getItemLootChance() || opened){
                 setOpened(true);
-                return;
+                return false;
             }
             setOpened(true);
-            setDisplayingItem(true);
 
             ResourceLocation lootLoc = ResourceLocation.parse(itemLootTable);
             LootTable table = serverLevel.getServer().getLootData().getLootTable(lootLoc);
@@ -97,6 +111,7 @@ public abstract class ItemChestBlockEntity extends IsaacChestBlockEntity {
             List<ItemStack> items = table.getRandomItems(builder.create(LootContextParamSets.CHEST));
             ItemStack stack = items.get(0);
 
+
             if (!stack.isEmpty() && stack.getItem() instanceof IsaacItem isaacItem){
                 stack.setCount(1);
                 this.clearContent(); // 如果出道具则清空内容
@@ -104,12 +119,14 @@ public abstract class ItemChestBlockEntity extends IsaacChestBlockEntity {
 
                 int itemId = isaacItem.getItemId();
                 PoolHelper.markAsRemoval(player, lootLoc, itemId); // 移出道具池
+
+                setDisplayingItem(true);
+                return true;
             }
-
         } catch (Exception e) {
-            itemLootTable = "";
+            itemLootTable = DEFAULT_ITEM_LOOT_TABLE;
         }
-
+        return false;
     }
 
     @Override
@@ -142,7 +159,7 @@ public abstract class ItemChestBlockEntity extends IsaacChestBlockEntity {
     // 原版lootTable逻辑
     @Override
     public void unpackLootTable(@Nullable Player player) {
-        if (locked){
+        if (locked || opened){ // 上锁的/已被开启的则不再触发掉落
             return;
         }
         super.unpackLootTable(player);
@@ -155,6 +172,7 @@ public abstract class ItemChestBlockEntity extends IsaacChestBlockEntity {
         tag.putBoolean("displayingItem", displayingItem);
         tag.putBoolean("opened", opened);
         tag.putString("itemLootTable", itemLootTable);
+        tag.putDouble("itemLootChance", itemLootChance);
     }
 
     @Override
@@ -164,6 +182,7 @@ public abstract class ItemChestBlockEntity extends IsaacChestBlockEntity {
         if (tag.contains("displayingItem")) this.displayingItem = tag.getBoolean("displayingItem");
         if (tag.contains("opened")) this.opened = tag.getBoolean("opened");
         if (tag.contains("itemLootTable")) this.itemLootTable = tag.getString("itemLootTable");
+        if (tag.contains("itemLootChance")) this.itemLootChance = tag.getDouble("itemLootChance");
     }
 
     @Override
@@ -183,5 +202,4 @@ public abstract class ItemChestBlockEntity extends IsaacChestBlockEntity {
     public Packet<ClientGamePacketListener> getUpdatePacket() {
         return ClientboundBlockEntityDataPacket.create(this);
     }
-
 }

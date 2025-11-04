@@ -19,3 +19,4 @@ public abstract class IsaacChestBlockEntity extends ChestBlockEntity implements 
     @Override
     abstract public @NotNull Component getDisplayName();
 }
+

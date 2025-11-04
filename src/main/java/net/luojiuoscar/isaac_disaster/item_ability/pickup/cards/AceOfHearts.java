@@ -1,15 +1,14 @@
 package net.luojiuoscar.isaac_disaster.item_ability.pickup.cards;
 
-import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.helper.EntityHelper;
 import net.luojiuoscar.isaac_disaster.helper.LevelHelper;
+import net.luojiuoscar.isaac_disaster.helper.LootHelper;
 import net.luojiuoscar.isaac_disaster.item_ability.pickup.IPickup;
-import net.luojiuoscar.isaac_disaster.manager.LootTableNameManager;
+import net.luojiuoscar.isaac_disaster.manager.LootTableManager;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.manager.id_managers.PickupId;
 import net.luojiuoscar.isaac_disaster.sound.ModSounds;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.InteractionHand;
@@ -40,8 +39,7 @@ public class AceOfHearts implements IPickup {
             Vec3 pos = entity.blockPosition().getCenter();
             entity.discard();
 
-            EntityHelper.spawnLootAtPos(player, pos, ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID,
-                    LootTableNameManager.RANDOM_HEARTS));
+            LootHelper.spawnLootAtPos(player, pos, LootTableManager.RANDOM_HEARTS);
         }
     }
 

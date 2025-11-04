@@ -30,9 +30,10 @@ public class LootModifierManager {
         register("trinket_enchantment", new TrinketEnchantmentLootModifier(new LootItemCondition[0]));
 
         // pickups
+        register("chest_loot", new ChestLootModifier(new LootItemCondition[0]));
+        register("daemons_tail", new DaemonsTailLootModifier(new LootItemCondition[0]));
         register("sack_head", new SackheadLootModifier(new LootItemCondition[0]));
         register("mitre", new MitreLootModifier(new LootItemCondition[0]));
-
 
     }
 }

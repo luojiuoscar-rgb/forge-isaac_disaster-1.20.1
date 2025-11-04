@@ -2,7 +2,7 @@ package net.luojiuoscar.isaac_disaster.event;
 
 
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
-import net.luojiuoscar.isaac_disaster.block.block_entity.ModBlockEntities;
+import net.luojiuoscar.isaac_disaster.block.ModBlockEntities;
 import net.luojiuoscar.isaac_disaster.block.renderer.chest.IsaacChestRenderer;
 import net.luojiuoscar.isaac_disaster.block.renderer.chest.PedestalRenderer;
 import net.luojiuoscar.isaac_disaster.client.FlyHudOverlay;
@@ -36,6 +36,9 @@ public class ClientModEvents {
         event.registerBlockEntityRenderer(ModBlockEntities.PEDESTAL_BLOCK_ENTITY.get(), PedestalRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.NORMAL_CHEST_BLOCK_ENTITY.get(), IsaacChestRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.LOCKED_CHEST_BLOCK_ENTITY.get(), IsaacChestRenderer::new);
+        event.registerBlockEntityRenderer(ModBlockEntities.OLD_CHEST_BLOCK_ENTITY.get(), IsaacChestRenderer::new);
+        event.registerBlockEntityRenderer(ModBlockEntities.ETERNAL_CHEST_BLOCK_ENTITY.get(), IsaacChestRenderer::new);
+        event.registerBlockEntityRenderer(ModBlockEntities.RED_CHEST_BLOCK_ENTITY.get(), IsaacChestRenderer::new);
 
     }
 
@@ -44,6 +47,11 @@ public class ClientModEvents {
     public static void registerAdditionalModels(ModelEvent.RegisterAdditional event) {
         event.register(ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "block/chest_lid"));
         event.register(ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "block/locked_chest_lid"));
+        event.register(ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "block/old_chest_lid"));
+        event.register(ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "block/eternal_chest_lid"));
+        event.register(ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "block/red_chest_lid"));
+
+
     }
 
     @SubscribeEvent

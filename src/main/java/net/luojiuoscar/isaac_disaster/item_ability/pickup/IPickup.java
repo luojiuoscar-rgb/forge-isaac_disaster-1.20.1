@@ -44,5 +44,4 @@ public interface IPickup {
     default List<Component> getDescription() {
         return new ArrayList<>();
     }
-
 }

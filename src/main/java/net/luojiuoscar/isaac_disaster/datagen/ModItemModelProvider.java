@@ -21,9 +21,7 @@ public class ModItemModelProvider extends ItemModelProvider {
     @Override
     protected void registerModels() {
         Set<Item> skipped = Set.of(
-                ModItems.GIGA_BOMB.get(),
-                ModItems.LOCKED_CHEST_ITEM.get(),
-                ModItems.NORMAL_CHEST_ITEM.get()
+                ModItems.GIGA_BOMB.get()
         );
 
         Consumer<Item> registerIfNotSkipped = (item) -> {
@@ -31,8 +29,6 @@ public class ModItemModelProvider extends ItemModelProvider {
                 basicItem(item);
             }
         };
-
-        // 直接从统一列表中获取所有被动物品，无需手动逐个添加
 
         ItemListManager.PASSIVE_ITEM_LIST.forEach(r -> registerIfNotSkipped.accept(r.get()));
         ItemListManager.ACTIVE_ITEM_LIST.forEach(r -> registerIfNotSkipped.accept(r.get()));

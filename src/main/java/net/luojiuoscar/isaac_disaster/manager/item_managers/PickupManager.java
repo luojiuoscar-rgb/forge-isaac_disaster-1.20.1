@@ -90,7 +90,13 @@ public class PickupManager {
                 new TheWorld(),
                 new TheStars(),
                 new GrabBag(),
-                new BlackSack()
+                new BlackSack(),
+                new EternalHeart(),
+                new GoldenHeart(),
+                new SmallBattery(),
+                new Battery(),
+                new MegaBattery(),
+                new GoldenBattery()
         );
     }
 }

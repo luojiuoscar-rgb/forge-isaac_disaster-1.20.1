@@ -1,7 +1,7 @@
 package net.luojiuoscar.isaac_disaster.item_ability.pickup.cards;
 
 import net.luojiuoscar.isaac_disaster.client.ClientDataManager;
-import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
+import net.luojiuoscar.isaac_disaster.helper.LootHelper;
 import net.luojiuoscar.isaac_disaster.item.ModItems;
 import net.luojiuoscar.isaac_disaster.item_ability.pickup.ITarot;
 import net.luojiuoscar.isaac_disaster.manager.ColorManager;
@@ -25,12 +25,12 @@ public class TheHierophant implements ITarot {
 
     @Override
     public void onUseEffect(Player player, ItemStack stack, InteractionHand hand) {
-        PlayerHelper.giveItem(player, ModItems.SOUL_HEART.get(), 2);
+        LootHelper.spawnLootAtPos(player, player.position(), ModItems.SOUL_HEART.getId(), 2);
     }
 
     @Override
     public void onUseEffectStronger(Player player, ItemStack stack, InteractionHand hand) {
-        PlayerHelper.giveItem(player, ModItems.SOUL_HEART.get(), 3);
+        LootHelper.spawnLootAtPos(player, player.position(), ModItems.SOUL_HEART.getId(), 3);
     }
 
     @Override

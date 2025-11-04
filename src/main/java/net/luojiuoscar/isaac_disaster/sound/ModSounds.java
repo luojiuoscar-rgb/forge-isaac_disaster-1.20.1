@@ -38,6 +38,8 @@ public class ModSounds {
     public static final RegistryObject<SoundEvent> FART_HUGE = registerSoundEvent("fart_huge");
     public static final RegistryObject<SoundEvent> BONE_HEART = registerSoundEvent("bone_heart");
     public static final RegistryObject<SoundEvent> UNLOCK = registerSoundEvent("unlock");
+    public static final RegistryObject<SoundEvent> ETERNAL_HEART = registerSoundEvent("eternal_heart");
+    public static final RegistryObject<SoundEvent> GOLDEN_HEART = registerSoundEvent("golden_heart");
 
     // pills
     public static final RegistryObject<SoundEvent> I_FOUND_PILLS_USE = registerSoundEvent("i_found_pills_use");

@@ -1,7 +1,7 @@
 package net.luojiuoscar.isaac_disaster.block.custom;
 
 import net.luojiuoscar.isaac_disaster.block.block_entity.PedestalBlockEntity;
-import net.luojiuoscar.isaac_disaster.block.block_entity.ModBlockEntities;
+import net.luojiuoscar.isaac_disaster.block.ModBlockEntities;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.item.custom.DebugStick;
 import net.luojiuoscar.isaac_disaster.manager.data.PedestalData;
@@ -95,7 +95,7 @@ public class PedestalBlock extends BaseEntityBlock {
         }
 
         else if (pedestal.isLocked()){
-            PlayerHelper.unlockBlock(player, hand, pos, pedestal::unlockAll);
+            PlayerHelper.unlockBlock(player, hand, pos, 2, pedestal::unlockAll);
         }
 
         else if (pedestal.isDecoration() || player.isCreative()){

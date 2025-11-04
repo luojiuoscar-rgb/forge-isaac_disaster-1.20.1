@@ -21,8 +21,8 @@ public class EffectNameManager {
     public static final String BABYLON = "babylon";
     public static final String SOUL_STATE = "soul_state";
     public static final String THE_WORLD = "the_world";
-
-
+    public static final String ETERNAL_HEART = "eternal_heart";
+    public static final String GILDING = "gilding";
 
 
 
