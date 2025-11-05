@@ -2,25 +2,18 @@ package net.luojiuoscar.isaac_disaster.block.block_entity.chest;
 
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.block.ModBlockEntities;
-import net.luojiuoscar.isaac_disaster.helper.PoolHelper;
-import net.luojiuoscar.isaac_disaster.item.item.IsaacItem;
 import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.Containers;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.storage.loot.LootParams;
-import net.minecraft.world.level.storage.loot.LootTable;
-import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
-import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
-import java.util.List;
 
 public class EternalChestBlockEntity extends ItemChestBlockEntity {
     public EternalChestBlockEntity(BlockPos pos, BlockState state) {
@@ -61,30 +54,16 @@ public class EternalChestBlockEntity extends ItemChestBlockEntity {
             setOpened(true);
             if (serverLevel.getRandom().nextDouble() < 0.33) return false;
 
-            ResourceLocation lootLoc = ResourceLocation.parse(getItemLootTable());
-            LootTable table = serverLevel.getServer().getLootData().getLootTable(lootLoc);
-
-            LootParams.Builder builder = new LootParams.Builder(serverLevel)
-                    .withParameter(LootContextParams.ORIGIN, this.getBlockPos().getCenter())
-                    .withOptionalParameter(LootContextParams.THIS_ENTITY, player);
-
-            List<ItemStack> items = table.getRandomItems(builder.create(LootContextParamSets.CHEST));
-            ItemStack stack = items.get(0);
-
-            if (!stack.isEmpty() && stack.getItem() instanceof IsaacItem isaacItem){
-                stack.setCount(1);
-                this.dropContent();
-                this.lootTable = null; // 不清空lootTable mc会假定箱子是空的从而无法渲染get(0)的item
-                this.setItem(0, stack);
-
-                int itemId = isaacItem.getItemId();
-                PoolHelper.markAsRemoval(player, lootLoc, itemId);
-
+            // 因为掉落物品会清空箱子，所以先弹出箱子内物品
+            dropContent();
+            this.lootTable = null;
+            boolean s = super.lootItem(serverLevel, player, pos, ResourceLocation.parse(getItemLootTable()));
+            if (s){
                 setDisplayingItem(true);
                 return true;
             }
-
         } catch (Exception e) {
+            IsaacDisaster.LOGGER.error("Failed to generate loot for eternal chests at {} with table {}", worldPosition, getItemLootTable(), e);
             setItemLootTable(DEFAULT_ITEM_LOOT_TABLE);
         }
         return false;
@@ -108,5 +87,17 @@ public class EternalChestBlockEntity extends ItemChestBlockEntity {
         ResourceLocation lt = this.lootTable;
         super.unpackLootTable(pPlayer);
         this.lootTable = lt; // 重设lootTable
+    }
+
+    @Override
+    protected void saveAdditional(CompoundTag tag) {
+        super.saveAdditional(tag);
+        tag.putInt("TryLootCount", tryLootCount);
+    }
+
+    @Override
+    public void load(CompoundTag tag) {
+        super.load(tag);
+        if (tag.contains("TryLootCount")) this.tryLootCount = tag.getInt("TryLootCount");
     }
 }

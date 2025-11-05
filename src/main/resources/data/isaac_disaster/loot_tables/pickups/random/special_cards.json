@@ -3,7 +3,8 @@
     {
       "rolls": 1,
       "entries": [
-        {"type": "minecraft:item", "name": "isaac_disaster:holy_card"}
+        {"type": "minecraft:item", "name": "isaac_disaster:holy_card"},
+        {"type": "minecraft:item", "name": "isaac_disaster:ancient_recall"}
       ]
     }
   ]

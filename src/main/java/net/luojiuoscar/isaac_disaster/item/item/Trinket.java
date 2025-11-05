@@ -1,10 +1,13 @@
 package net.luojiuoscar.isaac_disaster.item.item;
 
+import net.luojiuoscar.isaac_disaster.item_ability.trinket.IRecursiveTrinket;
 import net.luojiuoscar.isaac_disaster.item_ability.trinket.ITrinket;
+import net.luojiuoscar.isaac_disaster.manager.ColorManager;
 import net.luojiuoscar.isaac_disaster.manager.item_managers.TrinketManager;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
@@ -22,6 +25,7 @@ public class Trinket extends Item implements IIsaacCuriosItem {
     private final int trinketId;
     private static final String ENCHANTED = "enchanted";
     private static final String SWALLOWING = "swallowing";
+    private static final String CONSUMED = "consumed";
     private final boolean hasSpecialEffects;
     private boolean canEquip;
     private boolean canUnequip;
@@ -40,17 +44,25 @@ public class Trinket extends Item implements IIsaacCuriosItem {
 
     @Override
     public void tryEquip(SlotContext slotContext, ItemStack prevStack, ItemStack stack) {
-        TrinketManager.getInstance().getTrinketFromId(getTrinketId()).onEquipped(slotContext.entity(), isEnchanted(stack), false);
+        TrinketManager.getInstance().getTrinketFromId(getTrinketId()).onEquipped(slotContext.entity(), isEnchanted(stack));
+        if (!isConsumed(stack)){
+            TrinketManager.getInstance().getTrinketFromId(getTrinketId()).onFirstEquipped(slotContext.entity(), isEnchanted(stack));
+        }
+        setConsumed(stack, true);
     }
     @Override
     public void tryUnequip(SlotContext slotContext, ItemStack prevStack, ItemStack stack) {
         if (isSwallowing(prevStack) || isSwallowing(stack)) return; // 不知道为什么 但是这样可以
-        TrinketManager.getInstance().getTrinketFromId(getTrinketId()).onUnequipped(slotContext.entity(), isEnchanted(stack), false);
+        TrinketManager.getInstance().getTrinketFromId(getTrinketId()).onUnequipped(slotContext.entity(), isEnchanted(stack));
     }
 
     @Override
     public void curioTick(SlotContext slotContext, ItemStack stack) {
-        TrinketManager.getInstance().getTrinketFromId(getTrinketId()).onTick(slotContext.entity(), isEnchanted(stack));
+        if (!(slotContext.entity() instanceof ServerPlayer player)) return;
+        if (!(TrinketManager.getInstance().getTrinketFromId(getTrinketId()) instanceof IRecursiveTrinket item)) return;
+        if (player.tickCount % item.getTickInterval() != 0) return;
+
+        item.recursiveEffect(player, isEnchanted(stack));
     }
 
     @Override
@@ -98,6 +110,11 @@ public class Trinket extends Item implements IIsaacCuriosItem {
                 // 附魔版本的描述信息
                 tooltipComponents.addAll(trinketAbility.getEnchantedDescription());
             }
+            if (isConsumed(stack)){
+                // 已消耗
+                tooltipComponents.add(Component.translatable("item.isaac_disaster.action.consumed")
+                        .withStyle(style -> style.withColor(ColorManager.SYNERGY)));
+            }
             // 解释性信息提示
             if (hasSpecialEffects){
                 tooltipComponents.add(Component.translatable("item.isaac_disaster.special.require_shift"));
@@ -123,4 +140,12 @@ public class Trinket extends Item implements IIsaacCuriosItem {
     public static void setSwallowing(ItemStack stack, boolean b) {
         stack.getOrCreateTag().putBoolean(SWALLOWING, b);
     }
+    public static boolean isConsumed(ItemStack stack) {
+        return stack.getOrCreateTag().getBoolean(CONSUMED);
+    }
+    public static void setConsumed(ItemStack stack, boolean b) {
+        stack.getOrCreateTag().putBoolean(CONSUMED, b);
+    }
+
+
 }

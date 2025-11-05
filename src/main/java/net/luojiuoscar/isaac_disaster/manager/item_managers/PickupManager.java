@@ -96,7 +96,15 @@ public class PickupManager {
                 new SmallBattery(),
                 new Battery(),
                 new MegaBattery(),
-                new GoldenBattery()
+                new GoldenBattery(),
+                new TwoOfSpades(),
+                new AceOfSpades(),
+                new AncientRecall(),
+                new JusticeR(),
+                new TheEmpressR(),
+                new TheChariotR(),
+                new StrengthR(),
+                new TemperanceR()
         );
     }
 }

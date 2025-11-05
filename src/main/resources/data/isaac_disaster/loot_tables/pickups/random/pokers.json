@@ -8,7 +8,10 @@
         {"type": "minecraft:item", "name": "isaac_disaster:2_of_hearts"},
         {"type": "minecraft:item", "name": "isaac_disaster:ace_of_clubs"},
         {"type": "minecraft:item", "name": "isaac_disaster:ace_of_diamonds"},
-        {"type": "minecraft:item", "name": "isaac_disaster:ace_of_hearts"}
+        {"type": "minecraft:item", "name": "isaac_disaster:ace_of_hearts"},
+        {"type": "minecraft:item", "name": "isaac_disaster:2_of_spades"},
+        {"type": "minecraft:item", "name": "isaac_disaster:ace_of_spades"},
+        {"type": "minecraft:item", "name": "isaac_disaster:queen_of_hearts"}
       ]
     }
   ]

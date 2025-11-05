@@ -62,6 +62,4 @@ public class LootHelper {
         LootParams params = builder.create(paramSet);
         return getLoot(level, tableId, params);
     }
-
-
 }

@@ -1,7 +1,6 @@
 package net.luojiuoscar.isaac_disaster.item_ability.passive_item.items;
 
 import net.luojiuoscar.isaac_disaster.helper.LootHelper;
-import net.luojiuoscar.isaac_disaster.item.ModItems;
 import net.luojiuoscar.isaac_disaster.item_ability.passive_item.IPassiveItem;
 import net.luojiuoscar.isaac_disaster.manager.LootTableManager;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
@@ -19,11 +18,6 @@ public class CaffeinePill implements IPassiveItem {
     @Override
     public int getItemId() {
         return ItemId.CAFFEINE_PILL.getId();
-    }
-
-    @Override
-    public ItemStack getItemStack(){
-        return new ItemStack(ModItems.CAFFEINE_PILL.get());
     }
 
     @Override

@@ -10,7 +10,6 @@ import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.UUID;
@@ -27,10 +26,6 @@ public class DizzinessEffect extends MobEffect {
 
     @Override
     public void applyEffectTick(@NotNull LivingEntity pLivingEntity, int pAmplifier){
-        //禁止移动
-        Vec3 motion = pLivingEntity.getDeltaMovement();
-        pLivingEntity.setDeltaMovement(0, motion.y, 0);
-
         //禁止飞行
         if(pLivingEntity instanceof Player player){
             player.getAbilities().flying = false;

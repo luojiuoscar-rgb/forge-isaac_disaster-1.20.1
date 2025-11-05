@@ -10,7 +10,6 @@ import net.luojiuoscar.isaac_disaster.manager.item_managers.PillEffectManager;
 import net.luojiuoscar.isaac_disaster.networking.ModMessages;
 import net.luojiuoscar.isaac_disaster.networking.packet.PillOnUseS2CPacket;
 import net.luojiuoscar.isaac_disaster.sound.ModSounds;
-import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.player.Player;
@@ -55,7 +54,7 @@ public class Paralysis implements IPillEffect {
         }
 
         int duration = 120;
-        MobEffectInstance dizziness = new MobEffectInstance(ModEffects.DIZZINESS.get(), duration);
+        MobEffectInstance dizziness = new MobEffectInstance(ModEffects.DIZZINESS.get(), duration, 255);
         MobEffectInstance lacrimal_hyposecretion = new MobEffectInstance(ModEffects.LACRIMAL_HYPOSECRETION.get(), duration);
         player.addEffect(dizziness);
         player.addEffect(lacrimal_hyposecretion);
@@ -68,7 +67,7 @@ public class Paralysis implements IPillEffect {
         }
 
         int duration = 240;
-        MobEffectInstance dizziness = new MobEffectInstance(ModEffects.DIZZINESS.get(), duration);
+        MobEffectInstance dizziness = new MobEffectInstance(ModEffects.DIZZINESS.get(), duration, 255);
         MobEffectInstance lacrimal_hyposecretion = new MobEffectInstance(ModEffects.LACRIMAL_HYPOSECRETION.get(), duration);
         player.addEffect(dizziness);
         player.addEffect(lacrimal_hyposecretion);

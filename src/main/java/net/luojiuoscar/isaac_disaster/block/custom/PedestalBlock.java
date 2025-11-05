@@ -4,6 +4,7 @@ import net.luojiuoscar.isaac_disaster.block.block_entity.PedestalBlockEntity;
 import net.luojiuoscar.isaac_disaster.block.ModBlockEntities;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.item.custom.DebugStick;
+import net.luojiuoscar.isaac_disaster.manager.data.IsaacItemBlockData;
 import net.luojiuoscar.isaac_disaster.manager.data.PedestalData;
 import net.luojiuoscar.isaac_disaster.sound.ModSounds;
 import net.minecraft.core.BlockPos;
@@ -102,7 +103,7 @@ public class PedestalBlock extends BaseEntityBlock {
             // 如果是装饰性的，则交换物品
             if (held.isEmpty() && !stored.isEmpty()){
                 player.setItemInHand(hand, stored);
-                pedestal.clearContents();
+                pedestal.clearContent();
                 level.playSound(null, pos.getX(), pos.getY(), pos.getZ(),
                         SoundEvents.ITEM_PICKUP, SoundSource.BLOCKS, 0.7f, 1.0f);
 
@@ -117,7 +118,8 @@ public class PedestalBlock extends BaseEntityBlock {
         else if (held.isEmpty() && !stored.isEmpty()){
             // 如果不是装饰性、且空手，则取下物品；并删除linked pedestal上的物品
             player.setItemInHand(hand, stored);
-            pedestal.clearContents();
+            pedestal.clearContent();
+            IsaacItemBlockData.get(serverLevel).removeItemBlock(pos); // 从nbt处移除
             level.playSound(null, pos.getX(), pos.getY(), pos.getZ(),
                     SoundEvents.ITEM_PICKUP, SoundSource.BLOCKS, 0.7f, 1.0f);
 
@@ -132,7 +134,7 @@ public class PedestalBlock extends BaseEntityBlock {
                     if (linkedPedestal == pedestal) continue; // 排除自己
                     if (linkedPedestal.getItem().isEmpty()) continue; // 空则无需更新
                     // 清空&更新linkedPedestal
-                    linkedPedestal.clearContents();
+                    linkedPedestal.clearContent();
 
                     serverLevel.sendParticles(ParticleTypes.CLOUD,
                             linkedPos.getX()+0.5, linkedPos.getY()+0.5, linkedPos.getZ()+0.5, 10,
@@ -151,6 +153,7 @@ public class PedestalBlock extends BaseEntityBlock {
         if (!level.isClientSide) {
             PedestalData manager = PedestalData.get((ServerLevel) level);
             manager.removePedestal(pos);
+            IsaacItemBlockData.get((ServerLevel) level).removeItemBlock(pos);
         }
 
         if (state.getBlock() != newState.getBlock()) {

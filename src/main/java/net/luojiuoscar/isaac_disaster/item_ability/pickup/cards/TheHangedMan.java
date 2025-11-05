@@ -4,6 +4,7 @@ import net.luojiuoscar.isaac_disaster.client.ClientDataManager;
 import net.luojiuoscar.isaac_disaster.effect.ModEffects;
 import net.luojiuoscar.isaac_disaster.item_ability.pickup.ITarot;
 import net.luojiuoscar.isaac_disaster.manager.ColorManager;
+import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.manager.id_managers.ItemId;
 import net.luojiuoscar.isaac_disaster.manager.id_managers.PickupId;
 import net.luojiuoscar.isaac_disaster.sound.ModSounds;
@@ -43,10 +44,9 @@ public class TheHangedMan implements ITarot {
     @Override
     public List<Component> getDescription() {
         List<Component> description = new ArrayList<>();
-        // 基础效果
-        description.add(Component.translatable("item.isaac_disaster.attribute.fly"));
 
-        // 塔罗牌桌布
+        description.add(StatManager.FLY_TIME.description(1));
+
         if (ClientDataManager.getInstance().getCountFromId(ItemId.TAROT_CLOTH.getId()) > 0){
             description.add(Component.translatable("item.isaac_disaster.tarot_cloth").append(": ")
                     .append(Component.translatable("item.isaac_disaster.synergy.description.increase_duration"))

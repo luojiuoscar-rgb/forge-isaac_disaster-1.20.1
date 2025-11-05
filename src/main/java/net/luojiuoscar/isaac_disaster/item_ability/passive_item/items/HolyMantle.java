@@ -2,7 +2,6 @@ package net.luojiuoscar.isaac_disaster.item_ability.passive_item.items;
 
 import net.luojiuoscar.isaac_disaster.effect.ModEffects;
 import net.luojiuoscar.isaac_disaster.helper.EntityHelper;
-import net.luojiuoscar.isaac_disaster.item.ModItems;
 import net.luojiuoscar.isaac_disaster.item_ability.passive_item.IRecursivePassiveItem;
 import net.luojiuoscar.isaac_disaster.manager.id_managers.ItemId;
 import net.minecraft.network.chat.Component;
@@ -17,11 +16,6 @@ public class HolyMantle implements IRecursivePassiveItem {
     @Override
     public int getItemId() {
         return ItemId.HOLY_MANTLE.getId();
-    }
-
-    @Override
-    public ItemStack getItemStack(){
-        return new ItemStack(ModItems.HOLY_MANTLE.get());
     }
 
     @Override
@@ -52,7 +46,6 @@ public class HolyMantle implements IRecursivePassiveItem {
         description.add(Component.translatable("effect.isaac_disaster.holy_shield").append(": ")
                 .append(Component.translatable("effect.isaac_disaster.holy_shield.explain.1")));
         description.add(Component.translatable("effect.isaac_disaster.holy_shield.explain.2"));
-        description.add(Component.translatable("effect.isaac_disaster.holy_shield.explain.3"));
 
         return description;
     }

@@ -112,25 +112,13 @@ public interface IActiveItem {
 
     }
 
-    /**
-     * 获取物品实例
-     */
-    ItemStack getItemStack();
-
-
     default int getItemLevel(){
-        if (getItemStack().getItem() instanceof IsaacItem item){
+        if (ItemId.getItemById(getItemId()).get() instanceof IsaacItem item){
             return item.getItemLevel();
         }
         return 0;
     }
 
-    /**
-     * 获取名称
-     */
-    default Component getDisplayName(){
-        return getItemStack().getDisplayName();
-    }
 
     /**
      * 获取描述文本(lore)

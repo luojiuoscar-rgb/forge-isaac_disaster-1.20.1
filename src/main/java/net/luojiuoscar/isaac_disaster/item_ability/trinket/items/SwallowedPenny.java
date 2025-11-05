@@ -1,7 +1,6 @@
 package net.luojiuoscar.isaac_disaster.item_ability.trinket.items;
 
 import net.luojiuoscar.isaac_disaster.helper.LootHelper;
-import net.luojiuoscar.isaac_disaster.item.ModItems;
 import net.luojiuoscar.isaac_disaster.item.item.Trinket;
 import net.luojiuoscar.isaac_disaster.item_ability.trinket.IHurtTriggerTrinket;
 import net.luojiuoscar.isaac_disaster.manager.ColorManager;
@@ -20,11 +19,6 @@ public class SwallowedPenny implements IHurtTriggerTrinket {
     @Override
     public int getId() {
         return TrinketId.SWALLOWED_PENNY.getId();
-    }
-
-    @Override
-    public ItemStack getItemStack() {
-        return new ItemStack(ModItems.SWALLOWED_PENNY.get());
     }
 
     @Override

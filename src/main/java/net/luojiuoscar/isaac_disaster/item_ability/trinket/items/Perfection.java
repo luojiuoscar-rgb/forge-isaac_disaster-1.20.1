@@ -27,11 +27,6 @@ public class Perfection implements IHurtTriggerTrinket {
     }
 
     @Override
-    public ItemStack getItemStack() {
-        return new ItemStack(ModItems.PERFECTION.get());
-    }
-
-    @Override
     public List<Component> getDescription() {
         return List.of(Component.translatable("item.isaac_disaster.perfection.lore.1"),
                 StatManager.LUCK.description(10));
@@ -44,7 +39,7 @@ public class Perfection implements IHurtTriggerTrinket {
     }
 
     @Override
-    public void onEquipped(LivingEntity entity, boolean isEnchanted, boolean isPermanent){
+    public void onEquipped(LivingEntity entity, boolean isEnchanted){
         if (!(entity instanceof Player player)) return;
         if (isEnchanted) {
             StatManager.LUCK.apply(player, 20);
@@ -54,7 +49,7 @@ public class Perfection implements IHurtTriggerTrinket {
 
     };
     @Override
-    public void onUnequipped(LivingEntity entity, boolean isEnchanted, boolean isPermanent){
+    public void onUnequipped(LivingEntity entity, boolean isEnchanted){
         if (!(entity instanceof Player player)) return;
         if (isEnchanted) {
             StatManager.LUCK.apply(player, -20);

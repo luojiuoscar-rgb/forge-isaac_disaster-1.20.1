@@ -1,6 +1,5 @@
 package net.luojiuoscar.isaac_disaster.item_ability.passive_item.items;
 
-import net.luojiuoscar.isaac_disaster.item.ModItems;
 import net.luojiuoscar.isaac_disaster.item_ability.passive_item.IPassiveItem;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.manager.id_managers.ItemId;
@@ -15,11 +14,6 @@ public class TheSadOnion implements IPassiveItem {
     @Override
     public int getItemId() {
         return ItemId.THE_SAD_ONION.getId();
-    }
-
-    @Override
-    public ItemStack getItemStack(){
-        return new ItemStack(ModItems.THE_SAD_ONION.get());
     }
 
     @Override

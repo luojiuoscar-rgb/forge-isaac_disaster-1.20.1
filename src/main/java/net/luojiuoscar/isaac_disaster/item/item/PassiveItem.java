@@ -6,6 +6,7 @@ import net.luojiuoscar.isaac_disaster.manager.ColorManager;
 import net.luojiuoscar.isaac_disaster.manager.item_managers.PassiveItemManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
@@ -80,7 +81,7 @@ public class PassiveItem extends IsaacItem implements IIsaacCuriosItem {
 
     @Override
     public void tryEquip(SlotContext slotContext, ItemStack prevStack, ItemStack stack) {
-        if (!(slotContext.entity() instanceof Player player)) return;
+        if (!(slotContext.entity() instanceof ServerPlayer player)) return;
         PassiveItemManager.getInstance().getItemFromId(getItemId()).onObtain(player, stack);
         setConsumed(stack, true);
 
@@ -91,13 +92,13 @@ public class PassiveItem extends IsaacItem implements IIsaacCuriosItem {
 
     @Override
     public void tryUnequip(SlotContext slotContext, ItemStack prevStack, ItemStack stack) {
-        if (!(slotContext.entity() instanceof Player player)) return;
+        if (!(slotContext.entity() instanceof ServerPlayer player)) return;
         PassiveItemManager.getInstance().getItemFromId(getItemId()).onRemove(player, stack);
     }
 
     @Override
     public void curioTick(SlotContext slotContext, ItemStack stack) {
-        if (!(slotContext.entity() instanceof Player player)) return;
+        if (!(slotContext.entity() instanceof ServerPlayer player)) return;
         if (!(PassiveItemManager.getInstance().getItemFromId(getItemId()) instanceof IRecursivePassiveItem item)) return;
         if (player.tickCount % item.getTickInterval() != 0) return; // tick interval
 

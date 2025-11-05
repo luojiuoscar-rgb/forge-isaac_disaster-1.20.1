@@ -1,6 +1,5 @@
 package net.luojiuoscar.isaac_disaster.item_ability.passive_item.items;
 
-import net.luojiuoscar.isaac_disaster.item.ModItems;
 import net.luojiuoscar.isaac_disaster.item.item.PassiveItem;
 import net.luojiuoscar.isaac_disaster.item.item.custom.ExperimentalTreatmentItem;
 import net.luojiuoscar.isaac_disaster.item_ability.passive_item.IPassiveItem;
@@ -20,11 +19,6 @@ public class ExperimentalTreatment implements IPassiveItem {
     @Override
     public int getItemId() {
         return ItemId.EXPERIMENTAL_TREATMENT.getId();
-    }
-
-    @Override
-    public ItemStack getItemStack(){
-        return new ItemStack(ModItems.EXPERIMENTAL_TREATMENT.get());
     }
 
     @Override

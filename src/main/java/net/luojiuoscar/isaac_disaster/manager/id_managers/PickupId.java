@@ -46,7 +46,15 @@ public enum PickupId {
     SMALL_BATTERY,
     BATTERY,
     MEGA_BATTERY,
-    GOLDEN_BATTERY;
+    GOLDEN_BATTERY,
+    TWO_OF_SPADES,
+    ACE_OF_SPADES,
+    ANCIENT_RECALL,
+    JUSTICE_R,
+    THE_EMPRESS_R,
+    THE_CHARIOT_R,
+    STRENGTH_R,
+    TEMPERANCE_R;
 
 
     private final int id;

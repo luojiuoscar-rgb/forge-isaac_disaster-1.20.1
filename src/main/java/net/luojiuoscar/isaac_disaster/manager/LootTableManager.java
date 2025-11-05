@@ -4,7 +4,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 
 public class LootTableManager {
-
+    // random drops
     public static final ResourceLocation RANDOM_COINS =
             ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "pickups/random/coins");
     public static final ResourceLocation RANDOM_PILLS =
@@ -21,13 +21,31 @@ public class LootTableManager {
             ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "pickups/random/batteries");
     public static final ResourceLocation RANDOM_SACKS =
             ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "pickups/random/sacks");
-
-    public static final ResourceLocation DEFAULT_ITEM_POOL =
-            ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "pools/item/passive_items");
-
+    public static final ResourceLocation RANDOM_TRINKETS =
+            ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "pickups/random/trinkets");
+    // sacks
     public static final ResourceLocation GRAB_BAG =
             ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "pickups/grab_bag");
     public static final ResourceLocation BLACK_SACK =
             ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "pickups/black_sack");
+
+
+    // item pools
+    public static final ResourceLocation DEFAULT_ITEM_POOL =
+            ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "pools/passive_items");
+
+
+    // chests
+    public static final ResourceLocation CHEST =
+            ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "chests/isaac/chest");
+    public static final ResourceLocation LOCKED_CHEST =
+            ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "chests/isaac/locked_chest");
+    public static final ResourceLocation GILDED_LOCKED_CHEST =
+            ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "chests/isaac/locked_chest_with_gilded_key");
+    public static final ResourceLocation RED_CHEST =
+            ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "chests/isaac/red_chest");
+    public static final ResourceLocation OLD_CHEST =
+            ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "chests/isaac/old_chest");
+
 
 }

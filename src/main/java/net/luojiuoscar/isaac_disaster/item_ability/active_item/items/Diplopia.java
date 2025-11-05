@@ -2,7 +2,6 @@ package net.luojiuoscar.isaac_disaster.item_ability.active_item.items;
 
 import net.luojiuoscar.isaac_disaster.client.ClientDataManager;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
-import net.luojiuoscar.isaac_disaster.item.ModItems;
 import net.luojiuoscar.isaac_disaster.item_ability.active_item.IDisposableActiveItem;
 import net.luojiuoscar.isaac_disaster.manager.ColorManager;
 import net.luojiuoscar.isaac_disaster.manager.TagManager;
@@ -30,7 +29,7 @@ public class Diplopia implements IDisposableActiveItem {
         List<ItemStack> invItems = new ArrayList<>();
         invItems.addAll(inv.items);
         invItems.addAll(inv.offhand);
-        invItems.addAll(inv.armor);
+
 
         for (ItemStack stack : invItems) {
             if (!stack.isEmpty()) {
@@ -46,11 +45,6 @@ public class Diplopia implements IDisposableActiveItem {
     @Override
     public void onTriggeredEffectStronger(Player player){
         onTriggeredEffect(player);
-    }
-
-    @Override
-    public ItemStack getItemStack() {
-        return new ItemStack(ModItems.DIPLOPIA.get());
     }
 
     @Override

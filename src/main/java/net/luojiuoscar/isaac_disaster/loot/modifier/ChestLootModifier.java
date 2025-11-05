@@ -40,7 +40,7 @@ public class ChestLootModifier extends LootModifier {
         if (pos == null) return objectArrayList;
 
         ServerLevel level = lootContext.getLevel();
-        if (!(level.getBlockEntity(BlockPos.containing(pos)) instanceof RandomizableContainerBlockEntity container)) return objectArrayList;
+        if (!(level.getBlockEntity(BlockPos.containing(pos)) instanceof RandomizableContainerBlockEntity)) return objectArrayList;
         if (!(lootContext.getParamOrNull(LootContextParams.THIS_ENTITY) instanceof ServerPlayer player)) return objectArrayList;
 
         RandomSource rand = player.getRandom();

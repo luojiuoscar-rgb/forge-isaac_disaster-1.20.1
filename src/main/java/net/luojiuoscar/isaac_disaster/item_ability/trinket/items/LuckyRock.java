@@ -1,7 +1,6 @@
 package net.luojiuoscar.isaac_disaster.item_ability.trinket.items;
 
 import net.luojiuoscar.isaac_disaster.helper.LevelHelper;
-import net.luojiuoscar.isaac_disaster.item.ModItems;
 import net.luojiuoscar.isaac_disaster.item.item.Trinket;
 import net.luojiuoscar.isaac_disaster.item_ability.trinket.ITriggerTrinket;
 import net.luojiuoscar.isaac_disaster.manager.ColorManager;
@@ -20,11 +19,6 @@ public class LuckyRock implements ITriggerTrinket {
     @Override
     public int getId() {
         return TrinketId.LUCKY_ROCK.getId();
-    }
-
-    @Override
-    public ItemStack getItemStack() {
-        return new ItemStack(ModItems.LUCKY_ROCK.get());
     }
 
     @Override

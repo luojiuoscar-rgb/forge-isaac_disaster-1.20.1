@@ -1,0 +1,15 @@
+{
+  "pools": [
+    {
+      "rolls": {
+        "min": 2,
+        "max": 3
+      },
+      "entries":[
+        {"type": "minecraft:loot_table", "name": "isaac_disaster:ref/coins_1t3", "weight": 35},
+        {"type": "minecraft:loot_table", "name": "isaac_disaster:pickups/random/keys", "weight": 15},
+        {"type": "minecraft:loot_table", "name": "isaac_disaster:pickups/random/bombs", "weight": 30}
+      ]
+    }
+  ]
+}

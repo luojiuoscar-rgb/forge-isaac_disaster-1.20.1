@@ -35,7 +35,7 @@ public class ModEffects {
             () -> new InvincibleEffect(MobEffectCategory.BENEFICIAL, 0xFFD700));
 
     public static final RegistryObject<MobEffect> FRAILTY = MOB_EFFECTS.register(EffectNameManager.FRAILTY,
-            () -> new FrailtyEffect(MobEffectCategory.BENEFICIAL, 0xFFD700));
+            () -> new FrailtyEffect(MobEffectCategory.HARMFUL, 0xFFD700));
 
     public static final RegistryObject<MobEffect> NECRONMICON_SHIELD = MOB_EFFECTS.register(EffectNameManager.NECRONMICON_SHIELD,
             () -> new NecronmiconShieldEffect(MobEffectCategory.BENEFICIAL, 0x000000));

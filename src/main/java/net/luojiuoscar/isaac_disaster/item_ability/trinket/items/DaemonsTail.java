@@ -1,11 +1,9 @@
 package net.luojiuoscar.isaac_disaster.item_ability.trinket.items;
 
-import net.luojiuoscar.isaac_disaster.item.ModItems;
 import net.luojiuoscar.isaac_disaster.item_ability.trinket.ITrinket;
 import net.luojiuoscar.isaac_disaster.manager.ColorManager;
 import net.luojiuoscar.isaac_disaster.manager.id_managers.TrinketId;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.item.ItemStack;
 
 import java.util.List;
 
@@ -13,11 +11,6 @@ public class DaemonsTail implements ITrinket {
     @Override
     public int getId() {
         return TrinketId.DAEMONS_TAIL.getId();
-    }
-
-    @Override
-    public ItemStack getItemStack() {
-        return new ItemStack(ModItems.DAEMONS_TAIL.get());
     }
 
     @Override

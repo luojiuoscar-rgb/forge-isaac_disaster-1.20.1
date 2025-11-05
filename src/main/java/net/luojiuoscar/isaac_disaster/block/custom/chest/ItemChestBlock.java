@@ -2,6 +2,7 @@ package net.luojiuoscar.isaac_disaster.block.custom.chest;
 
 import net.luojiuoscar.isaac_disaster.block.block_entity.chest.ItemChestBlockEntity;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
+import net.luojiuoscar.isaac_disaster.manager.data.IsaacItemBlockData;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
@@ -47,7 +48,7 @@ public abstract class ItemChestBlock extends IsaacChestBlock{
                 boolean spawnedItem = chest.tryLootItem(serverLevel, player, pos); // 尝试生成道具
 
                 if (!spawnedItem) {
-                    super.use(state, level, pos, player, hand, hit); // 打开箱子
+                    return super.use(state, level, pos, player, hand, hit); // 打开箱子
                 }else{
                     level.playSound(null, pos.getX(), pos.getY(), pos.getZ(),
                             SoundEvents.CHEST_OPEN, SoundSource.BLOCKS, 1.0f, 1.0f);
@@ -57,8 +58,10 @@ public abstract class ItemChestBlock extends IsaacChestBlock{
         } else if (chest.isDisplayingItem()){ // 获取物品
             if (held.isEmpty()){
                 player.setItemInHand(hand, store);
-                chest.setItem(0, ItemStack.EMPTY);
+                chest.clearItemDisplayList();
+                chest.clearContent();
                 chest.setDisplayingItem(false);
+                IsaacItemBlockData.get(serverLevel).removeItemBlock(pos);
 
                 level.playSound(null, pos.getX(), pos.getY(), pos.getZ(),
                         SoundEvents.ITEM_PICKUP, SoundSource.BLOCKS, 0.7f, 1.0f);
@@ -67,12 +70,19 @@ public abstract class ItemChestBlock extends IsaacChestBlock{
             }
 
         }else{
-            super.use(state, level, pos, player, hand, hit);
+            return super.use(state, level, pos, player, hand, hit);
+        }
+        return InteractionResult.SUCCESS;
+    }
+
+    @Override
+    public void onRemove(BlockState state, Level level, BlockPos pos,
+                         BlockState newState, boolean isMoving){
+        if (!level.isClientSide){
+            IsaacItemBlockData.get((ServerLevel) level).removeItemBlock(pos);
         }
 
-
-
-        return InteractionResult.SUCCESS;
+        super.onRemove(state, level, pos, newState, isMoving);
     }
 
     @Override

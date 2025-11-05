@@ -22,7 +22,7 @@ public class RedChestBlockEntity extends ItemChestBlockEntity {
     public RedChestBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.RED_CHEST_BLOCK_ENTITY.get(), pos, state);
 
-        this.setItemLootChance(0.4);
+        this.setItemLootChance(0.1);
     }
 
     @Override
@@ -40,41 +40,59 @@ public class RedChestBlockEntity extends ItemChestBlockEntity {
         if (isOpened()) return false;
         if (level == null) return false;
 
-        RandomSource rand = player.getRandom();
+        RandomSource rand = serverLevel.getRandom();
 
-        if (rand.nextDouble() < 0.5){ // 50%进行其他事件
+        try {
+            if (opened) return false;
             setOpened(true);
 
-            EventHelper.triggerWeightedEvent(serverLevel, player, rand,
-                    new EventHelper.EventWeight(() ->{
-                        EntityHelper.spawnBomb(pos.getCenter().add(0, 1, 0), null, level, Vec3.ZERO, 2);
-                    }, 2),
-                    new EventHelper.EventWeight(() -> {
-                        EntityHelper.spawnBomb(pos.getCenter().add(0, 1, 0), null, level, Vec3.ZERO, 1);
-                        EntityHelper.spawnBomb(pos.getCenter().add(0, 1, 0), null, level, Vec3.ZERO, 1);
-                    }, 3),
-                    new EventHelper.EventWeight(() ->{
-                        CaveSpider s = new CaveSpider(EntityType.CAVE_SPIDER, level);
-                        s.setPos(pos.getCenter().add(0, 1, 0));
-                        level.addFreshEntity(s);
-
-                        CaveSpider s2 = new CaveSpider(EntityType.CAVE_SPIDER, level);
-                        s2.setPos(pos.getCenter().add(0, 1, 0));
-                        level.addFreshEntity(s2);
-                    }, 2),
-                    new EventHelper.EventWeight(() ->{
-                        Spider s = new Spider(EntityType.SPIDER, level);
-                        s.setPos(pos.getCenter().add(0, 1, 0));
-                        level.addFreshEntity(s);
-
-                        Spider s2 = new Spider(EntityType.SPIDER, level);
-                        s2.setPos(pos.getCenter().add(0, 1, 0));
-                        level.addFreshEntity(s2);
-                    }, 3)
-            );
-            return false;
+            if (rand.nextDouble() >= getItemLootChance()){
+                if (rand.nextDouble() >= 0.5){
+                    openEvent(serverLevel, player, pos);
+                }
+                return false;
+            }
+            boolean s = lootItem(serverLevel, player, pos, ResourceLocation.parse(getItemLootTable()));
+            if (s){
+                setDisplayingItem(true);
+                return true;
+            }
+        } catch (Exception e) {
+            IsaacDisaster.LOGGER.error("Failed to generate loot for red chests at {} with table {}", worldPosition, getItemLootTable(), e);
+            setItemLootTable(DEFAULT_ITEM_LOOT_TABLE);
         }
-        return super.tryLootItem(serverLevel, player, pos);
+        return false;
+    }
+
+    private void openEvent(ServerLevel serverLevel, Player player, BlockPos pos){
+        RandomSource rand = serverLevel.getRandom();
+        EventHelper.triggerWeightedEvent(serverLevel, player, rand,
+                new EventHelper.EventWeight(() ->{
+                    EntityHelper.spawnBomb(pos.getCenter().add(0, 1, 0), null, level, Vec3.ZERO, 2);
+                }, 2),
+                new EventHelper.EventWeight(() -> {
+                    EntityHelper.spawnBomb(pos.getCenter().add(0, 1, 0), null, level, Vec3.ZERO, 1);
+                    EntityHelper.spawnBomb(pos.getCenter().add(0, 1, 0), null, level, Vec3.ZERO, 1);
+                }, 3),
+                new EventHelper.EventWeight(() ->{
+                    CaveSpider s = new CaveSpider(EntityType.CAVE_SPIDER, serverLevel);
+                    s.setPos(pos.getCenter().add(0, 1, 0));
+                    serverLevel.addFreshEntity(s);
+
+                    CaveSpider s2 = new CaveSpider(EntityType.CAVE_SPIDER, serverLevel);
+                    s2.setPos(pos.getCenter().add(0, 1, 0));
+                    serverLevel.addFreshEntity(s2);
+                }, 2),
+                new EventHelper.EventWeight(() ->{
+                    Spider s = new Spider(EntityType.SPIDER, serverLevel);
+                    s.setPos(pos.getCenter().add(0, 1, 0));
+                    serverLevel.addFreshEntity(s);
+
+                    Spider s2 = new Spider(EntityType.SPIDER, serverLevel);
+                    s2.setPos(pos.getCenter().add(0, 1, 0));
+                    serverLevel.addFreshEntity(s2);
+                }, 3)
+        );
     }
 
 }

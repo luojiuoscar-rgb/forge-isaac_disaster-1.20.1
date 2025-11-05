@@ -24,6 +24,8 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -145,7 +147,7 @@ public class PlayerHelper {
         List<ItemStack> invItems = new ArrayList<>();
         invItems.addAll(inv.items);
         invItems.addAll(inv.offhand);
-        invItems.addAll(inv.armor);
+
         boolean canOverCharge = hasItem(ItemId.THE_BATTERY.getId(), player);
         // 遍历背包 对全部物品充能
         for (ItemStack stack : invItems) {
@@ -214,7 +216,7 @@ public class PlayerHelper {
         List<ItemStack> items = new ArrayList<>();
         items.addAll(inv.items);
         items.addAll(inv.offhand);
-        items.addAll(inv.armor);
+
 
         // 遍历背包所有物品
         for (ItemStack stack : items) {
@@ -241,7 +243,7 @@ public class PlayerHelper {
         List<ItemStack> items = new ArrayList<>();
         items.addAll(inv.items);
         items.addAll(inv.offhand);
-        items.addAll(inv.armor);
+
 
         // 遍历背包所有物品
         for (ItemStack stack : items) {
@@ -508,9 +510,13 @@ public class PlayerHelper {
     }
     public static double getTearsCorrection(Player player) {
         AttributeInstance instance = player.getAttribute(ModAttributes.TEARS_CORRECTION.get());
-        if (instance == null) return 0.0;
+        MobEffectInstance effect = player.getEffect(MobEffects.DIG_SPEED);
 
-        return  instance.getValue();
+        double value = 0;
+        value += effect != null ? effect.getAmplifier() + 1 : 0;
+        value += instance != null ? instance.getValue() : 0;
+
+        return  value;
     }
     public static float getExtraBulletScale(Player player){
         // 额外子弹大小因子

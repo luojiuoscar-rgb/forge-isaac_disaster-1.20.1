@@ -13,7 +13,7 @@ public enum TrinketId {
     CARTRIDGE,
     LUCKY_ROCK,
     LUCKY_TOE,
-    CANCER,
+    CANCER_TRINKET,
     BLIND_RAGE,
     PERFECTION,
     DAEMONS_TAIL,
@@ -23,7 +23,9 @@ public enum TrinketId {
     RUSTED_KEY,
     CHILDS_HEART,
     MATCH_STICK,
-    POKER_CHIP;
+    POKER_CHIP,
+    GILDED_KEY,
+    THE_LEFT_HAND;
 
 
     private final int id;

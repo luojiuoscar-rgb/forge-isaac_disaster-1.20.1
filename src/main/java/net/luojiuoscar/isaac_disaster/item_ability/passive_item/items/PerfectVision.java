@@ -2,7 +2,6 @@ package net.luojiuoscar.isaac_disaster.item_ability.passive_item.items;
 
 
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerPassiveItemProvider;
-import net.luojiuoscar.isaac_disaster.item.ModItems;
 import net.luojiuoscar.isaac_disaster.item_ability.passive_item.IPassiveItem;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.manager.id_managers.ItemId;
@@ -20,11 +19,6 @@ import java.util.UUID;
 public class PerfectVision implements IPassiveItem {
     private static final UUID PERFECT_VISION_DAMAGE =
             UUID.nameUUIDFromBytes(("isaac_disaster:perfect_vision_damage").getBytes(StandardCharsets.UTF_8));
-
-    @Override
-    public ItemStack getItemStack(){
-        return new ItemStack(ModItems.PERFECT_VISION.get());
-    }
 
     @Override
     public int getItemId() {

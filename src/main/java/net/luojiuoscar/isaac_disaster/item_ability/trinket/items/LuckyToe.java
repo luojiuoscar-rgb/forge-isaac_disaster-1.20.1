@@ -1,6 +1,5 @@
 package net.luojiuoscar.isaac_disaster.item_ability.trinket.items;
 
-import net.luojiuoscar.isaac_disaster.item.ModItems;
 import net.luojiuoscar.isaac_disaster.item_ability.trinket.ITrinket;
 import net.luojiuoscar.isaac_disaster.manager.ColorManager;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
@@ -9,7 +8,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
 
 import java.util.List;
 
@@ -17,11 +15,6 @@ public class LuckyToe implements ITrinket {
     @Override
     public int getId() {
         return TrinketId.LUCKY_TOE.getId();
-    }
-
-    @Override
-    public ItemStack getItemStack() {
-        return new ItemStack(ModItems.LUCKY_TOE.get());
     }
 
     @Override
@@ -36,7 +29,7 @@ public class LuckyToe implements ITrinket {
     }
 
     @Override
-    public void onEquipped(LivingEntity entity, boolean isEnchanted, boolean isPermanent){
+    public void onEquipped(LivingEntity entity, boolean isEnchanted){
         if (!(entity instanceof Player player)) return;
         if (isEnchanted) {
             StatManager.LUCK.apply(player, 2);
@@ -46,7 +39,7 @@ public class LuckyToe implements ITrinket {
 
     };
     @Override
-    public void onUnequipped(LivingEntity entity, boolean isEnchanted, boolean isPermanent){
+    public void onUnequipped(LivingEntity entity, boolean isEnchanted){
         if (!(entity instanceof Player player)) return;
         if (isEnchanted) {
             StatManager.LUCK.apply(player, -2);

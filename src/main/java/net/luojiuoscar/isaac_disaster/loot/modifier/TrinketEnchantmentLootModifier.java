@@ -4,7 +4,6 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.luojiuoscar.isaac_disaster.item.item.Trinket;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.storage.loot.LootContext;
@@ -25,16 +24,16 @@ public class TrinketEnchantmentLootModifier extends LootModifier {
     protected @NotNull ObjectArrayList<ItemStack> doApply(ObjectArrayList<ItemStack> objectArrayList, LootContext lootContext) {
         if (objectArrayList.isEmpty()) return objectArrayList;
 
-        ResourceLocation tableId = lootContext.getQueriedLootTableId();
         RandomSource rand = lootContext.getRandom();
-        ItemStack stack = objectArrayList.get(0);
 
-        if (!(stack.getItem() instanceof Trinket) || objectArrayList.size() > 1 ||
-                !tableId.getNamespace().equals("isaac_disaster") || !tableId.getPath().startsWith("pools/trinket/"))
-            return objectArrayList;
+        for (ItemStack stack : objectArrayList){
+            if (!(stack.getItem() instanceof Trinket) || objectArrayList.size() > 1){
+                continue;
+            }
 
-        if (rand.nextDouble() < 0.02){ // 2% chance
-            Trinket.setEnchanted(stack, true);
+            if (rand.nextDouble() < 0.02){ // 2% chance
+                Trinket.setEnchanted(stack, true);
+            }
         }
 
         return objectArrayList;

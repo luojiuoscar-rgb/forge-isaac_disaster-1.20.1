@@ -2,6 +2,7 @@ package net.luojiuoscar.isaac_disaster.item_ability.passive_item;
 
 import net.luojiuoscar.isaac_disaster.item.item.IsaacItem;
 import net.luojiuoscar.isaac_disaster.item.item.PassiveItem;
+import net.luojiuoscar.isaac_disaster.manager.id_managers.ItemId;
 import net.luojiuoscar.isaac_disaster.sound.ModSounds;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvent;
@@ -65,10 +66,8 @@ public interface IPassiveItem {
         return new ArrayList<>();
     }
 
-    ItemStack getItemStack();
-
     default int getItemLevel(){
-        if (getItemStack().getItem() instanceof IsaacItem item){
+        if (ItemId.getItemById(getItemId()).get() instanceof IsaacItem item){
             return item.getItemLevel();
         }
         return 0;

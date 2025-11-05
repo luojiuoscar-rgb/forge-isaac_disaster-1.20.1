@@ -7,6 +7,7 @@ import net.luojiuoscar.isaac_disaster.effect.ModEffects;
 import net.luojiuoscar.isaac_disaster.entity.custom.IsaacBullet;
 import net.luojiuoscar.isaac_disaster.event.custom.*;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
+import net.luojiuoscar.isaac_disaster.item.ModItems;
 import net.luojiuoscar.isaac_disaster.item.item.Trinket;
 import net.luojiuoscar.isaac_disaster.item_ability.passive_item.IDamageTriggerPassiveItem;
 import net.luojiuoscar.isaac_disaster.item_ability.passive_item.INewBulletTypePassiveItem;
@@ -203,4 +204,11 @@ public class IsaacDisasterEvents {
 
 
     }
+
+    @SubscribeEvent
+    public static void onItemDisplayAdd(ItemDisplayAddEvent event){
+        event.addDisplayItem(new ItemStack(ModItems.BREAKFAST.get()));
+        event.addDisplayItem(new ItemStack(ModItems.DESSERT.get()));
+    }
+
 }

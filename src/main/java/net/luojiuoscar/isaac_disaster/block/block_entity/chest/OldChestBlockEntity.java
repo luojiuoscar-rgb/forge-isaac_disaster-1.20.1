@@ -21,6 +21,7 @@ public class OldChestBlockEntity extends ItemChestBlockEntity {
         return ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "block/old_chest_lid");
     }
 
+
     @Override
     public @NotNull Component getDisplayName() {
         return Component.translatable("block.isaac_disaster.old_chest");

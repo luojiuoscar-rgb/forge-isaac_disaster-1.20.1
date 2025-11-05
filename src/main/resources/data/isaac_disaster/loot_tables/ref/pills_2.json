@@ -1,0 +1,10 @@
+{
+  "pools": [
+    {
+      "rolls": 2,
+      "entries":[
+        {"type": "minecraft:loot_table", "name": "isaac_disaster:pickups/random/pills"}
+      ]
+    }
+  ]
+}

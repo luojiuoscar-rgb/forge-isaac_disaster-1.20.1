@@ -3,8 +3,8 @@ package net.luojiuoscar.isaac_disaster.event;
 
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.block.ModBlockEntities;
-import net.luojiuoscar.isaac_disaster.block.renderer.chest.IsaacChestRenderer;
-import net.luojiuoscar.isaac_disaster.block.renderer.chest.PedestalRenderer;
+import net.luojiuoscar.isaac_disaster.block.renderer.IsaacChestRenderer;
+import net.luojiuoscar.isaac_disaster.block.renderer.PedestalRenderer;
 import net.luojiuoscar.isaac_disaster.client.FlyHudOverlay;
 import net.luojiuoscar.isaac_disaster.client.ModKeyMappings;
 import net.luojiuoscar.isaac_disaster.entity.ModEntities;

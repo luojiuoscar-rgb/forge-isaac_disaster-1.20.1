@@ -186,7 +186,7 @@
   "item.isaac_disaster.action.consumed": "[已使用]",
   "item.isaac_disaster.action.cannot_unequip": "无法卸下",
 
-
+  "items start": "",
   "item.isaac_disaster.breakfast": "早餐",
   "item.isaac_disaster.dessert": "甜点",
   "item.isaac_disaster.lunch": "正餐",
@@ -350,10 +350,14 @@
   "item.isaac_disaster.sack_head.lore.1": "使以撒掉落物有概率变成福袋",
   "item.isaac_disaster.mitre": "主教冠",
   "item.isaac_disaster.mitre.lore.1": "红心有概率转化为魂心",
+  "item.isaac_disaster.the_d6": "六面骰",
+  "item.isaac_disaster.the_d6.lore.1": "变化一定范围内的道具",
+
+  "items end": "",
 
 
 
-
+  "trinkets": "",
   "item.isaac_disaster.swallowed_penny": "被吞下的硬币",
   "item.isaac_disaster.swallowed_penny.lore.1": "受伤时概率生成1个硬币",
   "item.isaac_disaster.swallowed_penny.enchanted.lore.1": "触发概率更高",
@@ -395,10 +399,19 @@
   "item.isaac_disaster.rusted_key.lore.1": "箱子里会有额外的钥匙",
   "item.isaac_disaster.poker_chip": "筹码",
   "item.isaac_disaster.poker_chip.lore.1": "有概率使箱子里的物品消失或者翻倍",
+  "item.isaac_disaster.gilded_key": "镀金钥匙",
+  "item.isaac_disaster.gilded_key.lore.1": "使箱子变成金箱子",
+  "item.isaac_disaster.gilded_key.lore.2": "改变金箱子的掉落逻辑",
+  "item.isaac_disaster.gilded_key.lore.3": "首次获取的时候获得一把钥匙",
+  "item.isaac_disaster.gilded_key.enchanted.lore.1": "不再给予钥匙",
+  "item.isaac_disaster.the_left_hand": "左断手",
+  "item.isaac_disaster.the_left_hand.lore.1": "使箱子变成红箱子",
+
+  "trinkets end": "",
 
 
 
-
+  "cards": "",
   "item.isaac_disaster.the_fool": "0-愚者",
   "item.isaac_disaster.the_fool.lore.1": "传送回出生点",
   "item.isaac_disaster.the_magician": "I-魔术师",
@@ -458,8 +471,29 @@
   "item.isaac_disaster.the_hierophant_r": "V-教皇？",
   "item.isaac_disaster.the_world": "XXI-世界",
   "item.isaac_disaster.the_world.lore.1": "获得时停效果",
+  "item.isaac_disaster.2_of_spades": "黑桃2",
+  "item.isaac_disaster.2_of_spades.lore.1": "钥匙翻倍",
+  "item.isaac_disaster.ace_of_spades": "黑桃A",
+  "item.isaac_disaster.ace_of_spades.lore.1": "将周围生物变成钥匙",
+  "item.isaac_disaster.ancient_recall": "先祖召唤",
+  "item.isaac_disaster.ancient_recall.lore.1": "生成3张随机卡牌",
+  "item.isaac_disaster.justice_r": "VIII-正义？",
+  "item.isaac_disaster.justice_r.lore.1": "获得2-4个金箱子",
+  "item.isaac_disaster.justice_r.tarot_cloth.lore.1": "获得4-14个金箱子",
+  "item.isaac_disaster.the_empress_r": "III-皇后？",
+  "item.isaac_disaster.the_empress_r.lore.1": "获得急迫II、脆弱之心",
+  "item.isaac_disaster.the_chariot_r": "VII-战车？",
+  "item.isaac_disaster.the_chariot_r.lore.1": "获得眩晕、无敌、急迫X",
+  "item.isaac_disaster.strength_r": "XI-力量？",
+  "item.isaac_disaster.strength_r.lore.1": "衰弱周围的生物",
+  "item.isaac_disaster.temperance_r": "XIV-节制？",
+  "item.isaac_disaster.temperance_r.lore.1": "一口气吃下5个药丸",
+  "item.isaac_disaster.temperance_r.tarot_cloth.lore.1": "一口气吃下10个药丸",
+
+  "pickups end": "",
 
 
+  "misc": "",
   "item.isaac_disaster.debug_stick": "调试棒",
   "message.isaac_disaster.debug_stick.clear": "§e已清空调试棒数据",
   "item.isaac_disaster.lock": "锁",
@@ -474,7 +508,7 @@
   "block.isaac_disaster.eternal_chest": "永恒箱子",
   "block.isaac_disaster.red_chest": "红箱子",
 
-
+  "pills": "",
   "pill.isaac_disaster.effect.unknown": "???",
   "pill.isaac_disaster.effect.balls_of_steel": "钢铁双蛋",
   "pill.isaac_disaster.effect.i_found_pills": "我找到枚怪药",

@@ -38,6 +38,4 @@ public abstract class IsaacChestBlock extends ChestBlock {
         }
         return null;
     }
-
-
 }

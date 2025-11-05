@@ -27,17 +27,6 @@ public class ModLootTableProvider extends LootTableProvider {
         public void generate(BiConsumer<ResourceLocation, LootTable.Builder> writer) {
             addItemPool(writer, "passive_items", TagManager.PASSIVE_ITEMS);
             addItemPool(writer, "active_items", TagManager.ACTIVE_ITEMS);
-            addTrinketPool(writer, "trinkets", TagManager.TRINKETS);
-        }
-
-        private void addTrinketPool(BiConsumer<ResourceLocation, LootTable.Builder> writer, String name, net.minecraft.tags.TagKey<net.minecraft.world.item.Item> tag) {
-            LootTable.Builder table = LootTable.lootTable()
-                    .withPool(LootPool.lootPool()
-                            .setRolls(net.minecraft.world.level.storage.loot.providers.number.ConstantValue.exactly(1))
-                            .add(TagEntry.expandTag(tag))
-                    );
-
-            writer.accept(ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "pools/trinket/" + name), table);
         }
 
         private void addItemPool(BiConsumer<ResourceLocation, LootTable.Builder> writer, String name, net.minecraft.tags.TagKey<net.minecraft.world.item.Item> tag) {
@@ -47,7 +36,7 @@ public class ModLootTableProvider extends LootTableProvider {
                             .add(TagEntry.expandTag(tag))
                     );
 
-            writer.accept(ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "pools/item/" + name), table);
+            writer.accept(ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "pools/" + name), table);
         }
     }
 }

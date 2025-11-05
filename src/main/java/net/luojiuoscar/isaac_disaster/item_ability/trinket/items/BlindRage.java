@@ -1,6 +1,5 @@
 package net.luojiuoscar.isaac_disaster.item_ability.trinket.items;
 
-import net.luojiuoscar.isaac_disaster.item.ModItems;
 import net.luojiuoscar.isaac_disaster.item.item.Trinket;
 import net.luojiuoscar.isaac_disaster.item_ability.trinket.IHurtTriggerTrinket;
 import net.luojiuoscar.isaac_disaster.manager.ColorManager;
@@ -17,11 +16,6 @@ public class BlindRage implements IHurtTriggerTrinket {
     @Override
     public int getId() {
         return TrinketId.BLIND_RAGE.getId();
-    }
-
-    @Override
-    public ItemStack getItemStack() {
-        return new ItemStack(ModItems.BLIND_RAGE.get());
     }
 
     @Override

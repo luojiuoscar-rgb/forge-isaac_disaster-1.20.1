@@ -11,11 +11,9 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 public class CrookedPenny implements IActiveItem {
 
@@ -46,11 +44,6 @@ public class CrookedPenny implements IActiveItem {
     public void onTriggeredEffectStronger(Player player){
         onTriggeredEffect(player);
         onTriggeredEffect(player);
-    }
-
-    @Override
-    public ItemStack getItemStack() {
-        return new ItemStack(ModItems.CROOKED_PENNY.get());
     }
 
     @Override

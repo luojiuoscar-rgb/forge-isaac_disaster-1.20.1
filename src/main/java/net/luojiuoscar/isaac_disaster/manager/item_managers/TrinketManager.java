@@ -45,7 +45,7 @@ public class TrinketManager {
                 new Cartridge(),
                 new LuckyToe(),
                 new LuckyRock(),
-                new Cancer(),
+                new CancerTrinket(),
                 new BlindRage(),
                 new Perfection(),
                 new DaemonsTail(),
@@ -55,7 +55,9 @@ public class TrinketManager {
                 new ChildsHeart(),
                 new RustedKey(),
                 new MatchStick(),
-                new PokerChip()
+                new PokerChip(),
+                new GildedKey(),
+                new TheLeftHand()
         );
     }
 }

@@ -23,11 +23,6 @@ public class TheSoul implements IRecursivePassiveItem {
     }
 
     @Override
-    public ItemStack getItemStack(){
-        return new ItemStack(ModItems.THE_SOUL.get());
-    }
-
-    @Override
     public void onFirstObtain(Player player, @Nullable ItemStack stack) {
         PlayerHelper.giveItem(player, ModItems.SOUL_HEART.get(), 2);
     }

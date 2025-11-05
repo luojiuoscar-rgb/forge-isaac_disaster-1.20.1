@@ -233,6 +233,9 @@ public class EntityHelper {
         int amplifier = entity.getEffect(effect) == null ? -1 : entity.getEffect(effect).getAmplifier();
         amplifier += count;
 
+        entity.removeEffect(effect);
+        if (amplifier < 0) return;
+
         MobEffectInstance newEffect = new MobEffectInstance(
                 effect,
                 -1,

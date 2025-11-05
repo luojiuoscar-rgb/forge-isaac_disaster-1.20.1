@@ -19,11 +19,6 @@ public class BomberBoy implements IPassiveItem {
     }
 
     @Override
-    public ItemStack getItemStack(){
-        return new ItemStack(ModItems.BOMBER_BOY.get());
-    }
-
-    @Override
     public void onFirstObtain(Player player, @Nullable ItemStack stack) {
         PlayerHelper.giveItem(player, ModItems.BOMB.get(), 5);
         PlayerHelper.giveItem(player, ModItems.GIGA_BOMB.get(), 1);

@@ -1,4 +1,4 @@
-package net.luojiuoscar.isaac_disaster.block.renderer.chest;
+package net.luojiuoscar.isaac_disaster.block.renderer;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
@@ -24,7 +24,7 @@ import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 
-public class IsaacChestRenderer implements BlockEntityRenderer<IsaacChestBlockEntity> {
+public class IsaacChestRenderer implements BlockEntityRenderer<IsaacChestBlockEntity>  {
 
     private final BlockRenderDispatcher blockRenderer;
 

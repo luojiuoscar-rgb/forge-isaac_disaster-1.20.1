@@ -2,9 +2,9 @@ package net.luojiuoscar.isaac_disaster.block.block_entity;
 
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.block.ModBlockEntities;
+import net.luojiuoscar.isaac_disaster.block.block_entity.misc.ItemDisplayContainerBlockEntity;
+import net.luojiuoscar.isaac_disaster.capability.misc.DisplayItemListCap;
 import net.luojiuoscar.isaac_disaster.helper.LevelHelper;
-import net.luojiuoscar.isaac_disaster.helper.PoolHelper;
-import net.luojiuoscar.isaac_disaster.item.item.IsaacItem;
 import net.luojiuoscar.isaac_disaster.manager.data.PedestalData;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -23,19 +23,14 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.storage.loot.LootParams;
-import net.minecraft.world.level.storage.loot.LootTable;
-import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
-import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraftforge.items.ItemStackHandler;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
-public class PedestalBlockEntity extends BlockEntity {
+public class PedestalBlockEntity extends BlockEntity implements ItemDisplayContainerBlockEntity {
     public final ItemStackHandler inventory = new ItemStackHandler(1){
         @Override
         protected int getStackLimit(int slot, @NotNull ItemStack stack) {
@@ -169,12 +164,17 @@ public class PedestalBlockEntity extends BlockEntity {
         }
     }
 
-    public void clearContents(){ inventory.setStackInSlot(0, ItemStack.EMPTY); }
+    public void clearContent(){
+        clearItemDisplayList();
+        inventory.setStackInSlot(0, ItemStack.EMPTY);
+    }
 
     public void drops(){
         if(level == null || !isDecoration || isLocked()) return;
         SimpleContainer inv = new SimpleContainer(inventory.getSlots());
-        for(int i=0;i<inventory.getSlots();i++) inv.setItem(i, inventory.getStackInSlot(i));
+        for(int i=0; i<inventory.getSlots(); i++) {
+            inv.setItem(i, inventory.getStackInSlot(i));
+        }
         Containers.dropContents(this.level, this.worldPosition, inv);
     }
 
@@ -192,7 +192,16 @@ public class PedestalBlockEntity extends BlockEntity {
 
     public static <T extends PedestalBlockEntity> void tick(Level level, BlockPos pos, BlockState state, T blockEntity) {
         if (level.isClientSide) return;
-        if (blockEntity.isGenerated() || blockEntity.isDecoration()) return;
+        if (blockEntity.isDecoration()) return;
+
+        // 道具轮播
+        blockEntity.tickRotate(level, level.getGameTime(), () -> {
+            if (!blockEntity.getItemDisplayList().isEmpty()) {
+                blockEntity.setItem(blockEntity.getCurrentItemDisplay());
+            }
+        });
+
+        if (blockEntity.isGenerated()) return;
 
         int range = 5;
         Player player = LevelHelper.findNearestOfType(level, pos.getX()+0.5, pos.getY()+0.5, pos.getZ()+0.5, range, Player.class,
@@ -200,42 +209,33 @@ public class PedestalBlockEntity extends BlockEntity {
 
         if (player == null) return;
 
-        blockEntity.fillFromLootTable((ServerLevel) level, player);
+        blockEntity.tryLootItem((ServerLevel) level, player, pos);
         blockEntity.setGenerated(true);
     }
 
-
-
-    public void fillFromLootTable(ServerLevel serverLevel, Player player) {
+    @Override
+    public boolean tryLootItem(ServerLevel serverLevel, Player player, BlockPos pos) {
         try {
-            ResourceLocation lootLoc = ResourceLocation.parse(itemLootTable);
-            LootTable table = serverLevel.getServer().getLootData().getLootTable(lootLoc);
-
-            LootParams.Builder builder = new LootParams.Builder(serverLevel)
-                    .withParameter(LootContextParams.ORIGIN, this.getBlockPos().getCenter())
-                    .withOptionalParameter(LootContextParams.THIS_ENTITY, player);
-
-            List<ItemStack> items = table.getRandomItems(builder.create(LootContextParamSets.CHEST));
-            ItemStack stack = items.get(0).copy();
-
-            if (!items.isEmpty() && stack.getItem() instanceof IsaacItem isaacItem) {
-                stack.setCount(1);
-                inventory.setStackInSlot(0, stack);
-
-                int itemId = isaacItem.getItemId();
-                PoolHelper.markAsRemoval(player, lootLoc, itemId); // 移出道具池
-            }
+            return lootItem(serverLevel, player, pos, ResourceLocation.parse(itemLootTable));
         } catch (Exception e) {
             IsaacDisaster.LOGGER.error("Failed to generate loot for pedestal at {} with table {}", worldPosition, itemLootTable, e);
             itemLootTable = "";
             isDecoration = true;
             generated = true;
         }
+        return false;
+    }
+
+    @Override
+    public void setItemDisplay(ItemStack stack) {
+        setItem(stack);
     }
 
     @Override
     protected void saveAdditional(@NotNull CompoundTag tag){
         super.saveAdditional(tag);
+        saveItemDisplayCap(tag);
+
         tag.put("inventory", inventory.serializeNBT());
         tag.putBoolean("isDecoration", isDecoration);
         tag.putBoolean("locked", locked);
@@ -258,6 +258,8 @@ public class PedestalBlockEntity extends BlockEntity {
     @Override
     public void load(@NotNull CompoundTag tag){
         super.load(tag);
+        loadItemDisplayCap(tag);
+
         if(tag.contains("inventory")) inventory.deserializeNBT(tag.getCompound("inventory"));
         isDecoration = tag.getBoolean("isDecoration");
         locked = tag.getBoolean("locked");
@@ -287,4 +289,21 @@ public class PedestalBlockEntity extends BlockEntity {
 
     @Override
     public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt){ handleUpdateTag(pkt.getTag()); }
+
+    @Override
+    public void itemRollFromPlayer(Player player) {
+        if (this.level == null || this.level.isClientSide) return;
+
+        this.clearContent();
+        this.tryLootItem((ServerLevel) level, player, getBlockPos());
+    }
+
+
+    // ====== 道具轮播 ======
+    private final DisplayItemListCap displayItemListCap = new DisplayItemListCap();
+
+    @Override
+    public DisplayItemListCap getItemDisplayCap() {
+        return displayItemListCap;
+    }
 }

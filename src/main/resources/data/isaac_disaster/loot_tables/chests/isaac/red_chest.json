@@ -1,0 +1,19 @@
+{
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {"type": "minecraft:loot_table", "name": "isaac_disaster:ref/pills_2", "weight": 10},
+        {"type": "minecraft:item", "name": "isaac_disaster:soul_heart", "weight": 15},
+        {"type": "minecraft:loot_table", "name": "isaac_disaster:ref/soul_heart_2", "weight": 10,
+        "functions": [
+          {
+            "function": "set_count",
+            "count": 2
+          }
+        ]}
+      ]
+    }
+  ]
+}
+

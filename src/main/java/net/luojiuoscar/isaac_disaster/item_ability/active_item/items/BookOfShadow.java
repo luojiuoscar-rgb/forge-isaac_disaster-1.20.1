@@ -3,7 +3,6 @@ package net.luojiuoscar.isaac_disaster.item_ability.active_item.items;
 import net.luojiuoscar.isaac_disaster.client.ClientDataManager;
 import net.luojiuoscar.isaac_disaster.effect.ModEffects;
 import net.luojiuoscar.isaac_disaster.helper.EntityHelper;
-import net.luojiuoscar.isaac_disaster.item.ModItems;
 import net.luojiuoscar.isaac_disaster.item_ability.active_item.IActiveItem;
 import net.luojiuoscar.isaac_disaster.manager.ColorManager;
 import net.luojiuoscar.isaac_disaster.manager.EffectDescriptionManager;
@@ -16,7 +15,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -49,11 +47,6 @@ public class BookOfShadow implements IActiveItem {
         EntityHelper.applyOrStackEffect(player,
                 ModEffects.INVINCIBLE.get(), 400, 0, true, false);
 
-    }
-
-    @Override
-    public ItemStack getItemStack() {
-        return new ItemStack(ModItems.BOOK_OF_SHADOW.get());
     }
 
     @Override

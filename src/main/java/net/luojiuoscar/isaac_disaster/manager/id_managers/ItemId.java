@@ -99,7 +99,8 @@ public enum ItemId {
     THE_SOUL,
     SACRED_ORB,
     SACK_HEAD,
-    MITRE;
+    MITRE,
+    THE_D6;
 
     private final int id;
     private static final Map<Integer, RegistryObject<Item>> ID_TO_ITEM = new HashMap<>();
