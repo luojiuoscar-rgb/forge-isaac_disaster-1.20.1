@@ -1,0 +1,14 @@
+{
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {"type": "minecraft:item", "name": "isaac_disaster:car_battery"},
+        {"type": "minecraft:item", "name": "isaac_disaster:the_battery"},
+        {"type": "minecraft:item", "name": "isaac_disaster:volt_9"},
+        {"type": "minecraft:item", "name": "isaac_disaster:volt_4p5"}
+      ]
+    }
+  ]
+}
+

@@ -1,0 +1,48 @@
+{
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {"type": "minecraft:item", "name": "isaac_disaster:steven"},
+        {"type": "minecraft:item", "name": "isaac_disaster:crickets_head"},
+        {"type": "minecraft:item", "name": "isaac_disaster:the_common_cold"},
+        {"type": "minecraft:item", "name": "isaac_disaster:boom"},
+        {"type": "minecraft:item", "name": "isaac_disaster:mr_mega"},
+        {"type": "minecraft:item", "name": "isaac_disaster:bomber_boy"},
+        {"type": "minecraft:item", "name": "isaac_disaster:scatter_bomb"},
+        {"type": "minecraft:item", "name": "isaac_disaster:fast_bomb"},
+        {"type": "minecraft:item", "name": "isaac_disaster:bobby_bomb"},
+        {"type": "minecraft:item", "name": "isaac_disaster:hot_bomb"},
+        {"type": "minecraft:item", "name": "isaac_disaster:blood_of_the_martyr"},
+        {"type": "minecraft:item", "name": "isaac_disaster:the_wafer"},
+        {"type": "minecraft:item", "name": "isaac_disaster:cupids_arrow"},
+        {"type": "minecraft:item", "name": "isaac_disaster:spoon_bender"},
+        {"type": "minecraft:item", "name": "isaac_disaster:the_sad_onion"},
+        {"type": "minecraft:item", "name": "isaac_disaster:pisces"},
+        {"type": "minecraft:item", "name": "isaac_disaster:the_inner_eye"},
+        {"type": "minecraft:item", "name": "isaac_disaster:perfect_vision"},
+        {"type": "minecraft:item", "name": "isaac_disaster:mutant_spider"},
+        {"type": "minecraft:item", "name": "isaac_disaster:polyphemus"},
+        {"type": "minecraft:item", "name": "isaac_disaster:heart"},
+        {"type": "minecraft:item", "name": "isaac_disaster:the_body"},
+        {"type": "minecraft:item", "name": "isaac_disaster:magic_mushroom"},
+        {"type": "minecraft:item", "name": "isaac_disaster:rubber_cement"},
+        {"type": "minecraft:item", "name": "isaac_disaster:host_hat"},
+        {"type": "minecraft:item", "name": "isaac_disaster:pyromaniac"},
+        {"type": "minecraft:item", "name": "isaac_disaster:pyro"},
+        {"type": "minecraft:item", "name": "isaac_disaster:tiny_planet"},
+        {"type": "minecraft:item", "name": "isaac_disaster:curse_of_the_tower"},
+        {"type": "minecraft:item", "name": "isaac_disaster:the_soul"},
+        {"type": "minecraft:item", "name": "isaac_disaster:the_book_of_belial"},
+        {"type": "minecraft:item", "name": "isaac_disaster:the_necronmicon"},
+        {"type": "minecraft:item", "name": "isaac_disaster:wooden_nickel"},
+        {"type": "minecraft:item", "name": "isaac_disaster:lemon_mishap"},
+        {"type": "minecraft:item", "name": "isaac_disaster:free_lemonade"},
+        {"type": "minecraft:item", "name": "isaac_disaster:the_gamekid"},
+        {"type": "minecraft:item", "name": "isaac_disaster:my_little_unicorn"},
+        {"type": "minecraft:item", "name": "isaac_disaster:telepathy_for_dummies"},
+        {"type": "minecraft:item", "name": "isaac_disaster:anarchist_cookbook"}
+      ]
+    }
+  ]
+}

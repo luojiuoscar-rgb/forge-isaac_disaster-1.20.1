@@ -1,13 +1,15 @@
 package net.luojiuoscar.isaac_disaster.block.custom;
 
-import net.luojiuoscar.isaac_disaster.block.block_entity.PedestalBlockEntity;
 import net.luojiuoscar.isaac_disaster.block.ModBlockEntities;
+import net.luojiuoscar.isaac_disaster.block.block_entity.PedestalBlockEntity;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.item.custom.DebugStick;
+import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.manager.data.IsaacItemBlockData;
 import net.luojiuoscar.isaac_disaster.manager.data.PedestalData;
 import net.luojiuoscar.isaac_disaster.sound.ModSounds;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
@@ -18,14 +20,18 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BaseEntityBlock;
+import net.minecraft.world.level.block.HorizontalDirectionalBlock;
 import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
@@ -39,6 +45,7 @@ public class PedestalBlock extends BaseEntityBlock {
 
     public PedestalBlock(Properties properties) {
         super(properties);
+        this.registerDefaultState(this.stateDefinition.any().setValue(FACING, Direction.NORTH));
     }
 
     // 显示方块模型
@@ -115,30 +122,61 @@ public class PedestalBlock extends BaseEntityBlock {
                 }
             }
         }
+
         else if (held.isEmpty() && !stored.isEmpty()){
             // 如果不是装饰性、且空手，则取下物品；并删除linked pedestal上的物品
-            player.setItemInHand(hand, stored);
-            pedestal.clearContent();
-            IsaacItemBlockData.get(serverLevel).removeItemBlock(pos); // 从nbt处移除
-            level.playSound(null, pos.getX(), pos.getY(), pos.getZ(),
-                    SoundEvents.ITEM_PICKUP, SoundSource.BLOCKS, 0.7f, 1.0f);
+            // 如果需求购买
+            double liftCost = pedestal.getLiftCost() * StatManager.MAX_HEALTH.getBonus();
+            int moneyCost = pedestal.getMoneyCost();
+            boolean buySuccess = true;
 
-            Set<BlockPos> linkedPedestals = pedestal.getLinkedPedestals();
-            for (BlockPos linkedPos : linkedPedestals){
-                BlockEntity be1 = level.getBlockEntity(linkedPos);
+            if (liftCost != 0 && !player.isCreative()){
+                buySuccess = false;
+                double playerMaxHealth = player.getMaxHealth();
+                double playerAbsorption = player.getAbsorptionAmount();
 
-                if (be1 instanceof PedestalBlockEntity linkedPedestal) {
-                    linkedPedestal.setDecoration(true);
-                    linkedPedestal.clearLinkedPedestals();
+                if ((playerMaxHealth + playerAbsorption / 2) >= liftCost){
+                    double remain = liftCost - playerMaxHealth;
 
-                    if (linkedPedestal == pedestal) continue; // 排除自己
-                    if (linkedPedestal.getItem().isEmpty()) continue; // 空则无需更新
-                    // 清空&更新linkedPedestal
-                    linkedPedestal.clearContent();
+                    StatManager.MAX_HEALTH.apply(player, -pedestal.getLiftCost());
+                    if (remain > 0){
+                        player.setAbsorptionAmount((float) (playerAbsorption - remain * 2));
+                    }
+                    buySuccess = true;
+                }
 
-                    serverLevel.sendParticles(ParticleTypes.CLOUD,
-                            linkedPos.getX()+0.5, linkedPos.getY()+0.5, linkedPos.getZ()+0.5, 10,
-                            0, 0.2, 0, 0.05);
+            }else if (pedestal.getMoneyCost() != 0 && !player.isCreative()){
+                buySuccess = false;
+                int playerMoney = PlayerHelper.countMoney(player);
+                if (playerMoney >= moneyCost){
+                    buySuccess = PlayerHelper.takeMoney(player, moneyCost);
+                }
+            }
+
+            if (buySuccess){
+                player.setItemInHand(hand, stored);
+                pedestal.clearContent();
+                IsaacItemBlockData.get(serverLevel).removeItemBlock(pos); // 从nbt处移除
+                level.playSound(null, pos.getX(), pos.getY(), pos.getZ(),
+                        SoundEvents.ITEM_PICKUP, SoundSource.BLOCKS, 0.7f, 1.0f);
+
+                Set<BlockPos> linkedPedestals = pedestal.getLinkedPedestals();
+                for (BlockPos linkedPos : linkedPedestals){
+                    BlockEntity be1 = level.getBlockEntity(linkedPos);
+
+                    if (be1 instanceof PedestalBlockEntity linkedPedestal) {
+                        linkedPedestal.setDecoration(true);
+                        linkedPedestal.clearLinkedPedestals();
+
+                        if (linkedPedestal == pedestal) continue; // 排除自己
+                        if (linkedPedestal.getItem().isEmpty()) continue; // 空则无需更新
+                        // 清空&更新linkedPedestal
+                        linkedPedestal.clearContent();
+
+                        serverLevel.sendParticles(ParticleTypes.CLOUD,
+                                linkedPos.getX()+0.5, linkedPos.getY()+0.5, linkedPos.getZ()+0.5, 10,
+                                0, 0.2, 0, 0.05);
+                    }
                 }
             }
         }
@@ -180,6 +218,20 @@ public class PedestalBlock extends BaseEntityBlock {
             if (be instanceof PedestalBlockEntity pedestal && stack.hasTag()) {
                 pedestal.load(stack.getTag().getCompound("BlockEntityTag"));
             }
+    }
+
+    // ====== facing ======
+    public static final DirectionProperty FACING = HorizontalDirectionalBlock.FACING;
+
+    @Override
+    protected void createBlockStateDefinition(StateDefinition.Builder<net.minecraft.world.level.block.Block, BlockState> builder) {
+        super.createBlockStateDefinition(builder);
+        builder.add(FACING);
+    }
+
+    @Override
+    public BlockState getStateForPlacement(BlockPlaceContext context) {
+        return this.defaultBlockState().setValue(FACING, context.getHorizontalDirection().getOpposite());
     }
 
 

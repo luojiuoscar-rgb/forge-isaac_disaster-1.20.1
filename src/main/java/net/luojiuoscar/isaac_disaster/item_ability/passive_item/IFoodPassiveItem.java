@@ -24,6 +24,7 @@ public interface IFoodPassiveItem {
         }
     }
 
+
     void onFoodObtainEffect(Player player, @Nullable ItemStack stack);
     void onFoodRemoveEffect(Player player, @Nullable ItemStack stack);
 }

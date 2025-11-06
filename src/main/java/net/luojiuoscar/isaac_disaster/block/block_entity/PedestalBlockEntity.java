@@ -54,6 +54,10 @@ public class PedestalBlockEntity extends BlockEntity implements ItemDisplayConta
     private String itemLootTable = "";
     private boolean generated = false;
     private boolean locked = false;
+    private int lifeCost = 0;
+    private int moneyCost = 0;
+
+
 
     public PedestalBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.PEDESTAL_BLOCK_ENTITY.get(), pos, state);
@@ -93,6 +97,18 @@ public class PedestalBlockEntity extends BlockEntity implements ItemDisplayConta
     public String getItemLootTable() { return itemLootTable; }
     public void setItemLootTable(String itemLootTable) {
         this.itemLootTable = itemLootTable;
+        setChanged();
+    }
+
+    public int getLiftCost() {return lifeCost; }
+    public void setLifeCost(int c) {
+        this.lifeCost = c;
+        setChanged();
+    }
+
+    public int getMoneyCost() {return moneyCost; }
+    public void setMoneyCost(int c) {
+        this.moneyCost = c;
         setChanged();
     }
 
@@ -241,6 +257,8 @@ public class PedestalBlockEntity extends BlockEntity implements ItemDisplayConta
         tag.putBoolean("isDecoration", isDecoration);
         tag.putBoolean("locked", locked);
         tag.putBoolean("generated", generated);
+        tag.putInt("lifeCost", lifeCost);
+        tag.putInt("moneyCost", moneyCost);
 
         if (!itemLootTable.isEmpty())
             tag.putString("itemLootTable", itemLootTable);
@@ -265,6 +283,8 @@ public class PedestalBlockEntity extends BlockEntity implements ItemDisplayConta
         isDecoration = tag.getBoolean("isDecoration");
         locked = tag.getBoolean("locked");
         generated = tag.getBoolean("generated");
+        lifeCost = tag.getInt("lifeCost");
+        moneyCost = tag.getInt("moneyCost");
 
         itemLootTable = tag.contains("itemLootTable") ? tag.getString("itemLootTable") : "";
 
@@ -307,4 +327,5 @@ public class PedestalBlockEntity extends BlockEntity implements ItemDisplayConta
     public DisplayItemListCap getItemDisplayCap() {
         return displayItemListCap;
     }
+
 }

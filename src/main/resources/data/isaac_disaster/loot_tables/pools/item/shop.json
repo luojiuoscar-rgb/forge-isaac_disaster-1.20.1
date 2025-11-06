@@ -1,0 +1,27 @@
+{
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {"type": "minecraft:item", "name": "isaac_disaster:car_battery"},
+        {"type": "minecraft:item", "name": "isaac_disaster:the_battery"},
+        {"type": "minecraft:item", "name": "isaac_disaster:volt_9"},
+        {"type": "minecraft:item", "name": "isaac_disaster:volt_4p5"},
+        {"type": "minecraft:item", "name": "isaac_disaster:phd"},
+        {"type": "minecraft:item", "name": "isaac_disaster:habit"},
+        {"type": "minecraft:item", "name": "isaac_disaster:piggy_bank"},
+        {"type": "minecraft:item", "name": "isaac_disaster:black_candle"},
+        {"type": "minecraft:item", "name": "isaac_disaster:tarot_cloth"},
+        {"type": "minecraft:item", "name": "isaac_disaster:sack_head"},
+        {"type": "minecraft:item", "name": "isaac_disaster:the_bible"},
+        {"type": "minecraft:item", "name": "isaac_disaster:wooden_nickel"},
+        {"type": "minecraft:item", "name": "isaac_disaster:placebo"},
+        {"type": "minecraft:item", "name": "isaac_disaster:diplopia"},
+        {"type": "minecraft:item", "name": "isaac_disaster:crooked_penny"},
+        {"type": "minecraft:item", "name": "isaac_disaster:dull_razor"},
+        {"type": "minecraft:item", "name": "isaac_disaster:smelter"}
+      ]
+    }
+  ]
+}
+

@@ -235,6 +235,50 @@ public class PlayerHelper {
 
         return money;
     }
+    public static boolean takeMoney(Player player, int amount) {
+        // 读取配置
+        int value1 = Config.COIN_TIER_1_VALUE.get();
+        int value2 = Config.COIN_TIER_2_VALUE.get();
+        int value3 = Config.COIN_TIER_3_VALUE.get();
+
+        Item tier1Coin = getItemFromConfig(Config.COIN_TIER_1_ID.get());
+        Item tier2Coin = getItemFromConfig(Config.COIN_TIER_2_ID.get());
+        Item tier3Coin = getItemFromConfig(Config.COIN_TIER_3_ID.get());
+
+        int total = countMoney(player);
+        if (total < amount) {
+            return false;
+        }
+
+        Inventory inv = player.getInventory();
+        List<ItemStack> all = new ArrayList<>();
+        all.addAll(inv.items);
+        all.addAll(inv.offhand);
+
+        for (ItemStack stack : all) {
+            Item item = stack.getItem();
+            if (item == tier1Coin || item == tier2Coin || item == tier3Coin) {
+                stack.shrink(stack.getCount());
+            }
+        }
+
+        int remain = total - amount;
+
+        int tier3Count = remain / value3;
+        remain %= value3;
+
+        int tier2Count = remain / value2;
+        remain %= value2;
+
+        int tier1Count = remain / value1;
+
+        giveItem(player, tier3Coin, tier3Count);
+        giveItem(player, tier2Coin, tier2Count);
+        giveItem(player, tier1Coin, tier1Count);
+
+        return true;
+    }
+
     public static int countInvItem(Player player, Item item){
         int count = 0;
 

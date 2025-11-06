@@ -1,0 +1,19 @@
+{
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {"type": "minecraft:item", "name": "isaac_disaster:blood_of_the_martyr"},
+        {"type": "minecraft:item", "name": "isaac_disaster:holy_mantle"},
+        {"type": "minecraft:item", "name": "isaac_disaster:the_wafer"},
+        {"type": "minecraft:item", "name": "isaac_disaster:dead_dove"},
+        {"type": "minecraft:item", "name": "isaac_disaster:the_body"},
+        {"type": "minecraft:item", "name": "isaac_disaster:the_soul"},
+        {"type": "minecraft:item", "name": "isaac_disaster:sacred_orb"},
+        {"type": "minecraft:item", "name": "isaac_disaster:mitre"},
+        {"type": "minecraft:item", "name": "isaac_disaster:the_bible"}
+      ]
+    }
+  ]
+}
+

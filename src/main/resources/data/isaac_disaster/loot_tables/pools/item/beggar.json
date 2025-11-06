@@ -1,0 +1,18 @@
+{
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {"type": "minecraft:item", "name": "isaac_disaster:breakfast"},
+        {"type": "minecraft:item", "name": "isaac_disaster:lunch"},
+        {"type": "minecraft:item", "name": "isaac_disaster:dinner"},
+        {"type": "minecraft:item", "name": "isaac_disaster:dessert"},
+        {"type": "minecraft:item", "name": "isaac_disaster:rotten_meat"},
+        {"type": "minecraft:item", "name": "isaac_disaster:midnight_snack"},
+        {"type": "minecraft:item", "name": "isaac_disaster:supper"},
+        {"type": "minecraft:item", "name": "isaac_disaster:crooked_penny"}
+      ]
+    }
+  ]
+}
+

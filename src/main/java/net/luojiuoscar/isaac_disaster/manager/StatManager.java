@@ -34,6 +34,9 @@ public enum StatManager {
         public void apply(Player player, double ratio){
             StatManager.modifyAdd(player, getUUID(), ratio * getBonus(), getMinVal(), getMaxVal());
             player.setHealth(player.getHealth()); // 刷新血量状态，避免显示溢出
+
+            if (player.getHealth() + player.getAbsorptionAmount() <= 0)
+                player.kill();
         }
     },
     MOVEMENT_SPEED("movement_speed", Attributes.MOVEMENT_SPEED, false, true,

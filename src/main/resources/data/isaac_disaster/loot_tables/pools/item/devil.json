@@ -1,0 +1,17 @@
+{
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {"type": "minecraft:item", "name": "isaac_disaster:money_is_power"},
+        {"type": "minecraft:item", "name": "isaac_disaster:false_phd"},
+        {"type": "minecraft:item", "name": "isaac_disaster:a_quarter"},
+        {"type": "minecraft:item", "name": "isaac_disaster:whore_of_babylon"},
+        {"type": "minecraft:item", "name": "isaac_disaster:curse_of_the_tower"},
+        {"type": "minecraft:item", "name": "isaac_disaster:the_book_of_belial"},
+        {"type": "minecraft:item", "name": "isaac_disaster:the_necronmicon"}
+      ]
+    }
+  ]
+}
+

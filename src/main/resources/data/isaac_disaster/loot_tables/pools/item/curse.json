@@ -1,0 +1,12 @@
+{
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {"type": "minecraft:item", "name": "isaac_disaster:false_phd"},
+        {"type": "minecraft:item", "name": "isaac_disaster:black_candle"},
+        {"type": "minecraft:item", "name": "isaac_disaster:tarot_cloth"}
+      ]
+    }
+  ]
+}

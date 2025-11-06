@@ -1,0 +1,18 @@
+{
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {"type": "minecraft:item", "name": "isaac_disaster:mr_mega"},
+        {"type": "minecraft:item", "name": "isaac_disaster:bomber_boy"},
+        {"type": "minecraft:item", "name": "isaac_disaster:scatter_bomb"},
+        {"type": "minecraft:item", "name": "isaac_disaster:fast_bomb"},
+        {"type": "minecraft:item", "name": "isaac_disaster:bobby_bomb"},
+        {"type": "minecraft:item", "name": "isaac_disaster:hot_bomb"},
+        {"type": "minecraft:item", "name": "isaac_disaster:pyromaniac"},
+        {"type": "minecraft:item", "name": "isaac_disaster:pyro"}
+      ]
+    }
+  ]
+}
+

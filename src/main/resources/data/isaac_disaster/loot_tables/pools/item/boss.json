@@ -1,0 +1,32 @@
+{
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {"type": "minecraft:item", "name": "isaac_disaster:breakfast"},
+        {"type": "minecraft:item", "name": "isaac_disaster:lunch"},
+        {"type": "minecraft:item", "name": "isaac_disaster:dinner"},
+        {"type": "minecraft:item", "name": "isaac_disaster:dessert"},
+        {"type": "minecraft:item", "name": "isaac_disaster:rotten_meat"},
+        {"type": "minecraft:item", "name": "isaac_disaster:a_snack"},
+        {"type": "minecraft:item", "name": "isaac_disaster:midnight_snack"},
+        {"type": "minecraft:item", "name": "isaac_disaster:supper"},
+        {"type": "minecraft:item", "name": "isaac_disaster:wooden_spoon"},
+        {"type": "minecraft:item", "name": "isaac_disaster:glass_eye"},
+        {"type": "minecraft:item", "name": "isaac_disaster:roid_rage"},
+        {"type": "minecraft:item", "name": "isaac_disaster:wire_coat_hanger"},
+        {"type": "minecraft:item", "name": "isaac_disaster:speed_ball"},
+        {"type": "minecraft:item", "name": "isaac_disaster:growth_hormones"},
+        {"type": "minecraft:item", "name": "isaac_disaster:synthoil"},
+        {"type": "minecraft:item", "name": "isaac_disaster:torn_photo"},
+        {"type": "minecraft:item", "name": "isaac_disaster:caffeine_pill"},
+        {"type": "minecraft:item", "name": "isaac_disaster:safety_pin"},
+        {"type": "minecraft:item", "name": "isaac_disaster:blue_cap"},
+        {"type": "minecraft:item", "name": "isaac_disaster:magic_scab"},
+        {"type": "minecraft:item", "name": "isaac_disaster:screw"},
+        {"type": "minecraft:item", "name": "isaac_disaster:experimental_treatment"}
+      ]
+    }
+  ]
+}
+

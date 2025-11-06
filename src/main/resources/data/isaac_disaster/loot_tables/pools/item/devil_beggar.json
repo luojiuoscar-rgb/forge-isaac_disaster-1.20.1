@@ -1,0 +1,17 @@
+{
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {"type": "minecraft:item", "name": "isaac_disaster:roid_rage"},
+        {"type": "minecraft:item", "name": "isaac_disaster:speed_ball"},
+        {"type": "minecraft:item", "name": "isaac_disaster:growth_hormones"},
+        {"type": "minecraft:item", "name": "isaac_disaster:synthoil"},
+        {"type": "minecraft:item", "name": "isaac_disaster:caffeine_pill"},
+        {"type": "minecraft:item", "name": "isaac_disaster:whore_of_babylon"},
+        {"type": "minecraft:item", "name": "isaac_disaster:experimental_treatment"}
+      ]
+    }
+  ]
+}
+

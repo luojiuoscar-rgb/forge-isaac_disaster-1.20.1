@@ -1,0 +1,16 @@
+{
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {"type": "minecraft:item", "name": "isaac_disaster:the_book_of_belial"},
+        {"type": "minecraft:item", "name": "isaac_disaster:book_of_shadow"},
+        {"type": "minecraft:item", "name": "isaac_disaster:the_bible"},
+        {"type": "minecraft:item", "name": "isaac_disaster:the_necronmicon"},
+        {"type": "minecraft:item", "name": "isaac_disaster:telepathy_for_dummies"},
+        {"type": "minecraft:item", "name": "isaac_disaster:anarchist_cookbook"}
+      ]
+    }
+  ]
+}
+

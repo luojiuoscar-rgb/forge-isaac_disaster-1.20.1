@@ -1,6 +1,7 @@
 package net.luojiuoscar.isaac_disaster.item_ability.passive_item.items;
 
 import net.luojiuoscar.isaac_disaster.client.ClientDataManager;
+import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.item_ability.passive_item.IFoodPassiveItem;
 import net.luojiuoscar.isaac_disaster.item_ability.passive_item.IPassiveItem;
 import net.luojiuoscar.isaac_disaster.manager.ColorManager;
@@ -8,6 +9,9 @@ import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.manager.id_managers.ItemId;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
@@ -24,6 +28,9 @@ public class Dessert implements IPassiveItem, IFoodPassiveItem {
     @Override
     public void onFirstObtain(Player player, @Nullable ItemStack stack) {
         StatManager.healHealth(player, 1.0f);
+        if (PlayerHelper.hasItem(ItemId.BINGE_EATER.getId(), (ServerPlayer) player) && stack != null){
+            player.addEffect(new MobEffectInstance(MobEffects.DAMAGE_BOOST, 600, 1));
+        }
     }
 
     @Override

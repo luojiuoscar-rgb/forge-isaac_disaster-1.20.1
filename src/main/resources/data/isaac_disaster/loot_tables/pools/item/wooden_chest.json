@@ -1,0 +1,13 @@
+{
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {"type": "minecraft:item", "name": "isaac_disaster:wooden_spoon"},
+        {"type": "minecraft:item", "name": "isaac_disaster:blood_of_the_martyr"},
+        {"type": "minecraft:item", "name": "isaac_disaster:wooden_nickel"}
+      ]
+    }
+  ]
+}
+

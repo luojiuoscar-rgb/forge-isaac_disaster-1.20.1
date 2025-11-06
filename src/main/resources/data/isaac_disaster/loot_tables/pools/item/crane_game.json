@@ -1,0 +1,25 @@
+{
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {"type": "minecraft:item", "name": "isaac_disaster:crickets_head"},
+        {"type": "minecraft:item", "name": "isaac_disaster:glass_eye"},
+        {"type": "minecraft:item", "name": "isaac_disaster:the_battery"},
+        {"type": "minecraft:item", "name": "isaac_disaster:volt_9"},
+        {"type": "minecraft:item", "name": "isaac_disaster:cupids_arrow"},
+        {"type": "minecraft:item", "name": "isaac_disaster:spoon_bender"},
+        {"type": "minecraft:item", "name": "isaac_disaster:the_sad_onion"},
+        {"type": "minecraft:item", "name": "isaac_disaster:wire_coat_hanger"},
+        {"type": "minecraft:item", "name": "isaac_disaster:mutant_spider"},
+        {"type": "minecraft:item", "name": "isaac_disaster:piggy_bank"},
+        {"type": "minecraft:item", "name": "isaac_disaster:screw"},
+        {"type": "minecraft:item", "name": "isaac_disaster:tarot_cloth"},
+        {"type": "minecraft:item", "name": "isaac_disaster:teleport"},
+        {"type": "minecraft:item", "name": "isaac_disaster:the_gamekid"},
+        {"type": "minecraft:item", "name": "isaac_disaster:my_little_unicorn"}
+      ]
+    }
+  ]
+}
+
