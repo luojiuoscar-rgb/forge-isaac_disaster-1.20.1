@@ -14,24 +14,21 @@ import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.item.item.ActiveItem;
 import net.luojiuoscar.isaac_disaster.item.item.IIsaacCuriosItem;
 import net.luojiuoscar.isaac_disaster.item.item.PassiveItem;
+import net.luojiuoscar.isaac_disaster.item.item.custom.FoodPassiveItem;
 import net.luojiuoscar.isaac_disaster.item.pickup.IsaacHead;
 import net.luojiuoscar.isaac_disaster.item.pickup.Pickup;
 import net.luojiuoscar.isaac_disaster.item.pickup.interfaces.IUsablePickup;
-import net.luojiuoscar.isaac_disaster.item_ability.trinket.ITriggerTrinket;
 import net.luojiuoscar.isaac_disaster.manager.EffectNameManager;
 import net.luojiuoscar.isaac_disaster.manager.data.PillShuffleData;
 import net.luojiuoscar.isaac_disaster.manager.id_managers.ItemId;
-import net.luojiuoscar.isaac_disaster.manager.id_managers.TrinketId;
 import net.luojiuoscar.isaac_disaster.manager.item_managers.ActiveItemManager;
 import net.luojiuoscar.isaac_disaster.manager.item_managers.PickupManager;
 import net.luojiuoscar.isaac_disaster.manager.item_managers.PillEffectManager;
-import net.luojiuoscar.isaac_disaster.manager.item_managers.TrinketManager;
 import net.luojiuoscar.isaac_disaster.networking.ModMessages;
 import net.luojiuoscar.isaac_disaster.networking.packet.PassiveItemSyncS2CPacket;
 import net.luojiuoscar.isaac_disaster.networking.packet.PillRecordsSyncS2CPacket;
 import net.luojiuoscar.isaac_disaster.networking.packet.SetCountSyncS2CPacket;
 import net.luojiuoscar.isaac_disaster.networking.packet.UseActiveItemS2CPacket;
-import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -41,28 +38,22 @@ import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityDimensions;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.entity.ai.goal.WrappedGoal;
-import net.minecraft.world.entity.monster.Creeper;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.Tags;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.entity.EntityEvent;
-import net.minecraftforge.event.entity.ProjectileImpactEvent;
-import net.minecraftforge.event.entity.living.*;
+import net.minecraftforge.event.entity.living.LivingAttackEvent;
+import net.minecraftforge.event.entity.living.LivingHurtEvent;
+import net.minecraftforge.event.entity.living.LivingKnockBackEvent;
+import net.minecraftforge.event.entity.living.MobEffectEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
-import net.minecraftforge.event.level.BlockEvent;
 import net.minecraftforge.event.level.ExplosionEvent;
 import net.minecraftforge.event.level.LevelEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -70,7 +61,6 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.server.command.ConfigCommand;
 import top.theillusivec4.curios.api.event.CurioUnequipEvent;
 
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -320,6 +310,7 @@ public class ForgeEvents {
             syncItemDataToClient(ItemId.BLOOD_OF_THE_MARTYR.getId(), serverPlayer);
             syncItemDataToClient(ItemId.PHD.getId(), serverPlayer);
             syncItemDataToClient(ItemId.FALSE_PHD.getId(), serverPlayer);
+            syncItemDataToClient(ItemId.BINGE_EATER.getId(), serverPlayer);
         }
     }
 
@@ -504,87 +495,22 @@ public class ForgeEvents {
         event.setNewSpeed(finalSpeed);
     }
 
-    @SubscribeEvent
-    public static void onBlockBreak(BlockEvent.BreakEvent event) {
-        Player player = event.getPlayer();
-        if (!(player instanceof ServerPlayer serverPlayer)) return;
 
-        Level level = player.level();
-        BlockPos pos = event.getPos();
-        BlockState state = level.getBlockState(pos);
-
-        if (state.is(Tags.Blocks.STONE) || state.is(Tags.Blocks.COBBLESTONE)) {
-            player.getCapability(PlayerSwallowedTrinketsProvider.PLAYER_SWALLOWED_TRINKETS).ifPresent(
-                    playerSwallowedTrinkets -> {
-                        List<ItemStack> stackList = playerSwallowedTrinkets.getAllTrinketListFromId(player, TrinketId.LUCKY_ROCK.getId());
-                        if (!stackList.isEmpty() &&
-                                TrinketManager.getInstance().getTrinketFromId(TrinketId.LUCKY_ROCK.getId()) instanceof ITriggerTrinket trinket){
-                            trinket.onTrigger(player, stackList, event);
-                        }
-                    });
-        }
-    }
-
-
-    @SubscribeEvent
-    public static void onProjectileImpact(ProjectileImpactEvent event) {
-        Projectile projectile = event.getProjectile();
-        if (!(event.getRayTraceResult() instanceof EntityHitResult entityHit)) return;
-
-        Entity hitEntity = entityHit.getEntity();
-        if (!(hitEntity instanceof LivingEntity living)) return;
-
-        if (living.hasEffect(ModEffects.SOUL_STATE.get())) {
-            // 取消命中事件
-            event.setCanceled(true);
-        }
-    }
-
-    @SubscribeEvent
-    public static void onLivingTick(LivingEvent.LivingTickEvent event){
-        LivingEntity entity = event.getEntity();
-        if (entity.level().isClientSide()) return;
-
-        if (PlayerHelper.countPlayer(p -> p.hasEffect(ModEffects.THE_WORLD.get())) > 0){
-            boolean timeStop = theWorldEffect(entity);
-            if (timeStop) {
-                event.setCanceled(true);
-                if (entity instanceof Mob mob) {
-                    // 清空当前执行的 Goal
-                    mob.goalSelector.getRunningGoals().forEach(WrappedGoal::stop);
-                    mob.targetSelector.getRunningGoals().forEach(WrappedGoal::stop);
-                }
-                if (entity instanceof Creeper creeper){
-                    creeper.setSwellDir(0);
-                }
-            }
-        }
-    }
-    private static boolean theWorldEffect(LivingEntity entity){
-        if (entity.isDeadOrDying() || entity.hasEffect(ModEffects.THE_WORLD.get())) return false;
-
-        if (entity.invulnerableTime > 0) {
-            entity.invulnerableTime = 0;
-            entity.hurtDuration = 0;
-            entity.hurtTime = 0;
-            entity.hurtMarked = false;
-        }
-        return true;
-    }
 
     @SubscribeEvent
     public static void onCurioUnequipEvent(CurioUnequipEvent event){
-        if (event.getEntity().level().isClientSide) return;
+        if (!(event.getEntity() instanceof Player player) || player.level().isClientSide) return;
 
         // item类中的onUnequip方法获取到的不是原stack，故而需要通过事件修改
         ItemStack stack = event.getStack();
 
-        if (stack.getItem() instanceof IIsaacCuriosItem){
+        if (stack.getItem() instanceof IIsaacCuriosItem ii){
             IIsaacCuriosItem.setOnCurios(stack, false);
+
+            if (ii instanceof FoodPassiveItem){
+                FoodPassiveItem.setBingeEater(stack, false);
+            }
         }
 
     }
-
-
-
 }

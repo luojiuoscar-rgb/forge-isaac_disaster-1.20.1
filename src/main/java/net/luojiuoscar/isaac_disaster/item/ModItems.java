@@ -8,6 +8,7 @@ import net.luojiuoscar.isaac_disaster.item.item.ActiveItem;
 import net.luojiuoscar.isaac_disaster.item.item.PassiveItem;
 import net.luojiuoscar.isaac_disaster.item.item.Trinket;
 import net.luojiuoscar.isaac_disaster.item.item.custom.ExperimentalTreatmentItem;
+import net.luojiuoscar.isaac_disaster.item.item.custom.FoodPassiveItem;
 import net.luojiuoscar.isaac_disaster.item.pickup.*;
 import net.luojiuoscar.isaac_disaster.manager.id_managers.ItemId;
 import net.luojiuoscar.isaac_disaster.manager.id_managers.PickupId;
@@ -58,15 +59,30 @@ public class ModItems {
         ItemId.registerItem(id.getId(), reg);
         return reg;
     }
+    private static RegistryObject<Item> registerFoodPassiveItem(
+            String name, int itemLevel, ItemId id) {
+        RegistryObject<Item> reg =
+                ITEMS.register(name, () -> new FoodPassiveItem(
+                        new Item.Properties(),
+                        itemLevel,
+                        id.getId(),
+                        false,
+                        false
+                ));
+        PASSIVE_ITEM_LIST.add(reg);
+        ItemId.registerItem(id.getId(), reg);
+        return reg;
+    }
 
-    public static final RegistryObject<Item> BREAKFAST          = registerPassiveItem("breakfast", 1, ItemId.BREAKFAST);
-    public static final RegistryObject<Item> DESSERT            = registerPassiveItem("dessert", 1, ItemId.DESSERT);
-    public static final RegistryObject<Item> DINNER             = registerPassiveItem("dinner", 1, ItemId.DINNER);
-    public static final RegistryObject<Item> LUNCH              = registerPassiveItem("lunch", 1, ItemId.LUNCH);
-    public static final RegistryObject<Item> SUPPER             = registerPassiveItem("supper", 1, ItemId.SUPPER);
-    public static final RegistryObject<Item> MIDNIGHT_SNACK     = registerPassiveItem("midnight_snack", 1, ItemId.MIDNIGHT_SNACK);
-    public static final RegistryObject<Item> ROTTEN_MEAT        = registerPassiveItem("rotten_meat", 1, ItemId.ROTTEN_MEAT);
-    public static final RegistryObject<Item> A_SNACK            = registerPassiveItem("a_snack", 1, ItemId.A_SNACK);
+
+    public static final RegistryObject<Item> BREAKFAST          = registerFoodPassiveItem("breakfast", 1, ItemId.BREAKFAST);
+    public static final RegistryObject<Item> DESSERT            = registerFoodPassiveItem("dessert", 1, ItemId.DESSERT);
+    public static final RegistryObject<Item> DINNER             = registerFoodPassiveItem("dinner", 1, ItemId.DINNER);
+    public static final RegistryObject<Item> LUNCH              = registerFoodPassiveItem("lunch", 1, ItemId.LUNCH);
+    public static final RegistryObject<Item> SUPPER             = registerFoodPassiveItem("supper", 1, ItemId.SUPPER);
+    public static final RegistryObject<Item> MIDNIGHT_SNACK     = registerFoodPassiveItem("midnight_snack", 1, ItemId.MIDNIGHT_SNACK);
+    public static final RegistryObject<Item> ROTTEN_MEAT        = registerFoodPassiveItem("rotten_meat", 1, ItemId.ROTTEN_MEAT);
+    public static final RegistryObject<Item> A_SNACK            = registerFoodPassiveItem("a_snack", 1, ItemId.A_SNACK);
     public static final RegistryObject<Item> WOODEN_SPOON       = registerPassiveItem("wooden_spoon", 1, ItemId.WOODEN_SPOON);
     public static final RegistryObject<Item> STEVEN             = registerPassiveItem("steven", 3, ItemId.STEVEN);
     public static final RegistryObject<Item> CRICKETS_HEAD      = registerPassiveItem("crickets_head", 4, ItemId.CRICKETS_HEAD);
@@ -135,6 +151,8 @@ public class ModItems {
     static { PASSIVE_ITEM_LIST.add(EXPERIMENTAL_TREATMENT); ItemId.registerItem(ItemId.EXPERIMENTAL_TREATMENT.getId(), EXPERIMENTAL_TREATMENT);}
     public static final RegistryObject<Item> SACK_HEAD          = registerPassiveItem("sack_head", 3, ItemId.SACK_HEAD);
     public static final RegistryObject<Item> MITRE              = registerPassiveItem("mitre", 2, ItemId.MITRE);
+    public static final RegistryObject<Item> GLITCHED_CROWN     = registerPassiveItem("glitched_crown", 4, ItemId.GLITCHED_CROWN);
+    public static final RegistryObject<Item> BINGE_EATER        = registerPassiveItem("binge_eater", 4, ItemId.BINGE_EATER);
 
 
 

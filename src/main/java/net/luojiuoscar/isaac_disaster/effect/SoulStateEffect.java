@@ -3,7 +3,12 @@ package net.luojiuoscar.isaac_disaster.effect;
 
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.phys.EntityHitResult;
+import net.minecraftforge.event.entity.ProjectileImpactEvent;
 
 
 public class SoulStateEffect extends MobEffect {
@@ -16,4 +21,16 @@ public class SoulStateEffect extends MobEffect {
         return java.util.Collections.emptyList();
     }
 
+    public static void onTriggered(ProjectileImpactEvent event){
+        Projectile projectile = event.getProjectile();
+        if (!(event.getRayTraceResult() instanceof EntityHitResult entityHit)) return;
+
+        Entity hitEntity = entityHit.getEntity();
+        if (!(hitEntity instanceof LivingEntity living)) return;
+
+        if (living.hasEffect(ModEffects.SOUL_STATE.get())) {
+            // 取消命中事件
+            event.setCanceled(true);
+        }
+    }
 }

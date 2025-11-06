@@ -19,12 +19,11 @@ Ensures in the future item could be generated from pool without removing it from
 
 #### ITEM POOLS & LOOT TABLES
  - Generating more than 1 item from item pool may cause unpredictable error. Item display will always choose the first item in the container.
- - All item pool should be located under *resources/data/isaac_disaster/loot_table/pools/item/* or it may not work correctly.
+ - Only pools under  *data/isaac_disaster/loot_tables/pools/item/* folder will be affected by other items.
  - If you wants to use mixed loot tables, use loot table references.
  - Items generated from pedestal & chests will be marked as removal.
 
- - Chest Loots are located under *resource/data/isaac_disaster/loot_tables/chests/isaac/* folder. 
-
+ - Chest Loots are located under *resource/data/isaac_disaster/loot_tables/chests/isaac/* folder.
 
 ## MIXIN
  - LivingEntity getDimensions()
@@ -36,7 +35,7 @@ Ensures in the future item could be generated from pool without removing it from
  - LootTable.pools
  - LootPool.entries
 
-## CREDITS
+# CREDITS
 I would like to thank the following contributors for their invaluable help and support:
 
 - [@半只橘猫](https://github.com/cutvmh307): Provided preset loot tables for item pools.

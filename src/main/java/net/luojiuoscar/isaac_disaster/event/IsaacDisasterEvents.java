@@ -7,10 +7,11 @@ import net.luojiuoscar.isaac_disaster.effect.ModEffects;
 import net.luojiuoscar.isaac_disaster.entity.custom.IsaacBullet;
 import net.luojiuoscar.isaac_disaster.event.custom.*;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
-import net.luojiuoscar.isaac_disaster.item.ModItems;
 import net.luojiuoscar.isaac_disaster.item.item.Trinket;
 import net.luojiuoscar.isaac_disaster.item_ability.passive_item.IDamageTriggerPassiveItem;
 import net.luojiuoscar.isaac_disaster.item_ability.passive_item.INewBulletTypePassiveItem;
+import net.luojiuoscar.isaac_disaster.item_ability.passive_item.items.BingeEater;
+import net.luojiuoscar.isaac_disaster.item_ability.passive_item.items.GlitchedCrown;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.manager.id_managers.ItemId;
 import net.luojiuoscar.isaac_disaster.manager.id_managers.TrinketId;
@@ -207,8 +208,16 @@ public class IsaacDisasterEvents {
 
     @SubscribeEvent
     public static void onItemDisplayAdd(ItemDisplayAddEvent event){
-        event.addDisplayItem(new ItemStack(ModItems.BREAKFAST.get()));
-        event.addDisplayItem(new ItemStack(ModItems.DESSERT.get()));
+        if (event.getLevel().isClientSide) return;
+        ServerPlayer player = (ServerPlayer) event.getPlayer();
+
+        if (PlayerHelper.hasItem(ItemId.GLITCHED_CROWN.getId(), player)){
+            GlitchedCrown.addDisplayItem(event);
+        }
+        if (PlayerHelper.hasItem(ItemId.BINGE_EATER.getId(), player)){
+            BingeEater.addDisplayItem(event);
+        }
+
     }
 
 }

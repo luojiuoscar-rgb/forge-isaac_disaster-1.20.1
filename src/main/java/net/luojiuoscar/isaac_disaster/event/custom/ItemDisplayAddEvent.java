@@ -1,6 +1,7 @@
 package net.luojiuoscar.isaac_disaster.event.custom;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -15,11 +16,13 @@ public class ItemDisplayAddEvent extends Event {
     private final Player player;
     private final BlockPos pos;
     private final List<ItemStack> itemDisplays = new ArrayList<>();
+    private final ResourceLocation lootTable;
 
-    public ItemDisplayAddEvent(ServerLevel level, Player player, BlockPos pos) {
+    public ItemDisplayAddEvent(ServerLevel level, Player player, BlockPos pos, ResourceLocation lootTable) {
         this.level = level;
         this.player = player;
         this.pos = pos;
+        this.lootTable = lootTable;
     }
 
     public ServerLevel getLevel() {
@@ -34,16 +37,12 @@ public class ItemDisplayAddEvent extends Event {
         return pos;
     }
 
-    /**
-     * 外部可以往这里添加展示型物品
-     */
+    public ResourceLocation getLootTable() {return lootTable; }
+
     public void addDisplayItem(@NotNull ItemStack stack) {
         itemDisplays.add(stack);
     }
 
-    /**
-     * 获取外部注册的展示物品
-     */
     public List<ItemStack> getDisplayItems() {
         return itemDisplays;
     }

@@ -5,6 +5,7 @@ import net.luojiuoscar.isaac_disaster.manager.id_managers.ItemId;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -28,4 +29,9 @@ public class TheWafer implements IPassiveItem {
                 Component.translatable("item.isaac_disaster.the_wafer.lore.1")
         );
     }
+
+    public static void onTriggered(LivingHurtEvent event){
+        event.setAmount(event.getAmount() * 0.5f);
+    }
+
 }

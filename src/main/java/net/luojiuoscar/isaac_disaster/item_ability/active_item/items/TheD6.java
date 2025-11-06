@@ -37,14 +37,19 @@ public class TheD6 implements IActiveItem {
         Set<BlockPos> posList = IsaacItemBlockData.get(serverLevel).getAll();
         Vec3 playerPos = player.position();
 
-        for (BlockPos pos : posList){
+        final double MAX_DISTANCE = 10.0;
 
+        for (BlockPos pos : posList) {
+            // distance
+            Vec3 blockCenter = Vec3.atCenterOf(pos);
+            double distanceSq = playerPos.distanceToSqr(blockCenter);
+            if (distanceSq > MAX_DISTANCE * MAX_DISTANCE) continue;
 
-
-            if (serverLevel.getBlockEntity(pos) instanceof ItemDisplayContainerBlockEntity be){
+            if (serverLevel.getBlockEntity(pos) instanceof ItemDisplayContainerBlockEntity be) {
                 be.itemRollFromPlayer(player);
             }
         }
+
     }
 
     @Override

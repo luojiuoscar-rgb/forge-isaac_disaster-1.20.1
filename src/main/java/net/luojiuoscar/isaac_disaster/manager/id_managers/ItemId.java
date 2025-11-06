@@ -100,7 +100,10 @@ public enum ItemId {
     SACRED_ORB,
     SACK_HEAD,
     MITRE,
-    THE_D6;
+    THE_D6,
+    GLITCHED_CROWN,
+    BINGE_EATER;
+
 
     private final int id;
     private static final Map<Integer, RegistryObject<Item>> ID_TO_ITEM = new HashMap<>();

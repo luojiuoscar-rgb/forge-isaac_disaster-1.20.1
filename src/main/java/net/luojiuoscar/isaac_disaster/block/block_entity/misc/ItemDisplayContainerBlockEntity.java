@@ -46,7 +46,7 @@ public interface ItemDisplayContainerBlockEntity {
             setItemDisplay(stack); // 首次加入
 
             // 从事件中添加
-            ItemDisplayAddEvent event = new ItemDisplayAddEvent(serverLevel, player, pos);
+            ItemDisplayAddEvent event = new ItemDisplayAddEvent(serverLevel, player, pos, tableId);
             net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(event);
             for (ItemStack extra : event.getDisplayItems()) {
                 if (!extra.isEmpty()) addItemDisplay(extra);
@@ -73,8 +73,14 @@ public interface ItemDisplayContainerBlockEntity {
 
     default int getDisplayTickInterval() {
         int size = getItemDisplayList().size();
-        if (size == 0) return 40;
-        return Math.max(2, 40 / size);
+        if (size == 0) return 30;
+
+        double C = 0.5;    // 最小值趋近
+        double k = 0.345;  // 衰减速度
+        double A = 30 - C; // 初始振幅
+
+        double value = A * Math.exp(-k * (size - 1)) + C;
+        return (int) Math.round(value);
     }
 
     default void rotateItemDisplay() {

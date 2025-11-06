@@ -36,7 +36,7 @@ public class ModLootTableProvider extends LootTableProvider {
                             .add(TagEntry.expandTag(tag))
                     );
 
-            writer.accept(ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "pools/" + name), table);
+            writer.accept(ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "pools/item/" + name), table);
         }
     }
 }

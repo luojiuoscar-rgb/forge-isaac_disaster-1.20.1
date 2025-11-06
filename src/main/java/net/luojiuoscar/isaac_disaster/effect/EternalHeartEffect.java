@@ -9,6 +9,7 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraftforge.event.entity.living.LivingHurtEvent;
 
 public class EternalHeartEffect extends MobEffect {
     protected EternalHeartEffect(MobEffectCategory pCategory, int pColor) {
@@ -44,5 +45,15 @@ public class EternalHeartEffect extends MobEffect {
     @Override
     public boolean isDurationEffectTick(int duration, int amplifier) {
         return duration % 10 == 0;
+    }
+
+    public static boolean onTriggered(LivingHurtEvent event){
+        if (!(event.getEntity() instanceof Player player) || player.getAbsorptionAmount() == 0) return false;
+
+        player.removeEffect(ModEffects.ETERNAL_HEART.get());
+        event.setAmount(0.0f);
+        player.level().playSound(null, player.getX(), player.getY(), player.getZ(),
+                ModSounds.BLACK_HEART_ACTIVE.get(), SoundSource.PLAYERS, 1.0f, 1.0f);
+        return true;
     }
 }

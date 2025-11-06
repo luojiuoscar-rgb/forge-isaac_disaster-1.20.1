@@ -228,8 +228,9 @@ public class Config
                 .define("allow_curio_unequip", true);
 
         AUTO_ADAPT_CURIO_SLOT = BUILDER
-                .comment("Equip curio passive item will also add 1 passive item slot. (NEED to enable at least one slot)")
-                .define("auto_adapt_curio_slot", true);
+                .comment("Equip curio passive item will also add 1 passive item slot. (NEED to enable at least one slot)" +
+                        "In current version, this option would cause errors when taken off the item.")
+                .define("auto_adapt_curio_slot", false);
 
         ITEM_REMOVAL_FROM_POOL = BUILDER
                 .comment("Item will be removed from the exact pool when spawns.")

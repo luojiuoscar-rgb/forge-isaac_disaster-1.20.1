@@ -125,7 +125,9 @@ public class  PassiveItemManager {
                 new TheSoul(),
                 new SacredOrb(),
                 new SackHead(),
-                new Mitre()
+                new Mitre(),
+                new GlitchedCrown(),
+                new BingeEater()
         );
     }
 }

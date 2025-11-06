@@ -118,9 +118,7 @@ public class EntityHelper {
         spawnBomb(spawnPos, player, player.level(), velocity, fuse, power, scale);
     }
 
-    /**
-     * 炸弹四向扩散（炸弹人）
-     */
+
     public static void bomberBoy(Player player, IsaacBomb source, Vec3 center, Level level) {
         if (!isValidOrigin(source)) return;
 

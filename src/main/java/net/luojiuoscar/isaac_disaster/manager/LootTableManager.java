@@ -32,7 +32,7 @@ public class LootTableManager {
 
     // item pools
     public static final ResourceLocation DEFAULT_ITEM_POOL =
-            ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "pools/passive_items");
+            ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "pools/item/passive_items");
 
 
     // chests

@@ -4,6 +4,7 @@ import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.block.ModBlockEntities;
 import net.luojiuoscar.isaac_disaster.block.block_entity.misc.ItemDisplayContainerBlockEntity;
 import net.luojiuoscar.isaac_disaster.capability.misc.DisplayItemListCap;
+import net.luojiuoscar.isaac_disaster.commands.gamerule.ModGameRules;
 import net.luojiuoscar.isaac_disaster.helper.LevelHelper;
 import net.luojiuoscar.isaac_disaster.manager.data.PedestalData;
 import net.minecraft.core.BlockPos;
@@ -201,7 +202,7 @@ public class PedestalBlockEntity extends BlockEntity implements ItemDisplayConta
             }
         });
 
-        if (blockEntity.isGenerated()) return;
+        if (blockEntity.isGenerated() || !level.getGameRules().getBoolean(ModGameRules.PEDESTAL_TRIGGERABLE)) return;
 
         int range = 5;
         Player player = LevelHelper.findNearestOfType(level, pos.getX()+0.5, pos.getY()+0.5, pos.getZ()+0.5, range, Player.class,

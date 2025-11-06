@@ -1,10 +1,12 @@
 package net.luojiuoscar.isaac_disaster.item_ability.trinket.items;
 
+import net.luojiuoscar.isaac_disaster.capability.player.PlayerSwallowedTrinketsProvider;
 import net.luojiuoscar.isaac_disaster.helper.LevelHelper;
 import net.luojiuoscar.isaac_disaster.item.item.Trinket;
 import net.luojiuoscar.isaac_disaster.item_ability.trinket.ITriggerTrinket;
 import net.luojiuoscar.isaac_disaster.manager.ColorManager;
 import net.luojiuoscar.isaac_disaster.manager.id_managers.TrinketId;
+import net.luojiuoscar.isaac_disaster.manager.item_managers.TrinketManager;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.player.Player;
@@ -43,6 +45,19 @@ public class LuckyRock implements ITriggerTrinket {
         Vec3 pos = event.getPos().getCenter();
         if (!(player.level() instanceof ServerLevel serverLevel)) return;
         LevelHelper.spawnMoney(serverLevel, pos, 1);
+    }
+
+    public static void onTriggered(BlockEvent.BreakEvent event){
+        Player player = event.getPlayer();
+
+        player.getCapability(PlayerSwallowedTrinketsProvider.PLAYER_SWALLOWED_TRINKETS).ifPresent(
+                playerSwallowedTrinkets -> {
+                    List<ItemStack> stackList = playerSwallowedTrinkets.getAllTrinketListFromId(player, TrinketId.LUCKY_ROCK.getId());
+                    if (!stackList.isEmpty() &&
+                            TrinketManager.getInstance().getTrinketFromId(TrinketId.LUCKY_ROCK.getId()) instanceof ITriggerTrinket trinket){
+                        trinket.onTrigger(player, stackList, event);
+                    }
+                });
     }
 
 }

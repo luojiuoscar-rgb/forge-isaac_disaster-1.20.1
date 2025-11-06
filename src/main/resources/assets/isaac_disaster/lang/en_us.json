@@ -352,6 +352,15 @@
   "item.isaac_disaster.mitre.lore.1": "红心有概率转化为魂心",
   "item.isaac_disaster.the_d6": "六面骰",
   "item.isaac_disaster.the_d6.lore.1": "变化一定范围内的道具",
+  "item.isaac_disaster.glitched_crown": "错误王冠",
+  "item.isaac_disaster.glitched_crown.lore.1": "让道具在5个选择中循环变化",
+  "item.isaac_disaster.binge_eater": "大胃王",
+  "item.isaac_disaster.binge_eater.lore.1": "道具会和食物类道具轮换",
+  "item.isaac_disaster.binge_eater.lore.2": "获取该道具后的每一个食物道具",
+  "item.isaac_disaster.binge_eater.lore.3": "都会给予额外加成，降低移速",
+  "item.isaac_disaster.binge_eater.lore.4": "同时获得一个逐渐衰减的临时伤害加成",
+
+
 
   "items end": "",
 

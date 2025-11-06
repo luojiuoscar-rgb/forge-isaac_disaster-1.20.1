@@ -1,8 +1,15 @@
 package net.luojiuoscar.isaac_disaster.effect;
 
+import net.luojiuoscar.isaac_disaster.helper.LootHelper;
+import net.luojiuoscar.isaac_disaster.manager.LootTableManager;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraftforge.event.entity.living.LivingHurtEvent;
 
 public class GildingEffect extends MobEffect {
     protected GildingEffect(MobEffectCategory pCategory, int pColor) {
@@ -12,5 +19,18 @@ public class GildingEffect extends MobEffect {
     @Override
     public java.util.List<ItemStack> getCurativeItems() {
         return java.util.Collections.emptyList();
+    }
+
+    public static void onTriggered(LivingHurtEvent event){
+        if (!(event.getEntity() instanceof Player player)) return;
+
+        MobEffectInstance instance = player.getEffect(ModEffects.GILDING.get());
+
+        int amplifier = instance.getAmplifier() + 1;
+        LootHelper.spawnLootAtPos(player, player.position(), LootTableManager.RANDOM_COINS, amplifier);
+        player.removeEffect(ModEffects.GILDING.get()); // 移除
+
+        player.level().playSound(null, player.getX(), player.getY(), player.getZ(),
+                SoundEvents.GLASS_BREAK, SoundSource.PLAYERS, 1.0f, 1.0f);
     }
 }

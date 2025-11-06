@@ -1,5 +1,6 @@
 package net.luojiuoscar.isaac_disaster.client;
 
+import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.manager.item_managers.PillEffectManager;
 
 import java.util.HashMap;
@@ -33,6 +34,7 @@ public class ClientDataManager {
      * GETTER
      */
     public int getCountFromId(int itemId) {
+        IsaacDisaster.LOGGER.info("ITEM COUNT MAP: {}", itemCountMap);
         return itemCountMap.getOrDefault(itemId, 0);
     }
     public int getFlyUnits() {
@@ -75,10 +77,10 @@ public class ClientDataManager {
 
     // 重置数据
     public void reset() {
-        itemCountMap = new HashMap<>();
+        itemCountMap.clear();
         flyUnits = 0;
-        setCountMap = new HashMap<>();
-        pillRecords = new HashMap<>();
+        setCountMap.clear();
+        pillRecords.clear();
         pillQuality = 0;
     }
 }

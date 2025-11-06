@@ -1,6 +1,9 @@
 package net.luojiuoscar.isaac_disaster.effect;
 
+import net.luojiuoscar.isaac_disaster.helper.EntityHelper;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
+import net.luojiuoscar.isaac_disaster.sound.ModSounds;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.entity.LivingEntity;
@@ -10,6 +13,7 @@ import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraftforge.event.entity.living.LivingHurtEvent;
 
 import java.util.UUID;
 
@@ -52,5 +56,19 @@ public class FragileHeartEffect extends MobEffect {
     @Override
     public java.util.List<ItemStack> getCurativeItems() {
         return java.util.Collections.emptyList();
+    }
+
+    public static void onTriggered(LivingHurtEvent event){
+        if (!(event.getEntity() instanceof Player player)) return;
+        if (event.getAmount() > Math.max(1.0f, StatManager.MAX_HEALTH.getBonus() * 0.25f)) return;
+
+        double emptyHealth = player.getMaxHealth() - player.getHealth();
+        // 当前骨心中有生命值时不消耗
+        if (emptyHealth >= StatManager.MAX_HEALTH.getBonus()){
+            EntityHelper.addAmplifier(player, ModEffects.FRAGILE_HEART.get(), -1);
+            player.level().playSound(null, player.getX(), player.getY(), player.getZ(),
+                    ModSounds.BONE_HEART.get(), SoundSource.PLAYERS, 1.0f, 1.0f);
+            event.setAmount(0.0f); // 骨心破碎时不额外扣除生命值
+        }
     }
 }
