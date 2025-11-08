@@ -58,7 +58,6 @@ public class Breakfast implements IPassiveItem, IFoodPassiveItem {
     public List<Component> getSynergyDescription() {
         List<Component> description = new ArrayList<>();
 
-        IsaacDisaster.LOGGER.info("SYNERGY DESC:");
         if (ClientDataManager.getInstance().getCountFromId(ItemId.BINGE_EATER.getId()) > 0){
             description.add(Component.translatable("item.isaac_disaster.binge_eater").append(": ").withStyle(style -> style.withColor(ColorManager.SYNERGY))
                     .append(StatManager.RANGE.description(1, Style.EMPTY.withColor(ColorManager.SYNERGY))));

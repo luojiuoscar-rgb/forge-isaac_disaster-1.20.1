@@ -34,7 +34,6 @@ public class ClientDataManager {
      * GETTER
      */
     public int getCountFromId(int itemId) {
-        IsaacDisaster.LOGGER.info("ITEM COUNT MAP: {}", itemCountMap);
         return itemCountMap.getOrDefault(itemId, 0);
     }
     public int getFlyUnits() {

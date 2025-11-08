@@ -9,24 +9,31 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.NotNull;
 
-public class NormalChestBlockEntity extends IsaacChestBlockEntity {
+public class WoodenChestBlockEntity extends ItemChestBlockEntity {
 
-    public NormalChestBlockEntity(BlockPos pos, BlockState state) {
-        super(ModBlockEntities.NORMAL_CHEST_BLOCK_ENTITY.get(), pos, state);
+    public WoodenChestBlockEntity(BlockPos pos, BlockState state) {
+        super(ModBlockEntities.WOODEN_CHEST_BLOCK_ENTITY.get(), pos, state);
+    }
+
+    @Override
+    public void init(){
+        this.setLocked(false);
+        this.setItemLootChance(0.1);
+        this.setItemLootTable(LootTableManager.POOL_WOODEN_CHEST.toString());
     }
 
     @Override
     public ResourceLocation getPresetLootTable(){
-        return LootTableManager.CHEST;
+        return LootTableManager.WOODEN_CHEST;
     }
 
     @Override
     public ResourceLocation getLidResourceLocation() {
-        return ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "block/chest_lid");
+        return ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "block/wooden_chest_lid");
     }
 
     @Override
     public @NotNull Component getDisplayName() {
-        return Component.translatable("block.isaac_disaster.chest");
+        return Component.translatable("block.isaac_disaster.wooden_chest");
     }
 }

@@ -9,24 +9,31 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.NotNull;
 
-public class NormalChestBlockEntity extends IsaacChestBlockEntity {
+public class BombChestBlockEntity extends ItemChestBlockEntity {
 
-    public NormalChestBlockEntity(BlockPos pos, BlockState state) {
-        super(ModBlockEntities.NORMAL_CHEST_BLOCK_ENTITY.get(), pos, state);
+    public BombChestBlockEntity(BlockPos pos, BlockState state) {
+        super(ModBlockEntities.BOMB_CHEST_BLOCK_ENTITY.get(), pos, state);
+    }
+
+    @Override
+    public void init(){
+        this.setLocked(true);
+        this.setItemLootChance(0.2);
+        this.setItemLootTable(LootTableManager.POOL_LOCKED_CHEST.toString());
     }
 
     @Override
     public ResourceLocation getPresetLootTable(){
-        return LootTableManager.CHEST;
+        return LootTableManager.LOCKED_CHEST;
     }
 
     @Override
     public ResourceLocation getLidResourceLocation() {
-        return ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "block/chest_lid");
+        return ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "block/bomb_chest_lid");
     }
 
     @Override
     public @NotNull Component getDisplayName() {
-        return Component.translatable("block.isaac_disaster.chest");
+        return Component.translatable("block.isaac_disaster.bomb_chest");
     }
 }

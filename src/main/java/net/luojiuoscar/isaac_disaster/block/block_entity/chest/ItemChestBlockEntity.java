@@ -26,18 +26,22 @@ public abstract class ItemChestBlockEntity extends IsaacChestBlockEntity impleme
 
     public ItemChestBlockEntity(BlockEntityType<?> blockEntityType, BlockPos pos, BlockState state) {
         super(blockEntityType, pos, state);
+        init();
     }
+
+    abstract void init();
 
     public float openness = 0.0F;
     public float oOpenness = 0.0F;
     private float rotation;
     public boolean clientShouldBeOpen = false;
 
-    private double itemLootChance = 0.2;
-    private boolean locked = false;
+    private double itemLootChance = -1;
+    private String itemLootTable = "";
+
+    private boolean locked;
     private boolean displayingItem = false;
-    private String itemLootTable = DEFAULT_ITEM_LOOT_TABLE;
-    protected boolean opened;
+
 
     public String getItemLootTable(){
         return itemLootTable;
@@ -45,17 +49,7 @@ public abstract class ItemChestBlockEntity extends IsaacChestBlockEntity impleme
     public void setItemLootTable(String itemLootTable){
         this.itemLootTable = itemLootTable;
     }
-    public boolean isOpened(){
-        return opened;
-    }
 
-    public void setOpened(boolean opened){
-        this.opened = opened;
-        setChanged();
-        if (level != null && !level.isClientSide) {
-            level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), 3);
-        }
-    }
 
     public float getRenderingRotation(){
         rotation += 0.5f;
@@ -98,6 +92,7 @@ public abstract class ItemChestBlockEntity extends IsaacChestBlockEntity impleme
                 return false;
             }
             setOpened(true);
+
 
             boolean spawned = lootItem(serverLevel, player, pos, ResourceLocation.parse(itemLootTable));
             if (spawned){
@@ -163,7 +158,6 @@ public abstract class ItemChestBlockEntity extends IsaacChestBlockEntity impleme
         saveItemDisplayCap(tag);
         tag.putBoolean("locked", locked);
         tag.putBoolean("displayingItem", displayingItem);
-        tag.putBoolean("opened", opened);
         tag.putString("itemLootTable", itemLootTable);
         tag.putDouble("itemLootChance", itemLootChance);
     }
@@ -174,7 +168,6 @@ public abstract class ItemChestBlockEntity extends IsaacChestBlockEntity impleme
         loadItemDisplayCap(tag);
         if (tag.contains("locked")) this.locked = tag.getBoolean("locked");
         if (tag.contains("displayingItem")) this.displayingItem = tag.getBoolean("displayingItem");
-        if (tag.contains("opened")) this.opened = tag.getBoolean("opened");
         if (tag.contains("itemLootTable")) this.itemLootTable = tag.getString("itemLootTable");
         if (tag.contains("itemLootChance")) this.itemLootChance = tag.getDouble("itemLootChance");
     }
@@ -189,8 +182,6 @@ public abstract class ItemChestBlockEntity extends IsaacChestBlockEntity impleme
     @Override
     public void handleUpdateTag(CompoundTag tag) {
         super.handleUpdateTag(tag);
-        load(tag);
-        load(tag);
     }
 
     @Override

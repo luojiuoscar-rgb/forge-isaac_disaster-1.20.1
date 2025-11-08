@@ -41,46 +41,45 @@ public class IsaacChestRenderer implements BlockEntityRenderer<IsaacChestBlockEn
         BlockState state = chest.getBlockState();
         Direction facing = state.getValue(BlockStateProperties.HORIZONTAL_FACING);
 
-
-        // 箱盖开合角度
-        float openness = chest.getOpenNess(partialTick);
-        openness = 1.0F - openness;
-        openness = 1.0F - openness * openness * openness;
-
-        poseStack.pushPose();
-
-        // ======= 箱子部分 =======
-        // 旋转方块朝向&旋转
-        poseStack.translate(0.5, 0.5, 0.5);
-        float degree = facing.toYRot();
-        degree = degree % 180f == 0 ? (degree + 180) % 360f : degree;
-        poseStack.mulPose(Axis.YP.rotationDegrees(degree));
-        poseStack.translate(-0.5, -0.5, -0.5);
-
-        poseStack.translate(0.5, 0.45, 0.875);
-        poseStack.mulPose(Axis.XP.rotationDegrees(openness * 90F)); // 绕 X 轴旋转
-        poseStack.translate(-0.5, -0.45, -0.875);
-
-
+        // ======= 箱盖部分 =======
         ResourceLocation rl = chest.getLidResourceLocation();
-        // 获取盖子模型
-        BakedModel lidModel = Minecraft.getInstance().getModelManager().getModel(rl);
+        if (rl != null){
+            // 开合角度
+            float openness = chest.getOpenNess(partialTick);
+            openness = 1.0F - openness;
+            openness = 1.0F - openness * openness * openness;
 
-        // 使用世界光照
-        int blockLight = chest.getLevel().getBrightness(LightLayer.BLOCK, chest.getBlockPos());
-        int skyLight = chest.getLevel().getBrightness(LightLayer.SKY, chest.getBlockPos());
-        int packedLight = LightTexture.pack(blockLight, skyLight);
+            poseStack.pushPose();
+            // 旋转方块朝向&旋转
+            poseStack.translate(0.5, 0.5, 0.5);
+            float degree = facing.toYRot();
+            degree = degree % 180f == 0 ? (degree + 180) % 360f : degree;
+            poseStack.mulPose(Axis.YP.rotationDegrees(degree));
+            poseStack.translate(-0.5, -0.5, -0.5);
 
-        // 渲染盖子
-        blockRenderer.getModelRenderer().renderModel(
-                poseStack.last(),
-                buffer.getBuffer(RenderType.solid()),
-                state,
-                lidModel,
-                1.0F, 1.0F, 1.0F,
-                packedLight, overlay
-        );
-        poseStack.popPose();
+            poseStack.translate(0.5, 0.45, 0.875);
+            poseStack.mulPose(Axis.XP.rotationDegrees(openness * 90F)); // 绕 X 轴旋转
+            poseStack.translate(-0.5, -0.45, -0.875);
+
+            // 获取盖子模型
+            BakedModel lidModel = Minecraft.getInstance().getModelManager().getModel(rl);
+
+            // 使用世界光照
+            int blockLight = chest.getLevel().getBrightness(LightLayer.BLOCK, chest.getBlockPos());
+            int skyLight = chest.getLevel().getBrightness(LightLayer.SKY, chest.getBlockPos());
+            int packedLight = LightTexture.pack(blockLight, skyLight);
+
+            // 渲染盖子
+            blockRenderer.getModelRenderer().renderModel(
+                    poseStack.last(),
+                    buffer.getBuffer(RenderType.solid()),
+                    state,
+                    lidModel,
+                    1.0F, 1.0F, 1.0F,
+                    packedLight, overlay
+            );
+            poseStack.popPose();
+        }
 
 
         // ======= 物品渲染部分 =======
@@ -99,8 +98,6 @@ public class IsaacChestRenderer implements BlockEntityRenderer<IsaacChestBlockEn
 
             poseStack.popPose();
         }
-
-
     }
 
     private int getLightLevel(Level level, BlockPos pos){

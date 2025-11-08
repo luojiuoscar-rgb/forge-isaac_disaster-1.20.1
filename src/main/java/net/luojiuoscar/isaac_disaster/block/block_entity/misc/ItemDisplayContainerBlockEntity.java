@@ -1,5 +1,6 @@
 package net.luojiuoscar.isaac_disaster.block.block_entity.misc;
 
+import net.luojiuoscar.isaac_disaster.block.block_entity.chest.ItemChestBlockEntity;
 import net.luojiuoscar.isaac_disaster.capability.misc.DisplayItemListCap;
 import net.luojiuoscar.isaac_disaster.event.custom.ItemDisplayAddEvent;
 import net.luojiuoscar.isaac_disaster.helper.LootHelper;
@@ -41,6 +42,9 @@ public interface ItemDisplayContainerBlockEntity {
         ItemStack stack = items.get(0);
 
         if (!stack.isEmpty() && stack.getItem() instanceof IsaacItem isaacItem){
+            if (!(serverLevel.getBlockEntity(pos) instanceof ItemChestBlockEntity chest)) return false;
+            chest.clearContent(); // 先清除原有物品
+
             stack.setCount(1);
             addItemDisplay(stack); // 加入到展示型道具列表
             setItemDisplay(stack); // 首次加入

@@ -218,7 +218,7 @@ public class PedestalBlockEntity extends BlockEntity implements ItemDisplayConta
             }
         });
 
-        if (blockEntity.isGenerated() || !level.getGameRules().getBoolean(ModGameRules.PEDESTAL_TRIGGERABLE)) return;
+        if (blockEntity.isGenerated() || level.getGameRules().getBoolean(ModGameRules.DISABLE_PLACEHOLDER)) return;
 
         int range = 5;
         Player player = LevelHelper.findNearestOfType(level, pos.getX()+0.5, pos.getY()+0.5, pos.getZ()+0.5, range, Player.class,
@@ -275,23 +275,23 @@ public class PedestalBlockEntity extends BlockEntity implements ItemDisplayConta
     }
 
     @Override
-    public void load(@NotNull CompoundTag tag){
+    public void load(@NotNull CompoundTag tag) {
         super.load(tag);
         loadItemDisplayCap(tag);
 
-        if(tag.contains("inventory")) inventory.deserializeNBT(tag.getCompound("inventory"));
-        isDecoration = tag.getBoolean("isDecoration");
-        locked = tag.getBoolean("locked");
-        generated = tag.getBoolean("generated");
-        lifeCost = tag.getInt("lifeCost");
-        moneyCost = tag.getInt("moneyCost");
+        if (tag.contains("inventory")) inventory.deserializeNBT(tag.getCompound("inventory"));
+        if (tag.contains("isDecoration")) isDecoration = tag.getBoolean("isDecoration");
+        if (tag.contains("locked")) locked = tag.getBoolean("locked");
+        if (tag.contains("generated")) generated = tag.getBoolean("generated");
+        if (tag.contains("lifeCost")) lifeCost = tag.getInt("lifeCost");
+        if (tag.contains("moneyCost")) moneyCost = tag.getInt("moneyCost");
+        if (tag.contains("itemLootTable")) itemLootTable = tag.getString("itemLootTable");
 
-        itemLootTable = tag.contains("itemLootTable") ? tag.getString("itemLootTable") : "";
-
-        linkedOffsets.clear();
-        if(tag.contains("linkedOffsets")){
+        // linkedOffsets
+        if (tag.contains("linkedOffsets")) {
+            linkedOffsets.clear();
             ListTag listTag = tag.getList("linkedOffsets", 10);
-            for(Tag t : listTag){
+            for (Tag t : listTag) {
                 CompoundTag posTag = (CompoundTag) t;
                 linkedOffsets.add(new BlockPos(
                         posTag.getInt("x"),

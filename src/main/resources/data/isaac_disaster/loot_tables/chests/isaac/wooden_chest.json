@@ -1,0 +1,12 @@
+{
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {"type": "minecraft:loot_table", "name": "isaac_disaster:ref/cards_2t3"},
+        {"type": "minecraft:loot_table", "name": "isaac_disaster:ref/pills_2t3"}
+      ]
+    }
+  ]
+}
+

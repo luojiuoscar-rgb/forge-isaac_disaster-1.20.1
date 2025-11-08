@@ -71,6 +71,7 @@ public class Config
     public static ForgeConfigSpec.BooleanValue ALLOW_CURIO_UNEQUIP;
     public static ForgeConfigSpec.BooleanValue AUTO_ADAPT_CURIO_SLOT;
     public static ForgeConfigSpec.IntValue ACTIVE_ITEM_DURABILITY_RESTORE_RATE;
+    public static ForgeConfigSpec.BooleanValue LIMITED_ACTIVE_ITEM_DURABILITY_RESTORE;
     public static ForgeConfigSpec.BooleanValue ACTIVE_ITEM_AUTO_RESTORE;
     public static ForgeConfigSpec.BooleanValue ITEM_REMOVAL_FROM_POOL;
     public static ForgeConfigSpec.BooleanValue ITEM_REMOVAL_FROM_ALL_POOL;
@@ -90,7 +91,7 @@ public class Config
 
     static {
         // 配置数值的默认值和范围
-        BUILDER.push("Passive Item Stats"); // 配置分组
+        BUILDER.push("Player Stats"); // 配置分组
         // 生命值增量基准  默认10
         HEALTH_BONUS = BUILDER
                 .comment("Base value of health increment")
@@ -187,11 +188,15 @@ public class Config
         BUILDER.pop();
     }
     static {
-        BUILDER.push("Item relevant");
+        BUILDER.push("Item related");
 
         ACTIVE_ITEM_DURABILITY_RESTORE_RATE = BUILDER
                 .comment("How many durability is restored every 4 ticks (0.2 seconds)")
                 .defineInRange("active_item_durability_restore_rate", 4, 0, 99999);
+
+        LIMITED_ACTIVE_ITEM_DURABILITY_RESTORE = BUILDER
+                .comment("Active item will auto restore durability ONLY in player's offhand and mainhand.")
+                .define("limited_active_item_durability_restore", false);
 
         ACTIVE_ITEM_AUTO_RESTORE = BUILDER
                 .comment("Active item will auto restore durability with time.")

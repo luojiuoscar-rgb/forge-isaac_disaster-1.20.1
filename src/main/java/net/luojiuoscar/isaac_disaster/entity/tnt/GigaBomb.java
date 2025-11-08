@@ -1,14 +1,12 @@
 package net.luojiuoscar.isaac_disaster.entity.tnt;
 
+import net.luojiuoscar.isaac_disaster.helper.EntityHelper;
 import net.luojiuoscar.isaac_disaster.sound.ModSounds;
-import net.minecraft.core.BlockPos;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
@@ -28,81 +26,48 @@ public class GigaBomb extends IsaacBomb {
     @Override
     protected void explode() {
         Level level = this.level();
-        BlockPos origin = this.blockPosition();
-        int radius = this.getPower(); // 你传入的范围
+        if (level.isClientSide) return;
 
-        // 播放音效
         level.playSound(null, this.getX(), this.getY(), this.getZ(),
                 ModSounds.GIGA_BOMB_EXPLOSION.get(), SoundSource.BLOCKS,
-                4.0F, 1.0F);
+                1.0F, 1.0F);
 
+        Explosion explosion = new Explosion(
+                level,
+                this,
+                this.getX(), this.getY(), this.getZ(),
+                this.getPower(),
+                false,
+                Explosion.BlockInteraction.DESTROY
+        );
+        explosion.explode();
+        explosion.finalizeExplosion(true);
 
-        // 产生伤害
-        dealExplosionDamage(level, this.position(), this.getPower());
+        double radius = this.getPower(); // 你希望的生物伤害范围
+        Vec3 center = this.position();
 
-        // 破坏方块
-        float threshold = 1200f;
-
-        for (int x = -radius; x <= radius; x++) {
-            for (int y = -radius; y <= radius; y++) {
-                for (int z = -radius; z <= radius; z++) {
-                    BlockPos pos = origin.offset(x, y, z);
-
-                    // 球形范围，只破坏距离内的方块
-                    if (pos.distSqr(origin) > radius * radius) continue;
-
-                    BlockState state = level.getBlockState(pos);
-
-                    // 空气跳过
-                    if (state.isAir()) continue;
-
-                    // 获取爆炸抗性
-                    Explosion dummyExplosion = new Explosion(level, this, this.getX(), this.getY(), this.getZ(), this.getPower(), false, Explosion.BlockInteraction.KEEP);
-
-                    float resistance = state.getExplosionResistance(level, pos, dummyExplosion);
-
-                    if (resistance < threshold) {
-                        // 80% 几率不掉落物品
-                        boolean drop = level.random.nextDouble() > 0.8;
-                        level.destroyBlock(pos, drop, this);
-                    }
-                }
-            }
-        }
-
-
-        this.discard(); // 删除 TNT 实体
-    }
-
-    private void dealExplosionDamage(Level level, Vec3 center, float radius) {
-        List<LivingEntity> entities = level.getEntitiesOfClass(LivingEntity.class,
-                new AABB(center.x - radius, center.y - radius, center.z - radius,
-                        center.x + radius, center.y + radius, center.z + radius));
+        List<LivingEntity> entities = level.getEntitiesOfClass(
+                LivingEntity.class,
+                new AABB(
+                        center.x - radius, center.y - radius, center.z - radius,
+                        center.x + radius, center.y + radius, center.z + radius
+                )
+        );
 
         for (LivingEntity entity : entities) {
+            // 跳过自己
+            if (EntityHelper.isFriendlyToPlayer(entity, this.getOwner())) continue;
             if (entity.isInvulnerable()) continue;
+            if (!entity.isAlive()) continue;
 
-            double distance = entity.position().distanceTo(center);
-            if (distance > radius) continue;
+            // 固定伤害 300，无衰减
+            entity.hurt(level.damageSources().explosion(this, this.getOwner()), 300.0f);
 
-            // 距离衰减因子
-            double factor = Math.exp(-2.0 * distance / radius); // 距离越远衰减越快
-
-            float damage = (float) (350.0f * factor);
-            entity.hurt(level.damageSources().explosion(this, null), damage);
-
-            // 推开效果（方向 = 实体位置 - 爆炸中心）
+            // 推力
             Vec3 pushDir = entity.position().subtract(center).normalize();
-            double pushStrength = 3.0 * factor + 1.5; // 即使远处也有一定推力
-            entity.push(pushDir.x * pushStrength, pushDir.y * pushStrength * 0.5, pushDir.z * pushStrength);
+            entity.push(pushDir.x * 2.5, pushDir.y, pushDir.z * 2.5);
         }
 
-        // 删除掉落物
-        List<ItemEntity> itemEntities = level.getEntitiesOfClass(ItemEntity.class,
-                new AABB(center.x - radius, center.y - radius, center.z - radius,
-                        center.x + radius, center.y + radius, center.z + radius));
-        for (ItemEntity item : itemEntities) {
-            item.discard();
-        }
+        this.discard();
     }
 }

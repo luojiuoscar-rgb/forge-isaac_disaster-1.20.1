@@ -39,6 +39,9 @@ public class ClientModEvents {
         event.registerBlockEntityRenderer(ModBlockEntities.OLD_CHEST_BLOCK_ENTITY.get(), IsaacChestRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.ETERNAL_CHEST_BLOCK_ENTITY.get(), IsaacChestRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.RED_CHEST_BLOCK_ENTITY.get(), IsaacChestRenderer::new);
+        event.registerBlockEntityRenderer(ModBlockEntities.WOODEN_CHEST_BLOCK_ENTITY.get(), IsaacChestRenderer::new);
+        event.registerBlockEntityRenderer(ModBlockEntities.BOMB_CHEST_BLOCK_ENTITY.get(), IsaacChestRenderer::new);
+        event.registerBlockEntityRenderer(ModBlockEntities.CHEST_PLACEHOLDER_BLOCK_ENTITY.get(), IsaacChestRenderer::new);
 
     }
 
@@ -50,7 +53,8 @@ public class ClientModEvents {
         event.register(ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "block/old_chest_lid"));
         event.register(ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "block/eternal_chest_lid"));
         event.register(ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "block/red_chest_lid"));
-
+        event.register(ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "block/wooden_chest_lid"));
+        event.register(ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "block/bomb_chest_lid"));
 
     }
 

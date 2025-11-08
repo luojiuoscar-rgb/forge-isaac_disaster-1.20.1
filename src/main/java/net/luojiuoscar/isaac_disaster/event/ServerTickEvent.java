@@ -21,11 +21,13 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
+import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Mod.EventBusSubscriber(modid = IsaacDisaster.MOD_ID)
@@ -99,11 +101,20 @@ public class ServerTickEvent {
         if (PlayerHelper.hasItem(ItemId.VOLT_4P5.getId(), player)) return;
 
 
-        // 遍历玩家所有物品槽位
-        for (int i = 0; i < player.getInventory().getContainerSize(); i++) {
-            ItemStack stack = player.getInventory().getItem(i);
+        // 恢复耐久
+        Inventory inv = player.getInventory();
+        List<ItemStack> items = new ArrayList<>();
+        // 仅在主副手
+        if (Config.LIMITED_ACTIVE_ITEM_DURABILITY_RESTORE.get()){
+            items.add(player.getMainHandItem());
+            items.add(player.getOffhandItem());
+        }else{
+            items.addAll(inv.items);
+            items.addAll(inv.offhand);
+        }
 
-            // 检查物品是否为NormalActiveItem类型且不为空
+        for (ItemStack stack : items) {
+
             if (!stack.isEmpty() && stack.getItem() instanceof ActiveItem) {
                 PlayerHelper.chargeItem(stack, Config.ACTIVE_ITEM_DURABILITY_RESTORE_RATE.get(),
                         PlayerHelper.hasItem(ItemId.THE_BATTERY.getId(), player));

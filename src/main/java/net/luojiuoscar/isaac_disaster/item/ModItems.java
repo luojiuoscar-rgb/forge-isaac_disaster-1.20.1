@@ -559,12 +559,16 @@ public class ModItems {
             () -> new Item(new Item.Properties()));
     static { MISC_LIST.add(LOCK); }
 
+    public static final RegistryObject<Item> CHEST_PLACEHOLDER_ITEM = ITEMS.register("chest_placeholder",
+            () -> new IsaacChestBlockItem(ModBlocks.CHEST_PLACEHOLDER_BLOCK.get(), new Item.Properties()));
+    static { MISC_LIST.add(CHEST_PLACEHOLDER_ITEM); }
+
     public static final RegistryObject<Item> NORMAL_CHEST_ITEM = ITEMS.register("chest",
             () -> new IsaacChestBlockItem(ModBlocks.NORMAL_CHEST_BLOCK.get(), new Item.Properties()));
     static { MISC_LIST.add(NORMAL_CHEST_ITEM); }
 
     public static final RegistryObject<Item> LOCKED_CHEST_ITEM = ITEMS.register("locked_chest",
-            () -> new IsaacChestBlockItem(ModBlocks.LOCKED_CHEST_BLOCK.get(), new Item.Properties().rarity(Rarity.RARE)));
+            () -> new IsaacChestBlockItem(ModBlocks.LOCKED_CHEST_BLOCK.get(), new Item.Properties().rarity(Rarity.COMMON)));
     static { MISC_LIST.add(LOCKED_CHEST_ITEM); }
 
     public static final RegistryObject<Item> OLD_CHEST_ITEM = ITEMS.register("old_chest",
@@ -579,6 +583,13 @@ public class ModItems {
             () -> new IsaacChestBlockItem(ModBlocks.RED_CHEST_BLOCK.get(), new Item.Properties().rarity(Rarity.UNCOMMON)));
     static { MISC_LIST.add(RED_CHEST_ITEM); }
 
+    public static final RegistryObject<Item> WOODEN_CHEST_ITEM = ITEMS.register("wooden_chest",
+            () -> new IsaacChestBlockItem(ModBlocks.WOODEN_CHEST_BLOCK.get(), new Item.Properties().rarity(Rarity.UNCOMMON)));
+    static { MISC_LIST.add(WOODEN_CHEST_ITEM); }
+
+    public static final RegistryObject<Item> BOMB_CHEST_ITEM = ITEMS.register("bomb_chest",
+            () -> new IsaacChestBlockItem(ModBlocks.BOMB_CHEST_BLOCK.get(), new Item.Properties().rarity(Rarity.COMMON)));
+    static { MISC_LIST.add(BOMB_CHEST_ITEM); }
     // misc end
 
 

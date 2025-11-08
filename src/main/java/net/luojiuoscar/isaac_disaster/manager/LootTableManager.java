@@ -33,6 +33,15 @@ public class LootTableManager {
     // item pools
     public static final ResourceLocation DEFAULT_ITEM_POOL =
             ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "pools/item/passive_items");
+    public static final ResourceLocation POOL_LOCKED_CHEST =
+            ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "pools/item/locked_chest");
+    public static final ResourceLocation POOL_RED_CHEST =
+            ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "pools/item/red_chest");
+    public static final ResourceLocation POOL_WOODEN_CHEST =
+            ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "pools/item/wooden_chest");
+    public static final ResourceLocation POOL_OLD_CHEST =
+            ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "pools/item/old_chest");
+
 
 
     // chests
@@ -46,6 +55,10 @@ public class LootTableManager {
             ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "chests/isaac/red_chest");
     public static final ResourceLocation OLD_CHEST =
             ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "chests/isaac/old_chest");
+    public static final ResourceLocation WOODEN_CHEST =
+            ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "chests/isaac/wooden_chest");
+
+
 
 
 }

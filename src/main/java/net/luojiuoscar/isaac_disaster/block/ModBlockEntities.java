@@ -48,4 +48,18 @@ public class ModBlockEntities {
                     () -> BlockEntityType.Builder.of(RedChestBlockEntity::new,
                             ModBlocks.RED_CHEST_BLOCK.get()).build(null));
 
+    public static final RegistryObject<BlockEntityType<WoodenChestBlockEntity>> WOODEN_CHEST_BLOCK_ENTITY =
+            BLOCK_ENTITIES.register("wooden_chest_block_entity",
+                    () -> BlockEntityType.Builder.of(WoodenChestBlockEntity::new,
+                            ModBlocks.WOODEN_CHEST_BLOCK.get()).build(null));
+
+    public static final RegistryObject<BlockEntityType<BombChestBlockEntity>> BOMB_CHEST_BLOCK_ENTITY =
+            BLOCK_ENTITIES.register("bomb_chest_block_entity",
+                    () -> BlockEntityType.Builder.of(BombChestBlockEntity::new,
+                            ModBlocks.BOMB_CHEST_BLOCK.get()).build(null));
+
+    public static final RegistryObject<BlockEntityType<ChestPlaceholderBlockEntity>> CHEST_PLACEHOLDER_BLOCK_ENTITY =
+            BLOCK_ENTITIES.register("chest_placeholder_block_entity",
+                    () -> BlockEntityType.Builder.of(ChestPlaceholderBlockEntity::new,
+                            ModBlocks.CHEST_PLACEHOLDER_BLOCK.get()).build(null));
 }

@@ -35,7 +35,7 @@ public enum StatManager {
             StatManager.modifyAdd(player, getUUID(), ratio * getBonus(), getMinVal(), getMaxVal());
             player.setHealth(player.getHealth()); // 刷新血量状态，避免显示溢出
 
-            if (player.getHealth() + player.getAbsorptionAmount() <= 0)
+            if (player.getMaxHealth() + player.getAbsorptionAmount() <= 0)
                 player.kill();
         }
     },

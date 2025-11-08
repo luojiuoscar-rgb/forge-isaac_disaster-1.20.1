@@ -1,16 +1,16 @@
 {
-  "type": "minecraft:block",
+  "type": "minecraft:item",
   "pools": [
     {
       "rolls": 1,
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "isaac_disaster:chest",
+          "name": "isaac_disaster:locked_chest",
           "functions": [
             {
               "function": "minecraft:set_nbt",
-              "tag": "{BlockEntityTag:{opened:1b}}"
+              "tag": "{BlockEntityTag:{opened:1b,locked:0b}}"
             }
           ]
         }

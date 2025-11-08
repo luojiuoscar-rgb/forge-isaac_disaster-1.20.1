@@ -40,4 +40,12 @@ public class ModBlocks {
     public static final RegistryObject<Block> RED_CHEST_BLOCK = BLOCKS.register("red_chest",
             () -> new RedChestBlock(BlockBehaviour.Properties.copy(Blocks.CHEST)));
 
+    public static final RegistryObject<Block> WOODEN_CHEST_BLOCK = BLOCKS.register("wooden_chest",
+            () -> new WoodenChest(BlockBehaviour.Properties.copy(Blocks.CHEST)));
+
+    public static final RegistryObject<Block> BOMB_CHEST_BLOCK = BLOCKS.register("bomb_chest",
+            () -> new BombChest(BlockBehaviour.Properties.copy(Blocks.STONE)));
+
+    public static final RegistryObject<Block> CHEST_PLACEHOLDER_BLOCK = BLOCKS.register("chest_placeholder",
+            () -> new ChestPlaceholderBlock(BlockBehaviour.Properties.copy(Blocks.GLASS).strength(0f)));
 }
