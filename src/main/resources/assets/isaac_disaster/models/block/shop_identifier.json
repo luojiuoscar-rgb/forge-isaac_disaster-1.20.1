@@ -1,0 +1,6 @@
+{
+	"parent": "isaac_disaster:block/identifier",
+	"textures": {
+		"0": "isaac_disaster:block/shop_identifier"
+	}
+}

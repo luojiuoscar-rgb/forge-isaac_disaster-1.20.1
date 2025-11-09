@@ -4,7 +4,7 @@ import net.luojiuoscar.isaac_disaster.block.block_entity.misc.ItemDisplayContain
 import net.luojiuoscar.isaac_disaster.client.ClientDataManager;
 import net.luojiuoscar.isaac_disaster.item_ability.active_item.IActiveItem;
 import net.luojiuoscar.isaac_disaster.manager.ColorManager;
-import net.luojiuoscar.isaac_disaster.manager.data.IsaacItemBlockData;
+import net.luojiuoscar.isaac_disaster.manager.data.BlockData;
 import net.luojiuoscar.isaac_disaster.manager.id_managers.ItemId;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
@@ -34,7 +34,7 @@ public class TheD6 implements IActiveItem {
     public void onTriggeredEffect(Player player) {
         if (!(player.level() instanceof ServerLevel serverLevel)) return;
 
-        Set<BlockPos> posList = IsaacItemBlockData.get(serverLevel).getAll();
+        Set<BlockPos> posList = BlockData.get(serverLevel).getAllItemBlocks();
         Vec3 playerPos = player.position();
 
         final double MAX_DISTANCE = 10.0;

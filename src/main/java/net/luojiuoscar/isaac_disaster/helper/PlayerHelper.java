@@ -2,6 +2,8 @@ package net.luojiuoscar.isaac_disaster.helper;
 
 import net.luojiuoscar.isaac_disaster.Config;
 import net.luojiuoscar.isaac_disaster.attribute.ModAttributes;
+import net.luojiuoscar.isaac_disaster.block.ModBlocks;
+import net.luojiuoscar.isaac_disaster.block.block_entity.PedestalBlockEntity;
 import net.luojiuoscar.isaac_disaster.capability.player.*;
 import net.luojiuoscar.isaac_disaster.client.ClientDataManager;
 import net.luojiuoscar.isaac_disaster.entity.custom.IsaacBullet;
@@ -10,6 +12,7 @@ import net.luojiuoscar.isaac_disaster.item.ModItems;
 import net.luojiuoscar.isaac_disaster.item.item.ActiveItem;
 import net.luojiuoscar.isaac_disaster.manager.ColorManager;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
+import net.luojiuoscar.isaac_disaster.manager.data.BlockData;
 import net.luojiuoscar.isaac_disaster.manager.id_managers.ItemId;
 import net.luojiuoscar.isaac_disaster.manager.id_managers.SetId;
 import net.luojiuoscar.isaac_disaster.manager.id_managers.TrinketId;
@@ -35,15 +38,14 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.server.ServerLifecycleHooks;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.function.Predicate;
 
 
@@ -817,5 +819,61 @@ public class PlayerHelper {
             stack.setDamageValue(newDamage);
         }
     }
+
+    public static void teleportToNearestIdentifier(ServerPlayer player, ResourceLocation identifier) {
+        ServerLevel level = (ServerLevel) player.level();
+
+        Set<BlockPos> posSet = BlockData.get(level).getIdentifiers(identifier);
+
+        if (posSet.isEmpty()) return;
+
+        BlockPos playerBlockPos = player.blockPosition();
+        Optional<BlockPos> nearest = posSet.stream()
+                .min(Comparator.comparingDouble(pos -> pos.distSqr(playerBlockPos)));
+
+        nearest.ifPresent(pos -> {
+            double x = pos.getX() + 0.5;
+            double y = pos.getY();
+            double z = pos.getZ() + 0.5;
+
+            player.teleportTo(level, x, y, z, player.getYRot(), player.getXRot());
+        });
+    }
+
+
+    public static void copyNearestPedestal(ServerPlayer player, boolean linked) {
+        ServerLevel level = (ServerLevel) player.level();
+        BlockData data = BlockData.get(level);
+        Set<BlockPos> pedestals = data.getAllPedestals();
+        if (pedestals.isEmpty()) return;
+
+        BlockPos playerPos = player.blockPosition();
+        pedestals.stream()
+                .min(Comparator.comparingDouble(pos -> pos.distSqr(playerPos)))
+                .ifPresent(nearest -> copyPedestalAt(level, nearest, linked));
+    }
+
+    private static void copyPedestalAt(ServerLevel level, BlockPos sourcePos, boolean linked) {
+        BlockEntity sourceBE = level.getBlockEntity(sourcePos);
+        if (!(sourceBE instanceof PedestalBlockEntity originalPedestal)) return;
+
+        for (int dx : new int[]{-1, 0, 1}) {
+            for (int dz : new int[]{-1, 0, 1}) {
+                BlockPos newPos = sourcePos.offset(dx, 0, dz);
+                if (!level.getBlockState(newPos).getCollisionShape(level, newPos).isEmpty()) continue;
+
+                level.setBlock(newPos, ModBlocks.PEDESTAL_BLOCK.get().defaultBlockState(), 3);
+
+                BlockEntity newBE = level.getBlockEntity(newPos);
+                if (newBE instanceof PedestalBlockEntity newPedestal) {
+                    newPedestal.copyFromOriginal(originalPedestal);
+                    if (linked) PedestalBlockEntity.linkPedestals(sourcePos, newPos, level);
+                    return; // 只复制到第一个空格
+                }
+            }
+        }
+    }
+
+
 }
 

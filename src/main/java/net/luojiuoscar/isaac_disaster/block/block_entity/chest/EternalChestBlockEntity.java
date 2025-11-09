@@ -67,7 +67,7 @@ public class EternalChestBlockEntity extends ItemChestBlockEntity {
             // 因为掉落物品会清空箱子，所以先弹出箱子内物品
             dropContent();
             this.lootTable = null;
-            boolean s = super.lootItem(serverLevel, player, pos, ResourceLocation.parse(getItemLootTable()));
+            boolean s = super.lootItem(serverLevel, player, pos, ResourceLocation.parse(getItemLootTable()), this::clearContent);
             if (s){
                 setDisplayingItem(true);
                 return true;

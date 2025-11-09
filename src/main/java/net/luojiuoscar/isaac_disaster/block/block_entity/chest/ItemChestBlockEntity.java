@@ -94,7 +94,7 @@ public abstract class ItemChestBlockEntity extends IsaacChestBlockEntity impleme
             setOpened(true);
 
 
-            boolean spawned = lootItem(serverLevel, player, pos, ResourceLocation.parse(itemLootTable));
+            boolean spawned = lootItem(serverLevel, player, pos, ResourceLocation.parse(itemLootTable), this::clearContent);
             if (spawned){
                 setDisplayingItem(true);
                 return true;
@@ -201,7 +201,7 @@ public abstract class ItemChestBlockEntity extends IsaacChestBlockEntity impleme
         if (this.level == null || this.level.isClientSide) return;
 
         this.clearContent();
-        this.lootItem((ServerLevel) level, player, getBlockPos(), ResourceLocation.parse(itemLootTable));
+        this.lootItem((ServerLevel) level, player, getBlockPos(), ResourceLocation.parse(itemLootTable), this::clearContent);
     }
 
     private final DisplayItemListCap displayItemListCap = new DisplayItemListCap();

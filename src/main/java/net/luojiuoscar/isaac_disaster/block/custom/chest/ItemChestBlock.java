@@ -2,7 +2,7 @@ package net.luojiuoscar.isaac_disaster.block.custom.chest;
 
 import net.luojiuoscar.isaac_disaster.block.block_entity.chest.ItemChestBlockEntity;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
-import net.luojiuoscar.isaac_disaster.manager.data.IsaacItemBlockData;
+import net.luojiuoscar.isaac_disaster.manager.data.BlockData;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
@@ -61,7 +61,7 @@ public abstract class ItemChestBlock extends IsaacChestBlock{
                 chest.clearItemDisplayList();
                 chest.clearContent();
                 chest.setDisplayingItem(false);
-                IsaacItemBlockData.get(serverLevel).removeItemBlock(pos);
+                BlockData.get(serverLevel).removeItemBlock(pos);
 
                 level.playSound(null, pos.getX(), pos.getY(), pos.getZ(),
                         SoundEvents.ITEM_PICKUP, SoundSource.BLOCKS, 0.7f, 1.0f);
@@ -79,7 +79,7 @@ public abstract class ItemChestBlock extends IsaacChestBlock{
     public void onRemove(BlockState state, Level level, BlockPos pos,
                          BlockState newState, boolean isMoving){
         if (!level.isClientSide){
-            IsaacItemBlockData.get((ServerLevel) level).removeItemBlock(pos);
+            BlockData.get((ServerLevel) level).removeItemBlock(pos);
         }
 
         super.onRemove(state, level, pos, newState, isMoving);

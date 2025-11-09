@@ -1,12 +1,11 @@
 package net.luojiuoscar.isaac_disaster.block.block_entity.misc;
 
-import net.luojiuoscar.isaac_disaster.block.block_entity.chest.ItemChestBlockEntity;
 import net.luojiuoscar.isaac_disaster.capability.misc.DisplayItemListCap;
 import net.luojiuoscar.isaac_disaster.event.custom.ItemDisplayAddEvent;
 import net.luojiuoscar.isaac_disaster.helper.LootHelper;
 import net.luojiuoscar.isaac_disaster.helper.PoolHelper;
 import net.luojiuoscar.isaac_disaster.item.item.IsaacItem;
-import net.luojiuoscar.isaac_disaster.manager.data.IsaacItemBlockData;
+import net.luojiuoscar.isaac_disaster.manager.data.BlockData;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
@@ -32,7 +31,8 @@ public interface ItemDisplayContainerBlockEntity {
     /**
      * 从道具池中将道具填充至itemDisplayList
      */
-    default boolean lootItem(ServerLevel serverLevel, Player player, BlockPos pos, ResourceLocation tableId){
+    default boolean lootItem(ServerLevel serverLevel, Player player, BlockPos pos, ResourceLocation tableId,
+                             Runnable beforeGenerateAction){
         List<ItemStack> items = LootHelper.generateLoot(serverLevel, tableId, new LootParams.Builder(serverLevel)
                         .withParameter(LootContextParams.ORIGIN, pos.getCenter())
                         .withOptionalParameter(LootContextParams.THIS_ENTITY, player),
@@ -42,8 +42,7 @@ public interface ItemDisplayContainerBlockEntity {
         ItemStack stack = items.get(0);
 
         if (!stack.isEmpty() && stack.getItem() instanceof IsaacItem isaacItem){
-            if (!(serverLevel.getBlockEntity(pos) instanceof ItemChestBlockEntity chest)) return false;
-            chest.clearContent(); // 先清除原有物品
+            beforeGenerateAction.run();
 
             stack.setCount(1);
             addItemDisplay(stack); // 加入到展示型道具列表
@@ -57,7 +56,7 @@ public interface ItemDisplayContainerBlockEntity {
             }
 
             PoolHelper.markAsRemoval(player, tableId, isaacItem.getItemId()); // 移出道具池
-            IsaacItemBlockData.get(serverLevel).addItemBlock(pos); // 记录当前坐标
+            BlockData.get(serverLevel).addItemBlock(pos); // 记录当前坐标
             return true;
         }
         return false;

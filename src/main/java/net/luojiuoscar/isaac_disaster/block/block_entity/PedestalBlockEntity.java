@@ -6,7 +6,7 @@ import net.luojiuoscar.isaac_disaster.block.block_entity.misc.ItemDisplayContain
 import net.luojiuoscar.isaac_disaster.capability.misc.DisplayItemListCap;
 import net.luojiuoscar.isaac_disaster.commands.gamerule.ModGameRules;
 import net.luojiuoscar.isaac_disaster.helper.LevelHelper;
-import net.luojiuoscar.isaac_disaster.manager.data.PedestalData;
+import net.luojiuoscar.isaac_disaster.manager.data.BlockData;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -200,11 +200,11 @@ public class PedestalBlockEntity extends BlockEntity implements ItemDisplayConta
 
     @Override
     public void onLoad() {
-        if (level == null) return;
-        if (!level.isClientSide) {
-            PedestalData manager = PedestalData.get((ServerLevel) level);
-            manager.addPedestal(worldPosition);
-        }
+        super.onLoad();
+        if (level == null || level.isClientSide) return;
+
+        BlockData manager = BlockData.get((ServerLevel) level);
+        manager.addPedestal(worldPosition);
     }
 
     public static <T extends PedestalBlockEntity> void tick(Level level, BlockPos pos, BlockState state, T blockEntity) {
@@ -233,7 +233,7 @@ public class PedestalBlockEntity extends BlockEntity implements ItemDisplayConta
     @Override
     public boolean tryLootItem(ServerLevel serverLevel, Player player, BlockPos pos) {
         try {
-            return lootItem(serverLevel, player, pos, ResourceLocation.parse(itemLootTable));
+            return lootItem(serverLevel, player, pos, ResourceLocation.parse(itemLootTable), this::clearContent);
         } catch (Exception e) {
             IsaacDisaster.LOGGER.error("Failed to generate loot for pedestal at {} with table {}", worldPosition, itemLootTable, e);
             itemLootTable = "";

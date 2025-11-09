@@ -43,7 +43,7 @@ public class ChestPlaceholderBlockEntity extends ItemChestBlockEntity {
         Player player = LevelHelper.findNearestOfType(
                 level,
                 pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5,
-                6.0,
+                range,
                 Player.class,
                 e -> e instanceof Player p && !p.isCreative() && !p.isSpectator()
         );
@@ -60,17 +60,16 @@ public class ChestPlaceholderBlockEntity extends ItemChestBlockEntity {
                 newState = ModBlocks.LOCKED_CHEST_BLOCK.get().defaultBlockState();
 
             }else{
-                newState = ModBlocks.LOCKED_CHEST_BLOCK.get().defaultBlockState();
-//                int val = level.getRandom().nextInt(0, 10);
-//                if (val < 7){
-//                    newState = ModBlocks.NORMAL_CHEST_BLOCK.get().defaultBlockState();
-//                }else if(val < 8){
-//                    newState = ModBlocks.LOCKED_CHEST_BLOCK.get().defaultBlockState();
-//                }else if(val < 9){
-//                    newState = ModBlocks.BOMB_CHEST_BLOCK.get().defaultBlockState();
-//                }else{
-//                    newState = ModBlocks.RED_CHEST_BLOCK.get().defaultBlockState();
-//                }
+                int val = level.getRandom().nextInt(0, 10);
+                if (val < 7){
+                    newState = ModBlocks.NORMAL_CHEST_BLOCK.get().defaultBlockState();
+                }else if(val < 8){
+                    newState = ModBlocks.LOCKED_CHEST_BLOCK.get().defaultBlockState();
+                }else if(val < 9){
+                    newState = ModBlocks.BOMB_CHEST_BLOCK.get().defaultBlockState();
+                }else{
+                    newState = ModBlocks.RED_CHEST_BLOCK.get().defaultBlockState();
+                }
             }
 
             // facing

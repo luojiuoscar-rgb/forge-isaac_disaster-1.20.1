@@ -5,8 +5,7 @@ import net.luojiuoscar.isaac_disaster.block.block_entity.PedestalBlockEntity;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.item.custom.DebugStick;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
-import net.luojiuoscar.isaac_disaster.manager.data.IsaacItemBlockData;
-import net.luojiuoscar.isaac_disaster.manager.data.PedestalData;
+import net.luojiuoscar.isaac_disaster.manager.data.BlockData;
 import net.luojiuoscar.isaac_disaster.sound.ModSounds;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -156,7 +155,7 @@ public class PedestalBlock extends BaseEntityBlock {
             if (buySuccess){
                 player.setItemInHand(hand, stored);
                 pedestal.clearContent();
-                IsaacItemBlockData.get(serverLevel).removeItemBlock(pos); // 从nbt处移除
+                BlockData.get(serverLevel).removeItemBlock(pos); // 从nbt处移除
                 level.playSound(null, pos.getX(), pos.getY(), pos.getZ(),
                         SoundEvents.ITEM_PICKUP, SoundSource.BLOCKS, 0.7f, 1.0f);
 
@@ -189,9 +188,9 @@ public class PedestalBlock extends BaseEntityBlock {
     public void onRemove(BlockState state, Level level, BlockPos pos,
                          BlockState newState, boolean isMoving) {
         if (!level.isClientSide) {
-            PedestalData manager = PedestalData.get((ServerLevel) level);
+            BlockData manager = BlockData.get((ServerLevel) level);
             manager.removePedestal(pos);
-            IsaacItemBlockData.get((ServerLevel) level).removeItemBlock(pos);
+            BlockData.get((ServerLevel) level).removeItemBlock(pos);
         }
 
         if (state.getBlock() != newState.getBlock()) {

@@ -3,7 +3,9 @@ package net.luojiuoscar.isaac_disaster.item;
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.block.ModBlocks;
 import net.luojiuoscar.isaac_disaster.item.block.IsaacChestBlockItem;
+import net.luojiuoscar.isaac_disaster.item.custom.ChestPlaceholder;
 import net.luojiuoscar.isaac_disaster.item.custom.DebugStick;
+import net.luojiuoscar.isaac_disaster.item.block.IdentifierBlockItem;
 import net.luojiuoscar.isaac_disaster.item.item.ActiveItem;
 import net.luojiuoscar.isaac_disaster.item.item.PassiveItem;
 import net.luojiuoscar.isaac_disaster.item.item.Trinket;
@@ -16,6 +18,7 @@ import net.luojiuoscar.isaac_disaster.manager.id_managers.TrinketId;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Rarity;
+import net.minecraft.world.level.block.Block;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -559,10 +562,6 @@ public class ModItems {
             () -> new Item(new Item.Properties()));
     static { MISC_LIST.add(LOCK); }
 
-    public static final RegistryObject<Item> CHEST_PLACEHOLDER_ITEM = ITEMS.register("chest_placeholder",
-            () -> new IsaacChestBlockItem(ModBlocks.CHEST_PLACEHOLDER_BLOCK.get(), new Item.Properties()));
-    static { MISC_LIST.add(CHEST_PLACEHOLDER_ITEM); }
-
     public static final RegistryObject<Item> NORMAL_CHEST_ITEM = ITEMS.register("chest",
             () -> new IsaacChestBlockItem(ModBlocks.NORMAL_CHEST_BLOCK.get(), new Item.Properties()));
     static { MISC_LIST.add(NORMAL_CHEST_ITEM); }
@@ -590,6 +589,32 @@ public class ModItems {
     public static final RegistryObject<Item> BOMB_CHEST_ITEM = ITEMS.register("bomb_chest",
             () -> new IsaacChestBlockItem(ModBlocks.BOMB_CHEST_BLOCK.get(), new Item.Properties().rarity(Rarity.COMMON)));
     static { MISC_LIST.add(BOMB_CHEST_ITEM); }
+
+    public static final RegistryObject<Item> CHEST_PLACEHOLDER_ITEM = ITEMS.register("chest_placeholder",
+            () -> new ChestPlaceholder(ModBlocks.CHEST_PLACEHOLDER_BLOCK.get(), new Item.Properties()));
+    static { MISC_LIST.add(CHEST_PLACEHOLDER_ITEM); }
+
+    private static RegistryObject<Item> registerIdentifier(String name, RegistryObject<Block> block) {
+        RegistryObject<Item> reg = ITEMS.register(name, () -> new IdentifierBlockItem(
+                block.get(), new Item.Properties()));
+        MISC_LIST.add(reg);
+        return reg;
+    }
+
+    public static final RegistryObject<Item> NORMAL_IDENTIFIER_ITEM = registerIdentifier("normal_identifier", ModBlocks.NORMAL_IDENTIFIER_BLOCK);
+    public static final RegistryObject<Item> TREASURE_IDENTIFIER_ITEM = registerIdentifier("treasure_identifier", ModBlocks.TREASURE_IDENTIFIER_BLOCK);
+    public static final RegistryObject<Item> SHOP_IDENTIFIER_ITEM = registerIdentifier("shop_identifier", ModBlocks.SHOP_IDENTIFIER_BLOCK);
+    public static final RegistryObject<Item> SECRET_IDENTIFIER_ITEM = registerIdentifier("secret_identifier", ModBlocks.SECRET_IDENTIFIER_BLOCK);
+    public static final RegistryObject<Item> SUPER_SECRET_IDENTIFIER_ITEM = registerIdentifier("super_secret_identifier", ModBlocks.SUPER_SECRET_IDENTIFIER_BLOCK);
+    public static final RegistryObject<Item> ULTRA_SECRET_IDENTIFIER_ITEM = registerIdentifier("ultra_secret_identifier", ModBlocks.ULTRA_SECRET_IDENTIFIER_BLOCK);
+    public static final RegistryObject<Item> BOSS_IDENTIFIER_ITEM = registerIdentifier("boss_identifier", ModBlocks.BOSS_IDENTIFIER_BLOCK);
+    public static final RegistryObject<Item> ELITE_IDENTIFIER_ITEM = registerIdentifier("elite_identifier", ModBlocks.ELITE_IDENTIFIER_BLOCK);
+    public static final RegistryObject<Item> GAMBLE_IDENTIFIER_ITEM = registerIdentifier("gamble_identifier", ModBlocks.GAMBLE_IDENTIFIER_BLOCK);
+    public static final RegistryObject<Item> LIBRARY_IDENTIFIER_ITEM = registerIdentifier("library_identifier", ModBlocks.LIBRARY_IDENTIFIER_BLOCK);
+    public static final RegistryObject<Item> CURSE_IDENTIFIER_ITEM = registerIdentifier("curse_identifier", ModBlocks.CURSE_IDENTIFIER_BLOCK);
+    public static final RegistryObject<Item> ANGEL_IDENTIFIER_ITEM = registerIdentifier("angel_identifier", ModBlocks.ANGEL_IDENTIFIER_BLOCK);
+    public static final RegistryObject<Item> DEVIL_IDENTIFIER_ITEM = registerIdentifier("devil_identifier", ModBlocks.DEVIL_IDENTIFIER_BLOCK);
+
     // misc end
 
 

@@ -64,7 +64,7 @@ public class RedChestBlockEntity extends ItemChestBlockEntity {
                 }
                 return false;
             }
-            boolean s = lootItem(serverLevel, player, pos, ResourceLocation.parse(getItemLootTable()));
+            boolean s = lootItem(serverLevel, player, pos, ResourceLocation.parse(getItemLootTable()), this::clearContent);
             if (s){
                 setDisplayingItem(true);
                 return true;

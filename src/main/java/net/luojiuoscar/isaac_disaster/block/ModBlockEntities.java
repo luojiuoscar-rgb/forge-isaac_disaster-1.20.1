@@ -3,6 +3,7 @@ package net.luojiuoscar.isaac_disaster.block;
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.block.block_entity.PedestalBlockEntity;
 import net.luojiuoscar.isaac_disaster.block.block_entity.chest.*;
+import net.luojiuoscar.isaac_disaster.block.block_entity.identifier.*;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.registries.DeferredRegister;
@@ -62,4 +63,58 @@ public class ModBlockEntities {
             BLOCK_ENTITIES.register("chest_placeholder_block_entity",
                     () -> BlockEntityType.Builder.of(ChestPlaceholderBlockEntity::new,
                             ModBlocks.CHEST_PLACEHOLDER_BLOCK.get()).build(null));
+
+    // identifiers
+    public static final RegistryObject<BlockEntityType<TreasureIdentifierBlockEntity>> TREASURE_IDENTIFIER_BLOCK_ENTITY =
+            BLOCK_ENTITIES.register("treasure_identifier_block_entity",
+                    () -> BlockEntityType.Builder.of(TreasureIdentifierBlockEntity::new,
+                            ModBlocks.TREASURE_IDENTIFIER_BLOCK.get()).build(null));
+    public static final RegistryObject<BlockEntityType<NormalIdentifierBlockEntity>> NORMAL_IDENTIFIER_BLOCK_ENTITY =
+            BLOCK_ENTITIES.register("normal_identifier_block_entity",
+                    () -> BlockEntityType.Builder.of(NormalIdentifierBlockEntity::new,
+                            ModBlocks.NORMAL_IDENTIFIER_BLOCK.get()).build(null));
+    public static final RegistryObject<BlockEntityType<ShopIdentifierBlockEntity>> SHOP_IDENTIFIER_BLOCK_ENTITY =
+            BLOCK_ENTITIES.register("shop_identifier_block_entity",
+                    () -> BlockEntityType.Builder.of(ShopIdentifierBlockEntity::new,
+                            ModBlocks.SHOP_IDENTIFIER_BLOCK.get()).build(null));
+    public static final RegistryObject<BlockEntityType<SecretIdentifierBlockEntity>> SECRET_IDENTIFIER_BLOCK_ENTITY =
+            BLOCK_ENTITIES.register("secret_identifier_block_entity",
+                    () -> BlockEntityType.Builder.of(SecretIdentifierBlockEntity::new,
+                            ModBlocks.SECRET_IDENTIFIER_BLOCK.get()).build(null));
+    public static final RegistryObject<BlockEntityType<SuperSecretIdentifierBlockEntity>> SUPER_SECRET_IDENTIFIER_BLOCK_ENTITY =
+            BLOCK_ENTITIES.register("super_secret_identifier_block_entity",
+                    () -> BlockEntityType.Builder.of(SuperSecretIdentifierBlockEntity::new,
+                            ModBlocks.SUPER_SECRET_IDENTIFIER_BLOCK.get()).build(null));
+    public static final RegistryObject<BlockEntityType<UltraSecretIdentifierBlockEntity>> ULTRA_SECRET_IDENTIFIER_BLOCK_ENTITY =
+            BLOCK_ENTITIES.register("ultra_secret_identifier_block_entity",
+                    () -> BlockEntityType.Builder.of(UltraSecretIdentifierBlockEntity::new,
+                            ModBlocks.ULTRA_SECRET_IDENTIFIER_BLOCK.get()).build(null));
+    public static final RegistryObject<BlockEntityType<CurseIdentifierBlockEntity>> CURSE_IDENTIFIER_BLOCK_ENTITY =
+            BLOCK_ENTITIES.register("curse_identifier_block_entity",
+                    () -> BlockEntityType.Builder.of(CurseIdentifierBlockEntity::new,
+                            ModBlocks.CURSE_IDENTIFIER_BLOCK.get()).build(null));
+    public static final RegistryObject<BlockEntityType<LibraryIdentifierBlockEntity>> LIBRARY_IDENTIFIER_BLOCK_ENTITY =
+            BLOCK_ENTITIES.register("library_identifier_block_entity",
+                    () -> BlockEntityType.Builder.of(LibraryIdentifierBlockEntity::new,
+                            ModBlocks.LIBRARY_IDENTIFIER_BLOCK.get()).build(null));
+    public static final RegistryObject<BlockEntityType<GambleIdentifierBlockEntity>> GAMBLE_IDENTIFIER_BLOCK_ENTITY =
+            BLOCK_ENTITIES.register("gamble_identifier_block_entity",
+                    () -> BlockEntityType.Builder.of(GambleIdentifierBlockEntity::new,
+                            ModBlocks.GAMBLE_IDENTIFIER_BLOCK.get()).build(null));
+    public static final RegistryObject<BlockEntityType<BossIdentifierBlockEntity>> BOSS_IDENTIFIER_BLOCK_ENTITY =
+            BLOCK_ENTITIES.register("boss_identifier_block_entity",
+                    () -> BlockEntityType.Builder.of(BossIdentifierBlockEntity::new,
+                            ModBlocks.BOSS_IDENTIFIER_BLOCK.get()).build(null));
+    public static final RegistryObject<BlockEntityType<EliteIdentifierBlockEntity>> ELITE_IDENTIFIER_BLOCK_ENTITY =
+            BLOCK_ENTITIES.register("elite_identifier_block_entity",
+                    () -> BlockEntityType.Builder.of(EliteIdentifierBlockEntity::new,
+                            ModBlocks.ELITE_IDENTIFIER_BLOCK.get()).build(null));
+    public static final RegistryObject<BlockEntityType<AngelIdentifierBlockEntity>> ANGEL_IDENTIFIER_BLOCK_ENTITY =
+            BLOCK_ENTITIES.register("angel_identifier_block_entity",
+                    () -> BlockEntityType.Builder.of(AngelIdentifierBlockEntity::new,
+                            ModBlocks.ANGEL_IDENTIFIER_BLOCK.get()).build(null));
+    public static final RegistryObject<BlockEntityType<DevilIdentifierBlockEntity>> DEVIL_IDENTIFIER_BLOCK_ENTITY =
+            BLOCK_ENTITIES.register("devil_identifier_block_entity",
+                    () -> BlockEntityType.Builder.of(DevilIdentifierBlockEntity::new,
+                            ModBlocks.DEVIL_IDENTIFIER_BLOCK.get()).build(null));
 }

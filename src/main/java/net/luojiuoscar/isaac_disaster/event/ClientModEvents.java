@@ -3,6 +3,7 @@ package net.luojiuoscar.isaac_disaster.event;
 
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.block.ModBlockEntities;
+import net.luojiuoscar.isaac_disaster.block.renderer.IdentifierRenderer;
 import net.luojiuoscar.isaac_disaster.block.renderer.IsaacChestRenderer;
 import net.luojiuoscar.isaac_disaster.block.renderer.PedestalRenderer;
 import net.luojiuoscar.isaac_disaster.client.FlyHudOverlay;
@@ -43,6 +44,20 @@ public class ClientModEvents {
         event.registerBlockEntityRenderer(ModBlockEntities.BOMB_CHEST_BLOCK_ENTITY.get(), IsaacChestRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.CHEST_PLACEHOLDER_BLOCK_ENTITY.get(), IsaacChestRenderer::new);
 
+        event.registerBlockEntityRenderer(ModBlockEntities.TREASURE_IDENTIFIER_BLOCK_ENTITY.get(), IdentifierRenderer::new);
+        event.registerBlockEntityRenderer(ModBlockEntities.NORMAL_IDENTIFIER_BLOCK_ENTITY.get(), IdentifierRenderer::new);
+        event.registerBlockEntityRenderer(ModBlockEntities.SHOP_IDENTIFIER_BLOCK_ENTITY.get(), IdentifierRenderer::new);
+        event.registerBlockEntityRenderer(ModBlockEntities.SECRET_IDENTIFIER_BLOCK_ENTITY.get(), IdentifierRenderer::new);
+        event.registerBlockEntityRenderer(ModBlockEntities.SUPER_SECRET_IDENTIFIER_BLOCK_ENTITY.get(), IdentifierRenderer::new);
+        event.registerBlockEntityRenderer(ModBlockEntities.ULTRA_SECRET_IDENTIFIER_BLOCK_ENTITY.get(), IdentifierRenderer::new);
+        event.registerBlockEntityRenderer(ModBlockEntities.CURSE_IDENTIFIER_BLOCK_ENTITY.get(), IdentifierRenderer::new);
+        event.registerBlockEntityRenderer(ModBlockEntities.LIBRARY_IDENTIFIER_BLOCK_ENTITY.get(), IdentifierRenderer::new);
+        event.registerBlockEntityRenderer(ModBlockEntities.GAMBLE_IDENTIFIER_BLOCK_ENTITY.get(), IdentifierRenderer::new);
+        event.registerBlockEntityRenderer(ModBlockEntities.BOSS_IDENTIFIER_BLOCK_ENTITY.get(), IdentifierRenderer::new);
+        event.registerBlockEntityRenderer(ModBlockEntities.ELITE_IDENTIFIER_BLOCK_ENTITY.get(), IdentifierRenderer::new);
+        event.registerBlockEntityRenderer(ModBlockEntities.ANGEL_IDENTIFIER_BLOCK_ENTITY.get(), IdentifierRenderer::new);
+        event.registerBlockEntityRenderer(ModBlockEntities.DEVIL_IDENTIFIER_BLOCK_ENTITY.get(), IdentifierRenderer::new);
+
     }
 
     // 注册自定义的模型
@@ -55,6 +70,21 @@ public class ClientModEvents {
         event.register(ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "block/red_chest_lid"));
         event.register(ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "block/wooden_chest_lid"));
         event.register(ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "block/bomb_chest_lid"));
+        event.register(ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "block/treasure_identifier"));
+        event.register(ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "block/normal_identifier"));
+        event.register(ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "block/shop_identifier"));
+        event.register(ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "block/library_identifier"));
+        event.register(ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "block/curse_identifier"));
+        event.register(ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "block/gamble_identifier"));
+        event.register(ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "block/secret_identifier"));
+        event.register(ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "block/super_secret_identifier"));
+        event.register(ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "block/ultra_secret_identifier"));
+        event.register(ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "block/angel_identifier"));
+        event.register(ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "block/devil_identifier"));
+        event.register(ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "block/boss_identifier"));
+        event.register(ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "block/elite_identifier"));
+
+
 
     }
 
