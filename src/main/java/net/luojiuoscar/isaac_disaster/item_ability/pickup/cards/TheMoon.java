@@ -11,7 +11,6 @@ import net.luojiuoscar.isaac_disaster.sound.ModSounds;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -19,43 +18,43 @@ import net.minecraft.world.item.ItemStack;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TheStars implements ITarot {
+public class TheMoon implements ITarot {
     @Override
     public int getItemId() {
-        return PickupId.THE_STARS.getId();
+        return PickupId.THE_MOON.getId();
     }
 
     @Override
     public void onUseEffect(Player player, ItemStack stack, InteractionHand hand) {
-        PlayerHelper.teleportToNearestIdentifier(
-                (ServerPlayer) player, ModBlockEntities.TREASURE_IDENTIFIER_BLOCK_ENTITY.getId());
-        player.level().playSound(null, player.getX(), player.getY(), player.getZ(),
-                SoundEvents.ENDERMAN_TELEPORT, SoundSource.PLAYERS, 1.0f ,1.0f);
-
+        boolean s = PlayerHelper.teleportToNearestIdentifier(
+                (ServerPlayer) player, ModBlockEntities.SECRET_IDENTIFIER_BLOCK_ENTITY.getId());
+        if (!s){
+            PlayerHelper.teleportToNearestIdentifier(
+                    (ServerPlayer) player, ModBlockEntities.SUPER_SECRET_IDENTIFIER_BLOCK_ENTITY.getId());
+        }
     }
 
     @Override
     public void onUseEffectStronger(Player player, ItemStack stack, InteractionHand hand) {
-        onUseEffect(player, stack, hand); // teleport
-        PlayerHelper.copyNearestPedestal((ServerPlayer) player, true);
+        onUseEffect(player, stack, hand);
     }
 
     @Override
     public void onUseSound(Player player) {
         player.playSound(SoundEvents.BOOK_PAGE_TURN);
-        player.playSound(ModSounds.THE_STARS.get());
+        player.playSound(ModSounds.THE_MOON.get());
     }
 
     @Override
     public List<Component> getDescription() {
         List<Component> description = new ArrayList<>();
         // 基础效果
-        description.add(Component.translatable("item.isaac_disaster.the_stars.lore.1"));
+        description.add(Component.translatable("item.isaac_disaster.the_moon.lore.1"));
 
         // 塔罗牌桌布
         if (ClientDataManager.getInstance().getCountFromId(ItemId.TAROT_CLOTH.getId()) > 0){
             description.add(Component.translatable("item.isaac_disaster.tarot_cloth").append(": ")
-                    .append(Component.translatable("item.isaac_disaster.the_stars.tarot_cloth.lore.1"))
+                    .append(Component.translatable("item.isaac_disaster.synergy.description.no_effect"))
                     .withStyle(style -> style.withColor(ColorManager.SYNERGY)));
         }
 

@@ -27,18 +27,17 @@ public class NecronmiconShieldEffect extends MobEffect {
         Entity attacker = event.getSource().getEntity();
         if (!(event.getEntity() instanceof Player player)) return;
 
-        if (event.getAmount() > Math.max(1.0f, StatManager.MAX_HEALTH.getBonus() * 0.25f)) return;
-
+        if (event.getAmount() <= Math.max(1.0f, StatManager.MAX_HEALTH.getBonus() * 0.25f)) return;
         // 伤害来源不能是拥有死灵庇护的玩家；否则不生效
-        if (!(attacker instanceof Player attackerplayer &&
-                attackerplayer.hasEffect(ModEffects.NECRONMICON_SHIELD.get()))){
-            // effect
-            ActiveItemManager.getInstance().getItemFromId(ItemId.THE_NECRONMICON.getId()).onTriggeredEffect(player);
-            // remove 1 amplifier
-            EntityHelper.addAmplifier(player, ModEffects.NECRONMICON_SHIELD.get(), -1);
-            // sounds
-            player.level().playSound(null, player.getX(), player.getY(), player.getZ(),
-                    ModSounds.BLACK_HEART_ACTIVE.get(), SoundSource.PLAYERS, 1.0f, 1.0f);
-        }
+        if (attacker instanceof Player attackerplayer &&
+                attackerplayer.hasEffect(ModEffects.NECRONMICON_SHIELD.get())) return;
+
+        // effect
+        ActiveItemManager.getInstance().getItemFromId(ItemId.THE_NECRONMICON.getId()).onTriggeredEffect(player);
+        // remove 1 amplifier
+        EntityHelper.addAmplifier(player, ModEffects.NECRONMICON_SHIELD.get(), -1);
+        // sounds
+        player.level().playSound(null, player.getX(), player.getY(), player.getZ(),
+                ModSounds.BLACK_HEART_ACTIVE.get(), SoundSource.PLAYERS, 1.0f, 1.0f);
     }
 }

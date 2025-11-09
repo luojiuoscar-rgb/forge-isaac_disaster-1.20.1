@@ -60,7 +60,7 @@ public class FragileHeartEffect extends MobEffect {
 
     public static void onTriggered(LivingHurtEvent event){
         if (!(event.getEntity() instanceof Player player)) return;
-        if (event.getAmount() > Math.max(1.0f, StatManager.MAX_HEALTH.getBonus() * 0.25f)) return;
+        if (event.getAmount() <= Math.max(1.0f, StatManager.MAX_HEALTH.getBonus() * 0.25f)) return;
 
         double emptyHealth = player.getMaxHealth() - player.getHealth();
         // 当前骨心中有生命值时不消耗

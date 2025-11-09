@@ -28,6 +28,7 @@ public class HolyShieldEffect extends MobEffect {
     public static void onTriggered(LivingHurtEvent event){
         double damage = event.getAmount();
         if (!(event.getEntity() instanceof Player player)) return;
+        if (!player.hasEffect(ModEffects.HOLY_SHIELD.get())) return;
 
         int amplifier = player.getEffect(ModEffects.HOLY_SHIELD.get()).getAmplifier();
 

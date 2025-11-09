@@ -104,7 +104,9 @@ public class PickupManager {
                 new TheEmpressR(),
                 new TheChariotR(),
                 new StrengthR(),
-                new TemperanceR()
+                new TemperanceR(),
+                new TheMoon(),
+                new TheTowerR()
         );
     }
 }

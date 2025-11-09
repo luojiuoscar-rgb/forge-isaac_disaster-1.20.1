@@ -498,6 +498,11 @@
   "item.isaac_disaster.temperance_r": "XIV-节制？",
   "item.isaac_disaster.temperance_r.lore.1": "一口气吃下5个药丸",
   "item.isaac_disaster.temperance_r.tarot_cloth.lore.1": "一口气吃下10个药丸",
+  "item.isaac_disaster.the_moon": "XVIII-月亮",
+  "item.isaac_disaster.the_moon.lore.1": "传送到最近的隐藏房",
+  "item.isaac_disaster.the_tower_r": "XVI-塔？",
+  "item.isaac_disaster.the_tower_r.lore.1": "在合适位置放置一个建筑",
+
 
   "pickups end": "",
 

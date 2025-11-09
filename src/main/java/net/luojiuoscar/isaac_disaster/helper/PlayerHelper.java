@@ -820,16 +820,18 @@ public class PlayerHelper {
         }
     }
 
-    public static void teleportToNearestIdentifier(ServerPlayer player, ResourceLocation identifier) {
+    public static boolean teleportToNearestIdentifier(ServerPlayer player, ResourceLocation identifier) {
         ServerLevel level = (ServerLevel) player.level();
 
         Set<BlockPos> posSet = BlockData.get(level).getIdentifiers(identifier);
 
-        if (posSet.isEmpty()) return;
+        if (posSet.isEmpty()) return false;
 
         BlockPos playerBlockPos = player.blockPosition();
         Optional<BlockPos> nearest = posSet.stream()
                 .min(Comparator.comparingDouble(pos -> pos.distSqr(playerBlockPos)));
+
+        if (nearest.isEmpty()) return false;
 
         nearest.ifPresent(pos -> {
             double x = pos.getX() + 0.5;
@@ -838,6 +840,7 @@ public class PlayerHelper {
 
             player.teleportTo(level, x, y, z, player.getYRot(), player.getXRot());
         });
+        return true;
     }
 
 

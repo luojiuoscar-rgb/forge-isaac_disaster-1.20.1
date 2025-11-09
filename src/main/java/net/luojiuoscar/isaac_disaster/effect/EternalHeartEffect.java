@@ -48,7 +48,7 @@ public class EternalHeartEffect extends MobEffect {
     }
 
     public static boolean onTriggered(LivingHurtEvent event){
-        if (!(event.getEntity() instanceof Player player) || player.getAbsorptionAmount() == 0) return false;
+        if (!(event.getEntity() instanceof Player player) || player.getAbsorptionAmount() != 0) return false;
 
         player.removeEffect(ModEffects.ETERNAL_HEART.get());
         event.setAmount(0.0f);

@@ -1,18 +1,28 @@
 package net.luojiuoscar.isaac_disaster.helper;
 
 import net.luojiuoscar.isaac_disaster.Config;
+import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.particles.ParticleOptions;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.StructureManager;
+import net.minecraft.world.level.chunk.ChunkGenerator;
+import net.minecraft.world.level.levelgen.structure.Structure;
+import net.minecraft.world.level.levelgen.structure.StructureStart;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplateManager;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -20,6 +30,8 @@ import net.minecraftforge.registries.ForgeRegistries;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Predicate;
 
 public class LevelHelper {
@@ -259,6 +271,71 @@ public class LevelHelper {
 
         return result;
     }
+
+    public static void spawnRandomStructure(ServerLevel level, BlockPos pos) {
+        CompletableFuture.runAsync(() -> {
+            try {
+                RegistryAccess registryAccess = level.registryAccess();
+                var structureRegistry = registryAccess.registryOrThrow(Registries.STRUCTURE);
+
+                List<ResourceLocation> structureIds = structureRegistry.keySet().stream().toList();
+                if (structureIds.isEmpty()) return;
+
+                RandomSource random = level.getRandom();
+                ResourceLocation randomId = structureIds.get(random.nextInt(structureIds.size()));
+                Optional<Structure> optional = structureRegistry.getOptional(randomId);
+                if (optional.isEmpty()) return;
+
+                Structure structure = optional.get();
+
+                ChunkPos chunkPos = new ChunkPos(pos);
+                ChunkGenerator generator = level.getChunkSource().getGenerator();
+                StructureManager structureManager = level.structureManager();
+                StructureTemplateManager templateManager = level.getStructureManager();
+
+                // 准备结构生成
+                StructureStart start = structure.generate(
+                        registryAccess,
+                        generator,
+                        generator.getBiomeSource(),
+                        level.getChunkSource().randomState(),
+                        templateManager,
+                        level.getSeed(),
+                        chunkPos,
+                        0,
+                        level,
+                        biomeHolder -> true
+                );
+
+                if (!start.isValid()) {
+                    IsaacDisaster.LOGGER.warn("Failed to prepare structure: {}", randomId);
+                    return;
+                }
+
+                // 回到主线程执行方块放置
+                level.getServer().execute(() -> {
+                    try {
+                        start.placeInChunk(
+                                level,
+                                structureManager,
+                                generator,
+                                level.getRandom(),
+                                start.getBoundingBox(),
+                                chunkPos
+                        );
+                    } catch (Exception e) {
+                        IsaacDisaster.LOGGER.error("Error placing structure {}: {}", randomId, e);
+                    }
+                });
+
+            } catch (Exception e) {
+                IsaacDisaster.LOGGER.error("Error generating structure async: ", e);
+            }
+        });
+    }
+
+
+
 
 }
 

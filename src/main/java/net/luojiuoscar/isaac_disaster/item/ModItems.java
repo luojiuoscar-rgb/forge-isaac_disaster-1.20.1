@@ -393,6 +393,10 @@ public class ModItems {
             () -> new Card(new Item.Properties(), PickupId.THE_STARS.getId()));
     static { PICKUP_LIST.add(THE_STARS); }
 
+    public static final RegistryObject<Item> THE_MOON = ITEMS.register("the_moon",
+            () -> new Card(new Item.Properties(), PickupId.THE_MOON.getId()));
+    static { PICKUP_LIST.add(THE_MOON); }
+
     public static final RegistryObject<Item> THE_SUN = ITEMS.register("the_sun",
             () -> new Card(new Item.Properties(), PickupId.THE_SUN.getId()));
     static { PICKUP_LIST.add(THE_SUN); }
@@ -432,6 +436,10 @@ public class ModItems {
     public static final RegistryObject<Item> TEMPERANCE_R = ITEMS.register("temperance_r",
             () -> new Card(new Item.Properties(), PickupId.TEMPERANCE_R.getId()));
     static { PICKUP_LIST.add(TEMPERANCE_R); }
+
+    public static final RegistryObject<Item> THE_TOWER_R = ITEMS.register("the_tower_r",
+            () -> new Card(new Item.Properties(), PickupId.THE_TOWER_R.getId()));
+    static { PICKUP_LIST.add(THE_TOWER_R); }
 
     public static final RegistryObject<Item> TWO_OF_DIAMONDS = ITEMS.register("2_of_diamonds",
             () -> new Card(new Item.Properties(), PickupId.TWO_OF_DIAMONDS.getId()));

@@ -54,7 +54,9 @@ public enum PickupId {
     THE_EMPRESS_R,
     THE_CHARIOT_R,
     STRENGTH_R,
-    TEMPERANCE_R;
+    TEMPERANCE_R,
+    THE_MOON,
+    THE_TOWER_R;
 
 
     private final int id;

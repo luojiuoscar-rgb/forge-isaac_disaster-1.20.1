@@ -80,9 +80,7 @@ public class ItemEvents {
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public static void onPlayerHurtHighest(LivingHurtEvent event) {
-        Entity attacker = event.getSource().getEntity();
         DamageSource source = event.getSource();
-        double damage = event.getAmount();
 
         if (!(event.getEntity() instanceof ServerPlayer player)) return;
         if (player.level().isClientSide) return;
@@ -103,7 +101,6 @@ public class ItemEvents {
         // 神圣护盾(免疫则取消时间)
         if (player.hasEffect(ModEffects.HOLY_SHIELD.get())){
             HolyShieldEffect.onTriggered(event);
-            return;
         }
     }
 
@@ -112,7 +109,6 @@ public class ItemEvents {
     public static void onPlayerHurt(LivingHurtEvent event) {
         Entity attacker = event.getSource().getEntity();
         DamageSource source = event.getSource();
-        double damage = event.getAmount();
 
         // 检测受伤者是否为玩家
         if (!(event.getEntity() instanceof ServerPlayer player)) return;

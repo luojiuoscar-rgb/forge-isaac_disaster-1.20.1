@@ -1,3 +1,6 @@
 {
-  "parent": "isaac_disaster:block/shop_identifier"
+  "parent": "isaac_disaster:item/identifier",
+  "textures": {
+    "0": "isaac_disaster:block/boss_identifier"
+  }
 }
