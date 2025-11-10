@@ -2,15 +2,15 @@ package net.luojiuoscar.isaac_disaster.item_ability.passive_item.items;
 
 import net.luojiuoscar.isaac_disaster.effect.ModEffects;
 import net.luojiuoscar.isaac_disaster.item_ability.passive_item.IRecursivePassiveItem;
-import net.luojiuoscar.isaac_disaster.manager.id_managers.EffectId;
+import net.luojiuoscar.isaac_disaster.manager.EffectManager;
 import net.luojiuoscar.isaac_disaster.manager.id_managers.ItemId;
-import net.luojiuoscar.isaac_disaster.manager.EffectDescriptionManager;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class WhoreOfBabylon implements IRecursivePassiveItem {
@@ -21,16 +21,16 @@ public class WhoreOfBabylon implements IRecursivePassiveItem {
     }
 
     @Override
-    public void onFirstObtain(Player player, @Nullable ItemStack stack) {
+    public void handleFirstObtain(Player player, @Nullable ItemStack stack) {
     }
 
     @Override
-    public void onObtainEffect(Player player, @Nullable ItemStack stack) {
+    public void handleObtain(Player player, @Nullable ItemStack stack) {
         recursiveEffect(player);
     }
 
     @Override
-    public void onRemove(Player player, @Nullable ItemStack stack) {
+    public void handleRemove(Player player, @Nullable ItemStack stack) {
     }
 
     @Override
@@ -62,6 +62,10 @@ public class WhoreOfBabylon implements IRecursivePassiveItem {
 
     @Override
     public List<Component> getExplain(){
-        return EffectDescriptionManager.getInstance().getDescriptionFromId(EffectId.BABYLON.getId());
+        List<Component> description = new ArrayList<>();
+
+        description.add(EffectManager.BABYLON.getExplainDesc());
+
+        return description;
     }
 }

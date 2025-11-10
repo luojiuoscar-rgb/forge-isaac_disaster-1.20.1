@@ -9,25 +9,20 @@ import net.luojiuoscar.isaac_disaster.item.ModItems;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.LightLayer;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix4f;
 
-import java.util.Objects;
-
-public class PedestalRenderer implements BlockEntityRenderer<PedestalBlockEntity> {
+public class PedestalRenderer implements BlockEntityRenderer<PedestalBlockEntity>, ItemRenderable {
 
     public PedestalRenderer(BlockEntityRendererProvider.Context context) {
 
@@ -35,7 +30,7 @@ public class PedestalRenderer implements BlockEntityRenderer<PedestalBlockEntity
 
     @Override
     public void render(@NotNull PedestalBlockEntity pedestal, float partialTicks, @NotNull PoseStack poseStack,
-                       @NotNull MultiBufferSource bufferSource, int packedLight, int packedOverlay) {
+                       @NotNull MultiBufferSource buffer, int packedLight, int packedOverlay) {
         ItemRenderer itemRenderer = Minecraft.getInstance().getItemRenderer();
 
         Level level = pedestal.getLevel();
@@ -48,16 +43,8 @@ public class PedestalRenderer implements BlockEntityRenderer<PedestalBlockEntity
                 ? new ItemStack(ModItems.LOCK.get())
                 : pedestal.getItem();
 
-        poseStack.pushPose();
-        poseStack.translate(0.5f, 0.75, 0.5f);
-        poseStack.scale(0.6f, 0.6f, 0.6f);
-        poseStack.mulPose(Axis.YP.rotationDegrees(pedestal.getRenderingRotation()));
-
-        itemRenderer.renderStatic(stack, ItemDisplayContext.FIXED, getLightLevel(Objects.requireNonNull(pedestal.getLevel()), pedestal.getBlockPos()),
-                OverlayTexture.NO_OVERLAY, poseStack, bufferSource, pedestal.getLevel(), 1);
-        poseStack.popPose();
-
-
+        renderItem(stack, poseStack, pedestal.getRenderingRotation(), level, buffer,
+                pedestal.getBlockPos(), 0.75f, 0.6f);
         // ======= shop =======
         // 生命成本优先
         if (!pedestal.isDecoration() && (pedestal.getLiftCost() != 0 || pedestal.getMoneyCost() != 0)){
@@ -87,7 +74,7 @@ public class PedestalRenderer implements BlockEntityRenderer<PedestalBlockEntity
 
                 itemRenderer.renderStatic(heartStack, ItemDisplayContext.FIXED,
                         getLightLevel(level, pedestal.getBlockPos()), OverlayTexture.NO_OVERLAY,
-                        poseStack, bufferSource, level, 1);
+                        poseStack, buffer, level, 1);
 
                 cost = String.valueOf(pedestal.getLiftCost() * StatManager.MAX_HEALTH.getBonus());
 
@@ -96,7 +83,7 @@ public class PedestalRenderer implements BlockEntityRenderer<PedestalBlockEntity
 
                 itemRenderer.renderStatic(coinStack, ItemDisplayContext.FIXED,
                         getLightLevel(level, pedestal.getBlockPos()), OverlayTexture.NO_OVERLAY,
-                        poseStack, bufferSource, level, 0);
+                        poseStack, buffer, level, 0);
 
                 cost = String.valueOf(pedestal.getMoneyCost());
             }
@@ -120,12 +107,12 @@ public class PedestalRenderer implements BlockEntityRenderer<PedestalBlockEntity
                     0xFFFFFFFF,
                     false,
                     matrix,
-                    bufferSource,
+                    buffer,
                     Font.DisplayMode.NORMAL,
                     0,
                     getLightLevel(level, pedestal.getBlockPos())
             );
-            if (bufferSource instanceof MultiBufferSource.BufferSource bs) {
+            if (buffer instanceof MultiBufferSource.BufferSource bs) {
                 bs.endBatch();
             }
 
@@ -133,32 +120,4 @@ public class PedestalRenderer implements BlockEntityRenderer<PedestalBlockEntity
             poseStack.popPose();
         }
     }
-
-    private int getLightLevel(Level level, BlockPos pos){
-        int bLight = level.getBrightness(LightLayer.BLOCK, pos);
-        int sLight = level.getBrightness(LightLayer.SKY, pos);
-        return LightTexture.pack(bLight, sLight);
-    }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 }

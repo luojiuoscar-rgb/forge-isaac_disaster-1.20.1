@@ -17,19 +17,19 @@ public class GlassEye implements IPassiveItem {
     }
 
     @Override
-    public void onFirstObtain(Player player, @Nullable ItemStack stack) {
+    public void handleFirstObtain(Player player, @Nullable ItemStack stack) {
 
     }
 
     @Override
-    public void onObtainEffect(Player player, @Nullable ItemStack stack) {
+    public void handleObtain(Player player, @Nullable ItemStack stack) {
         StatManager.DAMAGE.apply(player, 0.75);
         StatManager.LUCK.apply(player, 1);
 
     }
 
     @Override
-    public void onRemove(Player player, @Nullable ItemStack stack) {
+    public void handleRemove(Player player, @Nullable ItemStack stack) {
         StatManager.DAMAGE.apply(player, -0.75);
         StatManager.LUCK.apply(player, -1);
     }

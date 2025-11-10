@@ -17,16 +17,16 @@ public class AQuarter implements IPassiveItem {
     }
 
     @Override
-    public void onFirstObtain(Player player, @Nullable ItemStack stack) {
+    public void handleFirstObtain(Player player, @Nullable ItemStack stack) {
         PlayerHelper.giveMoney(player, 25);
     }
 
     @Override
-    public void onObtainEffect(Player player, @Nullable ItemStack stack) {
+    public void handleObtain(Player player, @Nullable ItemStack stack) {
     }
 
     @Override
-    public void onRemove(Player player, @Nullable ItemStack stack) {
+    public void handleRemove(Player player, @Nullable ItemStack stack) {
     }
 
     @Override

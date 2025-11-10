@@ -5,7 +5,6 @@ import net.luojiuoscar.isaac_disaster.event.custom.ItemDisplayAddEvent;
 import net.luojiuoscar.isaac_disaster.helper.LootHelper;
 import net.luojiuoscar.isaac_disaster.item.ModItems;
 import net.luojiuoscar.isaac_disaster.item.item.custom.FoodPassiveItem;
-import net.luojiuoscar.isaac_disaster.item_ability.passive_item.INeedSyncToClient;
 import net.luojiuoscar.isaac_disaster.item_ability.passive_item.IPassiveItem;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.manager.id_managers.ItemId;
@@ -13,7 +12,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.storage.loot.LootParams;
@@ -23,7 +21,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-public class BingeEater implements IPassiveItem, INeedSyncToClient {
+public class BingeEater implements IPassiveItem {
     private static final ResourceLocation BINGE_EATER_POOL =
             ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "pools/binge_eater");
 
@@ -33,26 +31,18 @@ public class BingeEater implements IPassiveItem, INeedSyncToClient {
     }
 
     @Override
-    public void onFirstObtain(Player player, @Nullable ItemStack stack) {
+    public void handleFirstObtain(Player player, @Nullable ItemStack stack) {
         player.setHealth(player.getMaxHealth());
     }
 
     @Override
-    public void onObtainEffect(Player player, @Nullable ItemStack stack) {
+    public void handleObtain(Player player, @Nullable ItemStack stack) {
         StatManager.MAX_HEALTH.apply(player, 1);
-
-        if (player instanceof ServerPlayer serverPlayer){
-            sync(serverPlayer, getItemId());
-        }
     }
 
     @Override
-    public void onRemove(Player player, @Nullable ItemStack stack) {
+    public void handleRemove(Player player, @Nullable ItemStack stack) {
         StatManager.MAX_HEALTH.apply(player, -1);
-
-        if (player instanceof ServerPlayer serverPlayer){
-            sync(serverPlayer, getItemId());
-        }
     }
 
     @Override

@@ -102,7 +102,8 @@ public enum ItemId {
     MITRE,
     THE_D6,
     GLITCHED_CROWN,
-    BINGE_EATER;
+    BINGE_EATER,
+    ECHO_CHAMBER;
 
 
     private final int id;

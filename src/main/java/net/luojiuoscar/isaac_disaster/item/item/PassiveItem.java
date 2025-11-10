@@ -1,14 +1,19 @@
 package net.luojiuoscar.isaac_disaster.item.item;
 
 import net.luojiuoscar.isaac_disaster.Config;
+import net.luojiuoscar.isaac_disaster.capability.player.PlayerPassiveItemProvider;
 import net.luojiuoscar.isaac_disaster.item_ability.passive_item.IRecursivePassiveItem;
 import net.luojiuoscar.isaac_disaster.manager.ColorManager;
 import net.luojiuoscar.isaac_disaster.manager.item_managers.PassiveItemManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import top.theillusivec4.curios.api.SlotContext;
 
@@ -82,7 +87,7 @@ public class PassiveItem extends IsaacItem implements IIsaacCuriosItem {
     @Override
     public void tryEquip(SlotContext slotContext, ItemStack prevStack, ItemStack stack) {
         if (!(slotContext.entity() instanceof ServerPlayer player)) return;
-        PassiveItemManager.getInstance().getItemFromId(getItemId()).onObtain(player, stack);
+        PassiveItemManager.getInstance().getItemFromId(getItemId()).onObtain(player, stack, false);
         setConsumed(stack, true);
 
         if (!Config.ALLOW_CURIO_UNEQUIP.get()){
@@ -103,5 +108,16 @@ public class PassiveItem extends IsaacItem implements IIsaacCuriosItem {
         if (player.tickCount % item.getTickInterval() != 0) return; // tick interval
 
         item.recursiveEffect(player); // recursive effect
+    }
+
+    @Override
+    public @NotNull InteractionResultHolder<ItemStack> use(@NotNull Level level, Player player, @NotNull InteractionHand hand) {
+        ItemStack stack = player.getItemInHand(hand);
+        if (!Config.USABLE_PASSIVE_ITEM.get() || player.level().isClientSide) return InteractionResultHolder.fail(stack);
+
+        player.getCapability(PlayerPassiveItemProvider.PLAYER_PASSIVE_ITEM).ifPresent(
+                playerPassiveItem -> playerPassiveItem.addItem((ServerPlayer) player, stack, hand));
+
+        return InteractionResultHolder.pass(stack);
     }
 }

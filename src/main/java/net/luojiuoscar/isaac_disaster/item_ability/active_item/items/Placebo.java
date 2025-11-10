@@ -27,9 +27,9 @@ public class Placebo implements IActiveItem {
         if (!(stack.getItem() instanceof Pill item)) return;
         // 根据类型触发效果
         if (item.isHorsePill()){
-            PillEffectManager.getInstance().getEffectFromPill(item.getPillId()).onUseH(player);
+            PillEffectManager.getInstance().getEffectFromPill(item.getPillId()).onUseH(player, true);
         }else{
-            PillEffectManager.getInstance().getEffectFromPill(item.getPillId()).onUse(player);
+            PillEffectManager.getInstance().getEffectFromPill(item.getPillId()).onUse(player, true);
         }
     }
 
@@ -37,7 +37,7 @@ public class Placebo implements IActiveItem {
     public void onTriggeredEffectStronger(Player player){
         ItemStack stack = player.getOffhandItem();
         if (!(stack.getItem() instanceof Pill item)) return;
-        PillEffectManager.getInstance().getEffectFromPill(item.getPillId()).onUseH(player);
+        PillEffectManager.getInstance().getEffectFromPill(item.getPillId()).onUseH(player, true);
     }
 
     @Override

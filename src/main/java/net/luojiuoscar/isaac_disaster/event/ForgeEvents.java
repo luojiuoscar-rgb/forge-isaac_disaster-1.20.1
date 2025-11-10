@@ -8,27 +8,20 @@ import net.luojiuoscar.isaac_disaster.commands.*;
 import net.luojiuoscar.isaac_disaster.effect.ModEffects;
 import net.luojiuoscar.isaac_disaster.entity.custom.IsaacBullet;
 import net.luojiuoscar.isaac_disaster.entity.tnt.IsaacBomb;
-import net.luojiuoscar.isaac_disaster.event.custom.ActiveItemUseEvent;
 import net.luojiuoscar.isaac_disaster.helper.EntityHelper;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.item.item.ActiveItem;
 import net.luojiuoscar.isaac_disaster.item.item.IIsaacCuriosItem;
-import net.luojiuoscar.isaac_disaster.item.item.PassiveItem;
 import net.luojiuoscar.isaac_disaster.item.item.custom.FoodPassiveItem;
 import net.luojiuoscar.isaac_disaster.item.pickup.IsaacHead;
-import net.luojiuoscar.isaac_disaster.item.pickup.Pickup;
-import net.luojiuoscar.isaac_disaster.item.pickup.interfaces.IUsablePickup;
-import net.luojiuoscar.isaac_disaster.manager.EffectNameManager;
+import net.luojiuoscar.isaac_disaster.manager.EffectManager;
 import net.luojiuoscar.isaac_disaster.manager.data.PillShuffleData;
 import net.luojiuoscar.isaac_disaster.manager.id_managers.ItemId;
-import net.luojiuoscar.isaac_disaster.manager.item_managers.ActiveItemManager;
-import net.luojiuoscar.isaac_disaster.manager.item_managers.PickupManager;
 import net.luojiuoscar.isaac_disaster.manager.item_managers.PillEffectManager;
 import net.luojiuoscar.isaac_disaster.networking.ModMessages;
-import net.luojiuoscar.isaac_disaster.networking.packet.PassiveItemSyncS2CPacket;
+import net.luojiuoscar.isaac_disaster.networking.packet.PassiveItemMapSyncS2CPacket;
 import net.luojiuoscar.isaac_disaster.networking.packet.PillRecordsSyncS2CPacket;
 import net.luojiuoscar.isaac_disaster.networking.packet.SetCountSyncS2CPacket;
-import net.luojiuoscar.isaac_disaster.networking.packet.UseActiveItemS2CPacket;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -44,7 +37,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.entity.EntityEvent;
@@ -62,7 +54,6 @@ import net.minecraftforge.server.command.ConfigCommand;
 import top.theillusivec4.curios.api.event.CurioUnequipEvent;
 
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import static net.luojiuoscar.isaac_disaster.IsaacDisaster.MOD_ID;
 
@@ -92,8 +83,7 @@ public class ForgeEvents {
             //passive item
             if(!event.getObject().getCapability(PlayerPassiveItemProvider.PLAYER_PASSIVE_ITEM).isPresent()){
                 event.addCapability(ResourceLocation.fromNamespaceAndPath(MOD_ID, "player_passive_item_cap"), new PlayerPassiveItemProvider());
-            }
-            //stat manager
+            }//stat manager
             if(!event.getObject().getCapability(PlayerStatModifierProvider.PLAYER_STAT_MODIFIER).isPresent()){
                 event.addCapability(ResourceLocation.fromNamespaceAndPath(MOD_ID, "player_stat_manager_cap"), new PlayerStatModifierProvider());
             }//ability
@@ -105,6 +95,9 @@ public class ForgeEvents {
             }//itemPools
             if(!event.getObject().getCapability(PlayerItemPoolsProvider.PLAYER_ITEM_POOL).isPresent()){
                 event.addCapability(ResourceLocation.fromNamespaceAndPath(MOD_ID, "player_item_pools_cap"), new PlayerItemPoolsProvider());
+            }//itemRecords
+            if(!event.getObject().getCapability(PlayerItemUseRecordProvider.PLAYER_ITEM_USE_RECORD).isPresent()){
+                event.addCapability(ResourceLocation.fromNamespaceAndPath(MOD_ID, "player_item_use_record_cap"), new PlayerItemUseRecordProvider());
             }
         }
     }
@@ -146,6 +139,12 @@ public class ForgeEvents {
                     newStore.copyFrom(oldStore);
                 });
             });
+            // item records
+            event.getOriginal().getCapability(PlayerItemUseRecordProvider.PLAYER_ITEM_USE_RECORD).ifPresent(oldStore -> {
+                event.getEntity().getCapability(PlayerItemUseRecordProvider.PLAYER_ITEM_USE_RECORD).ifPresent(newStore -> {
+                    newStore.copyFrom(oldStore);
+                });
+            });
 
             event.getOriginal().invalidateCaps();
         }
@@ -169,53 +168,6 @@ public class ForgeEvents {
 
         ConfigCommand.register(event.getDispatcher());
     }
-
-    @SubscribeEvent
-    public static void onPlayerRightClick(PlayerInteractEvent.RightClickItem event) {
-        Player player = event.getEntity();
-        if(player.level().isClientSide()) return;
-
-
-        InteractionHand hand = event.getHand();
-        ItemStack stack = player.getItemInHand(event.getHand());
-        if(stack.isEmpty()) return;
-
-        // 判断物品类型
-        if(stack.getItem() instanceof ActiveItem item){
-            RCActiveItem(player, item, stack, hand);
-        }
-        else if(stack.getItem() instanceof PassiveItem){
-            if (!Config.USABLE_PASSIVE_ITEM.get()) return; // 从config获取是否可以右键使用的数据
-            player.getCapability(PlayerPassiveItemProvider.PLAYER_PASSIVE_ITEM).ifPresent(
-                    playerPassiveItem -> {playerPassiveItem.addItem((ServerPlayer) player, stack, hand);
-                    });
-        }
-        else if(stack.getItem() instanceof Pickup item && item instanceof IUsablePickup){
-            PickupManager.getInstance().getItemFromId(item.getPickupId()).onUse(player, stack, hand);
-        }
-    }
-
-    // right-clicked active item
-    private static void RCActiveItem(Player player, ActiveItem item, ItemStack stack, InteractionHand hand){
-        ActiveItemUseEvent event = new ActiveItemUseEvent(player, item, stack);
-        MinecraftForge.EVENT_BUS.post(event);
-        if (event.isCanceled()) return;
-
-        // 如果当前物品的耐久度不足且没有过载则无法使用物品
-        if (!ActiveItem.getOverCharged(stack) &&
-                stack.getMaxDamage() - stack.getDamageValue() < item.getDamagePerUse(player)){
-            return;
-        }
-
-        // 触发使用效果
-        if (!player.level().isClientSide()) {
-            // 服务端效果
-            ActiveItemManager.getInstance().getItemFromId(item.getItemId()).onUse(player, hand);
-            ModMessages.sentToPlayer(new UseActiveItemS2CPacket(item.getItemId()), (ServerPlayer) player);
-        }
-    }
-
-
 
     @SubscribeEvent
     public static void onPlayerAttack(LivingAttackEvent event){
@@ -286,7 +238,7 @@ public class ForgeEvents {
                     double damageValue = attackDamage.getValue();
                     // 保存
                     affectedEntity.getCapability(EntityEffectProvider.ENTITY_CAP).ifPresent(
-                            entityEffect -> entityEffect.setSourceDamage(EffectNameManager.POISON,
+                            entityEffect -> entityEffect.setSourceDamage(EffectManager.POISON.getId(),
                                     damageValue)
                     );
                 }
@@ -303,14 +255,8 @@ public class ForgeEvents {
         if (event.getEntity() instanceof ServerPlayer serverPlayer) {
             // 同步套装
             syncSetDataToClient(serverPlayer);
-            // 胶囊相关
             syncPillDataToClient(serverPlayer);
-            // 从服务端Capability获取数据
-            syncItemDataToClient(ItemId.CAR_BATTERY.getId(), serverPlayer);
-            syncItemDataToClient(ItemId.BLOOD_OF_THE_MARTYR.getId(), serverPlayer);
-            syncItemDataToClient(ItemId.PHD.getId(), serverPlayer);
-            syncItemDataToClient(ItemId.FALSE_PHD.getId(), serverPlayer);
-            syncItemDataToClient(ItemId.BINGE_EATER.getId(), serverPlayer);
+            syncItemDataToClient(serverPlayer);
         }
     }
 
@@ -328,27 +274,24 @@ public class ForgeEvents {
         );
     }
     public static void syncPillDataToClient(ServerPlayer player){
-        player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY).ifPresent(
-                playerAbility -> {
-                    Map<Integer,Integer> map = Map.copyOf(playerAbility.getPillRecordsMap());
+        player.getCapability(PlayerItemUseRecordProvider.PLAYER_ITEM_USE_RECORD).ifPresent(
+                playerItemUseRecord -> {
+                    Map<Integer,Integer> map = Map.copyOf(playerItemUseRecord.getPillEffectMap());
                     for (Map.Entry<Integer, Integer> entry : map.entrySet()) {
                         ModMessages.sentToPlayer(new PillRecordsSyncS2CPacket(entry.getKey(), entry.getValue()), player);
                     }
                 }
         );
     }
-    public static void syncItemDataToClient(int ItemId, ServerPlayer player) {
-        AtomicInteger count = new AtomicInteger();
+    public static void syncItemDataToClient(ServerPlayer player) {
         player.getCapability(PlayerPassiveItemProvider.PLAYER_PASSIVE_ITEM).ifPresent(
-                playerPassiveItem -> count.set(playerPassiveItem.getItemCountFromAll(player, ItemId))
-        );
-        ModMessages.sentToPlayer(new PassiveItemSyncS2CPacket(ItemId, count.get()), player);
+                playerPassiveItem -> {
+                    Map<Integer, Integer> items = playerPassiveItem.getItemCountMapFromAll(player);
+                    ModMessages.sentToPlayer(new PassiveItemMapSyncS2CPacket(items), player);
+                });
     }
 
 
-    /**
-     * 监听爆炸事件
-     */
     @SubscribeEvent
     public static void onExplosion(ExplosionEvent.Detonate event) {
         // 获取爆炸源实体
@@ -386,9 +329,6 @@ public class ForgeEvents {
     @SubscribeEvent
     public static void onLivingHurt(LivingHurtEvent event) {
         LivingEntity victim = event.getEntity();
-        Entity attacker = event.getSource().getEntity();
-        DamageSource source = event.getSource();
-        double damage = event.getAmount();
 
         // 易伤
         if (victim.hasEffect(ModEffects.VULNERABLE.get())){

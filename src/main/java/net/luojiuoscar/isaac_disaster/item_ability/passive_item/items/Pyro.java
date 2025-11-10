@@ -19,16 +19,16 @@ public class Pyro implements IPassiveItem {
     }
 
     @Override
-    public void onFirstObtain(Player player, @Nullable ItemStack stack) {
+    public void handleFirstObtain(Player player, @Nullable ItemStack stack) {
         PlayerHelper.giveItem(player, ModItems.BOMB.get(), 64);
     }
 
     @Override
-    public void onObtainEffect(Player player, @Nullable ItemStack stack) {
+    public void handleObtain(Player player, @Nullable ItemStack stack) {
     }
 
     @Override
-    public void onRemove(Player player, @Nullable ItemStack stack) {
+    public void handleRemove(Player player, @Nullable ItemStack stack) {
     }
 
     @Override

@@ -20,9 +20,9 @@ public class RangeDown implements IPillEffect {
     }
 
     @Override
-    public void onUse(Player player){
+    public void onUse(Player player, boolean withSFX){
         if (PlayerHelper.getPillQuality(player) > 0){
-            PillEffectManager.getInstance().getEffectFromEffectId(PillEffectId.RANGE_UP.getId()).onUse(player);
+            PillEffectManager.getInstance().getEffectFromEffectId(PillEffectId.RANGE_UP.getId()).onUse(player, true);
             return;
         }
 
@@ -33,9 +33,9 @@ public class RangeDown implements IPillEffect {
     }
 
     @Override
-    public void onUseH(Player player){
+    public void onUseH(Player player, boolean withSFX){
         if (PlayerHelper.getPillQuality(player) > 0){
-            PillEffectManager.getInstance().getEffectFromEffectId(PillEffectId.RANGE_UP.getId()).onUseH(player);
+            PillEffectManager.getInstance().getEffectFromEffectId(PillEffectId.RANGE_UP.getId()).onUseH(player, true);
             return;
         }
 

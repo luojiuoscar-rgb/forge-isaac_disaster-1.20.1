@@ -4,9 +4,8 @@ import net.luojiuoscar.isaac_disaster.effect.ModEffects;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.item.ModItems;
 import net.luojiuoscar.isaac_disaster.item_ability.passive_item.IRecursivePassiveItem;
-import net.luojiuoscar.isaac_disaster.manager.id_managers.EffectId;
+import net.luojiuoscar.isaac_disaster.manager.EffectManager;
 import net.luojiuoscar.isaac_disaster.manager.id_managers.ItemId;
-import net.luojiuoscar.isaac_disaster.manager.EffectDescriptionManager;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.player.Player;
@@ -23,16 +22,16 @@ public class TheSoul implements IRecursivePassiveItem {
     }
 
     @Override
-    public void onFirstObtain(Player player, @Nullable ItemStack stack) {
+    public void handleFirstObtain(Player player, @Nullable ItemStack stack) {
         PlayerHelper.giveItem(player, ModItems.SOUL_HEART.get(), 2);
     }
 
     @Override
-    public void onObtainEffect(Player player, @Nullable ItemStack stack) {
+    public void handleObtain(Player player, @Nullable ItemStack stack) {
     }
 
     @Override
-    public void onRemove(Player player, @Nullable ItemStack stack) {
+    public void handleRemove(Player player, @Nullable ItemStack stack) {
     }
 
     @Override
@@ -47,7 +46,7 @@ public class TheSoul implements IRecursivePassiveItem {
     public List<Component> getExplain(){
         List<Component> description = new ArrayList<>();
 
-        description.addAll(EffectDescriptionManager.getInstance().getDescriptionFromId(EffectId.REPULSION_AURA.getId()));
+        description.add(EffectManager.SOUL_STATE.getExplainDesc());
 
         return description;
     }

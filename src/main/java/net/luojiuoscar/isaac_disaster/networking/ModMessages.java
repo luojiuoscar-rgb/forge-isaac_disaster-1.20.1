@@ -27,14 +27,6 @@ public class ModMessages {
                 .simpleChannel();
 
         INSTANCE = net;
-
-        // register ObtainPassiveItemS2CPacket
-        net.messageBuilder(ObtainPassiveItemS2CPacket.class, id(), NetworkDirection.PLAY_TO_CLIENT)
-                .decoder(ObtainPassiveItemS2CPacket::new)
-                .encoder(ObtainPassiveItemS2CPacket::toBytes)
-                .consumerNetworkThread(ObtainPassiveItemS2CPacket::handle)
-                .add();
-
         // register RemoveItemFromId
         net.messageBuilder(RemovePassiveItemFromIdC2SPacket.class, id(), NetworkDirection.PLAY_TO_SERVER)
                 .decoder(RemovePassiveItemFromIdC2SPacket::new)
@@ -56,11 +48,18 @@ public class ModMessages {
                 .consumerNetworkThread(UseActiveItemS2CPacket::handle)
                 .add();
 
-        // register PassiveItemSyncS2CPacket
-        net.messageBuilder(PassiveItemSyncS2CPacket.class, id(), NetworkDirection.PLAY_TO_CLIENT)
-                .decoder(PassiveItemSyncS2CPacket::new)
-                .encoder(PassiveItemSyncS2CPacket::toBytes)
-                .consumerNetworkThread(PassiveItemSyncS2CPacket::handle)
+        // register PassiveItemModifyCountSyncS2CPacket
+        net.messageBuilder(PassiveItemModifyCountSyncS2CPacket.class, id(), NetworkDirection.PLAY_TO_CLIENT)
+                .decoder(PassiveItemModifyCountSyncS2CPacket::new)
+                .encoder(PassiveItemModifyCountSyncS2CPacket::toBytes)
+                .consumerNetworkThread(PassiveItemModifyCountSyncS2CPacket::handle)
+                .add();
+
+        // register PassiveItemMapSyncS2CPacket
+        net.messageBuilder(PassiveItemMapSyncS2CPacket.class, id(), NetworkDirection.PLAY_TO_CLIENT)
+                .decoder(PassiveItemMapSyncS2CPacket::new)
+                .encoder(PassiveItemMapSyncS2CPacket::toBytes)
+                .consumerNetworkThread(PassiveItemMapSyncS2CPacket::handle)
                 .add();
 
         // register PickupOnUseS2CPacket

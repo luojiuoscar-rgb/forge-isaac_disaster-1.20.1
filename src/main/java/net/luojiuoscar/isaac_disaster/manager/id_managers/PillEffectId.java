@@ -39,7 +39,8 @@ public enum PillEffectId {
     SHOT_SPEED_DOWN,
     SHOT_SPEED_UP,
     EXPERIMENTAL_PILL,
-    GULP;
+    GULP,
+    VURP;
 
 
     private final int id;

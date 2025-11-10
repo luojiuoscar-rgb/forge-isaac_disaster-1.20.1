@@ -8,13 +8,14 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
 public interface IPickup {
     int getItemId();
 
-    default void onUse(Player player, ItemStack stack, InteractionHand hand){
+    default void onUse(Player player, @Nullable ItemStack stack, @Nullable InteractionHand hand){
         if (player.level().isClientSide) return;
         onUseEffect(player, stack, hand);
 
@@ -26,11 +27,12 @@ public interface IPickup {
         }
     }
 
-    default void shrinkAfterUse(ItemStack stack){
+    default void shrinkAfterUse(@Nullable ItemStack stack){
+        if (stack == null) return;
         stack.shrink(1);
     }
 
-    void onUseEffect(Player player, ItemStack stack, InteractionHand hand);
+    void onUseEffect(Player player, @Nullable ItemStack stack, @Nullable InteractionHand hand);
 
     void onUseSound(Player player);
 

@@ -1,23 +1,17 @@
 package net.luojiuoscar.isaac_disaster.capability.player;
 
-
 import net.luojiuoscar.isaac_disaster.helper.ColorHelper;
 import net.luojiuoscar.isaac_disaster.manager.ColorManager;
-import net.luojiuoscar.isaac_disaster.networking.ModMessages;
-import net.luojiuoscar.isaac_disaster.networking.packet.PillRecordsSyncS2CPacket;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
-import net.minecraftforge.common.capabilities.AutoRegisterCapability;
 
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-
-@AutoRegisterCapability
 public class PlayerAbility {
     private boolean holdRightClick;
 
@@ -27,19 +21,16 @@ public class PlayerAbility {
     private int controllable;
 
     private Map<Integer, Integer> bulletFilters;
-
     private Map<Integer, Boolean> itemFlags;
     private int extraTrinketSlotCounts;
 
-    // 记录玩家pillId -> EffectId的序列
-    private Map<Integer, Integer> pillRecords;
-
-
-    public PlayerAbility(){
+    public PlayerAbility() {
+        bulletFilters = new HashMap<>();
+        itemFlags = new HashMap<>();
         init();
     }
 
-    public void init(){
+    public void init() {
         holdRightClick = false;
         piercing = 0;
         homing = 0;
@@ -47,16 +38,12 @@ public class PlayerAbility {
         controllable = 0;
         extraTrinketSlotCounts = 0;
 
-        bulletFilters = new HashMap<>();
-        bulletFilters.put(-1, ColorManager.FILTER_BASE); // -1视为当前颜色
+        bulletFilters.clear();
+        bulletFilters.put(-1, ColorManager.FILTER_BASE);
 
-        pillRecords = new HashMap<>();
-        itemFlags = new HashMap<>();
+        itemFlags.clear();
     }
-    /**
-     * 复制玩家属性
-     * 复制后立刻触发属性修改；以确保玩家属性正确继承
-     */
+
     public void copyFrom(PlayerAbility source, Player player) {
         this.holdRightClick = source.holdRightClick;
         this.piercing = source.piercing;
@@ -66,9 +53,9 @@ public class PlayerAbility {
         this.extraTrinketSlotCounts = source.extraTrinketSlotCounts;
 
         this.bulletFilters = new HashMap<>(source.bulletFilters);
-        this.pillRecords = new HashMap<>(source.pillRecords);
         this.itemFlags = new HashMap<>(source.itemFlags);
     }
+
     public void saveNBTData(CompoundTag nbt) {
         nbt.putBoolean("holdRightClick", holdRightClick);
         nbt.putInt("piercing", piercing);
@@ -77,7 +64,6 @@ public class PlayerAbility {
         nbt.putInt("controllable", controllable);
         nbt.putInt("trinket_slot_counts", extraTrinketSlotCounts);
 
-        // 滤镜
         ListTag filterList = new ListTag();
         for (Map.Entry<Integer, Integer> entry : bulletFilters.entrySet()) {
             CompoundTag tag = new CompoundTag();
@@ -87,17 +73,6 @@ public class PlayerAbility {
         }
         nbt.put("bullet_filters", filterList);
 
-        // 药丸记录
-        ListTag pillRecordsList = new ListTag();
-        for (Map.Entry<Integer, Integer> entry : pillRecords.entrySet()) {
-            CompoundTag tag = new CompoundTag();
-            tag.putInt("pill_id", entry.getKey());
-            tag.putInt("effect_id", entry.getValue());
-            pillRecordsList.add(tag);
-        }
-        nbt.put("pill_records", pillRecordsList);
-
-        // 物品记录
         ListTag itemFlagList = new ListTag();
         for (Map.Entry<Integer, Boolean> entry : itemFlags.entrySet()) {
             CompoundTag tag = new CompoundTag();
@@ -107,6 +82,7 @@ public class PlayerAbility {
         }
         nbt.put("item_flags", itemFlagList);
     }
+
     public void loadNBTData(CompoundTag nbt) {
         this.holdRightClick = nbt.getBoolean("holdRightClick");
         this.spectral = nbt.getInt("spectral");
@@ -126,17 +102,6 @@ public class PlayerAbility {
             }
         }
 
-        pillRecords.clear();
-        if (nbt.contains("pill_records", Tag.TAG_LIST)) {
-            ListTag list = nbt.getList("pill_records", Tag.TAG_COMPOUND);
-            for (Tag t : list) {
-                CompoundTag tag = (CompoundTag) t;
-                int pillId = tag.getInt("pill_id");
-                int effectId = tag.getInt("effect_id");
-                pillRecords.put(pillId, effectId);
-            }
-        }
-
         itemFlags.clear();
         if (nbt.contains("item_flags", Tag.TAG_LIST)) {
             ListTag list = nbt.getList("item_flags", Tag.TAG_COMPOUND);
@@ -149,74 +114,86 @@ public class PlayerAbility {
         }
     }
 
-
-
-    public boolean isHoldRightClick(){
+    public boolean isHoldRightClick() {
         return holdRightClick;
     }
-    public void setHoldRightClick(boolean holdRightClick){
+
+    public void setHoldRightClick(boolean holdRightClick) {
         this.holdRightClick = holdRightClick;
     }
+
     public int getPiercing() {
         return piercing;
     }
-    public void setPiercing(int amount){
+
+    public void setPiercing(int amount) {
         piercing = amount;
     }
+
     public int getHoming() {
         return homing;
     }
-    public void setHoming(int amount){
+
+    public void setHoming(int amount) {
         homing = amount;
     }
+
     public int getSpectral() {
         return spectral;
     }
-    public void setSpectral(int amount){
+
+    public void setSpectral(int amount) {
         spectral = amount;
     }
+
     public int getControllable() {
         return controllable;
     }
-    public void setControllable(int amount){
+
+    public void setControllable(int amount) {
         controllable = amount;
     }
+
     public void addFilter(int color, Player player) {
         bulletFilters.put(color, bulletFilters.getOrDefault(color, 0));
         resetFilter(player);
     }
+
     public void removeFilter(int color, Player player) {
         bulletFilters.remove(color, 1);
-        if (bulletFilters.getOrDefault(color, 0) == 0){
+        if (bulletFilters.getOrDefault(color, 0) == 0) {
             bulletFilters.remove(color);
         }
         resetFilter(player);
     }
+
     public void clearFilters() {
         bulletFilters.clear();
         bulletFilters.put(-1, ColorManager.FILTER_BASE);
     }
+
     public Map<Integer, Integer> getFilters() {
         return Collections.unmodifiableMap(bulletFilters);
     }
-    public void resetFilter(Player player){
+
+    public void resetFilter(Player player) {
         bulletFilters.put(-1, ColorHelper.blendFilters(ColorManager.FILTER_BASE,
-                bulletFilters.keySet().stream().toList())); // 放到-1位置视为当前filter颜色
+                bulletFilters.keySet().stream().toList()));
     }
-    public Map<Integer, Integer> getPillRecordsMap() {
-        return Collections.unmodifiableMap(pillRecords);
-    }
-    public void setPillRecord(ServerPlayer player, int pillId, int effectId) {
-        bulletFilters.put(pillId, effectId);
-        // 同步到客户端
-        ModMessages.sentToPlayer(new PillRecordsSyncS2CPacket(pillId, effectId), player);
-    }
+
     public Map<Integer, Boolean> getItemFlags() {
         return Collections.unmodifiableMap(itemFlags);
     }
-    public void setItemFlags(ServerPlayer player, int ItemId, boolean flag){
+
+    public void setItemFlags(ServerPlayer player, int ItemId, boolean flag) {
         itemFlags.put(ItemId, flag);
     }
-    public int getExtraTrinketSlotCounts(){return extraTrinketSlotCounts;}
-    public void setExtraTrinketSlotCounts(int amount) {this.extraTrinketSlotCounts = amount;}
+
+    public int getExtraTrinketSlotCounts() {
+        return extraTrinketSlotCounts;
+    }
+
+    public void setExtraTrinketSlotCounts(int amount) {
+        this.extraTrinketSlotCounts = amount;
+    }
 }

@@ -10,9 +10,9 @@ import net.luojiuoscar.isaac_disaster.entity.ModEntities;
 import net.luojiuoscar.isaac_disaster.event.ServerTickEvent;
 import net.luojiuoscar.isaac_disaster.item.ModCreativeModeTabs;
 import net.luojiuoscar.isaac_disaster.item.ModItems;
+import net.luojiuoscar.isaac_disaster.item.PillRegistry;
 import net.luojiuoscar.isaac_disaster.loot.ModLootModifiers;
 import net.luojiuoscar.isaac_disaster.loot.ModLootTypes;
-import net.luojiuoscar.isaac_disaster.manager.EffectDescriptionManager;
 import net.luojiuoscar.isaac_disaster.manager.item_managers.*;
 import net.luojiuoscar.isaac_disaster.networking.ModMessages;
 import net.luojiuoscar.isaac_disaster.sound.ModSounds;
@@ -46,11 +46,12 @@ public class IsaacDisaster
         // Register ourselves for server and other game events we are interested in
         MinecraftForge.EVENT_BUS.register(this);
 
-
         ModAttributes.register(modEventBus);
 
-        ModCreativeModeTabs.register(modEventBus);
         ModItems.register(modEventBus);
+        PillRegistry.register(modEventBus);
+        ModCreativeModeTabs.register(modEventBus);
+
         ModBlocks.register(modEventBus);
         ModBlockEntities.register(modEventBus);
         ModEntities.register(modEventBus);
@@ -79,8 +80,6 @@ public class IsaacDisaster
             PickupManager.getInstance().init();
             SetManager.getInstance().init();
             PillEffectManager.getInstance().init();
-
-            EffectDescriptionManager.getInstance().init();
         });
     }
 

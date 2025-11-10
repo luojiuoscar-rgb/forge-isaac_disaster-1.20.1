@@ -22,9 +22,9 @@ public class RetroVision implements IPillEffect {
     }
 
     @Override
-    public void onUse(Player player){
+    public void onUse(Player player, boolean withSFX){
         if (PlayerHelper.getPillQuality(player) > 0){
-            PillEffectManager.getInstance().getEffectFromEffectId(PillEffectId.I_CAN_SEE_FOREVER.getId()).onUse(player);
+            PillEffectManager.getInstance().getEffectFromEffectId(PillEffectId.I_CAN_SEE_FOREVER.getId()).onUse(player, true);
             return;
         }
 
@@ -35,9 +35,9 @@ public class RetroVision implements IPillEffect {
     }
 
     @Override
-    public void onUseH(Player player){
+    public void onUseH(Player player, boolean withSFX){
         if (PlayerHelper.getPillQuality(player) > 0){
-            PillEffectManager.getInstance().getEffectFromEffectId(PillEffectId.I_CAN_SEE_FOREVER.getId()).onUseH(player);
+            PillEffectManager.getInstance().getEffectFromEffectId(PillEffectId.I_CAN_SEE_FOREVER.getId()).onUseH(player, true);
             return;
         }
 

@@ -5,9 +5,8 @@ import net.luojiuoscar.isaac_disaster.effect.ModEffects;
 import net.luojiuoscar.isaac_disaster.helper.EntityHelper;
 import net.luojiuoscar.isaac_disaster.item_ability.active_item.IActiveItem;
 import net.luojiuoscar.isaac_disaster.manager.ColorManager;
-import net.luojiuoscar.isaac_disaster.manager.EffectDescriptionManager;
+import net.luojiuoscar.isaac_disaster.manager.EffectManager;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
-import net.luojiuoscar.isaac_disaster.manager.id_managers.EffectId;
 import net.luojiuoscar.isaac_disaster.manager.id_managers.ItemId;
 import net.luojiuoscar.isaac_disaster.manager.id_managers.SetId;
 import net.luojiuoscar.isaac_disaster.manager.item_managers.SetManager;
@@ -78,7 +77,7 @@ public class BookOfShadow implements IActiveItem {
         List<Component> description = new ArrayList<>();
 
         description.addAll(SetManager.getInstance().getSetFromId(SetId.BOOK.getId()).getExplain());
-        description.addAll(EffectDescriptionManager.getInstance().getDescriptionFromId(EffectId.INVINCIBLE.getId()));
+        description.add(EffectManager.INVINCIBLE.getExplainDesc());
 
         return description;
     }

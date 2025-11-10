@@ -2,13 +2,19 @@ package net.luojiuoscar.isaac_disaster.helper;
 
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.storage.loot.LootParams;
+import net.minecraft.world.level.storage.loot.LootPool;
 import net.minecraft.world.level.storage.loot.LootTable;
+import net.minecraft.world.level.storage.loot.entries.LootItem;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSet;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
+import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.ArrayList;
@@ -46,6 +52,36 @@ public class LootHelper {
             level.addFreshEntity(new ItemEntity(level, pos.x, pos.y, pos.z, stack));
         }
     }
+    public static void spawnItemViaLoot(ServerPlayer player, Vec3 pos, Item item, int count) {
+        if (player == null || !(player.level() instanceof ServerLevel level)) return;
+
+        // 创建一个自定义 LootTable
+        LootPool.Builder poolBuilder = LootPool.lootPool()
+                .setRolls(ConstantValue.exactly(count)) // 掉落次数 = count
+                .add(LootItem.lootTableItem(item));
+
+        LootTable lootTable = LootTable.lootTable()
+                .withPool(poolBuilder)
+                .build();
+
+        // 构建 LootContext
+        LootParams.Builder paramsBuilder = new LootParams.Builder(level)
+                .withParameter(LootContextParams.ORIGIN, pos)
+                .withParameter(LootContextParams.THIS_ENTITY, player)
+                .withLuck(player.getLuck());
+        LootParams params = paramsBuilder.create(LootContextParamSets.EMPTY);
+
+        List<ItemStack> generatedLoot = lootTable.getRandomItems(params);
+
+        // 掉落
+        for (ItemStack stack : generatedLoot) {
+            ItemEntity entity = new ItemEntity(level, pos.x, pos.y, pos.z, stack);
+            entity.setDefaultPickUpDelay();
+            level.addFreshEntity(entity);
+        }
+    }
+
+
 
     /**
      * 从自定义 LootParams 中获取战利品列表

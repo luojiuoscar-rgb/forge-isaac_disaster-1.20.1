@@ -4,9 +4,8 @@ import net.luojiuoscar.isaac_disaster.client.ClientDataManager;
 import net.luojiuoscar.isaac_disaster.effect.ModEffects;
 import net.luojiuoscar.isaac_disaster.item_ability.active_item.IActiveItem;
 import net.luojiuoscar.isaac_disaster.manager.ColorManager;
-import net.luojiuoscar.isaac_disaster.manager.id_managers.EffectId;
+import net.luojiuoscar.isaac_disaster.manager.EffectManager;
 import net.luojiuoscar.isaac_disaster.manager.id_managers.ItemId;
-import net.luojiuoscar.isaac_disaster.manager.EffectDescriptionManager;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.player.Player;
@@ -69,9 +68,9 @@ public class TheGamekid implements IActiveItem {
     public List<Component> getExplain(){
         List<Component> description = new ArrayList<>();
 
-        description.addAll(EffectDescriptionManager.getInstance().getDescriptionFromId(EffectId.INVINCIBLE.getId()));
-        description.addAll(EffectDescriptionManager.getInstance().getDescriptionFromId(EffectId.LACRIMAL_HYPOSECRETION.getId()));
-        description.addAll(EffectDescriptionManager.getInstance().getDescriptionFromId(EffectId.PAC_MAN.getId()));
+        description.add(EffectManager.INVINCIBLE.getExplainDesc());
+        description.add(EffectManager.LACRIMAL_HYPOSECRETION.getExplainDesc());
+        description.add(EffectManager.PAC_MAN.getExplainDesc());
 
         return description;
     }

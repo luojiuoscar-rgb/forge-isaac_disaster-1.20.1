@@ -17,18 +17,18 @@ public class TheSadOnion implements IPassiveItem {
     }
 
     @Override
-    public void onFirstObtain(Player player, @Nullable ItemStack stack) {
+    public void handleFirstObtain(Player player, @Nullable ItemStack stack) {
 
     }
 
     @Override
-    public void onObtainEffect(Player player, @Nullable ItemStack stack) {
+    public void handleObtain(Player player, @Nullable ItemStack stack) {
         StatManager.TEARS.apply(player, 1);
         StatManager.BLOCK_BREAKING.apply(player, 1);
     }
 
     @Override
-    public void onRemove(Player player, @Nullable ItemStack stack) {
+    public void handleRemove(Player player, @Nullable ItemStack stack) {
         StatManager.TEARS.apply(player, -1);
         StatManager.BLOCK_BREAKING.apply(player, -1);
     }

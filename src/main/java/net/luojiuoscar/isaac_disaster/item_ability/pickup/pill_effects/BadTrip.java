@@ -21,18 +21,18 @@ public class BadTrip implements IPillEffect {
     }
 
     @Override
-    public void onUse(Player player){
+    public void onUse(Player player, boolean withSFX){
         if (PlayerHelper.getPillQuality(player) > 0){
-            PillEffectManager.getInstance().getEffectFromEffectId(PillEffectId.BALLS_OF_STEEL.getId()).onUse(player);
+            PillEffectManager.getInstance().getEffectFromEffectId(PillEffectId.BALLS_OF_STEEL.getId()).onUse(player, true);
             return;
         }
         if (player.getHealth() <= StatManager.MAX_HEALTH.getBonus()){
             if (PlayerHelper.getPillQuality(player) < 0){
-                PillEffectManager.getInstance().getEffectFromEffectId(PillEffectId.I_FOUND_PILLS.getId()).onUse(player);
+                PillEffectManager.getInstance().getEffectFromEffectId(PillEffectId.I_FOUND_PILLS.getId()).onUse(player, true);
                 return;
             }
 
-            PillEffectManager.getInstance().getEffectFromEffectId(PillEffectId.FULL_HEALTH.getId()).onUse(player);
+            PillEffectManager.getInstance().getEffectFromEffectId(PillEffectId.FULL_HEALTH.getId()).onUse(player, true);
             return;
         }
 
@@ -44,18 +44,18 @@ public class BadTrip implements IPillEffect {
     }
 
     @Override
-    public void onUseH(Player player){
+    public void onUseH(Player player, boolean withSFX){
         if (PlayerHelper.getPillQuality(player) > 0){
-            PillEffectManager.getInstance().getEffectFromEffectId(PillEffectId.BALLS_OF_STEEL.getId()).onUseH(player);
+            PillEffectManager.getInstance().getEffectFromEffectId(PillEffectId.BALLS_OF_STEEL.getId()).onUseH(player, true);
             return;
         }
         if (player.getHealth() <= StatManager.MAX_HEALTH.getBonus() * 2){
             if (PlayerHelper.getPillQuality(player) < 0){
-                PillEffectManager.getInstance().getEffectFromEffectId(PillEffectId.I_FOUND_PILLS.getId()).onUseH(player);
+                PillEffectManager.getInstance().getEffectFromEffectId(PillEffectId.I_FOUND_PILLS.getId()).onUseH(player, true);
                 return;
             }
 
-            PillEffectManager.getInstance().getEffectFromEffectId(PillEffectId.FULL_HEALTH.getId()).onUseH(player);
+            PillEffectManager.getInstance().getEffectFromEffectId(PillEffectId.FULL_HEALTH.getId()).onUseH(player, true);
             return;
         }
 

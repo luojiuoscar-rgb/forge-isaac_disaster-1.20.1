@@ -1,6 +1,7 @@
 package net.luojiuoscar.isaac_disaster.capability.player;
 
 import net.luojiuoscar.isaac_disaster.helper.CuriosHelper;
+import net.luojiuoscar.isaac_disaster.item.item.IsaacItem;
 import net.luojiuoscar.isaac_disaster.item.item.PassiveItem;
 import net.luojiuoscar.isaac_disaster.item_ability.passive_item.INewBulletTypePassiveItem;
 import net.luojiuoscar.isaac_disaster.item_ability.passive_item.IRecursivePassiveItem;
@@ -9,7 +10,6 @@ import net.luojiuoscar.isaac_disaster.item_ability.set.ISet;
 import net.luojiuoscar.isaac_disaster.manager.item_managers.PassiveItemManager;
 import net.luojiuoscar.isaac_disaster.manager.item_managers.SetManager;
 import net.luojiuoscar.isaac_disaster.networking.ModMessages;
-import net.luojiuoscar.isaac_disaster.networking.packet.ObtainPassiveItemS2CPacket;
 import net.luojiuoscar.isaac_disaster.networking.packet.SetCountSyncS2CPacket;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.IntTag;
@@ -31,10 +31,10 @@ public class PlayerPassiveItem {
     // 用编号代表道具。需要查询道具的时候再使用道具管理器
     private List<ItemStack> playerPassiveItems;
     // 键为道具ID，值为道具数量
-    private Map<Integer, Integer> itemCountMap;
-    private Map<Integer, Integer> triggerItemMap;
-    private Map<Integer, Integer> recursiveItemMap; // itemId : remainTick
-    private Map<Integer, Integer> newBulletTypeMap;
+    private final Map<Integer, Integer> itemCountMap;
+    private final Map<Integer, Integer> triggerItemMap;
+    private final Map<Integer, Integer> recursiveItemMap; // itemId : remainTick
+    private final Map<Integer, Integer> newBulletTypeMap;
 
     private Map<Integer, Integer> setCountMap; // 当前套装计数
     private Set<Integer> obtainedSets; // 已经获得过的套装
@@ -42,10 +42,6 @@ public class PlayerPassiveItem {
 
     // constructor
     public PlayerPassiveItem(){
-        init();
-    }
-
-    public void init(){
         this.playerPassiveItems = new ArrayList<>();
 
         this.itemCountMap = new HashMap<>();
@@ -54,9 +50,19 @@ public class PlayerPassiveItem {
         this.setCountMap = new HashMap<>();
         this.obtainedSets = new HashSet<>();
         this.newBulletTypeMap = new HashMap<>();
+        init();
     }
 
+    public void init(){
+        this.playerPassiveItems.clear();
 
+        this.itemCountMap.clear();
+        this.triggerItemMap.clear();
+        this.recursiveItemMap.clear();
+        this.setCountMap.clear();
+        this.obtainedSets.clear();
+        this.newBulletTypeMap.clear();
+    }
 
     /**
      * 清空全部的哈希表
@@ -231,6 +237,21 @@ public class PlayerPassiveItem {
         return count;
     }
 
+    public Map<Integer, Integer> getItemCountMapFromAll(Player player){
+        Map<Integer, Integer> map = new HashMap<>(itemCountMap);
+
+        List<ItemStack> stackList = CuriosHelper.getEquippedItemsInSlot(player, CuriosHelper.PASSIVE_ITEM);
+        for (ItemStack stack : stackList) {
+            if (stack.isEmpty() || !(stack.getItem() instanceof IsaacItem item)) continue;
+
+            int id = item.getItemId();
+            map.put(id, map.getOrDefault(id, 0) + 1);
+        }
+
+        return map;
+    }
+
+
     public List<ItemStack> getItemWithList(int itemId){
         List<ItemStack> list = new ArrayList<>();
 
@@ -256,10 +277,8 @@ public class PlayerPassiveItem {
         if (!(stack.getItem() instanceof PassiveItem item)) return;
         int itemId = item.getItemId();
 
-
         // 触发效果 (先触发效果以适配会对stack本身产生变化的道具；确保后续正确存入)
-        PassiveItemManager.getInstance().getItemFromId(itemId).onObtain(player, stack);
-        ModMessages.sentToPlayer(new ObtainPassiveItemS2CPacket(itemId), player);
+        PassiveItemManager.getInstance().getItemFromId(itemId).onObtain(player, stack, true);
         PassiveItem.setConsumed(stack, true);
 
         // 增加被动道具到列表
@@ -267,32 +286,9 @@ public class PlayerPassiveItem {
         // 更新哈希表：数量+1
         updateItemMap(item.getItemId(), 1);
 
-
         // 删除道具(不论是否为创造模式)
         stack.shrink(1);
     }
-
-    /** 将一个新的道具添加到列表。同时无视首次添加效果 */
-    public void addItemWithoutFirst(ServerPlayer player, ItemStack stack){
-        // 如果道具数量已达上限
-        if(this.getTotalItemsCountInCap() >= PASSIVE_ITEM_LIMIT.get()){
-            player.sendSystemMessage(Component.translatable("message.isaac_disaster.warning.too_many_items").withStyle(
-                    style -> style.withColor(0xFFBF00).withUnderlined(true)
-            ));
-            return;
-        }
-
-        if (!(stack.getItem() instanceof PassiveItem item)) return;
-        int itemId = item.getItemId();
-
-        playerPassiveItems.add(stack);
-        // 更新哈希表：数量+1
-        updateItemMap(itemId, 1);
-
-        PassiveItemManager.getInstance().getItemFromId(itemId).onObtainEffect(player, stack);
-        ModMessages.sentToPlayer(new ObtainPassiveItemS2CPacket(itemId), player);
-    }
-
 
     public boolean removeFromIndex(ServerPlayer player, int index) {
         // 确保索引有效

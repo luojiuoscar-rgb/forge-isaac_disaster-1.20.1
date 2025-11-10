@@ -1,17 +1,23 @@
 package net.luojiuoscar.isaac_disaster.item.item;
 
 import net.luojiuoscar.isaac_disaster.Config;
+import net.luojiuoscar.isaac_disaster.capability.player.PlayerItemUseRecordProvider;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerSwallowedTrinketsProvider;
+import net.luojiuoscar.isaac_disaster.event.custom.ActiveItemUseEvent;
 import net.luojiuoscar.isaac_disaster.manager.ColorManager;
 import net.luojiuoscar.isaac_disaster.manager.id_managers.TrinketId;
 import net.luojiuoscar.isaac_disaster.manager.item_managers.ActiveItemManager;
+import net.luojiuoscar.isaac_disaster.networking.ModMessages;
+import net.luojiuoscar.isaac_disaster.networking.packet.UseActiveItemS2CPacket;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraftforge.common.MinecraftForge;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -166,13 +172,30 @@ public class ActiveItem extends IsaacItem {
     public @NotNull InteractionResultHolder<ItemStack> use(@NotNull Level level, Player player, @NotNull InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
         if (!(stack.getItem() instanceof ActiveItem item)) return InteractionResultHolder.fail(stack);
-        // 如果当前物品的耐久度不足且没有过载则无法使用物品
+
+        // 触发事件
+        ActiveItemUseEvent event = new ActiveItemUseEvent(player, item, stack);
+        MinecraftForge.EVENT_BUS.post(event);
+        if (event.isCanceled()) return InteractionResultHolder.pass(stack);
+
+        // 耐久检查
         if (!ActiveItem.getOverCharged(stack) &&
-                stack.getMaxDamage() - stack.getDamageValue() < item.getDamagePerUse(player)){
+                stack.getMaxDamage() - stack.getDamageValue() < item.getDamagePerUse(player)) {
             return InteractionResultHolder.fail(stack);
         }
 
-        // 返回成功动画
+        // effect
+        if (!level.isClientSide && player instanceof ServerPlayer serverPlayer) {
+            // record
+            serverPlayer.getCapability(PlayerItemUseRecordProvider.PLAYER_ITEM_USE_RECORD).ifPresent(
+                    playerItemUseRecord -> playerItemUseRecord.addActiveRecord(getItemId()));
+
+            ActiveItemManager.getInstance().getItemFromId(item.getItemId()).onUse(player, hand);
+            ModMessages.sentToPlayer(new UseActiveItemS2CPacket(item.getItemId()), serverPlayer);
+        }
+
         return InteractionResultHolder.success(stack);
     }
+
+
 }

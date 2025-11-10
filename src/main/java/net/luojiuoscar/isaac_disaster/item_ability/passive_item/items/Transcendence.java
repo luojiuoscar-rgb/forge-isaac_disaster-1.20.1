@@ -1,10 +1,9 @@
 package net.luojiuoscar.isaac_disaster.item_ability.passive_item.items;
 
 import net.luojiuoscar.isaac_disaster.item_ability.passive_item.IPassiveItem;
+import net.luojiuoscar.isaac_disaster.manager.EffectManager;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
-import net.luojiuoscar.isaac_disaster.manager.id_managers.EffectId;
 import net.luojiuoscar.isaac_disaster.manager.id_managers.ItemId;
-import net.luojiuoscar.isaac_disaster.manager.EffectDescriptionManager;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -21,16 +20,16 @@ public class Transcendence implements IPassiveItem {
     }
 
     @Override
-    public void onFirstObtain(Player player, @Nullable ItemStack stack) {
+    public void handleFirstObtain(Player player, @Nullable ItemStack stack) {
     }
 
     @Override
-    public void onObtainEffect(Player player, @Nullable ItemStack stack) {
+    public void handleObtain(Player player, @Nullable ItemStack stack) {
         StatManager.FLY_TIME.apply(player, 1);
     }
 
     @Override
-    public void onRemove(Player player, @Nullable ItemStack stack) {
+    public void handleRemove(Player player, @Nullable ItemStack stack) {
         StatManager.FLY_TIME.apply(player, -1);
     }
 
@@ -46,7 +45,7 @@ public class Transcendence implements IPassiveItem {
     public List<Component> getExplain(){
         List<Component> description = new ArrayList<>();
 
-        description.addAll(EffectDescriptionManager.getInstance().getDescriptionFromId(EffectId.TRANSCENDENCE.getId()));
+        description.add(EffectManager.TRANSCENDENCE.getExplainDesc());
 
         return description;
     }

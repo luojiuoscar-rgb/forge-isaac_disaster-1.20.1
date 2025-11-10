@@ -127,7 +127,8 @@ public class  PassiveItemManager {
                 new SackHead(),
                 new Mitre(),
                 new GlitchedCrown(),
-                new BingeEater()
+                new BingeEater(),
+                new EchoChamber()
         );
     }
 }

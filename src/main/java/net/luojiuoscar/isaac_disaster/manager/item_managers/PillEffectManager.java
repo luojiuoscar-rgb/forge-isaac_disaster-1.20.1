@@ -64,6 +64,15 @@ public class PillEffectManager {
         return Map.copyOf(this.PillEffectMap);
     }
 
+    public int getPillIdFromEffectId(int effectId) {
+        for (Map.Entry<Integer, Integer> entry : PillEffectMap.entrySet()) {
+            if (entry.getValue() == effectId) {
+                return entry.getKey();
+            }
+        }
+        return 0; // 未找到时返回 0
+    }
+
     public boolean isReady() {
         return !registeredEffects.isEmpty() && !registeredPillIds.isEmpty();
     }
@@ -138,9 +147,9 @@ public class PillEffectManager {
         int effectId = keyList.get(random.nextInt(keyList.size()));
 
         if (isHorsePill){
-            getEffectFromEffectId(effectId).onUseH(player);
+            getEffectFromEffectId(effectId).onUseH(player, true);
         }else{
-            getEffectFromEffectId(effectId).onUse(player);
+            getEffectFromEffectId(effectId).onUse(player, true);
         }
     }
 
@@ -185,7 +194,8 @@ public class PillEffectManager {
                 new ShotSpeedDown(),
                 new ShotSpeedUp(),
                 new ExperimentalPill(),
-                new Gulp()
+                new Gulp(),
+                new Vurp()
         );
     }
 }

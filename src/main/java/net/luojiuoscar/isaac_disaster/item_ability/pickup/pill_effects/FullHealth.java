@@ -20,9 +20,9 @@ public class FullHealth implements IPillEffect {
     }
 
     @Override
-    public void onUse(Player player){
+    public void onUse(Player player, boolean withSFX){
         if (PlayerHelper.getPillQuality(player) < 0){
-            PillEffectManager.getInstance().getEffectFromEffectId(PillEffectId.BAD_TRIP.getId()).onUse(player);
+            PillEffectManager.getInstance().getEffectFromEffectId(PillEffectId.BAD_TRIP.getId()).onUse(player, true);
             return;
         }
 
@@ -33,9 +33,9 @@ public class FullHealth implements IPillEffect {
     }
 
     @Override
-    public void onUseH(Player player){
+    public void onUseH(Player player, boolean withSFX){
         if (PlayerHelper.getPillQuality(player) < 0){
-            PillEffectManager.getInstance().getEffectFromEffectId(PillEffectId.BAD_TRIP.getId()).onUseH(player);
+            PillEffectManager.getInstance().getEffectFromEffectId(PillEffectId.BAD_TRIP.getId()).onUseH(player, true);
             return;
         }
 
@@ -47,12 +47,12 @@ public class FullHealth implements IPillEffect {
 
     @Override
     public void onUseEffect(Player player) {
-        player.setHealth(player.getHealth());
+        player.setHealth(player.getMaxHealth());
     }
 
     @Override
     public void onUseEffectH(Player player) {
-        player.setHealth(player.getHealth());
+        player.setHealth(player.getMaxHealth());
         StatManager.gainAbsorption(player, 3);
     }
 

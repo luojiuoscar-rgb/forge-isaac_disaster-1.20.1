@@ -8,9 +8,12 @@ import net.luojiuoscar.isaac_disaster.entity.custom.IsaacBullet;
 import net.luojiuoscar.isaac_disaster.event.custom.*;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.item.item.Trinket;
+import net.luojiuoscar.isaac_disaster.item.pickup.Card;
+import net.luojiuoscar.isaac_disaster.item.pickup.Pill;
 import net.luojiuoscar.isaac_disaster.item_ability.passive_item.IDamageTriggerPassiveItem;
 import net.luojiuoscar.isaac_disaster.item_ability.passive_item.INewBulletTypePassiveItem;
 import net.luojiuoscar.isaac_disaster.item_ability.passive_item.items.BingeEater;
+import net.luojiuoscar.isaac_disaster.item_ability.passive_item.items.EchoChamber;
 import net.luojiuoscar.isaac_disaster.item_ability.passive_item.items.GlitchedCrown;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.manager.id_managers.ItemId;
@@ -217,6 +220,21 @@ public class IsaacDisasterEvents {
         if (PlayerHelper.hasItem(ItemId.BINGE_EATER.getId(), player)){
             BingeEater.addDisplayItem(event);
         }
+
+    }
+
+    @SubscribeEvent
+    public static void onPickupUse(PickupUseEvent event){
+        ItemStack stack = event.getStack();
+        Player player = event.getPlayer();
+        if (stack == null || player == null || player.level().isClientSide) return;
+
+        if ((stack.getItem() instanceof Pill || stack.getItem() instanceof Card) &&
+                PlayerHelper.hasItem(ItemId.ECHO_CHAMBER.getId(), (ServerPlayer) player)){
+            EchoChamber.onTriggered(player);
+        }
+
+
 
     }
 

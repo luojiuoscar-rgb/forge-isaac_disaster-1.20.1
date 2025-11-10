@@ -14,21 +14,25 @@ import java.util.Set;
 @AutoRegisterCapability
 public class PlayerItemPools {
 
-    private Map<ResourceLocation, Set<Integer>> removeFromPool;
-    private Map<ResourceLocation, Set<Integer>> addFromPool;
-    private Set<Integer> addAll;
-    private Set<Integer> removeAll;
+    private final Map<ResourceLocation, Set<Integer>> removeFromPool;
+    private final Map<ResourceLocation, Set<Integer>> addFromPool;
+    private final Set<Integer> addAll;
+    private final Set<Integer> removeAll;
 
 
     public PlayerItemPools() {
-        init();
-    }
-
-    public void init() {
         removeFromPool = new HashMap<>();
         addFromPool = new HashMap<>();
         addAll = new HashSet<>();
         removeAll = new HashSet<>();
+        init();
+    }
+
+    public void init() {
+        removeFromPool.clear();
+        addFromPool.clear();
+        addAll.clear();
+        removeAll.clear();
     }
 
 

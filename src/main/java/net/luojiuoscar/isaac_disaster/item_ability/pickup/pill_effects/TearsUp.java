@@ -20,9 +20,9 @@ public class TearsUp implements IPillEffect {
     }
 
     @Override
-    public void onUse(Player player){
+    public void onUse(Player player, boolean withSFX){
         if (PlayerHelper.getPillQuality(player) < 0){
-            PillEffectManager.getInstance().getEffectFromEffectId(PillEffectId.TEARS_DOWN.getId()).onUse(player);
+            PillEffectManager.getInstance().getEffectFromEffectId(PillEffectId.TEARS_DOWN.getId()).onUse(player, true);
             return;
         }
 
@@ -33,9 +33,9 @@ public class TearsUp implements IPillEffect {
     }
 
     @Override
-    public void onUseH(Player player){
+    public void onUseH(Player player, boolean withSFX){
         if (PlayerHelper.getPillQuality(player) < 0){
-            PillEffectManager.getInstance().getEffectFromEffectId(PillEffectId.TEARS_DOWN.getId()).onUseH(player);
+            PillEffectManager.getInstance().getEffectFromEffectId(PillEffectId.TEARS_DOWN.getId()).onUseH(player, true);
             return;
         }
 

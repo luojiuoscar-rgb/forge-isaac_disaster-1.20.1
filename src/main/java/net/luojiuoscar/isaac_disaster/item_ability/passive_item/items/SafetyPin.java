@@ -20,19 +20,19 @@ public class SafetyPin implements IPassiveItem {
     }
 
     @Override
-    public void onFirstObtain(Player player, @Nullable ItemStack stack) {
+    public void handleFirstObtain(Player player, @Nullable ItemStack stack) {
         PlayerHelper.giveItem(player, ModItems.BLACK_HEART.get(), 1);
     }
 
     @Override
-    public void onObtainEffect(Player player, @Nullable ItemStack stack) {
+    public void handleObtain(Player player, @Nullable ItemStack stack) {
         StatManager.RANGE.apply(player, 1);
         StatManager.BLOCK_REACH.apply(player, 1);
         StatManager.BULLET_SPEED.apply(player, 0.8);
     }
 
     @Override
-    public void onRemove(Player player, @Nullable ItemStack stack) {
+    public void handleRemove(Player player, @Nullable ItemStack stack) {
         StatManager.RANGE.apply(player, -1);
         StatManager.BLOCK_REACH.apply(player, -1);
         StatManager.BULLET_SPEED.apply(player, -0.8);

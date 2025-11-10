@@ -17,11 +17,11 @@ public class TheInnerEye implements IPassiveItem {
     }
 
     @Override
-    public void onFirstObtain(Player player, @Nullable ItemStack stack) {
+    public void handleFirstObtain(Player player, @Nullable ItemStack stack) {
     }
 
     @Override
-    public void onObtainEffect(Player player, @Nullable ItemStack stack) {
+    public void handleObtain(Player player, @Nullable ItemStack stack) {
         // 增加一层“双倍延迟”
         player.getCapability(PlayerStatModifierProvider.PLAYER_STAT_MODIFIER).ifPresent(
                 playerStatModifier -> playerStatModifier.modifyDoubleShotDelay(player, 1)
@@ -29,7 +29,7 @@ public class TheInnerEye implements IPassiveItem {
     }
 
     @Override
-    public void onRemove(Player player, @Nullable ItemStack stack) {
+    public void handleRemove(Player player, @Nullable ItemStack stack) {
         player.getCapability(PlayerStatModifierProvider.PLAYER_STAT_MODIFIER).ifPresent(
                 playerStatModifier -> playerStatModifier.modifyDoubleShotDelay(player, -1)
         );

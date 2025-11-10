@@ -2,10 +2,10 @@ package net.luojiuoscar.isaac_disaster.item;
 
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.block.ModBlocks;
+import net.luojiuoscar.isaac_disaster.item.block.IdentifierBlockItem;
 import net.luojiuoscar.isaac_disaster.item.block.IsaacChestBlockItem;
 import net.luojiuoscar.isaac_disaster.item.custom.ChestPlaceholder;
 import net.luojiuoscar.isaac_disaster.item.custom.DebugStick;
-import net.luojiuoscar.isaac_disaster.item.block.IdentifierBlockItem;
 import net.luojiuoscar.isaac_disaster.item.item.ActiveItem;
 import net.luojiuoscar.isaac_disaster.item.item.PassiveItem;
 import net.luojiuoscar.isaac_disaster.item.item.Trinket;
@@ -156,6 +156,7 @@ public class ModItems {
     public static final RegistryObject<Item> MITRE              = registerPassiveItem("mitre", 2, ItemId.MITRE);
     public static final RegistryObject<Item> GLITCHED_CROWN     = registerPassiveItem("glitched_crown", 4, ItemId.GLITCHED_CROWN);
     public static final RegistryObject<Item> BINGE_EATER        = registerPassiveItem("binge_eater", 4, ItemId.BINGE_EATER);
+    public static final RegistryObject<Item> ECHO_CHAMBER        = registerPassiveItem("echo_chamber", 3, ItemId.ECHO_CHAMBER);
 
 
 
@@ -486,76 +487,6 @@ public class ModItems {
     static { PICKUP_LIST.add(ANCIENT_RECALL); }
 
 
-
-
-    public static final RegistryObject<Item> PILL1 = ITEMS.register("pill1",
-            () -> new Pill(new Item.Properties(), 1, false));
-    public static final RegistryObject<Item> PILL2 = ITEMS.register("pill2",
-            () -> new Pill(new Item.Properties(), 2, false));
-    public static final RegistryObject<Item> PILL3 = ITEMS.register("pill3",
-            () -> new Pill(new Item.Properties(), 3, false));
-    public static final RegistryObject<Item> PILL4 = ITEMS.register("pill4",
-            () -> new Pill(new Item.Properties(), 4, false));
-    public static final RegistryObject<Item> PILL5 = ITEMS.register("pill5",
-            () -> new Pill(new Item.Properties(), 5, false));
-    public static final RegistryObject<Item> PILL6 = ITEMS.register("pill6",
-            () -> new Pill(new Item.Properties(), 6, false));
-    public static final RegistryObject<Item> PILL7 = ITEMS.register("pill7",
-            () -> new Pill(new Item.Properties(), 7, false));
-    public static final RegistryObject<Item> PILL8 = ITEMS.register("pill8",
-            () -> new Pill(new Item.Properties(), 8, false));
-    public static final RegistryObject<Item> PILL9 = ITEMS.register("pill9",
-            () -> new Pill(new Item.Properties(), 9, false));
-    public static final RegistryObject<Item> PILL10 = ITEMS.register("pill10",
-            () -> new Pill(new Item.Properties(), 10, false));
-    public static final RegistryObject<Item> PILL11 = ITEMS.register("pill11",
-            () -> new Pill(new Item.Properties(), 11, false));
-    public static final RegistryObject<Item> PILL12 = ITEMS.register("pill12",
-            () -> new Pill(new Item.Properties(), 12, false));
-    public static final RegistryObject<Item> PILL13 = ITEMS.register("pill13",
-            () -> new Pill(new Item.Properties(), 13, false));
-    public static final RegistryObject<Item> PILL1_H = ITEMS.register("pill1_h",
-            () -> new Pill(new Item.Properties().stacksTo(16), 1, true));
-    public static final RegistryObject<Item> PILL2_H = ITEMS.register("pill2_h",
-            () -> new Pill(new Item.Properties().stacksTo(16), 2, true));
-    public static final RegistryObject<Item> PILL3_H = ITEMS.register("pill3_h",
-            () -> new Pill(new Item.Properties().stacksTo(16), 3, true));
-    public static final RegistryObject<Item> PILL4_H = ITEMS.register("pill4_h",
-            () -> new Pill(new Item.Properties().stacksTo(16), 4, true));
-    public static final RegistryObject<Item> PILL5_H = ITEMS.register("pill5_h",
-            () -> new Pill(new Item.Properties().stacksTo(16), 5, true));
-    public static final RegistryObject<Item> PILL6_H = ITEMS.register("pill6_h",
-            () -> new Pill(new Item.Properties().stacksTo(16), 6, true));
-    public static final RegistryObject<Item> PILL7_H = ITEMS.register("pill7_h",
-            () -> new Pill(new Item.Properties().stacksTo(16), 7, true));
-    public static final RegistryObject<Item> PILL8_H = ITEMS.register("pill8_h",
-            () -> new Pill(new Item.Properties().stacksTo(16), 8, true));
-    public static final RegistryObject<Item> PILL9_H = ITEMS.register("pill9_h",
-            () -> new Pill(new Item.Properties().stacksTo(16), 9, true));
-    public static final RegistryObject<Item> PILL10_H = ITEMS.register("pill10_h",
-            () -> new Pill(new Item.Properties().stacksTo(16), 10, true));
-    public static final RegistryObject<Item> PILL11_H = ITEMS.register("pill11_h",
-            () -> new Pill(new Item.Properties().stacksTo(16), 11, true));
-    public static final RegistryObject<Item> PILL12_H = ITEMS.register("pill12_h",
-            () -> new Pill(new Item.Properties().stacksTo(16), 12, true));
-    public static final RegistryObject<Item> PILL13_H = ITEMS.register("pill13_h",
-            () -> new Pill(new Item.Properties().stacksTo(16), 13, true));
-    public static final RegistryObject<Item> GOLDEN_PILL = ITEMS.register("golden_pill",
-            () -> new GoldenPill(new Item.Properties(), false));
-    public static final RegistryObject<Item> GOLDEN_PILL_H = ITEMS.register("golden_pill_h",
-            () -> new GoldenPill(new Item.Properties(), true));
-    static {
-        PICKUP_LIST.addAll(List.of(
-                PILL1, PILL2, PILL3, PILL4, PILL5, PILL6, PILL7, PILL8, PILL9, PILL10, PILL11, PILL12, PILL13,
-                PILL1_H, PILL2_H, PILL3_H, PILL4_H, PILL5_H, PILL6_H, PILL7_H, PILL8_H, PILL9_H, PILL10_H, PILL11_H, PILL12_H, PILL13_H,
-                GOLDEN_PILL, GOLDEN_PILL_H
-        ));
-    }
-
-
-
-
-
     // pickup end
     // misc
     public static final RegistryObject<Item> DEBUG_STICK = ITEMS.register("debug_stick",
@@ -565,10 +496,6 @@ public class ModItems {
     public static final RegistryObject<Item> PEDESTAL_ITEM = ITEMS.register("pedestal",
             () -> new BlockItem(ModBlocks.PEDESTAL_BLOCK.get(), new Item.Properties()));
     static { MISC_LIST.add(PEDESTAL_ITEM); }
-
-    public static final RegistryObject<Item> LOCK = ITEMS.register("lock",
-            () -> new Item(new Item.Properties()));
-    static { MISC_LIST.add(LOCK); }
 
     public static final RegistryObject<Item> NORMAL_CHEST_ITEM = ITEMS.register("chest",
             () -> new IsaacChestBlockItem(ModBlocks.NORMAL_CHEST_BLOCK.get(), new Item.Properties()));
@@ -624,6 +551,11 @@ public class ModItems {
     public static final RegistryObject<Item> DEVIL_IDENTIFIER_ITEM = registerIdentifier("devil_identifier", ModBlocks.DEVIL_IDENTIFIER_BLOCK);
 
     // misc end
+
+    public static final RegistryObject<Item> LOCK = ITEMS.register("lock",
+            () -> new Item(new Item.Properties()));
+    public static final RegistryObject<Item> QUESTION_MARK = ITEMS.register("question_mark",
+            () -> new Item(new Item.Properties()));
 
 
 }

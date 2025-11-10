@@ -126,6 +126,9 @@ public class ModSounds {
     public static final RegistryObject<SoundEvent> EXPERIMENTAL_PILL_H = registerSoundEvent("experimental_pill_h");
     public static final RegistryObject<SoundEvent> GULP = registerSoundEvent("gulp");
     public static final RegistryObject<SoundEvent> GULP_H = registerSoundEvent("gulp_h");
+    public static final RegistryObject<SoundEvent> VURP = registerSoundEvent("vurp");
+    public static final RegistryObject<SoundEvent> VURP_H = registerSoundEvent("vurp_h");
+
 
     // cards
     public static final RegistryObject<SoundEvent> THE_FOOL = registerSoundEvent("the_fool");

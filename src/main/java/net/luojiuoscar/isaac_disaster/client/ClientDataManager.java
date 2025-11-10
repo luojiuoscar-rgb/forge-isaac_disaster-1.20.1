@@ -1,6 +1,5 @@
 package net.luojiuoscar.isaac_disaster.client;
 
-import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.manager.item_managers.PillEffectManager;
 
 import java.util.HashMap;
@@ -10,9 +9,9 @@ import java.util.Map;
 public class ClientDataManager {
     private static final ClientDataManager INSTANCE = new ClientDataManager();
 
-    private Map<Integer, Integer> itemCountMap;
-    private Map<Integer, Integer> setCountMap;
-    private Map<Integer, Integer> pillRecords;
+    private final Map<Integer, Integer> itemCountMap;
+    private final Map<Integer, Integer> setCountMap;
+    private final Map<Integer, Integer> pillRecords;
     private int flyUnits;
     private int pillQuality;
 
@@ -59,6 +58,14 @@ public class ClientDataManager {
      */
     public void setItemWithId(int itemId, int count) {
         itemCountMap.put(itemId, count);
+    }
+    public void modifyItemCount(int itemId, int count) {
+        int c = itemCountMap.getOrDefault(itemId, 0) + count;
+        if (c <= 0){
+            itemCountMap.remove(itemId);
+        }else{
+            itemCountMap.put(itemId, c);
+        }
     }
     public void setFlyPercentage(int flyUnits) {
         this.flyUnits = flyUnits;

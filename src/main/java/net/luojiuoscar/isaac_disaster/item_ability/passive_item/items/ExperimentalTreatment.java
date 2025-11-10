@@ -8,6 +8,7 @@ import net.luojiuoscar.isaac_disaster.manager.id_managers.ItemId;
 import net.luojiuoscar.isaac_disaster.manager.id_managers.SetId;
 import net.luojiuoscar.isaac_disaster.manager.item_managers.SetManager;
 import net.minecraft.network.chat.Component;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -22,13 +23,16 @@ public class ExperimentalTreatment implements IPassiveItem {
     }
 
     @Override
-    public void onObtain(Player player, @Nullable ItemStack stack){
-        if (stack != null && !PassiveItem.isConsumed(stack)) onFirstObtain(player, stack);
-        onObtainEffect(player, stack);
+    public void onObtain(Player player, @Nullable ItemStack stack, boolean withSFX){
+        if (stack != null && !PassiveItem.isConsumed(stack)) handleFirstObtain(player, stack);
+        handleObtain(player, stack);
+
+        if (withSFX) player.level().playSound(null, player.getX(), player.getY(), player.getZ(), getSound(),
+                SoundSource.PLAYERS, 1.0f, 1.0f);
     }
 
     @Override
-    public void onFirstObtain(Player player, @Nullable ItemStack stack) {
+    public void handleFirstObtain(Player player, @Nullable ItemStack stack) {
         if (stack == null) return;
 
         // 当玩家首次获得该物品时触发，生成若干随机属性
@@ -46,7 +50,7 @@ public class ExperimentalTreatment implements IPassiveItem {
     }
 
     @Override
-    public void onObtainEffect(Player player, @Nullable ItemStack stack) {
+    public void handleObtain(Player player, @Nullable ItemStack stack) {
         if (stack == null) return;
         StatManager.modifySetWithId(player, SetId.SPUN.getId(), 1);
         Map<UUID, Double> map = ExperimentalTreatmentItem.getModifierMap(stack);
@@ -60,7 +64,7 @@ public class ExperimentalTreatment implements IPassiveItem {
     }
 
     @Override
-    public void onRemove(Player player, @Nullable ItemStack stack) {
+    public void handleRemove(Player player, @Nullable ItemStack stack) {
         if (stack == null) return;
         StatManager.modifySetWithId(player, SetId.SPUN.getId(), -1);
 

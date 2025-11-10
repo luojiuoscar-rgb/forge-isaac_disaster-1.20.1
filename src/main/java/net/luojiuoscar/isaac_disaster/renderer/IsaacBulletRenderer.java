@@ -20,9 +20,9 @@ public class IsaacBulletRenderer extends EntityRenderer<IsaacBullet> {
             ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "textures/particle/tear_bullet.png");
 
     // 可调参数
-    private static final float SCALE_FADE_THRESHOLD = 1.2f;    // 超过这个大小才触发淡出
-    private static final float MAX_FADE_DISTANCE = 3.0f;       // 超过此距离完全不透明
-    private static final int FADE_DURATION_TICKS = 10;         // 子弹生成后的持续时间
+    private static final float SCALE_FADE_THRESHOLD = 1.4f;    // 超过这个大小才触发
+    private static final float MAX_FADE_DISTANCE = 2.0f;       // 超过此距离完全不透明
+    private static final int FADE_DURATION_TICKS = 6;          // 子弹生成后的持续时间
 
     public IsaacBulletRenderer(EntityRendererProvider.Context context) {
         super(context);

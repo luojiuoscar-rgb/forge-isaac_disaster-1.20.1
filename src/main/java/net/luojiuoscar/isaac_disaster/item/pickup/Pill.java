@@ -1,7 +1,8 @@
 package net.luojiuoscar.isaac_disaster.item.pickup;
 
-import net.luojiuoscar.isaac_disaster.capability.player.PlayerAbilityProvider;
+import net.luojiuoscar.isaac_disaster.capability.player.PlayerItemUseRecordProvider;
 import net.luojiuoscar.isaac_disaster.client.ClientDataManager;
+import net.luojiuoscar.isaac_disaster.event.custom.PickupUseEvent;
 import net.luojiuoscar.isaac_disaster.item.pickup.interfaces.ICommonPickup;
 import net.luojiuoscar.isaac_disaster.manager.id_managers.ItemId;
 import net.luojiuoscar.isaac_disaster.manager.item_managers.PillEffectManager;
@@ -13,6 +14,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.level.Level;
+import net.minecraftforge.common.MinecraftForge;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -33,29 +35,33 @@ public class Pill extends Item implements ICommonPickup {
     public @NotNull InteractionResultHolder<ItemStack> use(@NotNull Level level, Player player, @NotNull InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
 
+        // 触发事件
+        PickupUseEvent event = new PickupUseEvent(player, stack);
+        MinecraftForge.EVENT_BUS.post(event);
+        if (event.isCanceled()) return InteractionResultHolder.pass(stack);
+
         // 触发药丸效果
         if (!level.isClientSide){
             if (isHorsePill){
-                PillEffectManager.getInstance().getEffectFromPill(pillId).onUseH(player);
+                PillEffectManager.getInstance().getEffectFromPill(pillId).onUseH(player, true);
             }else {
-                PillEffectManager.getInstance().getEffectFromPill(pillId).onUse(player);
+                PillEffectManager.getInstance().getEffectFromPill(pillId).onUse(player, true);
             }
 
             // 如果没有有正确的药丸记录，则更新
             if (!ClientDataManager.getInstance().isPillRecordCorrectly(pillId)){
                 int effectId = PillEffectManager.getInstance().getEffectIdFromPill(pillId);
-                player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY).ifPresent(
-                        playerAbility -> playerAbility.setPillRecord((ServerPlayer) player, pillId, effectId)
-                );
-            }
-        }
 
+                player.getCapability(PlayerItemUseRecordProvider.PLAYER_ITEM_USE_RECORD).ifPresent(
+                        playerItemUseRecord -> {
+                            playerItemUseRecord.setPillEffectRecord((ServerPlayer) player, pillId, effectId);
+                            playerItemUseRecord.addPillRecord(pillId, isHorsePill);
+                            playerItemUseRecord.addPillEffectRecord(
+                                    PillEffectManager.getInstance().getEffectIdFromPill(pillId), isHorsePill);
+                        });
+            }}
 
-        // 物品-1
-        if (!(player.isCreative() || player.isSpectator())) {
-            stack.shrink(1);
-        }
-
+        if (!(player.isCreative() || player.isSpectator())) stack.shrink(1);
         return InteractionResultHolder.success(stack);
     }
 

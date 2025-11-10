@@ -27,7 +27,7 @@ public class Supper implements IPassiveItem, IFoodPassiveItem {
     }
 
     @Override
-    public void onFirstObtain(Player player, @Nullable ItemStack stack) {
+    public void handleFirstObtain(Player player, @Nullable ItemStack stack) {
         StatManager.healHealth(player, 1.0f);
         if (PlayerHelper.hasItem(ItemId.BINGE_EATER.getId(), (ServerPlayer) player) && stack != null){
             player.addEffect(new MobEffectInstance(MobEffects.DAMAGE_BOOST, 600, 1));
@@ -35,13 +35,13 @@ public class Supper implements IPassiveItem, IFoodPassiveItem {
     }
 
     @Override
-    public void onObtainEffect(Player player, @Nullable ItemStack stack) {
+    public void handleObtain(Player player, @Nullable ItemStack stack) {
         StatManager.MAX_HEALTH.apply(player, 1);
         onFoodObtain(player, stack);
     }
 
     @Override
-    public void onRemove(Player player, @Nullable ItemStack stack) {
+    public void handleRemove(Player player, @Nullable ItemStack stack) {
         StatManager.MAX_HEALTH.apply(player, -1);
         onFoodRemove(player, stack);
     }

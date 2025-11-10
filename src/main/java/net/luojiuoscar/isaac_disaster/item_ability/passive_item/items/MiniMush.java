@@ -19,12 +19,12 @@ public class MiniMush implements IPassiveItem {
     }
 
     @Override
-    public void onFirstObtain(Player player, @Nullable ItemStack stack) {
+    public void handleFirstObtain(Player player, @Nullable ItemStack stack) {
 
     }
 
     @Override
-    public void onObtainEffect(Player player, @Nullable ItemStack stack) {
+    public void handleObtain(Player player, @Nullable ItemStack stack) {
         StatManager.SCALE.apply(player, -1.5);
         StatManager.MOVEMENT_SPEED.apply(player,  1.5);
         StatManager.RANGE.apply(player,  1);
@@ -33,7 +33,7 @@ public class MiniMush implements IPassiveItem {
     }
 
     @Override
-    public void onRemove(Player player, @Nullable ItemStack stack) {
+    public void handleRemove(Player player, @Nullable ItemStack stack) {
         StatManager.SCALE.apply(player, 1.5);
         StatManager.MOVEMENT_SPEED.apply(player,  -1.5);
         StatManager.RANGE.apply(player,  -1);

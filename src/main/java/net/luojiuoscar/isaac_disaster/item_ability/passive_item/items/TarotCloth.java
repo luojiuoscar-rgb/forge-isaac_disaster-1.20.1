@@ -1,15 +1,10 @@
 package net.luojiuoscar.isaac_disaster.item_ability.passive_item.items;
 
 import net.luojiuoscar.isaac_disaster.helper.LootHelper;
-import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.item_ability.passive_item.IPassiveItem;
 import net.luojiuoscar.isaac_disaster.manager.LootTableManager;
 import net.luojiuoscar.isaac_disaster.manager.id_managers.ItemId;
-import net.luojiuoscar.isaac_disaster.networking.ModMessages;
-import net.luojiuoscar.isaac_disaster.networking.packet.PassiveItemSyncS2CPacket;
 import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
@@ -24,25 +19,16 @@ public class TarotCloth implements IPassiveItem {
     }
 
     @Override
-    public void onFirstObtain(Player player, @Nullable ItemStack stack) {
-        ServerLevel level = (ServerLevel) player.level();
+    public void handleFirstObtain(Player player, @Nullable ItemStack stack) {
         LootHelper.spawnLootAtPos(player, player.position(), LootTableManager.RANDOM_CARDS);
     }
 
     @Override
-    public void onObtainEffect(Player player, @Nullable ItemStack stack) {
-        if (player instanceof ServerPlayer serverPlayer){
-            int count = PlayerHelper.getItemCount(ItemId.TAROT_CLOTH.getId(), serverPlayer);
-            ModMessages.sentToPlayer(new PassiveItemSyncS2CPacket(ItemId.TAROT_CLOTH.getId(), count), serverPlayer);
-        }
+    public void handleObtain(Player player, @Nullable ItemStack stack) {
     }
 
     @Override
-    public void onRemove(Player player, @Nullable ItemStack stack) {
-        if (player instanceof ServerPlayer serverPlayer){
-            int count = PlayerHelper.getItemCount(ItemId.TAROT_CLOTH.getId(), serverPlayer);
-            ModMessages.sentToPlayer(new PassiveItemSyncS2CPacket(ItemId.TAROT_CLOTH.getId(), count), serverPlayer);
-        }
+    public void handleRemove(Player player, @Nullable ItemStack stack) {
     }
 
     @Override

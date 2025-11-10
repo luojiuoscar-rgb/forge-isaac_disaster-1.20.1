@@ -9,6 +9,7 @@ import net.luojiuoscar.isaac_disaster.manager.id_managers.ItemId;
 import net.luojiuoscar.isaac_disaster.manager.id_managers.PickupId;
 import net.luojiuoscar.isaac_disaster.sound.ModSounds;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
@@ -25,12 +26,14 @@ public class TheHierophant implements ITarot {
 
     @Override
     public void onUseEffect(Player player, ItemStack stack, InteractionHand hand) {
-        LootHelper.spawnLootAtPos(player, player.position(), ModItems.SOUL_HEART.getId(), 2);
+        if (!(player instanceof ServerPlayer serverPlayer)) return;
+        LootHelper.spawnItemViaLoot(serverPlayer, player.position(), ModItems.SOUL_HEART.get(), 2);
     }
 
     @Override
     public void onUseEffectStronger(Player player, ItemStack stack, InteractionHand hand) {
-        LootHelper.spawnLootAtPos(player, player.position(), ModItems.SOUL_HEART.getId(), 3);
+        if (!(player instanceof ServerPlayer serverPlayer)) return;
+        LootHelper.spawnItemViaLoot(serverPlayer, player.position(), ModItems.SOUL_HEART.get(), 3);
     }
 
     @Override

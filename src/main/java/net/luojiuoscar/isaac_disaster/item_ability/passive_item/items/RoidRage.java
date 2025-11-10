@@ -19,11 +19,11 @@ public class RoidRage implements IPassiveItem {
     }
 
     @Override
-    public void onFirstObtain(Player player, @Nullable ItemStack stack) {
+    public void handleFirstObtain(Player player, @Nullable ItemStack stack) {
     }
 
     @Override
-    public void onObtainEffect(Player player, @Nullable ItemStack stack) {
+    public void handleObtain(Player player, @Nullable ItemStack stack) {
         StatManager.RANGE.apply(player, 1);
         StatManager.ENTITY_REACH.apply(player, 1);
         StatManager.BLOCK_REACH.apply(player, 1);
@@ -32,7 +32,7 @@ public class RoidRage implements IPassiveItem {
     }
 
     @Override
-    public void onRemove(Player player, @Nullable ItemStack stack) {
+    public void handleRemove(Player player, @Nullable ItemStack stack) {
         StatManager.RANGE.apply(player, -1);
         StatManager.ENTITY_REACH.apply(player, -1);
         StatManager.BLOCK_REACH.apply(player, -1);

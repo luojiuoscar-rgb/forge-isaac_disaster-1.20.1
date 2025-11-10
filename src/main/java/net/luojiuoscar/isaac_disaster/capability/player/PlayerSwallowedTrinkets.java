@@ -19,11 +19,12 @@ public class PlayerSwallowedTrinkets {
     private List<ItemStack> swallowedTrinkets;
 
     public PlayerSwallowedTrinkets(){
+        swallowedTrinkets = new ArrayList<>();
         init();
     }
 
     public void init(){
-        swallowedTrinkets = new ArrayList<>();
+        swallowedTrinkets.clear();
     }
 
     /** 添加一个饰品 */

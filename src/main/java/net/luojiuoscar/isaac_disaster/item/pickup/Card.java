@@ -1,5 +1,6 @@
 package net.luojiuoscar.isaac_disaster.item.pickup;
 
+import net.luojiuoscar.isaac_disaster.capability.player.PlayerItemUseRecordProvider;
 import net.luojiuoscar.isaac_disaster.client.ClientDataManager;
 import net.luojiuoscar.isaac_disaster.item.pickup.interfaces.IUsablePickup;
 import net.luojiuoscar.isaac_disaster.manager.id_managers.ItemId;
@@ -23,12 +24,6 @@ public class Card extends Pickup implements IUsablePickup {
     }
 
     @Override
-    public @NotNull InteractionResultHolder<ItemStack> use(@NotNull Level level, Player player, @NotNull InteractionHand hand) {
-        ItemStack stack = player.getItemInHand(hand);
-        return InteractionResultHolder.success(stack);
-    }
-
-    @Override
     public final void appendHoverText(@NotNull ItemStack stack, @Nullable Level level, @NotNull List<Component> tooltipComponents, @NotNull TooltipFlag isAdvanced) {
         super.appendHoverText(stack, level, tooltipComponents, isAdvanced);
 
@@ -40,5 +35,13 @@ public class Card extends Pickup implements IUsablePickup {
     @Override
     public boolean isFoil(@NotNull ItemStack stack) {
         return ClientDataManager.getInstance().getCountFromId(ItemId.TAROT_CLOTH.getId()) > 0;
+    }
+
+    @Override
+    public InteractionResultHolder<ItemStack> use(@NotNull Level level, Player player, @NotNull InteractionHand hand){
+        player.getCapability(PlayerItemUseRecordProvider.PLAYER_ITEM_USE_RECORD).ifPresent(
+                playerItemUseRecord -> playerItemUseRecord.addCardRecord(getPickupId()));
+
+        return super.use(level, player, hand);
     }
 }

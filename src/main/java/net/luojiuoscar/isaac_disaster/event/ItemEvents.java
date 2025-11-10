@@ -4,6 +4,8 @@ import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerPassiveItemProvider;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerSwallowedTrinketsProvider;
 import net.luojiuoscar.isaac_disaster.effect.*;
+import net.luojiuoscar.isaac_disaster.effect.curse.CurseOfTheMaze;
+import net.luojiuoscar.isaac_disaster.effect.custom.*;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.item.item.Trinket;
 import net.luojiuoscar.isaac_disaster.item_ability.passive_item.IDamageTriggerPassiveItem;
@@ -151,14 +153,15 @@ public class ItemEvents {
 
         // 惩罚性效果
         if (source.is(DamageTypes.GENERIC_KILL)) return;
+
         if (player.hasEffect(ModEffects.NECRONMICON_SHIELD.get())) NecronmiconShieldEffect.onTriggered(event);
-        if (player.hasEffect(ModEffects.ETERNAL_HEART.get())){
-            if (EternalHeartEffect.onTriggered(event)){
+        if (player.hasEffect(ModEffects.ETERNAL_HEART.get()))
+            if (EternalHeartEffect.onTriggered(event))
                 return;
-            }
-        }
         if (player.hasEffect(ModEffects.GILDING.get())) GildingEffect.onTriggered(event);
         if (player.hasEffect(ModEffects.FRAGILE_HEART.get())) FragileHeartEffect.onTriggered(event);
+        if (player.hasEffect(ModEffects.CURSE_OF_THE_MAZE.get())) CurseOfTheMaze.onTriggered(event);
+
     }
 
 

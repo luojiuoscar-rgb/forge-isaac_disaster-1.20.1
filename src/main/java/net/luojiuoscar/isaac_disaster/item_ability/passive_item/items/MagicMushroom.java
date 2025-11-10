@@ -21,18 +21,17 @@ public class MagicMushroom implements IPassiveItem {
     }
 
     @Override
-    public void onObtainSound(Player player) {
-        SoundEvent defaultSound = ModSounds.MAGIC_MUSHROOM_OBTAIN.get();
-        player.playSound(defaultSound, 1.0F, 1.0F);
+    public SoundEvent getSound() {
+        return ModSounds.MAGIC_MUSHROOM_OBTAIN.get();
     }
 
     @Override
-    public void onFirstObtain(Player player, @Nullable ItemStack stack) {
+    public void handleFirstObtain(Player player, @Nullable ItemStack stack) {
         player.setHealth(player.getMaxHealth());
     }
 
     @Override
-    public void onObtainEffect(Player player, @Nullable ItemStack stack) {
+    public void handleObtain(Player player, @Nullable ItemStack stack) {
         StatManager.MAX_HEALTH.apply(player, 1);
         StatManager.SCALE.apply(player, 2.5);
         StatManager.MOVEMENT_SPEED.apply(player, 1.5);
@@ -45,7 +44,7 @@ public class MagicMushroom implements IPassiveItem {
     }
 
     @Override
-    public void onRemove(Player player, @Nullable ItemStack stack) {
+    public void handleRemove(Player player, @Nullable ItemStack stack) {
         StatManager.MAX_HEALTH.apply(player, -1);
         StatManager.SCALE.apply(player, -2.5);
         StatManager.MOVEMENT_SPEED.apply(player, -1.5);

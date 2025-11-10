@@ -7,10 +7,7 @@ import net.luojiuoscar.isaac_disaster.item_ability.passive_item.IPassiveItem;
 import net.luojiuoscar.isaac_disaster.manager.LootTableManager;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.manager.id_managers.ItemId;
-import net.luojiuoscar.isaac_disaster.networking.ModMessages;
-import net.luojiuoscar.isaac_disaster.networking.packet.PassiveItemSyncS2CPacket;
 import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
@@ -24,26 +21,18 @@ public class FalsePhd implements IPassiveItem {
     }
 
     @Override
-    public void onFirstObtain(Player player, @Nullable ItemStack stack) {
+    public void handleFirstObtain(Player player, @Nullable ItemStack stack) {
         PlayerHelper.giveItem(player, ModItems.BLACK_HEART.get(), 1);
         LootHelper.spawnLootAtPos(player, player.blockPosition().getCenter(), LootTableManager.RANDOM_PILLS);
     }
 
     @Override
-    public void onObtainEffect(Player player, @Nullable ItemStack stack) {
-        if (player instanceof ServerPlayer serverPlayer){
-            int count = PlayerHelper.getItemCount(ItemId.FALSE_PHD.getId(), serverPlayer);
-            ModMessages.sentToPlayer(new PassiveItemSyncS2CPacket(ItemId.FALSE_PHD.getId(), count), serverPlayer);
-        }
+    public void handleObtain(Player player, @Nullable ItemStack stack) {
         StatManager.PILL_QUALITY.apply(player, -1);
     }
 
     @Override
-    public void onRemove(Player player, @Nullable ItemStack stack) {
-        if (player instanceof ServerPlayer serverPlayer){
-            int count = PlayerHelper.getItemCount(ItemId.FALSE_PHD.getId(), serverPlayer);
-            ModMessages.sentToPlayer(new PassiveItemSyncS2CPacket(ItemId.FALSE_PHD.getId(), count), serverPlayer);
-        }
+    public void handleRemove(Player player, @Nullable ItemStack stack) {
         StatManager.PILL_QUALITY.apply(player, 1);
     }
 

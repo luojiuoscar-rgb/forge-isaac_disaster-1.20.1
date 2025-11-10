@@ -29,6 +29,7 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -336,19 +337,16 @@ public class PlayerHelper {
     /**
      * 将玩家传送到一个随机安全位置
      */
-    public static void teleportToRandomLocation(Player player, double radius) {
-        // 只在服务端执行传送逻辑
-        if (player.level().isClientSide()) {
-            return;
-        }
+    public static void teleportToRandomLocation(Entity entity, double radius) {
+        if (entity.level().isClientSide()) return;
 
-        Level world = player.level();
-        Vec3 currentPos = player.position();
+        Level world = entity.level();
+        Vec3 currentPos = entity.position();
         int minY = world.getMinBuildHeight();
         int maxY = world.getMaxBuildHeight();
 
-        RandomSource random = player.getRandom();
-        float playerHeight = player.getBbHeight();
+        RandomSource random = world.getRandom();
+        float playerHeight = entity.getBbHeight();
 
         // 最多尝试5次
         for (int retry = 0; retry < 5; retry++) {
@@ -364,7 +362,7 @@ public class PlayerHelper {
 
             if (safePos != null) {
                 // 找到安全位置，执行传送（Y坐标稍微向上偏移，避免卡进方块）
-                player.teleportTo(
+                entity.teleportTo(
                         safePos.getX() + 0.5, // 方块中心X
                         safePos.getY() + 0.1, // 稍微高于方块
                         safePos.getZ() + 0.5  // 方块中心Z
@@ -372,8 +370,6 @@ public class PlayerHelper {
                 return;
             }
         }
-
-        // 达到最大尝试次数仍未找到合适位置
     }
     private static BlockPos findSafePositionUpwards(Level world, int x, int z, int startY, int maxY, double playerHeight) {
         BlockPos currentPos = new BlockPos(x, startY, z);
