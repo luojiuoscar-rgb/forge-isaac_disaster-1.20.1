@@ -1,0 +1,14 @@
+{
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {"type": "minecraft:item", "name": "isaac_disaster:tarots_back", "weight": 6666},
+        {"type": "minecraft:item", "name": "isaac_disaster:reverse_tarots_back", "weight": 1122},
+        {"type": "minecraft:item", "name": "isaac_disaster:pokers_back", "weight": 774},
+        {"type": "minecraft:item", "name": "isaac_disaster:specials_back", "weight": 351}
+      ]
+    }
+  ]
+}
+

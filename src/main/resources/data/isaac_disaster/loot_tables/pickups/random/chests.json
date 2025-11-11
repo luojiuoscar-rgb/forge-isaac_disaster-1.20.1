@@ -3,10 +3,11 @@
     {
       "rolls": 1,
       "entries": [
-        {"type": "minecraft:item", "name": "isaac_disaster:chest", "weight": 1},
-        {"type": "minecraft:item", "name": "isaac_disaster:locked_chest", "weight": 1},
-        {"type": "minecraft:item", "name": "isaac_disaster:eternal_chest", "weight": 1},
-        {"type": "minecraft:item", "name": "isaac_disaster:old_chest", "weight": 1}
+        {"type": "minecraft:item", "name": "isaac_disaster:chest", "weight": 69},
+        {"type": "minecraft:item", "name": "isaac_disaster:locked_chest", "weight": 10},
+        {"type": "minecraft:item", "name": "isaac_disaster:bomb_chest", "weight": 10},
+        {"type": "minecraft:item", "name": "isaac_disaster:red_chest", "weight": 10},
+        {"type": "minecraft:item", "name": "isaac_disaster:eternal_chest", "weight": 1}
       ]
     }
   ]

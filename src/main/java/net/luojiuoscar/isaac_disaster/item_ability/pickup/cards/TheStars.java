@@ -27,8 +27,13 @@ public class TheStars implements ITarot {
 
     @Override
     public void onUseEffect(Player player, ItemStack stack, InteractionHand hand) {
-        PlayerHelper.teleportToNearestIdentifier(
-                (ServerPlayer) player, ModBlockEntities.TREASURE_IDENTIFIER_BLOCK_ENTITY.getId());
+        boolean s = PlayerHelper.teleportToNearestIdentifier(
+                (ServerPlayer) player, ModBlockEntities.PLANETARIUM_IDENTIFIER_BLOCK_ENTITY.getId());
+        if (!s){
+            PlayerHelper.teleportToNearestIdentifier(
+                    (ServerPlayer) player, ModBlockEntities.TREASURE_IDENTIFIER_BLOCK_ENTITY.getId());
+        }
+
         player.level().playSound(null, player.getX(), player.getY(), player.getZ(),
                 SoundEvents.ENDERMAN_TELEPORT, SoundSource.PLAYERS, 1.0f ,1.0f);
 

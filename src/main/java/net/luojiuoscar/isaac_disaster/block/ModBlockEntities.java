@@ -117,4 +117,12 @@ public class ModBlockEntities {
             BLOCK_ENTITIES.register("devil_identifier_block_entity",
                     () -> BlockEntityType.Builder.of(DevilIdentifierBlockEntity::new,
                             ModBlocks.DEVIL_IDENTIFIER_BLOCK.get()).build(null));
+    public static final RegistryObject<BlockEntityType<PlanetariumIdentifierBlockEntity>> PLANETARIUM_IDENTIFIER_BLOCK_ENTITY =
+            BLOCK_ENTITIES.register("planetarium_identifier_block_entity",
+                    () -> BlockEntityType.Builder.of(PlanetariumIdentifierBlockEntity::new,
+                            ModBlocks.PLANETARIUM_IDENTIFIER_BLOCK.get()).build(null));
+
+
+
+
 }

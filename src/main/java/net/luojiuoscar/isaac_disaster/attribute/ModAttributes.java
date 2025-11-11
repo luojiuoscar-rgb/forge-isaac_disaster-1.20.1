@@ -49,14 +49,14 @@ public class ModAttributes {
     public static final RegistryObject<Attribute> FLY_TIME = MOD_ATTRIBUTE.register("fly_time",
             () -> new RangedAttribute("attribute.isaac_disaster.fly_time", 0.0D, 0.0D, 1024D).setSyncable(true));
 
+    public static final RegistryObject<Attribute> DEVIL_CHANCE = MOD_ATTRIBUTE.register("devil_chance",
+            () -> new RangedAttribute("attribute.isaac_disaster.devil_chance", 0.0D, 0.0D, 1D).setSyncable(true));
 
+    public static final RegistryObject<Attribute> ANGEL_CHANCE = MOD_ATTRIBUTE.register("angel_chance",
+            () -> new RangedAttribute("attribute.isaac_disaster.angel_chance", 0.0D, 0.0D, 1D).setSyncable(true));
 
-
-
-
-
-
-
+    public static final RegistryObject<Attribute> PLANETARIUM_CHANCE = MOD_ATTRIBUTE.register("planetarium_chance",
+            () -> new RangedAttribute("attribute.isaac_disaster.planetarium_chance", 0.0D, 0.0D, 1D).setSyncable(true));
 
 
 }

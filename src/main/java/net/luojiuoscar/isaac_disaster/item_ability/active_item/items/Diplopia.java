@@ -2,7 +2,7 @@ package net.luojiuoscar.isaac_disaster.item_ability.active_item.items;
 
 import net.luojiuoscar.isaac_disaster.client.ClientDataManager;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
-import net.luojiuoscar.isaac_disaster.item_ability.active_item.IDisposableActiveItem;
+import net.luojiuoscar.isaac_disaster.item_ability.active_item.IActiveItem;
 import net.luojiuoscar.isaac_disaster.manager.ColorManager;
 import net.luojiuoscar.isaac_disaster.manager.TagManager;
 import net.luojiuoscar.isaac_disaster.manager.id_managers.ItemId;
@@ -14,7 +14,7 @@ import net.minecraft.world.item.ItemStack;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Diplopia implements IDisposableActiveItem {
+public class Diplopia implements IActiveItem {
 
     @Override
     public int getItemId() {

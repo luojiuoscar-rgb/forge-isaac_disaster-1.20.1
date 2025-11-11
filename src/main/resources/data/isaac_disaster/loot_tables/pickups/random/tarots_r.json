@@ -5,7 +5,13 @@
       "entries": [
         {"type": "minecraft:item", "name": "isaac_disaster:the_magician_r"},
         {"type": "minecraft:item", "name": "isaac_disaster:the_high_priestess_r"},
-        {"type": "minecraft:item", "name": "isaac_disaster:the_hierophant_r"}
+        {"type": "minecraft:item", "name": "isaac_disaster:the_hierophant_r"},
+        {"type": "minecraft:item", "name": "isaac_disaster:strength_r"},
+        {"type": "minecraft:item", "name": "isaac_disaster:temperance_r"},
+        {"type": "minecraft:item", "name": "isaac_disaster:the_tower_r"},
+        {"type": "minecraft:item", "name": "isaac_disaster:justice_r"},
+        {"type": "minecraft:item", "name": "isaac_disaster:the_empress_r"},
+        {"type": "minecraft:item", "name": "isaac_disaster:the_chariot_r"}
       ]
     }
   ]

@@ -56,7 +56,13 @@ public enum PickupId {
     STRENGTH_R,
     TEMPERANCE_R,
     THE_MOON,
-    THE_TOWER_R;
+    THE_TOWER_R,
+    QUESTION_CARD,
+    WILD_CARD,
+    TAROTS_BACK,
+    REVERSE_TAROTS_BACK,
+    POKERS_BACK,
+    SPECIALS_BACK;
 
 
     private final int id;

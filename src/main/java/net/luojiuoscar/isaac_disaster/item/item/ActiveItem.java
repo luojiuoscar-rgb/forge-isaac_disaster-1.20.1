@@ -185,13 +185,14 @@ public class ActiveItem extends IsaacItem {
         }
 
         // effect
-        if (!level.isClientSide && player instanceof ServerPlayer serverPlayer) {
-            // record
-            serverPlayer.getCapability(PlayerItemUseRecordProvider.PLAYER_ITEM_USE_RECORD).ifPresent(
-                    playerItemUseRecord -> playerItemUseRecord.addActiveRecord(getItemId()));
-
+        if (!(player.getItemInHand(hand).getItem() instanceof IIgnoreRecord) &&
+        !level.isClientSide && player instanceof ServerPlayer serverPlayer) {
             ActiveItemManager.getInstance().getItemFromId(item.getItemId()).onUse(player, hand);
             ModMessages.sentToPlayer(new UseActiveItemS2CPacket(item.getItemId()), serverPlayer);
+
+            // 先触发后记录
+            serverPlayer.getCapability(PlayerItemUseRecordProvider.PLAYER_ITEM_USE_RECORD).ifPresent(
+                    playerItemUseRecord -> playerItemUseRecord.addActiveRecord(getItemId()));
         }
 
         return InteractionResultHolder.success(stack);

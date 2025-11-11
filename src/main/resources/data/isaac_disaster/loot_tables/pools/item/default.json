@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:empty",
+  "pools": [
+    {
+      "bonus_rolls": 0.0,
+      "entries": [
+        {
+          "type": "minecraft:tag",
+          "expand": true,
+          "name": "isaac_disaster:active_items"
+        },
+        {
+          "type": "minecraft:tag",
+          "expand": true,
+          "name": "isaac_disaster:passive_items"
+        }
+      ],
+      "rolls": 1.0
+    }
+  ],
+  "random_sequence": "isaac_disaster:pools/item/default"
+}

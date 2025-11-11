@@ -106,7 +106,13 @@ public class PickupManager {
                 new StrengthR(),
                 new TemperanceR(),
                 new TheMoon(),
-                new TheTowerR()
+                new TheTowerR(),
+                new QuestionCard(),
+                new WildCard(),
+                new PokersBack(),
+                new SpecialsBack(),
+                new TarotsBack(),
+                new ReverseTarotsBack()
         );
     }
 }

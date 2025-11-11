@@ -1,0 +1,18 @@
+{
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {"type": "minecraft:loot_table", "name": "isaac_disaster:pickups/random/coins", "weight": 30},
+        {"type": "minecraft:loot_table", "name": "isaac_disaster:pickups/random/hearts", "weight": 20},
+        {"type": "minecraft:loot_table", "name": "isaac_disaster:pickups/random/bombs", "weight": 20},
+        {"type": "minecraft:loot_table", "name": "isaac_disaster:pickups/random/keys", "weight": 15},
+        {"type": "minecraft:loot_table", "name": "isaac_disaster:pickups/random/cards", "weight": 7},
+        {"type": "minecraft:loot_table", "name": "isaac_disaster:pickups/random/pills", "weight": 7},
+        {"type": "minecraft:loot_table", "name": "isaac_disaster:pickups/random/sacks", "weight": 3},
+        {"type": "minecraft:loot_table", "name": "isaac_disaster:pickups/random/chests", "weight": 2}
+      ]
+    }
+  ]
+}
+

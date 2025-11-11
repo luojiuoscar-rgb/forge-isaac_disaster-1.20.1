@@ -4,6 +4,8 @@ import net.minecraft.resources.ResourceLocation;
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 
 public class LootTableManager {
+    public static final ResourceLocation RANDOM_PICKUPS =
+            ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "pickups/random/coins");
     // random drops
     public static final ResourceLocation RANDOM_COINS =
             ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "pickups/random/coins");
@@ -32,7 +34,7 @@ public class LootTableManager {
 
     // item pools
     public static final ResourceLocation DEFAULT_ITEM_POOL =
-            ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "pools/item/passive_items");
+            ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "pools/item/default");
     public static final ResourceLocation POOL_LOCKED_CHEST =
             ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "pools/item/locked_chest");
     public static final ResourceLocation POOL_RED_CHEST =
@@ -57,6 +59,23 @@ public class LootTableManager {
             ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "chests/isaac/old_chest");
     public static final ResourceLocation WOODEN_CHEST =
             ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "chests/isaac/wooden_chest");
+
+    // card backs
+    public static final ResourceLocation RANDOM_TAROTS =
+            ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "pickups/random/tarots");
+    public static final ResourceLocation RANDOM_TAROTS_R =
+            ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "pickups/random/tarots_r");
+    public static final ResourceLocation RANDOM_POKERS =
+            ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "pickups/random/pokers");
+    public static final ResourceLocation RANDOM_SPECIALS =
+            ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "pickups/random/special_cards");
+    public static final ResourceLocation RANDOM_CARD_BACKS =
+            ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "pickups/random/card_backs");
+
+
+    // items
+    public static final ResourceLocation CHAOS =
+            ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "pickups/chaos");
 
 
 

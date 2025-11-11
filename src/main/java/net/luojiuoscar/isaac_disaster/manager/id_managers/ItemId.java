@@ -103,7 +103,12 @@ public enum ItemId {
     THE_D6,
     GLITCHED_CROWN,
     BINGE_EATER,
-    ECHO_CHAMBER;
+    ECHO_CHAMBER,
+    CHAOS,
+    KAMIKAZE;
+
+
+
 
 
     private final int id;

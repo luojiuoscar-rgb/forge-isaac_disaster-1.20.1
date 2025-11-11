@@ -1,4 +1,4 @@
-package net.luojiuoscar.isaac_disaster.item;
+package net.luojiuoscar.isaac_disaster.item.registries;
 
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.item.pickup.GoldenPill;

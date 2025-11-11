@@ -57,6 +57,7 @@ public class ClientModEvents {
         event.registerBlockEntityRenderer(ModBlockEntities.ELITE_IDENTIFIER_BLOCK_ENTITY.get(), IdentifierRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.ANGEL_IDENTIFIER_BLOCK_ENTITY.get(), IdentifierRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.DEVIL_IDENTIFIER_BLOCK_ENTITY.get(), IdentifierRenderer::new);
+        event.registerBlockEntityRenderer(ModBlockEntities.PLANETARIUM_IDENTIFIER_BLOCK_ENTITY.get(), IdentifierRenderer::new);
 
     }
 
@@ -83,6 +84,7 @@ public class ClientModEvents {
         event.register(ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "block/devil_identifier"));
         event.register(ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "block/boss_identifier"));
         event.register(ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "block/elite_identifier"));
+        event.register(ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "block/planetarium_identifier"));
 
 
 

@@ -7,6 +7,7 @@ import net.luojiuoscar.isaac_disaster.item.block.IsaacChestBlockItem;
 import net.luojiuoscar.isaac_disaster.item.custom.ChestPlaceholder;
 import net.luojiuoscar.isaac_disaster.item.custom.DebugStick;
 import net.luojiuoscar.isaac_disaster.item.item.ActiveItem;
+import net.luojiuoscar.isaac_disaster.item.item.DisposableActiveItem;
 import net.luojiuoscar.isaac_disaster.item.item.PassiveItem;
 import net.luojiuoscar.isaac_disaster.item.item.Trinket;
 import net.luojiuoscar.isaac_disaster.item.item.custom.ExperimentalTreatmentItem;
@@ -23,8 +24,6 @@ import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
-
-import java.util.List;
 
 import static net.luojiuoscar.isaac_disaster.manager.ItemListManager.*;
 
@@ -156,7 +155,8 @@ public class ModItems {
     public static final RegistryObject<Item> MITRE              = registerPassiveItem("mitre", 2, ItemId.MITRE);
     public static final RegistryObject<Item> GLITCHED_CROWN     = registerPassiveItem("glitched_crown", 4, ItemId.GLITCHED_CROWN);
     public static final RegistryObject<Item> BINGE_EATER        = registerPassiveItem("binge_eater", 4, ItemId.BINGE_EATER);
-    public static final RegistryObject<Item> ECHO_CHAMBER        = registerPassiveItem("echo_chamber", 3, ItemId.ECHO_CHAMBER);
+    public static final RegistryObject<Item> ECHO_CHAMBER       = registerPassiveItem("echo_chamber", 3, ItemId.ECHO_CHAMBER);
+    public static final RegistryObject<Item> CHAOS              = registerPassiveItem("chaos", 3, ItemId.CHAOS);
 
 
 
@@ -183,6 +183,21 @@ public class ModItems {
         ItemId.registerItem(id.getId(), reg);
         return reg;
     }
+    private static RegistryObject<Item> registerDisposableActiveItem(int useCharge, int totalCharge, String name, int itemLevel, ItemId id,
+                                                           boolean hasSpecialEffect, boolean useOriginalColor) {
+        RegistryObject<Item> reg = ITEMS.register(name, () -> new DisposableActiveItem(
+                new Item.Properties(),
+                itemLevel,
+                id.getId(),
+                useCharge,
+                totalCharge,
+                hasSpecialEffect,
+                useOriginalColor
+        ));
+        ACTIVE_ITEM_LIST.add(reg);
+        ItemId.registerItem(id.getId(), reg);
+        return reg;
+    }
     public static final RegistryObject<Item> YUM_HEART             = registerActiveItem(8, 8, "yum_heart", 1, ItemId.YUM_HEART);
     public static final RegistryObject<Item> THE_BOOK_OF_BELIAL    = registerActiveItem(8, 8, "the_book_of_belial", 2, ItemId.THE_BOOK_OF_BELIAL, true);
     public static final RegistryObject<Item> BOOK_OF_SHADOW        = registerActiveItem(12, 12, "book_of_shadow", 3, ItemId.BOOK_OF_SHADOW, true);
@@ -196,13 +211,14 @@ public class ModItems {
     public static final RegistryObject<Item> UNICORN_STUMP         = registerActiveItem(12, 12, "unicorn_stump", 1, ItemId.UNICORN_STUMP, true);
     public static final RegistryObject<Item> MY_LITTLE_UNICORN     = registerActiveItem(12, 12, "my_little_unicorn", 1, ItemId.MY_LITTLE_UNICORN, true);
     public static final RegistryObject<Item> PLACEBO               = registerActiveItem(24, 24, "placebo", 1, ItemId.PLACEBO);
-    public static final RegistryObject<Item> DIPLOPIA              = registerActiveItem(0, 0, "diplopia", 4, ItemId.DIPLOPIA);
+    public static final RegistryObject<Item> DIPLOPIA              = registerDisposableActiveItem(0, 0, "diplopia", 4, ItemId.DIPLOPIA, false, false);
     public static final RegistryObject<Item> CROOKED_PENNY         = registerActiveItem(18, 18, "crooked_penny", 3, ItemId.CROOKED_PENNY);
     public static final RegistryObject<Item> DULL_RAZOR            = registerActiveItem(2, 2, "dull_razor", 2, ItemId.DULL_RAZOR);
     public static final RegistryObject<Item> TELEPATHY_FOR_DUMMIES = registerActiveItem(8, 8, "telepathy_for_dummies", 1, ItemId.TELEPATHY_FOR_DUMMIES, true);
     public static final RegistryObject<Item> ANARCHIST_COOKBOOK    = registerActiveItem(6, 6, "anarchist_cookbook", 1, ItemId.ANARCHIST_COOKBOOK, true);
     public static final RegistryObject<Item> SMELTER               = registerActiveItem(12, 12, "smelter", 2, ItemId.SMELTER);
     public static final RegistryObject<Item> THE_D6                = registerActiveItem(12, 12, "the_d6", 4, ItemId.THE_D6);
+    public static final RegistryObject<Item> KAMIKAZE              = registerActiveItem(0, 0, "kamikaze", 0, ItemId.KAMIKAZE);
 
 
 
@@ -478,6 +494,10 @@ public class ModItems {
             () -> new Card(new Item.Properties(), PickupId.QUEEN_OF_HEARTS.getId()));
     static { PICKUP_LIST.add(QUEEN_OF_HEARTS); }
 
+    public static final RegistryObject<Item> QUESTION_CARD = ITEMS.register("question_card",
+            () -> new Card(new Item.Properties(), PickupId.QUESTION_CARD.getId()));
+    static { PICKUP_LIST.add(QUESTION_CARD); }
+
     public static final RegistryObject<Item> HOLY_CARD = ITEMS.register("holy_card",
             () -> new Card(new Item.Properties(), PickupId.HOLY_CARD.getId()));
     static { PICKUP_LIST.add(HOLY_CARD); }
@@ -486,6 +506,24 @@ public class ModItems {
             () -> new Card(new Item.Properties(), PickupId.ANCIENT_RECALL.getId()));
     static { PICKUP_LIST.add(ANCIENT_RECALL); }
 
+    public static final RegistryObject<Item> WILD_CARD = ITEMS.register("wild_card",
+            () -> new WildCard(new Item.Properties(), PickupId.WILD_CARD.getId()));
+    static { PICKUP_LIST.add(WILD_CARD); }
+
+
+
+    public static final RegistryObject<Item> TAROTS_BACK = ITEMS.register("tarots_back",
+            () -> new Card(new Item.Properties(), PickupId.TAROTS_BACK.getId()));
+    static { PICKUP_LIST.add(TAROTS_BACK); }
+    public static final RegistryObject<Item> REVERSE_TAROTS_BACK = ITEMS.register("reverse_tarots_back",
+            () -> new Card(new Item.Properties(), PickupId.REVERSE_TAROTS_BACK.getId()));
+    static { PICKUP_LIST.add(REVERSE_TAROTS_BACK); }
+    public static final RegistryObject<Item> POKERS_BACK = ITEMS.register("pokers_back",
+            () -> new Card(new Item.Properties(), PickupId.POKERS_BACK.getId()));
+    static { PICKUP_LIST.add(POKERS_BACK); }
+    public static final RegistryObject<Item> SPECIALS_BACK = ITEMS.register("specials_back",
+            () -> new Card(new Item.Properties(), PickupId.SPECIALS_BACK.getId()));
+    static { PICKUP_LIST.add(SPECIALS_BACK); }
 
     // pickup end
     // misc
@@ -536,19 +574,20 @@ public class ModItems {
         return reg;
     }
 
-    public static final RegistryObject<Item> NORMAL_IDENTIFIER_ITEM = registerIdentifier("normal_identifier", ModBlocks.NORMAL_IDENTIFIER_BLOCK);
-    public static final RegistryObject<Item> TREASURE_IDENTIFIER_ITEM = registerIdentifier("treasure_identifier", ModBlocks.TREASURE_IDENTIFIER_BLOCK);
-    public static final RegistryObject<Item> SHOP_IDENTIFIER_ITEM = registerIdentifier("shop_identifier", ModBlocks.SHOP_IDENTIFIER_BLOCK);
-    public static final RegistryObject<Item> SECRET_IDENTIFIER_ITEM = registerIdentifier("secret_identifier", ModBlocks.SECRET_IDENTIFIER_BLOCK);
+    public static final RegistryObject<Item> NORMAL_IDENTIFIER_ITEM     = registerIdentifier("normal_identifier", ModBlocks.NORMAL_IDENTIFIER_BLOCK);
+    public static final RegistryObject<Item> TREASURE_IDENTIFIER_ITEM   = registerIdentifier("treasure_identifier", ModBlocks.TREASURE_IDENTIFIER_BLOCK);
+    public static final RegistryObject<Item> SHOP_IDENTIFIER_ITEM       = registerIdentifier("shop_identifier", ModBlocks.SHOP_IDENTIFIER_BLOCK);
+    public static final RegistryObject<Item> SECRET_IDENTIFIER_ITEM     = registerIdentifier("secret_identifier", ModBlocks.SECRET_IDENTIFIER_BLOCK);
     public static final RegistryObject<Item> SUPER_SECRET_IDENTIFIER_ITEM = registerIdentifier("super_secret_identifier", ModBlocks.SUPER_SECRET_IDENTIFIER_BLOCK);
     public static final RegistryObject<Item> ULTRA_SECRET_IDENTIFIER_ITEM = registerIdentifier("ultra_secret_identifier", ModBlocks.ULTRA_SECRET_IDENTIFIER_BLOCK);
-    public static final RegistryObject<Item> BOSS_IDENTIFIER_ITEM = registerIdentifier("boss_identifier", ModBlocks.BOSS_IDENTIFIER_BLOCK);
-    public static final RegistryObject<Item> ELITE_IDENTIFIER_ITEM = registerIdentifier("elite_identifier", ModBlocks.ELITE_IDENTIFIER_BLOCK);
-    public static final RegistryObject<Item> GAMBLE_IDENTIFIER_ITEM = registerIdentifier("gamble_identifier", ModBlocks.GAMBLE_IDENTIFIER_BLOCK);
-    public static final RegistryObject<Item> LIBRARY_IDENTIFIER_ITEM = registerIdentifier("library_identifier", ModBlocks.LIBRARY_IDENTIFIER_BLOCK);
-    public static final RegistryObject<Item> CURSE_IDENTIFIER_ITEM = registerIdentifier("curse_identifier", ModBlocks.CURSE_IDENTIFIER_BLOCK);
-    public static final RegistryObject<Item> ANGEL_IDENTIFIER_ITEM = registerIdentifier("angel_identifier", ModBlocks.ANGEL_IDENTIFIER_BLOCK);
-    public static final RegistryObject<Item> DEVIL_IDENTIFIER_ITEM = registerIdentifier("devil_identifier", ModBlocks.DEVIL_IDENTIFIER_BLOCK);
+    public static final RegistryObject<Item> BOSS_IDENTIFIER_ITEM       = registerIdentifier("boss_identifier", ModBlocks.BOSS_IDENTIFIER_BLOCK);
+    public static final RegistryObject<Item> ELITE_IDENTIFIER_ITEM      = registerIdentifier("elite_identifier", ModBlocks.ELITE_IDENTIFIER_BLOCK);
+    public static final RegistryObject<Item> GAMBLE_IDENTIFIER_ITEM     = registerIdentifier("gamble_identifier", ModBlocks.GAMBLE_IDENTIFIER_BLOCK);
+    public static final RegistryObject<Item> LIBRARY_IDENTIFIER_ITEM    = registerIdentifier("library_identifier", ModBlocks.LIBRARY_IDENTIFIER_BLOCK);
+    public static final RegistryObject<Item> CURSE_IDENTIFIER_ITEM      = registerIdentifier("curse_identifier", ModBlocks.CURSE_IDENTIFIER_BLOCK);
+    public static final RegistryObject<Item> ANGEL_IDENTIFIER_ITEM      = registerIdentifier("angel_identifier", ModBlocks.ANGEL_IDENTIFIER_BLOCK);
+    public static final RegistryObject<Item> DEVIL_IDENTIFIER_ITEM      = registerIdentifier("devil_identifier", ModBlocks.DEVIL_IDENTIFIER_BLOCK);
+    public static final RegistryObject<Item> PLANETARIUM_IDENTIFIER_ITEM = registerIdentifier("planetarium_identifier", ModBlocks.PLANETARIUM_IDENTIFIER_BLOCK);
 
     // misc end
 

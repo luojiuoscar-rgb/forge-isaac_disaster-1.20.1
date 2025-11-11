@@ -2,6 +2,7 @@ package net.luojiuoscar.isaac_disaster.item.pickup;
 
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerItemUseRecordProvider;
 import net.luojiuoscar.isaac_disaster.client.ClientDataManager;
+import net.luojiuoscar.isaac_disaster.item.item.IIgnoreRecord;
 import net.luojiuoscar.isaac_disaster.item.pickup.interfaces.IUsablePickup;
 import net.luojiuoscar.isaac_disaster.manager.id_managers.ItemId;
 import net.luojiuoscar.isaac_disaster.manager.item_managers.PickupManager;
@@ -39,9 +40,13 @@ public class Card extends Pickup implements IUsablePickup {
 
     @Override
     public InteractionResultHolder<ItemStack> use(@NotNull Level level, Player player, @NotNull InteractionHand hand){
-        player.getCapability(PlayerItemUseRecordProvider.PLAYER_ITEM_USE_RECORD).ifPresent(
-                playerItemUseRecord -> playerItemUseRecord.addCardRecord(getPickupId()));
+        super.use(level, player, hand);
 
-        return super.use(level, player, hand);
+        if (!(player.getItemInHand(hand).getItem() instanceof IIgnoreRecord)){
+            player.getCapability(PlayerItemUseRecordProvider.PLAYER_ITEM_USE_RECORD).ifPresent(
+                    playerItemUseRecord -> playerItemUseRecord.addCardRecord(getPickupId()));
+        }
+
+        return InteractionResultHolder.success(player.getItemInHand(hand));
     }
 }

@@ -1,12 +1,15 @@
-package net.luojiuoscar.isaac_disaster.loot.modifier;
+package net.luojiuoscar.isaac_disaster.loot.modifier.item;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import net.luojiuoscar.isaac_disaster.helper.LevelHelper;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.item.ModItems;
-import net.luojiuoscar.isaac_disaster.item.pickup.Heart;
-import net.luojiuoscar.isaac_disaster.manager.id_managers.TrinketId;
+import net.luojiuoscar.isaac_disaster.item.pickup.interfaces.ICommonPickup;
+import net.luojiuoscar.isaac_disaster.manager.LootTableManager;
+import net.luojiuoscar.isaac_disaster.manager.id_managers.ItemId;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.ItemStack;
@@ -17,12 +20,12 @@ import net.minecraftforge.common.loot.IGlobalLootModifier;
 import net.minecraftforge.common.loot.LootModifier;
 import org.jetbrains.annotations.NotNull;
 
-public class DaemonsTailLootModifier extends LootModifier {
+public class SackheadLootModifier extends LootModifier {
 
-    public static final Codec<DaemonsTailLootModifier> CODEC = RecordCodecBuilder.create(inst -> codecStart(inst)
-            .apply(inst, DaemonsTailLootModifier::new));
+    public static final Codec<SackheadLootModifier> CODEC = RecordCodecBuilder.create(inst -> codecStart(inst)
+            .apply(inst, SackheadLootModifier::new));
 
-    public DaemonsTailLootModifier(LootItemCondition[] conditionsIn) {
+    public SackheadLootModifier(LootItemCondition[] conditionsIn) {
         super(conditionsIn);
     }
 
@@ -30,44 +33,51 @@ public class DaemonsTailLootModifier extends LootModifier {
     protected @NotNull ObjectArrayList<ItemStack> doApply(ObjectArrayList<ItemStack> objectArrayList, LootContext lootContext) {
         if (objectArrayList.isEmpty()) return objectArrayList;
 
-        ServerPlayer player;
+        ServerPlayer player = null;
         if (lootContext.getParamOrNull(LootContextParams.THIS_ENTITY) instanceof ServerPlayer thisPlayer) {
             player = thisPlayer;
         } else if (lootContext.getParamOrNull(LootContextParams.KILLER_ENTITY) instanceof ServerPlayer killerPlayer) {
             player = killerPlayer;
-        } else {
-            player = null;
         }
-        if (player == null || !PlayerHelper.hasTrinket(TrinketId.DAEMONS_TAIL.getId(), player)) return objectArrayList;
+        if (player == null || PlayerHelper.getItemCount(ItemId.SACK_HEAD.getId(), player) == 0) return objectArrayList;
 
-        // based on type
-        double threshold = PlayerHelper.getValueFromTrinket(0.7, 0.35, TrinketId.DAEMONS_TAIL.getId(), player);
+
+        ResourceLocation tableId = lootContext.getQueriedLootTableId();
+
+        if (tableId == LootTableManager.BLACK_SACK || tableId == LootTableManager.GRAB_BAG){
+            return objectArrayList;
+        }
 
         RandomSource rand = lootContext.getRandom();
         ObjectArrayList<ItemStack> newList = new ObjectArrayList<>();
 
-        int blackHeartCount = 0;
+        int grabBagCount = 0;
         for (ItemStack stack : objectArrayList) {
-            if (stack.getItem() instanceof Heart){
+            if (stack.getItem() instanceof ICommonPickup || LevelHelper.isCoin(stack.getItem())){
                 int originalCount = stack.getCount();
+                int count = originalCount;
 
                 for (int j = 0; j < originalCount; j++) {
-                    if (rand.nextDouble() < threshold) {
-                        blackHeartCount++;
+                    if ((stack.getItem() instanceof ICommonPickup && rand.nextDouble() < 0.2) ||
+                            LevelHelper.isCoin(stack.getItem()) && rand.nextDouble() < 0.1) {
+
+                        grabBagCount++;
+                        count--;
                     }
                 }
-
-                if (blackHeartCount > 0){
-                    ItemStack blackHeart = new ItemStack(ModItems.BLACK_HEART.get());
-                    blackHeart.setCount(blackHeartCount);
-                    newList.add(blackHeart);
-                    blackHeartCount = 0;
+                stack.setCount(count);
+                if (count != 0){
+                    newList.add(stack);
                 }
-
+                if (grabBagCount > 0){
+                    ItemStack grabBag = new ItemStack(ModItems.GRAB_BAG.get());
+                    grabBag.setCount(grabBagCount);
+                    newList.add(grabBag);
+                    grabBagCount = 0;
+                }
             }else{
                 newList.add(stack);
             }
-
         }
 
 

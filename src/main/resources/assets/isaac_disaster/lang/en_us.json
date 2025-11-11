@@ -360,7 +360,11 @@
   "item.isaac_disaster.binge_eater.lore.4": "食物道具在首次获取时提供力量II",
   "item.isaac_disaster.echo_chamber": "回声室",
   "item.isaac_disaster.echo_chamber.lore.1": "触发上次使用的3个胶囊或卡牌的效果",
-
+  "item.isaac_disaster.chaos": "混沌",
+  "item.isaac_disaster.chaos.lore.1": "打乱你的道具池",
+  "item.isaac_disaster.chaos.lore.2": "生成1-6个随机掉落",
+  "item.isaac_disaster.kamikaze": "神风！",
+  "item.isaac_disaster.kamikaze.lore.1": "在自身位置引发一次爆炸",
 
   "items end": "",
 
@@ -448,7 +452,7 @@
   "item.isaac_disaster.the_tower.lore.1": "在周围生成6个炸弹",
   "item.isaac_disaster.the_tower.tarot_cloth.lore.1": "在周围生成12个炸弹",
   "item.isaac_disaster.the_stars": "XVII-星星",
-  "item.isaac_disaster.the_stars.lore.1": "传送到最近的宝箱房",
+  "item.isaac_disaster.the_stars.lore.1": "传送到最近的星象房或者宝箱房",
   "item.isaac_disaster.the_stars.tarot_cloth.lore.1": "额外生成一个可选的底座道具",
   "item.isaac_disaster.the_sun": "XIX-太阳",
   "item.isaac_disaster.the_sun.lore.1": "调整时间为正午",
@@ -502,7 +506,19 @@
   "item.isaac_disaster.the_moon.lore.1": "传送到最近的隐藏房",
   "item.isaac_disaster.the_tower_r": "XVI-塔？",
   "item.isaac_disaster.the_tower_r.lore.1": "在合适位置放置一个建筑",
+  "item.isaac_disaster.question_card": "？卡",
+  "item.isaac_disaster.question_card.lore.1": "使用一次另一只手上的主动道具的效果",
+  "item.isaac_disaster.wild_card": "万用牌",
+  "item.isaac_disaster.wild_card.lore.1": "触发上一次触发的物品效果",
 
+  "item.isaac_disaster.tarots_back": "塔罗牌卡背",
+  "item.isaac_disaster.tarots_back.lore.1": "抽取一张随机的塔罗牌",
+  "item.isaac_disaster.reverse_tarots_back": "逆位塔罗牌卡背",
+  "item.isaac_disaster.reverse_tarots_back.lore.1": "抽取一张随机的逆位塔罗牌",
+  "item.isaac_disaster.pokers_back": "扑克牌卡背",
+  "item.isaac_disaster.pokers_back.lore.1": "抽取一张扑克牌",
+  "item.isaac_disaster.specials_back": "特殊牌卡背",
+  "item.isaac_disaster.specials_back.lore.1": "抽取一张特殊卡牌",
 
   "pickups end": "",
 
@@ -557,7 +573,8 @@
   "block.isaac_disaster.angel_identifier.lore.1": "用于传送到天使房的行为将会定位到此方块",
   "block.isaac_disaster.devil_identifier": "恶魔房标识符",
   "block.isaac_disaster.devil_identifier.lore.1": "用于传送到恶魔房的行为将会定位到此方块",
-
+  "block.isaac_disaster.planetarium_identifier": "星象房标识符",
+  "block.isaac_disaster.planetarium_identifier.lore.1": "用于传送到星象房的行为将会定位到此方块",
 
   "pills": "",
   "pill.isaac_disaster.effect.unknown": "???",

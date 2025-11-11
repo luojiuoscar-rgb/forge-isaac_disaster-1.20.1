@@ -70,7 +70,8 @@ public class ActiveItemManager {
                 new TelepathyForDummies(),
                 new AnarchistCookbook(),
                 new Smelter(),
-                new TheD6()
+                new TheD6(),
+                new Kamikaze()
         );
     }
 }

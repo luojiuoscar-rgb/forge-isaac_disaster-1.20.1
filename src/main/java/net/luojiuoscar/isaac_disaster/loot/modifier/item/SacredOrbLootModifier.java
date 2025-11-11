@@ -1,4 +1,4 @@
-package net.luojiuoscar.isaac_disaster.loot.modifier;
+package net.luojiuoscar.isaac_disaster.loot.modifier.item;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;

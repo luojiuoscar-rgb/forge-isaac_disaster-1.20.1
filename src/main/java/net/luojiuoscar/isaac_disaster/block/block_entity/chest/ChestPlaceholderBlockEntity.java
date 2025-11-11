@@ -60,15 +60,17 @@ public class ChestPlaceholderBlockEntity extends ItemChestBlockEntity {
                 newState = ModBlocks.LOCKED_CHEST_BLOCK.get().defaultBlockState();
 
             }else{
-                int val = level.getRandom().nextInt(0, 10);
-                if (val < 7){
+                int val = level.getRandom().nextInt(0, 100);
+                if (val < 69){
                     newState = ModBlocks.NORMAL_CHEST_BLOCK.get().defaultBlockState();
-                }else if(val < 8){
+                }else if(val < 79){
                     newState = ModBlocks.LOCKED_CHEST_BLOCK.get().defaultBlockState();
-                }else if(val < 9){
+                }else if(val < 89){
                     newState = ModBlocks.BOMB_CHEST_BLOCK.get().defaultBlockState();
-                }else{
+                }else if(val < 99){
                     newState = ModBlocks.RED_CHEST_BLOCK.get().defaultBlockState();
+                }else{
+                    newState = ModBlocks.ETERNAL_CHEST_BLOCK.get().defaultBlockState();
                 }
             }
 

@@ -3,6 +3,7 @@ package net.luojiuoscar.isaac_disaster.item.pickup;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerItemUseRecordProvider;
 import net.luojiuoscar.isaac_disaster.client.ClientDataManager;
 import net.luojiuoscar.isaac_disaster.event.custom.PickupUseEvent;
+import net.luojiuoscar.isaac_disaster.item.item.IIgnoreRecord;
 import net.luojiuoscar.isaac_disaster.item.pickup.interfaces.ICommonPickup;
 import net.luojiuoscar.isaac_disaster.manager.id_managers.ItemId;
 import net.luojiuoscar.isaac_disaster.manager.item_managers.PillEffectManager;
@@ -49,7 +50,8 @@ public class Pill extends Item implements ICommonPickup {
             }
 
             // 如果没有有正确的药丸记录，则更新
-            if (!ClientDataManager.getInstance().isPillRecordCorrectly(pillId)){
+            if (!(stack.getItem() instanceof IIgnoreRecord) &&
+                    !ClientDataManager.getInstance().isPillRecordCorrectly(pillId)){
                 int effectId = PillEffectManager.getInstance().getEffectIdFromPill(pillId);
 
                 player.getCapability(PlayerItemUseRecordProvider.PLAYER_ITEM_USE_RECORD).ifPresent(

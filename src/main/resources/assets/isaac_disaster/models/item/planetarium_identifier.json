@@ -1,0 +1,6 @@
+{
+  "parent": "isaac_disaster:item/identifier",
+  "textures": {
+    "0": "isaac_disaster:block/planetarium_identifier"
+  }
+}

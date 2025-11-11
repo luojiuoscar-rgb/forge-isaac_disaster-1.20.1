@@ -90,7 +90,9 @@ public class ModBlocks {
     public static final RegistryObject<Block> DEVIL_IDENTIFIER_BLOCK = BLOCKS.register("devil_identifier",
             () -> new DevilIdentifierBlock(BlockBehaviour.Properties.copy(Blocks.STONE)
                     .noOcclusion().noCollission()));
-
+    public static final RegistryObject<Block> PLANETARIUM_IDENTIFIER_BLOCK = BLOCKS.register("planetarium_identifier",
+            () -> new PlanetariumIdentifierBlock(BlockBehaviour.Properties.copy(Blocks.STONE)
+                    .noOcclusion().noCollission()));
 
 
 }
