@@ -323,16 +323,16 @@ public enum StatManager {
                 playerAbility -> playerAbility.setControllable(playerAbility.getControllable() + amount)
         );
     }
-
-    public static void addBulletFilter(Player player, int amount){
+    /* ---------------------- 子弹类型与颜色 ---------------------- */
+    public static void addBulletType(Player player, int id, int count){
         player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY).ifPresent(
-                playerAbility -> playerAbility.addFilter(amount, player)
+                playerAbility -> playerAbility.addBulletType(id, count)
         );
-
     }
-    public static void removeBulletFilter(Player player, int amount){
+
+    public static void addBulletColor(Player player, int id, int count){
         player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY).ifPresent(
-                playerAbility -> playerAbility.removeFilter(amount, player)
+                playerAbility -> playerAbility.addBulletColor(id, count)
         );
     }
 

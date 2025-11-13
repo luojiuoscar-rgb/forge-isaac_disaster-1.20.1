@@ -5,17 +5,13 @@ import net.luojiuoscar.isaac_disaster.attribute.ModAttributes;
 import net.luojiuoscar.isaac_disaster.block.ModBlocks;
 import net.luojiuoscar.isaac_disaster.block.block_entity.PedestalBlockEntity;
 import net.luojiuoscar.isaac_disaster.capability.player.*;
-import net.luojiuoscar.isaac_disaster.client.ClientDataManager;
-import net.luojiuoscar.isaac_disaster.entity.custom.IsaacBullet;
 import net.luojiuoscar.isaac_disaster.entity.tnt.IsaacBomb;
 import net.luojiuoscar.isaac_disaster.item.ModItems;
 import net.luojiuoscar.isaac_disaster.item.item.ActiveItem;
-import net.luojiuoscar.isaac_disaster.manager.ColorManager;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.manager.data.BlockData;
-import net.luojiuoscar.isaac_disaster.manager.id_managers.ItemId;
-import net.luojiuoscar.isaac_disaster.manager.id_managers.SetId;
-import net.luojiuoscar.isaac_disaster.manager.id_managers.TrinketId;
+import net.luojiuoscar.isaac_disaster.manager.id.ItemId;
+import net.luojiuoscar.isaac_disaster.manager.id.TrinketId;
 import net.luojiuoscar.isaac_disaster.sound.ModSounds;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
@@ -31,7 +27,6 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
-import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -94,16 +89,14 @@ public class PlayerHelper {
         level.addFreshEntity(itemEntity);
     }
     public static boolean hasItem(int itemId, ServerPlayer player){
-        int[] count = {0};
-        player.getCapability(PlayerPassiveItemProvider.PLAYER_PASSIVE_ITEM)
-                .ifPresent(provider -> count[0] = provider.getItemCountFromAll(player, itemId));
-        return count[0] > 0;
+        return player.getCapability(PlayerPassiveItemProvider.PLAYER_PASSIVE_ITEM)
+                .map(p -> p.getItemCountFromAll(player, itemId) > 0)
+                .orElse(false);
     }
     public static int getItemCount(int itemId, ServerPlayer player){
-        int[] count = {0};
-        player.getCapability(PlayerPassiveItemProvider.PLAYER_PASSIVE_ITEM)
-                .ifPresent(provider -> count[0] = provider.getItemCountFromAll(player, itemId));
-        return count[0];
+        return player.getCapability(PlayerPassiveItemProvider.PLAYER_PASSIVE_ITEM)
+                .map(p -> p.getItemCountFromAll(player, itemId))
+                .orElse(0);
     }
     public static boolean hasTrinket(int itemId, ServerPlayer player){
         return hasTrinket(itemId, player, false);
@@ -121,12 +114,10 @@ public class PlayerHelper {
                 .orElse(false);
     }
     public static int getTrinketCount(int itemId, ServerPlayer player){
-        int[] count = {0};
-        player.getCapability(PlayerSwallowedTrinketsProvider.PLAYER_SWALLOWED_TRINKETS)
-                .ifPresent(playerSwallowedTrinkets ->
-                    count[0] = playerSwallowedTrinkets.getAllTrinketListFromId(player, itemId).size()
-                );
-        return count[0];
+        return player.getCapability(PlayerSwallowedTrinketsProvider.PLAYER_SWALLOWED_TRINKETS)
+                .map(p -> p.getAllTrinketListFromId(player, itemId).size())
+                .orElse(0);
+
     }
     public static double getValueFromTrinket(double normal, double enchanted, int itemId, ServerPlayer player){
         if (!hasTrinket(itemId, player)) return 0;
@@ -305,10 +296,9 @@ public class PlayerHelper {
 
 
     public static boolean hasSet(int itemId, ServerPlayer player){
-        int[] count = {0};
-        player.getCapability(PlayerPassiveItemProvider.PLAYER_PASSIVE_ITEM)
-                .ifPresent(provider -> count[0] = provider.getSetCountFromId(itemId));
-        return count[0] > 0;
+        return player.getCapability(PlayerPassiveItemProvider.PLAYER_PASSIVE_ITEM)
+                .map(p -> p.getSetCountFromId(itemId) > 3)
+                .orElse(false);
     }
 
 
@@ -409,141 +399,11 @@ public class PlayerHelper {
             }
         }
 
-        // 所有检查通过，位置安全
         return true;
     }
 
 
-
-    // 子弹相关
-    public static void shotBulletFromPlayer(Player player){
-        int count = getBulletCount(player);
-
-        // 发射子弹
-        if (count <= 1){
-            shotBullet(player);
-        }else if(count == 2){
-            shot2Bullet(player);
-        }else {
-            count = Math.min(count, 17); // 最大子弹数17
-            float angleInterval = Math.max(11 - count, 5) * 2; // 子弹之间的间隔角度
-            float curAngle = -angleInterval * (count - 1) / 2.0f;
-
-            for (int i = 0; i < count; i++){
-                shotBullet(player, player.getXRot(), player.getYRot() + curAngle);
-                curAngle += angleInterval; // 修改角度
-            }
-        }
-    }
-
-    private static IsaacBullet createBullet(Player player, Vec3 spawnPos, float xRot, float yRot) {
-        // 获取玩家当前体型缩放比
-        double width = player.getBbWidth();
-
-        // 子弹生成位置前移距离
-        double forwardOffset = 0.4 * (width / 0.6); // 正常玩家宽度约0.6
-
-        // 生成点 朝向偏移
-        Vec3 look = player.getLookAngle();
-        Vec3 adjustedPos = spawnPos.add(look.scale(forwardOffset));
-
-        // 创建子弹
-        return new IsaacBullet(
-                player.level(),
-                player,
-                getBulletLiftTime(player),
-                getBulletSpeed(player),
-                getBulletScale(player),
-                isSpectral(player),
-                isPiercing(player),
-                isHoming(player),
-                isControllable(player),
-                getDamage(player),
-                getBulletColor(player),
-                getBulletAlpha(player),
-                getBulletFilter(player),
-                xRot,
-                yRot,
-                adjustedPos
-        );
-    }
-    public static void shotBullet(Player player) {
-        shotBullet(player, player.getXRot(), player.getYRot());
-    }
-    public static void shotBullet(Player player, float xRot, float yRot) {
-        Vec3 eyePos = player.getEyePosition().add(0, player.getBbHeight() * -0.15, 0);
-        IsaacBullet bullet = createBullet(player, eyePos, xRot, yRot);
-        player.level().addFreshEntity(bullet);
-    }
-    public static void shot2Bullet(Player player) {
-        if (player.level().isClientSide()) return;
-
-        Vec3 look = player.getLookAngle();
-        Vec3 right = look.cross(new Vec3(0, 1, 0)).normalize();
-        Vec3 eyePos = player.getEyePosition().add(0, player.getBbHeight() * -0.15, 0);
-
-        IsaacBullet bullet1 = createBullet(player, eyePos.add(right.scale(0.25)), player.getXRot(), player.getYRot());
-        IsaacBullet bullet2 = createBullet(player, eyePos.add(right.scale(-0.25)), player.getXRot(), player.getYRot());
-
-        player.level().addFreshEntity(bullet1);
-        player.level().addFreshEntity(bullet2);
-    }
-
-
-    public static boolean isSpectral(Player player){
-        int[] count = {0};
-        player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY).ifPresent(
-                PlayerAbility -> count[0] = (PlayerAbility.getSpectral())
-        );
-        return count[0] > 0;
-    }
-    public static boolean isHoming(Player player){
-        int[] count = {0};
-        player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY).ifPresent(
-                PlayerAbility -> count[0] = (PlayerAbility.getHoming())
-        );
-        return count[0] > 0;
-    }
-    public static boolean isPiercing(Player player){
-        int[] count = {0};
-        player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY).ifPresent(
-                PlayerAbility -> count[0] = (PlayerAbility.getPiercing())
-        );
-        return count[0] > 0;
-    }
-    public static boolean isControllable(Player player){
-        int[] count = {0};
-        player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY).ifPresent(
-                PlayerAbility -> count[0] = (PlayerAbility.getControllable())
-        );
-        return count[0] > 0;
-    }
-    public static int getBulletColor(Player player){
-        return ColorManager.COLOR_BASE;
-    }
-    public static float getBulletAlpha(Player player){
-        return 1.0f;
-    }
-    public static int getBulletFilter(Player player){
-        int[] color = {0};
-        player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY).ifPresent(
-                playerAbility -> color[0] = playerAbility.getFilters().getOrDefault(-1, ColorManager.FILTER_BASE)
-        );
-
-        return color[0];
-    }
-
     // 基础
-    public static double getBulletSpeed(Player player) {
-        AttributeInstance instance = player.getAttribute(ModAttributes.BULLET_SPEED.get());
-        if (instance == null) return 1.0;
-        return Math.max(instance.getValue(),0.1);
-    }
-    public static double getBulletRange(Player player) {
-        AttributeInstance instance = player.getAttribute(ModAttributes.BULLET_RANGE.get());
-        if (instance == null) return 18.0;
-        return  Math.min(Math.max(instance.getValue(), 4), 99);
-    }
     public static double getTears(Player player) {
         AttributeInstance instance = player.getAttribute(ModAttributes.TEARS.get());
         if (instance == null) return 0.0;
@@ -567,15 +427,6 @@ public class PlayerHelper {
         if (extraBulletScale != null) extraScale = (float) extraBulletScale.getValue();
         return extraScale;
     }
-    public static float getBulletScale(Player player){
-        // 基于子弹伤害的体型因素
-        AttributeInstance instance = player.getAttribute(Attributes.ATTACK_DAMAGE);
-        double damage = 1.0;
-        if (instance != null) {
-            damage = instance.getValue();
-        };
-        return getBulletScale(Math.max(damage, 0), getExtraBulletScale(player));
-    }
     public static float getBulletScale(double damage, float extraScale) {
         float scale = 1.0f;
 
@@ -587,54 +438,9 @@ public class PlayerHelper {
 
         return scale + extraScale;
     }
-    public static int getBulletCount(Player player){
-        RandomSource random = player.getRandom();
-
-        AttributeInstance bullet_count = player.getAttribute(ModAttributes.BULLET_COUNT.get());
-        if (bullet_count == null) return 1;
-        // 获取子弹数量计数
-        int[] count = {0};
-        count[0] = (int) bullet_count.getValue();
-
-        // theInnerEye & mutantSpider & perfectVision
-        player.getCapability(PlayerPassiveItemProvider.PLAYER_PASSIVE_ITEM).ifPresent(
-                playerPassiveItem -> {
-                    int theInnerEye = playerPassiveItem.getItemCountFromAll(player, ItemId.THE_INNER_EYE.getId());
-                    int mutantSpider = playerPassiveItem.getItemCountFromAll(player, ItemId.MUTANT_SPIDER.getId());
-                    int perfectVision = playerPassiveItem.getItemCountFromAll(player, ItemId.PERFECT_VISION.getId());
-
-                    if (perfectVision >= 1){
-                        if (theInnerEye + mutantSpider == 0){
-                            count[0] += 1; // 只有c -> 子弹+1
-                        }else{
-                            count[0] += perfectVision - 1; // 子弹+ c-1
-                        }
-                    }
-
-                    if (theInnerEye + mutantSpider > 0){
-                        count[0] += theInnerEye + 2*mutantSpider + 1;
-                    }
-                }
-        );
-
-        // 书虫套装（25%概率额外子弹）
-        if (ClientDataManager.getInstance().getSetCountFromId(SetId.BOOK.getId()) >= 3 &&
-                random.nextDouble() < 0.25){
-            count[0] += 1;
-        }
-
-
-        return count[0];
-    }
 
 
     // 衍生
-    public static int getBulletLiftTime(Player player) {
-        double speed = getBulletSpeed(player);
-        double range = getBulletRange(player);
-        // 计算所需 ticks
-        return (int) Math.min(Math.max(1, range / speed), 200);
-    }
     public static double getShotDelay(Player player) {
         double tears = getTears(player);
         double delay;
@@ -676,11 +482,6 @@ public class PlayerHelper {
     }
 
     // 属性
-    public static float getDamage(Player player){
-        AttributeInstance instance = player.getAttribute(Attributes.ATTACK_DAMAGE);
-        if (instance != null) return (float) instance.getValue();
-        return 0.0f;
-    }
     public static int getPillQuality(Player player){
         AttributeInstance instance = player.getAttribute(ModAttributes.PILL_QUALITY.get());
         if (instance == null) return 0;

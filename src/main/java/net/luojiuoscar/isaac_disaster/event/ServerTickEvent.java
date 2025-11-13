@@ -13,7 +13,8 @@ import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.helper.ScheduledFuncHelper;
 import net.luojiuoscar.isaac_disaster.item.item.ActiveItem;
 import net.luojiuoscar.isaac_disaster.item.pickup.IsaacHead;
-import net.luojiuoscar.isaac_disaster.manager.id_managers.ItemId;
+import net.luojiuoscar.isaac_disaster.manager.attack.AttackManager;
+import net.luojiuoscar.isaac_disaster.manager.id.ItemId;
 import net.luojiuoscar.isaac_disaster.sound.ModSounds;
 import net.minecraft.client.Minecraft;
 import net.minecraft.server.MinecraftServer;
@@ -58,7 +59,7 @@ public class ServerTickEvent {
         // 每tickCounter执行一次
         if (tickCounter % ServerTickEvent.TICK_FREQUENCY == 0){
             for (ServerPlayer player : server.getPlayerList().getPlayers()){
-                // main
+
                 chargeActiveItem(player);
                 updateFly(player);
                 bugsFix(player);
@@ -66,6 +67,15 @@ public class ServerTickEvent {
                 onPlayerSprint(player);
             }
         }
+
+        // 每秒一次
+        if (tickCounter % 20 == 0){
+            for (ServerPlayer player : server.getPlayerList().getPlayers()){
+
+                updatePlayerCache(player);
+            }
+        }
+
 
         // 每tick执行一次
         for (ServerPlayer player : server.getPlayerList().getPlayers()){
@@ -170,13 +180,11 @@ public class ServerTickEvent {
 
 
     private static void holdRightClick(ServerPlayer player, ItemStack stack){
-        // 若在冷却
-        if (player.getCooldowns().isOnCooldown(stack.getItem())) return;
-        // 若有无泪症
-        if (player.hasEffect(ModEffects.LACRIMAL_HYPOSECRETION.get())) return;
+        // 若在冷却 or 有无泪症
+        if (player.getCooldowns().isOnCooldown(stack.getItem()) ||
+                player.hasEffect(ModEffects.LACRIMAL_HYPOSECRETION.get())) return;
 
-        // 发射子弹
-        PlayerHelper.shotBulletFromPlayer(player);
+        AttackManager.getInstance().playerPerformAttack(player);
 
         // 射击延迟
         player.getCooldowns().addCooldown(stack.getItem(), (int) PlayerHelper.getShotDelay(player));
@@ -189,6 +197,16 @@ public class ServerTickEvent {
                 SoundSource.PLAYERS,
                 0.6f,
                 1.0f
+        );
+    }
+
+
+    private static void updatePlayerCache(ServerPlayer player){
+        player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY).ifPresent(
+                playerAbility -> {
+                    playerAbility.updateBestBulletColor();
+                    playerAbility.updateBestBulletType();
+                }
         );
     }
 

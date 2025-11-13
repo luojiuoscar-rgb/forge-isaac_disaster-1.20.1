@@ -19,24 +19,24 @@ public class ModEvents {
         event.getTypes().forEach(type -> {
             if (Mob.class.isAssignableFrom(type.getBaseClass()) || type == EntityType.PLAYER) {
                 event.add(type, ModAttributes.SCALE.get());
+                event.add(EntityType.PLAYER, ModAttributes.BULLET_SPEED.get());
+                event.add(EntityType.PLAYER, ModAttributes.BULLET_RANGE.get());
+                event.add(EntityType.PLAYER, ModAttributes.BULLET_SCALE.get());
+            }
+
+            // 给玩家追加的属性
+            if (type == EntityType.PLAYER) {
+                event.add(EntityType.PLAYER, ModAttributes.TEARS.get());
+                event.add(EntityType.PLAYER, ModAttributes.TEARS_CORRECTION.get());
+                event.add(EntityType.PLAYER, ModAttributes.BLOCK_BREAKING_SPEED.get());
+                event.add(EntityType.PLAYER, ModAttributes.BULLET_COUNT.get());
+                event.add(EntityType.PLAYER, ModAttributes.COLLISION_DAMAGE.get());
+                event.add(EntityType.PLAYER, ModAttributes.FLY_TIME.get());
+                event.add(EntityType.PLAYER, ModAttributes.PILL_QUALITY.get());
+                event.add(EntityType.PLAYER, ModAttributes.DEVIL_CHANCE.get());
+                event.add(EntityType.PLAYER, ModAttributes.ANGEL_CHANCE.get());
+                event.add(EntityType.PLAYER, ModAttributes.PLANETARIUM_CHANCE.get());
             }
         });
-
-        // 给玩家追加的属性
-        if (!event.has(EntityType.PLAYER, ModAttributes.BULLET_SPEED.get())) {
-            event.add(EntityType.PLAYER, ModAttributes.BULLET_SPEED.get());
-            event.add(EntityType.PLAYER, ModAttributes.BULLET_RANGE.get());
-            event.add(EntityType.PLAYER, ModAttributes.TEARS.get());
-            event.add(EntityType.PLAYER, ModAttributes.TEARS_CORRECTION.get());
-            event.add(EntityType.PLAYER, ModAttributes.BLOCK_BREAKING_SPEED.get());
-            event.add(EntityType.PLAYER, ModAttributes.BULLET_SCALE.get());
-            event.add(EntityType.PLAYER, ModAttributes.BULLET_COUNT.get());
-            event.add(EntityType.PLAYER, ModAttributes.COLLISION_DAMAGE.get());
-            event.add(EntityType.PLAYER, ModAttributes.FLY_TIME.get());
-            event.add(EntityType.PLAYER, ModAttributes.PILL_QUALITY.get());
-            event.add(EntityType.PLAYER, ModAttributes.DEVIL_CHANCE.get());
-            event.add(EntityType.PLAYER, ModAttributes.ANGEL_CHANCE.get());
-            event.add(EntityType.PLAYER, ModAttributes.PLANETARIUM_CHANCE.get());
-        }
     }
 }

@@ -359,12 +359,14 @@
   "item.isaac_disaster.binge_eater.lore.3": "都会给予额外加成，降低移速",
   "item.isaac_disaster.binge_eater.lore.4": "食物道具在首次获取时提供力量II",
   "item.isaac_disaster.echo_chamber": "回声室",
-  "item.isaac_disaster.echo_chamber.lore.1": "触发上次使用的3个胶囊或卡牌的效果",
+  "item.isaac_disaster.echo_chamber.lore.1": "使用卡牌或者胶囊时",
+  "item.isaac_disaster.echo_chamber.lore.2": "触发上次使用的3个胶囊或卡牌的效果",
   "item.isaac_disaster.chaos": "混沌",
   "item.isaac_disaster.chaos.lore.1": "打乱你的道具池",
   "item.isaac_disaster.chaos.lore.2": "生成1-6个随机掉落",
   "item.isaac_disaster.kamikaze": "神风！",
   "item.isaac_disaster.kamikaze.lore.1": "在自身位置引发一次爆炸",
+  "item.isaac_disaster.tooth_picks": "牙签",
 
   "items end": "",
 
@@ -526,7 +528,6 @@
   "misc": "",
   "item.isaac_disaster.debug_stick": "调试棒",
   "message.isaac_disaster.debug_stick.clear": "§e已清空调试棒数据",
-  "item.isaac_disaster.lock": "锁",
 
   "block.isaac_disaster.pedestal": "底座",
   "block.isaac_disaster.message.locked": "需要用钥匙解锁",

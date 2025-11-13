@@ -3,7 +3,7 @@ package net.luojiuoscar.isaac_disaster.item_ability.passive_item.items;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerItemUseRecord;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerItemUseRecordProvider;
 import net.luojiuoscar.isaac_disaster.item_ability.passive_item.IPassiveItem;
-import net.luojiuoscar.isaac_disaster.manager.id_managers.ItemId;
+import net.luojiuoscar.isaac_disaster.manager.id.ItemId;
 import net.luojiuoscar.isaac_disaster.manager.item_managers.PickupManager;
 import net.luojiuoscar.isaac_disaster.manager.item_managers.PillEffectManager;
 import net.minecraft.network.chat.Component;
@@ -35,7 +35,8 @@ public class EchoChamber implements IPassiveItem {
     @Override
     public List<Component> getDescription() {
         return List.of(
-                Component.translatable("item.isaac_disaster.echo_chamber.lore.1")
+                Component.translatable("item.isaac_disaster.echo_chamber.lore.1"),
+                Component.translatable("item.isaac_disaster.echo_chamber.lore.2")
         );
     }
 

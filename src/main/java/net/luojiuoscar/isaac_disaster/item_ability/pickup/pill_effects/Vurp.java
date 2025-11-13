@@ -4,7 +4,7 @@ import net.luojiuoscar.isaac_disaster.capability.player.PlayerItemUseRecordProvi
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.item.registries.PillRegistry;
 import net.luojiuoscar.isaac_disaster.item_ability.pickup.IPillEffect;
-import net.luojiuoscar.isaac_disaster.manager.id_managers.PillEffectId;
+import net.luojiuoscar.isaac_disaster.manager.id.PillEffectId;
 import net.luojiuoscar.isaac_disaster.sound.ModSounds;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;

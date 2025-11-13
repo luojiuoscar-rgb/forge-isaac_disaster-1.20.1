@@ -1,12 +1,11 @@
 package net.luojiuoscar.isaac_disaster.capability.player;
 
-import net.luojiuoscar.isaac_disaster.helper.ColorHelper;
-import net.luojiuoscar.isaac_disaster.manager.ColorManager;
+import net.luojiuoscar.isaac_disaster.manager.attack.AttackTypeId;
+import net.luojiuoscar.isaac_disaster.manager.id.BulletColorId;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.player.Player;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -20,13 +19,18 @@ public class PlayerAbility {
     private int spectral;
     private int controllable;
 
-    private Map<Integer, Integer> bulletFilters;
-    private Map<Integer, Boolean> itemFlags;
     private int extraTrinketSlotCounts;
 
+    private Map<Integer, Boolean> itemFlags;
+    private Map<Integer, Integer> bulletType;
+    private int bestBulletType;
+    private Map<Integer, Integer> bulletColor; // bullet color id : count
+    private int bestBulletColor;
+
     public PlayerAbility() {
-        bulletFilters = new HashMap<>();
         itemFlags = new HashMap<>();
+        bulletType = new HashMap<>();
+        bulletColor = new HashMap<>();
         init();
     }
 
@@ -38,13 +42,12 @@ public class PlayerAbility {
         controllable = 0;
         extraTrinketSlotCounts = 0;
 
-        bulletFilters.clear();
-        bulletFilters.put(-1, ColorManager.FILTER_BASE);
-
         itemFlags.clear();
+        bulletType.clear();
+        bulletColor.clear();
     }
 
-    public void copyFrom(PlayerAbility source, Player player) {
+    public void copyFrom(PlayerAbility source) {
         this.holdRightClick = source.holdRightClick;
         this.piercing = source.piercing;
         this.homing = source.homing;
@@ -52,8 +55,9 @@ public class PlayerAbility {
         this.controllable = source.controllable;
         this.extraTrinketSlotCounts = source.extraTrinketSlotCounts;
 
-        this.bulletFilters = new HashMap<>(source.bulletFilters);
         this.itemFlags = new HashMap<>(source.itemFlags);
+        this.bulletType = new HashMap<>(source.bulletType);
+        this.bulletColor = new HashMap<>(source.bulletColor);
     }
 
     public void saveNBTData(CompoundTag nbt) {
@@ -64,15 +68,6 @@ public class PlayerAbility {
         nbt.putInt("controllable", controllable);
         nbt.putInt("trinket_slot_counts", extraTrinketSlotCounts);
 
-        ListTag filterList = new ListTag();
-        for (Map.Entry<Integer, Integer> entry : bulletFilters.entrySet()) {
-            CompoundTag tag = new CompoundTag();
-            tag.putInt("color", entry.getKey());
-            tag.putInt("count", entry.getValue());
-            filterList.add(tag);
-        }
-        nbt.put("bullet_filters", filterList);
-
         ListTag itemFlagList = new ListTag();
         for (Map.Entry<Integer, Boolean> entry : itemFlags.entrySet()) {
             CompoundTag tag = new CompoundTag();
@@ -81,6 +76,26 @@ public class PlayerAbility {
             itemFlagList.add(tag);
         }
         nbt.put("item_flags", itemFlagList);
+
+        ListTag bulletTypeList = new ListTag();
+        for (Map.Entry<Integer, Integer> entry : bulletType.entrySet()) {
+            CompoundTag tag = new CompoundTag();
+            tag.putInt("bullet_type_id", entry.getKey());
+            tag.putInt("count", entry.getValue());
+            bulletTypeList.add(tag);
+        }
+        nbt.put("bullet_types", bulletTypeList);
+
+        ListTag bulletColorList = new ListTag();
+        for (Map.Entry<Integer, Integer> entry : bulletColor.entrySet()) {
+            CompoundTag tag = new CompoundTag();
+            tag.putInt("bullet_color_id", entry.getKey());
+            tag.putInt("count", entry.getValue());
+            bulletColorList.add(tag);
+        }
+        nbt.put("bullet_colors", bulletColorList);
+
+
     }
 
     public void loadNBTData(CompoundTag nbt) {
@@ -91,17 +106,6 @@ public class PlayerAbility {
         this.controllable = nbt.getInt("controllable");
         this.extraTrinketSlotCounts = nbt.getInt("trinket_slot_counts");
 
-        bulletFilters.clear();
-        if (nbt.contains("bullet_filters", Tag.TAG_LIST)) {
-            ListTag list = nbt.getList("bullet_filters", Tag.TAG_COMPOUND);
-            for (Tag t : list) {
-                CompoundTag tag = (CompoundTag) t;
-                int color = tag.getInt("color");
-                int count = tag.getInt("count");
-                bulletFilters.put(color, count);
-            }
-        }
-
         itemFlags.clear();
         if (nbt.contains("item_flags", Tag.TAG_LIST)) {
             ListTag list = nbt.getList("item_flags", Tag.TAG_COMPOUND);
@@ -110,6 +114,28 @@ public class PlayerAbility {
                 int itemId = tag.getInt("item_id");
                 boolean flag = tag.getBoolean("flag");
                 itemFlags.put(itemId, flag);
+            }
+        }
+
+        bulletType.clear();
+        if (nbt.contains("bullet_types", Tag.TAG_LIST)) {
+            ListTag list = nbt.getList("bullet_types", Tag.TAG_COMPOUND);
+            for (Tag t : list) {
+                CompoundTag tag = (CompoundTag) t;
+                int color = tag.getInt("bullet_type_id");
+                int count = tag.getInt("count");
+                bulletType.put(color, count);
+            }
+        }
+
+        bulletColor.clear();
+        if (nbt.contains("bullet_colors", Tag.TAG_LIST)) {
+            ListTag list = nbt.getList("bullet_colors", Tag.TAG_COMPOUND);
+            for (Tag t : list) {
+                CompoundTag tag = (CompoundTag) t;
+                int color = tag.getInt("bullet_color_id");
+                int count = tag.getInt("count");
+                bulletColor.put(color, count);
             }
         }
     }
@@ -154,33 +180,6 @@ public class PlayerAbility {
         controllable = amount;
     }
 
-    public void addFilter(int color, Player player) {
-        bulletFilters.put(color, bulletFilters.getOrDefault(color, 0));
-        resetFilter(player);
-    }
-
-    public void removeFilter(int color, Player player) {
-        bulletFilters.remove(color, 1);
-        if (bulletFilters.getOrDefault(color, 0) == 0) {
-            bulletFilters.remove(color);
-        }
-        resetFilter(player);
-    }
-
-    public void clearFilters() {
-        bulletFilters.clear();
-        bulletFilters.put(-1, ColorManager.FILTER_BASE);
-    }
-
-    public Map<Integer, Integer> getFilters() {
-        return Collections.unmodifiableMap(bulletFilters);
-    }
-
-    public void resetFilter(Player player) {
-        bulletFilters.put(-1, ColorHelper.blendFilters(ColorManager.FILTER_BASE,
-                bulletFilters.keySet().stream().toList()));
-    }
-
     public Map<Integer, Boolean> getItemFlags() {
         return Collections.unmodifiableMap(itemFlags);
     }
@@ -196,4 +195,68 @@ public class PlayerAbility {
     public void setExtraTrinketSlotCounts(int amount) {
         this.extraTrinketSlotCounts = amount;
     }
+
+    public Map<Integer, Integer> getBulletTypeMap() {
+        return new HashMap<>(bulletType);
+    }
+
+    public void addBulletType(int id, int count) {
+        int r = bulletType.getOrDefault(id, 0) + count;
+        if (r <= 0) {
+            bulletType.remove(id);
+            return;
+        }
+        bulletType.put(id, r);
+    }
+
+    public void updateBestBulletType(){
+        int bestId = AttackTypeId.BULLET.getId();
+        int bestPriority = AttackTypeId.getPriorityById(bestId);
+
+        for (int id : bulletType.keySet()) {
+            int priority = AttackTypeId.getPriorityById(id);
+            if (priority > bestPriority) {
+                bestPriority = priority;
+                bestId = id;
+            }
+        }
+        this.bestBulletType = bestId;
+    }
+
+    public int getBestBulletType(){
+        return bestBulletType;
+    }
+
+    public Map<Integer, Integer> getBulletColor(){
+        return new HashMap<>(bulletColor);
+    }
+
+    public void updateBestBulletColor(){
+        // 每一段时间更新
+        int bestId = BulletColorId.BASE.getId();
+        int bestPriority = BulletColorId.getPriorityById(bestId);
+
+        for (int id : bulletColor.keySet()) {
+            int priority = BulletColorId.getPriorityById(id);
+            if (priority > bestPriority) {
+                bestPriority = priority;
+                bestId = id;
+            }
+        }
+        this.bestBulletColor = bestId;
+    }
+
+    public int getBestBulletColorId(){
+        return bestBulletColor;
+    }
+
+    public void addBulletColor(int id, int count){
+        int r = bulletColor.getOrDefault(id, 0) + count;
+        if (r <= 0) {
+            bulletColor.remove(id);
+            return;
+        }
+        bulletColor.put(id, r);
+    }
+
 }

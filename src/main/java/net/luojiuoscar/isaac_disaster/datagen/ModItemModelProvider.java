@@ -34,5 +34,6 @@ public class ModItemModelProvider extends ItemModelProvider {
         ItemListManager.ACTIVE_ITEM_LIST.forEach(r -> registerIfNotSkipped.accept(r.get()));
         ItemListManager.TRINKET_LIST.forEach(r -> registerIfNotSkipped.accept(r.get()));
         ItemListManager.PICKUP_LIST.forEach(r -> registerIfNotSkipped.accept(r.get()));
+        ItemListManager.GENERIC_LIST.forEach(r -> registerIfNotSkipped.accept(r.get()));
     }
 }

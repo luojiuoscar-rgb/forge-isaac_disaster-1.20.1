@@ -2,7 +2,7 @@ package net.luojiuoscar.isaac_disaster.item_ability.passive_item;
 
 import net.luojiuoscar.isaac_disaster.item.item.IsaacItem;
 import net.luojiuoscar.isaac_disaster.item.item.PassiveItem;
-import net.luojiuoscar.isaac_disaster.manager.id_managers.ItemId;
+import net.luojiuoscar.isaac_disaster.manager.id.ItemId;
 import net.luojiuoscar.isaac_disaster.networking.ModMessages;
 import net.luojiuoscar.isaac_disaster.networking.packet.PassiveItemModifyCountSyncS2CPacket;
 import net.luojiuoscar.isaac_disaster.sound.ModSounds;

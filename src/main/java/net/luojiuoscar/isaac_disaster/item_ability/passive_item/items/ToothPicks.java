@@ -1,0 +1,72 @@
+package net.luojiuoscar.isaac_disaster.item_ability.passive_item.items;
+
+import net.luojiuoscar.isaac_disaster.client.ClientDataManager;
+import net.luojiuoscar.isaac_disaster.item_ability.passive_item.IPassiveItem;
+import net.luojiuoscar.isaac_disaster.manager.ColorManager;
+import net.luojiuoscar.isaac_disaster.manager.StatManager;
+import net.luojiuoscar.isaac_disaster.manager.id.BulletColorId;
+import net.luojiuoscar.isaac_disaster.manager.id.ItemId;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.Style;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class ToothPicks implements IPassiveItem {
+
+    @Override
+    public int getItemId() {
+        return ItemId.TOOTH_PICKS.getId();
+    }
+
+    @Override
+    public void handleFirstObtain(Player player, @Nullable ItemStack stack) {
+    }
+
+    @Override
+    public void handleObtain(Player player, @Nullable ItemStack stack) {
+        StatManager.TEARS.apply(player, 1);
+        StatManager.BULLET_SPEED.apply(player, 0.8);
+        StatManager.ATTACK_SPEED.apply(player, 1);
+        StatManager.ATTACK_KNOCKBACK.apply(player, 0.5);
+        StatManager.addBulletColor(player, BulletColorId.BLOOD_TEAR.getId(), 1);
+    }
+
+    @Override
+    public void handleRemove(Player player, @Nullable ItemStack stack) {
+        StatManager.TEARS.apply(player, -1);
+        StatManager.BULLET_SPEED.apply(player, -0.8);
+        StatManager.ATTACK_SPEED.apply(player, -1);
+        StatManager.ATTACK_KNOCKBACK.apply(player, -0.5);
+        StatManager.addBulletColor(player, BulletColorId.BLOOD_TEAR.getId(), -1);
+    }
+
+    @Override
+    public List<Component> getDescription() {
+        return List.of(
+                StatManager.TEARS.description(1),
+                StatManager.BULLET_SPEED.description(-0.8),
+                StatManager.ATTACK_SPEED.description(1),
+                StatManager.ATTACK_KNOCKBACK.description(0.5)
+        );
+    }
+
+
+    @Override
+    public List<Component> getSynergyDescription() {
+        List<Component> description = new ArrayList<>();
+
+        if (ClientDataManager.getInstance().getCountFromId(ItemId.BINGE_EATER.getId()) > 0){
+            description.add(Component.translatable("item.isaac_disaster.binge_eater").append(": ").withStyle(style -> style.withColor(ColorManager.SYNERGY))
+                    .append(StatManager.BULLET_SPEED.description(1, Style.EMPTY.withColor(ColorManager.SYNERGY))));
+            description.add(StatManager.TEARS.description(0.7, Style.EMPTY.withColor(ColorManager.SYNERGY)));
+            description.add(StatManager.MOVEMENT_SPEED.description(-0.15, Style.EMPTY.withColor(ColorManager.SYNERGY)));
+
+        }
+
+        return description;
+    }
+}

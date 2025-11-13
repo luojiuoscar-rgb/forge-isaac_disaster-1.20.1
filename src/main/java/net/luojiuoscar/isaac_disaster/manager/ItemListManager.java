@@ -14,7 +14,7 @@ public class ItemListManager {
     public static final List<RegistryObject<Item>> TRINKET_LIST = new ArrayList<>();
     public static final List<RegistryObject<Item>> MISC_LIST = new ArrayList<>();
 
-
+    public static final List<RegistryObject<Item>> GENERIC_LIST = new ArrayList<>();
 
 
 }

@@ -3,7 +3,7 @@ package net.luojiuoscar.isaac_disaster.item_ability.pickup.cards;
 import net.luojiuoscar.isaac_disaster.helper.LootHelper;
 import net.luojiuoscar.isaac_disaster.item_ability.pickup.IPickup;
 import net.luojiuoscar.isaac_disaster.manager.LootTableManager;
-import net.luojiuoscar.isaac_disaster.manager.id_managers.PickupId;
+import net.luojiuoscar.isaac_disaster.manager.id.PickupId;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;

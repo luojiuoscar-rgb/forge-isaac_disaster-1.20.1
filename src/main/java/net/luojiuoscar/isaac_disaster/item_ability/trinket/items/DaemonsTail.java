@@ -2,7 +2,7 @@ package net.luojiuoscar.isaac_disaster.item_ability.trinket.items;
 
 import net.luojiuoscar.isaac_disaster.item_ability.trinket.ITrinket;
 import net.luojiuoscar.isaac_disaster.manager.ColorManager;
-import net.luojiuoscar.isaac_disaster.manager.id_managers.TrinketId;
+import net.luojiuoscar.isaac_disaster.manager.id.TrinketId;
 import net.minecraft.network.chat.Component;
 
 import java.util.List;

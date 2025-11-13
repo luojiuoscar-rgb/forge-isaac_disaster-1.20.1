@@ -13,6 +13,7 @@ import net.luojiuoscar.isaac_disaster.item.ModItems;
 import net.luojiuoscar.isaac_disaster.item.registries.PillRegistry;
 import net.luojiuoscar.isaac_disaster.loot.ModLootModifiers;
 import net.luojiuoscar.isaac_disaster.loot.ModLootTypes;
+import net.luojiuoscar.isaac_disaster.manager.attack.AttackManager;
 import net.luojiuoscar.isaac_disaster.manager.item_managers.*;
 import net.luojiuoscar.isaac_disaster.networking.ModMessages;
 import net.luojiuoscar.isaac_disaster.sound.ModSounds;
@@ -80,6 +81,7 @@ public class IsaacDisaster
             PickupManager.getInstance().init();
             SetManager.getInstance().init();
             PillEffectManager.getInstance().init();
+            AttackManager.getInstance().init();
         });
     }
 

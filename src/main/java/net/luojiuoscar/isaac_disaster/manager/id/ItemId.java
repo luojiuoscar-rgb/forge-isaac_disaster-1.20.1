@@ -1,4 +1,4 @@
-package net.luojiuoscar.isaac_disaster.manager.id_managers;
+package net.luojiuoscar.isaac_disaster.manager.id;
 
 import net.minecraft.world.item.Item;
 import net.minecraftforge.registries.RegistryObject;
@@ -105,7 +105,8 @@ public enum ItemId {
     BINGE_EATER,
     ECHO_CHAMBER,
     CHAOS,
-    KAMIKAZE;
+    KAMIKAZE,
+    TOOTH_PICKS;
 
 
 

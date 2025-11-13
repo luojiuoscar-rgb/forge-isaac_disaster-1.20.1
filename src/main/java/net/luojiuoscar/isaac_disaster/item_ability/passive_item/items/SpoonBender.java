@@ -1,9 +1,9 @@
 package net.luojiuoscar.isaac_disaster.item_ability.passive_item.items;
 
 import net.luojiuoscar.isaac_disaster.item_ability.passive_item.IPassiveItem;
-import net.luojiuoscar.isaac_disaster.manager.ColorManager;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
-import net.luojiuoscar.isaac_disaster.manager.id_managers.ItemId;
+import net.luojiuoscar.isaac_disaster.manager.id.BulletColorId;
+import net.luojiuoscar.isaac_disaster.manager.id.ItemId;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -25,13 +25,13 @@ public class SpoonBender implements IPassiveItem {
     @Override
     public void handleObtain(Player player, @Nullable ItemStack stack) {
         StatManager.modifyHoming(player, 1);
-        StatManager.addBulletFilter(player, ColorManager.SPOON_BENDER_FILTER);
+        StatManager.addBulletColor(player, BulletColorId.SPOON_BENDER.getId(), 1);
     }
 
     @Override
     public void handleRemove(Player player, @Nullable ItemStack stack) {
         StatManager.modifyHoming(player, -1);
-        StatManager.removeBulletFilter(player, ColorManager.SPOON_BENDER_FILTER);
+        StatManager.addBulletColor(player, BulletColorId.SPOON_BENDER.getId(), -1);
     }
 
     @Override

@@ -129,7 +129,8 @@ public class  PassiveItemManager {
                 new GlitchedCrown(),
                 new BingeEater(),
                 new EchoChamber(),
-                new Chaos()
+                new Chaos(),
+                new ToothPicks()
         );
     }
 }

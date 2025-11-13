@@ -10,11 +10,5 @@ public class ColorManager {
     public static final int TRANSPARENT_GRAY = 0x696969;
     public static final int SYNERGY = 0xFFFF00;
 
-    public static final int FILTER_BASE = 0xFFFFFF;
-    public static final int COLOR_BASE = 0xFFFFFF;
-
-    public static final int POISON_BULLET_COLOR = 0x5CA45C;
-    public static final int SPOON_BENDER_FILTER = 0x611595;
     public static final int LEMON = 0xFFFF66;
-
 }

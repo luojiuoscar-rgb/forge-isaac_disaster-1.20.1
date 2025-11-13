@@ -3,7 +3,7 @@ package net.luojiuoscar.isaac_disaster.manager.item_managers;
 import net.luojiuoscar.isaac_disaster.manager.data.PillShuffleData;
 import net.luojiuoscar.isaac_disaster.item_ability.pickup.IPillEffect;
 import net.luojiuoscar.isaac_disaster.item_ability.pickup.pill_effects.*;
-import net.luojiuoscar.isaac_disaster.manager.id_managers.PillEffectId;
+import net.luojiuoscar.isaac_disaster.manager.id.PillEffectId;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;

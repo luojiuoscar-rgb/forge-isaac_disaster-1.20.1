@@ -1,12 +1,12 @@
 package net.luojiuoscar.isaac_disaster.item_ability.passive_item.items;
 
 import net.luojiuoscar.isaac_disaster.effect.ModEffects;
-import net.luojiuoscar.isaac_disaster.entity.custom.IsaacBullet;
+import net.luojiuoscar.isaac_disaster.event.custom.PlayerPerformAttackEvent;
 import net.luojiuoscar.isaac_disaster.item_ability.passive_item.IDamageTriggerPassiveItem;
-import net.luojiuoscar.isaac_disaster.item_ability.passive_item.INewBulletTypePassiveItem;
-import net.luojiuoscar.isaac_disaster.manager.ColorManager;
+import net.luojiuoscar.isaac_disaster.item_ability.passive_item.ISpecialTypeBulletPassiveItem;
 import net.luojiuoscar.isaac_disaster.manager.EffectManager;
-import net.luojiuoscar.isaac_disaster.manager.id_managers.ItemId;
+import net.luojiuoscar.isaac_disaster.manager.id.BulletColorId;
+import net.luojiuoscar.isaac_disaster.manager.id.ItemId;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
@@ -17,7 +17,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TheCommonCold implements IDamageTriggerPassiveItem, INewBulletTypePassiveItem {
+public class TheCommonCold implements IDamageTriggerPassiveItem, ISpecialTypeBulletPassiveItem {
     @Override
     public int getItemId() {
         return ItemId.THE_COMMON_COLD.getId();
@@ -76,17 +76,15 @@ public class TheCommonCold implements IDamageTriggerPassiveItem, INewBulletTypeP
         return description;
     }
 
-    @Override
-    public int getNewColor(){
-        return ColorManager.POISON_BULLET_COLOR;
-    }
 
     @Override
-    public void onShootEffect(Player player, IsaacBullet bullet) {
-        // 如果触发
-        if (Math.random() <= getTriggerChance(player)) {
-            bullet.setColor(getNewColor());
-            bullet.addBulletHitEffect(ItemId.THE_COMMON_COLD.getId());
+    public void onShoot(PlayerPerformAttackEvent event) {
+        Player player = event.getPlayer();
+
+        if (player.getRandom().nextDouble() <= getTriggerChance(player)) {
+            event.setBulletColorId(BulletColorId.POISON.getId());
+
+            event.addHitEffect(ItemId.THE_COMMON_COLD.getId());
         }
     }
 }

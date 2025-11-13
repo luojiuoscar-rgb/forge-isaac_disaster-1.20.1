@@ -13,9 +13,9 @@ import net.luojiuoscar.isaac_disaster.item.item.Trinket;
 import net.luojiuoscar.isaac_disaster.item.item.custom.ExperimentalTreatmentItem;
 import net.luojiuoscar.isaac_disaster.item.item.custom.FoodPassiveItem;
 import net.luojiuoscar.isaac_disaster.item.pickup.*;
-import net.luojiuoscar.isaac_disaster.manager.id_managers.ItemId;
-import net.luojiuoscar.isaac_disaster.manager.id_managers.PickupId;
-import net.luojiuoscar.isaac_disaster.manager.id_managers.TrinketId;
+import net.luojiuoscar.isaac_disaster.manager.id.ItemId;
+import net.luojiuoscar.isaac_disaster.manager.id.PickupId;
+import net.luojiuoscar.isaac_disaster.manager.id.TrinketId;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Rarity;
@@ -157,6 +157,7 @@ public class ModItems {
     public static final RegistryObject<Item> BINGE_EATER        = registerPassiveItem("binge_eater", 4, ItemId.BINGE_EATER);
     public static final RegistryObject<Item> ECHO_CHAMBER       = registerPassiveItem("echo_chamber", 3, ItemId.ECHO_CHAMBER);
     public static final RegistryObject<Item> CHAOS              = registerPassiveItem("chaos", 3, ItemId.CHAOS);
+    public static final RegistryObject<Item> TOOTH_PICKS        = registerPassiveItem("tooth_picks", 3, ItemId.TOOTH_PICKS);
 
 
 
@@ -590,11 +591,14 @@ public class ModItems {
     public static final RegistryObject<Item> PLANETARIUM_IDENTIFIER_ITEM = registerIdentifier("planetarium_identifier", ModBlocks.PLANETARIUM_IDENTIFIER_BLOCK);
 
     // misc end
+    private static RegistryObject<Item> registerGeneric(String name) {
+        RegistryObject<Item> reg = ITEMS.register(name, () -> new Item(new Item.Properties()));
+        GENERIC_LIST.add(reg);
+        return reg;
+    }
 
-    public static final RegistryObject<Item> LOCK = ITEMS.register("lock",
-            () -> new Item(new Item.Properties()));
-    public static final RegistryObject<Item> QUESTION_MARK = ITEMS.register("question_mark",
-            () -> new Item(new Item.Properties()));
 
 
+    public static final RegistryObject<Item> LOCK                   = registerGeneric("lock");
+    public static final RegistryObject<Item> QUESTION_MARK          = registerGeneric("question_mark");
 }

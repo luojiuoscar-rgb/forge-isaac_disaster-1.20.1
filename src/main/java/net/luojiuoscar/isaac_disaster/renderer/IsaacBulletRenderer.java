@@ -5,7 +5,6 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.entity.custom.IsaacBullet;
-import net.luojiuoscar.isaac_disaster.helper.ColorHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
@@ -46,17 +45,11 @@ public class IsaacBulletRenderer extends EntityRenderer<IsaacBullet> {
 
         // 基础颜色计算
         int color = bullet.getColor();
-        int filter = bullet.getFilterColor();
         float alpha = bullet.getAlpha();
 
-        int blended = (filter == 0xFFFFFF || filter == 0x000000)
-                ? color
-                : ColorHelper.blendColor(color, filter, 0.7f);
-
-        float r = ((blended >> 16) & 0xFF) / 255f;
-        float g = ((blended >> 8) & 0xFF) / 255f;
-        float b = (blended & 0xFF) / 255f;
-
+        float r = ((color >> 16) & 0xFF) / 255f;
+        float g = ((color >> 8) & 0xFF) / 255f;
+        float b = (color & 0xFF) / 255f;
 
         // 近距离淡出逻辑
         Minecraft mc = Minecraft.getInstance();

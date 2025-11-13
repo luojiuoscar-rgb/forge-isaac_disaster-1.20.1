@@ -1,10 +1,8 @@
 package net.luojiuoscar.isaac_disaster.item_ability.pickup.pill_effects;
 
 import net.luojiuoscar.isaac_disaster.item_ability.pickup.IPillEffect;
-import net.luojiuoscar.isaac_disaster.manager.id_managers.PillEffectId;
+import net.luojiuoscar.isaac_disaster.manager.id.PillEffectId;
 import net.luojiuoscar.isaac_disaster.sound.ModSounds;
-import net.minecraft.network.chat.Component;
-import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.entity.player.Player;
 
 public class IFoundPills implements IPillEffect {

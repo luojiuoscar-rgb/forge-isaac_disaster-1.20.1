@@ -3,7 +3,7 @@ package net.luojiuoscar.isaac_disaster.capability.player;
 import net.luojiuoscar.isaac_disaster.helper.CuriosHelper;
 import net.luojiuoscar.isaac_disaster.item.item.IsaacItem;
 import net.luojiuoscar.isaac_disaster.item.item.PassiveItem;
-import net.luojiuoscar.isaac_disaster.item_ability.passive_item.INewBulletTypePassiveItem;
+import net.luojiuoscar.isaac_disaster.item_ability.passive_item.ISpecialTypeBulletPassiveItem;
 import net.luojiuoscar.isaac_disaster.item_ability.passive_item.IRecursivePassiveItem;
 import net.luojiuoscar.isaac_disaster.item_ability.passive_item.ITriggerPassiveItem;
 import net.luojiuoscar.isaac_disaster.item_ability.set.ISet;
@@ -99,7 +99,7 @@ public class PlayerPassiveItem {
             recursiveItemMap.put(itemId, item.getTickInterval());
         }
         // 如果可以射出特殊类型的子弹
-        if(PassiveItemManager.getInstance().getItemFromId(itemId) instanceof INewBulletTypePassiveItem){
+        if(PassiveItemManager.getInstance().getItemFromId(itemId) instanceof ISpecialTypeBulletPassiveItem){
             newBulletTypeMap.put(itemId, itemCountMap.get(itemId));
         }
     }
@@ -181,7 +181,7 @@ public class PlayerPassiveItem {
             if (!(stack.getItem() instanceof PassiveItem item)) continue;
             int itemId = item.getItemId();
 
-            if (!(PassiveItemManager.getInstance().getItemFromId(itemId) instanceof INewBulletTypePassiveItem)) continue;
+            if (!(PassiveItemManager.getInstance().getItemFromId(itemId) instanceof ISpecialTypeBulletPassiveItem)) continue;
 
             map.put(itemId, 1 + map.getOrDefault(itemId, 0));
         }

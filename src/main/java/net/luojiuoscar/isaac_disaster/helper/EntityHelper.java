@@ -8,13 +8,17 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.TamableAnimal;
+import net.minecraft.world.entity.*;
+import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+
+import javax.annotation.Nullable;
+import java.util.List;
+import java.util.function.Predicate;
 
 public class EntityHelper {
 
@@ -253,5 +257,64 @@ public class EntityHelper {
             level.setBlock(pos, Blocks.FIRE.defaultBlockState(), 11);
         }
     }
+
+    @Nullable
+    public static LivingEntity findNearestHostileTarget(Level level,
+                                                        LivingEntity owner,
+                                                        Vec3 center,
+                                                        double range,
+                                                        @Nullable Predicate<LivingEntity> filter) {
+        // 以传入的 center 作为搜索中心
+        AABB searchBox = new AABB(center.x - range, center.y - range, center.z - range,
+                center.x + range, center.y + range, center.z + range);
+
+        List<LivingEntity> nearby = level.getEntitiesOfClass(LivingEntity.class,
+                searchBox,
+                e -> e.isAlive() && e != owner && !e.isInvulnerable() &&
+                        (filter == null || filter.test(e))
+        );
+
+        LivingEntity hostileAggro = null;
+        LivingEntity hostilePassive = null;
+        LivingEntity neutral = null;
+        LivingEntity playerTarget = null;
+
+        for (LivingEntity e : nearby) {
+
+            if (EntityHelper.isFriendlyToPlayer(e, owner)) continue;
+
+            if (e instanceof Monster monster) {
+                boolean hasAggro = monster.getTarget() == owner;
+                if (monster instanceof NeutralMob neutralMob && owner instanceof Player player)
+                    if (neutralMob.isAngryAt(player)) hasAggro = true;
+
+                if (hasAggro) {
+                    if (hostileAggro == null || e.distanceToSqr(center.x, center.y, center.z) < hostileAggro.distanceToSqr(center.x, center.y, center.z))
+                        hostileAggro = e;
+                } else if (hostilePassive == null || e.distanceToSqr(center.x, center.y, center.z) < hostilePassive.distanceToSqr(center.x, center.y, center.z))
+                    hostilePassive = e;
+
+            } else if (e instanceof PathfinderMob) {
+                if (neutral == null || e.distanceToSqr(center.x, center.y, center.z) < neutral.distanceToSqr(center.x, center.y, center.z))
+                    neutral = e;
+
+            } else if (e instanceof Player otherPlayer && owner instanceof Player ownerPlayer) {
+                if (!ownerPlayer.isAlliedTo(otherPlayer) &&
+                        ((ServerLevel) ownerPlayer.level()).getServer().isPvpAllowed() &&
+                        ownerPlayer.canHarmPlayer(otherPlayer)) {
+
+                    if (playerTarget == null || e.distanceToSqr(center.x, center.y, center.z) < playerTarget.distanceToSqr(center.x, center.y, center.z))
+                        playerTarget = e;
+                }
+            }
+        }
+
+        if (hostileAggro != null) return hostileAggro;
+        if (hostilePassive != null) return hostilePassive;
+        if (neutral != null) return neutral;
+        return playerTarget;
+    }
+
+
 
 }
