@@ -1,16 +1,19 @@
-package net.luojiuoscar.isaac_disaster.event.custom;
+package net.luojiuoscar.isaac_disaster.event.custom.attack;
 
-import net.luojiuoscar.isaac_disaster.entity.custom.IsaacBullet;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.EntityHitResult;
 
-public class IsaacBulletAfterHitEvent extends IsaacBulletEvent {
+import java.util.Set;
+
+public class IsaacAttackAfterHitEvent extends IsaacAttackEvent {
     private final EntityHitResult hit;
     private double damage;
     private final double targetHealth;
     private boolean discardAfterHit = true; // 默认命中后消失
 
-    public IsaacBulletAfterHitEvent(IsaacBullet bullet, EntityHitResult hit, double damage, double targetHealth) {
-        super(bullet);
+    public IsaacAttackAfterHitEvent(Entity entity, int attackTypeId, Set<Integer> hitEffects,
+                                    EntityHitResult hit, double damage, double targetHealth) {
+        super(entity, attackTypeId, hitEffects);
         this.hit = hit;
         this.damage = damage;
         this.targetHealth = targetHealth;

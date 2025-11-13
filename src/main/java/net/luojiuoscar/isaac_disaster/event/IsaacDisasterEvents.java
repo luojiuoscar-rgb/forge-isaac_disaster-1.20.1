@@ -4,8 +4,13 @@ import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerPassiveItemProvider;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerSwallowedTrinketsProvider;
 import net.luojiuoscar.isaac_disaster.effect.ModEffects;
-import net.luojiuoscar.isaac_disaster.entity.custom.IsaacBullet;
-import net.luojiuoscar.isaac_disaster.event.custom.*;
+import net.luojiuoscar.isaac_disaster.entity.custom.TearBullet;
+import net.luojiuoscar.isaac_disaster.event.custom.attack.IsaacAttackAfterHitEvent;
+import net.luojiuoscar.isaac_disaster.event.custom.attack.IsaacAttackBeforeHitEntityEvent;
+import net.luojiuoscar.isaac_disaster.event.custom.attack.IsaacAttackHitBlockEvent;
+import net.luojiuoscar.isaac_disaster.event.custom.attack.PlayerPerformAttackEvent;
+import net.luojiuoscar.isaac_disaster.event.custom.attack.tear_bullet.TearBulletTickEvent;
+import net.luojiuoscar.isaac_disaster.event.custom.misc.*;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.item.item.Trinket;
 import net.luojiuoscar.isaac_disaster.item.pickup.Card;
@@ -59,8 +64,8 @@ public class IsaacDisasterEvents {
     }
 
     @SubscribeEvent
-    public static void onBulletTick(IsaacBulletTickEvent event){
-        IsaacBullet bullet = event.getBullet();
+    public static void onBulletTick(TearBulletTickEvent event){
+        TearBullet bullet = event.getBullet();
         LivingEntity owner = bullet.getOwner();
 
         if (!(owner instanceof ServerPlayer player)) return;
@@ -73,10 +78,9 @@ public class IsaacDisasterEvents {
 
 
     @SubscribeEvent
-    public static void onBulletHitBlock(IsaacBulletHitBlockEvent event) {
-        IsaacBullet bullet = event.getBullet();
-
-        if (!(bullet.getOwner() instanceof ServerPlayer player)) return;
+    public static void onAttackHitBlock(IsaacAttackHitBlockEvent event) {
+        if (!(event.getDirectSource() instanceof TearBullet bullet &&
+                bullet.getOwner() instanceof ServerPlayer player)) return;
 
         if (PlayerHelper.hasItem(ItemId.RUBBER_CEMENT.getId(), player)){
             RubberCement.bounceOnBlock(event);
@@ -86,9 +90,9 @@ public class IsaacDisasterEvents {
 
 
     @SubscribeEvent
-    public static void beforeBulletHitEntity(IsaacBulletBeforeHitEvent event) {
-        IsaacBullet bullet = event.getBullet();
-        Set<Integer> effects = bullet.getBulletHitEffects();
+    public static void beforeAttackHitEntity(IsaacAttackBeforeHitEntityEvent event) {
+        if (!(event.getDirectSource() instanceof TearBullet bullet)) return;
+        Set<Integer> effects = bullet.getHitEffectIds();
 
         if (event.getHit().getEntity() instanceof LivingEntity living &&
         living.hasEffect(ModEffects.SOUL_STATE.get())) {
@@ -107,8 +111,8 @@ public class IsaacDisasterEvents {
     }
 
     @SubscribeEvent
-    public static void afterBulletHitEntity(IsaacBulletAfterHitEvent event) {
-        IsaacBullet bullet = event.getBullet();
+    public static void afterAttackHitEntity(IsaacAttackAfterHitEvent event) {
+        if (!(event.getDirectSource() instanceof TearBullet bullet)) return;
         EntityHitResult hit = event.getHitResult();
 
         if (!(bullet.getOwner() instanceof ServerPlayer player)) return;

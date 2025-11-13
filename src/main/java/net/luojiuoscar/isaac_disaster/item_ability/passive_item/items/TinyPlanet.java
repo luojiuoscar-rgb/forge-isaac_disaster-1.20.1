@@ -1,7 +1,7 @@
 package net.luojiuoscar.isaac_disaster.item_ability.passive_item.items;
 
-import net.luojiuoscar.isaac_disaster.entity.custom.IsaacBullet;
-import net.luojiuoscar.isaac_disaster.event.custom.IsaacBulletTickEvent;
+import net.luojiuoscar.isaac_disaster.entity.custom.TearBullet;
+import net.luojiuoscar.isaac_disaster.event.custom.attack.tear_bullet.TearBulletTickEvent;
 import net.luojiuoscar.isaac_disaster.item_ability.passive_item.IPassiveItem;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.manager.id.ItemId;
@@ -45,8 +45,8 @@ public class TinyPlanet implements IPassiveItem {
                 );
     }
 
-    public static void onTriggered(IsaacBulletTickEvent event){
-        IsaacBullet bullet = event.getBullet();
+    public static void onTriggered(TearBulletTickEvent event){
+        TearBullet bullet = event.getBullet();
         LivingEntity owner = bullet.getOwner();
 
         if (owner instanceof Player player)

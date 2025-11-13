@@ -1,6 +1,6 @@
 package net.luojiuoscar.isaac_disaster.capability.player;
 
-import net.luojiuoscar.isaac_disaster.manager.attack.AttackTypeId;
+import net.luojiuoscar.isaac_disaster.manager.id.AttackTypeId;
 import net.luojiuoscar.isaac_disaster.manager.id.BulletColorId;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -211,10 +211,10 @@ public class PlayerAbility {
 
     public void updateBestBulletType(){
         int bestId = AttackTypeId.BULLET.getId();
-        int bestPriority = AttackTypeId.getPriorityById(bestId);
+        double bestPriority = AttackTypeId.getPriorityById(bestId);
 
         for (int id : bulletType.keySet()) {
-            int priority = AttackTypeId.getPriorityById(id);
+            double priority = AttackTypeId.getPriorityById(id);
             if (priority > bestPriority) {
                 bestPriority = priority;
                 bestId = id;
@@ -234,10 +234,10 @@ public class PlayerAbility {
     public void updateBestBulletColor(){
         // 每一段时间更新
         int bestId = BulletColorId.BASE.getId();
-        int bestPriority = BulletColorId.getPriorityById(bestId);
+        double bestPriority = BulletColorId.getPriorityById(bestId);
 
         for (int id : bulletColor.keySet()) {
-            int priority = BulletColorId.getPriorityById(id);
+            double priority = BulletColorId.getPriorityById(id);
             if (priority > bestPriority) {
                 bestPriority = priority;
                 bestId = id;

@@ -1,4 +1,4 @@
-package net.luojiuoscar.isaac_disaster.manager.attack;
+package net.luojiuoscar.isaac_disaster.manager.id;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -7,8 +7,13 @@ public enum AttackTypeId {
     BULLET(0),
     LASER(100);
 
+
+
+
+
+
     private final int id;
-    private final int priority;
+    private final double priority;
 
     // ================= 构造与字段 =================
     AttackTypeId(int priority) {
@@ -20,7 +25,7 @@ public enum AttackTypeId {
         return id;
     }
 
-    public int getPriority() {
+    public double getPriority() {
         return priority;
     }
 
@@ -39,7 +44,7 @@ public enum AttackTypeId {
     }
 
     /** 根据id直接获取优先级（若不存在返回-1） */
-    public static int getPriorityById(int id) {
+    public static double getPriorityById(int id) {
         AttackTypeId type = BY_ID.get(id);
         return type == null ? -1 : type.priority;
     }

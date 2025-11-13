@@ -158,6 +158,7 @@ public class ModItems {
     public static final RegistryObject<Item> ECHO_CHAMBER       = registerPassiveItem("echo_chamber", 3, ItemId.ECHO_CHAMBER);
     public static final RegistryObject<Item> CHAOS              = registerPassiveItem("chaos", 3, ItemId.CHAOS);
     public static final RegistryObject<Item> TOOTH_PICKS        = registerPassiveItem("tooth_picks", 3, ItemId.TOOTH_PICKS);
+    public static final RegistryObject<Item> TECHNOLOGY         = registerPassiveItem("technology", 3, ItemId.TECHNOLOGY);
 
 
 

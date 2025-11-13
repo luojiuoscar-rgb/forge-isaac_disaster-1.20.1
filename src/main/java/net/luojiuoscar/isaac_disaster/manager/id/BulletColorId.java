@@ -1,5 +1,7 @@
 package net.luojiuoscar.isaac_disaster.manager.id;
 
+import org.joml.Vector3f;
+
 public enum BulletColorId {
     BASE(0xFFFFFF, 1.0f, 0),
     SPOON_BENDER(0x7A33C0, 1.0f, 1),
@@ -33,7 +35,7 @@ public enum BulletColorId {
         return alpha;
     }
 
-    public int getPriority() {
+    public double getPriority() {
         return priority;
     }
 
@@ -44,7 +46,7 @@ public enum BulletColorId {
         return BASE;
     }
 
-    public static int getPriorityById(int id) {
+    public static double getPriorityById(int id) {
         BulletColorId value = byId(id);
         return value.getPriority();
     }
@@ -57,6 +59,14 @@ public enum BulletColorId {
     public static float getAlphaById(int id) {
         BulletColorId value = byId(id);
         return value.getAlpha();
+    }
+
+    public static Vector3f getVec3fColorById(int id) {
+        int color = getColorById(id);
+        float r = ((color >> 16) & 0xFF) / 255.0f;
+        float g = ((color >> 8) & 0xFF) / 255.0f;
+        float b = (color & 0xFF) / 255.0f;
+        return new Vector3f(r, g, b);
     }
 
 }

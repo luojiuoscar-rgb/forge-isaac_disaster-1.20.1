@@ -2,7 +2,7 @@ package net.luojiuoscar.isaac_disaster.effect.custom;
 
 
 import net.luojiuoscar.isaac_disaster.effect.ModEffects;
-import net.luojiuoscar.isaac_disaster.event.custom.PacManEatEvent;
+import net.luojiuoscar.isaac_disaster.event.custom.misc.PacManEatEvent;
 import net.luojiuoscar.isaac_disaster.helper.LevelHelper;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.minecraft.sounds.SoundEvents;

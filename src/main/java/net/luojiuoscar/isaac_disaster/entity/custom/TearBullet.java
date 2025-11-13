@@ -2,10 +2,16 @@ package net.luojiuoscar.isaac_disaster.entity.custom;
 
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.entity.ModEntities;
-import net.luojiuoscar.isaac_disaster.event.custom.*;
+import net.luojiuoscar.isaac_disaster.event.custom.attack.IsaacAttackBeforeHitEntityEvent;
+import net.luojiuoscar.isaac_disaster.event.custom.attack.IsaacAttackHitBlockEvent;
+import net.luojiuoscar.isaac_disaster.event.custom.attack.IsaacAttackAfterHitEvent;
+import net.luojiuoscar.isaac_disaster.event.custom.attack.tear_bullet.TearBulletDiscardEvent;
+import net.luojiuoscar.isaac_disaster.event.custom.attack.tear_bullet.TearBulletShootEvent;
+import net.luojiuoscar.isaac_disaster.event.custom.attack.tear_bullet.TearBulletTickEvent;
 import net.luojiuoscar.isaac_disaster.helper.EntityHelper;
-import net.luojiuoscar.isaac_disaster.manager.TagManager;
+import net.luojiuoscar.isaac_disaster.manager.id.AttackTypeId;
 import net.luojiuoscar.isaac_disaster.manager.id.BulletColorId;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -30,14 +36,17 @@ import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.*;
+import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.network.NetworkHooks;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.UUID;
 
-public class IsaacBullet extends Entity {
+public class TearBullet extends Entity {
 
     // ======== 基础属性 ========
     private int lifeTick;
@@ -62,18 +71,18 @@ public class IsaacBullet extends Entity {
 
     // ======== 状态 ========
     private final Set<UUID> damagedEntities = new HashSet<>();
-    private final Set<Integer> bulletHitEffects = new HashSet<>();
+    private final Set<Integer> hitEffectIds = new HashSet<>();
 
     // ======== 客户端同步属性 ========
     private static final EntityDataAccessor<Float> SCALE =
-            SynchedEntityData.defineId(IsaacBullet.class, EntityDataSerializers.FLOAT);
+            SynchedEntityData.defineId(TearBullet.class, EntityDataSerializers.FLOAT);
     private static final EntityDataAccessor<Integer> COLOR =
-            SynchedEntityData.defineId(IsaacBullet.class, EntityDataSerializers.INT);
+            SynchedEntityData.defineId(TearBullet.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Float> ALPHA =
-            SynchedEntityData.defineId(IsaacBullet.class, EntityDataSerializers.FLOAT);
+            SynchedEntityData.defineId(TearBullet.class, EntityDataSerializers.FLOAT);
 
     // ======== 构造函数 ========
-    public IsaacBullet(EntityType<? extends IsaacBullet> type, Level level) {
+    public TearBullet(EntityType<? extends TearBullet> type, Level level) {
         super(type, level);
         this.noPhysics = true;
         this.isSpectral = false;
@@ -86,7 +95,7 @@ public class IsaacBullet extends Entity {
         this.setScale(1.0f);
     }
 
-    public IsaacBullet(Level level, LivingEntity shooter, int lifeTick, double bulletSpeed, float scale, float damage, float xRot, float yRot) {
+    public TearBullet(Level level, LivingEntity shooter, int lifeTick, double bulletSpeed, float scale, float damage, float xRot, float yRot) {
         this(ModEntities.TEAR_BULLET.get(), level);
 
         this.ownerUUID = shooter.getUUID();
@@ -102,7 +111,8 @@ public class IsaacBullet extends Entity {
         setDeltaMovement(look.scale(bulletSpeed));
 
         if (!level.isClientSide)
-            MinecraftForge.EVENT_BUS.post(new IsaacBulletShootEvent(this, shooter));
+            MinecraftForge.EVENT_BUS.post(new TearBulletShootEvent(
+                    getOwner(), AttackTypeId.BULLET.getId(), hitEffectIds, this));
     }
 
 
@@ -115,10 +125,10 @@ public class IsaacBullet extends Entity {
             return;
         }
 
-        MinecraftForge.EVENT_BUS.post(new IsaacBulletTickEvent(this));
+        MinecraftForge.EVENT_BUS.post(new TearBulletTickEvent(this));
 
         if (--lifeTick <= 0) {
-            if (!MinecraftForge.EVENT_BUS.post(new IsaacBulletDiscardEvent(this))) discard();
+            if (!MinecraftForge.EVENT_BUS.post(new TearBulletDiscardEvent(this))) discard();
             return;
         }
 
@@ -129,26 +139,42 @@ public class IsaacBullet extends Entity {
         boolean collided = handleBlockCollision(start, end);
         if (collided) return; // 撞到方块时取消移动
 
-        if (tickCount % 4 == 0) handleSteering();
-
         handleEntityCollision(start, end, motion);
+
+        if (tickCount % 4 == 0) handleSteering();
 
         move(MoverType.SELF, motion);
     }
 
     private boolean handleBlockCollision(Vec3 start, Vec3 end) {
         if (isSpectral) return false;
-        BlockHitResult blockHit = level().clip(new ClipContext(start, end, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, this));
-        if (blockHit.getType() == HitResult.Type.BLOCK) {
-            BlockState state = level().getBlockState(blockHit.getBlockPos());
-            if (!state.is(TagManager.PENETRABLE_BLOCKS)) {
-                if (!MinecraftForge.EVENT_BUS.post(new IsaacBulletHitBlockEvent(this, blockHit))) {
-                    if (!MinecraftForge.EVENT_BUS.post(new IsaacBulletDiscardEvent(this))) discard();
-                }
-                return true;
+
+        BlockHitResult blockHit = level().clip(
+                new ClipContext(start, end, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, this)
+        );
+
+        if (blockHit.getType() != HitResult.Type.BLOCK) {
+            return false;
+        }
+
+        BlockPos pos = blockHit.getBlockPos();
+        BlockState state = level().getBlockState(pos);
+
+        // 获取该方块的碰撞体积（VoxelShape）
+        VoxelShape shape = state.getCollisionShape(level(), pos);
+
+        if (shape.isEmpty() || shape.bounds().getSize() < 0.01) {
+            return false;
+        }
+
+        if (!MinecraftForge.EVENT_BUS.post(new IsaacAttackHitBlockEvent(getOwner(), AttackTypeId.BULLET.getId(),
+                hitEffectIds, blockHit))) {
+            if (!MinecraftForge.EVENT_BUS.post(new TearBulletDiscardEvent(this))) {
+                discard();
             }
         }
-        return false;
+
+        return true;
     }
 
     private void handleSteering() {
@@ -180,23 +206,23 @@ public class IsaacBullet extends Entity {
         if (EntityHelper.isFriendlyToPlayer(living, getOwner()) || living == getOwner() || damagedEntities.contains(target.getUUID()))
             return;
 
-        IsaacBulletBeforeHitEvent beforeEvent = new IsaacBulletBeforeHitEvent(this, entityHit, getDamage());
+        IsaacAttackBeforeHitEntityEvent beforeEvent = new IsaacAttackBeforeHitEntityEvent(
+                getOwner(), AttackTypeId.BULLET.getId(), hitEffectIds, entityHit, damage);
+
         if (MinecraftForge.EVENT_BUS.post(beforeEvent)) return;
 
         double damageValue = beforeEvent.getDamage();
-        int oldHurtResistant = living.invulnerableTime;
-        living.invulnerableTime = 0;
+        if (living.invulnerableTime > 0) living.invulnerableTime = 0;
         living.hurt(makeDamageSource(), (float) damageValue);
-        living.invulnerableTime = oldHurtResistant;
 
-        IsaacBulletAfterHitEvent event = new IsaacBulletAfterHitEvent(
-                this, entityHit, damageValue, living.getHealth());
+        IsaacAttackAfterHitEvent event = new IsaacAttackAfterHitEvent(
+                this, AttackTypeId.BULLET.getId(), hitEffectIds, entityHit, damageValue, living.getHealth());
         MinecraftForge.EVENT_BUS.post(event);
 
         damagedEntities.add(target.getUUID());
 
         if (!isPiercing && event.shouldDiscardAfterHit()) {
-            if (!MinecraftForge.EVENT_BUS.post(new IsaacBulletDiscardEvent(this))) discard();
+            if (!MinecraftForge.EVENT_BUS.post(new TearBulletDiscardEvent(this))) discard();
         }
     }
 
@@ -207,7 +233,7 @@ public class IsaacBullet extends Entity {
         Vec3 bulletPos = this.position();
         Vec3 forwardPos = bulletPos.add(this.getDeltaMovement().normalize().scale(3.0));
 
-        return EntityHelper.findNearestHostileTarget(
+        return EntityHelper.findNearestTrackingTarget(
                 level(),
                 getOwner(),
                 forwardPos, // 用前方位置作为中心
@@ -281,7 +307,7 @@ public class IsaacBullet extends Entity {
 
     // ======== DamageSource ========
     private DamageSource makeDamageSource() {
-        if (!(level() instanceof ServerLevel serverLevel)) return level().damageSources().generic();
+        if (!(level() instanceof ServerLevel serverLevel)) return this.damageSources().generic();
 
         var damageTypeHolder = serverLevel.registryAccess()
                 .registryOrThrow(Registries.DAMAGE_TYPE)
@@ -382,12 +408,12 @@ public class IsaacBullet extends Entity {
     public float getDamage() { return damage; }
 
     // ======== Bullet Effects ========
-    public void setBulletHitEffects(Set<Integer> hitEffects) {
-        this.bulletHitEffects.clear();
-        this.bulletHitEffects.addAll(hitEffects);
+    public void setHitEffectIds(Set<Integer> hitEffects) {
+        this.hitEffectIds.clear();
+        this.hitEffectIds.addAll(hitEffects);
     }
-    public void clearBulletHitEffects() { bulletHitEffects.clear(); }
-    public Set<Integer> getBulletHitEffects() { return bulletHitEffects; }
+    public void clearBulletHitEffects() { hitEffectIds.clear(); }
+    public Set<Integer> getHitEffectIds() { return hitEffectIds; }
 
     public Set<UUID> getDamagedEntities() {
         return damagedEntities;

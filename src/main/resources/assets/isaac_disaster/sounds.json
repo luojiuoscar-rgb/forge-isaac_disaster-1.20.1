@@ -49,9 +49,9 @@
       "isaac_disaster:holy_shield_broke"
     ]
   },
-  "isaac_head_shoot": {
+  "tear_bullet_shot": {
     "sounds": [
-      "isaac_disaster:isaac_head_shoot"
+      "isaac_disaster:tear_bullet_shot"
     ]
   },
   "balls_of_steel": {
@@ -1042,6 +1042,11 @@
   "golden_heart": {
     "sounds": [
       "isaac_disaster:golden_heart"
+    ]
+  },
+  "laser_shot": {
+    "sounds": [
+      "isaac_disaster:laser_shot"
     ]
   }
 }

@@ -12,6 +12,12 @@ public class ModSounds {
     public static final DeferredRegister<SoundEvent> SOUND_EVENTS =
             DeferredRegister.create(ForgeRegistries.SOUND_EVENTS, IsaacDisaster.MOD_ID);
 
+    // attack
+    public static final RegistryObject<SoundEvent> TEAR_BULLET_SHOT = registerSoundEvent("tear_bullet_shot");
+    public static final RegistryObject<SoundEvent> LASER_SHOT = registerSoundEvent("laser_shot");
+
+
+
     // other
     public static final RegistryObject<SoundEvent> DEFAULT_OBTAIN_ITEM = registerSoundEvent("default_obtain_item");
     public static final RegistryObject<SoundEvent> STEVE_HURT_OLD = registerSoundEvent("steve_hurt_old");
@@ -33,7 +39,6 @@ public class ModSounds {
     public static final RegistryObject<SoundEvent> SOUL_HEART = registerSoundEvent("soul_heart");
     public static final RegistryObject<SoundEvent> BLACK_HEART = registerSoundEvent("black_heart");
     public static final RegistryObject<SoundEvent> BLACK_HEART_ACTIVE = registerSoundEvent("black_heart_active");
-    public static final RegistryObject<SoundEvent> ISAAC_HEAD_SHOOT = registerSoundEvent("isaac_head_shoot");
     public static final RegistryObject<SoundEvent> FART_NORMAL = registerSoundEvent("fart_normal");
     public static final RegistryObject<SoundEvent> FART_HUGE = registerSoundEvent("fart_huge");
     public static final RegistryObject<SoundEvent> BONE_HEART = registerSoundEvent("bone_heart");

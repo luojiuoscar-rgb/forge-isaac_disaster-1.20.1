@@ -67,7 +67,6 @@ public class SacredOrbLootModifier extends LootModifier {
 
             if (!generated.isEmpty()) {
                 stack = generated.get(0);
-                LOGGER.info("NEW STACK: {}", stack);
             }
 
             if (stack.getItem() instanceof IsaacItem newItem) {

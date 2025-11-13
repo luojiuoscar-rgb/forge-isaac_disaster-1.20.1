@@ -19,9 +19,9 @@ public class ModEvents {
         event.getTypes().forEach(type -> {
             if (Mob.class.isAssignableFrom(type.getBaseClass()) || type == EntityType.PLAYER) {
                 event.add(type, ModAttributes.SCALE.get());
-                event.add(EntityType.PLAYER, ModAttributes.BULLET_SPEED.get());
-                event.add(EntityType.PLAYER, ModAttributes.BULLET_RANGE.get());
-                event.add(EntityType.PLAYER, ModAttributes.BULLET_SCALE.get());
+                event.add(type, ModAttributes.BULLET_SPEED.get());
+                event.add(type, ModAttributes.BULLET_RANGE.get());
+                event.add(type, ModAttributes.BULLET_SCALE.get());
             }
 
             // 给玩家追加的属性

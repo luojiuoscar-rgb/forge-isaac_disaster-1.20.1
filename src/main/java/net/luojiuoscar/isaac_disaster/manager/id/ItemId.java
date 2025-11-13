@@ -106,7 +106,8 @@ public enum ItemId {
     ECHO_CHAMBER,
     CHAOS,
     KAMIKAZE,
-    TOOTH_PICKS;
+    TOOTH_PICKS,
+    TECHNOLOGY;
 
 
 

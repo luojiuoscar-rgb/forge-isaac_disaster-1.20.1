@@ -1,5 +1,6 @@
 package net.luojiuoscar.isaac_disaster.manager.item_managers;
 
+import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.manager.data.PillShuffleData;
 import net.luojiuoscar.isaac_disaster.item_ability.pickup.IPillEffect;
 import net.luojiuoscar.isaac_disaster.item_ability.pickup.pill_effects.*;
@@ -118,9 +119,9 @@ public class PillEffectManager {
         // 立即写入磁盘
         try {
             level.getDataStorage().save();
-            LOGGER.info("PillShuffleData saved to disk.");
+            IsaacDisaster.LOGGER.info("PillShuffleData saved to disk.");
         } catch (Exception e) {
-            LOGGER.error("Failed to save PillShuffleData immediately.", e);
+            IsaacDisaster.LOGGER.error("Failed to save PillShuffleData immediately.", e);
         }
     }
 

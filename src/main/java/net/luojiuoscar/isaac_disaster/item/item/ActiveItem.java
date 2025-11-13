@@ -3,7 +3,7 @@ package net.luojiuoscar.isaac_disaster.item.item;
 import net.luojiuoscar.isaac_disaster.Config;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerItemUseRecordProvider;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerSwallowedTrinketsProvider;
-import net.luojiuoscar.isaac_disaster.event.custom.ActiveItemUseEvent;
+import net.luojiuoscar.isaac_disaster.event.custom.misc.ActiveItemUseEvent;
 import net.luojiuoscar.isaac_disaster.manager.ColorManager;
 import net.luojiuoscar.isaac_disaster.manager.id.TrinketId;
 import net.luojiuoscar.isaac_disaster.manager.item_managers.ActiveItemManager;

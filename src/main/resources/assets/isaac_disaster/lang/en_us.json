@@ -7,6 +7,10 @@
   "death.attack.tear": "%1$s 被泪弹杀死了",
   "death.attack.tear.player": "%1$s 被 %2$s 的泪弹杀死了",
   "death.attack.tear.item": "%1$s 被 %2$s 使用 %3$s 的泪弹杀死了",
+  "death.attack.laser": "%1$s 死于激光",
+  "death.attack.laser.player": "%1$s 被 %2$s 的激光杀死了",
+  "death.attack.laser.item": "%1$s 被 %2$s 使用 %3$s 的激光杀死了",
+
   "item.isaac_disaster.pill1": "未知胶囊#1",
   "item.isaac_disaster.pill2": "未知胶囊#2",
   "item.isaac_disaster.pill3": "未知胶囊#3",
@@ -367,6 +371,9 @@
   "item.isaac_disaster.kamikaze": "神风！",
   "item.isaac_disaster.kamikaze.lore.1": "在自身位置引发一次爆炸",
   "item.isaac_disaster.tooth_picks": "牙签",
+  "item.isaac_disaster.technology": "科技",
+  "item.isaac_disaster.technology.lore.1": "攻击方式变为激光",
+
 
   "items end": "",
 

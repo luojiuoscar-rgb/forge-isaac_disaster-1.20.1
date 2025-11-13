@@ -1,4 +1,4 @@
-package net.luojiuoscar.isaac_disaster.event.custom;
+package net.luojiuoscar.isaac_disaster.event.custom.misc;
 
 import net.minecraftforge.eventbus.api.Event;
 import net.minecraft.world.entity.LivingEntity;

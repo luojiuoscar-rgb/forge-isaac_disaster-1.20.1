@@ -5,12 +5,8 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.level.block.Block;
 
 public class TagManager {
-    public static final TagKey<Block> PENETRABLE_BLOCKS =
-            TagKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "penetrable_blocks"));
-
     public static final TagKey<Item> PASSIVE_ITEMS =
             TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "passive_items"));
     public static final TagKey<Item> ACTIVE_ITEMS =

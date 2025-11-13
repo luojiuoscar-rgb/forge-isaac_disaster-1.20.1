@@ -1,7 +1,7 @@
 package net.luojiuoscar.isaac_disaster.item_ability.passive_item.items;
 
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
-import net.luojiuoscar.isaac_disaster.event.custom.ItemDisplayAddEvent;
+import net.luojiuoscar.isaac_disaster.event.custom.misc.ItemDisplayAddEvent;
 import net.luojiuoscar.isaac_disaster.helper.LootHelper;
 import net.luojiuoscar.isaac_disaster.item.ModItems;
 import net.luojiuoscar.isaac_disaster.item.item.custom.FoodPassiveItem;

@@ -1,8 +1,8 @@
 package net.luojiuoscar.isaac_disaster.item_ability.passive_item.items;
 
-import net.luojiuoscar.isaac_disaster.entity.custom.IsaacBullet;
-import net.luojiuoscar.isaac_disaster.event.custom.IsaacBulletAfterHitEvent;
-import net.luojiuoscar.isaac_disaster.event.custom.IsaacBulletHitBlockEvent;
+import net.luojiuoscar.isaac_disaster.entity.custom.TearBullet;
+import net.luojiuoscar.isaac_disaster.event.custom.attack.IsaacAttackAfterHitEvent;
+import net.luojiuoscar.isaac_disaster.event.custom.attack.IsaacAttackHitBlockEvent;
 import net.luojiuoscar.isaac_disaster.helper.EntityHelper;
 import net.luojiuoscar.isaac_disaster.item_ability.passive_item.IPassiveItem;
 import net.luojiuoscar.isaac_disaster.manager.id.ItemId;
@@ -43,8 +43,8 @@ public class RubberCement implements IPassiveItem {
         );
     }
 
-    public static void bounceOnBlock(IsaacBulletHitBlockEvent event) {
-        IsaacBullet bullet = event.getBullet();
+    public static void bounceOnBlock(IsaacAttackHitBlockEvent event) {
+        if (!(event.getDirectSource() instanceof TearBullet bullet)) return;
         BlockHitResult hit = event.getHitResult();
 
         Vec3 motion = bullet.getDeltaMovement();
@@ -65,17 +65,17 @@ public class RubberCement implements IPassiveItem {
     }
 
 
-    public static void bounceOnEntity(IsaacBulletAfterHitEvent event) {
-        IsaacBullet bullet = event.getBullet();
+    public static void bounceOnEntity(IsaacAttackAfterHitEvent event) {
+        if (!(event.getDirectSource() instanceof TearBullet bullet)) return;
         double speed = bullet.getDeltaMovement().length();
 
         // 50% 概率弹向最近敌对生物
         if (Math.random() < 0.5) {
-            LivingEntity target = EntityHelper.findNearestHostileTarget(
+            LivingEntity target = EntityHelper.findNearestTrackingTarget(
                     bullet.level(),
                     bullet.getOwner(),
                     bullet.position(),
-                    IsaacBullet.HOMING_RANGE,
+                    TearBullet.HOMING_RANGE,
                     e -> !bullet.getDamagedEntities().contains(e.getUUID())
             );
 

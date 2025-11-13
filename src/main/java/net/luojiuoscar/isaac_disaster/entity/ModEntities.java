@@ -1,7 +1,7 @@
 package net.luojiuoscar.isaac_disaster.entity;
 
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
-import net.luojiuoscar.isaac_disaster.entity.custom.IsaacBullet;
+import net.luojiuoscar.isaac_disaster.entity.custom.TearBullet;
 import net.luojiuoscar.isaac_disaster.entity.custom.LemonEffectCloud;
 import net.luojiuoscar.isaac_disaster.entity.tnt.GigaBomb;
 import net.luojiuoscar.isaac_disaster.entity.tnt.IsaacBomb;
@@ -34,9 +34,9 @@ public class ModEntities {
                     .build("giga_bomb")
     );
 
-    public static final RegistryObject<EntityType<IsaacBullet>> TEAR_BULLET =
+    public static final RegistryObject<EntityType<TearBullet>> TEAR_BULLET =
             MOD_ENTITIES.register("tear_bullet",
-                    () -> EntityType.Builder.<IsaacBullet>of(IsaacBullet::new, MobCategory.MISC)
+                    () -> EntityType.Builder.<TearBullet>of(TearBullet::new, MobCategory.MISC)
                             .sized(0.25f, 0.25f) // 小一点的碰撞箱
                             .clientTrackingRange(64) // 客户端追踪距离
                             .updateInterval(2) // 同步tick

@@ -1,14 +1,16 @@
 package net.luojiuoscar.isaac_disaster.manager.attack.types;
 
 import net.luojiuoscar.isaac_disaster.attribute.ModAttributes;
-import net.luojiuoscar.isaac_disaster.capability.player.PlayerAbilityProvider;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerPassiveItemProvider;
-import net.luojiuoscar.isaac_disaster.entity.custom.IsaacBullet;
-import net.luojiuoscar.isaac_disaster.event.custom.IsaacBulletShootEvent;
-import net.luojiuoscar.isaac_disaster.event.custom.IsaacGetBulletCountEvent;
-import net.luojiuoscar.isaac_disaster.manager.attack.AttackTypeId;
+import net.luojiuoscar.isaac_disaster.entity.custom.TearBullet;
+import net.luojiuoscar.isaac_disaster.event.custom.attack.tear_bullet.TearBulletShootEvent;
+import net.luojiuoscar.isaac_disaster.event.custom.misc.IsaacGetBulletCountEvent;
+import net.luojiuoscar.isaac_disaster.manager.attack.IAttackType;
+import net.luojiuoscar.isaac_disaster.manager.id.AttackTypeId;
 import net.luojiuoscar.isaac_disaster.manager.id.BulletColorId;
 import net.luojiuoscar.isaac_disaster.manager.id.ItemId;
+import net.luojiuoscar.isaac_disaster.sound.ModSounds;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -25,11 +27,23 @@ public class BulletAttack implements IAttackType {
     }
 
     @Override
-    public int getPriority() {
+    public double getPriority() {
         return AttackTypeId.BULLET.getPriority();
     }
 
-    public void performAttack(LivingEntity entity, int colorId, Set<Integer> hitEffects) {
+    @Override
+    public void makeSound(LivingEntity entity){
+        entity.level().playSound(
+                null,
+                entity.blockPosition(),
+                ModSounds.TEAR_BULLET_SHOT.get(),
+                SoundSource.PLAYERS,
+                0.6f,
+                1.0f
+        );
+    }
+
+    public void handleAttack(LivingEntity entity, int colorId, Set<Integer> hitEffects) {
         int count = entity instanceof Player player ? getBulletCount(player) : 1;
 
         if (count <= 1) {
@@ -49,13 +63,13 @@ public class BulletAttack implements IAttackType {
     }
 
     // =================== 子弹发射 ===================
-    private IsaacBullet createBullet(LivingEntity shooter, Vec3 spawnPos, float xRot, float yRot, int colorId, Set<Integer> hitEffects) {
+    private TearBullet createBullet(LivingEntity shooter, Vec3 spawnPos, float xRot, float yRot, int colorId, Set<Integer> hitEffects) {
         double width = shooter.getBbWidth();
         double forwardOffset = 0.4 * (width / 0.6);
         Vec3 look = Vec3.directionFromRotation(xRot, yRot);
         Vec3 adjustedPos = spawnPos.add(look.scale(forwardOffset));
 
-        IsaacBullet bullet = new IsaacBullet(
+        TearBullet bullet = new TearBullet(
                 shooter.level(),
                 shooter,
                 getBulletLiftTime(shooter),
@@ -71,7 +85,7 @@ public class BulletAttack implements IAttackType {
         bullet.setHoming(isHoming(shooter));
         bullet.setControllable(isControllable(shooter));
 
-        bullet.setBulletHitEffects(hitEffects);
+        bullet.setHitEffectIds(hitEffects);
 
         bullet.setColor(BulletColorId.getColorById(colorId));
         bullet.setAlpha(BulletColorId.getAlphaById(colorId));
@@ -80,7 +94,7 @@ public class BulletAttack implements IAttackType {
         bullet.setDeltaMovement(look.scale(getBulletSpeed(shooter)));
 
         if (!shooter.level().isClientSide)
-            MinecraftForge.EVENT_BUS.post(new IsaacBulletShootEvent(bullet, shooter));
+            MinecraftForge.EVENT_BUS.post(new TearBulletShootEvent(bullet.getOwner(), getId(), hitEffects, bullet));
 
         return bullet;
     }
@@ -92,7 +106,7 @@ public class BulletAttack implements IAttackType {
     private void shotBullet(LivingEntity entity, float xRot, float yRot, int colorId, Set<Integer> hitEffects) {
         if (entity.level().isClientSide()) return;
         Vec3 eyePos = entity.getEyePosition().add(0, entity.getBbHeight() * -0.15, 0);
-        IsaacBullet bullet = createBullet(entity, eyePos, xRot, yRot, colorId, hitEffects);
+        TearBullet bullet = createBullet(entity, eyePos, xRot, yRot, colorId, hitEffects);
         entity.level().addFreshEntity(bullet);
     }
 
@@ -102,9 +116,9 @@ public class BulletAttack implements IAttackType {
         Vec3 right = look.cross(new Vec3(0, 1, 0)).normalize();
         Vec3 eyePos = entity.getEyePosition().add(0, entity.getBbHeight() * -0.15, 0);
 
-        IsaacBullet bullet1 = createBullet(
+        TearBullet bullet1 = createBullet(
                 entity, eyePos.add(right.scale(0.25)), entity.getXRot(), entity.getYRot(), colorId, hitEffects);
-        IsaacBullet bullet2 = createBullet(
+        TearBullet bullet2 = createBullet(
                 entity, eyePos.add(right.scale(-0.25)), entity.getXRot(), entity.getYRot(), colorId, hitEffects);
 
         entity.level().addFreshEntity(bullet1);
@@ -140,43 +154,6 @@ public class BulletAttack implements IAttackType {
     private float getDamage(LivingEntity entity) {
         AttributeInstance attr = entity.getAttribute(Attributes.ATTACK_DAMAGE);
         return attr != null ? (float) attr.getValue() : 1f;
-    }
-
-    // =================== 高级特性 ===================
-    private boolean isSpectral(LivingEntity entity){
-        if (entity instanceof Player player){
-            return player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY)
-                    .map(a -> a.getSpectral() > 0)
-                    .orElse(false);
-        }
-        return false;
-    }
-
-    private boolean isHoming(LivingEntity entity){
-        if (entity instanceof Player player){
-            return player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY)
-                    .map(a -> a.getHoming() > 0)
-                    .orElse(false);
-        }
-        return false;
-    }
-
-    private boolean isPiercing(LivingEntity entity){
-        if (entity instanceof Player player){
-            return player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY)
-                    .map(a -> a.getPiercing() > 0)
-                    .orElse(false);
-        }
-        return false;
-    }
-
-    private boolean isControllable(LivingEntity entity){
-        if (entity instanceof Player player){
-            return player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY)
-                    .map(a -> a.getControllable() > 0)
-                    .orElse(false);
-        }
-        return false;
     }
 
     // =================== count ===================

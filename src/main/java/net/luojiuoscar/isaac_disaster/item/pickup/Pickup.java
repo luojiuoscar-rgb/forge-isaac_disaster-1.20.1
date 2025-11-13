@@ -1,6 +1,6 @@
 package net.luojiuoscar.isaac_disaster.item.pickup;
 
-import net.luojiuoscar.isaac_disaster.event.custom.PickupUseEvent;
+import net.luojiuoscar.isaac_disaster.event.custom.misc.PickupUseEvent;
 import net.luojiuoscar.isaac_disaster.item.pickup.interfaces.IUsablePickup;
 import net.luojiuoscar.isaac_disaster.manager.item_managers.PickupManager;
 import net.minecraft.world.InteractionHand;

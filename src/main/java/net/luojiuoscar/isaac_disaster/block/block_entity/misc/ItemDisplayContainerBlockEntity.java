@@ -1,7 +1,7 @@
 package net.luojiuoscar.isaac_disaster.block.block_entity.misc;
 
 import net.luojiuoscar.isaac_disaster.capability.misc.DisplayItemListCap;
-import net.luojiuoscar.isaac_disaster.event.custom.ItemDisplayAddEvent;
+import net.luojiuoscar.isaac_disaster.event.custom.misc.ItemDisplayAddEvent;
 import net.luojiuoscar.isaac_disaster.helper.LootHelper;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.helper.PoolHelper;

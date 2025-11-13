@@ -15,11 +15,9 @@ import net.luojiuoscar.isaac_disaster.item.item.ActiveItem;
 import net.luojiuoscar.isaac_disaster.item.pickup.IsaacHead;
 import net.luojiuoscar.isaac_disaster.manager.attack.AttackManager;
 import net.luojiuoscar.isaac_disaster.manager.id.ItemId;
-import net.luojiuoscar.isaac_disaster.sound.ModSounds;
 import net.minecraft.client.Minecraft;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.player.Inventory;
@@ -188,16 +186,6 @@ public class ServerTickEvent {
 
         // 射击延迟
         player.getCooldowns().addCooldown(stack.getItem(), (int) PlayerHelper.getShotDelay(player));
-
-        // SFX
-        player.level().playSound(
-                null,
-                player.blockPosition(),
-                ModSounds.ISAAC_HEAD_SHOOT.get(),
-                SoundSource.PLAYERS,
-                0.6f,
-                1.0f
-        );
     }
 
 

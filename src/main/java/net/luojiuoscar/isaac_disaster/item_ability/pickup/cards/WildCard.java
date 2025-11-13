@@ -51,19 +51,14 @@ public class WildCard implements IPickup {
 
                     long maxSeq = Math.max(seqEffect, Math.max(seqCard, seqActive));
 
-                    IsaacDisaster.LOGGER.info("WILD CARD: {}, {}, {}, max:{}", effect, card, active, maxSeq);
-
                     if (maxSeq == seqEffect) {
                         PillEffectManager.getInstance().getEffectFromEffectId(effect.id()).onUse(player, false);
-                        IsaacDisaster.LOGGER.info("WILD CARD TRIGGERED EFFECT");
                     }
                     else if (maxSeq == seqCard) {
                         PickupManager.getInstance().getItemFromId(card.id()).onUseEffect(player, null, null);
-                        IsaacDisaster.LOGGER.info("WILD CARD TRIGGERED CARD");
                     }
                     else if (maxSeq == seqActive) {
                         ActiveItemManager.getInstance().getItemFromId(active.id()).onUse(player, null);
-                        IsaacDisaster.LOGGER.info("WILD CARD TRIGGERED ACTIVE");
                     }
                 }
         );

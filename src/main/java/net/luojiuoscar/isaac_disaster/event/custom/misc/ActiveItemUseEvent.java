@@ -1,4 +1,4 @@
-package net.luojiuoscar.isaac_disaster.event.custom;
+package net.luojiuoscar.isaac_disaster.event.custom.misc;
 
 import net.luojiuoscar.isaac_disaster.item.item.ActiveItem;
 import net.minecraft.world.entity.player.Player;

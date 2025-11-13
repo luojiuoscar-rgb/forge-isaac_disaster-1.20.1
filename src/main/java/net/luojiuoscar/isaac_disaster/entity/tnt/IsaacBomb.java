@@ -7,16 +7,11 @@ import net.luojiuoscar.isaac_disaster.manager.id.ItemId;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.NeutralMob;
-import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.item.PrimedTnt;
-import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
@@ -97,7 +92,17 @@ public class IsaacBomb extends PrimedTnt {
         // 波比炸弹的追踪效果
         if(this.getOwner() instanceof ServerPlayer player
             && PlayerHelper.hasItem(ItemId.BOBBY_BOMB.getId(), player)){
-            LivingEntity target = getTrackingTarget();
+
+            Vec3 forwardPos = this.position().add(this.getDeltaMovement().normalize().scale(3.0));
+
+            LivingEntity target = EntityHelper.findNearestTrackingTarget(
+                    level(),
+                    getOwner(),
+                    forwardPos, // 用前方位置作为中心
+                    6,
+                    null
+            );
+
             if (target != null) {
                 steerTowards(target, 0.1); // 0.3 = 转向速度
             }
@@ -123,84 +128,6 @@ public class IsaacBomb extends PrimedTnt {
         }
     }
 
-
-
-    @Nullable
-    public LivingEntity getTrackingTarget() {
-        double range = 16.0;
-
-        List<LivingEntity> nearby = this.level().getEntitiesOfClass(
-                LivingEntity.class,
-                this.getBoundingBox().inflate(range),
-                e -> e.isAlive()
-                        && e != this.getOwner()
-                        && !e.isInvulnerable() // 排除无敌实体
-        );
-
-        LivingEntity hostileAggro = null;
-        LivingEntity hostilePassive = null;
-        LivingEntity neutral = null;
-        LivingEntity playerTarget = null;
-
-        for (LivingEntity e : nearby) {
-            if (EntityHelper.isFriendlyToPlayer(e, owner)){
-                continue;
-            }
-
-            // ==== 敌对生物（Monster） ====
-            if (e instanceof Monster monster) {
-                boolean hasAggro = false;
-
-                // 是否正盯着 owner 攻击
-                if (monster.getTarget() == this.getOwner()) hasAggro = true;
-
-                // 如果是中立型怪物，检测是否被激怒
-                if (monster instanceof NeutralMob neutralMob && this.getOwner() instanceof Player player)
-                    if (neutralMob.isAngryAt(player)) hasAggro = true;
-
-                // 有仇恨 -> 优先追踪
-                if (hasAggro) {
-                    if (hostileAggro == null || this.distanceToSqr(e) < this.distanceToSqr(hostileAggro))
-                        hostileAggro = e;
-                } else {
-                    if (hostilePassive == null || this.distanceToSqr(e) < this.distanceToSqr(hostilePassive))
-                        hostilePassive = e;
-                }
-            }
-
-            // ==== 中立生物（不攻击） ====
-            else if (e instanceof PathfinderMob) {
-                if (neutral == null || this.distanceToSqr(e) < this.distanceToSqr(neutral))
-                    neutral = e;
-            }
-
-            // ==== 玩家 ====
-            else if (e instanceof Player otherPlayer) {
-                if (this.getOwner() instanceof Player ownerPlayer) {
-                    // 排除同队伍
-                    if (ownerPlayer.isAlliedTo(otherPlayer)) continue;
-
-                    // 排除关闭PVP的服务器
-                    if (ownerPlayer.level() instanceof ServerLevel serverLevel) {
-                        MinecraftServer server = serverLevel.getServer();
-                        if (!server.isPvpAllowed()) continue;
-                    }
-
-                    // 检查是否能伤害
-                    if (!ownerPlayer.canHarmPlayer(otherPlayer)) continue;
-
-                    // 选最近的玩家
-                    if (playerTarget == null || this.distanceToSqr(e) < this.distanceToSqr(playerTarget))
-                        playerTarget = e;
-                }
-            }
-        }
-
-        if (hostileAggro != null) return hostileAggro;
-        if (hostilePassive != null) return hostilePassive;
-        if (neutral != null) return neutral;
-        return playerTarget;
-    }
 
     // 朝向目标转向（保持原始速度大小不变）
     private void steerTowards(LivingEntity target, double steerStrength) {

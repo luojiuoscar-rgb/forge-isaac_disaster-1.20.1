@@ -23,7 +23,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.function.Supplier;
 
-import static com.mojang.text2speech.Narrator.LOGGER;
 import static net.luojiuoscar.isaac_disaster.Config.HOLY_SHIELD_STRENGTH;
 import static net.luojiuoscar.isaac_disaster.Config.NEARBY_RANGE;
 
@@ -242,10 +241,7 @@ public enum StatManager {
     public static void modifyAdd(Player player, UUID uuid, double amount,
                                  @javax.annotation.Nullable Double minValue, @javax.annotation.Nullable Double maxValue){
         AttributeInstance instance = player.getAttribute(StatManager.fromUUID(uuid).getAttribute());
-        if(instance == null){
-            LOGGER.debug("ADD FAILED");
-            return;
-        }
+        if(instance == null) return;
 
         AttributeModifier modifier = instance.getModifier(uuid);
         double current = modifier != null ? modifier.getAmount() : 0.0;
@@ -260,10 +256,7 @@ public enum StatManager {
     public static void modifyMultiplyBase(Player player, UUID uuid, double amount,
                                           @javax.annotation.Nullable Double minValue, @javax.annotation.Nullable Double maxValue){
         AttributeInstance instance = player.getAttribute(StatManager.fromUUID(uuid).getAttribute());
-        if(instance == null){
-            LOGGER.debug("MULTIPLY_BASE FAILED");
-            return;
-        }
+        if(instance == null) return;
 
         AttributeModifier modifier = instance.getModifier(uuid);
         double current = modifier != null ? modifier.getAmount() : 0.0;
@@ -324,7 +317,7 @@ public enum StatManager {
         );
     }
     /* ---------------------- 子弹类型与颜色 ---------------------- */
-    public static void addBulletType(Player player, int id, int count){
+    public static void addAttackType(Player player, int id, int count){
         player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY).ifPresent(
                 playerAbility -> playerAbility.addBulletType(id, count)
         );

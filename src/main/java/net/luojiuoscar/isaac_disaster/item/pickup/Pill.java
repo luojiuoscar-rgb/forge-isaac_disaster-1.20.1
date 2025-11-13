@@ -2,7 +2,7 @@ package net.luojiuoscar.isaac_disaster.item.pickup;
 
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerItemUseRecordProvider;
 import net.luojiuoscar.isaac_disaster.client.ClientDataManager;
-import net.luojiuoscar.isaac_disaster.event.custom.PickupUseEvent;
+import net.luojiuoscar.isaac_disaster.event.custom.misc.PickupUseEvent;
 import net.luojiuoscar.isaac_disaster.item.item.IIgnoreRecord;
 import net.luojiuoscar.isaac_disaster.item.pickup.interfaces.ICommonPickup;
 import net.luojiuoscar.isaac_disaster.manager.id.ItemId;

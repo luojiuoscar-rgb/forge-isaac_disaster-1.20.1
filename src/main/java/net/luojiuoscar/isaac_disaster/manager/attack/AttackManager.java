@@ -1,10 +1,10 @@
 package net.luojiuoscar.isaac_disaster.manager.attack;
 
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerAbilityProvider;
-import net.luojiuoscar.isaac_disaster.event.custom.PlayerPerformAttackEvent;
+import net.luojiuoscar.isaac_disaster.event.custom.attack.PlayerPerformAttackEvent;
 import net.luojiuoscar.isaac_disaster.manager.attack.types.BulletAttack;
-import net.luojiuoscar.isaac_disaster.manager.attack.types.IAttackType;
 import net.luojiuoscar.isaac_disaster.manager.attack.types.LaserAttack;
+import net.luojiuoscar.isaac_disaster.manager.id.AttackTypeId;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.common.MinecraftForge;
 

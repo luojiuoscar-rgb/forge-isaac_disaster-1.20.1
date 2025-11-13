@@ -9,6 +9,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.*;
+import net.minecraft.world.entity.monster.Enemy;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
@@ -259,14 +260,16 @@ public class EntityHelper {
     }
 
     @Nullable
-    public static LivingEntity findNearestHostileTarget(Level level,
-                                                        LivingEntity owner,
-                                                        Vec3 center,
-                                                        double range,
-                                                        @Nullable Predicate<LivingEntity> filter) {
-        // 以传入的 center 作为搜索中心
-        AABB searchBox = new AABB(center.x - range, center.y - range, center.z - range,
-                center.x + range, center.y + range, center.z + range);
+    public static LivingEntity findNearestTrackingTarget(Level level,
+                                                         LivingEntity owner,
+                                                         Vec3 center,
+                                                         double range,
+                                                         @Nullable Predicate<LivingEntity> filter) {
+        // 搜索范围
+        AABB searchBox = new AABB(
+                center.x - range, center.y - range, center.z - range,
+                center.x + range, center.y + range, center.z + range
+        );
 
         List<LivingEntity> nearby = level.getEntitiesOfClass(LivingEntity.class,
                 searchBox,
@@ -281,12 +284,18 @@ public class EntityHelper {
 
         for (LivingEntity e : nearby) {
 
-            if (EntityHelper.isFriendlyToPlayer(e, owner)) continue;
+            if (isFriendlyToPlayer(e, owner)) continue;
 
-            if (e instanceof Monster monster) {
-                boolean hasAggro = monster.getTarget() == owner;
-                if (monster instanceof NeutralMob neutralMob && owner instanceof Player player)
-                    if (neutralMob.isAngryAt(player)) hasAggro = true;
+            // 优先考虑 Enemy
+            if (e instanceof Enemy) {
+                boolean hasAggro = false;
+
+                if (e instanceof Monster m) {
+                    hasAggro = m.getTarget() == owner;
+
+                    if (m instanceof NeutralMob neutralMob && owner instanceof Player player)
+                        if (neutralMob.isAngryAt(player)) hasAggro = true;
+                }
 
                 if (hasAggro) {
                     if (hostileAggro == null || e.distanceToSqr(center.x, center.y, center.z) < hostileAggro.distanceToSqr(center.x, center.y, center.z))
@@ -294,11 +303,14 @@ public class EntityHelper {
                 } else if (hostilePassive == null || e.distanceToSqr(center.x, center.y, center.z) < hostilePassive.distanceToSqr(center.x, center.y, center.z))
                     hostilePassive = e;
 
-            } else if (e instanceof PathfinderMob) {
+            }
+            // 中立生物
+            else if (e instanceof PathfinderMob) {
                 if (neutral == null || e.distanceToSqr(center.x, center.y, center.z) < neutral.distanceToSqr(center.x, center.y, center.z))
                     neutral = e;
-
-            } else if (e instanceof Player otherPlayer && owner instanceof Player ownerPlayer) {
+            }
+            // 玩家
+            else if (e instanceof Player otherPlayer && owner instanceof Player ownerPlayer) {
                 if (!ownerPlayer.isAlliedTo(otherPlayer) &&
                         ((ServerLevel) ownerPlayer.level()).getServer().isPvpAllowed() &&
                         ownerPlayer.canHarmPlayer(otherPlayer)) {
@@ -314,7 +326,5 @@ public class EntityHelper {
         if (neutral != null) return neutral;
         return playerTarget;
     }
-
-
 
 }

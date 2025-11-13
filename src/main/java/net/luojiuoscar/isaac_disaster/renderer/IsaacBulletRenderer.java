@@ -4,7 +4,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
-import net.luojiuoscar.isaac_disaster.entity.custom.IsaacBullet;
+import net.luojiuoscar.isaac_disaster.entity.custom.TearBullet;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
@@ -14,7 +14,7 @@ import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 
-public class IsaacBulletRenderer extends EntityRenderer<IsaacBullet> {
+public class IsaacBulletRenderer extends EntityRenderer<TearBullet> {
     private static final ResourceLocation TEAR_BULLET =
             ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "textures/particle/tear_bullet.png");
 
@@ -28,7 +28,7 @@ public class IsaacBulletRenderer extends EntityRenderer<IsaacBullet> {
     }
 
     @Override
-    public void render(IsaacBullet bullet, float entityYaw, float partialTicks, PoseStack poseStack,
+    public void render(TearBullet bullet, float entityYaw, float partialTicks, PoseStack poseStack,
                        MultiBufferSource buffer, int packedLight) {
 
         poseStack.pushPose();
@@ -100,7 +100,7 @@ public class IsaacBulletRenderer extends EntityRenderer<IsaacBullet> {
     }
 
     @Override
-    public ResourceLocation getTextureLocation(IsaacBullet entity) {
+    public ResourceLocation getTextureLocation(TearBullet entity) {
         return TEAR_BULLET;
     }
 }

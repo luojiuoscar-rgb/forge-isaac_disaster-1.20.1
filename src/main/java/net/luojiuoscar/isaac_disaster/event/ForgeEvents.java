@@ -6,7 +6,7 @@ import net.luojiuoscar.isaac_disaster.capability.entity.EntityEffectProvider;
 import net.luojiuoscar.isaac_disaster.capability.player.*;
 import net.luojiuoscar.isaac_disaster.commands.*;
 import net.luojiuoscar.isaac_disaster.effect.ModEffects;
-import net.luojiuoscar.isaac_disaster.entity.custom.IsaacBullet;
+import net.luojiuoscar.isaac_disaster.entity.custom.TearBullet;
 import net.luojiuoscar.isaac_disaster.entity.tnt.IsaacBomb;
 import net.luojiuoscar.isaac_disaster.helper.EntityHelper;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
@@ -346,7 +346,7 @@ public class ForgeEvents {
         DamageSource source = entity.getLastDamageSource();
 
         if (source == null) return;
-        if (source.getEntity() instanceof IsaacBullet) event.setCanceled(true);
+        if (source.getEntity() instanceof TearBullet) event.setCanceled(true);
 
         if (entity instanceof Player player){
             // 神圣护盾
