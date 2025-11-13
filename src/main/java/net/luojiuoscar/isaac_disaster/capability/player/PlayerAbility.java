@@ -1,7 +1,7 @@
 package net.luojiuoscar.isaac_disaster.capability.player;
 
-import net.luojiuoscar.isaac_disaster.manager.id.AttackTypeId;
-import net.luojiuoscar.isaac_disaster.manager.id.BulletColorId;
+import net.luojiuoscar.isaac_disaster.manager.attack.managers.AttackType;
+import net.luojiuoscar.isaac_disaster.manager.attack.managers.BulletColor;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
@@ -22,15 +22,17 @@ public class PlayerAbility {
     private int extraTrinketSlotCounts;
 
     private Map<Integer, Boolean> itemFlags;
-    private Map<Integer, Integer> bulletType;
+    private Map<Integer, Integer> attackType;
     private int bestBulletType;
     private Map<Integer, Integer> bulletColor; // bullet color id : count
     private int bestBulletColor;
+    private Map<Integer, Integer> trajectories;
 
     public PlayerAbility() {
         itemFlags = new HashMap<>();
-        bulletType = new HashMap<>();
+        attackType = new HashMap<>();
         bulletColor = new HashMap<>();
+        trajectories = new HashMap<>();
         init();
     }
 
@@ -43,8 +45,9 @@ public class PlayerAbility {
         extraTrinketSlotCounts = 0;
 
         itemFlags.clear();
-        bulletType.clear();
+        attackType.clear();
         bulletColor.clear();
+        trajectories.clear();
     }
 
     public void copyFrom(PlayerAbility source) {
@@ -56,8 +59,9 @@ public class PlayerAbility {
         this.extraTrinketSlotCounts = source.extraTrinketSlotCounts;
 
         this.itemFlags = new HashMap<>(source.itemFlags);
-        this.bulletType = new HashMap<>(source.bulletType);
+        this.attackType = new HashMap<>(source.attackType);
         this.bulletColor = new HashMap<>(source.bulletColor);
+        this.trajectories = new HashMap<>(source.trajectories);
     }
 
     public void saveNBTData(CompoundTag nbt) {
@@ -78,7 +82,7 @@ public class PlayerAbility {
         nbt.put("item_flags", itemFlagList);
 
         ListTag bulletTypeList = new ListTag();
-        for (Map.Entry<Integer, Integer> entry : bulletType.entrySet()) {
+        for (Map.Entry<Integer, Integer> entry : attackType.entrySet()) {
             CompoundTag tag = new CompoundTag();
             tag.putInt("bullet_type_id", entry.getKey());
             tag.putInt("count", entry.getValue());
@@ -95,7 +99,14 @@ public class PlayerAbility {
         }
         nbt.put("bullet_colors", bulletColorList);
 
-
+        ListTag trajectoriesList = new ListTag();
+        for (Map.Entry<Integer, Integer> entry : trajectories.entrySet()) {
+            CompoundTag tag = new CompoundTag();
+            tag.putInt("trajectory_id", entry.getKey());
+            tag.putInt("count", entry.getValue());
+            trajectoriesList.add(tag);
+        }
+        nbt.put("trajectories", trajectoriesList);
     }
 
     public void loadNBTData(CompoundTag nbt) {
@@ -117,14 +128,14 @@ public class PlayerAbility {
             }
         }
 
-        bulletType.clear();
+        attackType.clear();
         if (nbt.contains("bullet_types", Tag.TAG_LIST)) {
             ListTag list = nbt.getList("bullet_types", Tag.TAG_COMPOUND);
             for (Tag t : list) {
                 CompoundTag tag = (CompoundTag) t;
                 int color = tag.getInt("bullet_type_id");
                 int count = tag.getInt("count");
-                bulletType.put(color, count);
+                attackType.put(color, count);
             }
         }
 
@@ -136,6 +147,17 @@ public class PlayerAbility {
                 int color = tag.getInt("bullet_color_id");
                 int count = tag.getInt("count");
                 bulletColor.put(color, count);
+            }
+        }
+
+        trajectories.clear();
+        if (nbt.contains("trajectories", Tag.TAG_LIST)) {
+            ListTag list = nbt.getList("trajectories", Tag.TAG_COMPOUND);
+            for (Tag t : list) {
+                CompoundTag tag = (CompoundTag) t;
+                int color = tag.getInt("trajectory_id");
+                int count = tag.getInt("count");
+                trajectories.put(color, count);
             }
         }
     }
@@ -197,24 +219,25 @@ public class PlayerAbility {
     }
 
     public Map<Integer, Integer> getBulletTypeMap() {
-        return new HashMap<>(bulletType);
+        return new HashMap<>(attackType);
     }
 
-    public void addBulletType(int id, int count) {
-        int r = bulletType.getOrDefault(id, 0) + count;
+    public void addAttackType(int id, int count) {
+        int r = attackType.getOrDefault(id, 0) + count;
         if (r <= 0) {
-            bulletType.remove(id);
+            attackType.remove(id);
             return;
         }
-        bulletType.put(id, r);
+        attackType.put(id, r);
+        updateBestAttackType();
     }
 
-    public void updateBestBulletType(){
-        int bestId = AttackTypeId.BULLET.getId();
-        double bestPriority = AttackTypeId.getPriorityById(bestId);
+    public void updateBestAttackType(){
+        int bestId = AttackType.BULLET.getId();
+        double bestPriority = AttackType.getPriorityById(bestId);
 
-        for (int id : bulletType.keySet()) {
-            double priority = AttackTypeId.getPriorityById(id);
+        for (int id : attackType.keySet()) {
+            double priority = AttackType.getPriorityById(id);
             if (priority > bestPriority) {
                 bestPriority = priority;
                 bestId = id;
@@ -233,11 +256,11 @@ public class PlayerAbility {
 
     public void updateBestBulletColor(){
         // 每一段时间更新
-        int bestId = BulletColorId.BASE.getId();
-        double bestPriority = BulletColorId.getPriorityById(bestId);
+        int bestId = BulletColor.BASE.getId();
+        double bestPriority = BulletColor.getPriorityById(bestId);
 
         for (int id : bulletColor.keySet()) {
-            double priority = BulletColorId.getPriorityById(id);
+            double priority = BulletColor.getPriorityById(id);
             if (priority > bestPriority) {
                 bestPriority = priority;
                 bestId = id;
@@ -257,6 +280,19 @@ public class PlayerAbility {
             return;
         }
         bulletColor.put(id, r);
+        updateBestBulletColor();
     }
 
+    public Map<Integer, Integer> getTrajectories() {
+        return trajectories;
+    }
+
+    public void addTrajectory(int id, int count){
+        int c = trajectories.getOrDefault(id, 0) + count;
+        if (c <= 0) {
+            trajectories.remove(id);
+            return;
+        }
+        trajectories.put(id, c);
+    }
 }

@@ -2,16 +2,19 @@ package net.luojiuoscar.isaac_disaster.item_ability.trinket.items;
 
 import net.luojiuoscar.isaac_disaster.item_ability.trinket.ITrinket;
 import net.luojiuoscar.isaac_disaster.manager.ColorManager;
+import net.luojiuoscar.isaac_disaster.manager.StatManager;
+import net.luojiuoscar.isaac_disaster.manager.attack.managers.AttackTrajectory;
 import net.luojiuoscar.isaac_disaster.manager.id.TrinketId;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 
 import java.util.List;
 
-public class RustedKey implements ITrinket {
+public class WiggleWorm implements ITrinket {
     @Override
     public int getId() {
-        return TrinketId.RUSTED_KEY.getId();
+        return TrinketId.WIGGLE_WORM.getId();
     }
 
     @Override
@@ -21,22 +24,30 @@ public class RustedKey implements ITrinket {
 
     @Override
     public void onEquipped(LivingEntity entity, boolean isEnchanted) {
+        if (!(entity instanceof Player player)) return;
 
+        StatManager.addTrajectory(player, AttackTrajectory.WIGGLE_WORM.getId(), 1);
     }
 
     @Override
     public void onUnequipped(LivingEntity entity, boolean isEnchanted) {
+        if (!(entity instanceof Player player)) return;
 
+        StatManager.addTrajectory(player, AttackTrajectory.WIGGLE_WORM.getId(), -1);
     }
 
     @Override
     public List<Component> getDescription() {
-        return List.of(Component.translatable("item.isaac_disaster.rusted_key.lore.1"));
+        return List.of(
+                Component.translatable("item.isaac_disaster.wiggle_worm.lore.1"),
+                StatManager.TEARS.description(0.5),
+                Component.translatable("item.isaac_disaster.attribute.spectral_bullet")
+        );
     }
 
     @Override
     public List<Component> getEnchantedDescription() {
-        return List.of(Component.translatable("item.isaac_disaster.synergy.description.higher_prob")
+        return List.of(Component.translatable("item.isaac_disaster.synergy.description.stronger")
                 .withStyle(style -> style.withColor(ColorManager.SYNERGY)));
     }
 }

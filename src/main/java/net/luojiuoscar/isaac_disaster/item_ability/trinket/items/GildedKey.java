@@ -29,6 +29,16 @@ public class GildedKey implements IRecursiveTrinket {
     }
 
     @Override
+    public void onEquipped(LivingEntity entity, boolean isEnchanted) {
+
+    }
+
+    @Override
+    public void onUnequipped(LivingEntity entity, boolean isEnchanted) {
+
+    }
+
+    @Override
     public List<Component> getDescription() {
         return List.of(Component.translatable("item.isaac_disaster.gilded_key.lore.1"),
                 Component.translatable("item.isaac_disaster.gilded_key.lore.2"),

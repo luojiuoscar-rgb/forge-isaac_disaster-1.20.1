@@ -2,7 +2,7 @@ package net.luojiuoscar.isaac_disaster.item_ability.passive_item.items;
 
 import net.luojiuoscar.isaac_disaster.item_ability.passive_item.IPassiveItem;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
-import net.luojiuoscar.isaac_disaster.manager.id.BulletColorId;
+import net.luojiuoscar.isaac_disaster.manager.attack.managers.BulletColor;
 import net.luojiuoscar.isaac_disaster.manager.id.ItemId;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
@@ -25,13 +25,13 @@ public class BloodOfTheMartyr implements IPassiveItem {
     @Override
     public void handleObtain(Player player, @Nullable ItemStack stack) {
         StatManager.DAMAGE.apply(player, 1);
-        StatManager.addBulletColor(player, BulletColorId.BLOOD_TEAR.getId(), 1);
+        StatManager.addBulletColor(player, BulletColor.BLOOD_TEAR.getId(), 1);
     }
 
     @Override
     public void handleRemove(Player player, @Nullable ItemStack stack) {
         StatManager.DAMAGE.apply(player, -1);
-        StatManager.addBulletColor(player, BulletColorId.BLOOD_TEAR.getId(), -1);
+        StatManager.addBulletColor(player, BulletColor.BLOOD_TEAR.getId(), -1);
     }
 
     @Override

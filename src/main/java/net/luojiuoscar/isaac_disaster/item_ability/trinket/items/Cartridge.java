@@ -9,6 +9,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
@@ -19,6 +20,21 @@ public class Cartridge implements IHurtTriggerTrinket {
     @Override
     public int getId() {
         return TrinketId.CARTRIDGE.getId();
+    }
+
+    @Override
+    public void onFirstEquipped(LivingEntity entity, boolean isEnchanted) {
+
+    }
+
+    @Override
+    public void onEquipped(LivingEntity entity, boolean isEnchanted) {
+
+    }
+
+    @Override
+    public void onUnequipped(LivingEntity entity, boolean isEnchanted) {
+
     }
 
     @Override

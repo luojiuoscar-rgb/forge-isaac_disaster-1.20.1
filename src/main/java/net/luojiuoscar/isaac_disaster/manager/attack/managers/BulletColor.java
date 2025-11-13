@@ -1,8 +1,8 @@
-package net.luojiuoscar.isaac_disaster.manager.id;
+package net.luojiuoscar.isaac_disaster.manager.attack.managers;
 
 import org.joml.Vector3f;
 
-public enum BulletColorId {
+public enum BulletColor {
     BASE(0xFFFFFF, 1.0f, 0),
     SPOON_BENDER(0x7A33C0, 1.0f, 1),
     BLOOD_TEAR(0xCC171F, 1.0f, 5),
@@ -16,7 +16,7 @@ public enum BulletColorId {
     private final float alpha;
     private final int priority;
 
-    BulletColorId(int color, float alpha, int priority) {
+    BulletColor(int color, float alpha, int priority) {
         this.id = ordinal();
         this.color = color;
         this.alpha = alpha;
@@ -39,25 +39,25 @@ public enum BulletColorId {
         return priority;
     }
 
-    public static BulletColorId byId(int id) {
-        for (BulletColorId value : values()) {
+    public static BulletColor byId(int id) {
+        for (BulletColor value : values()) {
             if (value.id == id) return value;
         }
         return BASE;
     }
 
     public static double getPriorityById(int id) {
-        BulletColorId value = byId(id);
+        BulletColor value = byId(id);
         return value.getPriority();
     }
 
     public static int getColorById(int id) {
-        BulletColorId value = byId(id);
+        BulletColor value = byId(id);
         return value.getColor();
     }
 
     public static float getAlphaById(int id) {
-        BulletColorId value = byId(id);
+        BulletColor value = byId(id);
         return value.getAlpha();
     }
 

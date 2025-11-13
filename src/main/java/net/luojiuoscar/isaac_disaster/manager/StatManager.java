@@ -319,7 +319,7 @@ public enum StatManager {
     /* ---------------------- 子弹类型与颜色 ---------------------- */
     public static void addAttackType(Player player, int id, int count){
         player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY).ifPresent(
-                playerAbility -> playerAbility.addBulletType(id, count)
+                playerAbility -> playerAbility.addAttackType(id, count)
         );
     }
 
@@ -329,6 +329,11 @@ public enum StatManager {
         );
     }
 
+    public static void addTrajectory(Player player, int id, int count){
+        player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY).ifPresent(
+                playerAbility -> playerAbility.addTrajectory(id, count)
+        );
+    }
     /* ---------------------- 道具套装 ---------------------- */
 
     public static void modifySetWithId(Player player, int setId, int amount){

@@ -2,13 +2,14 @@ package net.luojiuoscar.isaac_disaster.manager.attack;
 
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerAbilityProvider;
 import net.luojiuoscar.isaac_disaster.event.custom.attack.PlayerPerformAttackEvent;
+import net.luojiuoscar.isaac_disaster.manager.attack.managers.AttackType;
 import net.luojiuoscar.isaac_disaster.manager.attack.types.BulletAttack;
 import net.luojiuoscar.isaac_disaster.manager.attack.types.LaserAttack;
-import net.luojiuoscar.isaac_disaster.manager.id.AttackTypeId;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.common.MinecraftForge;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -40,17 +41,19 @@ public class AttackManager {
         player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY).ifPresent(playerAbility -> {
             int attackId = playerAbility.getBestBulletType();
             int colorId = playerAbility.getBestBulletColorId();
+            Set<Integer> trajectories = playerAbility.getTrajectories().keySet();
 
-            PlayerPerformAttackEvent event = new PlayerPerformAttackEvent(player, attackId, colorId);
+            PlayerPerformAttackEvent event = new PlayerPerformAttackEvent(player, attackId, colorId, trajectories);
             MinecraftForge.EVENT_BUS.post(event);
 
             attackId = event.getAttackTypeId();
             colorId = event.getBulletColorId();
             Set<Integer> hitEffects = event.getHitEffects();
+            trajectories = new HashSet<>(event.getTrajectories());
 
-            IAttackType attack = attacks.getOrDefault(attackId, attacks.get(AttackTypeId.BULLET.getId()));
+            IAttackType attack = attacks.getOrDefault(attackId, attacks.get(AttackType.BULLET.getId()));
             if (attack != null) {
-                attack.performAttack(player, colorId, hitEffects);
+                attack.performAttack(player, colorId, hitEffects, trajectories);
             }
         });
     }

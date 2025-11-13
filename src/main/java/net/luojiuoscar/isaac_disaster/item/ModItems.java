@@ -253,6 +253,7 @@ public class ModItems {
     public static final RegistryObject<Item> POKER_CHIP     = registerTrinket("poker_chip", TrinketId.POKER_CHIP);
     public static final RegistryObject<Item> GILDED_KEY     = registerTrinket("gilded_key", TrinketId.GILDED_KEY);
     public static final RegistryObject<Item> THE_LEFT_HAND  = registerTrinket("the_left_hand", TrinketId.THE_LEFT_HAND);
+    public static final RegistryObject<Item> WIGGLE_WORM  = registerTrinket("wiggle_worm", TrinketId.WIGGLE_WORM);
 
 
     // trinket end

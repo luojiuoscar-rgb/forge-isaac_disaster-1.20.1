@@ -9,6 +9,7 @@ import net.luojiuoscar.isaac_disaster.manager.id.TrinketId;
 import net.luojiuoscar.isaac_disaster.manager.item_managers.TrinketManager;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
@@ -21,6 +22,21 @@ public class LuckyRock implements ITriggerTrinket {
     @Override
     public int getId() {
         return TrinketId.LUCKY_ROCK.getId();
+    }
+
+    @Override
+    public void onFirstEquipped(LivingEntity entity, boolean isEnchanted) {
+
+    }
+
+    @Override
+    public void onEquipped(LivingEntity entity, boolean isEnchanted) {
+
+    }
+
+    @Override
+    public void onUnequipped(LivingEntity entity, boolean isEnchanted) {
+
     }
 
     @Override

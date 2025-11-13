@@ -9,13 +9,11 @@ import net.luojiuoscar.isaac_disaster.event.custom.attack.IsaacAttackAfterHitEve
 import net.luojiuoscar.isaac_disaster.event.custom.attack.IsaacAttackBeforeHitEntityEvent;
 import net.luojiuoscar.isaac_disaster.event.custom.attack.IsaacAttackHitBlockEvent;
 import net.luojiuoscar.isaac_disaster.event.custom.attack.PlayerPerformAttackEvent;
-import net.luojiuoscar.isaac_disaster.event.custom.attack.tear_bullet.TearBulletTickEvent;
 import net.luojiuoscar.isaac_disaster.event.custom.misc.*;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.item.item.Trinket;
 import net.luojiuoscar.isaac_disaster.item.pickup.Card;
 import net.luojiuoscar.isaac_disaster.item.pickup.Pill;
-import net.luojiuoscar.isaac_disaster.item_ability.passive_item.IDamageTriggerPassiveItem;
 import net.luojiuoscar.isaac_disaster.item_ability.passive_item.ISpecialTypeBulletPassiveItem;
 import net.luojiuoscar.isaac_disaster.item_ability.passive_item.items.*;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
@@ -64,20 +62,6 @@ public class IsaacDisasterEvents {
     }
 
     @SubscribeEvent
-    public static void onBulletTick(TearBulletTickEvent event){
-        TearBullet bullet = event.getBullet();
-        LivingEntity owner = bullet.getOwner();
-
-        if (!(owner instanceof ServerPlayer player)) return;
-
-        if (PlayerHelper.hasItem(ItemId.TINY_PLANET.getId(), player)){
-            TinyPlanet.onTriggered(event);
-        }
-    }
-
-
-
-    @SubscribeEvent
     public static void onAttackHitBlock(IsaacAttackHitBlockEvent event) {
         if (!(event.getDirectSource() instanceof TearBullet bullet &&
                 bullet.getOwner() instanceof ServerPlayer player)) return;
@@ -86,7 +70,6 @@ public class IsaacDisasterEvents {
             RubberCement.bounceOnBlock(event);
         }
     }
-
 
 
     @SubscribeEvent
@@ -105,8 +88,8 @@ public class IsaacDisasterEvents {
 
         // 遍历并触发对应效果
         for (int itemId : effects){
-            IDamageTriggerPassiveItem item =(IDamageTriggerPassiveItem)PassiveItemManager.getInstance().getItemFromId(itemId);
-            item.handleAttackEntityEffect(player, living);
+            ISpecialTypeBulletPassiveItem item =(ISpecialTypeBulletPassiveItem) PassiveItemManager.getInstance().getItemFromId(itemId);
+            item.onHit(player, living);
         }
     }
 
@@ -165,8 +148,6 @@ public class IsaacDisasterEvents {
                         }
                     }
                 });
-
-
     }
 
     @SubscribeEvent

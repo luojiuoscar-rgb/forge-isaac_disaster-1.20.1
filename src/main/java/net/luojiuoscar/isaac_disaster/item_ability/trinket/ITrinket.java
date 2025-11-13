@@ -10,11 +10,11 @@ public interface ITrinket {
     int getId();
 
     // effects
-    default void onFirstEquipped(LivingEntity entity, boolean isEnchanted){};
+    void onFirstEquipped(LivingEntity entity, boolean isEnchanted);
 
-    default void onEquipped(LivingEntity entity, boolean isEnchanted){};
+    void onEquipped(LivingEntity entity, boolean isEnchanted);
 
-    default void onUnequipped(LivingEntity entity, boolean isEnchanted){};
+    void onUnequipped(LivingEntity entity, boolean isEnchanted);
 
 
     List<Component> getDescription();

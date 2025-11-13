@@ -5,7 +5,7 @@ import net.luojiuoscar.isaac_disaster.event.custom.attack.PlayerPerformAttackEve
 import net.luojiuoscar.isaac_disaster.item_ability.passive_item.IDamageTriggerPassiveItem;
 import net.luojiuoscar.isaac_disaster.item_ability.passive_item.ISpecialTypeBulletPassiveItem;
 import net.luojiuoscar.isaac_disaster.manager.EffectManager;
-import net.luojiuoscar.isaac_disaster.manager.id.BulletColorId;
+import net.luojiuoscar.isaac_disaster.manager.attack.managers.BulletColor;
 import net.luojiuoscar.isaac_disaster.manager.id.ItemId;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -30,17 +30,15 @@ public class TheCommonCold implements IDamageTriggerPassiveItem, ISpecialTypeBul
 
     @Override
     public void handleAttackEntityEffect(Player player, LivingEntity target){
-        // 给目标添加中毒效果：持续5秒（100游戏刻，20刻=1秒），等级1
         MobEffectInstance poisonEffect = new MobEffectInstance(
-                ModEffects.ISAAC_POISON.get(),  // 中毒效果的类型
-                70,                 // 持续时间（游戏刻）
-                0,                  // 效果等级（0=I级，1=II级，以此类推）
-                false,              // 是否显示粒子效果
-                true,               // 是否显示图标
-                true                // 是否可以被移除（如牛奶）
+                ModEffects.POISON.get(),
+                70,
+                0,
+                false,
+                true,
+                true
         );
 
-        // 为目标实体应用效果
         target.addEffect(poisonEffect, player);
     };
 
@@ -76,15 +74,19 @@ public class TheCommonCold implements IDamageTriggerPassiveItem, ISpecialTypeBul
         return description;
     }
 
-
     @Override
     public void onShoot(PlayerPerformAttackEvent event) {
         Player player = event.getPlayer();
 
         if (player.getRandom().nextDouble() <= getTriggerChance(player)) {
-            event.setBulletColorId(BulletColorId.POISON.getId());
+            event.setBulletColorId(BulletColor.POISON.getId());
 
             event.addHitEffect(ItemId.THE_COMMON_COLD.getId());
         }
+    }
+
+    @Override
+    public void onHit(Player source, LivingEntity target) {
+        handleAttackEntityEffect(source, target);
     }
 }

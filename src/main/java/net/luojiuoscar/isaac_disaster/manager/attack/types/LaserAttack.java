@@ -1,12 +1,14 @@
 package net.luojiuoscar.isaac_disaster.manager.attack.types;
 
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
-import net.luojiuoscar.isaac_disaster.attribute.ModAttributes;
-import net.luojiuoscar.isaac_disaster.event.custom.attack.*;
+import net.luojiuoscar.isaac_disaster.event.custom.attack.IsaacAttackAfterHitEvent;
+import net.luojiuoscar.isaac_disaster.event.custom.attack.IsaacAttackBeforeHitEntityEvent;
+import net.luojiuoscar.isaac_disaster.event.custom.attack.IsaacAttackHitBlockEvent;
 import net.luojiuoscar.isaac_disaster.helper.EntityHelper;
 import net.luojiuoscar.isaac_disaster.manager.attack.IAttackType;
-import net.luojiuoscar.isaac_disaster.manager.id.AttackTypeId;
-import net.luojiuoscar.isaac_disaster.manager.id.BulletColorId;
+import net.luojiuoscar.isaac_disaster.manager.attack.managers.AttackTrajectory;
+import net.luojiuoscar.isaac_disaster.manager.attack.managers.AttackType;
+import net.luojiuoscar.isaac_disaster.manager.attack.managers.BulletColor;
 import net.luojiuoscar.isaac_disaster.sound.ModSounds;
 import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.core.registries.Registries;
@@ -16,7 +18,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
@@ -33,12 +35,12 @@ public class LaserAttack implements IAttackType {
 
     @Override
     public int getId() {
-        return AttackTypeId.LASER.getId();
+        return AttackType.LASER.getId();
     }
 
     @Override
     public double getPriority() {
-        return AttackTypeId.LASER.getPriority();
+        return AttackType.LASER.getPriority();
     }
 
     @Override
@@ -54,11 +56,27 @@ public class LaserAttack implements IAttackType {
     }
 
     @Override
-    public void handleAttack(LivingEntity entity, int colorId, Set<Integer> hitEffects) {
+    public void handleAttack(LivingEntity entity, int colorId, Set<Integer> hitEffects, Set<Integer> trajectories) {
+        int count = entity instanceof Player player ? getBulletCount(player) : 1;
+
+        float angleInterval = 6;
+        float curAngle = -angleInterval * (count - 1) / 2.0f;
+
+        for (int i = 0; i < count; i++) {
+            float baseYRot = entity.getYRot() + curAngle;
+            float baseXRot = entity.getXRot();
+
+            shotLaser(entity, colorId, hitEffects, baseXRot, baseYRot, trajectories);
+            curAngle += angleInterval;
+        }
+    }
+
+    private void shotLaser(LivingEntity entity, int colorId, Set<Integer> hitEffects,
+                           float xRot, float yRot, Set<Integer> trajectories) {
         if (!(entity.level() instanceof ServerLevel level)) return;
 
         Vec3 startPos = entity.getEyePosition().subtract(0, entity.getBbHeight() * 0.1, 0);
-        Vec3 direction = entity.getLookAngle().normalize();
+        Vec3 direction = getDirectionFromRotation(xRot, yRot);
 
         double range = getRange(entity);
         double width = getWidth(entity);
@@ -70,10 +88,18 @@ public class LaserAttack implements IAttackType {
         double step = 0.5;
 
         boolean homing = isHoming(entity);
-
         Vec3 lastPos = currentPos;
 
         while (traveled < range) {
+            // ========= 轨迹效果 =========
+            for (int trajId : trajectories) {
+                AttackTrajectory traj = AttackTrajectory.byId(trajId);
+                AttackTrajectory.TrajectoryContext ctx =
+                        new AttackTrajectory.TrajectoryContext(currentPos, direction, traveled);
+                direction = traj.apply(direction, ctx).normalize();
+            }
+            // ============================
+
             if (homing) {
                 LivingEntity target = EntityHelper.findNearestTrackingTarget(
                         level,
@@ -85,7 +111,7 @@ public class LaserAttack implements IAttackType {
 
                 if (target != null) {
                     Vec3 toTarget = target.getEyePosition().subtract(currentPos).normalize();
-                    direction = smoothTurn(direction, toTarget, 0.15); // 0.15 = 平滑系数
+                    direction = smoothTurn(direction, toTarget, 0.15);
                 }
             }
 
@@ -96,8 +122,6 @@ public class LaserAttack implements IAttackType {
             }
 
             handleEntityCollision(entity, level, box, hitEntities, damage, hitEffects);
-
-            // 插入粒子，使激光更连续
             spawnInterpolatedParticles(level, lastPos, currentPos, width, colorId);
 
             lastPos = currentPos;
@@ -105,6 +129,18 @@ public class LaserAttack implements IAttackType {
             traveled += step;
         }
     }
+
+    /**
+     * 从 pitch（xRot）和 yaw（yRot） 计算方向向量
+     */
+    private Vec3 getDirectionFromRotation(float xRot, float yRot) {
+        float f = (float) Math.cos(-yRot * ((float) Math.PI / 180F) - (float) Math.PI);
+        float f1 = (float) Math.sin(-yRot * ((float) Math.PI / 180F) - (float) Math.PI);
+        float f2 = (float) -Math.cos(-xRot * ((float) Math.PI / 180F));
+        float f3 = (float) Math.sin(-xRot * ((float) Math.PI / 180F));
+        return new Vec3((f1 * f2), f3, (f * f2)).normalize();
+    }
+
 
     // ================= 平滑转向 =================
     private Vec3 smoothTurn(Vec3 currentDir, Vec3 targetDir, double factor) {
@@ -115,8 +151,8 @@ public class LaserAttack implements IAttackType {
 
     // ================= 粒子插值 =================
     private void spawnInterpolatedParticles(ServerLevel level, Vec3 from, Vec3 to, double width, int colorId) {
-        Vector3f color = BulletColorId.getVec3fColorById(colorId);
-        if (colorId == BulletColorId.BASE.getId()) color = new Vector3f(1f, 0f, 0f);
+        Vector3f color = BulletColor.getVec3fColorById(colorId);
+        if (colorId == BulletColor.BASE.getId()) color = new Vector3f(1f, 0f, 0f);
 
         Vec3 delta = to.subtract(from);
         double distance = delta.length();
@@ -182,24 +218,6 @@ public class LaserAttack implements IAttackType {
         }
     }
 
-    // ================= 参数接口 =================
-
-    public double getRange(LivingEntity living) {
-        return Math.min(64, living.getAttributeValue(ModAttributes.BULLET_RANGE.get()));
-    }
-
-    public double getWidth(LivingEntity living) {
-        double scale = living.getAttributeValue(ModAttributes.BULLET_SCALE.get());
-        double damage = living.getAttributeValue(Attributes.ATTACK_DAMAGE);
-        return Math.log10(1 + damage) + scale / 2;
-    }
-
-    public float getDamage(LivingEntity living) {
-        return (float) living.getAttributeValue(Attributes.ATTACK_DAMAGE);
-    }
-
-    // ================= DamageSource =================
-
     private DamageSource makeDamageSource(LivingEntity source) {
         if (!(source.level() instanceof ServerLevel level)) return source.damageSources().generic();
 
@@ -212,4 +230,9 @@ public class LaserAttack implements IAttackType {
 
         return new DamageSource(damageTypeHolder, source, source);
     }
+
+    public double getWidth(LivingEntity living) {
+        return getBulletScale(living) * 0.25;
+    }
+
 }

@@ -227,7 +227,7 @@ public class ForgeEvents {
         // 获取效果的来源（伤害来源）
         Entity source = event.getEffectSource();
         // 检查是否是目标药水效果
-        if (event.getEffectInstance().getEffect() == ModEffects.ISAAC_POISON.get()) {
+        if (event.getEffectInstance().getEffect() == ModEffects.POISON.get()) {
             // 确保来源是实体且存在
             if (source instanceof LivingEntity damageSourceEntity) {
                 // 获取伤害来源的攻击伤害属性

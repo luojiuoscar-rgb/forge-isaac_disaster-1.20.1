@@ -27,6 +27,11 @@ public class Perfection implements IHurtTriggerTrinket {
     }
 
     @Override
+    public void onFirstEquipped(LivingEntity entity, boolean isEnchanted) {
+
+    }
+
+    @Override
     public List<Component> getDescription() {
         return List.of(Component.translatable("item.isaac_disaster.perfection.lore.1"),
                 StatManager.LUCK.description(10));

@@ -57,7 +57,8 @@ public class TrinketManager {
                 new MatchStick(),
                 new PokerChip(),
                 new GildedKey(),
-                new TheLeftHand()
+                new TheLeftHand(),
+                new WiggleWorm()
         );
     }
 }

@@ -25,7 +25,8 @@ public enum TrinketId {
     MATCH_STICK,
     POKER_CHIP,
     GILDED_KEY,
-    THE_LEFT_HAND;
+    THE_LEFT_HAND,
+    WIGGLE_WORM;
 
 
     private final int id;

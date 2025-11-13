@@ -428,6 +428,10 @@
   "item.isaac_disaster.gilded_key.enchanted.lore.1": "不再给予钥匙",
   "item.isaac_disaster.the_left_hand": "左断手",
   "item.isaac_disaster.the_left_hand.lore.1": "使箱子变成红箱子",
+  "item.isaac_disaster.wiggle_worm": "蠕动虫",
+  "item.isaac_disaster.wiggle_worm.lore.1": "使攻击轨迹变成正弦函数",
+
+
 
   "trinkets end": "",
 

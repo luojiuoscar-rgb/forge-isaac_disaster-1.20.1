@@ -18,6 +18,11 @@ public class LuckyToe implements ITrinket {
     }
 
     @Override
+    public void onFirstEquipped(LivingEntity entity, boolean isEnchanted) {
+
+    }
+
+    @Override
     public List<Component> getDescription() {
         return List.of(StatManager.LUCK.description(1),
                 Component.translatable("item.isaac_disaster.lucky_toe.lore.1"));

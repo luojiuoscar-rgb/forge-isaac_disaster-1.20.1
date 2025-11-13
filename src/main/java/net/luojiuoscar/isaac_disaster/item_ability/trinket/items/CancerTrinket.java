@@ -17,6 +17,11 @@ public class CancerTrinket implements ITrinket {
     }
 
     @Override
+    public void onFirstEquipped(LivingEntity entity, boolean isEnchanted) {
+
+    }
+
+    @Override
     public List<Component> getDescription() {
         return List.of(StatManager.TEARS_CORRECTION.description(1));
     }

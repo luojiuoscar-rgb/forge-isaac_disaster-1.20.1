@@ -6,6 +6,7 @@ import net.luojiuoscar.isaac_disaster.item_ability.trinket.IRecursiveTrinket;
 import net.luojiuoscar.isaac_disaster.manager.ColorManager;
 import net.luojiuoscar.isaac_disaster.manager.id.TrinketId;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -17,6 +18,21 @@ public class TheLeftHand implements IRecursiveTrinket {
     @Override
     public int getId() {
         return TrinketId.THE_LEFT_HAND.getId();
+    }
+
+    @Override
+    public void onFirstEquipped(LivingEntity entity, boolean isEnchanted) {
+
+    }
+
+    @Override
+    public void onEquipped(LivingEntity entity, boolean isEnchanted) {
+
+    }
+
+    @Override
+    public void onUnequipped(LivingEntity entity, boolean isEnchanted) {
+
     }
 
     @Override

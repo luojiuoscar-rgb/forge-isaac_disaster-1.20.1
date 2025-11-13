@@ -5,7 +5,7 @@ import net.luojiuoscar.isaac_disaster.effect.curse.CurseOfTheBlind;
 import net.luojiuoscar.isaac_disaster.effect.curse.CurseOfTheMaze;
 import net.luojiuoscar.isaac_disaster.effect.custom.*;
 import net.luojiuoscar.isaac_disaster.manager.EffectManager;
-import net.luojiuoscar.isaac_disaster.manager.id.BulletColorId;
+import net.luojiuoscar.isaac_disaster.manager.attack.managers.BulletColor;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -22,7 +22,7 @@ public class ModEffects {
         MOB_EFFECTS.register(eventBus);
     }
 
-    public static final RegistryObject<MobEffect> ISAAC_POISON = MOB_EFFECTS.register(EffectManager.POISON.getName(),
+    public static final RegistryObject<MobEffect> POISON = MOB_EFFECTS.register(EffectManager.POISON.getName(),
             () -> new PoisonEffect(MobEffectCategory.HARMFUL, 8889187));
 
     public static final RegistryObject<MobEffect> POWER_OF_BELIAL = MOB_EFFECTS.register(EffectManager.POWER_OF_BELIAL.getName(),
@@ -71,7 +71,7 @@ public class ModEffects {
             () -> new FragileHeartEffect(MobEffectCategory.BENEFICIAL, 0x7f7d70));
 
     public static final RegistryObject<MobEffect> TELEPATHY = MOB_EFFECTS.register(EffectManager.TELEPATHY.getName(),
-            () -> new TelepathyEffect(MobEffectCategory.BENEFICIAL, BulletColorId.SPOON_BENDER.getColor()));
+            () -> new TelepathyEffect(MobEffectCategory.BENEFICIAL, BulletColor.SPOON_BENDER.getColor()));
 
     public static final RegistryObject<MobEffect> BABYLON = MOB_EFFECTS.register(EffectManager.BABYLON.getName(),
             () -> new BabylonEffect(MobEffectCategory.BENEFICIAL, 0x990000));

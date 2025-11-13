@@ -63,17 +63,9 @@ public class ServerTickEvent {
                 bugsFix(player);
                 recursiveItemTick(player);
                 onPlayerSprint(player);
+                updateCached(player);
             }
         }
-
-        // 每秒一次
-        if (tickCounter % 20 == 0){
-            for (ServerPlayer player : server.getPlayerList().getPlayers()){
-
-                updatePlayerCache(player);
-            }
-        }
-
 
         // 每tick执行一次
         for (ServerPlayer player : server.getPlayerList().getPlayers()){
@@ -189,13 +181,15 @@ public class ServerTickEvent {
     }
 
 
-    private static void updatePlayerCache(ServerPlayer player){
+    private static void updateCached(ServerPlayer player){
         player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY).ifPresent(
                 playerAbility -> {
                     playerAbility.updateBestBulletColor();
-                    playerAbility.updateBestBulletType();
+                    playerAbility.updateBestAttackType();
                 }
         );
+
     }
+
 
 }

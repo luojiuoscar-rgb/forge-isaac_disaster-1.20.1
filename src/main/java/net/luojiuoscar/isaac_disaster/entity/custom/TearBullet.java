@@ -2,15 +2,16 @@ package net.luojiuoscar.isaac_disaster.entity.custom;
 
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.entity.ModEntities;
+import net.luojiuoscar.isaac_disaster.event.custom.attack.IsaacAttackAfterHitEvent;
 import net.luojiuoscar.isaac_disaster.event.custom.attack.IsaacAttackBeforeHitEntityEvent;
 import net.luojiuoscar.isaac_disaster.event.custom.attack.IsaacAttackHitBlockEvent;
-import net.luojiuoscar.isaac_disaster.event.custom.attack.IsaacAttackAfterHitEvent;
 import net.luojiuoscar.isaac_disaster.event.custom.attack.tear_bullet.TearBulletDiscardEvent;
 import net.luojiuoscar.isaac_disaster.event.custom.attack.tear_bullet.TearBulletShootEvent;
 import net.luojiuoscar.isaac_disaster.event.custom.attack.tear_bullet.TearBulletTickEvent;
 import net.luojiuoscar.isaac_disaster.helper.EntityHelper;
-import net.luojiuoscar.isaac_disaster.manager.id.AttackTypeId;
-import net.luojiuoscar.isaac_disaster.manager.id.BulletColorId;
+import net.luojiuoscar.isaac_disaster.manager.attack.managers.AttackTrajectory;
+import net.luojiuoscar.isaac_disaster.manager.attack.managers.AttackType;
+import net.luojiuoscar.isaac_disaster.manager.attack.managers.BulletColor;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
@@ -72,6 +73,7 @@ public class TearBullet extends Entity {
     // ======== 状态 ========
     private final Set<UUID> damagedEntities = new HashSet<>();
     private final Set<Integer> hitEffectIds = new HashSet<>();
+    private final Set<Integer> trajectories = new HashSet<>();
 
     // ======== 客户端同步属性 ========
     private static final EntityDataAccessor<Float> SCALE =
@@ -79,6 +81,8 @@ public class TearBullet extends Entity {
     private static final EntityDataAccessor<Integer> COLOR =
             SynchedEntityData.defineId(TearBullet.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Float> ALPHA =
+            SynchedEntityData.defineId(TearBullet.class, EntityDataSerializers.FLOAT);
+    private static final EntityDataAccessor<Float> TRAVELED =
             SynchedEntityData.defineId(TearBullet.class, EntityDataSerializers.FLOAT);
 
     // ======== 构造函数 ========
@@ -90,7 +94,7 @@ public class TearBullet extends Entity {
         this.isHoming = false;
         this.isControllable = false;
         this.damage = 1.0f;
-        this.setColor(BulletColorId.BASE.getColor());
+        this.setColor(BulletColor.BASE.getColor());
         this.setAlpha(1.0f);
         this.setScale(1.0f);
     }
@@ -112,7 +116,7 @@ public class TearBullet extends Entity {
 
         if (!level.isClientSide)
             MinecraftForge.EVENT_BUS.post(new TearBulletShootEvent(
-                    getOwner(), AttackTypeId.BULLET.getId(), hitEffectIds, this));
+                    getOwner(), AttackType.BULLET.getId(), hitEffectIds, this));
     }
 
 
@@ -120,6 +124,24 @@ public class TearBullet extends Entity {
     @Override
     public void tick() {
         super.tick();
+
+        Vec3 motion = getDeltaMovement();
+
+        // ============ 轨迹叠加 ============
+        if (!trajectories.isEmpty()) {
+            Vec3 newMotion = motion;
+            for (Integer trajId : trajectories) {
+                AttackTrajectory.TrajectoryContext ctx =
+                        new AttackTrajectory.TrajectoryContext(position(), newMotion, getTraveled());
+                Vec3 applied = AttackTrajectory.byId(trajId).apply(newMotion, ctx);
+                // 合成：偏移向量叠加
+                Vec3 offset = applied.subtract(newMotion);
+                newMotion = newMotion.add(offset);
+            }
+            setDeltaMovement(newMotion);
+        }
+        // =========================================
+
         if (level().isClientSide) {
             move(MoverType.SELF, getDeltaMovement());
             return;
@@ -133,18 +155,18 @@ public class TearBullet extends Entity {
         }
 
         Vec3 start = position();
-        Vec3 motion = getDeltaMovement();
-        Vec3 end = start.add(motion);
+        Vec3 end = start.add(getDeltaMovement());
 
         boolean collided = handleBlockCollision(start, end);
-        if (collided) return; // 撞到方块时取消移动
+        if (collided) return;
 
-        handleEntityCollision(start, end, motion);
-
+        handleEntityCollision(start, end, getDeltaMovement());
         if (tickCount % 4 == 0) handleSteering();
 
-        move(MoverType.SELF, motion);
+        move(MoverType.SELF, getDeltaMovement());
+        setTraveled((float) (getTraveled() + getDeltaMovement().length()));
     }
+
 
     private boolean handleBlockCollision(Vec3 start, Vec3 end) {
         if (isSpectral) return false;
@@ -167,7 +189,7 @@ public class TearBullet extends Entity {
             return false;
         }
 
-        if (!MinecraftForge.EVENT_BUS.post(new IsaacAttackHitBlockEvent(getOwner(), AttackTypeId.BULLET.getId(),
+        if (!MinecraftForge.EVENT_BUS.post(new IsaacAttackHitBlockEvent(this, AttackType.BULLET.getId(),
                 hitEffectIds, blockHit))) {
             if (!MinecraftForge.EVENT_BUS.post(new TearBulletDiscardEvent(this))) {
                 discard();
@@ -207,7 +229,7 @@ public class TearBullet extends Entity {
             return;
 
         IsaacAttackBeforeHitEntityEvent beforeEvent = new IsaacAttackBeforeHitEntityEvent(
-                getOwner(), AttackTypeId.BULLET.getId(), hitEffectIds, entityHit, damage);
+                getOwner(), AttackType.BULLET.getId(), hitEffectIds, entityHit, damage);
 
         if (MinecraftForge.EVENT_BUS.post(beforeEvent)) return;
 
@@ -216,7 +238,7 @@ public class TearBullet extends Entity {
         living.hurt(makeDamageSource(), (float) damageValue);
 
         IsaacAttackAfterHitEvent event = new IsaacAttackAfterHitEvent(
-                this, AttackTypeId.BULLET.getId(), hitEffectIds, entityHit, damageValue, living.getHealth());
+                this, AttackType.BULLET.getId(), hitEffectIds, entityHit, damageValue, living.getHealth());
         MinecraftForge.EVENT_BUS.post(event);
 
         damagedEntities.add(target.getUUID());
@@ -336,6 +358,7 @@ public class TearBullet extends Entity {
         entityData.define(SCALE, 1.0F);
         entityData.define(COLOR, 0xFFFFFF);
         entityData.define(ALPHA, 1.0F);
+        entityData.define(TRAVELED, 0.0F);
     }
 
     // ======== NBT读写 ========
@@ -395,6 +418,8 @@ public class TearBullet extends Entity {
     public float getScale() { return this.entityData.get(SCALE); }
     public int getColor() { return this.entityData.get(COLOR); }
     public float getAlpha() { return this.entityData.get(ALPHA); }
+    public float getTraveled() { return this.entityData.get(TRAVELED); }
+
 
     public void setScale(float scale) {
         this.entityData.set(SCALE, scale);
@@ -404,6 +429,8 @@ public class TearBullet extends Entity {
 
     public void setColor(int rgb) { this.entityData.set(COLOR, rgb); }
     public void setAlpha(float alpha) { this.entityData.set(ALPHA, Mth.clamp(alpha, 0.0F, 1.0F)); }
+    public void setTraveled(float traveled) { this.entityData.set(TRAVELED, traveled); }
+
     public void setDamage(float damage) { this.damage = damage; }
     public float getDamage() { return damage; }
 
@@ -412,8 +439,14 @@ public class TearBullet extends Entity {
         this.hitEffectIds.clear();
         this.hitEffectIds.addAll(hitEffects);
     }
-    public void clearBulletHitEffects() { hitEffectIds.clear(); }
     public Set<Integer> getHitEffectIds() { return hitEffectIds; }
+
+    public void setTrajectories(Set<Integer> trajectories) {
+        this.trajectories.clear();
+        this.trajectories.addAll(trajectories);
+    }
+    public Set<Integer> getTrajectories() { return trajectories; }
+
 
     public Set<UUID> getDamagedEntities() {
         return damagedEntities;

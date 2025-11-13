@@ -11,12 +11,14 @@ public class PlayerPerformAttackEvent extends Event {
     private int attackTypeId;
     private int bulletColorId;
     private final Set<Integer> hitEffects;
+    private final Set<Integer> trajectories;
 
-    public PlayerPerformAttackEvent(Player player, int attackTypeId, int bulletColorId) {
+    public PlayerPerformAttackEvent(Player player, int attackTypeId, int bulletColorId, Set<Integer> trajectories) {
         this.player = player;
         this.attackTypeId = attackTypeId;
         this.bulletColorId = bulletColorId;
         this.hitEffects = new HashSet<>();
+        this.trajectories = trajectories;
     }
 
     public Player getPlayer() {
@@ -30,7 +32,7 @@ public class PlayerPerformAttackEvent extends Event {
     }
 
     public Set<Integer> getHitEffects() {
-        return new HashSet<>(hitEffects);
+        return hitEffects;
     }
 
     public void setAttackTypeId(int input){
@@ -45,4 +47,7 @@ public class PlayerPerformAttackEvent extends Event {
         hitEffects.add(id);
     }
 
+    public Set<Integer> getTrajectories(){
+        return trajectories;
+    }
 }
