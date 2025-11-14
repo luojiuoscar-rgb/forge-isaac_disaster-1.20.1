@@ -126,22 +126,24 @@ public class TearBullet extends Entity {
         Vec3 positionOffset = Vec3.ZERO; // 额外位置偏移
         double traveled = getTraveled();
 
-        // ================== 轨迹偏移 ==================
-        Vec3 baseDir = getVelocity().normalize();
-        double deltaDist = getVelocity().length();
-
-        for (int trajId : getTrajectories()) {
-            AttackTrajectory traj = AttackTrajectory.byId(trajId);
-            AttackTrajectory.TrajectoryContext ctx =
-                    new AttackTrajectory.TrajectoryContext(baseDir, traveled, deltaDist, getOwner(), position());
-
-            var result = traj.getResult(ctx);
-            setVelocity(getVelocity().add(result.velocityOffset()));
-            positionOffset = positionOffset.add(result.positionOffset());
-        }
-
         // ================== 跟踪/控制 ==================
-        if (tickCount % 4 == 0) handleSteering();
+        if (tickCount % 4 == 0) setIsCurrentlySteering(handleSteering());
+
+        // ================== 轨迹偏移 ==================
+        if (!isCurrentlySteering()){ // 非跟踪时
+            Vec3 baseDir = getVelocity().normalize();
+            double deltaDist = getVelocity().length();
+
+            for (int trajId : getTrajectories()) {
+                AttackTrajectory traj = AttackTrajectory.byId(trajId);
+                AttackTrajectory.TrajectoryContext ctx =
+                        new AttackTrajectory.TrajectoryContext(baseDir, traveled, deltaDist, getOwner(), position());
+
+                var result = traj.getResult(ctx);
+                setVelocity(getVelocity().add(result.velocityOffset()));
+                positionOffset = positionOffset.add(result.positionOffset());
+            }
+        }
 
         // 最终位移 = velocity + 额外位置偏移
         Vec3 finalMove = getVelocity().add(positionOffset);
@@ -193,19 +195,22 @@ public class TearBullet extends Entity {
         return true;
     }
 
-    private void handleSteering() {
+    private boolean handleSteering() {
         LivingEntity owner = getOwner();
         LivingEntity target = isHoming ? getTrackingTarget() : null;
 
         if (target == null && isControllable && owner != null) {
             Vec3 targetPos = owner.getEyePosition().add(Vec3.directionFromRotation(owner.getXRot(), owner.getYRot()).scale(CONTROL_RANGE));
             steerTowards(targetPos, CONTROL_STEER, true);
+            return true;
         }
 
         if (target != null) {
             steerTowards(target, HOMING_STEER);
             if (getVelocity().length() < HOMING_SPEED) setVelocity(getVelocity().normalize().scale(HOMING_SPEED));
+            return true;
         }
+        return false;
     }
 
     private void handleEntityCollision(Vec3 start, Vec3 end, Vec3 motion) {
@@ -311,6 +316,7 @@ public class TearBullet extends Entity {
         entityData.define(TRAVELED, 0.0F);
         entityData.define(VELOCITY, new Vector3f(0f, 0f, 0f));
         entityData.define(TRAJECTORIES, "");
+        entityData.define(IS_CURRENTLY_STEERING, false);
     }
 
     // ======== NBT读写 ========
@@ -329,15 +335,6 @@ public class TearBullet extends Entity {
             ListTag listTag = tag.getList("DamagedEntities", Tag.TAG_COMPOUND);
             for (int i = 0; i < listTag.size(); i++) damagedEntities.add(NbtUtils.loadUUID(listTag.getCompound(i)));
         }
-
-        if (tag.contains("Trajectories", Tag.TAG_STRING)) {
-            entityData.set(TRAJECTORIES, tag.getString("Trajectories"));
-        }
-
-        if (tag.contains("Velocity", Tag.TAG_COMPOUND)) {
-            CompoundTag velTag = tag.getCompound("Velocity");
-            setVelocity(new Vec3(velTag.getDouble("x"), velTag.getDouble("y"), velTag.getDouble("z")));
-        }
     }
 
     @Override
@@ -353,14 +350,6 @@ public class TearBullet extends Entity {
         ListTag listTag = new ListTag();
         for (UUID id : damagedEntities) listTag.add(NbtUtils.createUUID(id));
         tag.put("DamagedEntities", listTag);
-
-        tag.putString("Trajectories", entityData.get(TRAJECTORIES));
-        Vec3 v = getVelocity();
-        CompoundTag velTag = new CompoundTag();
-        velTag.putDouble("x", v.x);
-        velTag.putDouble("y", v.y);
-        velTag.putDouble("z", v.z);
-        tag.put("Velocity", velTag);
     }
 
     // ======== 客户端 ========
@@ -388,6 +377,7 @@ public class TearBullet extends Entity {
     public int getColor() { return this.entityData.get(COLOR); }
     public float getAlpha() { return this.entityData.get(ALPHA); }
     public float getTraveled() { return this.entityData.get(TRAVELED); }
+    public boolean isCurrentlySteering() { return this.entityData.get(IS_CURRENTLY_STEERING); }
 
     public void setScale(float scale) {
         this.entityData.set(SCALE, scale);
@@ -398,6 +388,7 @@ public class TearBullet extends Entity {
     public void setColor(int rgb) { this.entityData.set(COLOR, rgb); }
     public void setAlpha(float alpha) { this.entityData.set(ALPHA, Mth.clamp(alpha, 0.0F, 1.0F)); }
     public void setTraveled(float traveled) { this.entityData.set(TRAVELED, traveled); }
+    public void setIsCurrentlySteering(boolean b) { this.entityData.set(IS_CURRENTLY_STEERING, b); }
 
     public void setDamage(float damage) { this.damage = damage; }
     public float getDamage() { return damage; }

@@ -82,6 +82,7 @@ public class LaserAttack implements IAttackType {
         double width = getWidth(entity);
         float damage = getDamage(entity);
         boolean homing = isHoming(entity);
+        boolean isCurrentlyHoming = false;
 
         Set<LivingEntity> hitEntities = new HashSet<>();
         Vec3 currentPos = startPos;
@@ -91,31 +92,9 @@ public class LaserAttack implements IAttackType {
         double step = Math.max(0.5, width * 2);
 
         while (traveled < range) {
-            // --------- 轨迹效果 ---------
-            Vec3 positionOffset = Vec3.ZERO;
-            Vec3 velocityOffset = Vec3.ZERO;
-            double totalSpeedDelta = 0.0;
-
-            for (int trajId : trajectories) {
-                AttackTrajectory traj = AttackTrajectory.byId(trajId);
-                AttackTrajectory.TrajectoryContext ctx =
-                        new AttackTrajectory.TrajectoryContext(direction, traveled, step, entity, currentPos);
-
-                var result = traj.getResult(ctx);
-
-                positionOffset = positionOffset.add(result.positionOffset());
-                velocityOffset = velocityOffset.add(result.velocityOffset());
-                totalSpeedDelta += result.speedDelta();
-            }
-
-            // 更新方向 + 步长
-            direction = direction.add(velocityOffset);
-            double effectiveStep = totalSpeedDelta > 0 ? totalSpeedDelta : step;
-
-            if (direction.lengthSqr() > 1e-6) direction = direction.normalize();
-
             // --------- Homing ---------
             if (homing) {
+                isCurrentlyHoming = false;
                 LivingEntity target = EntityHelper.findNearestTrackingTarget(
                         level,
                         entity,
@@ -127,7 +106,33 @@ public class LaserAttack implements IAttackType {
                 if (target != null) {
                     Vec3 toTarget = target.getEyePosition().subtract(currentPos).normalize();
                     direction = smoothTurn(direction, toTarget, 0.15);
+                    isCurrentlyHoming = true;
                 }
+            }
+
+            // --------- 轨迹效果 ---------
+            double effectiveStep = step;
+            Vec3 positionOffset = Vec3.ZERO;
+            Vec3 velocityOffset = Vec3.ZERO;
+            double totalSpeedDelta = 0.0;
+
+            if (!isCurrentlyHoming){
+                for (int trajId : trajectories) {
+                    AttackTrajectory traj = AttackTrajectory.byId(trajId);
+                    AttackTrajectory.TrajectoryContext ctx =
+                            new AttackTrajectory.TrajectoryContext(direction, traveled, step, entity, currentPos);
+
+                    var result = traj.getResult(ctx);
+
+                    positionOffset = positionOffset.add(result.positionOffset());
+                    velocityOffset = velocityOffset.add(result.velocityOffset());
+                    totalSpeedDelta += result.speedDelta();
+                }
+                // 更新方向 + 步长
+                direction = direction.add(velocityOffset);
+                effectiveStep = totalSpeedDelta > 0 ? totalSpeedDelta : step;
+
+                if (direction.lengthSqr() > 1e-6) direction = direction.normalize();
             }
 
             // --------- 碰撞检测 ---------
