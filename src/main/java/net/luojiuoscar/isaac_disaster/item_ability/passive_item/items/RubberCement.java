@@ -47,7 +47,7 @@ public class RubberCement implements IPassiveItem {
         if (!(event.getDirectSource() instanceof TearBullet bullet)) return;
         BlockHitResult hit = event.getHitResult();
 
-        Vec3 motion = bullet.getDeltaMovement();
+        Vec3 motion = bullet.getVelocity();
         Vec3 normal = Vec3.atLowerCornerOf(hit.getDirection().getNormal()).normalize();
 
         double speed = motion.length();
@@ -57,7 +57,7 @@ public class RubberCement implements IPassiveItem {
         Vec3 reflected = motion.subtract(normal.scale(2 * motion.dot(normal)));
 
         // 更新速度为反射向量
-        bullet.setDeltaMovement(reflected);
+        bullet.setVelocity(reflected);
 
         // 防止立即再次撞到同一个方块
         bullet.move(MoverType.SELF, reflected.scale(0.1));
@@ -67,7 +67,7 @@ public class RubberCement implements IPassiveItem {
 
     public static void bounceOnEntity(IsaacAttackAfterHitEvent event) {
         if (!(event.getDirectSource() instanceof TearBullet bullet)) return;
-        double speed = bullet.getDeltaMovement().length();
+        double speed = bullet.getVelocity().length();
 
         // 50% 概率弹向最近敌对生物
         if (Math.random() < 0.5) {
@@ -82,7 +82,7 @@ public class RubberCement implements IPassiveItem {
             if (target != null) {
                 // 计算方向
                 Vec3 dir = target.getEyePosition().subtract(bullet.position()).normalize();
-                bullet.setDeltaMovement(dir.scale(speed));
+                bullet.setVelocity(dir.scale(speed));
                 event.setDiscardAfterHit(false);
                 return;
             }
@@ -96,7 +96,7 @@ public class RubberCement implements IPassiveItem {
         double z = Math.cos(phi);
         Vec3 randomDir = new Vec3(x, y, z).normalize();
 
-        bullet.setDeltaMovement(randomDir.scale(speed));
+        bullet.setVelocity(randomDir.scale(speed));
         event.setDiscardAfterHit(false);
     }
 

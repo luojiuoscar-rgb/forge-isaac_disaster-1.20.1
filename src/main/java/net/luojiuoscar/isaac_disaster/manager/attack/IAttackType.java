@@ -104,7 +104,7 @@ public interface IAttackType {
 
     default double getRange(LivingEntity entity) {
         AttributeInstance attr = entity.getAttribute(ModAttributes.BULLET_RANGE.get());
-        return attr != null ? Math.max(attr.getValue(), 1) : 18.0;
+        return attr != null ? Math.max(Math.min(attr.getValue(), 64), 1) : 18.0;
     }
 
     default float getBulletScale(LivingEntity entity) {

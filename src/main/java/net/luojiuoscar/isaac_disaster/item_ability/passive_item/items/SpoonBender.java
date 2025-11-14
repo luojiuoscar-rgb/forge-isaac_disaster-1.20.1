@@ -24,13 +24,13 @@ public class SpoonBender implements IPassiveItem {
 
     @Override
     public void handleObtain(Player player, @Nullable ItemStack stack) {
-        StatManager.modifyHoming(player, 1);
+        StatManager.applyHoming(player, 1);
         StatManager.addBulletColor(player, BulletColor.SPOON_BENDER.getId(), 1);
     }
 
     @Override
     public void handleRemove(Player player, @Nullable ItemStack stack) {
-        StatManager.modifyHoming(player, -1);
+        StatManager.applyHoming(player, -1);
         StatManager.addBulletColor(player, BulletColor.SPOON_BENDER.getId(), -1);
     }
 

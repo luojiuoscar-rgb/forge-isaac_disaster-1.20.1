@@ -1,97 +1,122 @@
 package net.luojiuoscar.isaac_disaster.manager.attack.managers;
 
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.Vec3;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.BiFunction;
+import java.util.function.Function;
 
 public enum AttackTrajectory {
 
-    /**
-     *  < pi : f(x)=cos(x)-1
-     *  else : g(x)=2 cos(x)
-     */
-    WIGGLE_WORM((velocity, ctx) -> {
-        Vec3 dir = velocity.normalize();      // 原速度方向
-        double speed = velocity.length();     // 原速度大小
+    WIGGLE_WORM(ctx -> {
+        double phaseScale = 1;
+        double t0 = ctx.distance * phaseScale;
+        double t1 = (ctx.distance + ctx.deltaDistance) * phaseScale;
 
-        // 子弹局部水平面
-        Vec3 ref = Math.abs(dir.y) > 0.95 ? new Vec3(1,0,0) : new Vec3(0,1,0);
-        Vec3 right = dir.cross(ref).normalize();
+        double y0 = (t0 < Math.PI) ? Math.cos(t0) - 1 : 2 * Math.cos(t0);
+        double y1 = (t1 < Math.PI) ? Math.cos(t1) - 1 : 2 * Math.cos(t1);
 
-        // 计算横向偏移增量（位移增量法）
-        double frequencyScale = 0.5;   // 降低频率
-        double amplitude = 0.5;        // 提高振幅
-        double x = ctx.distance * frequencyScale;
+        double deltaY = y1 - y0;
 
-        // 分段函数斜率
-        double slope = (x < Math.PI) ? -Math.sin(x) : -2 * Math.sin(x);
+        Vec3 dir = ctx.dir;
+        Vec3 right = new Vec3(-dir.z, 0, dir.x).normalize();
+        double offsetScale = 0.5;
 
-        // 将斜率转为**横向位移增量**
-        Vec3 lateralOffset = right.scale(slope * amplitude);
+        Vec3 posOffset = right.scale(deltaY * offsetScale);
+        Vec3 velOffset = right.scale(deltaY * 0.05);
 
-        // 将横向位移与前进位移叠加
-        return dir.add(lateralOffset).normalize().scale(speed);
+        // 默认返回原速度
+        return new TrajectoryResult(posOffset, velOffset);
+    }),
+    TINY_PLANET(ctx -> {
+        LivingEntity owner = ctx.owner;
+        if (owner == null || ctx.pos == null) return TrajectoryResult.ZERO;
+
+        Vec3 bulletPos = ctx.pos;
+
+        double targetRadius = 3.0;
+        double angularSpeed = 0.35;
+        double yAmplitude = 0.2;
+        double yFrequency = 1.2;
+
+        Vec3 ownerCenter = owner.position().add(0, owner.getBbHeight() * 0.5, 0);
+        Vec3 rel = bulletPos.subtract(ownerCenter);
+
+        double currentR = Math.max(0.001, Math.sqrt(rel.x * rel.x + rel.z * rel.z));
+        rel = rel.scale(targetRadius / currentR);
+
+        double angle = Math.atan2(rel.z, rel.x);
+        double nextAngle = angle + angularSpeed;
+
+        Vec3 desiredRel = new Vec3(
+                Math.cos(nextAngle) * targetRadius,
+                Math.sin(ctx.distance * yFrequency) * yAmplitude,
+                Math.sin(nextAngle) * targetRadius
+        );
+
+        Vec3 desiredPos = ownerCenter.add(desiredRel);
+
+        Vec3 desiredVel = desiredPos.subtract(bulletPos).normalize().scale(ctx.deltaDistance);
+        Vec3 currentVel = ctx.dir.scale(ctx.deltaDistance);
+        Vec3 velOffset = desiredVel.subtract(currentVel);
+
+        // 明确返回子弹速度
+        return new TrajectoryResult(Vec3.ZERO, velOffset);
     });
-    // =========================================================
 
     private static final Map<Integer, AttackTrajectory> BY_ID = new HashMap<>();
 
     static {
-        for (AttackTrajectory t : values()) {
-            BY_ID.put(t.getId(), t);
-        }
+        for (AttackTrajectory t : values()) BY_ID.put(t.getId(), t);
     }
 
-    private final BiFunction<Vec3, TrajectoryContext, Vec3> applier;
+    private final Function<TrajectoryContext, TrajectoryResult> offsetSupplier;
 
-    AttackTrajectory(BiFunction<Vec3, TrajectoryContext, Vec3> applier) {
-        this.applier = applier;
+    AttackTrajectory(Function<TrajectoryContext, TrajectoryResult> off) {
+        this.offsetSupplier = off;
     }
 
-    public int getId() {
-        return ordinal();
+    public int getId() { return ordinal(); }
+
+    public TrajectoryResult getResult(TrajectoryContext ctx) {
+        return offsetSupplier.apply(ctx);
     }
 
-    /**
-     * 应用轨迹变换
-     * @param velocity 当前速度向量
-     * @param ctx 上下文信息
-     * @return 新的速度向量
-     */
-    public Vec3 apply(Vec3 velocity, TrajectoryContext ctx) {
-        return applier.apply(velocity, ctx);
-    }
-
-    /**
-     * 根据id反查轨迹
-     */
     public static AttackTrajectory byId(int id) {
         return BY_ID.getOrDefault(id, WIGGLE_WORM);
     }
 
-    // ====================== 辅助类 ======================
-    /**
-     * 轨迹上下文：用于提供轨迹计算所需的环境数据
-     */
+    // ================================
+    // 轨迹上下文
+    // ================================
     public static class TrajectoryContext {
-        public Vec3 bulletPos;   // 当前子弹位置
-        public Vec3 targetPos;   // 目标位置（可选）
-        public Vec3 velocity;    // 当前速度
-        public double distance;  // 子弹沿原始速度方向累积位移
+        public final Vec3 dir;
+        public final double distance;
+        public final double deltaDistance;
+        public final LivingEntity owner;
+        public final Vec3 pos;
 
-        public TrajectoryContext(Vec3 bulletPos, Vec3 velocity, double distance) {
-            this.bulletPos = bulletPos;
-            this.velocity = velocity;
+        public TrajectoryContext(Vec3 dir, double distance, double deltaDistance,
+                                 @Nullable LivingEntity owner, Vec3 pos) {
+            this.dir = dir;
             this.distance = distance;
-        }
-
-        public TrajectoryContext(Vec3 bulletPos, Vec3 targetPos, Vec3 velocity, double distance) {
-            this.bulletPos = bulletPos;
-            this.targetPos = targetPos;
-            this.velocity = velocity;
-            this.distance = distance;
+            this.deltaDistance = deltaDistance;
+            this.owner = owner;
+            this.pos = pos;
         }
     }
+
+    public record TrajectoryResult(Vec3 positionOffset, Vec3 velocityOffset, double speedDelta) {
+
+        public static final TrajectoryResult ZERO = new TrajectoryResult(Vec3.ZERO, Vec3.ZERO, 0.0);
+
+        // 简化构造函数，默认 speedDelta = 0
+        public TrajectoryResult(Vec3 positionOffset, Vec3 velocityOffset) {
+            this(positionOffset, velocityOffset, 0.0);
+        }
+
+    }
+
 }

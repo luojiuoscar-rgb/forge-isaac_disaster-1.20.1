@@ -9,6 +9,7 @@ import net.minecraft.server.level.ServerPlayer;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class PlayerAbility {
@@ -26,13 +27,13 @@ public class PlayerAbility {
     private int bestBulletType;
     private Map<Integer, Integer> bulletColor; // bullet color id : count
     private int bestBulletColor;
-    private Map<Integer, Integer> trajectories;
+    private LinkedHashMap<Integer, Integer> trajectories;
 
     public PlayerAbility() {
         itemFlags = new HashMap<>();
         attackType = new HashMap<>();
         bulletColor = new HashMap<>();
-        trajectories = new HashMap<>();
+        trajectories = new LinkedHashMap<>();
         init();
     }
 
@@ -61,7 +62,7 @@ public class PlayerAbility {
         this.itemFlags = new HashMap<>(source.itemFlags);
         this.attackType = new HashMap<>(source.attackType);
         this.bulletColor = new HashMap<>(source.bulletColor);
-        this.trajectories = new HashMap<>(source.trajectories);
+        this.trajectories = new LinkedHashMap<>(source.trajectories);
     }
 
     public void saveNBTData(CompoundTag nbt) {
@@ -284,7 +285,7 @@ public class PlayerAbility {
     }
 
     public Map<Integer, Integer> getTrajectories() {
-        return trajectories;
+        return new LinkedHashMap<>(trajectories);
     }
 
     public void addTrajectory(int id, int count){

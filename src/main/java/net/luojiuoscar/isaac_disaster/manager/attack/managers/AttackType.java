@@ -43,9 +43,9 @@ public enum AttackType {
         return BY_ID.get(id);
     }
 
-    /** 根据id直接获取优先级（若不存在返回-1） */
+    /** 根据id直接获取优先级 */
     public static double getPriorityById(int id) {
         AttackType type = BY_ID.get(id);
-        return type == null ? -1 : type.priority;
+        return type == null ? 0 : type.priority;
     }
 }

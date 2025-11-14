@@ -6,6 +6,7 @@ import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.manager.attack.managers.AttackTrajectory;
 import net.luojiuoscar.isaac_disaster.manager.id.TrinketId;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.Style;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 
@@ -27,6 +28,12 @@ public class WiggleWorm implements ITrinket {
         if (!(entity instanceof Player player)) return;
 
         StatManager.addTrajectory(player, AttackTrajectory.WIGGLE_WORM.getId(), 1);
+        if (isEnchanted){
+            StatManager.TEARS.apply(player, 1);
+        }else{
+            StatManager.TEARS.apply(player, 0.5);
+        }
+        StatManager.applySpectral(player, 1);
     }
 
     @Override
@@ -34,6 +41,11 @@ public class WiggleWorm implements ITrinket {
         if (!(entity instanceof Player player)) return;
 
         StatManager.addTrajectory(player, AttackTrajectory.WIGGLE_WORM.getId(), -1);
+        if (isEnchanted){
+            StatManager.TEARS.apply(player, -1);
+        }else{
+            StatManager.TEARS.apply(player, -0.5);
+        }        StatManager.applySpectral(player, -1);
     }
 
     @Override
@@ -47,7 +59,6 @@ public class WiggleWorm implements ITrinket {
 
     @Override
     public List<Component> getEnchantedDescription() {
-        return List.of(Component.translatable("item.isaac_disaster.synergy.description.stronger")
-                .withStyle(style -> style.withColor(ColorManager.SYNERGY)));
+        return List.of(StatManager.TEARS.description(0.5, Style.EMPTY.withColor(ColorManager.SYNERGY)));
     }
 }

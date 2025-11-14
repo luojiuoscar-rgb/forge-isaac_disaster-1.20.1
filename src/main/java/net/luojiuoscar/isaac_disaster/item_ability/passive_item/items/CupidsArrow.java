@@ -22,12 +22,12 @@ public class CupidsArrow implements IPassiveItem {
 
     @Override
     public void handleObtain(Player player, @Nullable ItemStack stack) {
-        StatManager.modifyPiercing(player, 1);
+        StatManager.applyPiercing(player, 1);
     }
 
     @Override
     public void handleRemove(Player player, @Nullable ItemStack stack) {
-        StatManager.modifyPiercing(player, -1);
+        StatManager.applyPiercing(player, -1);
     }
 
     @Override

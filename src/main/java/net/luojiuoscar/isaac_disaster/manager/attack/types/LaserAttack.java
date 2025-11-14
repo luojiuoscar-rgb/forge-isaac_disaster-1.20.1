@@ -76,30 +76,45 @@ public class LaserAttack implements IAttackType {
         if (!(entity.level() instanceof ServerLevel level)) return;
 
         Vec3 startPos = entity.getEyePosition().subtract(0, entity.getBbHeight() * 0.1, 0);
-        Vec3 direction = getDirectionFromRotation(xRot, yRot);
+        Vec3 direction = getDirectionFromRotation(xRot, yRot).normalize();
 
         double range = getRange(entity);
         double width = getWidth(entity);
         float damage = getDamage(entity);
+        boolean homing = isHoming(entity);
 
         Set<LivingEntity> hitEntities = new HashSet<>();
         Vec3 currentPos = startPos;
-        double traveled = 0;
-        double step = 0.5;
-
-        boolean homing = isHoming(entity);
         Vec3 lastPos = currentPos;
+        double traveled = 0.0;
+
+        double step = Math.max(0.5, width * 2);
 
         while (traveled < range) {
-            // ========= 轨迹效果 =========
+            // --------- 轨迹效果 ---------
+            Vec3 positionOffset = Vec3.ZERO;
+            Vec3 velocityOffset = Vec3.ZERO;
+            double totalSpeedDelta = 0.0;
+
             for (int trajId : trajectories) {
                 AttackTrajectory traj = AttackTrajectory.byId(trajId);
                 AttackTrajectory.TrajectoryContext ctx =
-                        new AttackTrajectory.TrajectoryContext(currentPos, direction, traveled);
-                direction = traj.apply(direction, ctx).normalize();
-            }
-            // ============================
+                        new AttackTrajectory.TrajectoryContext(direction, traveled, step, entity, currentPos);
 
+                var result = traj.getResult(ctx);
+
+                positionOffset = positionOffset.add(result.positionOffset());
+                velocityOffset = velocityOffset.add(result.velocityOffset());
+                totalSpeedDelta += result.speedDelta();
+            }
+
+            // 更新方向 + 步长
+            direction = direction.add(velocityOffset);
+            double effectiveStep = totalSpeedDelta > 0 ? totalSpeedDelta : step;
+
+            if (direction.lengthSqr() > 1e-6) direction = direction.normalize();
+
+            // --------- Homing ---------
             if (homing) {
                 LivingEntity target = EntityHelper.findNearestTrackingTarget(
                         level,
@@ -115,20 +130,27 @@ public class LaserAttack implements IAttackType {
                 }
             }
 
+            // --------- 碰撞检测 ---------
             AABB box = createCollisionBox(currentPos, width);
 
             if (!isSpectral(entity)) {
-                if (handleBlockCollision(entity, level, currentPos, direction, step, hitEffects)) break;
+                if (handleBlockCollision(entity, level, currentPos, direction, effectiveStep, hitEffects)) break;
             }
 
             handleEntityCollision(entity, level, box, hitEntities, damage, hitEffects);
+
+            // --------- 粒子 ---------
             spawnInterpolatedParticles(level, lastPos, currentPos, width, colorId);
 
+            // --------- 更新位置 ---------
             lastPos = currentPos;
-            currentPos = currentPos.add(direction.scale(step));
-            traveled += step;
+            currentPos = currentPos.add(direction.scale(effectiveStep));
+            traveled += effectiveStep + positionOffset.length(); // 位置偏移也算在累计距离里
+            currentPos = currentPos.add(positionOffset); // 位置偏移
         }
     }
+
+
 
     /**
      * 从 pitch（xRot）和 yaw（yRot） 计算方向向量

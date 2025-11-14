@@ -42,6 +42,7 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.network.NetworkHooks;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.joml.Vector3f;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -55,7 +56,6 @@ public class TearBullet extends Entity {
     private float damage;
     private UUID ownerUUID;
     private LivingEntity cachedOwner;
-    private Double orbitAngle;
 
     // ======== 特性 ========
     public boolean isSpectral = false;
@@ -73,7 +73,6 @@ public class TearBullet extends Entity {
     // ======== 状态 ========
     private final Set<UUID> damagedEntities = new HashSet<>();
     private final Set<Integer> hitEffectIds = new HashSet<>();
-    private final Set<Integer> trajectories = new HashSet<>();
 
     // ======== 客户端同步属性 ========
     private static final EntityDataAccessor<Float> SCALE =
@@ -84,90 +83,91 @@ public class TearBullet extends Entity {
             SynchedEntityData.defineId(TearBullet.class, EntityDataSerializers.FLOAT);
     private static final EntityDataAccessor<Float> TRAVELED =
             SynchedEntityData.defineId(TearBullet.class, EntityDataSerializers.FLOAT);
+    private static final EntityDataAccessor<Vector3f> VELOCITY =
+            SynchedEntityData.defineId(TearBullet.class, EntityDataSerializers.VECTOR3);
+    private static final EntityDataAccessor<String> TRAJECTORIES =
+            SynchedEntityData.defineId(TearBullet.class, EntityDataSerializers.STRING);
+    private static final EntityDataAccessor<Boolean> IS_CURRENTLY_STEERING =
+            SynchedEntityData.defineId(TearBullet.class, EntityDataSerializers.BOOLEAN);
 
     // ======== 构造函数 ========
     public TearBullet(EntityType<? extends TearBullet> type, Level level) {
         super(type, level);
         this.noPhysics = true;
-        this.isSpectral = false;
-        this.isPiercing = false;
-        this.isHoming = false;
-        this.isControllable = false;
         this.damage = 1.0f;
         this.setColor(BulletColor.BASE.getColor());
         this.setAlpha(1.0f);
         this.setScale(1.0f);
+        setVelocity(Vec3.ZERO);
     }
 
     public TearBullet(Level level, LivingEntity shooter, int lifeTick, double bulletSpeed, float scale, float damage, float xRot, float yRot) {
         this(ModEntities.TEAR_BULLET.get(), level);
-
         this.ownerUUID = shooter.getUUID();
         this.cachedOwner = shooter;
         this.lifeTick = lifeTick;
         this.totalLifeTick = lifeTick;
         this.damage = damage;
-
         setScale(scale);
-
         moveTo(shooter.getX(), shooter.getEyeY(), shooter.getZ(), yRot, xRot);
         Vec3 look = Vec3.directionFromRotation(xRot, yRot);
-        setDeltaMovement(look.scale(bulletSpeed));
+        setVelocity(look.scale(bulletSpeed));
 
         if (!level.isClientSide)
             MinecraftForge.EVENT_BUS.post(new TearBulletShootEvent(
                     getOwner(), AttackType.BULLET.getId(), hitEffectIds, this));
     }
 
-
     // ======== 核心逻辑 ========
     @Override
     public void tick() {
         super.tick();
 
-        Vec3 motion = getDeltaMovement();
+        Vec3 positionOffset = Vec3.ZERO; // 额外位置偏移
+        double traveled = getTraveled();
 
-        // ============ 轨迹叠加 ============
-        if (!trajectories.isEmpty()) {
-            Vec3 newMotion = motion;
-            for (Integer trajId : trajectories) {
-                AttackTrajectory.TrajectoryContext ctx =
-                        new AttackTrajectory.TrajectoryContext(position(), newMotion, getTraveled());
-                Vec3 applied = AttackTrajectory.byId(trajId).apply(newMotion, ctx);
-                // 合成：偏移向量叠加
-                Vec3 offset = applied.subtract(newMotion);
-                newMotion = newMotion.add(offset);
-            }
-            setDeltaMovement(newMotion);
-        }
-        // =========================================
+        // ================== 轨迹偏移 ==================
+        Vec3 baseDir = getVelocity().normalize();
+        double deltaDist = getVelocity().length();
 
-        if (level().isClientSide) {
-            move(MoverType.SELF, getDeltaMovement());
-            return;
+        for (int trajId : getTrajectories()) {
+            AttackTrajectory traj = AttackTrajectory.byId(trajId);
+            AttackTrajectory.TrajectoryContext ctx =
+                    new AttackTrajectory.TrajectoryContext(baseDir, traveled, deltaDist, getOwner(), position());
+
+            var result = traj.getResult(ctx);
+            setVelocity(getVelocity().add(result.velocityOffset()));
+            positionOffset = positionOffset.add(result.positionOffset());
         }
 
-        MinecraftForge.EVENT_BUS.post(new TearBulletTickEvent(this));
-
-        if (--lifeTick <= 0) {
-            if (!MinecraftForge.EVENT_BUS.post(new TearBulletDiscardEvent(this))) discard();
-            return;
-        }
-
-        Vec3 start = position();
-        Vec3 end = start.add(getDeltaMovement());
-
-        boolean collided = handleBlockCollision(start, end);
-        if (collided) return;
-
-        handleEntityCollision(start, end, getDeltaMovement());
+        // ================== 跟踪/控制 ==================
         if (tickCount % 4 == 0) handleSteering();
 
-        move(MoverType.SELF, getDeltaMovement());
-        setTraveled((float) (getTraveled() + getDeltaMovement().length()));
+        // 最终位移 = velocity + 额外位置偏移
+        Vec3 finalMove = getVelocity().add(positionOffset);
+        setDeltaMovement(finalMove);
+
+        // ================== 碰撞检测 ==================
+        if (!level().isClientSide) {
+            MinecraftForge.EVENT_BUS.post(new TearBulletTickEvent(this));
+
+            if (--lifeTick <= 0) {
+                if (!MinecraftForge.EVENT_BUS.post(new TearBulletDiscardEvent(this))) discard();
+                return;
+            }
+
+            Vec3 start = position();
+            Vec3 end = start.add(finalMove);
+
+            if (handleBlockCollision(start, end)) return;
+            handleEntityCollision(start, end, finalMove);
+        }
+
+        move(MoverType.SELF, finalMove);
+        setTraveled((float)(traveled + finalMove.length()));
     }
 
-
+    // ======== 碰撞与追踪 ========
     private boolean handleBlockCollision(Vec3 start, Vec3 end) {
         if (isSpectral) return false;
 
@@ -175,22 +175,16 @@ public class TearBullet extends Entity {
                 new ClipContext(start, end, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, this)
         );
 
-        if (blockHit.getType() != HitResult.Type.BLOCK) {
-            return false;
-        }
+        if (blockHit.getType() != HitResult.Type.BLOCK) return false;
 
         BlockPos pos = blockHit.getBlockPos();
         BlockState state = level().getBlockState(pos);
-
-        // 获取该方块的碰撞体积（VoxelShape）
         VoxelShape shape = state.getCollisionShape(level(), pos);
 
-        if (shape.isEmpty() || shape.bounds().getSize() < 0.01) {
-            return false;
-        }
+        if (shape.isEmpty() || shape.bounds().getSize() < 0.01) return false;
 
-        if (!MinecraftForge.EVENT_BUS.post(new IsaacAttackHitBlockEvent(this, AttackType.BULLET.getId(),
-                hitEffectIds, blockHit))) {
+        IsaacAttackHitBlockEvent event = new IsaacAttackHitBlockEvent(this, AttackType.BULLET.getId(), hitEffectIds, blockHit);
+        if (!MinecraftForge.EVENT_BUS.post(event)) {
             if (!MinecraftForge.EVENT_BUS.post(new TearBulletDiscardEvent(this))) {
                 discard();
             }
@@ -205,13 +199,12 @@ public class TearBullet extends Entity {
 
         if (target == null && isControllable && owner != null) {
             Vec3 targetPos = owner.getEyePosition().add(Vec3.directionFromRotation(owner.getXRot(), owner.getYRot()).scale(CONTROL_RANGE));
-            steerTowards(targetPos, CONTROL_STEER, false);
+            steerTowards(targetPos, CONTROL_STEER, true);
         }
 
         if (target != null) {
             steerTowards(target, HOMING_STEER);
-            Vec3 vel = getDeltaMovement();
-            if (vel.length() < HOMING_SPEED) setDeltaMovement(vel.normalize().scale(HOMING_SPEED));
+            if (getVelocity().length() < HOMING_SPEED) setVelocity(getVelocity().normalize().scale(HOMING_SPEED));
         }
     }
 
@@ -250,81 +243,38 @@ public class TearBullet extends Entity {
 
     public LivingEntity getTrackingTarget() {
         LivingEntity owner = getOwner();
-        if (!(owner instanceof LivingEntity)) return null; // 安全检查
+        if (!(owner instanceof LivingEntity)) return null;
 
         Vec3 bulletPos = this.position();
-        Vec3 forwardPos = bulletPos.add(this.getDeltaMovement().normalize().scale(3.0));
+        Vec3 forwardPos = bulletPos.add(getVelocity().normalize().scale(3.0));
 
         return EntityHelper.findNearestTrackingTarget(
                 level(),
                 getOwner(),
-                forwardPos, // 用前方位置作为中心
+                forwardPos,
                 HOMING_RANGE,
                 e -> !damagedEntities.contains(e.getUUID())
         );
     }
 
-    // ======== 追踪/转向方法 ========
-    public void steerHorizontalOrbit(LivingEntity target, double steerStrength, double radius, double angularSpeed) {
-        if (target == null) return;
-
-        Vec3 ownerPos = target.position().add(0, target.getBbHeight() * 0.5, 0);
-        if (orbitAngle == null) orbitAngle = Math.atan2(getZ() - ownerPos.z, getX() - ownerPos.x);
-        double angle = orbitAngle + angularSpeed * tickCount;
-
-        double targetX = ownerPos.x + radius * Math.cos(angle);
-        double targetZ = ownerPos.z + radius * Math.sin(angle);
-
-        double targetY = target.getY() + target.getBbHeight() * 0.5;
-        targetY += (targetY - getY()) * 0.05;
-
-        steerTowards(new Vec3(targetX, targetY, targetZ), steerStrength, true);
-    }
-
+    // ======== 追踪/转向 ========
     public void steerTowards(LivingEntity target, double steerStrength) {
         if (target == null) return;
-
         Vec3 targetPos = target.position().add(0, target.getBbHeight() * 0.5, 0);
-        Vec3 toTarget = targetPos.subtract(position());
-
-        Vec3 currentVel = getDeltaMovement();
-        if (currentVel.lengthSqr() < 1e-6) return; // 避免零向量
-
-        // 计算角度差，距离越近 steerStrength 越小，避免绕圈
-        double distance = toTarget.length();
-        double adaptiveSteer = steerStrength;
-        if (distance < 1.0) adaptiveSteer *= distance; // 距离小 steering 小
-
-        // 平滑转向目标方向
-        Vec3 desiredVel = toTarget.normalize().scale(currentVel.length());
-        Vec3 newVel = currentVel.add(desiredVel.subtract(currentVel).scale(adaptiveSteer));
-
-        // 保持原有速度长度
-        newVel = newVel.normalize().scale(currentVel.length());
-
-        setDeltaMovement(newVel);
+        steerTowards(targetPos, steerStrength, true);
     }
 
-
     public void steerTowards(Vec3 targetPos, double steerStrength, boolean normalizeSpeed) {
-        Vec3 currentVel = getDeltaMovement();
-        if (currentVel.lengthSqr() < 1e-6) return;
-
         Vec3 toTarget = targetPos.subtract(position());
+        if (toTarget.lengthSqr() < 1e-6) return;
+
         double distance = toTarget.length();
-
-        // 根据距离自适应 steer，避免绕圈
-        double adaptiveSteer = steerStrength;
-        if (distance < 1.0) adaptiveSteer *= distance;
-
-        // 平滑转向
+        double adaptiveSteer = steerStrength * Math.min(distance, 1.0);
         Vec3 desiredVel = toTarget.normalize();
-        Vec3 newVel = currentVel.normalize().add(desiredVel.subtract(currentVel.normalize()).scale(adaptiveSteer));
+        Vec3 newVel = getVelocity().normalize().add(desiredVel.subtract(getVelocity().normalize()).scale(adaptiveSteer));
 
-        // 保持原速度长度
-        if (normalizeSpeed) newVel = newVel.normalize().scale(currentVel.length());
-
-        setDeltaMovement(newVel);
+        if (normalizeSpeed) newVel = newVel.normalize().scale(getVelocity().length());
+        setVelocity(newVel);
     }
 
     // ======== DamageSource ========
@@ -359,6 +309,8 @@ public class TearBullet extends Entity {
         entityData.define(COLOR, 0xFFFFFF);
         entityData.define(ALPHA, 1.0F);
         entityData.define(TRAVELED, 0.0F);
+        entityData.define(VELOCITY, new Vector3f(0f, 0f, 0f));
+        entityData.define(TRAJECTORIES, "");
     }
 
     // ======== NBT读写 ========
@@ -377,6 +329,15 @@ public class TearBullet extends Entity {
             ListTag listTag = tag.getList("DamagedEntities", Tag.TAG_COMPOUND);
             for (int i = 0; i < listTag.size(); i++) damagedEntities.add(NbtUtils.loadUUID(listTag.getCompound(i)));
         }
+
+        if (tag.contains("Trajectories", Tag.TAG_STRING)) {
+            entityData.set(TRAJECTORIES, tag.getString("Trajectories"));
+        }
+
+        if (tag.contains("Velocity", Tag.TAG_COMPOUND)) {
+            CompoundTag velTag = tag.getCompound("Velocity");
+            setVelocity(new Vec3(velTag.getDouble("x"), velTag.getDouble("y"), velTag.getDouble("z")));
+        }
     }
 
     @Override
@@ -392,6 +353,14 @@ public class TearBullet extends Entity {
         ListTag listTag = new ListTag();
         for (UUID id : damagedEntities) listTag.add(NbtUtils.createUUID(id));
         tag.put("DamagedEntities", listTag);
+
+        tag.putString("Trajectories", entityData.get(TRAJECTORIES));
+        Vec3 v = getVelocity();
+        CompoundTag velTag = new CompoundTag();
+        velTag.putDouble("x", v.x);
+        velTag.putDouble("y", v.y);
+        velTag.putDouble("z", v.z);
+        tag.put("Velocity", velTag);
     }
 
     // ======== 客户端 ========
@@ -420,7 +389,6 @@ public class TearBullet extends Entity {
     public float getAlpha() { return this.entityData.get(ALPHA); }
     public float getTraveled() { return this.entityData.get(TRAVELED); }
 
-
     public void setScale(float scale) {
         this.entityData.set(SCALE, scale);
         this.setBoundingBox(new AABB(getX() - scale * 0.25, getY() - scale * 0.25, getZ() - scale * 0.25,
@@ -434,21 +402,35 @@ public class TearBullet extends Entity {
     public void setDamage(float damage) { this.damage = damage; }
     public float getDamage() { return damage; }
 
-    // ======== Bullet Effects ========
+    public Vec3 getVelocity() {
+        Vector3f v = entityData.get(VELOCITY);
+        return new Vec3(v.x(), v.y(), v.z());
+    }
+
+    public void setVelocity(Vec3 vel) {
+        entityData.set(VELOCITY, new Vector3f((float) vel.x, (float) vel.y, (float) vel.z));
+    }
+
+    public void setTrajectories(Set<Integer> set) {
+        String s = set.stream().map(String::valueOf).reduce((a, b) -> a + "," + b).orElse("");
+        entityData.set(TRAJECTORIES, s);
+    }
+
+    public Set<Integer> getTrajectories() {
+        String s = entityData.get(TRAJECTORIES);
+        Set<Integer> set = new HashSet<>();
+        if (!s.isEmpty()) {
+            for (String str : s.split(",")) set.add(Integer.parseInt(str));
+        }
+        return set;
+    }
+
     public void setHitEffectIds(Set<Integer> hitEffects) {
         this.hitEffectIds.clear();
         this.hitEffectIds.addAll(hitEffects);
     }
+
     public Set<Integer> getHitEffectIds() { return hitEffectIds; }
 
-    public void setTrajectories(Set<Integer> trajectories) {
-        this.trajectories.clear();
-        this.trajectories.addAll(trajectories);
-    }
-    public Set<Integer> getTrajectories() { return trajectories; }
-
-
-    public Set<UUID> getDamagedEntities() {
-        return damagedEntities;
-    }
+    public Set<UUID> getDamagedEntities() { return damagedEntities; }
 }

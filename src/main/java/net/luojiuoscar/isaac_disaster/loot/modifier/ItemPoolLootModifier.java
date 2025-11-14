@@ -66,7 +66,7 @@ public class ItemPoolLootModifier extends LootModifier {
         // 新的临时 entries
         List<LootPoolEntryContainer.Builder<?>> newEntries = new ArrayList<>();
 
-        LootPool pool = originalTable.pools.get(0); // 假设只有一个 pool
+        LootPool pool = originalTable.pools.get(0);// 假设只有一个 pool
         if (pool == null) return objectArrayList;
 
         // 遍历原 pool entries
