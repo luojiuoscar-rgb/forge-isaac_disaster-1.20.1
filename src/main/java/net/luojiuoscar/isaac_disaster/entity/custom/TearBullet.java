@@ -232,14 +232,12 @@ public class TearBullet extends Entity {
         if (MinecraftForge.EVENT_BUS.post(beforeEvent)) return;
 
         double damageValue = beforeEvent.getDamage();
-        if (living.invulnerableTime > 0) living.invulnerableTime = 0;
-        living.hurt(makeDamageSource(), (float) damageValue);
+
+        makeDamage(living, (float) damageValue);
 
         IsaacAttackAfterHitEvent event = new IsaacAttackAfterHitEvent(
                 this, AttackType.BULLET.getId(), hitEffectIds, entityHit, damageValue, living.getHealth());
         MinecraftForge.EVENT_BUS.post(event);
-
-        damagedEntities.add(target.getUUID());
 
         if (!isPiercing && event.shouldDiscardAfterHit()) {
             if (!MinecraftForge.EVENT_BUS.post(new TearBulletDiscardEvent(this))) discard();
@@ -283,7 +281,13 @@ public class TearBullet extends Entity {
     }
 
     // ======== DamageSource ========
-    private DamageSource makeDamageSource() {
+    private void makeDamage(LivingEntity victim, float damage){
+        victim.invulnerableTime = 0;
+        victim.hurt(getDamageSource(), damage);
+        damagedEntities.add(victim.getUUID());
+    }
+
+    private DamageSource getDamageSource() {
         if (!(level() instanceof ServerLevel serverLevel)) return this.damageSources().generic();
 
         var damageTypeHolder = serverLevel.registryAccess()

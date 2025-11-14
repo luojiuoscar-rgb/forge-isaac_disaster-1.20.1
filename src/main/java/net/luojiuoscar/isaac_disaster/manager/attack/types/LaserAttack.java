@@ -233,9 +233,8 @@ public class LaserAttack implements IAttackType {
 
             if (!MinecraftForge.EVENT_BUS.post(beforeHit)) {
                 double actualDamage = beforeHit.getDamage();
-                target.invulnerableTime = 0;
-                target.hurt(makeDamageSource(source), (float) actualDamage);
-                hitEntities.add(target);
+
+                hitEntities.add(makeDamage(source, target,(float) actualDamage));
 
                 IsaacAttackAfterHitEvent afterHit = new IsaacAttackAfterHitEvent(
                         source, getId(), hitEffects, hitResult, actualDamage, target.getHealth()
@@ -245,18 +244,25 @@ public class LaserAttack implements IAttackType {
         }
     }
 
-    private DamageSource makeDamageSource(LivingEntity source) {
-        if (!(source.level() instanceof ServerLevel level)) return source.damageSources().generic();
+    //** 返回被记录的生物 */
+    private LivingEntity makeDamage(LivingEntity source, LivingEntity target, float damage) {
+        target.invulnerableTime = 0;
+        target.hurt(getDamageSource(source), damage);
+        return target;
+    }
 
+    private DamageSource getDamageSource(LivingEntity source){
+        if (!(source.level() instanceof ServerLevel level)) return source.damageSources().generic();
         var damageTypeHolder = level.registryAccess()
                 .registryOrThrow(Registries.DAMAGE_TYPE)
                 .getHolderOrThrow(ResourceKey.create(
                         Registries.DAMAGE_TYPE,
                         ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "laser")
                 ));
-
         return new DamageSource(damageTypeHolder, source, source);
     }
+
+
 
     public double getWidth(LivingEntity living) {
         return getBulletScale(living) * 0.25;
