@@ -11,7 +11,6 @@ import net.minecraftforge.common.MinecraftForge;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 public class AttackManager {
     private static final AttackManager INSTANCE = new AttackManager();
@@ -41,19 +40,19 @@ public class AttackManager {
         player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY).ifPresent(playerAbility -> {
             int attackId = playerAbility.getBestBulletType();
             int colorId = playerAbility.getBestBulletColorId();
-            Set<Integer> trajectories = playerAbility.getTrajectories().keySet();
+            Map<Integer, Integer> trajectories = playerAbility.getTrajectories();
 
-            PlayerPerformAttackEvent event = new PlayerPerformAttackEvent(player, attackId, colorId, trajectories);
+            var context = new IAttackType.AttackContext(colorId, new HashSet<>(), trajectories);
+
+            PlayerPerformAttackEvent event = new PlayerPerformAttackEvent(player, attackId, context);
             MinecraftForge.EVENT_BUS.post(event);
 
             attackId = event.getAttackTypeId();
-            colorId = event.getBulletColorId();
-            Set<Integer> hitEffects = event.getHitEffects();
-            trajectories = new HashSet<>(event.getTrajectories());
+            context = event.getContext();
 
             IAttackType attack = attacks.getOrDefault(attackId, attacks.get(AttackType.BULLET.getId()));
             if (attack != null) {
-                attack.performAttack(player, colorId, hitEffects, trajectories);
+                attack.performAttack(player,context);
             }
         });
     }

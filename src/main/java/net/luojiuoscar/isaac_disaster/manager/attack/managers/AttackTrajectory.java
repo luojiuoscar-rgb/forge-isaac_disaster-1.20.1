@@ -22,7 +22,7 @@ public enum AttackTrajectory {
 
         Vec3 dir = ctx.dir;
         Vec3 right = new Vec3(-dir.z, 0, dir.x).normalize();
-        double offsetScale = 0.5;
+        double offsetScale = 0.5 + ctx.amplifier * 0.25;
 
         Vec3 posOffset = right.scale(deltaY * offsetScale);
         Vec3 velOffset = right.scale(deltaY * 0.05);
@@ -36,7 +36,7 @@ public enum AttackTrajectory {
 
         Vec3 bulletPos = ctx.pos;
 
-        double targetRadius = 3.0;
+        double targetRadius = 3.0 + ctx.amplifier;
         double angularSpeed = 0.35;
         double yAmplitude = 0.2;
         double yFrequency = 1.2;
@@ -97,14 +97,16 @@ public enum AttackTrajectory {
         public final double deltaDistance;
         public final LivingEntity owner;
         public final Vec3 pos;
+        public final int amplifier;
 
         public TrajectoryContext(Vec3 dir, double distance, double deltaDistance,
-                                 @Nullable LivingEntity owner, Vec3 pos) {
+                                 @Nullable LivingEntity owner, Vec3 pos, int amplifier) {
             this.dir = dir;
             this.distance = distance;
             this.deltaDistance = deltaDistance;
             this.owner = owner;
             this.pos = pos;
+            this.amplifier = Math.max(0, amplifier);
         }
     }
 

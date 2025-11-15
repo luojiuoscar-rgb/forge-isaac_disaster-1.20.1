@@ -29,6 +29,7 @@ import org.joml.Vector3f;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public class LaserAttack implements IAttackType {
@@ -56,7 +57,7 @@ public class LaserAttack implements IAttackType {
     }
 
     @Override
-    public void handleAttack(LivingEntity entity, int colorId, Set<Integer> hitEffects, Set<Integer> trajectories) {
+    public void handleAttack(LivingEntity entity, AttackContext context) {
         int count = entity instanceof Player player ? getBulletCount(player) : 1;
 
         float angleInterval = 6;
@@ -66,13 +67,12 @@ public class LaserAttack implements IAttackType {
             float baseYRot = entity.getYRot() + curAngle;
             float baseXRot = entity.getXRot();
 
-            shotLaser(entity, colorId, hitEffects, baseXRot, baseYRot, trajectories);
+            shotLaser(entity, baseXRot, baseYRot, context);
             curAngle += angleInterval;
         }
     }
 
-    private void shotLaser(LivingEntity entity, int colorId, Set<Integer> hitEffects,
-                           float xRot, float yRot, Set<Integer> trajectories) {
+    private void shotLaser(LivingEntity entity, float xRot, float yRot, AttackContext context) {
         if (!(entity.level() instanceof ServerLevel level)) return;
 
         Vec3 startPos = entity.getEyePosition().subtract(0, entity.getBbHeight() * 0.1, 0);
@@ -117,10 +117,13 @@ public class LaserAttack implements IAttackType {
             double totalSpeedDelta = 0.0;
 
             if (!isCurrentlyHoming){
-                for (int trajId : trajectories) {
+                for (Map.Entry<Integer, Integer> entry : context.trajectories.entrySet()) {
+                    int trajId = entry.getKey();
+                    int amplifier = entry.getValue() - 1;
+
                     AttackTrajectory traj = AttackTrajectory.byId(trajId);
                     AttackTrajectory.TrajectoryContext ctx =
-                            new AttackTrajectory.TrajectoryContext(direction, traveled, step, entity, currentPos);
+                            new AttackTrajectory.TrajectoryContext(direction, traveled, step, entity, currentPos, amplifier);
 
                     var result = traj.getResult(ctx);
 
@@ -139,13 +142,13 @@ public class LaserAttack implements IAttackType {
             AABB box = createCollisionBox(currentPos, width);
 
             if (!isSpectral(entity)) {
-                if (handleBlockCollision(entity, level, currentPos, direction, effectiveStep, hitEffects)) break;
+                if (handleBlockCollision(entity, level, currentPos, direction, effectiveStep, context.hitEffects)) break;
             }
 
-            handleEntityCollision(entity, level, box, hitEntities, damage, hitEffects);
+            handleEntityCollision(entity, level, box, hitEntities, damage, context.hitEffects);
 
             // --------- 粒子 ---------
-            spawnInterpolatedParticles(level, lastPos, currentPos, width, colorId);
+            spawnInterpolatedParticles(level, lastPos, currentPos, width, context.colorId);
 
             // --------- 更新位置 ---------
             lastPos = currentPos;

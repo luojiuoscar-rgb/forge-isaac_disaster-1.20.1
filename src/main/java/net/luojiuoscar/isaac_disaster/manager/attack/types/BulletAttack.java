@@ -12,8 +12,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.MinecraftForge;
 
-import java.util.Set;
-
 public class BulletAttack implements IAttackType {
     @Override
     public int getId() {
@@ -37,27 +35,26 @@ public class BulletAttack implements IAttackType {
         );
     }
 
-    public void handleAttack(LivingEntity entity, int colorId, Set<Integer> hitEffects, Set<Integer> trajectories) {
+    public void handleAttack(LivingEntity entity, AttackContext context) {
         int count = entity instanceof Player player ? getBulletCount(player) : 1;
 
         if (count <= 1) {
-            shotBullet(entity, colorId, hitEffects, trajectories);
+            shotBullet(entity, context);
         } else if (count == 2) {
-            shot2Bullet(entity, colorId, hitEffects, trajectories);
+            shot2Bullet(entity, context);
         } else {
             float angleInterval = Math.max(11 - count, 5) * 2;
             float curAngle = -angleInterval * (count - 1) / 2.0f;
 
             for (int i = 0; i < count; i++) {
-                shotBullet(entity, entity.getXRot(), entity.getYRot() + curAngle, colorId, hitEffects, trajectories);
+                shotBullet(entity, entity.getXRot(), entity.getYRot() + curAngle, context);
                 curAngle += angleInterval;
             }
         }
     }
 
     // =================== 子弹发射 ===================
-    private TearBullet createBullet(LivingEntity shooter, Vec3 spawnPos, float xRot, float yRot, int colorId,
-                                    Set<Integer> hitEffects, Set<Integer> trajectories) {
+    private TearBullet createBullet(LivingEntity shooter, Vec3 spawnPos, float xRot, float yRot, AttackContext context) {
         double width = shooter.getBbWidth();
         double forwardOffset = 0.4 * (width / 0.6);
         Vec3 look = Vec3.directionFromRotation(xRot, yRot);
@@ -79,33 +76,33 @@ public class BulletAttack implements IAttackType {
         bullet.setHoming(isHoming(shooter));
         bullet.setControllable(isControllable(shooter));
 
-        bullet.setHitEffectIds(hitEffects);
-        bullet.setTrajectories(trajectories);
+        bullet.setHitEffectIds(context.hitEffects);
+        bullet.setTrajectories(context.trajectories);
 
-        bullet.setColor(BulletColor.getColorById(colorId));
-        bullet.setAlpha(BulletColor.getAlphaById(colorId));
+        bullet.setColor(BulletColor.getColorById(context.colorId));
+        bullet.setAlpha(BulletColor.getAlphaById(context.colorId));
 
         bullet.moveTo(adjustedPos.x, adjustedPos.y, adjustedPos.z, yRot, xRot);
         bullet.setDeltaMovement(look.scale(getBulletSpeed(shooter)));
 
         if (!shooter.level().isClientSide)
-            MinecraftForge.EVENT_BUS.post(new TearBulletShootEvent(bullet.getOwner(), getId(), hitEffects, bullet));
+            MinecraftForge.EVENT_BUS.post(new TearBulletShootEvent(bullet.getOwner(), getId(), context.hitEffects, bullet));
 
         return bullet;
     }
 
-    private void shotBullet(LivingEntity entity, int colorId, Set<Integer> hitEffects, Set<Integer> trajectories) {
-        shotBullet(entity, entity.getXRot(), entity.getYRot(), colorId, hitEffects, trajectories);
+    private void shotBullet(LivingEntity entity, AttackContext context) {
+        shotBullet(entity, entity.getXRot(), entity.getYRot(), context);
     }
 
-    private void shotBullet(LivingEntity entity, float xRot, float yRot, int colorId, Set<Integer> hitEffects, Set<Integer> trajectories) {
+    private void shotBullet(LivingEntity entity, float xRot, float yRot, AttackContext context) {
         if (entity.level().isClientSide()) return;
         Vec3 eyePos = entity.getEyePosition().add(0, entity.getBbHeight() * -0.15, 0);
-        TearBullet bullet = createBullet(entity, eyePos, xRot, yRot, colorId, hitEffects, trajectories);
+        TearBullet bullet = createBullet(entity, eyePos, xRot, yRot, context);
         entity.level().addFreshEntity(bullet);
     }
 
-    private void shot2Bullet(LivingEntity entity, int colorId, Set<Integer> hitEffects, Set<Integer> trajectories) {
+    private void shot2Bullet(LivingEntity entity, AttackContext context) {
         if (entity.level().isClientSide()) return;
         Vec3 look = entity.getLookAngle();
         Vec3 right = look.cross(new Vec3(0, 1, 0)).normalize();
@@ -113,10 +110,10 @@ public class BulletAttack implements IAttackType {
 
         TearBullet bullet1 = createBullet(
                 entity, eyePos.add(right.scale(0.25)),
-                entity.getXRot(), entity.getYRot(), colorId, hitEffects, trajectories);
+                entity.getXRot(), entity.getYRot(), context);
         TearBullet bullet2 = createBullet(
                 entity, eyePos.add(right.scale(-0.25)),
-                entity.getXRot(), entity.getYRot(), colorId, hitEffects, trajectories);
+                entity.getXRot(), entity.getYRot(), context);
 
         entity.level().addFreshEntity(bullet1);
         entity.level().addFreshEntity(bullet2);

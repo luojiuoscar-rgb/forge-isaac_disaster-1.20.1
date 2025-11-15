@@ -11,6 +11,7 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.common.MinecraftForge;
 
+import java.util.Map;
 import java.util.Set;
 
 public interface IAttackType {
@@ -18,14 +19,26 @@ public interface IAttackType {
 
     double getPriority();
 
-    default void performAttack(LivingEntity livingEntity, int colorId, Set<Integer> hitEffects, Set<Integer> trajectories){
-        handleAttack(livingEntity, colorId, hitEffects, trajectories);
+    default void performAttack(LivingEntity livingEntity, AttackContext context){
+        handleAttack(livingEntity, context);
         makeSound(livingEntity);
     }
 
-    void handleAttack(LivingEntity livingEntity, int colorId, Set<Integer> hitEffects, Set<Integer> trajectories);
+    void handleAttack(LivingEntity livingEntity, AttackContext context);
 
     void makeSound(LivingEntity entity);
+
+    class AttackContext {
+        public int colorId;
+        public Set<Integer> hitEffects;
+        public Map<Integer, Integer> trajectories;
+
+        public AttackContext(int colorId, Set<Integer> hitEffects, Map<Integer, Integer> trajectories) {
+            this.colorId = colorId;
+            this.hitEffects = hitEffects;
+            this.trajectories = trajectories;
+        }
+    }
 
 
     default boolean isSpectral(LivingEntity entity){

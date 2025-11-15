@@ -44,9 +44,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
 
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 public class TearBullet extends Entity {
 
@@ -134,10 +132,13 @@ public class TearBullet extends Entity {
             Vec3 baseDir = getVelocity().normalize();
             double deltaDist = getVelocity().length();
 
-            for (int trajId : getTrajectories()) {
+            for (Map.Entry<Integer, Integer> entry : getTrajectories().entrySet()) {
+                int trajId = entry.getKey();
+                int amplifier = entry.getValue() - 1;
+
                 AttackTrajectory traj = AttackTrajectory.byId(trajId);
                 AttackTrajectory.TrajectoryContext ctx =
-                        new AttackTrajectory.TrajectoryContext(baseDir, traveled, deltaDist, getOwner(), position());
+                        new AttackTrajectory.TrajectoryContext(baseDir, traveled, deltaDist, getOwner(), position(), amplifier);
 
                 var result = traj.getResult(ctx);
                 setVelocity(getVelocity().add(result.velocityOffset()));
@@ -406,18 +407,32 @@ public class TearBullet extends Entity {
         entityData.set(VELOCITY, new Vector3f((float) vel.x, (float) vel.y, (float) vel.z));
     }
 
-    public void setTrajectories(Set<Integer> set) {
-        String s = set.stream().map(String::valueOf).reduce((a, b) -> a + "," + b).orElse("");
+    public void setTrajectories(Map<Integer, Integer> map) {
+        // 格式 "id1:value1,id2:value2"
+        String s = map.entrySet().stream()
+                .map(e -> e.getKey() + ":" + e.getValue())
+                .reduce((a, b) -> a + "," + b)
+                .orElse("");
         entityData.set(TRAJECTORIES, s);
     }
 
-    public Set<Integer> getTrajectories() {
+    // Getter: String -> Map
+    public Map<Integer, Integer> getTrajectories() {
         String s = entityData.get(TRAJECTORIES);
-        Set<Integer> set = new HashSet<>();
+        Map<Integer, Integer> map = new HashMap<>();
         if (!s.isEmpty()) {
-            for (String str : s.split(",")) set.add(Integer.parseInt(str));
+            for (String pair : s.split(",")) {
+                String[] parts = pair.split(":");
+                if (parts.length == 2) {
+                    try {
+                        int key = Integer.parseInt(parts[0]);
+                        int value = Integer.parseInt(parts[1]);
+                        map.put(key, value);
+                    } catch (NumberFormatException ignored) {}
+                }
+            }
         }
-        return set;
+        return map;
     }
 
     public void setHitEffectIds(Set<Integer> hitEffects) {

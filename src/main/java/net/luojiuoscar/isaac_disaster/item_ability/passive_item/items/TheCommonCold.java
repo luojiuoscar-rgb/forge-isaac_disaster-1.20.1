@@ -79,9 +79,9 @@ public class TheCommonCold implements IDamageTriggerPassiveItem, ISpecialTypeBul
         Player player = event.getPlayer();
 
         if (player.getRandom().nextDouble() <= getTriggerChance(player)) {
-            event.setBulletColorId(BulletColor.POISON.getId());
+            event.getContext().colorId  = BulletColor.POISON.getId();
 
-            event.addHitEffect(ItemId.THE_COMMON_COLD.getId());
+            event.getContext().hitEffects.add(ItemId.THE_COMMON_COLD.getId());
         }
     }
 
