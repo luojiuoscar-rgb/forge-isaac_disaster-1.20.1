@@ -64,7 +64,42 @@ public enum AttackTrajectory {
 
         // 明确返回子弹速度
         return new TrajectoryResult(Vec3.ZERO, velOffset);
+    }),
+    RING_WORM(ctx -> {
+        Vec3 dir = ctx.dir.normalize();
+
+        // 构建局部坐标系，确保 dir 是 x 轴，y-z 平面为圆面
+        Vec3 up = new Vec3(0, 1, 0);
+        if (Math.abs(dir.dot(up)) > 0.999) up = new Vec3(0, 0, 1);
+        Vec3 right = dir.cross(up).normalize();
+        Vec3 localUp = right.cross(dir).normalize();
+
+        // 螺旋参数
+        double radius = 1 + ctx.amplifier * 0.5; // 圆半径
+        double angularSpeed = Math.PI * 0.25; // 每单位距离旋转 0.5 * PI 弧度
+
+        // 累积角度
+        double angle0 = ctx.distance * angularSpeed;           // 当前帧起始角度
+        double angle1 = (ctx.distance + ctx.deltaDistance) * angularSpeed; // 当前帧结束角度
+
+        // 计算增量偏移
+        Vec3 offset0 = right.scale(Math.cos(angle0) * radius)
+                .add(localUp.scale(Math.sin(angle0) * radius));
+        Vec3 offset1 = right.scale(Math.cos(angle1) * radius)
+                .add(localUp.scale(Math.sin(angle1) * radius));
+
+        Vec3 offset = offset1.subtract(offset0);
+
+        // 速度不改变
+        return new TrajectoryResult(offset, Vec3.ZERO);
     });
+
+
+
+
+
+
+
 
     private static final Map<Integer, AttackTrajectory> BY_ID = new HashMap<>();
 

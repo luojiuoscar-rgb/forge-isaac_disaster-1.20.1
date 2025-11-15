@@ -1,28 +1,29 @@
 package net.luojiuoscar.isaac_disaster.item_ability.pickup.pill_effects;
 
 import net.luojiuoscar.isaac_disaster.client.ClientDataManager;
+import net.luojiuoscar.isaac_disaster.effect.ModEffects;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.item_ability.pickup.IPillEffect;
-import net.luojiuoscar.isaac_disaster.manager.id.ItemId;
 import net.luojiuoscar.isaac_disaster.manager.id.PillEffectId;
-import net.luojiuoscar.isaac_disaster.manager.item_managers.ActiveItemManager;
 import net.luojiuoscar.isaac_disaster.manager.item_managers.PillEffectManager;
 import net.luojiuoscar.isaac_disaster.networking.ModMessages;
 import net.luojiuoscar.isaac_disaster.networking.packet.PillOnUseS2CPacket;
 import net.luojiuoscar.isaac_disaster.sound.ModSounds;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.player.Player;
 
 
-public class PowerPill implements IPillEffect {
+public class QuestionPill implements IPillEffect {
     @Override
     public int getPillEffectId() {
-        return PillEffectId.POWER_PILL.getId();
+        return PillEffectId.QUESTION_PILL.getId();
     }
+
     @Override
     public void onUse(Player player, boolean withSFX){
-        if (PlayerHelper.getPillQuality(player) < 0){
-            PillEffectManager.getInstance().getEffectFromEffectId(PillEffectId.RUA_WIZARD.getId()).onUse(player, true);
+        if (PlayerHelper.getPillQuality(player) > 0){
+            PillEffectManager.getInstance().getEffectFromEffectId(PillEffectId.TELEPILLS.getId()).onUse(player, true);
             return;
         }
 
@@ -34,8 +35,8 @@ public class PowerPill implements IPillEffect {
 
     @Override
     public void onUseH(Player player, boolean withSFX){
-        if (PlayerHelper.getPillQuality(player) < 0){
-            PillEffectManager.getInstance().getEffectFromEffectId(PillEffectId.RUA_WIZARD.getId()).onUseH(player, true);
+        if (PlayerHelper.getPillQuality(player) > 0){
+            PillEffectManager.getInstance().getEffectFromEffectId(PillEffectId.TELEPILLS.getId()).onUseH(player, true);
             return;
         }
 
@@ -45,35 +46,36 @@ public class PowerPill implements IPillEffect {
         }
     }
 
+
+
     @Override
     public void onUseEffect(Player player) {
-        ActiveItemManager.getInstance().getItemFromId(ItemId.THE_GAMEKID.getId()).onTriggeredEffect(player);
+        player.addEffect(new MobEffectInstance(ModEffects.CURSE_OF_THE_MAZE.get(), 600, 0));
     }
 
     @Override
     public void onUseEffectH(Player player) {
-        ActiveItemManager.getInstance().getItemFromId(ItemId.THE_GAMEKID.getId()).onTriggeredEffectStronger(player);
+        player.addEffect(new MobEffectInstance(ModEffects.CURSE_OF_THE_MAZE.get(), 1500, 0));
     }
 
     @Override
     public void onUseSound(Player player) {
-        player.playSound(ModSounds.POWER_PILL.get(), 1.0f, 1.0f);
-        player.playSound(ModSounds.PILL_USE_GOOD.get(), 1.0f, 1.0f);
+        player.playSound(ModSounds.PILL_USE_BAD.get(), 1.0f, 1.0f);
+        player.playSound(ModSounds.QUESTION_PILL.get(), 1.0f, 1.0f);
     }
 
     @Override
     public void onUseSoundH(Player player) {
-        player.playSound(ModSounds.POWER_PILL_H.get(), 1.0f, 1.0f);
-        player.playSound(ModSounds.PILL_USE_GOOD_H.get(), 1.0f, 1.0f);
-
+        player.playSound(ModSounds.PILL_USE_BAD_H.get(), 1.0f, 1.0f);
+        player.playSound(ModSounds.QUESTION_PILL_H.get(), 1.0f, 1.0f);
     }
 
     @Override
     public String getDescriptionId(){
-        if (ClientDataManager.getInstance().getPillQuality() < 0){
-            return "pill.isaac_disaster.effect.rua_wizard";
+        if (ClientDataManager.getInstance().getPillQuality() > 0){
+            return "pill.isaac_disaster.effect.telepills";
         }
-        return "pill.isaac_disaster.effect.power_pill";
+        return "pill.isaac_disaster.effect.question_pill";
     }
 
 }

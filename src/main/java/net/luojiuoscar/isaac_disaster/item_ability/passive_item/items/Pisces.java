@@ -23,7 +23,7 @@ public class Pisces implements IPassiveItem {
 
     @Override
     public void handleObtain(Player player, @Nullable ItemStack stack) {
-        StatManager.applyPiercing(player, 1);
+        StatManager.addPiercing(player, 1);
         StatManager.TEARS_CORRECTION.apply(player, 1);
         StatManager.BULLET_SCALE.apply(player, 2);
         StatManager.ATTACK_KNOCKBACK.apply(player, 1);
@@ -31,7 +31,7 @@ public class Pisces implements IPassiveItem {
 
     @Override
     public void handleRemove(Player player, @Nullable ItemStack stack) {
-        StatManager.applyPiercing(player, -1);
+        StatManager.addPiercing(player, -1);
         StatManager.TEARS_CORRECTION.apply(player, -1);
         StatManager.BULLET_SCALE.apply(player, -2);
         StatManager.ATTACK_KNOCKBACK.apply(player, -1);

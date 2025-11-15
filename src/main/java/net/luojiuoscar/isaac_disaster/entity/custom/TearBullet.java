@@ -147,7 +147,8 @@ public class TearBullet extends Entity {
         }
 
         // 最终位移 = velocity + 额外位置偏移
-        Vec3 finalMove = getVelocity().add(positionOffset);
+        Vec3 velocityMove = getVelocity(); // 真实速度移动，用于统计 traveled
+        Vec3 finalMove = velocityMove.add(positionOffset); // 视觉偏移 + 碰撞偏移
         setDeltaMovement(finalMove);
 
         // ================== 碰撞检测 ==================
@@ -167,7 +168,7 @@ public class TearBullet extends Entity {
         }
 
         move(MoverType.SELF, finalMove);
-        setTraveled((float)(traveled + finalMove.length()));
+        setTraveled((float)(traveled + velocityMove.length()));
     }
 
     // ======== 碰撞与追踪 ========

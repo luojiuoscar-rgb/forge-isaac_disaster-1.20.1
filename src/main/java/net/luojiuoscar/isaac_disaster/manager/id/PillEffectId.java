@@ -40,7 +40,11 @@ public enum PillEffectId {
     SHOT_SPEED_UP,
     EXPERIMENTAL_PILL,
     GULP,
-    VURP;
+    VURP,
+    RUA_WIZARD,
+    ENERGY_48,
+    QUESTION_PILL,
+    BOMBS_ARE_KEY;
 
 
     private final int id;

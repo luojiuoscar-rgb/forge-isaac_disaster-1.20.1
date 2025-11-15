@@ -68,6 +68,7 @@ public class LaserAttack implements IAttackType {
         public boolean spectral;
         public Set<LivingEntity> hitEntities = new HashSet<>();
         public LivingEntity shooter;
+        public boolean isCurrentlyHoming;
 
         public LaserProjectile(LivingEntity shooter, Vec3 startPos, Vec3 direction, double step, double width,
                                float damage, boolean homing, boolean spectral) {
@@ -80,6 +81,7 @@ public class LaserAttack implements IAttackType {
             this.homing = homing;
             this.spectral = spectral;
             this.traveled = 0;
+            this.isCurrentlyHoming = false;
         }
     }
 
@@ -93,16 +95,19 @@ public class LaserAttack implements IAttackType {
         for (int i = 0; i < count; i++) {
             float baseYRot = entity.getYRot() + curAngle;
             float baseXRot = entity.getXRot();
-            shotLaser(entity, context, baseXRot, baseYRot);
+            shoot(entity, context, Vec3.ZERO, baseXRot, baseYRot);
             curAngle += angleInterval;
         }
     }
 
     // ================== shotLaser ==================
-    private void shotLaser(LivingEntity entity, AttackContext context, float xRot, float yRot) {
+    @Override
+    public void handleShoot(LivingEntity entity, AttackContext context, Vec3 offset, float xRot, float yRot) {
         if (!(entity.level() instanceof ServerLevel level)) return;
 
         Vec3 startPos = entity.getEyePosition().subtract(0, entity.getBbHeight() * 0.1, 0);
+        startPos = startPos.add(offset);
+
         Vec3 direction = getDirectionFromRotation(xRot, yRot).normalize();
 
         LaserProjectile laser = new LaserProjectile(
@@ -124,6 +129,7 @@ public class LaserAttack implements IAttackType {
     // ================== stepLaser ==================
     private void stepLaser(LaserProjectile laser, ServerLevel level, AttackContext context) {
         // --------- Homing ---------
+        laser.isCurrentlyHoming = false;
         if (laser.homing) {
             LivingEntity target = EntityHelper.findNearestTrackingTarget(
                     level,
@@ -135,61 +141,77 @@ public class LaserAttack implements IAttackType {
             if (target != null) {
                 Vec3 toTarget = target.getEyePosition().subtract(laser.position).normalize();
                 laser.direction = smoothTurn(laser.direction, toTarget, 0.15);
+                laser.isCurrentlyHoming = true;
             }
         }
 
         // --------- Trajectories ---------
-        Vec3 positionOffset = Vec3.ZERO;
-        Vec3 velocityOffset = Vec3.ZERO;
+        Vec3 totalPositionOffset = Vec3.ZERO;
+        Vec3 totalVelocityOffset = Vec3.ZERO;
 
-        for (Map.Entry<Integer, Integer> entry : context.trajectories.entrySet()) {
-            int trajId = entry.getKey();
-            int amplifier = entry.getValue() - 1;
+        if (!laser.isCurrentlyHoming){
+            for (Map.Entry<Integer, Integer> entry : context.trajectories.entrySet()) {
+                int trajId = entry.getKey();
+                int amplifier = entry.getValue() - 1;
 
-            AttackTrajectory traj = AttackTrajectory.byId(trajId);
-            AttackTrajectory.TrajectoryContext ctx =
-                    new AttackTrajectory.TrajectoryContext(
-                            laser.direction,
-                            laser.traveled,
-                            laser.step,
-                            laser.shooter,
-                            laser.position,
-                            amplifier
-                    );
+                AttackTrajectory traj = AttackTrajectory.byId(trajId);
+                AttackTrajectory.TrajectoryContext ctx =
+                        new AttackTrajectory.TrajectoryContext(
+                                laser.direction,
+                                laser.traveled,
+                                laser.step,
+                                laser.shooter,
+                                laser.position,
+                                amplifier
+                        );
 
-            var result = traj.getResult(ctx);
-            positionOffset = positionOffset.add(result.positionOffset());
-            velocityOffset = velocityOffset.add(result.velocityOffset());
-            if (result.speedDelta() > 0) laser.step = result.speedDelta();
+                var result = traj.getResult(ctx);
+
+                // 平滑插值：将 deltaDistance 分成若干小步累加
+                int steps = Math.max(1, (int)(laser.step * 4));
+                double stepDistance = laser.step / steps;
+                for (int i = 0; i < steps; i++) {
+                    double partialDistance = stepDistance * i;
+                    AttackTrajectory.TrajectoryContext subCtx =
+                            new AttackTrajectory.TrajectoryContext(
+                                    laser.direction,
+                                    laser.traveled + partialDistance,
+                                    stepDistance,
+                                    laser.shooter,
+                                    laser.position,
+                                    amplifier
+                            );
+                    var subResult = traj.getResult(subCtx);
+                    totalPositionOffset = totalPositionOffset.add(subResult.positionOffset());
+                    totalVelocityOffset = totalVelocityOffset.add(subResult.velocityOffset());
+                    if (subResult.speedDelta() > 0) laser.step = subResult.speedDelta();
+                }
+            }
         }
 
-        laser.direction = laser.direction.add(velocityOffset);
+        // --------- 更新方向 ---------
+        laser.direction = laser.direction.add(totalVelocityOffset);
         if (laser.direction.lengthSqr() > 1e-6) laser.direction = laser.direction.normalize();
 
-        // --------- 计算下一帧位置 ---------
-        Vec3 prePos = laser.position;
-        Vec3 nextPos = laser.position.add(laser.direction.scale(laser.step)).add(positionOffset);
+        // --------- 计算下一帧位置（偏移不影响射程） ---------
+        Vec3 nextPos = laser.position.add(laser.direction.scale(laser.step)).add(totalPositionOffset);
 
         // --------- 粒子 ---------
         spawnInterpolatedParticles(level, laser.position, nextPos, laser.width, context.colorId);
 
         // --------- Block Collision ---------
         AABB box = createCollisionBox(nextPos, laser.width);
-        if (!laser.spectral) {
-            if (handleBlockCollision(laser, level, context.hitEffects)) {
-                laser.traveled = getRange(laser.shooter);
-                return;
-            }
+        if (!laser.spectral && handleBlockCollision(laser, level, context.hitEffects)) {
+            laser.traveled = getRange(laser.shooter);
+            return;
         }
 
         // --------- Entity Collision ---------
         handleEntityCollision(laser, level, box, context.hitEffects);
 
-        // --------- 更新位置和行进距离 ---------
-        if (prePos == laser.position){
-            laser.position = nextPos;
-        }
-        laser.traveled += laser.step + positionOffset.length();
+        // --------- 更新位置和行进距离（只加步长，不加偏移长度） ---------
+        laser.position = nextPos;
+        laser.traveled += laser.step;
     }
 
     // ================== Collision & Damage ==================

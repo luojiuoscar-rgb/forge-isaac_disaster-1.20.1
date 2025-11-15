@@ -12,10 +12,10 @@ import net.minecraft.world.entity.player.Player;
 
 import java.util.List;
 
-public class WiggleWorm implements ITrinket {
+public class RingWorm implements ITrinket {
     @Override
     public int getId() {
-        return TrinketId.WIGGLE_WORM.getId();
+        return TrinketId.RING_WORM.getId();
     }
 
     @Override
@@ -27,7 +27,7 @@ public class WiggleWorm implements ITrinket {
     public void onEquipped(LivingEntity entity, boolean isEnchanted) {
         if (!(entity instanceof Player player)) return;
 
-        StatManager.addTrajectory(player, AttackTrajectory.WIGGLE_WORM.getId(), 1);
+        StatManager.addTrajectory(player, AttackTrajectory.RING_WORM.getId(), 1);
         if (isEnchanted){
             StatManager.TEARS.apply(player, 1);
         }else{
@@ -40,7 +40,7 @@ public class WiggleWorm implements ITrinket {
     public void onUnequipped(LivingEntity entity, boolean isEnchanted) {
         if (!(entity instanceof Player player)) return;
 
-        StatManager.addTrajectory(player, AttackTrajectory.WIGGLE_WORM.getId(), -1);
+        StatManager.addTrajectory(player, AttackTrajectory.RING_WORM.getId(), -1);
         if (isEnchanted){
             StatManager.TEARS.apply(player, -1);
         }else{
@@ -51,7 +51,7 @@ public class WiggleWorm implements ITrinket {
     @Override
     public List<Component> getDescription() {
         return List.of(
-                Component.translatable("item.isaac_disaster.wiggle_worm.lore.1"),
+                Component.translatable("item.isaac_disaster.ring_worm.lore.1"),
                 StatManager.TEARS.description(0.5),
                 Component.translatable("item.isaac_disaster.attribute.spectral_bullet")
         );

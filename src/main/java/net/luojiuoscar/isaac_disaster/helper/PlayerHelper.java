@@ -137,12 +137,15 @@ public class PlayerHelper {
     }
     /**若amount为null则代表直接充满*/
     public static void chargeAll(ServerPlayer player, @Nullable Integer amount){
+        boolean canOverCharge = hasItem(ItemId.THE_BATTERY.getId(), player);
+        chargeAll(player, amount, canOverCharge);
+    }
+    public static void chargeAll(ServerPlayer player, @Nullable Integer amount, boolean canOverCharge){
         Inventory inv = player.getInventory();
         List<ItemStack> invItems = new ArrayList<>();
         invItems.addAll(inv.items);
         invItems.addAll(inv.offhand);
 
-        boolean canOverCharge = hasItem(ItemId.THE_BATTERY.getId(), player);
         // 遍历背包 对全部物品充能
         for (ItemStack stack : invItems) {
             if (!stack.isEmpty() && stack.getItem() instanceof ActiveItem &&

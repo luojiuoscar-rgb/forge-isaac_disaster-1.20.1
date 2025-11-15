@@ -1,9 +1,9 @@
 package net.luojiuoscar.isaac_disaster.manager.item_managers;
 
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
-import net.luojiuoscar.isaac_disaster.manager.data.PillShuffleData;
 import net.luojiuoscar.isaac_disaster.item_ability.pickup.IPillEffect;
 import net.luojiuoscar.isaac_disaster.item_ability.pickup.pill_effects.*;
+import net.luojiuoscar.isaac_disaster.manager.data.PillShuffleData;
 import net.luojiuoscar.isaac_disaster.manager.id.PillEffectId;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
@@ -11,8 +11,6 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.player.Player;
 
 import java.util.*;
-
-import static com.mojang.text2speech.Narrator.LOGGER;
 
 public class PillEffectManager {
     private static final PillEffectManager INSTANCE = new PillEffectManager();
@@ -196,7 +194,11 @@ public class PillEffectManager {
                 new ShotSpeedUp(),
                 new ExperimentalPill(),
                 new Gulp(),
-                new Vurp()
+                new Vurp(),
+                new RUAWizard(),
+                new Energy48(),
+                new QuestionPill(),
+                new BombsAreKey()
         );
     }
 }

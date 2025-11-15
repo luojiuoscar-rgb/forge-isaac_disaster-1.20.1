@@ -25,6 +25,7 @@ public enum EffectManager {
     THE_WORLD("the_world"),
     ETERNAL_HEART("eternal_heart"),
     GILDING("gilding"),
+    THE_WIZ("the_wiz"),
 
     // Curses
     CURSE_OF_THE_BLIND("curse_of_the_blind"),

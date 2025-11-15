@@ -24,13 +24,13 @@ public class DeadDove implements IPassiveItem {
     @Override
     public void handleObtain(Player player, @Nullable ItemStack stack) {
         StatManager.FLY_TIME.apply(player, 1);
-        StatManager.applySpectral(player, 1);
+        StatManager.addSpectral(player, 1);
     }
 
     @Override
     public void handleRemove(Player player, @Nullable ItemStack stack) {
         StatManager.FLY_TIME.apply(player, -1);
-        StatManager.applySpectral(player, -1);
+        StatManager.addSpectral(player, -1);
     }
 
     @Override

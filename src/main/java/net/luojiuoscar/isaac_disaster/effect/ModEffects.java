@@ -88,6 +88,9 @@ public class ModEffects {
     public static final RegistryObject<MobEffect> GILDING = MOB_EFFECTS.register(EffectManager.GILDING.getName(),
             () -> new GildingEffect(MobEffectCategory.BENEFICIAL, 0xefe300));
 
+    public static final RegistryObject<MobEffect> THE_WIZ = MOB_EFFECTS.register(EffectManager.THE_WIZ.getName(),
+            () -> new TheWizEffect(MobEffectCategory.NEUTRAL, 0xFFFFFF));
+
     // curses
     public static final RegistryObject<MobEffect> CURSE_OF_THE_BLIND = MOB_EFFECTS.register(EffectManager.CURSE_OF_THE_BLIND.getName(),
             () -> new CurseOfTheBlind(MobEffectCategory.HARMFUL, 0x512799));

@@ -39,7 +39,7 @@ public class BulletAttack implements IAttackType {
         int count = entity instanceof Player player ? getBulletCount(player) : 1;
 
         if (count <= 1) {
-            shotBullet(entity, context);
+            shotBullet(entity, context, entity.getXRot(), entity.getYRot());
         } else if (count == 2) {
             shot2Bullet(entity, context);
         } else {
@@ -47,13 +47,36 @@ public class BulletAttack implements IAttackType {
             float curAngle = -angleInterval * (count - 1) / 2.0f;
 
             for (int i = 0; i < count; i++) {
-                shotBullet(entity, entity.getXRot(), entity.getYRot() + curAngle, context);
+                shotBullet(entity, context, entity.getXRot(), entity.getYRot() + curAngle);
                 curAngle += angleInterval;
             }
         }
     }
 
     // =================== 子弹发射 ===================
+    @Override
+    public void handleShoot(LivingEntity shooter, AttackContext context, Vec3 offset, float xRot, float yRot) {
+        if (shooter.level().isClientSide()) return;
+
+        Vec3 eyePos = shooter.getEyePosition().add(0, shooter.getBbHeight() * -0.15, 0);
+        Vec3 spawnPos = eyePos.add(offset);
+
+        TearBullet bullet = createBullet(shooter, spawnPos, xRot, yRot, context);
+        shooter.level().addFreshEntity(bullet);
+    }
+
+    private void shotBullet(LivingEntity entity, AttackContext context, float xRot, float yRot) {
+        shoot(entity, context, Vec3.ZERO, xRot, yRot);
+    }
+
+    private void shot2Bullet(LivingEntity entity, AttackContext context) {
+        Vec3 look = entity.getLookAngle();
+        Vec3 right = look.cross(new Vec3(0, 1, 0)).normalize();
+
+        shoot(entity, context, right.scale(0.25), entity.getXRot(), entity.getYRot());
+        shoot(entity, context, right.scale(-0.25), entity.getXRot(), entity.getYRot());
+    }
+
     private TearBullet createBullet(LivingEntity shooter, Vec3 spawnPos, float xRot, float yRot, AttackContext context) {
         double width = shooter.getBbWidth();
         double forwardOffset = 0.4 * (width / 0.6);
@@ -90,34 +113,6 @@ public class BulletAttack implements IAttackType {
                     new TearBulletShootEvent(bullet, bullet.getOwner(), getId(), context.hitEffects, bullet));
 
         return bullet;
-    }
-
-    private void shotBullet(LivingEntity entity, AttackContext context) {
-        shotBullet(entity, entity.getXRot(), entity.getYRot(), context);
-    }
-
-    private void shotBullet(LivingEntity entity, float xRot, float yRot, AttackContext context) {
-        if (entity.level().isClientSide()) return;
-        Vec3 eyePos = entity.getEyePosition().add(0, entity.getBbHeight() * -0.15, 0);
-        TearBullet bullet = createBullet(entity, eyePos, xRot, yRot, context);
-        entity.level().addFreshEntity(bullet);
-    }
-
-    private void shot2Bullet(LivingEntity entity, AttackContext context) {
-        if (entity.level().isClientSide()) return;
-        Vec3 look = entity.getLookAngle();
-        Vec3 right = look.cross(new Vec3(0, 1, 0)).normalize();
-        Vec3 eyePos = entity.getEyePosition().add(0, entity.getBbHeight() * -0.15, 0);
-
-        TearBullet bullet1 = createBullet(
-                entity, eyePos.add(right.scale(0.25)),
-                entity.getXRot(), entity.getYRot(), context);
-        TearBullet bullet2 = createBullet(
-                entity, eyePos.add(right.scale(-0.25)),
-                entity.getXRot(), entity.getYRot(), context);
-
-        entity.level().addFreshEntity(bullet1);
-        entity.level().addFreshEntity(bullet2);
     }
 
     // =================== 基础属性 ===================

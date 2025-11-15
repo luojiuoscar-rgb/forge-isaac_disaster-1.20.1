@@ -58,7 +58,12 @@ public class TrinketManager {
                 new PokerChip(),
                 new GildedKey(),
                 new TheLeftHand(),
-                new WiggleWorm()
+                new WiggleWorm(),
+                new BrainWorm(),
+                new WhipWorm(),
+                new TapeWorm(),
+                new LazyWorm(),
+                new RingWorm()
         );
     }
 }

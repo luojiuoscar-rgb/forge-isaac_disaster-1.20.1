@@ -133,6 +133,17 @@ public class ModSounds {
     public static final RegistryObject<SoundEvent> GULP_H = registerSoundEvent("gulp_h");
     public static final RegistryObject<SoundEvent> VURP = registerSoundEvent("vurp");
     public static final RegistryObject<SoundEvent> VURP_H = registerSoundEvent("vurp_h");
+    public static final RegistryObject<SoundEvent> RUA_WIZARD = registerSoundEvent("are_you_a_wizard");
+    public static final RegistryObject<SoundEvent> RUA_WIZARD_H = registerSoundEvent("are_you_a_wizard_h");
+    public static final RegistryObject<SoundEvent> ENERGY_48 = registerSoundEvent("48_hour_energy");
+    public static final RegistryObject<SoundEvent> ENERGY_48_H = registerSoundEvent("48_hour_energy_h");
+    public static final RegistryObject<SoundEvent> QUESTION_PILL = registerSoundEvent("question_marks");
+    public static final RegistryObject<SoundEvent> QUESTION_PILL_H = registerSoundEvent("question_marks_h");
+    public static final RegistryObject<SoundEvent> BOMBS_ARE_KEY = registerSoundEvent("bombs_are_key");
+    public static final RegistryObject<SoundEvent> BOMBS_ARE_KEY_H = registerSoundEvent("bombs_are_key_h");
+
+
+
 
 
     // cards

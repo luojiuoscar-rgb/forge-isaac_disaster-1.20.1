@@ -25,14 +25,14 @@ public class TinyPlanet implements IPassiveItem {
     @Override
     public void handleObtain(Player player, @Nullable ItemStack stack) {
         StatManager.RANGE.apply(player, 2.5);
-        StatManager.applySpectral(player, 1);
+        StatManager.addSpectral(player, 1);
         StatManager.addTrajectory(player, AttackTrajectory.TINY_PLANET.getId(), 1);
     }
 
     @Override
     public void handleRemove(Player player, @Nullable ItemStack stack) {
         StatManager.RANGE.apply(player, -2.5);
-        StatManager.applySpectral(player, -1);
+        StatManager.addSpectral(player, -1);
         StatManager.addTrajectory(player, AttackTrajectory.TINY_PLANET.getId(), -1);
     }
 

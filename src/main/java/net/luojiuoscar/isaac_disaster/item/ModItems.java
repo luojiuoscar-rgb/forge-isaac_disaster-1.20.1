@@ -159,6 +159,8 @@ public class ModItems {
     public static final RegistryObject<Item> CHAOS              = registerPassiveItem("chaos", 3, ItemId.CHAOS);
     public static final RegistryObject<Item> TOOTH_PICKS        = registerPassiveItem("tooth_picks", 3, ItemId.TOOTH_PICKS);
     public static final RegistryObject<Item> TECHNOLOGY         = registerPassiveItem("technology", 3, ItemId.TECHNOLOGY);
+    public static final RegistryObject<Item> MARKED             = registerPassiveItem("marked", 1, ItemId.MARKED);
+    public static final RegistryObject<Item> THE_WIZ            = registerPassiveItem("the_wiz", 0, ItemId.THE_WIZ);
 
 
 
@@ -253,7 +255,12 @@ public class ModItems {
     public static final RegistryObject<Item> POKER_CHIP     = registerTrinket("poker_chip", TrinketId.POKER_CHIP);
     public static final RegistryObject<Item> GILDED_KEY     = registerTrinket("gilded_key", TrinketId.GILDED_KEY);
     public static final RegistryObject<Item> THE_LEFT_HAND  = registerTrinket("the_left_hand", TrinketId.THE_LEFT_HAND);
-    public static final RegistryObject<Item> WIGGLE_WORM  = registerTrinket("wiggle_worm", TrinketId.WIGGLE_WORM);
+    public static final RegistryObject<Item> WIGGLE_WORM    = registerTrinket("wiggle_worm", TrinketId.WIGGLE_WORM);
+    public static final RegistryObject<Item> BRAIN_WORM     = registerTrinket("brain_worm", TrinketId.BRAIN_WORM);
+    public static final RegistryObject<Item> WHIP_WORM      = registerTrinket("whip_worm", TrinketId.WHIP_WORM);
+    public static final RegistryObject<Item> TAPE_WORM      = registerTrinket("tape_worm", TrinketId.TAPE_WORM);
+    public static final RegistryObject<Item> LAZY_WORM      = registerTrinket("lazy_worm", TrinketId.LAZY_WORM);
+    public static final RegistryObject<Item> RING_WORM      = registerTrinket("ring_worm", TrinketId.RING_WORM);
 
 
     // trinket end

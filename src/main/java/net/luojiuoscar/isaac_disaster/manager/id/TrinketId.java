@@ -26,7 +26,12 @@ public enum TrinketId {
     POKER_CHIP,
     GILDED_KEY,
     THE_LEFT_HAND,
-    WIGGLE_WORM;
+    WIGGLE_WORM,
+    BRAIN_WORM,
+    WHIP_WORM,
+    TAPE_WORM,
+    LAZY_WORM,
+    RING_WORM;
 
 
     private final int id;

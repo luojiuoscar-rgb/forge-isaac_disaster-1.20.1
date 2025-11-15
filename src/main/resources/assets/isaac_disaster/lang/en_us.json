@@ -108,7 +108,8 @@
   "effect.isaac_disaster.curse_of_the_blind.description": "道具会展示为一个问号",
   "effect.isaac_disaster.curse_of_the_maze": "混乱诅咒",
   "effect.isaac_disaster.curse_of_the_maze.description": "受伤时会随机传送",
-
+  "effect.isaac_disaster.the_wiz": "\"智慧\"",
+  "effect.isaac_disaster.the_wiz.description": "子弹向左前方、右前方发射",
 
   "attribute.isaac_disaster.max_health": "生命上限",
   "attribute.isaac_disaster.movement_speed": "移动速度",
@@ -189,7 +190,7 @@
   "item.isaac_disaster.action.consumed": "[已使用]",
   "item.isaac_disaster.action.cannot_unequip": "无法卸下",
 
-  "items start": "",
+  "item start": "",
   "item.isaac_disaster.breakfast": "早餐",
   "item.isaac_disaster.dessert": "甜点",
   "item.isaac_disaster.lunch": "正餐",
@@ -373,13 +374,15 @@
   "item.isaac_disaster.tooth_picks": "牙签",
   "item.isaac_disaster.technology": "科技",
   "item.isaac_disaster.technology.lore.1": "攻击方式变为激光",
+  "item.isaac_disaster.marked": "十字准星",
+  "item.isaac_disaster.the_wiz": "蠢巫帽",
+  "item.isaac_disaster.the_wiz.lore.1": "同时向两个斜前方发射泪弹",
+
+  "item end": "",
 
 
-  "items end": "",
 
-
-
-  "trinkets": "",
+  "trinket": "",
   "item.isaac_disaster.swallowed_penny": "被吞下的硬币",
   "item.isaac_disaster.swallowed_penny.lore.1": "受伤时概率生成1个硬币",
   "item.isaac_disaster.swallowed_penny.enchanted.lore.1": "触发概率更高",
@@ -429,11 +432,15 @@
   "item.isaac_disaster.the_left_hand": "左断手",
   "item.isaac_disaster.the_left_hand.lore.1": "使箱子变成红箱子",
   "item.isaac_disaster.wiggle_worm": "蠕动虫",
-  "item.isaac_disaster.wiggle_worm.lore.1": "使攻击轨迹变成正弦函数",
+  "item.isaac_disaster.wiggle_worm.lore.1": "泪弹以正弦函数轨迹摆动前进",
+  "item.isaac_disaster.brain_worm": "脑虫",
+  "item.isaac_disaster.whip_worm": "鞭形虫",
+  "item.isaac_disaster.tape_worm": "长条虫",
+  "item.isaac_disaster.lazy_worm": "懒懒虫",
+  "item.isaac_disaster.ring_worm": "环形虫",
+  "item.isaac_disaster.ring_worm.lore.1": "泪弹以弹簧状前进",
 
-
-
-  "trinkets end": "",
+  "trinket end": "",
 
 
 
@@ -630,6 +637,11 @@
   "pill.isaac_disaster.effect.experimental_pill": "实验性胶囊",
   "pill.isaac_disaster.effect.gulp": "咕噜！",
   "pill.isaac_disaster.effect.vurp": "嗝！",
+  "pill.isaac_disaster.effect.rua_wizard": "你是巫师吗？",
+  "pill.isaac_disaster.effect.48_hour_energy": "48小时能量！",
+  "pill.isaac_disaster.effect.question_pill": "???",
+  "pill.isaac_disaster.effect.bombs_are_key": "炸弹变钥匙",
+
 
   "item.isaac_disaster.bomb": "炸弹",
   "item.isaac_disaster.giga_bomb": "炸弹",

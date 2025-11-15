@@ -4,10 +4,8 @@ import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerPassiveItemProvider;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerSwallowedTrinketsProvider;
 import net.luojiuoscar.isaac_disaster.effect.ModEffects;
-import net.luojiuoscar.isaac_disaster.event.custom.attack.IsaacAttackAfterHitEvent;
-import net.luojiuoscar.isaac_disaster.event.custom.attack.IsaacAttackBeforeHitEntityEvent;
-import net.luojiuoscar.isaac_disaster.event.custom.attack.IsaacAttackHitBlockEvent;
-import net.luojiuoscar.isaac_disaster.event.custom.attack.PlayerPerformAttackEvent;
+import net.luojiuoscar.isaac_disaster.effect.custom.TheWizEffect;
+import net.luojiuoscar.isaac_disaster.event.custom.attack.*;
 import net.luojiuoscar.isaac_disaster.event.custom.misc.*;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.item.item.Trinket;
@@ -182,7 +180,19 @@ public class IsaacDisasterEvents {
             count++;
         }
 
+        if (player.hasEffect(ModEffects.THE_WIZ.get())){
+            count = Math.min(count, 8);  // 最大为 8(*2)
+        }
+
         event.setCount(count);
+    }
+
+    @SubscribeEvent
+    public static void onCreateShootEvent(BeforeCreateShootEvent event){
+        if (event.getShooter().hasEffect(ModEffects.THE_WIZ.get())){
+            TheWizEffect.onTriggered(event);
+        }
+
     }
 
 

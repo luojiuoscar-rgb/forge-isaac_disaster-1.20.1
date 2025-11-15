@@ -3,12 +3,14 @@ package net.luojiuoscar.isaac_disaster.manager.attack;
 import net.luojiuoscar.isaac_disaster.attribute.ModAttributes;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerAbilityProvider;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerPassiveItemProvider;
+import net.luojiuoscar.isaac_disaster.event.custom.attack.BeforeCreateShootEvent;
 import net.luojiuoscar.isaac_disaster.event.custom.misc.IsaacGetBulletCountEvent;
 import net.luojiuoscar.isaac_disaster.manager.id.ItemId;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.MinecraftForge;
 
 import java.util.Map;
@@ -19,12 +21,12 @@ public interface IAttackType {
 
     double getPriority();
 
-    default void performAttack(LivingEntity livingEntity, AttackContext context){
-        handleAttack(livingEntity, context);
-        makeSound(livingEntity);
+    default void performAttack(LivingEntity entity, AttackContext context) {
+        handleAttack(entity, context);
+        makeSound(entity);
     }
 
-    void handleAttack(LivingEntity livingEntity, AttackContext context);
+    void handleAttack(LivingEntity entity, AttackContext context);
 
     void makeSound(LivingEntity entity);
 
@@ -40,7 +42,28 @@ public interface IAttackType {
         }
     }
 
+    default void shoot(LivingEntity shooter, AttackContext context, Vec3 offset, float xRot, float yRot){
+        BeforeCreateShootEvent event = new BeforeCreateShootEvent(shooter, context, offset, xRot, yRot);
+        MinecraftForge.EVENT_BUS.post(event);
 
+        if (!event.isCanceled()) {
+            Vec3 usedOffset = event.getOffset();
+            float usedX = event.getXRot();
+            float usedY = event.getYRot();
+
+            handleShoot(shooter, context, usedOffset, usedX, usedY);
+        }
+
+        // 额外子弹
+        for (BeforeCreateShootEvent.ExtraShot extra : event.getExtraShots()) {
+            handleShoot(shooter, context, extra.offset(), extra.xRot(), extra.yRot());
+        }
+    }
+
+
+    void handleShoot(LivingEntity shooter, AttackContext context, Vec3 offset, float xRot, float yRot);
+
+    // ============ 属性相关 =============
     default boolean isSpectral(LivingEntity entity){
         if (entity instanceof Player player){
             return player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY)

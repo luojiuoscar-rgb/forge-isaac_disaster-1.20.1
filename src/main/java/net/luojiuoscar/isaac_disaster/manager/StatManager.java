@@ -296,22 +296,22 @@ public enum StatManager {
 
     /* ---------------------- 子弹能力 ---------------------- */
 
-    public static void applyPiercing(Player player, int amount){
+    public static void addPiercing(Player player, int amount){
         player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY).ifPresent(
                 playerAbility -> playerAbility.setPiercing(playerAbility.getPiercing() + amount)
         );
     }
-    public static void applyHoming(Player player, int amount){
+    public static void addHoming(Player player, int amount){
         player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY).ifPresent(
                 playerAbility -> playerAbility.setHoming(playerAbility.getHoming() + amount)
         );
     }
-    public static void applySpectral(Player player, int amount){
+    public static void addSpectral(Player player, int amount){
         player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY).ifPresent(
                 playerAbility -> playerAbility.setSpectral(playerAbility.getSpectral() + amount)
         );
     }
-    public static void applyControllable(Player player, int amount){
+    public static void addControllable(Player player, int amount){
         player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY).ifPresent(
                 playerAbility -> playerAbility.setControllable(playerAbility.getControllable() + amount)
         );

@@ -107,7 +107,9 @@ public enum ItemId {
     CHAOS,
     KAMIKAZE,
     TOOTH_PICKS,
-    TECHNOLOGY;
+    TECHNOLOGY,
+    MARKED,
+    THE_WIZ;
 
 
 

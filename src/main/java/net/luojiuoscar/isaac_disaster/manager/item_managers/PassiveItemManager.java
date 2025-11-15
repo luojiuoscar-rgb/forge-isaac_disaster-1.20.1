@@ -131,7 +131,9 @@ public class  PassiveItemManager {
                 new EchoChamber(),
                 new Chaos(),
                 new ToothPicks(),
-                new Technology()
+                new Technology(),
+                new Marked(),
+                new TheWiz()
         );
     }
 }

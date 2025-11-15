@@ -33,7 +33,7 @@ public class TelepathyEffect extends MobEffect {
             return;
         }
 
-        StatManager.applyHoming(player, 1);
+        StatManager.addHoming(player, 1);
         StatManager.addBulletColor(player, BulletColor.SPOON_BENDER.getId(), 1);
 
         AttributeInstance attr = player.getAttribute(ModAttributes.BULLET_RANGE.get());
@@ -57,7 +57,7 @@ public class TelepathyEffect extends MobEffect {
         super.removeAttributeModifiers(entity, attributes, amplifier);
         if (!(entity instanceof ServerPlayer player)) return;
 
-        StatManager.applyHoming(player, -1);
+        StatManager.addHoming(player, -1);
         StatManager.addBulletColor(player, BulletColor.SPOON_BENDER.getId(), -1);
 
         AttributeInstance attr = player.getAttribute(ModAttributes.BULLET_RANGE.get());
