@@ -1,10 +1,12 @@
 package net.luojiuoscar.isaac_disaster.item_ability.passive_item.items;
 
+import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.entity.custom.TearBullet;
 import net.luojiuoscar.isaac_disaster.event.custom.attack.IsaacAttackAfterHitEvent;
 import net.luojiuoscar.isaac_disaster.event.custom.attack.IsaacAttackHitBlockEvent;
 import net.luojiuoscar.isaac_disaster.helper.EntityHelper;
 import net.luojiuoscar.isaac_disaster.item_ability.passive_item.IPassiveItem;
+import net.luojiuoscar.isaac_disaster.manager.attack.types.LaserAttack;
 import net.luojiuoscar.isaac_disaster.manager.id.ItemId;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.LivingEntity;
@@ -43,30 +45,44 @@ public class RubberCement implements IPassiveItem {
         );
     }
 
+    /** 方块碰撞弹射 */
     public static void bounceOnBlock(IsaacAttackHitBlockEvent event) {
-        if (!(event.getDirectSource() instanceof TearBullet bullet)) return;
         BlockHitResult hit = event.getHitResult();
-
-        Vec3 motion = bullet.getVelocity();
         Vec3 normal = Vec3.atLowerCornerOf(hit.getDirection().getNormal()).normalize();
 
-        double speed = motion.length();
-        if (speed < 1e-6) return;
+        // ---------------- TearBullet ----------------
+        if (event.getDirectSource() instanceof TearBullet bullet) {
+            Vec3 motion = bullet.getVelocity();
 
-        // 反射方向
-        Vec3 reflected = motion.subtract(normal.scale(2 * motion.dot(normal)));
+            double speed = motion.length();
+            if (speed < 1e-6) return;
 
-        // 更新速度为反射向量
-        bullet.setVelocity(reflected);
+            Vec3 reflected = motion.subtract(normal.scale(2 * motion.dot(normal)));
+            bullet.setVelocity(reflected);
+            bullet.move(MoverType.SELF, reflected.scale(1));
+        }
+        // ---------------- LaserProjectile ----------------
+        else if (event.getDirectSource() instanceof LaserAttack.LaserProjectile laser) {
+            Vec3 direction = laser.direction;
 
-        // 防止立即再次撞到同一个方块
-        bullet.move(MoverType.SELF, reflected.scale(0.1));
+            Vec3 reflected = direction.subtract(normal.scale(2 * direction.dot(normal)));
+            laser.direction = reflected;
+            Vec3 prePos = laser.position;
+            laser.position = laser.position.add(reflected.scale(laser.step));
+
+            IsaacDisaster.LOGGER.info("Laser Bounce: normal:{}, direction:{} -> {}, position: {} -> {}",
+                    normal, direction, reflected, prePos, laser.position);
+        }
+
+
         event.setCanceled(true);
     }
 
-
+    /** 实体碰撞弹射，只处理 TearBullet */
     public static void bounceOnEntity(IsaacAttackAfterHitEvent event) {
         if (!(event.getDirectSource() instanceof TearBullet bullet)) return;
+        if (bullet.isPiercing) return;
+
         double speed = bullet.getVelocity().length();
 
         // 50% 概率弹向最近敌对生物
@@ -80,7 +96,6 @@ public class RubberCement implements IPassiveItem {
             );
 
             if (target != null) {
-                // 计算方向
                 Vec3 dir = target.getEyePosition().subtract(bullet.position()).normalize();
                 bullet.setVelocity(dir.scale(speed));
                 event.setDiscardAfterHit(false);
@@ -99,6 +114,4 @@ public class RubberCement implements IPassiveItem {
         bullet.setVelocity(randomDir.scale(speed));
         event.setDiscardAfterHit(false);
     }
-
-
 }

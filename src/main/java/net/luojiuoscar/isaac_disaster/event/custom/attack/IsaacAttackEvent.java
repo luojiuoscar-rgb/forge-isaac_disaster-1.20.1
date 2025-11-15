@@ -6,12 +6,14 @@ import net.minecraftforge.eventbus.api.Event;
 import java.util.Set;
 
 public class IsaacAttackEvent extends Event {
-    private final Entity directSource;
+    private final Object directSource;
+    private final Entity indirectSource;
     private final int attackType;
     private final Set<Integer> hitEffects;
 
-    public IsaacAttackEvent(Entity entity, int attackType, Set<Integer> hitEffectIds) {
-        this.directSource = entity;
+    public IsaacAttackEvent(Object directSource, Entity indirectSource, int attackType, Set<Integer> hitEffectIds) {
+        this.directSource = directSource;
+        this.indirectSource = indirectSource;
         this.attackType = attackType;
         this.hitEffects = hitEffectIds;
     }
@@ -20,8 +22,12 @@ public class IsaacAttackEvent extends Event {
         return attackType;
     }
 
-    public Entity getDirectSource() {
+    public Object getDirectSource() {
         return directSource;
+    }
+
+    public Entity getIndirectSource() {
+        return indirectSource;
     }
 
     public Set<Integer> getHitEffects() {

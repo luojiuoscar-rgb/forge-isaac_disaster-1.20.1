@@ -1,6 +1,6 @@
 package net.luojiuoscar.isaac_disaster.event.custom.attack;
 
-import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraftforge.eventbus.api.Cancelable;
 
@@ -11,9 +11,9 @@ public class IsaacAttackBeforeHitEntityEvent extends IsaacAttackEvent {
     private final EntityHitResult hit;
     private double damage;
 
-    public IsaacAttackBeforeHitEntityEvent(LivingEntity source, int attackType, Set<Integer> hitEffectIds,
+    public IsaacAttackBeforeHitEntityEvent(Object directSource, Entity indirectSource, int attackType, Set<Integer> hitEffectIds,
                                            EntityHitResult hit, float damage) {
-        super(source, attackType, hitEffectIds);
+        super(directSource, indirectSource, attackType, hitEffectIds);
         this.hit = hit;
         this.damage = damage;
     }

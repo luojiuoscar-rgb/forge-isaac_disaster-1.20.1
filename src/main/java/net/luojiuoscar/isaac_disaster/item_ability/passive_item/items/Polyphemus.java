@@ -56,7 +56,8 @@ public class Polyphemus implements IPassiveItem {
     }
 
     public static void onTriggered(IsaacAttackAfterHitEvent event){
-        if (!(event.getDirectSource() instanceof TearBullet bullet && bullet.getOwner() instanceof Player player)) return;
+        if (!(event.getDirectSource() instanceof TearBullet bullet &&
+                event.getIndirectSource() instanceof Player player)) return;
 
         double damage = event.getDamage();
 

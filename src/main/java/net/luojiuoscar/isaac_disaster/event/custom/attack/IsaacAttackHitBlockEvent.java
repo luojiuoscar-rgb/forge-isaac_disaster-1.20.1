@@ -10,9 +10,9 @@ import java.util.Set;
 public class IsaacAttackHitBlockEvent extends IsaacAttackEvent {
     private final BlockHitResult hit;
 
-    public IsaacAttackHitBlockEvent(Entity directSource, int attackType, Set<Integer> hitEffectIds,
+    public IsaacAttackHitBlockEvent(Object directSource, Entity indirectSource, int attackType, Set<Integer> hitEffectIds,
                                     BlockHitResult hit) {
-        super(directSource, attackType, hitEffectIds);
+        super(directSource, indirectSource, attackType, hitEffectIds);
         this.hit = hit;
     }
 

@@ -86,7 +86,8 @@ public class BulletAttack implements IAttackType {
         bullet.setDeltaMovement(look.scale(getBulletSpeed(shooter)));
 
         if (!shooter.level().isClientSide)
-            MinecraftForge.EVENT_BUS.post(new TearBulletShootEvent(bullet.getOwner(), getId(), context.hitEffects, bullet));
+            MinecraftForge.EVENT_BUS.post(
+                    new TearBulletShootEvent(bullet, bullet.getOwner(), getId(), context.hitEffects, bullet));
 
         return bullet;
     }

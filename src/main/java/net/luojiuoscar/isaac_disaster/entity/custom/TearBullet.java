@@ -113,7 +113,7 @@ public class TearBullet extends Entity {
 
         if (!level.isClientSide)
             MinecraftForge.EVENT_BUS.post(new TearBulletShootEvent(
-                    getOwner(), AttackType.BULLET.getId(), hitEffectIds, this));
+                    this, getOwner(), AttackType.BULLET.getId(), hitEffectIds, this));
     }
 
     // ======== 核心逻辑 ========
@@ -186,7 +186,7 @@ public class TearBullet extends Entity {
 
         if (shape.isEmpty() || shape.bounds().getSize() < 0.01) return false;
 
-        IsaacAttackHitBlockEvent event = new IsaacAttackHitBlockEvent(this, AttackType.BULLET.getId(), hitEffectIds, blockHit);
+        IsaacAttackHitBlockEvent event = new IsaacAttackHitBlockEvent(this, getOwner(), AttackType.BULLET.getId(), hitEffectIds, blockHit);
         if (!MinecraftForge.EVENT_BUS.post(event)) {
             if (!MinecraftForge.EVENT_BUS.post(new TearBulletDiscardEvent(this))) {
                 discard();
@@ -228,7 +228,7 @@ public class TearBullet extends Entity {
             return;
 
         IsaacAttackBeforeHitEntityEvent beforeEvent = new IsaacAttackBeforeHitEntityEvent(
-                getOwner(), AttackType.BULLET.getId(), hitEffectIds, entityHit, damage);
+                this, getOwner(), AttackType.BULLET.getId(), hitEffectIds, entityHit, damage);
 
         if (MinecraftForge.EVENT_BUS.post(beforeEvent)) return;
 
@@ -237,7 +237,7 @@ public class TearBullet extends Entity {
         makeDamage(living, (float) damageValue);
 
         IsaacAttackAfterHitEvent event = new IsaacAttackAfterHitEvent(
-                this, AttackType.BULLET.getId(), hitEffectIds, entityHit, damageValue, living.getHealth());
+                this, getOwner(), AttackType.BULLET.getId(), hitEffectIds, entityHit, damageValue, living.getHealth());
         MinecraftForge.EVENT_BUS.post(event);
 
         if (!isPiercing && event.shouldDiscardAfterHit()) {

@@ -4,7 +4,6 @@ import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerPassiveItemProvider;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerSwallowedTrinketsProvider;
 import net.luojiuoscar.isaac_disaster.effect.ModEffects;
-import net.luojiuoscar.isaac_disaster.entity.custom.TearBullet;
 import net.luojiuoscar.isaac_disaster.event.custom.attack.IsaacAttackAfterHitEvent;
 import net.luojiuoscar.isaac_disaster.event.custom.attack.IsaacAttackBeforeHitEntityEvent;
 import net.luojiuoscar.isaac_disaster.event.custom.attack.IsaacAttackHitBlockEvent;
@@ -63,8 +62,7 @@ public class IsaacDisasterEvents {
 
     @SubscribeEvent
     public static void onAttackHitBlock(IsaacAttackHitBlockEvent event) {
-        if (!(event.getDirectSource() instanceof TearBullet bullet &&
-                bullet.getOwner() instanceof ServerPlayer player)) return;
+        if (!(event.getIndirectSource() instanceof ServerPlayer player)) return;
 
         if (PlayerHelper.hasItem(ItemId.RUBBER_CEMENT.getId(), player)){
             RubberCement.bounceOnBlock(event);
@@ -74,31 +72,29 @@ public class IsaacDisasterEvents {
 
     @SubscribeEvent
     public static void beforeAttackHitEntity(IsaacAttackBeforeHitEntityEvent event) {
-        if (!(event.getDirectSource() instanceof TearBullet bullet)) return;
-        Set<Integer> effects = bullet.getHitEffectIds();
+        Set<Integer> effects = event.getHitEffects();
+        if (!(event.getHit().getEntity() instanceof LivingEntity entity)) return;
 
-        if (event.getHit().getEntity() instanceof LivingEntity living &&
-        living.hasEffect(ModEffects.SOUL_STATE.get())) {
+        if (entity.hasEffect(ModEffects.SOUL_STATE.get())) {
             event.setCanceled(true);
             return;
         }
 
         // 检测是否为玩家触发的效果
-        if (!(bullet.getOwner() instanceof Player player && event.getHit().getEntity() instanceof LivingEntity living)) return;
+        if (!(event.getIndirectSource() instanceof Player player)) return;
 
         // 遍历并触发对应效果
         for (int itemId : effects){
             ISpecialTypeBulletPassiveItem item =(ISpecialTypeBulletPassiveItem) PassiveItemManager.getInstance().getItemFromId(itemId);
-            item.onHit(player, living);
+            item.onHit(player, entity);
         }
     }
 
     @SubscribeEvent
     public static void afterAttackHitEntity(IsaacAttackAfterHitEvent event) {
-        if (!(event.getDirectSource() instanceof TearBullet bullet)) return;
-        EntityHitResult hit = event.getHitResult();
+        if (!(event.getIndirectSource() instanceof ServerPlayer player)) return;
 
-        if (!(bullet.getOwner() instanceof ServerPlayer player)) return;
+        EntityHitResult hit = event.getHitResult();
 
         if (PlayerHelper.hasItem(ItemId.POLYPHEMUS.getId(), player)){
             if (hit.getEntity() instanceof LivingEntity living && living.isDeadOrDying()){
@@ -106,7 +102,7 @@ public class IsaacDisasterEvents {
             }
         }
 
-        if (PlayerHelper.hasItem(ItemId.RUBBER_CEMENT.getId(), player) && !bullet.isPiercing){
+        if (PlayerHelper.hasItem(ItemId.RUBBER_CEMENT.getId(), player)){
             RubberCement.bounceOnEntity(event);
         }
 
