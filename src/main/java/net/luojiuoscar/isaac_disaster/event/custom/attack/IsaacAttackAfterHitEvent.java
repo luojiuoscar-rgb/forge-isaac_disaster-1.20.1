@@ -9,7 +9,6 @@ public class IsaacAttackAfterHitEvent extends IsaacAttackEvent {
     private final EntityHitResult hit;
     private double damage;
     private final double targetHealth;
-    private boolean discardAfterHit = true; // 默认命中后消失
 
     public IsaacAttackAfterHitEvent(Object directSource, Entity indirectSource, int attackTypeId, Set<Integer> hitEffects,
                                     EntityHitResult hit, double damage, double targetHealth) {
@@ -25,8 +24,4 @@ public class IsaacAttackAfterHitEvent extends IsaacAttackEvent {
     public double getTargetHealth() { return targetHealth; }
 
     public void setDamage(double damage) { this.damage = damage; }
-
-    public boolean shouldDiscardAfterHit() { return discardAfterHit; }
-
-    public void setDiscardAfterHit(boolean discardAfterHit) { this.discardAfterHit = discardAfterHit; }
 }

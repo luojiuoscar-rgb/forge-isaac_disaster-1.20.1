@@ -64,10 +64,10 @@ public class Polyphemus implements IPassiveItem {
         double effectiveDamage = event.getTargetHealth();
         double newDamage = damage - effectiveDamage;
         if (newDamage > 0){  // 如果还有伤害剩余
-            event.setDiscardAfterHit(false);
             event.setDamage(newDamage);
             // 计算新体型
             bullet.setScale(PlayerHelper.getBulletScale(newDamage, PlayerHelper.getExtraBulletScale(player)));
+            event.setCanceled(true);
         }
     }
 }

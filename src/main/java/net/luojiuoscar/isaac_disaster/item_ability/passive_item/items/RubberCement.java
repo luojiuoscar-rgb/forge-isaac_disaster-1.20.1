@@ -98,7 +98,7 @@ public class RubberCement implements IPassiveItem {
             if (target != null) {
                 Vec3 dir = target.getEyePosition().subtract(bullet.position()).normalize();
                 bullet.setVelocity(dir.scale(speed));
-                event.setDiscardAfterHit(false);
+                event.setCanceled(true);
                 return;
             }
         }
@@ -112,6 +112,6 @@ public class RubberCement implements IPassiveItem {
         Vec3 randomDir = new Vec3(x, y, z).normalize();
 
         bullet.setVelocity(randomDir.scale(speed));
-        event.setDiscardAfterHit(false);
+        event.setCanceled(true);
     }
 }

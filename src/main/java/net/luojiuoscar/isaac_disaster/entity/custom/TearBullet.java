@@ -241,7 +241,7 @@ public class TearBullet extends Entity {
                 this, getOwner(), AttackType.BULLET.getId(), hitEffectIds, entityHit, damageValue, living.getHealth());
         MinecraftForge.EVENT_BUS.post(event);
 
-        if (!isPiercing && event.shouldDiscardAfterHit()) {
+        if (!isPiercing) {
             if (!MinecraftForge.EVENT_BUS.post(new TearBulletDiscardEvent(this))) discard();
         }
     }
