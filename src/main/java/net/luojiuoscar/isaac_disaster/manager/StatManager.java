@@ -239,7 +239,7 @@ public enum StatManager {
     }
 
     public static void modifyAdd(Player player, UUID uuid, double amount,
-                                 @javax.annotation.Nullable Double minValue, @javax.annotation.Nullable Double maxValue){
+                                 @Nullable Double minValue, @Nullable Double maxValue){
         AttributeInstance instance = player.getAttribute(StatManager.fromUUID(uuid).getAttribute());
         if(instance == null) return;
 
@@ -254,7 +254,7 @@ public enum StatManager {
     }
 
     public static void modifyMultiplyBase(Player player, UUID uuid, double amount,
-                                          @javax.annotation.Nullable Double minValue, @javax.annotation.Nullable Double maxValue){
+                                          @Nullable Double minValue, @Nullable Double maxValue){
         AttributeInstance instance = player.getAttribute(StatManager.fromUUID(uuid).getAttribute());
         if(instance == null) return;
 

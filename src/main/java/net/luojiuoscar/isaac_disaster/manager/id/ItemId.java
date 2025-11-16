@@ -109,7 +109,8 @@ public enum ItemId {
     TOOTH_PICKS,
     TECHNOLOGY,
     MARKED,
-    THE_WIZ;
+    THE_WIZ,
+    MY_REFLECTION;
 
 
 

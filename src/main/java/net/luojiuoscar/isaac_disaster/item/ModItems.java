@@ -161,6 +161,7 @@ public class ModItems {
     public static final RegistryObject<Item> TECHNOLOGY         = registerPassiveItem("technology", 3, ItemId.TECHNOLOGY);
     public static final RegistryObject<Item> MARKED             = registerPassiveItem("marked", 1, ItemId.MARKED);
     public static final RegistryObject<Item> THE_WIZ            = registerPassiveItem("the_wiz", 0, ItemId.THE_WIZ);
+    public static final RegistryObject<Item> MY_REFLECTION      = registerPassiveItem("my_reflection", 3, ItemId.MY_REFLECTION);
 
 
 
@@ -261,6 +262,8 @@ public class ModItems {
     public static final RegistryObject<Item> TAPE_WORM      = registerTrinket("tape_worm", TrinketId.TAPE_WORM);
     public static final RegistryObject<Item> LAZY_WORM      = registerTrinket("lazy_worm", TrinketId.LAZY_WORM);
     public static final RegistryObject<Item> RING_WORM      = registerTrinket("ring_worm", TrinketId.RING_WORM);
+    public static final RegistryObject<Item> OUROBOROS_WORM = registerTrinket("ouroboros_worm", TrinketId.OUROBOROS_WORM);
+    public static final RegistryObject<Item> HOOK_WORM      = registerTrinket("hook_worm", TrinketId.HOOK_WORM);
 
 
     // trinket end

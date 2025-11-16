@@ -133,7 +133,8 @@ public class  PassiveItemManager {
                 new ToothPicks(),
                 new Technology(),
                 new Marked(),
-                new TheWiz()
+                new TheWiz(),
+                new MyReflection()
         );
     }
 }

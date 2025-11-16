@@ -9,6 +9,7 @@ import net.luojiuoscar.isaac_disaster.event.custom.attack.tear_bullet.TearBullet
 import net.luojiuoscar.isaac_disaster.event.custom.attack.tear_bullet.TearBulletShootEvent;
 import net.luojiuoscar.isaac_disaster.event.custom.attack.tear_bullet.TearBulletTickEvent;
 import net.luojiuoscar.isaac_disaster.helper.EntityHelper;
+import net.luojiuoscar.isaac_disaster.manager.attack.IAttackType;
 import net.luojiuoscar.isaac_disaster.manager.attack.managers.AttackTrajectory;
 import net.luojiuoscar.isaac_disaster.manager.attack.managers.AttackType;
 import net.luojiuoscar.isaac_disaster.manager.attack.managers.BulletColor;
@@ -54,6 +55,7 @@ public class TearBullet extends Entity {
     private float damage;
     private UUID ownerUUID;
     private LivingEntity cachedOwner;
+    private double yRotAngle;
 
     // ======== 特性 ========
     public boolean isSpectral = false;
@@ -106,6 +108,7 @@ public class TearBullet extends Entity {
         this.lifeTick = lifeTick;
         this.totalLifeTick = lifeTick;
         this.damage = damage;
+        this.yRotAngle = shooter.getYRot() - yRot;
         setScale(scale);
         moveTo(shooter.getX(), shooter.getEyeY(), shooter.getZ(), yRot, xRot);
         Vec3 look = Vec3.directionFromRotation(xRot, yRot);
@@ -128,27 +131,39 @@ public class TearBullet extends Entity {
         if (tickCount % 4 == 0) setIsCurrentlySteering(handleSteering());
 
         // ================== 轨迹偏移 ==================
-        if (!isCurrentlySteering()){ // 非跟踪时
-            Vec3 baseDir = getVelocity().normalize();
-            double deltaDist = getVelocity().length();
+        Vec3 baseDir = getVelocity().normalize(); // 当前方向
+        double speed = getVelocity().length();    // 当前速度大小
 
+        if (!isCurrentlySteering()) { // 非跟踪时
             for (Map.Entry<Integer, Integer> entry : getTrajectories().entrySet()) {
                 int trajId = entry.getKey();
                 int amplifier = entry.getValue() - 1;
 
                 AttackTrajectory traj = AttackTrajectory.byId(trajId);
                 AttackTrajectory.TrajectoryContext ctx =
-                        new AttackTrajectory.TrajectoryContext(baseDir, traveled, deltaDist, getOwner(), position(), amplifier);
+                        new AttackTrajectory.TrajectoryContext(
+                                baseDir, traveled, speed, getOwner(), position(), amplifier, yRotAngle);
 
                 var result = traj.getResult(ctx);
-                setVelocity(getVelocity().add(result.velocityOffset()));
+
+                // ---- 应用旋转到方向 ----
+                Vec3 up = new Vec3(0, 1, 0);
+                baseDir = IAttackType.rotateAroundAxis(baseDir, up, result.yRot());
+                Vec3 right = baseDir.cross(up).normalize();
+                baseDir = IAttackType.rotateAroundAxis(baseDir, right, result.xRot());
+
+                // ---- 将旋转后的方向应用到速度 ----
+                Vec3 newVelocity = baseDir.scale(speed).add(result.velocityOffset());
+                setVelocity(newVelocity);
+
+                // ---- 累积位置偏移 ----
                 positionOffset = positionOffset.add(result.positionOffset());
             }
         }
 
         // 最终位移 = velocity + 额外位置偏移
-        Vec3 velocityMove = getVelocity(); // 真实速度移动，用于统计 traveled
-        Vec3 finalMove = velocityMove.add(positionOffset); // 视觉偏移 + 碰撞偏移
+        Vec3 velocityMove = getVelocity(); // 当前速度向量
+        Vec3 finalMove = velocityMove.add(positionOffset);
         setDeltaMovement(finalMove);
 
         // ================== 碰撞检测 ==================
@@ -170,6 +185,7 @@ public class TearBullet extends Entity {
         move(MoverType.SELF, finalMove);
         setTraveled((float)(traveled + velocityMove.length()));
     }
+
 
     // ======== 碰撞与追踪 ========
     private boolean handleBlockCollision(Vec3 start, Vec3 end) {

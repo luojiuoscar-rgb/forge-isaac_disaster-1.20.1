@@ -31,7 +31,9 @@ public enum TrinketId {
     WHIP_WORM,
     TAPE_WORM,
     LAZY_WORM,
-    RING_WORM;
+    RING_WORM,
+    OUROBOROS_WORM,
+    HOOK_WORM;
 
 
     private final int id;

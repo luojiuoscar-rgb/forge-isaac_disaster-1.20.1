@@ -9,9 +9,6 @@ public enum AttackType {
 
 
 
-
-
-
     private final int id;
     private final double priority;
 

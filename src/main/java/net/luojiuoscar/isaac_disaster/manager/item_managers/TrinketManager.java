@@ -63,7 +63,9 @@ public class TrinketManager {
                 new WhipWorm(),
                 new TapeWorm(),
                 new LazyWorm(),
-                new RingWorm()
+                new RingWorm(),
+                new OuroborosWorm(),
+                new HookWorm()
         );
     }
 }

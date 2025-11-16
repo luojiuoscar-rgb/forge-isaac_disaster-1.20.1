@@ -377,6 +377,9 @@
   "item.isaac_disaster.marked": "十字准星",
   "item.isaac_disaster.the_wiz": "蠢巫帽",
   "item.isaac_disaster.the_wiz.lore.1": "同时向两个斜前方发射泪弹",
+  "item.isaac_disaster.my_reflection": "我的镜像",
+  "item.isaac_disaster.my_reflection.lore.1": "子弹向前飞行一段距离后返回",
+  "item.isaac_disaster.my_reflection.lore.2": "射程倍率和弹速倍率提升",
 
   "item end": "",
 
@@ -439,7 +442,10 @@
   "item.isaac_disaster.lazy_worm": "懒懒虫",
   "item.isaac_disaster.ring_worm": "环形虫",
   "item.isaac_disaster.ring_worm.lore.1": "泪弹以弹簧状前进",
-
+  "item.isaac_disaster.ouroboros_worm": "衔尾虫",
+  "item.isaac_disaster.ouroboros_worm.lore.1": "泪弹在竖直平面内以环状前进",
+  "item.isaac_disaster.hook_worm": "钩形虫",
+  "item.isaac_disaster.hook_worm.lore.1": "泪弹以城墙状路径前进",
   "trinket end": "",
 
 

@@ -156,4 +156,17 @@ public interface IAttackType {
         }
         return scale + extra;
     }
+
+    static Vec3 rotateAroundAxis(Vec3 v, Vec3 axis, double radians) {
+        axis = axis.normalize();
+        double cos = Math.cos(radians);
+        double sin = Math.sin(radians);
+
+        Vec3 term1 = v.scale(cos);
+        Vec3 term2 = axis.cross(v).scale(sin);
+        Vec3 term3 = axis.scale(axis.dot(v) * (1 - cos));
+
+        return term1.add(term2).add(term3);
+    }
+
 }
