@@ -1,7 +1,7 @@
 package net.luojiuoscar.isaac_disaster.item_ability.pickup.pill_effects;
 
 import net.luojiuoscar.isaac_disaster.item_ability.pickup.IPillEffect;
-import net.luojiuoscar.isaac_disaster.manager.id.PillEffectId;
+import net.luojiuoscar.isaac_disaster.manager.item_managers.id.PillEffectId;
 import net.luojiuoscar.isaac_disaster.manager.item_managers.PillEffectManager;
 import net.luojiuoscar.isaac_disaster.sound.ModSounds;
 import net.minecraft.util.RandomSource;

@@ -6,7 +6,7 @@ import net.luojiuoscar.isaac_disaster.helper.LootHelper;
 import net.luojiuoscar.isaac_disaster.item_ability.pickup.IPickup;
 import net.luojiuoscar.isaac_disaster.manager.LootTableManager;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
-import net.luojiuoscar.isaac_disaster.manager.id.PickupId;
+import net.luojiuoscar.isaac_disaster.manager.item_managers.id.PickupId;
 import net.luojiuoscar.isaac_disaster.sound.ModSounds;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;

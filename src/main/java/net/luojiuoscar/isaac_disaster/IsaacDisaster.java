@@ -16,6 +16,8 @@ import net.luojiuoscar.isaac_disaster.loot.ModLootTypes;
 import net.luojiuoscar.isaac_disaster.manager.attack.AttackManager;
 import net.luojiuoscar.isaac_disaster.manager.item_managers.*;
 import net.luojiuoscar.isaac_disaster.networking.ModMessages;
+import net.luojiuoscar.isaac_disaster.registries.ModRegistries;
+import net.luojiuoscar.isaac_disaster.registries.trajectory.ModTrajectoryTypes;
 import net.luojiuoscar.isaac_disaster.sound.ModSounds;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
@@ -64,6 +66,17 @@ public class IsaacDisaster
 
         ModGameRules.register();
 
+        // isaac
+        ModRegistries.register(modEventBus);
+
+        ModTrajectoryTypes.register(modEventBus);
+
+
+
+
+
+
+
         MinecraftForge.EVENT_BUS.register(new ServerTickEvent());
         // Register the item to a creative tab
         modEventBus.addListener(this::addCreative);
@@ -101,4 +114,5 @@ public class IsaacDisaster
         public static void onClientSetup(FMLClientSetupEvent event) {
         }
     }
+
 }

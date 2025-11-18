@@ -16,7 +16,7 @@ import net.luojiuoscar.isaac_disaster.item.item.custom.FoodPassiveItem;
 import net.luojiuoscar.isaac_disaster.item.pickup.IsaacHead;
 import net.luojiuoscar.isaac_disaster.manager.EffectManager;
 import net.luojiuoscar.isaac_disaster.manager.data.PillShuffleData;
-import net.luojiuoscar.isaac_disaster.manager.id.ItemId;
+import net.luojiuoscar.isaac_disaster.manager.item_managers.id.ItemId;
 import net.luojiuoscar.isaac_disaster.manager.item_managers.PillEffectManager;
 import net.luojiuoscar.isaac_disaster.networking.ModMessages;
 import net.luojiuoscar.isaac_disaster.networking.packet.PassiveItemMapSyncS2CPacket;

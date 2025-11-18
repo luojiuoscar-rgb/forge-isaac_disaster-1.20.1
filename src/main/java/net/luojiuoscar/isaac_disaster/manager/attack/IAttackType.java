@@ -5,7 +5,8 @@ import net.luojiuoscar.isaac_disaster.capability.player.PlayerAbilityProvider;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerPassiveItemProvider;
 import net.luojiuoscar.isaac_disaster.event.custom.attack.BeforeCreateShootEvent;
 import net.luojiuoscar.isaac_disaster.event.custom.misc.IsaacGetBulletCountEvent;
-import net.luojiuoscar.isaac_disaster.manager.id.ItemId;
+import net.luojiuoscar.isaac_disaster.manager.item_managers.id.ItemId;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -33,9 +34,9 @@ public interface IAttackType {
     class AttackContext {
         public int colorId;
         public Set<Integer> hitEffects;
-        public Map<Integer, Integer> trajectories;
+        public Map<ResourceLocation, Integer> trajectories;
 
-        public AttackContext(int colorId, Set<Integer> hitEffects, Map<Integer, Integer> trajectories) {
+        public AttackContext(int colorId, Set<Integer> hitEffects, Map<ResourceLocation, Integer> trajectories) {
             this.colorId = colorId;
             this.hitEffects = hitEffects;
             this.trajectories = trajectories;

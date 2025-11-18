@@ -6,9 +6,11 @@ import net.luojiuoscar.isaac_disaster.event.custom.attack.IsaacAttackBeforeHitEn
 import net.luojiuoscar.isaac_disaster.event.custom.attack.IsaacAttackHitBlockEvent;
 import net.luojiuoscar.isaac_disaster.helper.EntityHelper;
 import net.luojiuoscar.isaac_disaster.manager.attack.IAttackType;
-import net.luojiuoscar.isaac_disaster.manager.attack.managers.AttackTrajectory;
 import net.luojiuoscar.isaac_disaster.manager.attack.managers.AttackType;
 import net.luojiuoscar.isaac_disaster.manager.attack.managers.BulletColor;
+import net.luojiuoscar.isaac_disaster.registries.ModRegistries;
+import net.luojiuoscar.isaac_disaster.registries.trajectory.AttackTrajectory;
+import net.luojiuoscar.isaac_disaster.registries.trajectory.TrajectoryContext;
 import net.luojiuoscar.isaac_disaster.sound.ModSounds;
 import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.core.registries.Registries;
@@ -25,6 +27,8 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.registries.IForgeRegistry;
+import net.minecraftforge.registries.RegistryManager;
 import org.joml.Vector3f;
 
 import java.util.HashSet;
@@ -140,14 +144,13 @@ public class LaserAttack implements IAttackType {
         if (laser.homing) {
             // 低频搜索目标（每 10 tick）
             if (laser.tickCount % 10 == 0 || laser.homingTarget == null || !laser.homingTarget.isAlive()) {
-                LivingEntity target = EntityHelper.findNearestTrackingTarget(
+                laser.homingTarget = EntityHelper.findNearestTrackingTarget(
                         level,
                         laser.shooter,
                         laser.position,
                         8.0,
                         e -> !laser.hitEntities.contains(e)
                 );
-                laser.homingTarget = target;
             }
 
             // 高频平滑转向
@@ -161,15 +164,19 @@ public class LaserAttack implements IAttackType {
         // --------- Trajectories ---------
         Vec3 totalPositionOffset = Vec3.ZERO;
         Vec3 totalVelocityOffset = Vec3.ZERO;
+        IForgeRegistry<AttackTrajectory> trajectoryIForgeRegistry =
+                RegistryManager.ACTIVE.getRegistry(ModRegistries.ATTACK_TRAJECTORY_KEY);
 
-        if (!laser.isCurrentlyHoming) {
-            for (Map.Entry<Integer, Integer> entry : context.trajectories.entrySet()) {
-                int trajId = entry.getKey();
+        if (!laser.isCurrentlyHoming && trajectoryIForgeRegistry != null) {
+            for (Map.Entry<ResourceLocation, Integer> entry : context.trajectories.entrySet()) {
+                ResourceLocation trajId = entry.getKey();
                 int amplifier = entry.getValue() - 1;
 
-                AttackTrajectory traj = AttackTrajectory.byId(trajId);
-                AttackTrajectory.TrajectoryContext ctx =
-                        new AttackTrajectory.TrajectoryContext(
+                AttackTrajectory traj = trajectoryIForgeRegistry.getValue(trajId);
+                if (traj == null) continue;
+
+                TrajectoryContext ctx =
+                        new TrajectoryContext(
                                 laser.direction,
                                 laser.traveled,
                                 laser.step,

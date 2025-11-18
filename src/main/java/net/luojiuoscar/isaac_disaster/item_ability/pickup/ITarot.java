@@ -1,7 +1,7 @@
 package net.luojiuoscar.isaac_disaster.item_ability.pickup;
 
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
-import net.luojiuoscar.isaac_disaster.manager.id.ItemId;
+import net.luojiuoscar.isaac_disaster.manager.item_managers.id.ItemId;
 import net.luojiuoscar.isaac_disaster.networking.ModMessages;
 import net.luojiuoscar.isaac_disaster.networking.packet.PickupOnUseS2CPacket;
 import net.minecraft.server.level.ServerPlayer;

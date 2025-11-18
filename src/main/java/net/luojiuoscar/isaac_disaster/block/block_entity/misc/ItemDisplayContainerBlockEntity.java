@@ -8,7 +8,7 @@ import net.luojiuoscar.isaac_disaster.helper.PoolHelper;
 import net.luojiuoscar.isaac_disaster.item.item.IsaacItem;
 import net.luojiuoscar.isaac_disaster.manager.LootTableManager;
 import net.luojiuoscar.isaac_disaster.manager.data.BlockData;
-import net.luojiuoscar.isaac_disaster.manager.id.ItemId;
+import net.luojiuoscar.isaac_disaster.manager.item_managers.id.ItemId;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;

@@ -3,7 +3,7 @@ package net.luojiuoscar.isaac_disaster.item_ability.passive_item.items;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerItemUseRecord;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerItemUseRecordProvider;
 import net.luojiuoscar.isaac_disaster.item_ability.passive_item.IPassiveItem;
-import net.luojiuoscar.isaac_disaster.manager.id.ItemId;
+import net.luojiuoscar.isaac_disaster.manager.item_managers.id.ItemId;
 import net.luojiuoscar.isaac_disaster.manager.item_managers.PickupManager;
 import net.luojiuoscar.isaac_disaster.manager.item_managers.PillEffectManager;
 import net.minecraft.network.chat.Component;

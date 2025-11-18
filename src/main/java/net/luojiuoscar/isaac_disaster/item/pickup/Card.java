@@ -4,7 +4,7 @@ import net.luojiuoscar.isaac_disaster.capability.player.PlayerItemUseRecordProvi
 import net.luojiuoscar.isaac_disaster.client.ClientDataManager;
 import net.luojiuoscar.isaac_disaster.item.item.IIgnoreRecord;
 import net.luojiuoscar.isaac_disaster.item.pickup.interfaces.IUsablePickup;
-import net.luojiuoscar.isaac_disaster.manager.id.ItemId;
+import net.luojiuoscar.isaac_disaster.manager.item_managers.id.ItemId;
 import net.luojiuoscar.isaac_disaster.manager.item_managers.PickupManager;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;

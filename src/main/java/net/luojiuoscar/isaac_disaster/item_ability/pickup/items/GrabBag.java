@@ -3,7 +3,7 @@ package net.luojiuoscar.isaac_disaster.item_ability.pickup.items;
 import net.luojiuoscar.isaac_disaster.helper.LootHelper;
 import net.luojiuoscar.isaac_disaster.item_ability.pickup.IPickup;
 import net.luojiuoscar.isaac_disaster.manager.LootTableManager;
-import net.luojiuoscar.isaac_disaster.manager.id.PickupId;
+import net.luojiuoscar.isaac_disaster.manager.item_managers.id.PickupId;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;

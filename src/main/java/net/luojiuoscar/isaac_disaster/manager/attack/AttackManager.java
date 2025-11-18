@@ -5,6 +5,7 @@ import net.luojiuoscar.isaac_disaster.event.custom.attack.PlayerPerformAttackEve
 import net.luojiuoscar.isaac_disaster.manager.attack.managers.AttackType;
 import net.luojiuoscar.isaac_disaster.manager.attack.types.BulletAttack;
 import net.luojiuoscar.isaac_disaster.manager.attack.types.LaserAttack;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.common.MinecraftForge;
 
@@ -40,7 +41,7 @@ public class AttackManager {
         player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY).ifPresent(playerAbility -> {
             int attackId = playerAbility.getBestBulletType();
             int colorId = playerAbility.getBestBulletColorId();
-            Map<Integer, Integer> trajectories = playerAbility.getTrajectories();
+            Map<ResourceLocation, Integer> trajectories = playerAbility.getTrajectories();
 
             var context = new IAttackType.AttackContext(colorId, new HashSet<>(), trajectories);
 
@@ -52,7 +53,7 @@ public class AttackManager {
 
             IAttackType attack = attacks.getOrDefault(attackId, attacks.get(AttackType.BULLET.getId()));
             if (attack != null) {
-                attack.performAttack(player,context);
+                attack.performAttack(player, context);
             }
         });
     }

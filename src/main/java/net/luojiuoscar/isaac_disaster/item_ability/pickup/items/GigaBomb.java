@@ -2,7 +2,7 @@ package net.luojiuoscar.isaac_disaster.item_ability.pickup.items;
 
 import net.luojiuoscar.isaac_disaster.helper.EntityHelper;
 import net.luojiuoscar.isaac_disaster.item_ability.pickup.IPickup;
-import net.luojiuoscar.isaac_disaster.manager.id.PickupId;
+import net.luojiuoscar.isaac_disaster.manager.item_managers.id.PickupId;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.InteractionHand;

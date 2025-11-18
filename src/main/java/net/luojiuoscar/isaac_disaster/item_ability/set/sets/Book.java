@@ -3,7 +3,7 @@ package net.luojiuoscar.isaac_disaster.item_ability.set.sets;
 import net.luojiuoscar.isaac_disaster.client.ClientDataManager;
 import net.luojiuoscar.isaac_disaster.item_ability.set.ISet;
 import net.luojiuoscar.isaac_disaster.manager.ColorManager;
-import net.luojiuoscar.isaac_disaster.manager.id.SetId;
+import net.luojiuoscar.isaac_disaster.manager.item_managers.id.SetId;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 

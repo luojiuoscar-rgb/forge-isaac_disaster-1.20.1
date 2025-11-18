@@ -5,11 +5,11 @@ import net.luojiuoscar.isaac_disaster.manager.attack.managers.BulletColor;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class PlayerAbility {
@@ -27,13 +27,13 @@ public class PlayerAbility {
     private int bestBulletType;
     private Map<Integer, Integer> bulletColor; // bullet color id : count
     private int bestBulletColor;
-    private LinkedHashMap<Integer, Integer> trajectories;
+    private HashMap<ResourceLocation, Integer> trajectories;
 
     public PlayerAbility() {
         itemFlags = new HashMap<>();
         attackType = new HashMap<>();
         bulletColor = new HashMap<>();
-        trajectories = new LinkedHashMap<>();
+        trajectories = new HashMap<>();
         init();
     }
 
@@ -62,7 +62,7 @@ public class PlayerAbility {
         this.itemFlags = new HashMap<>(source.itemFlags);
         this.attackType = new HashMap<>(source.attackType);
         this.bulletColor = new HashMap<>(source.bulletColor);
-        this.trajectories = new LinkedHashMap<>(source.trajectories);
+        this.trajectories = new HashMap<>(source.trajectories);
     }
 
     public void saveNBTData(CompoundTag nbt) {
@@ -101,9 +101,9 @@ public class PlayerAbility {
         nbt.put("bullet_colors", bulletColorList);
 
         ListTag trajectoriesList = new ListTag();
-        for (Map.Entry<Integer, Integer> entry : trajectories.entrySet()) {
+        for (Map.Entry<ResourceLocation, Integer> entry : trajectories.entrySet()) {
             CompoundTag tag = new CompoundTag();
-            tag.putInt("trajectory_id", entry.getKey());
+            tag.putString("trajectory_id", entry.getKey().toString());
             tag.putInt("count", entry.getValue());
             trajectoriesList.add(tag);
         }
@@ -156,9 +156,12 @@ public class PlayerAbility {
             ListTag list = nbt.getList("trajectories", Tag.TAG_COMPOUND);
             for (Tag t : list) {
                 CompoundTag tag = (CompoundTag) t;
-                int color = tag.getInt("trajectory_id");
+                String trajIdStr = tag.getString("trajectory_id"); // 读取字符串
                 int count = tag.getInt("count");
-                trajectories.put(color, count);
+                try {
+                    ResourceLocation rl = ResourceLocation.parse(trajIdStr);
+                    trajectories.put(rl, count);
+                } catch (Exception ignored) {} // 防止非法字符串
             }
         }
     }
@@ -284,16 +287,16 @@ public class PlayerAbility {
         updateBestBulletColor();
     }
 
-    public Map<Integer, Integer> getTrajectories() {
-        return new LinkedHashMap<>(trajectories);
+    public Map<ResourceLocation, Integer> getTrajectories() {
+        return new HashMap<>(trajectories);
     }
 
-    public void addTrajectory(int id, int count){
-        int c = trajectories.getOrDefault(id, 0) + count;
+    public void addTrajectory(ResourceLocation rl, int count){
+        int c = trajectories.getOrDefault(rl, 0) + count;
         if (c <= 0) {
-            trajectories.remove(id);
+            trajectories.remove(rl);
             return;
         }
-        trajectories.put(id, c);
+        trajectories.put(rl, c);
     }
 }

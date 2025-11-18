@@ -10,9 +10,11 @@ import net.luojiuoscar.isaac_disaster.event.custom.attack.tear_bullet.TearBullet
 import net.luojiuoscar.isaac_disaster.event.custom.attack.tear_bullet.TearBulletTickEvent;
 import net.luojiuoscar.isaac_disaster.helper.EntityHelper;
 import net.luojiuoscar.isaac_disaster.manager.attack.IAttackType;
-import net.luojiuoscar.isaac_disaster.manager.attack.managers.AttackTrajectory;
 import net.luojiuoscar.isaac_disaster.manager.attack.managers.AttackType;
 import net.luojiuoscar.isaac_disaster.manager.attack.managers.BulletColor;
+import net.luojiuoscar.isaac_disaster.registries.ModRegistries;
+import net.luojiuoscar.isaac_disaster.registries.trajectory.AttackTrajectory;
+import net.luojiuoscar.isaac_disaster.registries.trajectory.TrajectoryContext;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
@@ -41,6 +43,8 @@ import net.minecraft.world.phys.*;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.network.NetworkHooks;
+import net.minecraftforge.registries.IForgeRegistry;
+import net.minecraftforge.registries.RegistryManager;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
@@ -133,15 +137,19 @@ public class TearBullet extends Entity {
         // ================== 轨迹偏移 ==================
         Vec3 baseDir = getVelocity().normalize(); // 当前方向
         double speed = getVelocity().length();    // 当前速度大小
+        IForgeRegistry<AttackTrajectory> trajectoryIForgeRegistry =
+                RegistryManager.ACTIVE.getRegistry(ModRegistries.ATTACK_TRAJECTORY_KEY);
 
-        if (!isCurrentlySteering()) { // 非跟踪时
-            for (Map.Entry<Integer, Integer> entry : getTrajectories().entrySet()) {
-                int trajId = entry.getKey();
+        if (!isCurrentlySteering() && trajectoryIForgeRegistry != null) { // 非跟踪时
+            for (Map.Entry<ResourceLocation, Integer> entry : getTrajectories().entrySet()) {
+                ResourceLocation trajId = entry.getKey();
                 int amplifier = entry.getValue() - 1;
 
-                AttackTrajectory traj = AttackTrajectory.byId(trajId);
-                AttackTrajectory.TrajectoryContext ctx =
-                        new AttackTrajectory.TrajectoryContext(
+                AttackTrajectory traj = trajectoryIForgeRegistry.getValue(trajId);
+                if (traj == null) continue;
+
+                TrajectoryContext ctx =
+                        new TrajectoryContext(
                                 baseDir, traveled, speed, getOwner(), position(), amplifier, yRotAngle);
 
                 var result = traj.getResult(ctx);
@@ -424,8 +432,8 @@ public class TearBullet extends Entity {
         entityData.set(VELOCITY, new Vector3f((float) vel.x, (float) vel.y, (float) vel.z));
     }
 
-    public void setTrajectories(Map<Integer, Integer> map) {
-        // 格式 "id1:value1,id2:value2"
+    public void setTrajectories(Map<ResourceLocation, Integer> map) {
+        // 格式 "namespace:path:value,namespace:path:value"
         String s = map.entrySet().stream()
                 .map(e -> e.getKey() + ":" + e.getValue())
                 .reduce((a, b) -> a + "," + b)
@@ -433,19 +441,18 @@ public class TearBullet extends Entity {
         entityData.set(TRAJECTORIES, s);
     }
 
-    // Getter: String -> Map
-    public Map<Integer, Integer> getTrajectories() {
+    public Map<ResourceLocation, Integer> getTrajectories() {
         String s = entityData.get(TRAJECTORIES);
-        Map<Integer, Integer> map = new HashMap<>();
+        Map<ResourceLocation, Integer> map = new HashMap<>();
         if (!s.isEmpty()) {
-            for (String pair : s.split(",")) {
-                String[] parts = pair.split(":");
-                if (parts.length == 2) {
+            for (String triplet : s.split(",")) {
+                String[] parts = triplet.split(":");
+                if (parts.length == 3) {
                     try {
-                        int key = Integer.parseInt(parts[0]);
-                        int value = Integer.parseInt(parts[1]);
-                        map.put(key, value);
-                    } catch (NumberFormatException ignored) {}
+                        ResourceLocation rl = ResourceLocation.fromNamespaceAndPath(parts[0], parts[1]);
+                        int value = Integer.parseInt(parts[2]);
+                        map.put(rl, value);
+                    } catch (Exception ignored) {}
                 }
             }
         }

@@ -1,4 +1,4 @@
-package net.luojiuoscar.isaac_disaster.manager.id;
+package net.luojiuoscar.isaac_disaster.manager.item_managers.id;
 
 public enum PickupId {
     BOMB,

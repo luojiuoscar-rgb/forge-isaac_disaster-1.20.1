@@ -10,6 +10,7 @@ import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
@@ -329,9 +330,9 @@ public enum StatManager {
         );
     }
 
-    public static void addTrajectory(Player player, int id, int count){
+    public static void addTrajectory(Player player, ResourceLocation rl, int count){
         player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY).ifPresent(
-                playerAbility -> playerAbility.addTrajectory(id, count)
+                playerAbility -> playerAbility.addTrajectory(rl, count)
         );
     }
     /* ---------------------- 道具套装 ---------------------- */

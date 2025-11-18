@@ -1,16 +1,18 @@
-package net.luojiuoscar.isaac_disaster.manager.attack.managers;
+package net.luojiuoscar.isaac_disaster.registries.content.trajectory;
 
+import net.luojiuoscar.isaac_disaster.registries.trajectory.AttackTrajectory;
+import net.luojiuoscar.isaac_disaster.registries.trajectory.TrajectoryResult;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.Vec3;
-import org.jetbrains.annotations.Nullable;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.function.Function;
+/**
+ * Built-in (default) trajectories. Each is an AttackTrajectory instance converted
+ * from your original enum entries. Keep these stateless.
+ */
+public final class BuiltinTrajectories {
+    private BuiltinTrajectories() {}
 
-public enum AttackTrajectory {
-
-    WIGGLE_WORM(ctx -> {
+    public static final AttackTrajectory WIGGLE_WORM = ctx -> {
         double phaseScale = 1;
         double t0 = ctx.distance * phaseScale;
         double t1 = (ctx.distance + ctx.deltaDistance) * phaseScale;
@@ -27,10 +29,10 @@ public enum AttackTrajectory {
         Vec3 posOffset = right.scale(deltaY * offsetScale);
         Vec3 velOffset = right.scale(deltaY * 0.05);
 
-        // 默认返回原速度
         return new TrajectoryResult(posOffset, velOffset);
-    }),
-    TINY_PLANET(ctx -> {
+    };
+
+    public static final AttackTrajectory TINY_PLANET = ctx -> {
         LivingEntity owner = ctx.owner;
         if (owner == null || ctx.pos == null) return TrajectoryResult.ZERO;
 
@@ -62,10 +64,10 @@ public enum AttackTrajectory {
         Vec3 currentVel = ctx.dir.scale(ctx.deltaDistance);
         Vec3 velOffset = desiredVel.subtract(currentVel);
 
-        // 明确返回子弹速度
         return new TrajectoryResult(Vec3.ZERO, velOffset);
-    }),
-    RING_WORM(ctx -> {
+    };
+
+    public static final AttackTrajectory RING_WORM = ctx -> {
         Vec3 dir = ctx.dir.normalize();
 
         // 构建局部坐标系，确保 dir 是 x 轴，y-z 平面为圆面
@@ -90,10 +92,10 @@ public enum AttackTrajectory {
 
         Vec3 offset = offset1.subtract(offset0);
 
-        // 速度不改变
         return new TrajectoryResult(offset, Vec3.ZERO);
-    }),
-    OUROBOROS_WORM(ctx -> {
+    };
+
+    public static final AttackTrajectory OUROBOROS_WORM = ctx -> {
         Vec3 forward = ctx.dir.normalize(); // 前进方向
         Vec3 up = new Vec3(0, 1, 0);        // 世界竖直方向
 
@@ -115,8 +117,9 @@ public enum AttackTrajectory {
         Vec3 offset = pos1.subtract(pos0).add(forward.scale(ctx.deltaDistance));
 
         return new TrajectoryResult(offset, Vec3.ZERO);
-    }),
-    HOOK_WORM(ctx -> {
+    };
+
+    public static final AttackTrajectory HOOK_WORM = ctx -> {
         // 当前方向
         Vec3 forward = ctx.dir.normalize();
 
@@ -152,10 +155,10 @@ public enum AttackTrajectory {
             else if (cmd == -1) yRot = Math.PI / 2; // 左转
         }
 
-        // 仅返回旋转量，不改变速度或位置
         return new TrajectoryResult(Vec3.ZERO, Vec3.ZERO, 0.0, xRot, yRot);
-    }),
-    MY_REFLECTION(ctx -> {
+    };
+
+    public static final AttackTrajectory MY_REFLECTION = ctx -> {
         Vec3 dir = ctx.dir.normalize();   // 发射方向
         Vec3 right = new Vec3(-dir.z, 0, dir.x).normalize(); // XZ平面垂直向量
 
@@ -177,77 +180,5 @@ public enum AttackTrajectory {
         Vec3 velOffset = right.scale(zOffset * 0.1 * amplifier);
 
         return new TrajectoryResult(posOffset, velOffset);
-    });
-
-
-
-
-
-
-
-
-
-
-
-
-    private static final Map<Integer, AttackTrajectory> BY_ID = new HashMap<>();
-
-    static {
-        for (AttackTrajectory t : values()) BY_ID.put(t.getId(), t);
-    }
-
-    private final Function<TrajectoryContext, TrajectoryResult> offsetSupplier;
-
-    AttackTrajectory(Function<TrajectoryContext, TrajectoryResult> off) {
-        this.offsetSupplier = off;
-    }
-
-    public int getId() { return ordinal(); }
-
-    public TrajectoryResult getResult(TrajectoryContext ctx) {
-        return offsetSupplier.apply(ctx);
-    }
-
-    public static AttackTrajectory byId(int id) {
-        return BY_ID.getOrDefault(id, WIGGLE_WORM);
-    }
-
-    // ================================
-    // 轨迹上下文
-    // ================================
-    public static class TrajectoryContext {
-        public final Vec3 dir;
-        public final double distance;
-        public final double deltaDistance;
-        public final LivingEntity owner;
-        public final Vec3 pos;
-        public final int amplifier;
-        public final double startYRot;
-
-        public TrajectoryContext(Vec3 dir, double distance, double deltaDistance,
-                                 @Nullable LivingEntity owner, Vec3 pos, int amplifier, double startYRot) {
-            this.dir = dir;
-            this.distance = distance;
-            this.deltaDistance = deltaDistance;
-            this.owner = owner;
-            this.pos = pos;
-            this.amplifier = Math.max(0, amplifier);
-            this.startYRot = startYRot;
-        }
-    }
-
-    public record TrajectoryResult(Vec3 positionOffset, Vec3 velocityOffset, double speedDelta,
-                                   double xRot, double yRot) {
-
-        public static final TrajectoryResult ZERO = new TrajectoryResult(Vec3.ZERO, Vec3.ZERO, 0.0, 0.0, 0.0);
-
-        public TrajectoryResult(Vec3 positionOffset, Vec3 velocityOffset) {
-            this(positionOffset, velocityOffset, 0.0, 0.0, 0.0);
-        }
-
-        public TrajectoryResult(Vec3 positionOffset, Vec3 velocityOffset, double speedDelta) {
-            this(positionOffset, velocityOffset, speedDelta, 0.0, 0.0);
-        }
-    }
-
+    };
 }

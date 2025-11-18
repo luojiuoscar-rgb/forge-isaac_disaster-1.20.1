@@ -1,10 +1,9 @@
 package net.luojiuoscar.isaac_disaster.item_ability.pickup.cards;
 
-import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerItemUseRecord;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerItemUseRecordProvider;
 import net.luojiuoscar.isaac_disaster.item_ability.pickup.IPickup;
-import net.luojiuoscar.isaac_disaster.manager.id.PickupId;
+import net.luojiuoscar.isaac_disaster.manager.item_managers.id.PickupId;
 import net.luojiuoscar.isaac_disaster.manager.item_managers.ActiveItemManager;
 import net.luojiuoscar.isaac_disaster.manager.item_managers.PickupManager;
 import net.luojiuoscar.isaac_disaster.manager.item_managers.PillEffectManager;

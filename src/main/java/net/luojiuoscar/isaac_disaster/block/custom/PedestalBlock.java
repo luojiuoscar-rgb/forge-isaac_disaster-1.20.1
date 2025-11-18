@@ -63,12 +63,12 @@ public class PedestalBlock extends BaseEntityBlock {
 
     @Override
     public VoxelShape getShape(BlockState state, BlockGetter world, BlockPos pos, CollisionContext context) {
-        return Shapes.box(0.0625, 0.0, 0.0625, 0.9375, 0.3125, 0.9375);
+        return Shapes.block();
     }
 
     @Override
     public VoxelShape getCollisionShape(BlockState state, BlockGetter world, BlockPos pos, CollisionContext context) {
-        return getShape(state, world, pos, context);
+        return Shapes.box(0.0625, 0.0, 0.0625, 0.9375, 0.3125, 0.9375);
     }
 
     // 玩家右键交互
