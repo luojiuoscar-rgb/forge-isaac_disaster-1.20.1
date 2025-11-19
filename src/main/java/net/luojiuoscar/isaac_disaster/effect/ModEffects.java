@@ -5,7 +5,6 @@ import net.luojiuoscar.isaac_disaster.effect.curse.CurseOfTheBlind;
 import net.luojiuoscar.isaac_disaster.effect.curse.CurseOfTheMaze;
 import net.luojiuoscar.isaac_disaster.effect.custom.*;
 import net.luojiuoscar.isaac_disaster.manager.EffectManager;
-import net.luojiuoscar.isaac_disaster.manager.attack.managers.BulletColor;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -71,7 +70,7 @@ public class ModEffects {
             () -> new FragileHeartEffect(MobEffectCategory.BENEFICIAL, 0x7f7d70));
 
     public static final RegistryObject<MobEffect> TELEPATHY = MOB_EFFECTS.register(EffectManager.TELEPATHY.getName(),
-            () -> new TelepathyEffect(MobEffectCategory.BENEFICIAL, BulletColor.SPOON_BENDER.getColor()));
+            () -> new TelepathyEffect(MobEffectCategory.BENEFICIAL, 0x7A33C0));
 
     public static final RegistryObject<MobEffect> BABYLON = MOB_EFFECTS.register(EffectManager.BABYLON.getName(),
             () -> new BabylonEffect(MobEffectCategory.BENEFICIAL, 0x990000));

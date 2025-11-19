@@ -32,12 +32,12 @@ public interface IAttackType {
     void makeSound(LivingEntity entity);
 
     class AttackContext {
-        public int colorId;
+        public ResourceLocation colorRl;
         public Set<Integer> hitEffects;
         public Map<ResourceLocation, Integer> trajectories;
 
-        public AttackContext(int colorId, Set<Integer> hitEffects, Map<ResourceLocation, Integer> trajectories) {
-            this.colorId = colorId;
+        public AttackContext(ResourceLocation colorRl, Set<Integer> hitEffects, Map<ResourceLocation, Integer> trajectories) {
+            this.colorRl = colorRl;
             this.hitEffects = hitEffects;
             this.trajectories = trajectories;
         }

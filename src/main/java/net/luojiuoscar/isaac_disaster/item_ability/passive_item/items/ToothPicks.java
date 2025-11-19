@@ -4,8 +4,8 @@ import net.luojiuoscar.isaac_disaster.client.ClientDataManager;
 import net.luojiuoscar.isaac_disaster.item_ability.passive_item.IPassiveItem;
 import net.luojiuoscar.isaac_disaster.manager.ColorManager;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
-import net.luojiuoscar.isaac_disaster.manager.attack.managers.BulletColor;
 import net.luojiuoscar.isaac_disaster.manager.item_managers.id.ItemId;
+import net.luojiuoscar.isaac_disaster.registries.bullet_color.ModBulletColors;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.world.entity.player.Player;
@@ -32,7 +32,7 @@ public class ToothPicks implements IPassiveItem {
         StatManager.BULLET_SPEED.apply(player, 0.8);
         StatManager.ATTACK_SPEED.apply(player, 1);
         StatManager.ATTACK_KNOCKBACK.apply(player, 0.5);
-        StatManager.addBulletColor(player, BulletColor.BLOOD_TEAR.getId(), 1);
+        StatManager.addBulletColor(player, ModBulletColors.BLOOD_TEAR.getId(), 1);
     }
 
     @Override
@@ -41,7 +41,7 @@ public class ToothPicks implements IPassiveItem {
         StatManager.BULLET_SPEED.apply(player, -0.8);
         StatManager.ATTACK_SPEED.apply(player, -1);
         StatManager.ATTACK_KNOCKBACK.apply(player, -0.5);
-        StatManager.addBulletColor(player, BulletColor.BLOOD_TEAR.getId(), -1);
+        StatManager.addBulletColor(player, ModBulletColors.BLOOD_TEAR.getId(), -1);
     }
 
     @Override

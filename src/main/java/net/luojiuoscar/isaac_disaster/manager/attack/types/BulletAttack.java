@@ -4,13 +4,16 @@ import net.luojiuoscar.isaac_disaster.entity.custom.TearBullet;
 import net.luojiuoscar.isaac_disaster.event.custom.attack.tear_bullet.TearBulletShootEvent;
 import net.luojiuoscar.isaac_disaster.manager.attack.IAttackType;
 import net.luojiuoscar.isaac_disaster.manager.attack.managers.AttackType;
-import net.luojiuoscar.isaac_disaster.manager.attack.managers.BulletColor;
+import net.luojiuoscar.isaac_disaster.registries.bullet_color.BulletColor;
+import net.luojiuoscar.isaac_disaster.registries.bullet_color.ModBulletColors;
 import net.luojiuoscar.isaac_disaster.sound.ModSounds;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.registries.IForgeRegistry;
+import net.minecraftforge.registries.RegistryManager;
 
 public class BulletAttack implements IAttackType {
     @Override
@@ -102,8 +105,15 @@ public class BulletAttack implements IAttackType {
         bullet.setHitEffectIds(context.hitEffects);
         bullet.setTrajectories(context.trajectories);
 
-        bullet.setColor(BulletColor.getColorById(context.colorId));
-        bullet.setAlpha(BulletColor.getAlphaById(context.colorId));
+        // 从registry获取
+        IForgeRegistry<BulletColor> registry = RegistryManager.ACTIVE.getRegistry(ModBulletColors.BULLET_COLOR_KEY);
+
+        BulletColor c = registry != null ? registry.getValue(context.colorRl) : ModBulletColors.BASE.get();
+        c = c == null ? ModBulletColors.BASE.get() : c;
+
+        bullet.setColor(c.color());
+        bullet.setAlpha(c.alpha());
+
 
         bullet.moveTo(adjustedPos.x, adjustedPos.y, adjustedPos.z, yRot, xRot);
         bullet.setDeltaMovement(look.scale(getBulletSpeed(shooter)));

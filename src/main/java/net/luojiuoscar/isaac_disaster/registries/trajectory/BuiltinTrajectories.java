@@ -1,7 +1,5 @@
-package net.luojiuoscar.isaac_disaster.registries.content.trajectory;
+package net.luojiuoscar.isaac_disaster.registries.trajectory;
 
-import net.luojiuoscar.isaac_disaster.registries.trajectory.AttackTrajectory;
-import net.luojiuoscar.isaac_disaster.registries.trajectory.TrajectoryResult;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.Vec3;
 

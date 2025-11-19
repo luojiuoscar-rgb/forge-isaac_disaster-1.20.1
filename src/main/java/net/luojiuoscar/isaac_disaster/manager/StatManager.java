@@ -324,9 +324,9 @@ public enum StatManager {
         );
     }
 
-    public static void addBulletColor(Player player, int id, int count){
+    public static void addBulletColor(Player player, ResourceLocation rl, int count){
         player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY).ifPresent(
-                playerAbility -> playerAbility.addBulletColor(id, count)
+                playerAbility -> playerAbility.addBulletColor(rl, count)
         );
     }
 

@@ -3,7 +3,7 @@ package net.luojiuoscar.isaac_disaster.item_ability.passive_item.items;
 import net.luojiuoscar.isaac_disaster.item_ability.passive_item.IPassiveItem;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.manager.item_managers.id.ItemId;
-import net.luojiuoscar.isaac_disaster.registries.trajectory.ModTrajectoryTypes;
+import net.luojiuoscar.isaac_disaster.registries.trajectory.ModAttackTrajectories;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -26,14 +26,14 @@ public class TinyPlanet implements IPassiveItem {
     public void handleObtain(Player player, @Nullable ItemStack stack) {
         StatManager.RANGE.apply(player, 2.5);
         StatManager.addSpectral(player, 1);
-        StatManager.addTrajectory(player, ModTrajectoryTypes.TINY_PLANET.getId(), 1);
+        StatManager.addTrajectory(player, ModAttackTrajectories.TINY_PLANET.getId(), 1);
     }
 
     @Override
     public void handleRemove(Player player, @Nullable ItemStack stack) {
         StatManager.RANGE.apply(player, -2.5);
         StatManager.addSpectral(player, -1);
-        StatManager.addTrajectory(player, ModTrajectoryTypes.TINY_PLANET.getId(), -1);
+        StatManager.addTrajectory(player, ModAttackTrajectories.TINY_PLANET.getId(), -1);
     }
 
     @Override

@@ -1,12 +1,15 @@
 package net.luojiuoscar.isaac_disaster.capability.player;
 
 import net.luojiuoscar.isaac_disaster.manager.attack.managers.AttackType;
-import net.luojiuoscar.isaac_disaster.manager.attack.managers.BulletColor;
+import net.luojiuoscar.isaac_disaster.registries.bullet_color.BulletColor;
+import net.luojiuoscar.isaac_disaster.registries.bullet_color.ModBulletColors;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraftforge.registries.IForgeRegistry;
+import net.minecraftforge.registries.RegistryManager;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -25,8 +28,8 @@ public class PlayerAbility {
     private Map<Integer, Boolean> itemFlags;
     private Map<Integer, Integer> attackType;
     private int bestBulletType;
-    private Map<Integer, Integer> bulletColor; // bullet color id : count
-    private int bestBulletColor;
+    private Map<ResourceLocation, Integer> bulletColor; // bullet color id : count
+    private ResourceLocation bestBulletColor;
     private HashMap<ResourceLocation, Integer> trajectories;
 
     public PlayerAbility() {
@@ -92,9 +95,9 @@ public class PlayerAbility {
         nbt.put("bullet_types", bulletTypeList);
 
         ListTag bulletColorList = new ListTag();
-        for (Map.Entry<Integer, Integer> entry : bulletColor.entrySet()) {
+        for (Map.Entry<ResourceLocation, Integer> entry : bulletColor.entrySet()) {
             CompoundTag tag = new CompoundTag();
-            tag.putInt("bullet_color_id", entry.getKey());
+            tag.putString("bullet_color_id", entry.getKey().toString());
             tag.putInt("count", entry.getValue());
             bulletColorList.add(tag);
         }
@@ -145,9 +148,12 @@ public class PlayerAbility {
             ListTag list = nbt.getList("bullet_colors", Tag.TAG_COMPOUND);
             for (Tag t : list) {
                 CompoundTag tag = (CompoundTag) t;
-                int color = tag.getInt("bullet_color_id");
+                String colorStr = tag.getString("bullet_color_id");
                 int count = tag.getInt("count");
-                bulletColor.put(color, count);
+                try{
+                    ResourceLocation rl = ResourceLocation.parse(colorStr);
+                    bulletColor.put(rl, count);
+                }catch (Exception ignored) {}
             }
         }
 
@@ -156,12 +162,12 @@ public class PlayerAbility {
             ListTag list = nbt.getList("trajectories", Tag.TAG_COMPOUND);
             for (Tag t : list) {
                 CompoundTag tag = (CompoundTag) t;
-                String trajIdStr = tag.getString("trajectory_id"); // 读取字符串
+                String trajIdStr = tag.getString("trajectory_id");
                 int count = tag.getInt("count");
                 try {
                     ResourceLocation rl = ResourceLocation.parse(trajIdStr);
                     trajectories.put(rl, count);
-                } catch (Exception ignored) {} // 防止非法字符串
+                } catch (Exception ignored) {}
             }
         }
     }
@@ -254,38 +260,48 @@ public class PlayerAbility {
         return bestBulletType;
     }
 
-    public Map<Integer, Integer> getBulletColor(){
+    public Map<ResourceLocation, Integer> getBulletColor(){
         return new HashMap<>(bulletColor);
     }
 
-    public void updateBestBulletColor(){
-        // 每一段时间更新
-        int bestId = BulletColor.BASE.getId();
-        double bestPriority = BulletColor.getPriorityById(bestId);
+    public void updateBestBulletColor() {
+        IForgeRegistry<BulletColor> registry = RegistryManager.ACTIVE.getRegistry(ModBulletColors.BULLET_COLOR_KEY);
+        if (registry == null) return;
 
-        for (int id : bulletColor.keySet()) {
-            double priority = BulletColor.getPriorityById(id);
+        double bestPriority = ModBulletColors.BASE.get().priority();
+        ResourceLocation bestKey = ModBulletColors.BASE.getId();
+
+        for (ResourceLocation key : this.bulletColor.keySet()) {
+            BulletColor color = registry.getValue(key);
+            if (color == null) continue;
+
+            double priority = color.priority();
             if (priority > bestPriority) {
                 bestPriority = priority;
-                bestId = id;
+                bestKey = key;
             }
         }
-        this.bestBulletColor = bestId;
+
+        this.bestBulletColor = bestKey;
     }
 
-    public int getBestBulletColorId(){
+    public ResourceLocation getBestBulletColor() {
         return bestBulletColor;
     }
 
-    public void addBulletColor(int id, int count){
-        int r = bulletColor.getOrDefault(id, 0) + count;
+    public void addBulletColor(ResourceLocation key, int count) {
+        int r = bulletColor.getOrDefault(key, 0) + count;
+
         if (r <= 0) {
-            bulletColor.remove(id);
-            return;
+            bulletColor.remove(key);
+        } else {
+            bulletColor.put(key, r);
         }
-        bulletColor.put(id, r);
+
         updateBestBulletColor();
     }
+
+
 
     public Map<ResourceLocation, Integer> getTrajectories() {
         return new HashMap<>(trajectories);

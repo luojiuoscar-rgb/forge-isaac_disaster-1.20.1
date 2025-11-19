@@ -1,0 +1,31 @@
+package net.luojiuoscar.isaac_disaster.registries.trajectory;
+
+import net.luojiuoscar.isaac_disaster.IsaacDisaster;
+import net.minecraft.core.Registry;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraftforge.registries.DeferredRegister;
+import net.minecraftforge.registries.RegistryObject;
+
+public final class ModAttackTrajectories {
+
+    public static final ResourceKey<Registry<AttackTrajectory>> ATTACK_TRAJECTORY_KEY =
+            ResourceKey.createRegistryKey(ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "attack_trajectory"));
+
+    public static final DeferredRegister<AttackTrajectory> ATTACK_TRAJECTORY_REGISTRY =
+            DeferredRegister.create(ATTACK_TRAJECTORY_KEY, IsaacDisaster.MOD_ID);
+
+    // Built-in entries
+    public static final RegistryObject<AttackTrajectory> WIGGLE_WORM =
+            ATTACK_TRAJECTORY_REGISTRY.register("wiggle_worm", () -> BuiltinTrajectories.WIGGLE_WORM);
+    public static final RegistryObject<AttackTrajectory> TINY_PLANET =
+            ATTACK_TRAJECTORY_REGISTRY.register("tiny_planet", () -> BuiltinTrajectories.TINY_PLANET);
+    public static final RegistryObject<AttackTrajectory> RING_WORM =
+            ATTACK_TRAJECTORY_REGISTRY.register("ring_worm", () -> BuiltinTrajectories.RING_WORM);
+    public static final RegistryObject<AttackTrajectory> OUROBOROS_WORM =
+            ATTACK_TRAJECTORY_REGISTRY.register("ouroboros_worm", () -> BuiltinTrajectories.OUROBOROS_WORM);
+    public static final RegistryObject<AttackTrajectory> HOOK_WORM =
+            ATTACK_TRAJECTORY_REGISTRY.register("hook_worm", () -> BuiltinTrajectories.HOOK_WORM);
+    public static final RegistryObject<AttackTrajectory> MY_REFLECTION =
+            ATTACK_TRAJECTORY_REGISTRY.register("my_reflection", () -> BuiltinTrajectories.MY_REFLECTION);
+}

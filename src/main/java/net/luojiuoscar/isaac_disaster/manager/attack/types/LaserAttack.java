@@ -7,9 +7,10 @@ import net.luojiuoscar.isaac_disaster.event.custom.attack.IsaacAttackHitBlockEve
 import net.luojiuoscar.isaac_disaster.helper.EntityHelper;
 import net.luojiuoscar.isaac_disaster.manager.attack.IAttackType;
 import net.luojiuoscar.isaac_disaster.manager.attack.managers.AttackType;
-import net.luojiuoscar.isaac_disaster.manager.attack.managers.BulletColor;
-import net.luojiuoscar.isaac_disaster.registries.ModRegistries;
+import net.luojiuoscar.isaac_disaster.registries.bullet_color.BulletColor;
+import net.luojiuoscar.isaac_disaster.registries.bullet_color.ModBulletColors;
 import net.luojiuoscar.isaac_disaster.registries.trajectory.AttackTrajectory;
+import net.luojiuoscar.isaac_disaster.registries.trajectory.ModAttackTrajectories;
 import net.luojiuoscar.isaac_disaster.registries.trajectory.TrajectoryContext;
 import net.luojiuoscar.isaac_disaster.sound.ModSounds;
 import net.minecraft.core.particles.DustParticleOptions;
@@ -165,7 +166,7 @@ public class LaserAttack implements IAttackType {
         Vec3 totalPositionOffset = Vec3.ZERO;
         Vec3 totalVelocityOffset = Vec3.ZERO;
         IForgeRegistry<AttackTrajectory> trajectoryIForgeRegistry =
-                RegistryManager.ACTIVE.getRegistry(ModRegistries.ATTACK_TRAJECTORY_KEY);
+                RegistryManager.ACTIVE.getRegistry(ModAttackTrajectories.ATTACK_TRAJECTORY_KEY);
 
         if (!laser.isCurrentlyHoming && trajectoryIForgeRegistry != null) {
             for (Map.Entry<ResourceLocation, Integer> entry : context.trajectories.entrySet()) {
@@ -209,7 +210,7 @@ public class LaserAttack implements IAttackType {
         Vec3 nextPos = laser.position.add(laser.direction.scale(laser.step)).add(totalPositionOffset);
 
         // --------- 粒子 ---------
-        spawnInterpolatedParticles(level, laser.position, nextPos, laser.width, context.colorId);
+        spawnInterpolatedParticles(level, laser.position, nextPos, laser.width, context.colorRl);
 
         // --------- Block Collision ---------
         AABB box = createCollisionBox(nextPos, laser.width);
@@ -301,9 +302,14 @@ public class LaserAttack implements IAttackType {
         return newDir.normalize();
     }
 
-    private void spawnInterpolatedParticles(ServerLevel level, Vec3 from, Vec3 to, double width, int colorId) {
-        Vector3f color = BulletColor.getVec3fColorById(colorId);
-        if (colorId == BulletColor.BASE.getId()) color = new Vector3f(1f, 0f, 0f);
+    private void spawnInterpolatedParticles(ServerLevel level, Vec3 from, Vec3 to, double width, ResourceLocation colorRl) {
+        IForgeRegistry<BulletColor> registry = RegistryManager.ACTIVE.getRegistry(ModBulletColors.BULLET_COLOR_KEY);
+
+        BulletColor c = registry != null ? registry.getValue(colorRl) : ModBulletColors.BASE.get();
+        c = c == null ? ModBulletColors.BASE.get() : c;
+
+        Vector3f color = BulletColor.getVec3fColorById(c.color());
+        if (c == ModBulletColors.BASE.get()) color = new Vector3f(1f, 0f, 0f);
 
         Vec3 delta = to.subtract(from);
         double distance = delta.length();

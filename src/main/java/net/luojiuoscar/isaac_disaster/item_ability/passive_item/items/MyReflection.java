@@ -5,7 +5,7 @@ import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.item_ability.passive_item.IPassiveItem;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.manager.item_managers.id.ItemId;
-import net.luojiuoscar.isaac_disaster.registries.trajectory.ModTrajectoryTypes;
+import net.luojiuoscar.isaac_disaster.registries.trajectory.ModAttackTrajectories;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
@@ -39,7 +39,7 @@ public class MyReflection implements IPassiveItem {
         StatManager.RANGE.apply(player, 1.5);
         StatManager.DAMAGE.apply(player, 1.5);
         StatManager.LUCK.apply(player, -1);
-        StatManager.addTrajectory(player, ModTrajectoryTypes.MY_REFLECTION.getId(), 1);
+        StatManager.addTrajectory(player, ModAttackTrajectories.MY_REFLECTION.getId(), 1);
 
         AttributeInstance range = player.getAttribute(ModAttributes.BULLET_RANGE.get());
         if (range != null && range.getModifier(MY_REFLECTION_RANGE) == null){
@@ -75,7 +75,7 @@ public class MyReflection implements IPassiveItem {
         StatManager.RANGE.apply(player, -1.5);
         StatManager.DAMAGE.apply(player, -1.5);
         StatManager.LUCK.apply(player, 1);
-        StatManager.addTrajectory(player, ModTrajectoryTypes.MY_REFLECTION.getId(), -1);
+        StatManager.addTrajectory(player, ModAttackTrajectories.MY_REFLECTION.getId(), -1);
     }
 
     @Override

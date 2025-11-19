@@ -40,10 +40,10 @@ public class AttackManager {
     public void playerPerformAttack(ServerPlayer player) {
         player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY).ifPresent(playerAbility -> {
             int attackId = playerAbility.getBestBulletType();
-            int colorId = playerAbility.getBestBulletColorId();
+            ResourceLocation colorRl = playerAbility.getBestBulletColor();
             Map<ResourceLocation, Integer> trajectories = playerAbility.getTrajectories();
 
-            var context = new IAttackType.AttackContext(colorId, new HashSet<>(), trajectories);
+            var context = new IAttackType.AttackContext(colorRl, new HashSet<>(), trajectories);
 
             PlayerPerformAttackEvent event = new PlayerPerformAttackEvent(player, attackId, context);
             MinecraftForge.EVENT_BUS.post(event);

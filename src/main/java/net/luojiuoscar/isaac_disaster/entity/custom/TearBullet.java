@@ -11,9 +11,8 @@ import net.luojiuoscar.isaac_disaster.event.custom.attack.tear_bullet.TearBullet
 import net.luojiuoscar.isaac_disaster.helper.EntityHelper;
 import net.luojiuoscar.isaac_disaster.manager.attack.IAttackType;
 import net.luojiuoscar.isaac_disaster.manager.attack.managers.AttackType;
-import net.luojiuoscar.isaac_disaster.manager.attack.managers.BulletColor;
-import net.luojiuoscar.isaac_disaster.registries.ModRegistries;
 import net.luojiuoscar.isaac_disaster.registries.trajectory.AttackTrajectory;
+import net.luojiuoscar.isaac_disaster.registries.trajectory.ModAttackTrajectories;
 import net.luojiuoscar.isaac_disaster.registries.trajectory.TrajectoryContext;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
@@ -99,7 +98,7 @@ public class TearBullet extends Entity {
         super(type, level);
         this.noPhysics = true;
         this.damage = 1.0f;
-        this.setColor(BulletColor.BASE.getColor());
+        this.setColor(0xFFFFFF);
         this.setAlpha(1.0f);
         this.setScale(1.0f);
         setVelocity(Vec3.ZERO);
@@ -138,7 +137,7 @@ public class TearBullet extends Entity {
         Vec3 baseDir = getVelocity().normalize(); // 当前方向
         double speed = getVelocity().length();    // 当前速度大小
         IForgeRegistry<AttackTrajectory> trajectoryIForgeRegistry =
-                RegistryManager.ACTIVE.getRegistry(ModRegistries.ATTACK_TRAJECTORY_KEY);
+                RegistryManager.ACTIVE.getRegistry(ModAttackTrajectories.ATTACK_TRAJECTORY_KEY);
 
         if (!isCurrentlySteering() && trajectoryIForgeRegistry != null) { // 非跟踪时
             for (Map.Entry<ResourceLocation, Integer> entry : getTrajectories().entrySet()) {

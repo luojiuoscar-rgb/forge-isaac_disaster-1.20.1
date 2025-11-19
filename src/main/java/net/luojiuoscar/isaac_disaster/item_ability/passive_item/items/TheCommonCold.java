@@ -5,8 +5,8 @@ import net.luojiuoscar.isaac_disaster.event.custom.attack.PlayerPerformAttackEve
 import net.luojiuoscar.isaac_disaster.item_ability.passive_item.IDamageTriggerPassiveItem;
 import net.luojiuoscar.isaac_disaster.item_ability.passive_item.ISpecialTypeBulletPassiveItem;
 import net.luojiuoscar.isaac_disaster.manager.EffectManager;
-import net.luojiuoscar.isaac_disaster.manager.attack.managers.BulletColor;
 import net.luojiuoscar.isaac_disaster.manager.item_managers.id.ItemId;
+import net.luojiuoscar.isaac_disaster.registries.bullet_color.ModBulletColors;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
@@ -79,7 +79,7 @@ public class TheCommonCold implements IDamageTriggerPassiveItem, ISpecialTypeBul
         Player player = event.getPlayer();
 
         if (player.getRandom().nextDouble() <= getTriggerChance(player)) {
-            event.getContext().colorId  = BulletColor.POISON.getId();
+            event.getContext().colorRl = ModBulletColors.POISON.getId();
 
             event.getContext().hitEffects.add(ItemId.THE_COMMON_COLD.getId());
         }

@@ -15,6 +15,8 @@ import net.luojiuoscar.isaac_disaster.item.item.ActiveItem;
 import net.luojiuoscar.isaac_disaster.item.pickup.IsaacHead;
 import net.luojiuoscar.isaac_disaster.manager.attack.AttackManager;
 import net.luojiuoscar.isaac_disaster.manager.item_managers.id.ItemId;
+import net.luojiuoscar.isaac_disaster.registries.bullet_color.BulletColor;
+import net.luojiuoscar.isaac_disaster.registries.bullet_color.ModBulletColors;
 import net.minecraft.client.Minecraft;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
@@ -23,8 +25,11 @@ import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.event.server.ServerStartingEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.registries.IForgeRegistry;
+import net.minecraftforge.registries.RegistryManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -63,7 +68,7 @@ public class ServerTickEvent {
                 bugsFix(player);
                 recursiveItemTick(player);
                 onPlayerSprint(player);
-                updateCached(player);
+                //updateCached(player);
             }
         }
 
@@ -189,6 +194,20 @@ public class ServerTickEvent {
                 }
         );
 
+    }
+
+    @SubscribeEvent
+    public static void onServerStarting(ServerStartingEvent event) {
+        IForgeRegistry<BulletColor> reg = RegistryManager.ACTIVE.getRegistry(ModBulletColors.BULLET_COLOR_KEY);
+        if (reg == null) {
+            IsaacDisaster.LOGGER.error("BulletColor registry is null!");
+            return;
+        }
+
+        IsaacDisaster.LOGGER.info("==== BulletColor Registry Content ====");
+        for (BulletColor bc : reg.getValues()) {
+            IsaacDisaster.LOGGER.info("BulletColor: color={}", bc.color());
+        }
     }
 
 

@@ -7,7 +7,6 @@ import net.luojiuoscar.isaac_disaster.block.ModBlocks;
 import net.luojiuoscar.isaac_disaster.commands.gamerule.ModGameRules;
 import net.luojiuoscar.isaac_disaster.effect.ModEffects;
 import net.luojiuoscar.isaac_disaster.entity.ModEntities;
-import net.luojiuoscar.isaac_disaster.event.ServerTickEvent;
 import net.luojiuoscar.isaac_disaster.item.ModCreativeModeTabs;
 import net.luojiuoscar.isaac_disaster.item.ModItems;
 import net.luojiuoscar.isaac_disaster.item.registries.PillRegistry;
@@ -17,7 +16,6 @@ import net.luojiuoscar.isaac_disaster.manager.attack.AttackManager;
 import net.luojiuoscar.isaac_disaster.manager.item_managers.*;
 import net.luojiuoscar.isaac_disaster.networking.ModMessages;
 import net.luojiuoscar.isaac_disaster.registries.ModRegistries;
-import net.luojiuoscar.isaac_disaster.registries.trajectory.ModTrajectoryTypes;
 import net.luojiuoscar.isaac_disaster.sound.ModSounds;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
@@ -49,6 +47,8 @@ public class IsaacDisaster
         // Register ourselves for server and other game events we are interested in
         MinecraftForge.EVENT_BUS.register(this);
 
+        ModRegistries.register(modEventBus);
+
         ModAttributes.register(modEventBus);
 
         ModItems.register(modEventBus);
@@ -66,18 +66,8 @@ public class IsaacDisaster
 
         ModGameRules.register();
 
-        // isaac
-        ModRegistries.register(modEventBus);
-
-        ModTrajectoryTypes.register(modEventBus);
 
 
-
-
-
-
-
-        MinecraftForge.EVENT_BUS.register(new ServerTickEvent());
         // Register the item to a creative tab
         modEventBus.addListener(this::addCreative);
         // Register our mod's ForgeConfigSpec so that Forge can create and load the config file for us
