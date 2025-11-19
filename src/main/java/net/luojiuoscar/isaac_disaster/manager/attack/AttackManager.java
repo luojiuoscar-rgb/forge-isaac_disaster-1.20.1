@@ -2,8 +2,8 @@ package net.luojiuoscar.isaac_disaster.manager.attack;
 
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerAbilityProvider;
 import net.luojiuoscar.isaac_disaster.event.custom.attack.PlayerPerformAttackEvent;
-import net.luojiuoscar.isaac_disaster.manager.attack.managers.AttackType;
 import net.luojiuoscar.isaac_disaster.manager.attack.types.BulletAttack;
+import net.luojiuoscar.isaac_disaster.manager.attack.types.IAttackType;
 import net.luojiuoscar.isaac_disaster.manager.attack.types.LaserAttack;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
@@ -58,10 +58,14 @@ public class AttackManager {
         });
     }
 
+    public double getPriority(int id){
+        IAttackType attack = attacks.getOrDefault(id, null);
+        return attack == null ? -1 : attack.getPriority();
+    }
 
 
+    // =========== 批量注册 ===========
     public void init() {
-        // 注册所有道具实例
         registerAttacks(
                 new BulletAttack(),
                 new LaserAttack()

@@ -1,6 +1,7 @@
 package net.luojiuoscar.isaac_disaster.capability.player;
 
-import net.luojiuoscar.isaac_disaster.manager.attack.managers.AttackType;
+import net.luojiuoscar.isaac_disaster.manager.attack.AttackManager;
+import net.luojiuoscar.isaac_disaster.manager.attack.AttackType;
 import net.luojiuoscar.isaac_disaster.registries.bullet_color.BulletColor;
 import net.luojiuoscar.isaac_disaster.registries.bullet_color.ModBulletColors;
 import net.minecraft.nbt.CompoundTag;
@@ -244,10 +245,10 @@ public class PlayerAbility {
 
     public void updateBestAttackType(){
         int bestId = AttackType.BULLET.getId();
-        double bestPriority = AttackType.getPriorityById(bestId);
+        double bestPriority = AttackManager.getInstance().getPriority(bestId);
 
         for (int id : attackType.keySet()) {
-            double priority = AttackType.getPriorityById(id);
+            double priority = AttackManager.getInstance().getPriority(id);
             if (priority > bestPriority) {
                 bestPriority = priority;
                 bestId = id;

@@ -1,4 +1,4 @@
-package net.luojiuoscar.isaac_disaster.manager.attack;
+package net.luojiuoscar.isaac_disaster.manager.attack.types;
 
 import net.luojiuoscar.isaac_disaster.attribute.ModAttributes;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerAbilityProvider;

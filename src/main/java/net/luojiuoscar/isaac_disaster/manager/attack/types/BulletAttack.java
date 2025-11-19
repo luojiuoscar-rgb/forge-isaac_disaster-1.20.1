@@ -2,8 +2,7 @@ package net.luojiuoscar.isaac_disaster.manager.attack.types;
 
 import net.luojiuoscar.isaac_disaster.entity.custom.TearBullet;
 import net.luojiuoscar.isaac_disaster.event.custom.attack.tear_bullet.TearBulletShootEvent;
-import net.luojiuoscar.isaac_disaster.manager.attack.IAttackType;
-import net.luojiuoscar.isaac_disaster.manager.attack.managers.AttackType;
+import net.luojiuoscar.isaac_disaster.manager.attack.AttackType;
 import net.luojiuoscar.isaac_disaster.registries.bullet_color.BulletColor;
 import net.luojiuoscar.isaac_disaster.registries.bullet_color.ModBulletColors;
 import net.luojiuoscar.isaac_disaster.sound.ModSounds;
@@ -22,9 +21,8 @@ public class BulletAttack implements IAttackType {
     }
 
     @Override
-    public double getPriority() {
-        return AttackType.BULLET.getPriority();
-    }
+    public double getPriority() {return AttackType.BULLET.getPriority();}
+
 
     @Override
     public void makeSound(LivingEntity entity){
