@@ -117,10 +117,7 @@ public class PillEffectManager {
         // 立即写入磁盘
         try {
             level.getDataStorage().save();
-            IsaacDisaster.LOGGER.info("PillShuffleData saved to disk.");
-        } catch (Exception e) {
-            IsaacDisaster.LOGGER.error("Failed to save PillShuffleData immediately.", e);
-        }
+        } catch (Exception e) {}
     }
 
     //================ NBT序列化部分 =================//

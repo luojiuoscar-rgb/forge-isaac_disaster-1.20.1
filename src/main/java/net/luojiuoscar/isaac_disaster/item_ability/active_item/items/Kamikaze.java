@@ -4,14 +4,11 @@ import net.luojiuoscar.isaac_disaster.client.ClientDataManager;
 import net.luojiuoscar.isaac_disaster.helper.LevelHelper;
 import net.luojiuoscar.isaac_disaster.item_ability.active_item.IActiveItem;
 import net.luojiuoscar.isaac_disaster.manager.ColorManager;
+import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.manager.item_managers.id.ItemId;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvent;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.level.ExplosionDamageCalculator;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.phys.Vec3;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,23 +36,8 @@ public class Kamikaze implements IActiveItem {
     }
 
     private void explode(Player player, float power, float damage){
-        player.level().explode(
-                null,
-                null,
-                new ExplosionDamageCalculator() {},
-                player.getX(),
-                player.getY(),
-                player.getZ(),
-                power,
-                false,
-                Level.ExplosionInteraction.BLOCK
-        );
-        Vec3 pos = player.position();
-        List<LivingEntity> livingEntities = LevelHelper.selectBySquare(player.level(), pos.x, pos.y, pos.z,
-                power + 2);
-        for (LivingEntity entity : livingEntities){
-            entity.hurt(player.damageSources().explosion(player, null), damage);
-        }
+        LevelHelper.explodeCustom(player, player.position(), power, damage, true);
+        player.hurt(player.damageSources().genericKill(), (float) StatManager.MAX_HEALTH.getBonus());
     }
 
 

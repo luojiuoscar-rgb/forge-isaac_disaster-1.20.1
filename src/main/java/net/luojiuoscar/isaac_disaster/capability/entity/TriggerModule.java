@@ -1,6 +1,5 @@
 package net.luojiuoscar.isaac_disaster.capability.entity;
 
-import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerModuleInstance;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerModuleQueue;
 import net.minecraft.nbt.CompoundTag;
@@ -54,7 +53,6 @@ public class TriggerModule {
     }
 
     public TriggerModuleQueue getTriggerModules(){
-        IsaacDisaster.LOGGER.info("Returned queue");
         return triggerModuleQueue;
     }
 }

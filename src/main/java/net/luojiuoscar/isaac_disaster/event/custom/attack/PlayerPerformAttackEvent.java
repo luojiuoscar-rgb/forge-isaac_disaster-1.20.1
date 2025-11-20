@@ -1,9 +1,11 @@
 package net.luojiuoscar.isaac_disaster.event.custom.attack;
 
-import net.luojiuoscar.isaac_disaster.manager.attack.type.IAttackType;
+import net.luojiuoscar.isaac_disaster.manager.attack.IAttackType;
 import net.minecraft.world.entity.player.Player;
+import net.minecraftforge.eventbus.api.Cancelable;
 import net.minecraftforge.eventbus.api.Event;
 
+@Cancelable
 public class PlayerPerformAttackEvent extends Event {
     private final Player player;
     private int attackTypeId;

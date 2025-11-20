@@ -34,7 +34,7 @@ public class AceOfDiamonds implements IPickup {
                 StatManager.getNearbyRange());
 
         for (LivingEntity entity : entities){
-            if (EntityHelper.isFriendlyToPlayer(entity, player)) continue;
+            if (EntityHelper.isFriendly(entity, player)) continue;
 
             Vec3 pos = entity.blockPosition().getCenter();
             entity.discard();

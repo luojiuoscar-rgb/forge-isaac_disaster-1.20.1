@@ -1,8 +1,10 @@
 package net.luojiuoscar.isaac_disaster.event.custom.misc;
 
 import net.minecraft.world.entity.player.Player;
+import net.minecraftforge.eventbus.api.Cancelable;
 import net.minecraftforge.eventbus.api.Event;
 
+@Cancelable
 public class IsaacGetBulletCountEvent extends Event {
     private final Player player;
     private int count;

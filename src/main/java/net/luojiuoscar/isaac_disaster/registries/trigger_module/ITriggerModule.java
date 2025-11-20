@@ -5,6 +5,7 @@ import net.luojiuoscar.isaac_disaster.event.custom.attack.IsaacAttackBeforeHitEn
 import net.luojiuoscar.isaac_disaster.event.custom.attack.IsaacAttackHitBlockEvent;
 import net.luojiuoscar.isaac_disaster.event.custom.attack.PlayerPerformAttackEvent;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
@@ -18,7 +19,8 @@ public interface ITriggerModule {
     Set<TriggerCategory> getTriggerType();
 
     default double getLuck(LivingEntity entity){
-        return entity.getAttributes().getValue(Attributes.LUCK);
+        AttributeInstance instance = entity.getAttribute(Attributes.LUCK);
+        return instance == null ? 0.0 : instance.getValue();
     }
 
     default double getPriority() {return 0; }

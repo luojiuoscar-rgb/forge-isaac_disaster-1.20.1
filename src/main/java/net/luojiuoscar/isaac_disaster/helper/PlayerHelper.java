@@ -683,6 +683,18 @@ public class PlayerHelper {
         return source.is(DamageTypes.GENERIC_KILL);
     }
 
+    public static boolean isHitAllowedType(DamageSource source){
+        return source.is(DamageTypes.PLAYER_ATTACK)
+                || source.is(DamageTypes.GENERIC)
+                || source.is(DamageTypes.MOB_PROJECTILE)
+                || source.is(DamageTypes.ARROW)
+                || source.is(DamageTypes.TRIDENT)
+                || source.is(DamageTypes.MAGIC)
+                || source.is(DamageTypes.INDIRECT_MAGIC)
+                || source.is(DamageTypes.MOB_ATTACK)
+                || source.is(DamageTypes.MOB_ATTACK_NO_AGGRO);
+    }
+
 
 }
 

@@ -3,8 +3,10 @@ package net.luojiuoscar.isaac_disaster.event.custom.misc;
 import net.luojiuoscar.isaac_disaster.item.item.ActiveItem;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraftforge.eventbus.api.Cancelable;
 import net.minecraftforge.eventbus.api.Event;
 
+@Cancelable
 public class ActiveItemUseEvent extends Event {
     private final Player player;
     private final ActiveItem activeItem;

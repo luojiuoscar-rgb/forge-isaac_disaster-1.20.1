@@ -56,7 +56,7 @@ public class GigaBomb extends IsaacBomb {
 
         for (LivingEntity entity : entities) {
             // 跳过自己
-            if (EntityHelper.isFriendlyToPlayer(entity, this.getOwner())) continue;
+            if (EntityHelper.isFriendly(entity, this.getOwner())) continue;
             if (entity.isInvulnerable()) continue;
             if (!entity.isAlive()) continue;
 

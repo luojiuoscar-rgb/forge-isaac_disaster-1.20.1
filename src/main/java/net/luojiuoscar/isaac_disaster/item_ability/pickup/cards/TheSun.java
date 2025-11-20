@@ -41,7 +41,7 @@ public class TheSun implements ITarot {
 
         for (LivingEntity entity : entities){
             // 友好、有火抗生物不造成伤害
-            if (EntityHelper.isFriendlyToPlayer(entity, player) ||
+            if (EntityHelper.isFriendly(entity, player) ||
                     entity.fireImmune()) continue;
             // 生成火焰、造成火伤
             EntityHelper.setFireAtEntity(entity);
@@ -64,7 +64,7 @@ public class TheSun implements ITarot {
 
         for (LivingEntity entity : entities){
             // 友好、有火抗生物不造成伤害
-            if (EntityHelper.isFriendlyToPlayer(entity, player) ||
+            if (EntityHelper.isFriendly(entity, player) ||
                     entity.fireImmune()) continue;
             // 生成火焰、造成火伤
             EntityHelper.setFireAtEntity(entity);

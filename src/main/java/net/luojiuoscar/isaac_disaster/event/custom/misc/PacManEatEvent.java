@@ -1,9 +1,11 @@
 package net.luojiuoscar.isaac_disaster.event.custom.misc;
 
+import net.minecraftforge.eventbus.api.Cancelable;
 import net.minecraftforge.eventbus.api.Event;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 
+@Cancelable
 public class PacManEatEvent extends Event {
 
     private final Player player;

@@ -134,7 +134,8 @@ public class  PassiveItemManager {
                 new Technology(),
                 new Marked(),
                 new TheWiz(),
-                new MyReflection()
+                new MyReflection(),
+                new Ipecac()
         );
     }
 }

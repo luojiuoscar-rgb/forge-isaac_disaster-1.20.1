@@ -15,7 +15,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.entity.Entity;
 import net.minecraftforge.event.entity.ProjectileImpactEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
@@ -23,24 +22,8 @@ import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
-import java.util.Set;
-
 @Mod.EventBusSubscriber(modid = IsaacDisaster.MOD_ID)
 public class ItemEvents {
-    public static final Set<String> ALLOWED_DAMAGE_TYPES = Set.of(
-            "player",              // 玩家直接攻击
-            "arrow",               // 弓箭
-            "trident",             // 三叉戟
-            "mob_projectile",      // 投射物
-            "indirect_magic",      // 例如药水、魔法
-            "magic",               // 魔法类
-            "generic"              // 普通伤害
-    );
-
-    public static boolean isAllowed(DamageSource source) {
-        return ALLOWED_DAMAGE_TYPES.contains(source.getMsgId());
-    }
-
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public static void onPlayerHurtHighest(LivingHurtEvent event) {
         DamageSource source = event.getSource();
@@ -70,7 +53,6 @@ public class ItemEvents {
 
     @SubscribeEvent
     public static void onPlayerHurt(LivingHurtEvent event) {
-        Entity attacker = event.getSource().getEntity();
         DamageSource source = event.getSource();
 
         // 检测受伤者是否为玩家

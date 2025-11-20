@@ -7,7 +7,7 @@ import net.luojiuoscar.isaac_disaster.event.custom.attack.IsaacAttackBeforeHitEn
 import net.luojiuoscar.isaac_disaster.event.custom.attack.IsaacAttackHitBlockEvent;
 import net.luojiuoscar.isaac_disaster.event.custom.attack.PlayerPerformAttackEvent;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
-import net.luojiuoscar.isaac_disaster.manager.attack.type.IBulletObject;
+import net.luojiuoscar.isaac_disaster.manager.attack.IBulletObject;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.ITriggerModule;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerModule;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerCategory;
@@ -56,14 +56,15 @@ public class TriggerModuleEvents {
 
     @SubscribeEvent
     public static void onHitEntity(LivingAttackEvent event) {
-        LivingEntity entity = event.getEntity();
+        // restricted damage types
+        if (!PlayerHelper.isHitAllowedType(event.getSource())) return;
+        if (!(event.getSource().getEntity() instanceof LivingEntity entity)) return;
 
         IForgeRegistry<ITriggerModule> reg  =
                 RegistryManager.ACTIVE.getRegistry(ModTriggerModule.TRIGGER_MODULE_KEY);
 
         entity.getCapability(TriggerModuleProvider.TRIGGER_MODULES).ifPresent(
                 triggerModule -> {
-
                     var queue = triggerModule.getTriggerModules().getCopy();
 
                     for (var inst : queue.getQueue()){
@@ -144,11 +145,9 @@ public class TriggerModuleEvents {
 
         player.getCapability(TriggerModuleProvider.TRIGGER_MODULES).ifPresent(
                 triggerModule -> {
-                    IsaacDisaster.LOGGER.info("Trigger module has been found.");
                     var queue = triggerModule.getTriggerModules().getCopy();
 
                     for (var inst : queue.getQueue()){
-                        IsaacDisaster.LOGGER.info("Trigger module instance: {}", inst);
                         ITriggerModule val = reg.getValue(inst.id);
                         if (val == null) continue;
                         Set<TriggerCategory> types = val.getTriggerType();

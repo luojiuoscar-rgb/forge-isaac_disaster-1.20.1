@@ -380,6 +380,13 @@
   "item.isaac_disaster.my_reflection": "我的镜像",
   "item.isaac_disaster.my_reflection.lore.1": "子弹向前飞行一段距离后返回",
   "item.isaac_disaster.my_reflection.lore.2": "射程倍率和弹速倍率提升",
+  "item.isaac_disaster.ipecac": "吐根酊",
+  "item.isaac_disaster.ipecac.lore.1": "发射吐根子弹",
+  "item.isaac_disaster.ipecac.lore.2": "吐根子弹在碰撞方块、生物时会爆炸，并造成中毒",
+  "item.isaac_disaster.ipecac.lore.3": "伤害越高，造成的爆炸和中毒越强",
+  "item.isaac_disaster.ipecac.lore.4": "当伤害较低时，提供伤害补偿",
+  "item.isaac_disaster.ipecac.lore.5": "对其他的攻击也有效",
+
 
   "item end": "",
 

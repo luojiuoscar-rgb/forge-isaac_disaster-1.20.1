@@ -33,7 +33,7 @@ public class StrengthR implements ITarot {
                 StatManager.getNearbyRange());
 
         for (LivingEntity le : living){
-            if (EntityHelper.isFriendlyToPlayer(le, player)) continue;
+            if (EntityHelper.isFriendly(le, player)) continue;
             le.addEffect(new MobEffectInstance(ModEffects.FRAILTY.get(), 600));
         }
     }
@@ -44,7 +44,7 @@ public class StrengthR implements ITarot {
                 StatManager.getNearbyRange());
 
         for (LivingEntity le : living){
-            if (EntityHelper.isFriendlyToPlayer(le, player)) continue;
+            if (EntityHelper.isFriendly(le, player)) continue;
             le.addEffect(new MobEffectInstance(ModEffects.FRAILTY.get(), 1200));
         }
     }

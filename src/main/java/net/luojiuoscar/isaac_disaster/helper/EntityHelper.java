@@ -188,21 +188,39 @@ public class EntityHelper {
         }
     }
 
-    public static boolean isFriendlyToPlayer(LivingEntity entity, LivingEntity player) {
-        if (player == null || entity == null) return false;
-        if (entity == player) return true; // 跳过本身
+    public static boolean isFriendly(LivingEntity a, LivingEntity b) {
+        if (a == null || b == null) return false;
+        if (a == b) return true; // 自己和自己
 
-        // 被同一玩家驯服的生物
-        if (entity instanceof TamableAnimal tamable) {
-            LivingEntity tamer = tamable.getOwner();
-            if (tamer != null && tamer.equals(player)) return true;
-        }
+        // Team 友好
+        if (a.isAlliedTo(b)) return true; // 内含玩家玩家、玩家实体、实体实体的 team 检测
 
-        // 玩家之间是队友
-        if (entity instanceof Player p && player instanceof Player o && o.isAlliedTo(p)) return true;
+        // 驯服生物：检查是否有同一主人
+        LivingEntity ownerA = getOwner(a);
+        LivingEntity ownerB = getOwner(b);
+
+        boolean aHasOwner = ownerA != null;
+        boolean bHasOwner = ownerB != null;
+
+        // 如果都是驯服生物，并且是同一个主人
+        if (aHasOwner && bHasOwner && ownerA.equals(ownerB)) return true;
+
+        // 生物A 是生物B 驯服的
+        if (aHasOwner && ownerA.equals(b)) return true;
+
+        // 生物B 是生物A 驯服的
+        if (bHasOwner && ownerB.equals(a)) return true;
 
         return false;
     }
+
+    private static LivingEntity getOwner(LivingEntity entity) {
+        if (entity instanceof TamableAnimal tamable) {
+            return tamable.getOwner();
+        }
+        return null;
+    }
+
 
     /**
      * 对于*可叠加*相关的药水效果
@@ -284,7 +302,7 @@ public class EntityHelper {
 
         for (LivingEntity e : nearby) {
 
-            if (isFriendlyToPlayer(e, owner)) continue;
+            if (isFriendly(e, owner)) continue;
 
             // 优先考虑 Enemy
             if (e instanceof Enemy) {

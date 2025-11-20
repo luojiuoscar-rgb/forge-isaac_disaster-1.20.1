@@ -5,7 +5,9 @@ import net.luojiuoscar.isaac_disaster.event.custom.attack.IsaacAttackAfterHitEve
 import net.luojiuoscar.isaac_disaster.event.custom.attack.IsaacAttackBeforeHitEntityEvent;
 import net.luojiuoscar.isaac_disaster.event.custom.attack.IsaacAttackHitBlockEvent;
 import net.luojiuoscar.isaac_disaster.helper.EntityHelper;
-import net.luojiuoscar.isaac_disaster.manager.attack.AttackType;
+import net.luojiuoscar.isaac_disaster.manager.attack.ModAttackType;
+import net.luojiuoscar.isaac_disaster.manager.attack.IAttackType;
+import net.luojiuoscar.isaac_disaster.manager.attack.IBulletObject;
 import net.luojiuoscar.isaac_disaster.registries.bullet_color.BulletColor;
 import net.luojiuoscar.isaac_disaster.registries.bullet_color.ModBulletColors;
 import net.luojiuoscar.isaac_disaster.registries.trajectory.IAttackTrajectory;
@@ -41,11 +43,11 @@ public class LaserAttack implements IAttackType {
 
     @Override
     public int getId() {
-        return AttackType.LASER.getId();
+        return ModAttackType.LASER.getId();
     }
 
     @Override
-    public double getPriority() {return AttackType.LASER.getPriority();}
+    public double getPriority() {return ModAttackType.LASER.getPriority();}
 
     @Override
     public void makeSound(LivingEntity entity) {

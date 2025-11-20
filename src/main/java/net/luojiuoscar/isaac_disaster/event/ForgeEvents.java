@@ -347,7 +347,6 @@ public class ForgeEvents {
             if (player.hasEffect(ModEffects.HOLY_SHIELD.get())){
                 event.setCanceled(true);
             }
-
         }
     }
 

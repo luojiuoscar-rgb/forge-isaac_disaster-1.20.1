@@ -1,10 +1,12 @@
 package net.luojiuoscar.isaac_disaster.event.custom.attack;
 
-import net.luojiuoscar.isaac_disaster.manager.attack.type.IBulletObject;
+import net.luojiuoscar.isaac_disaster.manager.attack.IBulletObject;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerModuleQueue;
 import net.minecraft.world.entity.Entity;
+import net.minecraftforge.eventbus.api.Cancelable;
 import net.minecraftforge.eventbus.api.Event;
 
+@Cancelable
 public class IsaacAttackEvent extends Event {
     private final IBulletObject bulletObject;
     private final Entity source;

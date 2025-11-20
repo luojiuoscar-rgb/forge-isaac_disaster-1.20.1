@@ -2,7 +2,8 @@ package net.luojiuoscar.isaac_disaster.manager.attack.type;
 
 import net.luojiuoscar.isaac_disaster.entity.custom.TearBullet;
 import net.luojiuoscar.isaac_disaster.event.custom.attack.tear_bullet.TearBulletShootEvent;
-import net.luojiuoscar.isaac_disaster.manager.attack.AttackType;
+import net.luojiuoscar.isaac_disaster.manager.attack.IAttackType;
+import net.luojiuoscar.isaac_disaster.manager.attack.ModAttackType;
 import net.luojiuoscar.isaac_disaster.registries.bullet_color.BulletColor;
 import net.luojiuoscar.isaac_disaster.registries.bullet_color.ModBulletColors;
 import net.luojiuoscar.isaac_disaster.sound.ModSounds;
@@ -17,11 +18,11 @@ import net.minecraftforge.registries.RegistryManager;
 public class BulletAttack implements IAttackType {
     @Override
     public int getId() {
-        return AttackType.BULLET.getId();
+        return ModAttackType.BULLET.getId();
     }
 
     @Override
-    public double getPriority() {return AttackType.BULLET.getPriority();}
+    public double getPriority() {return ModAttackType.BULLET.getPriority();}
 
 
     @Override
@@ -84,16 +85,7 @@ public class BulletAttack implements IAttackType {
         Vec3 look = Vec3.directionFromRotation(xRot, yRot);
         Vec3 adjustedPos = spawnPos.add(look.scale(forwardOffset));
 
-        TearBullet bullet = new TearBullet(
-                shooter.level(),
-                shooter,
-                getBulletLiftTime(shooter),
-                getBulletSpeed(shooter),
-                getBulletScale(shooter),
-                getDamage(shooter),
-                xRot,
-                yRot
-        );
+        TearBullet bullet = getBulletObject(shooter, xRot, yRot);
 
         bullet.setSpectral(isSpectral(shooter));
         bullet.setPiercing(isPiercing(shooter));
@@ -123,8 +115,21 @@ public class BulletAttack implements IAttackType {
         return bullet;
     }
 
+    public TearBullet getBulletObject(LivingEntity shooter, float xRot, float yRot){
+        return new TearBullet(
+                shooter.level(),
+                shooter,
+                getBulletLiftTime(shooter),
+                getBulletSpeed(shooter),
+                getBulletScale(shooter),
+                getDamage(shooter),
+                xRot,
+                yRot
+        );
+    }
+
     // =================== 基础属性 ===================
-    private int getBulletLiftTime(LivingEntity entity) {
+    int getBulletLiftTime(LivingEntity entity) {
         double speed = getBulletSpeed(entity);
         double range = getRange(entity);
         return (int) Math.min(Math.max(1, range / speed), 200);

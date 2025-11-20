@@ -18,6 +18,7 @@ public class Habit implements ITriggerModule {
     @Override
     public void onHurt(LivingHurtEvent event, int stacks, TriggerModuleQueue queue) {
         if (!(event.getEntity() instanceof ServerPlayer player)) return;
+
         PlayerHelper.chargeAll(player, 100);
     }
 }

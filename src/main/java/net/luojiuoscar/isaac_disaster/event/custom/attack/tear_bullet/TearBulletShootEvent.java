@@ -2,13 +2,10 @@ package net.luojiuoscar.isaac_disaster.event.custom.attack.tear_bullet;
 
 import net.luojiuoscar.isaac_disaster.entity.custom.TearBullet;
 import net.luojiuoscar.isaac_disaster.event.custom.attack.IsaacAttackEvent;
-import net.luojiuoscar.isaac_disaster.manager.attack.type.IBulletObject;
-import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerModuleInstance;
+import net.luojiuoscar.isaac_disaster.manager.attack.IBulletObject;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerModuleQueue;
 import net.minecraft.world.entity.Entity;
 import net.minecraftforge.eventbus.api.Cancelable;
-
-import java.util.List;
 
 @Cancelable
 public class TearBulletShootEvent extends IsaacAttackEvent {

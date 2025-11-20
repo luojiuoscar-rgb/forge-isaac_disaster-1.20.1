@@ -2,7 +2,7 @@ package net.luojiuoscar.isaac_disaster.item_ability.passive_item.items;
 
 import net.luojiuoscar.isaac_disaster.item_ability.passive_item.IPassiveItem;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
-import net.luojiuoscar.isaac_disaster.manager.attack.AttackType;
+import net.luojiuoscar.isaac_disaster.manager.attack.ModAttackType;
 import net.luojiuoscar.isaac_disaster.manager.item_managers.id.ItemId;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
@@ -23,12 +23,12 @@ public class Technology implements IPassiveItem {
 
     @Override
     public void handleObtain(Player player, @Nullable ItemStack stack) {
-        StatManager.addAttackType(player, AttackType.LASER.getId(), 1);
+        StatManager.addAttackType(player, ModAttackType.LASER.getId(), 1);
     }
 
     @Override
     public void handleRemove(Player player, @Nullable ItemStack stack) {
-        StatManager.addAttackType(player, AttackType.LASER.getId(), -1);
+        StatManager.addAttackType(player, ModAttackType.LASER.getId(), -1);
     }
 
     @Override

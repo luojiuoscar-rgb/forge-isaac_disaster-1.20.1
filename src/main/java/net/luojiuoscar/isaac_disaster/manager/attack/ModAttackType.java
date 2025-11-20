@@ -1,15 +1,16 @@
 package net.luojiuoscar.isaac_disaster.manager.attack;
 
-public enum AttackType {
+public enum ModAttackType {
     BULLET(0),
-    LASER(100);
+    LASER(100),
+    IPECAC(10);
 
 
     private final int id;
     private final double priority;
 
     // ================= 构造与字段 =================
-    AttackType(int priority) {
+    ModAttackType(int priority) {
         this.id = this.ordinal();
         this.priority = priority;
     }

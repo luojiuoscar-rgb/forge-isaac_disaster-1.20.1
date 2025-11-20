@@ -167,7 +167,7 @@ public class ServerTickEvent {
                 LevelHelper.selectBySquare(player.level(), player.getX(), player.getY(), player.getZ(), radius);
 
         for (LivingEntity living : entities){
-            if (EntityHelper.isFriendlyToPlayer(living, player)) return; // 跳过友方
+            if (EntityHelper.isFriendly(living, player)) return; // 跳过友方
 
             living.hurt(player.damageSources().playerAttack(player), damage);
         }
@@ -194,20 +194,6 @@ public class ServerTickEvent {
                 }
         );
 
-    }
-
-    @SubscribeEvent
-    public static void onServerStarting(ServerStartingEvent event) {
-        IForgeRegistry<BulletColor> reg = RegistryManager.ACTIVE.getRegistry(ModBulletColors.BULLET_COLOR_KEY);
-        if (reg == null) {
-            IsaacDisaster.LOGGER.error("BulletColor registry is null!");
-            return;
-        }
-
-        IsaacDisaster.LOGGER.info("==== BulletColor Registry Content ====");
-        for (BulletColor bc : reg.getValues()) {
-            IsaacDisaster.LOGGER.info("BulletColor: color={}", bc.color());
-        }
     }
 
 

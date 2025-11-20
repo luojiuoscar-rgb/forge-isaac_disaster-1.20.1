@@ -1,4 +1,4 @@
-package net.luojiuoscar.isaac_disaster.manager.attack.type;
+package net.luojiuoscar.isaac_disaster.manager.attack;
 
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerModuleQueue;
 

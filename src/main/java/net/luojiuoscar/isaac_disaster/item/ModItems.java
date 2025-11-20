@@ -162,6 +162,7 @@ public class ModItems {
     public static final RegistryObject<Item> MARKED             = registerPassiveItem("marked", 1, ItemId.MARKED);
     public static final RegistryObject<Item> THE_WIZ            = registerPassiveItem("the_wiz", 0, ItemId.THE_WIZ);
     public static final RegistryObject<Item> MY_REFLECTION      = registerPassiveItem("my_reflection", 3, ItemId.MY_REFLECTION);
+    public static final RegistryObject<Item> IPECAC             = registerPassiveItem("ipecac", 4, ItemId.IPECAC, true);
 
 
 

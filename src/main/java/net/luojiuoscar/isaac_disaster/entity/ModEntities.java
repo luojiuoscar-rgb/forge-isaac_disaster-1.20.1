@@ -1,6 +1,7 @@
 package net.luojiuoscar.isaac_disaster.entity;
 
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
+import net.luojiuoscar.isaac_disaster.entity.custom.GravityBullet;
 import net.luojiuoscar.isaac_disaster.entity.custom.TearBullet;
 import net.luojiuoscar.isaac_disaster.entity.custom.LemonEffectCloud;
 import net.luojiuoscar.isaac_disaster.entity.tnt.GigaBomb;
@@ -41,6 +42,15 @@ public class ModEntities {
                             .clientTrackingRange(64) // 客户端追踪距离
                             .updateInterval(2) // 同步tick
                             .build("tear_bullet")
+            );
+
+    public static final RegistryObject<EntityType<GravityBullet>> GRAVITY_BULLET =
+            MOD_ENTITIES.register("gravity_bullet",
+                    () -> EntityType.Builder.<GravityBullet>of(GravityBullet::new, MobCategory.MISC)
+                            .sized(0.25f, 0.25f) // 小一点的碰撞箱
+                            .clientTrackingRange(64) // 客户端追踪距离
+                            .updateInterval(2) // 同步tick
+                            .build("gravity_bullet")
             );
 
     public static final RegistryObject<EntityType<LemonEffectCloud>> SELECTIVE_EFFECT_CLOUD =

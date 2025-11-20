@@ -67,11 +67,6 @@ public class TheCommonCold implements ITriggerModule {
         if (!(event.getHit().getEntity() instanceof LivingEntity victim)) return;
         if (!(event.getSource() instanceof LivingEntity attacker)) return;
 
-        applyEffect(victim, attacker);
-    }
-
-    @Override
-    public double getPriority(){
-        return -1;
+        applyEffect(attacker, victim);
     }
 }

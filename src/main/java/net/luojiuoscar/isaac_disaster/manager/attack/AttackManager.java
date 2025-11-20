@@ -3,7 +3,6 @@ package net.luojiuoscar.isaac_disaster.manager.attack;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerAbilityProvider;
 import net.luojiuoscar.isaac_disaster.event.custom.attack.PlayerPerformAttackEvent;
 import net.luojiuoscar.isaac_disaster.manager.attack.type.BulletAttack;
-import net.luojiuoscar.isaac_disaster.manager.attack.type.IAttackType;
 import net.luojiuoscar.isaac_disaster.manager.attack.type.LaserAttack;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerModuleQueue;
 import net.minecraft.resources.ResourceLocation;
@@ -51,7 +50,7 @@ public class AttackManager {
             attackId = event.getAttackTypeId();
             context = event.getContext();
 
-            IAttackType attack = attacks.getOrDefault(attackId, attacks.get(AttackType.BULLET.getId()));
+            IAttackType attack = attacks.getOrDefault(attackId, attacks.get(ModAttackType.BULLET.getId()));
             if (attack != null) {
                 attack.performAttack(player, context);
             }

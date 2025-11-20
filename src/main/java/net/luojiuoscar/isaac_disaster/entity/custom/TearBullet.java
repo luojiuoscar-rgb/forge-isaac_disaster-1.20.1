@@ -9,9 +9,9 @@ import net.luojiuoscar.isaac_disaster.event.custom.attack.tear_bullet.TearBullet
 import net.luojiuoscar.isaac_disaster.event.custom.attack.tear_bullet.TearBulletShootEvent;
 import net.luojiuoscar.isaac_disaster.event.custom.attack.tear_bullet.TearBulletTickEvent;
 import net.luojiuoscar.isaac_disaster.helper.EntityHelper;
-import net.luojiuoscar.isaac_disaster.manager.attack.AttackType;
-import net.luojiuoscar.isaac_disaster.manager.attack.type.IAttackType;
-import net.luojiuoscar.isaac_disaster.manager.attack.type.IBulletObject;
+import net.luojiuoscar.isaac_disaster.manager.attack.ModAttackType;
+import net.luojiuoscar.isaac_disaster.manager.attack.IAttackType;
+import net.luojiuoscar.isaac_disaster.manager.attack.IBulletObject;
 import net.luojiuoscar.isaac_disaster.registries.trajectory.IAttackTrajectory;
 import net.luojiuoscar.isaac_disaster.registries.trajectory.ModAttackTrajectories;
 import net.luojiuoscar.isaac_disaster.registries.trajectory.TrajectoryContext;
@@ -121,7 +121,7 @@ public class TearBullet extends Entity implements IBulletObject {
 
         if (!level.isClientSide)
             MinecraftForge.EVENT_BUS.post(new TearBulletShootEvent(
-                    this, getOwner(), AttackType.BULLET.getId(), triggerModules, this));
+                    this, getOwner(), ModAttackType.BULLET.getId(), triggerModules, this));
     }
 
     // ======== 核心逻辑 ========
@@ -212,7 +212,7 @@ public class TearBullet extends Entity implements IBulletObject {
 
         if (shape.isEmpty() || shape.bounds().getSize() < 0.01) return false;
 
-        IsaacAttackHitBlockEvent event = new IsaacAttackHitBlockEvent(this, getOwner(), AttackType.BULLET.getId(), triggerModules, blockHit);
+        IsaacAttackHitBlockEvent event = new IsaacAttackHitBlockEvent(this, getOwner(), ModAttackType.BULLET.getId(), triggerModules, blockHit);
         if (!MinecraftForge.EVENT_BUS.post(event)) {
             if (!MinecraftForge.EVENT_BUS.post(new TearBulletDiscardEvent(this))) {
                 discard();
@@ -250,11 +250,11 @@ public class TearBullet extends Entity implements IBulletObject {
         Entity target = entityHit.getEntity();
         if (!(target instanceof LivingEntity living)) return;
 
-        if (EntityHelper.isFriendlyToPlayer(living, getOwner()) || living == getOwner() || damagedEntities.contains(target.getUUID()))
+        if (EntityHelper.isFriendly(living, getOwner()) || living == getOwner() || damagedEntities.contains(target.getUUID()))
             return;
 
         IsaacAttackBeforeHitEntityEvent beforeEvent = new IsaacAttackBeforeHitEntityEvent(
-                this, getOwner(), AttackType.BULLET.getId(), triggerModules, entityHit, damage);
+                this, getOwner(), ModAttackType.BULLET.getId(), triggerModules, entityHit, damage);
 
         if (MinecraftForge.EVENT_BUS.post(beforeEvent)) return;
 
@@ -263,7 +263,7 @@ public class TearBullet extends Entity implements IBulletObject {
         makeDamage(living, (float) damageValue);
 
         IsaacAttackAfterHitEvent event = new IsaacAttackAfterHitEvent(
-                this, getOwner(), AttackType.BULLET.getId(), triggerModules, entityHit, damageValue, living.getHealth());
+                this, getOwner(), ModAttackType.BULLET.getId(), triggerModules, entityHit, damageValue, living.getHealth());
         MinecraftForge.EVENT_BUS.post(event);
 
         if (!isPiercing) {
