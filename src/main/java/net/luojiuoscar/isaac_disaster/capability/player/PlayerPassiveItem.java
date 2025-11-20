@@ -3,9 +3,7 @@ package net.luojiuoscar.isaac_disaster.capability.player;
 import net.luojiuoscar.isaac_disaster.helper.CuriosHelper;
 import net.luojiuoscar.isaac_disaster.item.item.IsaacItem;
 import net.luojiuoscar.isaac_disaster.item.item.PassiveItem;
-import net.luojiuoscar.isaac_disaster.item_ability.passive_item.ISpecialTypeBulletPassiveItem;
 import net.luojiuoscar.isaac_disaster.item_ability.passive_item.IRecursivePassiveItem;
-import net.luojiuoscar.isaac_disaster.item_ability.passive_item.ITriggerPassiveItem;
 import net.luojiuoscar.isaac_disaster.item_ability.set.ISet;
 import net.luojiuoscar.isaac_disaster.manager.item_managers.PassiveItemManager;
 import net.luojiuoscar.isaac_disaster.manager.item_managers.SetManager;
@@ -32,9 +30,7 @@ public class PlayerPassiveItem {
     private List<ItemStack> playerPassiveItems;
     // 键为道具ID，值为道具数量
     private final Map<Integer, Integer> itemCountMap;
-    private final Map<Integer, Integer> triggerItemMap;
     private final Map<Integer, Integer> recursiveItemMap; // itemId : remainTick
-    private final Map<Integer, Integer> newBulletTypeMap;
 
     private Map<Integer, Integer> setCountMap; // 当前套装计数
     private Set<Integer> obtainedSets; // 已经获得过的套装
@@ -45,11 +41,9 @@ public class PlayerPassiveItem {
         this.playerPassiveItems = new ArrayList<>();
 
         this.itemCountMap = new HashMap<>();
-        this.triggerItemMap = new HashMap<>();
         this.recursiveItemMap = new HashMap<>();
         this.setCountMap = new HashMap<>();
         this.obtainedSets = new HashSet<>();
-        this.newBulletTypeMap = new HashMap<>();
         init();
     }
 
@@ -57,11 +51,9 @@ public class PlayerPassiveItem {
         this.playerPassiveItems.clear();
 
         this.itemCountMap.clear();
-        this.triggerItemMap.clear();
         this.recursiveItemMap.clear();
         this.setCountMap.clear();
         this.obtainedSets.clear();
-        this.newBulletTypeMap.clear();
     }
 
     /**
@@ -69,11 +61,9 @@ public class PlayerPassiveItem {
      */
     public void clearItemMap(){
         itemCountMap.clear();
-        triggerItemMap.clear();
         recursiveItemMap.clear();
         setCountMap.clear();
         obtainedSets.clear();
-        newBulletTypeMap.clear();
     }
 
 
@@ -83,10 +73,6 @@ public class PlayerPassiveItem {
      */
     private void updateItemMap(int itemId, int amount) {
         itemCountMap.put(itemId, itemCountMap.getOrDefault(itemId, 0) + amount);
-        // 如果是触发型道具
-        if(PassiveItemManager.getInstance().getItemFromId(itemId) instanceof ITriggerPassiveItem){
-            triggerItemMap.put(itemId, itemCountMap.get(itemId));
-        }
         // 如果是循环型道具
         if(PassiveItemManager.getInstance().getItemFromId(itemId) instanceof IRecursivePassiveItem item){
             // 对于循环型道具需要移除计数器
@@ -97,10 +83,6 @@ public class PlayerPassiveItem {
             }
             // 初始计时
             recursiveItemMap.put(itemId, item.getTickInterval());
-        }
-        // 如果可以射出特殊类型的子弹
-        if(PassiveItemManager.getInstance().getItemFromId(itemId) instanceof ISpecialTypeBulletPassiveItem){
-            newBulletTypeMap.put(itemId, itemCountMap.get(itemId));
         }
     }
 
@@ -119,26 +101,6 @@ public class PlayerPassiveItem {
 
     public List<ItemStack> getPassiveItems(){
         return new ArrayList<>(playerPassiveItems);
-    }
-    public Map<Integer, Integer> getCapTriggerItems(){
-        return new HashMap<>(triggerItemMap);
-    }
-
-    /** 包含cap和curios在内的所有触发型道具 */
-    public Map<Integer, Integer> getAllTriggerItems(Player player){
-        Map<Integer, Integer> map = new HashMap<>(triggerItemMap);
-
-        List<ItemStack> curiosItems = CuriosHelper.getEquippedItemsInSlot(player, CuriosHelper.PASSIVE_ITEM);
-        for (ItemStack stack : curiosItems){
-            if (!(stack.getItem() instanceof PassiveItem item)) continue;
-            int itemId = item.getItemId();
-
-            if (!(PassiveItemManager.getInstance().getItemFromId(itemId) instanceof ITriggerPassiveItem)) continue;
-
-            map.put(itemId, 1 + map.getOrDefault(itemId, 0));
-        }
-
-        return map;
     }
 
     public Map<Integer, Integer> getCapRecursiveItems(){
@@ -170,24 +132,6 @@ public class PlayerPassiveItem {
     }
     public void setObtainedSet(int setId){
         this.obtainedSets.add(setId);
-    }
-
-    /** 包含cap和curios在内的所有子弹类型改变道具 */
-    public Map<Integer, Integer> getAllNewBulletTypeItems(Player player){
-        Map<Integer, Integer> map = new HashMap<>(newBulletTypeMap);
-
-        List<ItemStack> curiosItems = CuriosHelper.getEquippedItemsInSlot(player, CuriosHelper.PASSIVE_ITEM);
-        for (ItemStack stack : curiosItems){
-            if (!(stack.getItem() instanceof PassiveItem item)) continue;
-            int itemId = item.getItemId();
-
-            if (!(PassiveItemManager.getInstance().getItemFromId(itemId) instanceof ISpecialTypeBulletPassiveItem)) continue;
-
-            map.put(itemId, 1 + map.getOrDefault(itemId, 0));
-        }
-
-
-        return map;
     }
 
     /**

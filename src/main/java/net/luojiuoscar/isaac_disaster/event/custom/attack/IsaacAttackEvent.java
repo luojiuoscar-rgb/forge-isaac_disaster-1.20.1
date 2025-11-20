@@ -1,36 +1,36 @@
 package net.luojiuoscar.isaac_disaster.event.custom.attack;
 
+import net.luojiuoscar.isaac_disaster.manager.attack.type.IBulletObject;
+import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerModuleQueue;
 import net.minecraft.world.entity.Entity;
 import net.minecraftforge.eventbus.api.Event;
 
-import java.util.Set;
-
 public class IsaacAttackEvent extends Event {
-    private final Object directSource;
-    private final Entity indirectSource;
+    private final IBulletObject bulletObject;
+    private final Entity source;
     private final int attackType;
-    private final Set<Integer> hitEffects;
+    private final TriggerModuleQueue triggerModuleQueue;
 
-    public IsaacAttackEvent(Object directSource, Entity indirectSource, int attackType, Set<Integer> hitEffectIds) {
-        this.directSource = directSource;
-        this.indirectSource = indirectSource;
+    public IsaacAttackEvent(IBulletObject bulletObject, Entity source, int attackType, TriggerModuleQueue triggerModuleQueue) {
+        this.bulletObject = bulletObject;
+        this.source = source;
         this.attackType = attackType;
-        this.hitEffects = hitEffectIds;
+        this.triggerModuleQueue = triggerModuleQueue;
     }
 
     public int getAttackType() {
         return attackType;
     }
 
-    public Object getDirectSource() {
-        return directSource;
+    public IBulletObject getBulletObject() {
+        return bulletObject;
     }
 
-    public Entity getIndirectSource() {
-        return indirectSource;
+    public Entity getSource() {
+        return source;
     }
 
-    public Set<Integer> getHitEffects() {
-        return hitEffects;
+    public TriggerModuleQueue getHitEffects() {
+        return triggerModuleQueue;
     }
 }

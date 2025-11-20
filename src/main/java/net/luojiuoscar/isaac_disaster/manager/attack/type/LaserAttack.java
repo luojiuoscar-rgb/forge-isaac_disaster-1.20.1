@@ -1,4 +1,4 @@
-package net.luojiuoscar.isaac_disaster.manager.attack.types;
+package net.luojiuoscar.isaac_disaster.manager.attack.type;
 
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.event.custom.attack.IsaacAttackAfterHitEvent;
@@ -8,9 +8,10 @@ import net.luojiuoscar.isaac_disaster.helper.EntityHelper;
 import net.luojiuoscar.isaac_disaster.manager.attack.AttackType;
 import net.luojiuoscar.isaac_disaster.registries.bullet_color.BulletColor;
 import net.luojiuoscar.isaac_disaster.registries.bullet_color.ModBulletColors;
-import net.luojiuoscar.isaac_disaster.registries.trajectory.AttackTrajectory;
+import net.luojiuoscar.isaac_disaster.registries.trajectory.IAttackTrajectory;
 import net.luojiuoscar.isaac_disaster.registries.trajectory.ModAttackTrajectories;
 import net.luojiuoscar.isaac_disaster.registries.trajectory.TrajectoryContext;
+import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerModuleQueue;
 import net.luojiuoscar.isaac_disaster.sound.ModSounds;
 import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.core.registries.Registries;
@@ -59,7 +60,7 @@ public class LaserAttack implements IAttackType {
     }
 
     // ================= LaserProjectile 封装 =================
-    public static class LaserProjectile {
+    public static class LaserProjectile implements IBulletObject {
         public Vec3 position;
         public Vec3 direction;
         public double traveled;
@@ -74,9 +75,11 @@ public class LaserAttack implements IAttackType {
         public int tickCount;
         public LivingEntity homingTarget;
         public double yRotAngle;
+        private final TriggerModuleQueue triggerModuleQueue;
 
         public LaserProjectile(LivingEntity shooter, Vec3 startPos, Vec3 direction, double step, double width,
-                               float damage, boolean homing, boolean spectral, double yRotAngle) {
+                               float damage, boolean homing, boolean spectral, double yRotAngle,
+                               TriggerModuleQueue triggerModuleQueue) {
             this.shooter = shooter;
             this.position = startPos;
             this.direction = direction;
@@ -90,6 +93,12 @@ public class LaserAttack implements IAttackType {
             this.tickCount = 0;
             this.homingTarget = null;
             this.yRotAngle = yRotAngle;
+            this.triggerModuleQueue = new TriggerModuleQueue(triggerModuleQueue.getQueue());
+        }
+
+        @Override
+        public TriggerModuleQueue getTriggerModules() {
+            return this.triggerModuleQueue;
         }
     }
 
@@ -127,7 +136,8 @@ public class LaserAttack implements IAttackType {
                 getDamage(entity),
                 isHoming(entity),
                 isSpectral(entity),
-                entity.getYRot() - yRot
+                entity.getYRot() - yRot,
+                context.getTriggerModuleQueue()
         );
 
         while (laser.traveled < getRange(entity)) {
@@ -162,7 +172,7 @@ public class LaserAttack implements IAttackType {
         // --------- Trajectories ---------
         Vec3 totalPositionOffset = Vec3.ZERO;
         Vec3 totalVelocityOffset = Vec3.ZERO;
-        IForgeRegistry<AttackTrajectory> trajectoryIForgeRegistry =
+        IForgeRegistry<IAttackTrajectory> trajectoryIForgeRegistry =
                 RegistryManager.ACTIVE.getRegistry(ModAttackTrajectories.ATTACK_TRAJECTORY_KEY);
 
         if (!laser.isCurrentlyHoming && trajectoryIForgeRegistry != null) {
@@ -170,7 +180,7 @@ public class LaserAttack implements IAttackType {
                 ResourceLocation trajId = entry.getKey();
                 int amplifier = entry.getValue() - 1;
 
-                AttackTrajectory traj = trajectoryIForgeRegistry.getValue(trajId);
+                IAttackTrajectory traj = trajectoryIForgeRegistry.getValue(trajId);
                 if (traj == null) continue;
 
                 TrajectoryContext ctx =
@@ -211,13 +221,13 @@ public class LaserAttack implements IAttackType {
 
         // --------- Block Collision ---------
         AABB box = createCollisionBox(nextPos, laser.width);
-        if (!laser.spectral && handleBlockCollision(laser, level, context.hitEffects)) {
+        if (!laser.spectral && handleBlockCollision(laser, level, context.getTriggerModuleQueue())) {
             laser.traveled = getRange(laser.shooter);
             return;
         }
 
         // --------- Entity Collision ---------
-        handleEntityCollision(laser, level, box, context.hitEffects);
+        handleEntityCollision(laser, level, box, context.getTriggerModuleQueue());
 
         // --------- 更新位置和行进距离 ---------
         laser.position = nextPos;
@@ -226,7 +236,7 @@ public class LaserAttack implements IAttackType {
     }
 
     // ================== Collision & Damage ==================
-    private boolean handleBlockCollision(LaserProjectile laser, ServerLevel level, Set<Integer> hitEffects) {
+    private boolean handleBlockCollision(LaserProjectile laser, ServerLevel level, TriggerModuleQueue triggerModules) {
         BlockHitResult blockHit = level.clip(new ClipContext(
                 laser.position,
                 laser.position.add(laser.direction.scale(laser.step)),
@@ -236,7 +246,7 @@ public class LaserAttack implements IAttackType {
         ));
 
         if (blockHit.getType() == BlockHitResult.Type.BLOCK) {
-            IsaacAttackHitBlockEvent blockEvent = new IsaacAttackHitBlockEvent(laser, laser.shooter, getId(), hitEffects, blockHit);
+            IsaacAttackHitBlockEvent blockEvent = new IsaacAttackHitBlockEvent(laser, laser.shooter, getId(), triggerModules, blockHit);
             MinecraftForge.EVENT_BUS.post(blockEvent);
 
             return !blockEvent.isCanceled();
@@ -244,7 +254,7 @@ public class LaserAttack implements IAttackType {
         return false;
     }
 
-    private void handleEntityCollision(LaserProjectile laser, ServerLevel level, AABB box, Set<Integer> hitEffects) {
+    private void handleEntityCollision(LaserProjectile laser, ServerLevel level, AABB box, TriggerModuleQueue triggerModules) {
         List<LivingEntity> entities = level.getEntitiesOfClass(LivingEntity.class, box,
                 e -> e != laser.shooter && e.isAlive() && !laser.hitEntities.contains(e)
         );
@@ -253,7 +263,7 @@ public class LaserAttack implements IAttackType {
             EntityHitResult hitResult = new EntityHitResult(target);
 
             IsaacAttackBeforeHitEntityEvent beforeHit = new IsaacAttackBeforeHitEntityEvent(
-                    laser, laser.shooter, getId(), hitEffects, hitResult, laser.damage
+                    laser, laser.shooter, getId(), triggerModules, hitResult, laser.damage
             );
 
             if (!MinecraftForge.EVENT_BUS.post(beforeHit)) {
@@ -261,7 +271,7 @@ public class LaserAttack implements IAttackType {
                 laser.hitEntities.add(makeDamage(laser.shooter, target,(float) actualDamage));
 
                 IsaacAttackAfterHitEvent afterHit = new IsaacAttackAfterHitEvent(
-                        laser, laser.shooter, getId(), hitEffects, hitResult, actualDamage, target.getHealth()
+                        laser, laser.shooter, getId(), triggerModules, hitResult, actualDamage, target.getHealth()
                 );
                 MinecraftForge.EVENT_BUS.post(afterHit);
             }

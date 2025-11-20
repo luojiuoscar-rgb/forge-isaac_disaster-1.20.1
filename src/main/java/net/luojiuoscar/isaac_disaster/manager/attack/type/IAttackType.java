@@ -1,4 +1,4 @@
-package net.luojiuoscar.isaac_disaster.manager.attack.types;
+package net.luojiuoscar.isaac_disaster.manager.attack.type;
 
 import net.luojiuoscar.isaac_disaster.attribute.ModAttributes;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerAbilityProvider;
@@ -6,6 +6,8 @@ import net.luojiuoscar.isaac_disaster.capability.player.PlayerPassiveItemProvide
 import net.luojiuoscar.isaac_disaster.event.custom.attack.BeforeCreateShootEvent;
 import net.luojiuoscar.isaac_disaster.event.custom.misc.IsaacGetBulletCountEvent;
 import net.luojiuoscar.isaac_disaster.manager.item_managers.id.ItemId;
+import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerModuleInstance;
+import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerModuleQueue;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
@@ -14,8 +16,9 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.MinecraftForge;
 
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 public interface IAttackType {
     int getId();
@@ -32,15 +35,34 @@ public interface IAttackType {
     void makeSound(LivingEntity entity);
 
     class AttackContext {
+
         public ResourceLocation colorRl;
-        public Set<Integer> hitEffects;
+        private final TriggerModuleQueue triggerModuleQueue;
         public Map<ResourceLocation, Integer> trajectories;
 
-        public AttackContext(ResourceLocation colorRl, Set<Integer> hitEffects, Map<ResourceLocation, Integer> trajectories) {
+        public AttackContext(ResourceLocation colorRl,
+                             TriggerModuleQueue triggerModuleQueue,
+                             Map<ResourceLocation, Integer> trajectories) {
             this.colorRl = colorRl;
-            this.hitEffects = hitEffects;
-            this.trajectories = trajectories;
+
+            // 深拷贝，避免外部修改影响 AttackContext 内部
+            this.triggerModuleQueue = new TriggerModuleQueue(triggerModuleQueue.getQueue());
+            this.trajectories = new HashMap<>(trajectories);
         }
+
+        public TriggerModuleQueue getTriggerModuleQueue() {
+            return triggerModuleQueue;
+        }
+
+        public void copyTriggerModule(List<TriggerModuleInstance> source){
+            this.triggerModuleQueue.clear();
+            this.triggerModuleQueue.getQueue().addAll(source);
+        }
+
+        public void addTriggerModule(ResourceLocation id, int count) {
+            triggerModuleQueue.add(id, count);
+        }
+
     }
 
     default void shoot(LivingEntity shooter, AttackContext context, Vec3 offset, float xRot, float yRot){

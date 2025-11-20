@@ -1,18 +1,18 @@
 package net.luojiuoscar.isaac_disaster.event.custom.attack;
 
+import net.luojiuoscar.isaac_disaster.manager.attack.type.IBulletObject;
+import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerModuleQueue;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraftforge.eventbus.api.Cancelable;
-
-import java.util.Set;
 
 @Cancelable
 public class IsaacAttackHitBlockEvent extends IsaacAttackEvent {
     private final BlockHitResult hit;
 
-    public IsaacAttackHitBlockEvent(Object directSource, Entity indirectSource, int attackType, Set<Integer> hitEffectIds,
+    public IsaacAttackHitBlockEvent(IBulletObject bulletObject, Entity source, int attackType, TriggerModuleQueue triggerModules,
                                     BlockHitResult hit) {
-        super(directSource, indirectSource, attackType, hitEffectIds);
+        super(bulletObject, source, attackType, triggerModules);
         this.hit = hit;
     }
 

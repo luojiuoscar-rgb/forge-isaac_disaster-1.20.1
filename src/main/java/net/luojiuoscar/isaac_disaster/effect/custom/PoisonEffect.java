@@ -14,7 +14,7 @@ public class PoisonEffect extends MobEffect {
     }
 
     private float getSourceDamage(LivingEntity entity){
-        return entity.getCapability(EntityEffectProvider.ENTITY_CAP)
+        return entity.getCapability(EntityEffectProvider.ENTITY_EFFECT_CAP)
                 .map(entityEffect -> (float) Math.max(1, entityEffect.getSourceDamageFromId(EffectManager.POISON.getId())))
                 .orElse(1f);
     }

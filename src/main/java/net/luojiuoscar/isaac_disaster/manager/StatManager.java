@@ -3,6 +3,7 @@ package net.luojiuoscar.isaac_disaster.manager;
 import net.luojiuoscar.isaac_disaster.Config;
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.attribute.ModAttributes;
+import net.luojiuoscar.isaac_disaster.capability.entity.TriggerModuleProvider;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerAbilityProvider;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerPassiveItemProvider;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerStatModifierProvider;
@@ -12,6 +13,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
@@ -333,6 +335,12 @@ public enum StatManager {
     public static void addTrajectory(Player player, ResourceLocation rl, int count){
         player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY).ifPresent(
                 playerAbility -> playerAbility.addTrajectory(rl, count)
+        );
+    }
+
+    public static void addTriggerModule(LivingEntity entity, ResourceLocation rl, int count){
+        entity.getCapability(TriggerModuleProvider.TRIGGER_MODULES).ifPresent(
+                triggerModule -> triggerModule.getTriggerModules().add(rl, count)
         );
     }
     /* ---------------------- 道具套装 ---------------------- */

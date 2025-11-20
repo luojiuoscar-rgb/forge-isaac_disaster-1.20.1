@@ -1,4 +1,4 @@
-package net.luojiuoscar.isaac_disaster.manager.attack.types;
+package net.luojiuoscar.isaac_disaster.manager.attack.type;
 
 import net.luojiuoscar.isaac_disaster.entity.custom.TearBullet;
 import net.luojiuoscar.isaac_disaster.event.custom.attack.tear_bullet.TearBulletShootEvent;
@@ -100,7 +100,7 @@ public class BulletAttack implements IAttackType {
         bullet.setHoming(isHoming(shooter));
         bullet.setControllable(isControllable(shooter));
 
-        bullet.setHitEffectIds(context.hitEffects);
+        bullet.setTriggerModules(context.getTriggerModuleQueue());
         bullet.setTrajectories(context.trajectories);
 
         // 从registry获取
@@ -118,7 +118,7 @@ public class BulletAttack implements IAttackType {
 
         if (!shooter.level().isClientSide)
             MinecraftForge.EVENT_BUS.post(
-                    new TearBulletShootEvent(bullet, bullet.getOwner(), getId(), context.hitEffects, bullet));
+                    new TearBulletShootEvent(bullet, bullet.getOwner(), getId(), context.getTriggerModuleQueue(), bullet));
 
         return bullet;
     }

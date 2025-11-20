@@ -2,15 +2,15 @@ package net.luojiuoscar.isaac_disaster.manager.attack;
 
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerAbilityProvider;
 import net.luojiuoscar.isaac_disaster.event.custom.attack.PlayerPerformAttackEvent;
-import net.luojiuoscar.isaac_disaster.manager.attack.types.BulletAttack;
-import net.luojiuoscar.isaac_disaster.manager.attack.types.IAttackType;
-import net.luojiuoscar.isaac_disaster.manager.attack.types.LaserAttack;
+import net.luojiuoscar.isaac_disaster.manager.attack.type.BulletAttack;
+import net.luojiuoscar.isaac_disaster.manager.attack.type.IAttackType;
+import net.luojiuoscar.isaac_disaster.manager.attack.type.LaserAttack;
+import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerModuleQueue;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.common.MinecraftForge;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 
 public class AttackManager {
@@ -43,7 +43,7 @@ public class AttackManager {
             ResourceLocation colorRl = playerAbility.getBestBulletColor();
             Map<ResourceLocation, Integer> trajectories = playerAbility.getTrajectories();
 
-            var context = new IAttackType.AttackContext(colorRl, new HashSet<>(), trajectories);
+            var context = new IAttackType.AttackContext(colorRl, new TriggerModuleQueue(), trajectories);
 
             PlayerPerformAttackEvent event = new PlayerPerformAttackEvent(player, attackId, context);
             MinecraftForge.EVENT_BUS.post(event);

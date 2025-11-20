@@ -27,6 +27,7 @@ public class PlayerAbility {
     private int extraTrinketSlotCounts;
 
     private Map<Integer, Boolean> itemFlags;
+
     private Map<Integer, Integer> attackType;
     private int bestBulletType;
     private Map<ResourceLocation, Integer> bulletColor; // bullet color id : count

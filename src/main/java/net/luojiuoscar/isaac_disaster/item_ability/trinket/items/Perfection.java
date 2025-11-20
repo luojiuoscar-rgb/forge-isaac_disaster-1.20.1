@@ -4,23 +4,21 @@ import net.luojiuoscar.isaac_disaster.capability.player.PlayerSwallowedTrinketsP
 import net.luojiuoscar.isaac_disaster.helper.CuriosHelper;
 import net.luojiuoscar.isaac_disaster.item.ModItems;
 import net.luojiuoscar.isaac_disaster.item.item.Trinket;
-import net.luojiuoscar.isaac_disaster.item_ability.trinket.IHurtTriggerTrinket;
+import net.luojiuoscar.isaac_disaster.item_ability.trinket.ITrinket;
 import net.luojiuoscar.isaac_disaster.manager.ColorManager;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.manager.item_managers.id.TrinketId;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.event.entity.living.LivingHurtEvent;
 
 import java.util.List;
 
-public class Perfection implements IHurtTriggerTrinket {
+public class Perfection implements ITrinket {
     @Override
     public int getId() {
         return TrinketId.PERFECTION.getId();
@@ -52,7 +50,8 @@ public class Perfection implements IHurtTriggerTrinket {
             StatManager.LUCK.apply(player, 10);
         }
 
-    };
+    }
+
     @Override
     public void onUnequipped(LivingEntity entity, boolean isEnchanted){
         if (!(entity instanceof Player player)) return;
@@ -61,12 +60,12 @@ public class Perfection implements IHurtTriggerTrinket {
         } else {
             StatManager.LUCK.apply(player, -10);
         }
-    };
+    }
 
-
-    @Override
-    public void handleHurtEffect(Player player, Entity attacker, List<ItemStack> stackList, LivingHurtEvent event) {
+    public static void onTriggered(Player player) {
         List<ItemStack> trinkets = CuriosHelper.getEquippedItemsInSlot(player, CuriosHelper.TRINKET);
+        if ((trinkets.stream().anyMatch(Trinket::isEnchanted) ? 0.4 : 0.2) < player.getRandom().nextDouble()) return;
+
         if (trinkets.stream().anyMatch(stack -> {
             if (!(stack.getItem() instanceof Trinket item)) return false;
             stack.setCount(0); // 从饰品移除
@@ -80,7 +79,7 @@ public class Perfection implements IHurtTriggerTrinket {
         spawnFakePaper(player.level(), player);
     }
 
-    private void spawnFakePaper(Level level, Player player) {
+    private static void spawnFakePaper(Level level, Player player) {
         if (level.isClientSide) return;
 
         // 创建纸的掉落实体
@@ -96,16 +95,5 @@ public class Perfection implements IHurtTriggerTrinket {
         itemEntity.setPickUpDelay(-1);
         itemEntity.lifespan = 15;
         level.addFreshEntity(itemEntity);
-    }
-
-
-    @Override
-    public boolean isPunishType() {
-        return true;
-    }
-
-    @Override
-    public double getTriggerChance(Player player, List<ItemStack> stackList) {
-        return stackList.stream().anyMatch(Trinket::isEnchanted) ? 0.4 : 0.2;
     }
 }

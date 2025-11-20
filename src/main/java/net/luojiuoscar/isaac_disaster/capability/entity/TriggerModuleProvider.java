@@ -12,24 +12,25 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 
-public class EntityEffectProvider implements ICapabilityProvider, INBTSerializable<CompoundTag> {
-    public static Capability<EntityEffect> ENTITY_EFFECT_CAP = CapabilityManager.get(new CapabilityToken<EntityEffect>() {});
+public class TriggerModuleProvider implements ICapabilityProvider, INBTSerializable<CompoundTag> {
+    //stat modifiers
+    public static Capability<TriggerModule> TRIGGER_MODULES = CapabilityManager.get(new CapabilityToken<TriggerModule>() {});
 
-    private EntityEffect entityCap = null;
-    private final LazyOptional<EntityEffect> optional = LazyOptional.of(this::createEntityCap);
 
-    private EntityEffect createEntityCap() {
-        if(this.entityCap == null){
-            this.entityCap = new EntityEffect();
+    private TriggerModule triggerModule = null;
+    private final LazyOptional<TriggerModule> optional = LazyOptional.of(this::createTriggerModule);
+
+    private TriggerModule createTriggerModule(){
+        if(this.triggerModule == null){
+            this.triggerModule = new TriggerModule();
         }
-
-        return this.entityCap;
+        return this.triggerModule;
     }
 
 
     @Override
     public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
-        if(cap == ENTITY_EFFECT_CAP){
+        if(cap == TRIGGER_MODULES){
             return optional.cast();
         }
 
@@ -39,12 +40,12 @@ public class EntityEffectProvider implements ICapabilityProvider, INBTSerializab
     @Override
     public CompoundTag serializeNBT() {
         CompoundTag nbt = new CompoundTag();
-        createEntityCap().saveNBTData(nbt);
+        createTriggerModule().saveNBTData(nbt);
         return nbt;
     }
 
     @Override
     public void deserializeNBT(CompoundTag nbt) {
-        createEntityCap().loadNBTData(nbt);
+        createTriggerModule().loadNBTData(nbt);
     }
 }

@@ -6,7 +6,7 @@ import net.luojiuoscar.isaac_disaster.event.custom.attack.IsaacAttackAfterHitEve
 import net.luojiuoscar.isaac_disaster.event.custom.attack.IsaacAttackHitBlockEvent;
 import net.luojiuoscar.isaac_disaster.helper.EntityHelper;
 import net.luojiuoscar.isaac_disaster.item_ability.passive_item.IPassiveItem;
-import net.luojiuoscar.isaac_disaster.manager.attack.types.LaserAttack;
+import net.luojiuoscar.isaac_disaster.manager.attack.type.LaserAttack;
 import net.luojiuoscar.isaac_disaster.manager.item_managers.id.ItemId;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.LivingEntity;
@@ -51,7 +51,7 @@ public class RubberCement implements IPassiveItem {
         Vec3 normal = Vec3.atLowerCornerOf(hit.getDirection().getNormal()).normalize();
 
         // ---------------- TearBullet ----------------
-        if (event.getDirectSource() instanceof TearBullet bullet) {
+        if (event.getBulletObject() instanceof TearBullet bullet) {
             Vec3 motion = bullet.getVelocity();
 
             double speed = motion.length();
@@ -62,7 +62,7 @@ public class RubberCement implements IPassiveItem {
             bullet.move(MoverType.SELF, reflected.scale(1));
         }
         // ---------------- LaserProjectile ----------------
-        else if (event.getDirectSource() instanceof LaserAttack.LaserProjectile laser) {
+        else if (event.getBulletObject() instanceof LaserAttack.LaserProjectile laser) {
             Vec3 direction = laser.direction;
 
             Vec3 reflected = direction.subtract(normal.scale(2 * direction.dot(normal)));
@@ -80,7 +80,7 @@ public class RubberCement implements IPassiveItem {
 
     /** 实体碰撞弹射，只处理 TearBullet */
     public static void bounceOnEntity(IsaacAttackAfterHitEvent event) {
-        if (!(event.getDirectSource() instanceof TearBullet bullet)) return;
+        if (!(event.getBulletObject() instanceof TearBullet bullet)) return;
         if (bullet.isPiercing) return;
 
         double speed = bullet.getVelocity().length();

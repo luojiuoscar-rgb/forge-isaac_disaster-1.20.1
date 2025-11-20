@@ -3,6 +3,7 @@ package net.luojiuoscar.isaac_disaster.event;
 import net.luojiuoscar.isaac_disaster.Config;
 import net.luojiuoscar.isaac_disaster.attribute.ModAttributes;
 import net.luojiuoscar.isaac_disaster.capability.entity.EntityEffectProvider;
+import net.luojiuoscar.isaac_disaster.capability.entity.TriggerModuleProvider;
 import net.luojiuoscar.isaac_disaster.capability.player.*;
 import net.luojiuoscar.isaac_disaster.commands.*;
 import net.luojiuoscar.isaac_disaster.effect.ModEffects;
@@ -78,7 +79,7 @@ public class ForgeEvents {
      * 首次给玩家创建Capability相关数据
      */
     @SubscribeEvent
-    public static void onAttachCapabilityPlayer(AttachCapabilitiesEvent<Entity> event){
+    public static void onAttachCapability(AttachCapabilitiesEvent<Entity> event){
         if(event.getObject() instanceof Player){
             //passive item
             if(!event.getObject().getCapability(PlayerPassiveItemProvider.PLAYER_PASSIVE_ITEM).isPresent()){
@@ -98,6 +99,14 @@ public class ForgeEvents {
             }//itemRecords
             if(!event.getObject().getCapability(PlayerItemUseRecordProvider.PLAYER_ITEM_USE_RECORD).isPresent()){
                 event.addCapability(ResourceLocation.fromNamespaceAndPath(MOD_ID, "player_item_use_record_cap"), new PlayerItemUseRecordProvider());
+            }
+        }
+        if (event.getObject() instanceof LivingEntity){
+            if(!event.getObject().getCapability(EntityEffectProvider.ENTITY_EFFECT_CAP).isPresent()){
+                event.addCapability(ResourceLocation.fromNamespaceAndPath(MOD_ID, "entity_effect_cap"), new EntityEffectProvider());
+            }
+            if(!event.getObject().getCapability(TriggerModuleProvider.TRIGGER_MODULES).isPresent()){
+                event.addCapability(ResourceLocation.fromNamespaceAndPath(MOD_ID, "trigger_module_cap"), new TriggerModuleProvider());
             }
         }
     }
@@ -142,6 +151,12 @@ public class ForgeEvents {
             // item records
             event.getOriginal().getCapability(PlayerItemUseRecordProvider.PLAYER_ITEM_USE_RECORD).ifPresent(oldStore -> {
                 event.getEntity().getCapability(PlayerItemUseRecordProvider.PLAYER_ITEM_USE_RECORD).ifPresent(newStore -> {
+                    newStore.copyFrom(oldStore);
+                });
+            });
+            // trigger modules
+            event.getOriginal().getCapability(TriggerModuleProvider.TRIGGER_MODULES).ifPresent(oldStore -> {
+                event.getEntity().getCapability(TriggerModuleProvider.TRIGGER_MODULES).ifPresent(newStore -> {
                     newStore.copyFrom(oldStore);
                 });
             });
@@ -199,27 +214,6 @@ public class ForgeEvents {
         }
     }
 
-    // 监听实体创建时的事件，附加 Capability
-    @SubscribeEvent
-    public static void onAttachCapabilitiesEntity(AttachCapabilitiesEvent<Entity> event) {
-        Entity entity = event.getObject();
-
-        // 只给生物实体（LivingEntity）附加 Capability（过滤非生物实体，如物品、方块实体等）
-        if (entity instanceof LivingEntity) {
-            // 定义一个唯一的标识符（避免与其他模组冲突）
-            ResourceLocation capabilityId = ResourceLocation.fromNamespaceAndPath(MOD_ID, "entity_effect_cap");
-
-            // 检查实体是否已附加该 Capability，避免重复添加
-            if (!event.getObject().getCapability(EntityEffectProvider.ENTITY_CAP).isPresent()) {
-                // 创建 Capability 提供者实例
-                EntityEffectProvider provider = new EntityEffectProvider();
-
-                // 附加 Capability 到实体
-                event.addCapability(capabilityId, provider);
-            }
-        }
-    }
-
     @SubscribeEvent
     public static void onLivingAddEffect(MobEffectEvent.Added event) {
         // 获取受到效果的实体
@@ -237,7 +231,7 @@ public class ForgeEvents {
                     // 获取攻击伤害值
                     double damageValue = attackDamage.getValue();
                     // 保存
-                    affectedEntity.getCapability(EntityEffectProvider.ENTITY_CAP).ifPresent(
+                    affectedEntity.getCapability(EntityEffectProvider.ENTITY_EFFECT_CAP).ifPresent(
                             entityEffect -> entityEffect.setSourceDamage(EffectManager.POISON.getId(),
                                     damageValue)
                     );

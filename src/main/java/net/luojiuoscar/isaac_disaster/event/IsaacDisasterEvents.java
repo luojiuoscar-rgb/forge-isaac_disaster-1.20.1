@@ -1,23 +1,22 @@
 package net.luojiuoscar.isaac_disaster.event;
 
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
-import net.luojiuoscar.isaac_disaster.capability.player.PlayerPassiveItemProvider;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerSwallowedTrinketsProvider;
 import net.luojiuoscar.isaac_disaster.effect.ModEffects;
 import net.luojiuoscar.isaac_disaster.effect.custom.TheWizEffect;
-import net.luojiuoscar.isaac_disaster.event.custom.attack.*;
+import net.luojiuoscar.isaac_disaster.event.custom.attack.BeforeCreateShootEvent;
 import net.luojiuoscar.isaac_disaster.event.custom.misc.*;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.item.item.Trinket;
 import net.luojiuoscar.isaac_disaster.item.pickup.Card;
 import net.luojiuoscar.isaac_disaster.item.pickup.Pill;
-import net.luojiuoscar.isaac_disaster.item_ability.passive_item.ISpecialTypeBulletPassiveItem;
-import net.luojiuoscar.isaac_disaster.item_ability.passive_item.items.*;
+import net.luojiuoscar.isaac_disaster.item_ability.passive_item.items.BingeEater;
+import net.luojiuoscar.isaac_disaster.item_ability.passive_item.items.EchoChamber;
+import net.luojiuoscar.isaac_disaster.item_ability.passive_item.items.GlitchedCrown;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.manager.item_managers.id.ItemId;
 import net.luojiuoscar.isaac_disaster.manager.item_managers.id.SetId;
 import net.luojiuoscar.isaac_disaster.manager.item_managers.id.TrinketId;
-import net.luojiuoscar.isaac_disaster.manager.item_managers.PassiveItemManager;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -29,83 +28,13 @@ import net.minecraft.world.entity.monster.Endermite;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.phys.EntityHitResult;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 @Mod.EventBusSubscriber(modid = IsaacDisaster.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class IsaacDisasterEvents {
-
-    @SubscribeEvent
-    public static void onPlayerPerformAttack(PlayerPerformAttackEvent event) {
-        Player player = event.getPlayer();
-
-        // 按概率、顺序修改可能的子弹类型
-        player.getCapability(PlayerPassiveItemProvider.PLAYER_PASSIVE_ITEM).ifPresent(passiveItems -> {
-            Map<Integer, Integer> bulletTypeMap = passiveItems.getAllNewBulletTypeItems(player);
-
-            for (int itemId : bulletTypeMap.keySet()) {
-
-                if (bulletTypeMap.get(itemId) > 0){
-                    ISpecialTypeBulletPassiveItem item = (ISpecialTypeBulletPassiveItem) PassiveItemManager.getInstance().getItemFromId(itemId);
-                    item.onShoot(event);
-                }
-            }
-        });
-    }
-
-    @SubscribeEvent
-    public static void onAttackHitBlock(IsaacAttackHitBlockEvent event) {
-        if (!(event.getIndirectSource() instanceof ServerPlayer player)) return;
-
-        if (PlayerHelper.hasItem(ItemId.RUBBER_CEMENT.getId(), player)){
-            RubberCement.bounceOnBlock(event);
-        }
-    }
-
-
-    @SubscribeEvent
-    public static void beforeAttackHitEntity(IsaacAttackBeforeHitEntityEvent event) {
-        Set<Integer> effects = event.getHitEffects();
-        if (!(event.getHit().getEntity() instanceof LivingEntity entity)) return;
-
-        if (entity.hasEffect(ModEffects.SOUL_STATE.get())) {
-            event.setCanceled(true);
-            return;
-        }
-
-        // 检测是否为玩家触发的效果
-        if (!(event.getIndirectSource() instanceof Player player)) return;
-
-        // 遍历并触发对应效果
-        for (int itemId : effects){
-            ISpecialTypeBulletPassiveItem item =(ISpecialTypeBulletPassiveItem) PassiveItemManager.getInstance().getItemFromId(itemId);
-            item.onHit(player, entity);
-        }
-    }
-
-    @SubscribeEvent
-    public static void afterAttackHitEntity(IsaacAttackAfterHitEvent event) {
-        if (!(event.getIndirectSource() instanceof ServerPlayer player)) return;
-
-        EntityHitResult hit = event.getHitResult();
-
-        if (PlayerHelper.hasItem(ItemId.POLYPHEMUS.getId(), player)){
-            if (hit.getEntity() instanceof LivingEntity living && living.isDeadOrDying()){
-                Polyphemus.onTriggered(event);
-            }
-        }
-
-        if (PlayerHelper.hasItem(ItemId.RUBBER_CEMENT.getId(), player)){
-            RubberCement.bounceOnEntity(event);
-        }
-
-    }
-
 
     @SubscribeEvent
     public static void onPacManEat(PacManEatEvent event) {
@@ -192,7 +121,6 @@ public class IsaacDisasterEvents {
         if (event.getShooter().hasEffect(ModEffects.THE_WIZ.get())){
             TheWizEffect.onTriggered(event);
         }
-
     }
 
 

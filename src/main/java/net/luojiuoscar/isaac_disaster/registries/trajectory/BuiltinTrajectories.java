@@ -10,7 +10,7 @@ import net.minecraft.world.phys.Vec3;
 public final class BuiltinTrajectories {
     private BuiltinTrajectories() {}
 
-    public static final AttackTrajectory WIGGLE_WORM = ctx -> {
+    public static final IAttackTrajectory WIGGLE_WORM = ctx -> {
         double phaseScale = 1;
         double t0 = ctx.distance * phaseScale;
         double t1 = (ctx.distance + ctx.deltaDistance) * phaseScale;
@@ -30,7 +30,7 @@ public final class BuiltinTrajectories {
         return new TrajectoryResult(posOffset, velOffset);
     };
 
-    public static final AttackTrajectory TINY_PLANET = ctx -> {
+    public static final IAttackTrajectory TINY_PLANET = ctx -> {
         LivingEntity owner = ctx.owner;
         if (owner == null || ctx.pos == null) return TrajectoryResult.ZERO;
 
@@ -65,7 +65,7 @@ public final class BuiltinTrajectories {
         return new TrajectoryResult(Vec3.ZERO, velOffset);
     };
 
-    public static final AttackTrajectory RING_WORM = ctx -> {
+    public static final IAttackTrajectory RING_WORM = ctx -> {
         Vec3 dir = ctx.dir.normalize();
 
         // 构建局部坐标系，确保 dir 是 x 轴，y-z 平面为圆面
@@ -93,7 +93,7 @@ public final class BuiltinTrajectories {
         return new TrajectoryResult(offset, Vec3.ZERO);
     };
 
-    public static final AttackTrajectory OUROBOROS_WORM = ctx -> {
+    public static final IAttackTrajectory OUROBOROS_WORM = ctx -> {
         Vec3 forward = ctx.dir.normalize(); // 前进方向
         Vec3 up = new Vec3(0, 1, 0);        // 世界竖直方向
 
@@ -117,7 +117,7 @@ public final class BuiltinTrajectories {
         return new TrajectoryResult(offset, Vec3.ZERO);
     };
 
-    public static final AttackTrajectory HOOK_WORM = ctx -> {
+    public static final IAttackTrajectory HOOK_WORM = ctx -> {
         // 当前方向
         Vec3 forward = ctx.dir.normalize();
 
@@ -156,7 +156,7 @@ public final class BuiltinTrajectories {
         return new TrajectoryResult(Vec3.ZERO, Vec3.ZERO, 0.0, xRot, yRot);
     };
 
-    public static final AttackTrajectory MY_REFLECTION = ctx -> {
+    public static final IAttackTrajectory MY_REFLECTION = ctx -> {
         Vec3 dir = ctx.dir.normalize();   // 发射方向
         Vec3 right = new Vec3(-dir.z, 0, dir.x).normalize(); // XZ平面垂直向量
 

@@ -4,7 +4,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.eventbus.api.Cancelable;
 import net.minecraftforge.eventbus.api.Event;
-import net.luojiuoscar.isaac_disaster.manager.attack.types.IAttackType.AttackContext;
+import net.luojiuoscar.isaac_disaster.manager.attack.type.IAttackType.AttackContext;
 
 import java.util.ArrayList;
 import java.util.List;

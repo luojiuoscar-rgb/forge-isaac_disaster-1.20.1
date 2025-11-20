@@ -1,0 +1,30 @@
+package net.luojiuoscar.isaac_disaster.registries.trigger_module;
+
+import net.luojiuoscar.isaac_disaster.IsaacDisaster;
+import net.luojiuoscar.isaac_disaster.registries.trigger_module.impl.*;
+import net.minecraft.core.Registry;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraftforge.registries.DeferredRegister;
+import net.minecraftforge.registries.RegistryObject;
+
+public class ModTriggerModule {
+    public static final ResourceKey<Registry<ITriggerModule>> TRIGGER_MODULE_KEY =
+            ResourceKey.createRegistryKey(ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "trigger_module"));
+
+    public static final DeferredRegister<ITriggerModule> TRIGGER_MODULE_REGISTRY =
+            DeferredRegister.create(TRIGGER_MODULE_KEY, IsaacDisaster.MOD_ID);
+
+
+    public static final RegistryObject<ITriggerModule> PIGGY_BANK           = TRIGGER_MODULE_REGISTRY.register("piggy_bank", PiggyBank::new);
+    public static final RegistryObject<ITriggerModule> CURSE_OF_THE_TOWER   = TRIGGER_MODULE_REGISTRY.register("curse_of_the_tower", CurseOfTheTower::new);
+    public static final RegistryObject<ITriggerModule> HABIT                = TRIGGER_MODULE_REGISTRY.register("habit", Habit::new);
+    public static final RegistryObject<ITriggerModule> THE_WAFER            = TRIGGER_MODULE_REGISTRY.register("the_wafer", TheWafer::new);
+    public static final RegistryObject<ITriggerModule> THE_COMMON_COLD      = TRIGGER_MODULE_REGISTRY.register("the_common_cold", TheCommonCold::new);
+    public static final RegistryObject<ITriggerModule> SWALLOWED_PENNY      = TRIGGER_MODULE_REGISTRY.register("swallowed_penny", SwallowedPenny::new);
+    public static final RegistryObject<ITriggerModule> LUCKY_ROCK           = TRIGGER_MODULE_REGISTRY.register("lucky_rock", LuckyRock::new);
+    public static final RegistryObject<ITriggerModule> CARTRIDGE            = TRIGGER_MODULE_REGISTRY.register("cartridge", Cartridge::new);
+    public static final RegistryObject<ITriggerModule> BLIND_RAGE           = TRIGGER_MODULE_REGISTRY.register("blind_rage", BlindRage::new);
+
+
+}

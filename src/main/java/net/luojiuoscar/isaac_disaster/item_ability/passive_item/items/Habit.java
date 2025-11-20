@@ -1,18 +1,17 @@
 package net.luojiuoscar.isaac_disaster.item_ability.passive_item.items;
 
-import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
-import net.luojiuoscar.isaac_disaster.item_ability.passive_item.IHurtTriggerPassiveItem;
+import net.luojiuoscar.isaac_disaster.item_ability.passive_item.IPassiveItem;
+import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.manager.item_managers.id.ItemId;
+import net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerModule;
 import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-public class Habit implements IHurtTriggerPassiveItem {
+public class Habit implements IPassiveItem {
 
     @Override
     public int getItemId() {
@@ -25,10 +24,12 @@ public class Habit implements IHurtTriggerPassiveItem {
 
     @Override
     public void handleObtain(Player player, @Nullable ItemStack stack) {
+        StatManager.addTriggerModule(player, ModTriggerModule.HABIT.getId(), 1);
     }
 
     @Override
     public void handleRemove(Player player, @Nullable ItemStack stack) {
+        StatManager.addTriggerModule(player, ModTriggerModule.HABIT.getId(), -1);
     }
 
     @Override
@@ -36,21 +37,5 @@ public class Habit implements IHurtTriggerPassiveItem {
         return List.of(
                 Component.translatable("item.isaac_disaster.habit.lore.1")
         );
-    }
-
-    @Override
-    public void handleHurtEffect(Player player, Entity target) {
-        if (player.level().isClientSide) return;
-        PlayerHelper.chargeAll((ServerPlayer) player, 100);
-    }
-
-    @Override
-    public boolean isPunishType() {
-        return false;
-    }
-
-    @Override
-    public double getTriggerChance(Player player) {
-        return 1;
     }
 }

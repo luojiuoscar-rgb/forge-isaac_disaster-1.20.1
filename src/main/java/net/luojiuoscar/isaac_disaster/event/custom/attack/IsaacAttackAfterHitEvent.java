@@ -1,18 +1,18 @@
 package net.luojiuoscar.isaac_disaster.event.custom.attack;
 
+import net.luojiuoscar.isaac_disaster.manager.attack.type.IBulletObject;
+import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerModuleQueue;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.EntityHitResult;
-
-import java.util.Set;
 
 public class IsaacAttackAfterHitEvent extends IsaacAttackEvent {
     private final EntityHitResult hit;
     private double damage;
     private final double targetHealth;
 
-    public IsaacAttackAfterHitEvent(Object directSource, Entity indirectSource, int attackTypeId, Set<Integer> hitEffects,
+    public IsaacAttackAfterHitEvent(IBulletObject bulletObject, Entity source, int attackTypeId, TriggerModuleQueue triggerModules,
                                     EntityHitResult hit, double damage, double targetHealth) {
-        super(directSource, indirectSource, attackTypeId, hitEffects);
+        super(bulletObject, source, attackTypeId, triggerModules);
         this.hit = hit;
         this.damage = damage;
         this.targetHealth = targetHealth;

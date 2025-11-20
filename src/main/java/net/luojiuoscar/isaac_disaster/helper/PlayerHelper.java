@@ -23,6 +23,8 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
@@ -675,6 +677,10 @@ public class PlayerHelper {
                 }
             }
         }
+    }
+
+    public static boolean isSelfDamage(DamageSource source){
+        return source.is(DamageTypes.GENERIC_KILL);
     }
 
 

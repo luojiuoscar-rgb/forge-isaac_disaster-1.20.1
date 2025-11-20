@@ -1,15 +1,11 @@
 package net.luojiuoscar.isaac_disaster.item_ability.passive_item.items;
 
-import net.luojiuoscar.isaac_disaster.effect.ModEffects;
-import net.luojiuoscar.isaac_disaster.event.custom.attack.PlayerPerformAttackEvent;
-import net.luojiuoscar.isaac_disaster.item_ability.passive_item.IDamageTriggerPassiveItem;
-import net.luojiuoscar.isaac_disaster.item_ability.passive_item.ISpecialTypeBulletPassiveItem;
+import net.luojiuoscar.isaac_disaster.item_ability.passive_item.IPassiveItem;
 import net.luojiuoscar.isaac_disaster.manager.EffectManager;
+import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.manager.item_managers.id.ItemId;
-import net.luojiuoscar.isaac_disaster.registries.bullet_color.ModBulletColors;
+import net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerModule;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
@@ -17,31 +13,11 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TheCommonCold implements IDamageTriggerPassiveItem, ISpecialTypeBulletPassiveItem {
+public class TheCommonCold implements IPassiveItem {
     @Override
     public int getItemId() {
         return ItemId.THE_COMMON_COLD.getId();
     }
-
-    @Override
-    public double getTriggerChance(Player player) {
-        return 1 / Math.max(1, 4 - (getPlayerLuck(player) / 4));
-    }
-
-    @Override
-    public void handleAttackEntityEffect(Player player, LivingEntity target){
-        MobEffectInstance poisonEffect = new MobEffectInstance(
-                ModEffects.POISON.get(),
-                70,
-                0,
-                false,
-                true,
-                true
-        );
-
-        target.addEffect(poisonEffect, player);
-    };
-
 
     @Override
     public void handleFirstObtain(Player player, @Nullable ItemStack stack) {
@@ -50,12 +26,12 @@ public class TheCommonCold implements IDamageTriggerPassiveItem, ISpecialTypeBul
 
     @Override
     public void handleObtain(Player player, @Nullable ItemStack stack) {
-
+        StatManager.addTriggerModule(player, ModTriggerModule.THE_COMMON_COLD.getId(), 1);
     }
 
     @Override
     public void handleRemove(Player player, @Nullable ItemStack stack) {
-
+        StatManager.addTriggerModule(player, ModTriggerModule.THE_COMMON_COLD.getId(), -1);
     }
 
     @Override
@@ -72,21 +48,5 @@ public class TheCommonCold implements IDamageTriggerPassiveItem, ISpecialTypeBul
         description.add(EffectManager.POISON.getExplainDesc());
 
         return description;
-    }
-
-    @Override
-    public void onShoot(PlayerPerformAttackEvent event) {
-        Player player = event.getPlayer();
-
-        if (player.getRandom().nextDouble() <= getTriggerChance(player)) {
-            event.getContext().colorRl = ModBulletColors.POISON.getId();
-
-            event.getContext().hitEffects.add(ItemId.THE_COMMON_COLD.getId());
-        }
-    }
-
-    @Override
-    public void onHit(Player source, LivingEntity target) {
-        handleAttackEntityEffect(source, target);
     }
 }
