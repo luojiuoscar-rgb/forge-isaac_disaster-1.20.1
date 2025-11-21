@@ -38,7 +38,7 @@ public class AttackManager {
     // =========== 工具方法 ===========
     public void playerPerformAttack(ServerPlayer player) {
         player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY).ifPresent(playerAbility -> {
-            int attackId = playerAbility.getBestBulletType();
+            int attackId = playerAbility.getBestAttackType();
             ResourceLocation colorRl = playerAbility.getBestBulletColor();
             Map<ResourceLocation, Integer> trajectories = playerAbility.getTrajectories();
 

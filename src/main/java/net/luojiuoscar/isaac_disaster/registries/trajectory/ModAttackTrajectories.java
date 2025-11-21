@@ -28,4 +28,6 @@ public final class ModAttackTrajectories {
             ATTACK_TRAJECTORY_REGISTRY.register("hook_worm", () -> BuiltinTrajectories.HOOK_WORM);
     public static final RegistryObject<IAttackTrajectory> MY_REFLECTION =
             ATTACK_TRAJECTORY_REGISTRY.register("my_reflection", () -> BuiltinTrajectories.MY_REFLECTION);
+    public static final RegistryObject<IAttackTrajectory> GRAVITY =
+            ATTACK_TRAJECTORY_REGISTRY.register("gravity", () -> BuiltinTrajectories.GRAVITY);
 }

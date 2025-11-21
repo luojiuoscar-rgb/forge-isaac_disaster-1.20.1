@@ -2,8 +2,7 @@ package net.luojiuoscar.isaac_disaster.manager.attack;
 
 public enum ModAttackType {
     BULLET(0),
-    LASER(100),
-    IPECAC(10);
+    LASER(100);
 
 
     private final int id;

@@ -59,7 +59,7 @@ public class Config
     public static ForgeConfigSpec.DoubleValue BLOCK_BREAKING_SPEED_BONUS;
     public static ForgeConfigSpec.DoubleValue ATTACK_KNOCKBACK_BONUS;
     public static ForgeConfigSpec.DoubleValue BULLET_SCALE_BONUS;
-
+    public static ForgeConfigSpec.DoubleValue EXTRA_SHOT_DELAY;
 
     // 其他可配置项目
     public static ForgeConfigSpec.IntValue PASSIVE_ITEM_LIMIT;
@@ -150,7 +150,7 @@ public class Config
 
         // 射速修正  默认1
         TEARS_CORRECTION_BONUS = BUILDER
-                .comment("Base value of tears correction increment")
+                .comment("Reduction of shot delay")
                 .defineInRange("tears_correction_bonus", 1.0, 0.0, 99999.0);
 
         // 攻击速度  默认1

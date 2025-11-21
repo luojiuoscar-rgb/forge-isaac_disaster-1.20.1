@@ -30,18 +30,19 @@ import static net.luojiuoscar.isaac_disaster.Config.HOLY_SHIELD_STRENGTH;
 import static net.luojiuoscar.isaac_disaster.Config.NEARBY_RANGE;
 
 public enum StatManager {
-    MAX_HEALTH("max_health", Attributes.MAX_HEALTH, false, true,
+    MAX_HEALTH("max_health", Attributes.MAX_HEALTH, 0, true,
             () -> Config.HEALTH_BONUS.get(), -20.0, null){
         @Override
         public void apply(Player player, double ratio){
-            StatManager.modifyAdd(player, getUUID(), ratio * getBonus(), getMinVal(), getMaxVal());
+            StatManager.addModifier(player, getUUID(), getAttribute(),ratio * getBonus(),
+                    getMinVal(), getMaxVal(), getOperationType());
             player.setHealth(player.getHealth()); // 刷新血量状态，避免显示溢出
 
             if (player.getMaxHealth() + player.getAbsorptionAmount() <= 0)
                 player.kill();
         }
     },
-    MOVEMENT_SPEED("movement_speed", Attributes.MOVEMENT_SPEED, false, true,
+    MOVEMENT_SPEED("movement_speed", Attributes.MOVEMENT_SPEED, 0, true,
             () -> Config.MOVEMENT_SPEED_BONUS.get(), null, null) {
         @Override
         public Component description(double value, Style style){
@@ -56,9 +57,9 @@ public enum StatManager {
                     .append(formatted).withStyle(style);
         }
     },
-    DAMAGE("damage", Attributes.ATTACK_DAMAGE, false, true,
-            () -> Config.DAMAGE_BONUS.get(), -0.9, null),
-    DAMAGE_MULTIPLY_BASE("damage_multiply_base", Attributes.ATTACK_DAMAGE, true, false,
+    DAMAGE("damage", Attributes.ATTACK_DAMAGE, 0, true,
+            () -> Config.DAMAGE_BONUS.get(), null, null),
+    DAMAGE_MULTIPLY_BASE("damage_multiply_base", Attributes.ATTACK_DAMAGE, 1, false,
             () -> Config.DAMAGE_MULTIPLIER_BASE.get(), -0.9, null) {
         @Override
         public Component description(double value, Style style){
@@ -73,45 +74,47 @@ public enum StatManager {
                     .append(formatted).withStyle(style);
         }
     },
-    LUCK("luck", Attributes.LUCK, false, true,
+    LUCK("luck", Attributes.LUCK, 0, true,
             () -> Config.LUCK_BONUS.get(), null, null),
-    SCALE("scale", ModAttributes.SCALE.get(), false, false,
-            () -> Config.SCALE_BONUS.get(), null, null){
+    SCALE("scale", ModAttributes.SCALE.get(), 0, false,
+            () -> Config.SCALE_BONUS.get(), 0.25, 10.0){
         @Override
         public void apply(Player player, double ratio){
-            StatManager.modifyAdd(player, getUUID(), ratio * getBonus(), getMinVal(), getMaxVal());
+            StatManager.addModifier(player, getUUID(), getAttribute(),ratio * getBonus(),
+                    getMinVal(), getMaxVal(), getOperationType());
             player.refreshDimensions();
         }
     },
-    RANGE("bullet_range", ModAttributes.BULLET_RANGE.get(), false, true,
+    RANGE("bullet_range", ModAttributes.BULLET_RANGE.get(), 0, true,
             () -> Config.RANGE_BONUS.get(), null, null),
-    ENTITY_REACH("entity_reach", ForgeMod.ENTITY_REACH.get(), false, true,
+    ENTITY_REACH("entity_reach", ForgeMod.ENTITY_REACH.get(), 0, true,
             () -> Config.ENTITY_REACH_BONUS.get(), -2.0, null),
-    BLOCK_REACH("block_reach", ForgeMod.BLOCK_REACH.get(), false, true,
+    BLOCK_REACH("block_reach", ForgeMod.BLOCK_REACH.get(), 0, true,
             () -> Config.BLOCK_REACH_BONUS.get(), -2.0, null),
-    TEARS("tears", ModAttributes.TEARS.get(), false, true,
+    TEARS("tears", ModAttributes.TEARS.get(), 0, true,
             () -> Config.TEARS_BONUS.get(), null, null),
-    TEARS_CORRECTION("tears_correction", ModAttributes.TEARS_CORRECTION.get(), false, true,
+    TEARS_CORRECTION("tears_correction", ModAttributes.TEARS_CORRECTION.get(), 0, true,
             () -> Config.TEARS_CORRECTION_BONUS.get(), null, null),
-    BULLET_SPEED("bullet_speed", ModAttributes.BULLET_SPEED.get(), false, true,
+    BULLET_SPEED("bullet_speed", ModAttributes.BULLET_SPEED.get(), 0, true,
             () -> Config.BULLET_SPEED_BONUS.get(), null, null),
-    ATTACK_SPEED("attack_speed", Attributes.ATTACK_SPEED, false, true,
+    ATTACK_SPEED("attack_speed", Attributes.ATTACK_SPEED, 0, true,
             () -> Config.ATTACK_SPEED_BONUS.get(), null, null),
-    BLOCK_BREAKING("block_breaking_speed", ModAttributes.BLOCK_BREAKING_SPEED.get(), false, true,
+    BLOCK_BREAKING("block_breaking_speed", ModAttributes.BLOCK_BREAKING_SPEED.get(), 0, true,
             () -> Config.BLOCK_BREAKING_SPEED_BONUS.get(), 0.0, null),
-    ATTACK_KNOCKBACK("attack_knockback", Attributes.ATTACK_KNOCKBACK, false, false,
+    ATTACK_KNOCKBACK("attack_knockback", Attributes.ATTACK_KNOCKBACK, 0, false,
             () -> Config.ATTACK_KNOCKBACK_BONUS.get(), null, null),
-    BULLET_SCALE("bullet_scale", ModAttributes.BULLET_SCALE.get(), false, false,
+    BULLET_SCALE("bullet_scale", ModAttributes.BULLET_SCALE.get(), 0, false,
             () -> Config.BULLET_SCALE_BONUS.get(), null, null),
-    BULLET_COUNT("bullet_count", ModAttributes.BULLET_COUNT.get(), false, false,
+    BULLET_COUNT("bullet_count", ModAttributes.BULLET_COUNT.get(), 0, false,
             null, 1.0, null),
-    PILL_QUALITY("pill_quality", ModAttributes.PILL_QUALITY.get(), false, false,
+    PILL_QUALITY("pill_quality", ModAttributes.PILL_QUALITY.get(), 0, false,
             null, null, null),
-    FLY_TIME("fly_time", ModAttributes.FLY_TIME.get(), false, false,
+    FLY_TIME("fly_time", ModAttributes.FLY_TIME.get(), 0, false,
             () -> Config.FLY_TIME.get(), null, null){
         @Override
         public void apply(Player player, double ratio){
-            StatManager.modifyAdd(player, getUUID(), ratio * getBonus(), getMinVal(), getMaxVal());
+            StatManager.addModifier(player, getUUID(), getAttribute(),ratio * getBonus(),
+                    getMinVal(), getMaxVal(), getOperationType());
             if (!PlayerHelper.canFly(player)){
                 player.getAbilities().mayfly = false;
                 player.getAbilities().flying = false;
@@ -122,7 +125,7 @@ public enum StatManager {
 
     private final UUID uuid;
     private final Attribute attribute;
-    private final boolean isMultiplyBase;
+    private final int operationType;
     private final boolean isNormalType;
     private final String key;
     private final Supplier<Double> bonus;
@@ -139,11 +142,11 @@ public enum StatManager {
     }
 
 
-    StatManager(String key, Attribute attribute, boolean isMultiplyBase, boolean isNormalType, @Nullable Supplier<Double> bonus,
+    StatManager(String key, Attribute attribute, int operationType, boolean isNormalType, @Nullable Supplier<Double> bonus,
                 @Nullable Double minVal, @Nullable Double maxVal) {
         this.uuid = UUID.nameUUIDFromBytes(("isaac_disaster:" + key).getBytes(StandardCharsets.UTF_8));
         this.attribute = attribute;
-        this.isMultiplyBase = isMultiplyBase;
+        this.operationType = operationType;
         this.isNormalType = isNormalType;
         this.key = key;
         this.bonus = bonus;
@@ -153,7 +156,7 @@ public enum StatManager {
 
     public UUID getUUID() { return uuid; }
     public Attribute getAttribute() { return attribute; }
-    public boolean isMultiplyBase() { return isMultiplyBase; }
+    public int getOperationType() { return operationType; }
     public boolean isNormalType() {return isNormalType; }
     public String getKey() {return key; }
     public double getBonus() {
@@ -165,11 +168,7 @@ public enum StatManager {
 
     /** 通用 apply 方法，可被 override */
     public void apply(Player player, double ratio){
-        if(isMultiplyBase){
-            StatManager.modifyMultiplyBase(player, uuid, ratio * getBonus(), minVal, maxVal);
-        } else {
-            StatManager.modifyAdd(player, uuid, ratio * getBonus(), minVal, maxVal);
-        }
+        StatManager.addModifier(player, uuid, attribute,ratio * getBonus(), minVal, maxVal, operationType);
     }
 
     /** 获取属性的描述性文本 */
@@ -216,59 +215,72 @@ public enum StatManager {
 
     /* ---------------------- 通用修改方法 ---------------------- */
 
-    public static void removeModifier(Player player, AttributeInstance attribute, UUID uuid) {
+    public static void removeModifier(Player player, @Nullable AttributeInstance attribute, UUID uuid) {
+        if (attribute == null) return;
         attribute.removeModifier(uuid);
         player.getCapability(PlayerStatModifierProvider.PLAYER_STAT_MODIFIER).ifPresent(
                 playerStatModifier -> playerStatModifier.removeModifier(uuid)
         );
     }
 
-    public static void setModifierAdd(Player player, AttributeInstance attribute,
-                                      double totalBoost, UUID uuid, String name) {
-        attribute.removeModifier(uuid);
-        attribute.addPermanentModifier(new AttributeModifier(uuid, name, totalBoost, AttributeModifier.Operation.ADDITION));
+    /** set or create */
+    public static void setModifier(Player player, UUID uuid, @Nullable Attribute attribute, double amount,
+                                   @Nullable Double minValue, @Nullable Double maxValue, int operationType) {
+        if (attribute == null) return;
+        AttributeInstance instance = player.getAttribute(attribute);
+        if (instance == null) return;
+
         player.getCapability(PlayerStatModifierProvider.PLAYER_STAT_MODIFIER).ifPresent(
-                playerStatModifier -> playerStatModifier.setModifier(uuid, totalBoost)
+                playerStatModifier -> {
+                    playerStatModifier.setModifierValue(uuid, amount, maxValue, minValue, attribute, operationType);
+
+                    AttributeModifier.Operation operation = AttributeModifier.Operation.ADDITION;
+                    if (operationType == 1){
+                        operation = AttributeModifier.Operation.MULTIPLY_BASE;
+                    }else if (operationType == 2){
+                        operation = AttributeModifier.Operation.MULTIPLY_TOTAL;
+                    }
+
+                    instance.removeModifier(uuid);
+                    double val = playerStatModifier.getStatInstance(uuid).getValue();
+                    instance.addPermanentModifier(new AttributeModifier(
+                            uuid,
+                            "",
+                            val,
+                            operation
+                    ));
+                }
         );
     }
 
-    public static void setModifierMultiplyBase(Player player, AttributeInstance attribute,
-                                               double totalBoost, UUID uuid, String name) {
-        attribute.removeModifier(uuid);
-        attribute.addPermanentModifier(new AttributeModifier(uuid, name, totalBoost, AttributeModifier.Operation.MULTIPLY_BASE));
+    /** add or create */
+    public static void addModifier(Player player, UUID uuid, @Nullable Attribute attribute, double amount,
+                                   @Nullable Double minValue, @Nullable Double maxValue, int operationType){
+        if (attribute == null) return;
+        AttributeInstance instance = player.getAttribute(attribute);
+        if (instance == null) return;
+
         player.getCapability(PlayerStatModifierProvider.PLAYER_STAT_MODIFIER).ifPresent(
-                playerStatModifier -> playerStatModifier.setModifier(uuid, totalBoost)
+                playerStatModifier -> {
+                    playerStatModifier.addModifierValue(uuid, amount, maxValue, minValue, attribute, operationType);
+
+                    AttributeModifier.Operation operation = AttributeModifier.Operation.ADDITION;
+                    if (operationType == 1){
+                        operation = AttributeModifier.Operation.MULTIPLY_BASE;
+                    }else if (operationType == 2){
+                        operation = AttributeModifier.Operation.MULTIPLY_TOTAL;
+                    }
+
+                    instance.removeModifier(uuid);
+                    double val = playerStatModifier.getStatInstance(uuid).getValue();
+                    instance.addPermanentModifier(new AttributeModifier(
+                            uuid,
+                            "",
+                            val,
+                            operation
+                    ));
+                }
         );
-    }
-
-    public static void modifyAdd(Player player, UUID uuid, double amount,
-                                 @Nullable Double minValue, @Nullable Double maxValue){
-        AttributeInstance instance = player.getAttribute(StatManager.fromUUID(uuid).getAttribute());
-        if(instance == null) return;
-
-        AttributeModifier modifier = instance.getModifier(uuid);
-        double current = modifier != null ? modifier.getAmount() : 0.0;
-        double newAmount = current + amount;
-
-        if(minValue != null && newAmount < minValue) newAmount = minValue;
-        if(maxValue != null && newAmount > maxValue) newAmount = maxValue;
-
-        setModifierAdd(player, instance, newAmount, uuid, "");
-    }
-
-    public static void modifyMultiplyBase(Player player, UUID uuid, double amount,
-                                          @Nullable Double minValue, @Nullable Double maxValue){
-        AttributeInstance instance = player.getAttribute(StatManager.fromUUID(uuid).getAttribute());
-        if(instance == null) return;
-
-        AttributeModifier modifier = instance.getModifier(uuid);
-        double current = modifier != null ? modifier.getAmount() : 0.0;
-        double newAmount = current + amount;
-
-        if(minValue != null && newAmount < minValue) newAmount = minValue;
-        if(maxValue != null && newAmount > maxValue) newAmount = maxValue;
-
-        setModifierMultiplyBase(player, instance, newAmount, uuid, "");
     }
 
     /* ---------------------- 基础属性数值获取 ---------------------- */

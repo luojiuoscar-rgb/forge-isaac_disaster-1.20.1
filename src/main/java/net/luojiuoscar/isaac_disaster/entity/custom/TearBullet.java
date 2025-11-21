@@ -61,6 +61,7 @@ public class TearBullet extends Entity implements IBulletObject {
     private UUID ownerUUID;
     private LivingEntity cachedOwner;
     private double yRotAngle;
+    private double xRotAngle;
 
     // ======== 特性 ========
     public boolean isSpectral = false;
@@ -114,6 +115,7 @@ public class TearBullet extends Entity implements IBulletObject {
         this.totalLifeTick = lifeTick;
         this.damage = damage;
         this.yRotAngle = shooter.getYRot() - yRot;
+        this.xRotAngle = shooter.getXRot() - xRot;
         setScale(scale);
         moveTo(shooter.getX(), shooter.getEyeY(), shooter.getZ(), yRot, xRot);
         Vec3 look = Vec3.directionFromRotation(xRot, yRot);
@@ -149,9 +151,7 @@ public class TearBullet extends Entity implements IBulletObject {
                 IAttackTrajectory traj = trajectoryIForgeRegistry.getValue(trajId);
                 if (traj == null) continue;
 
-                TrajectoryContext ctx =
-                        new TrajectoryContext(
-                                baseDir, traveled, speed, getOwner(), position(), amplifier, yRotAngle);
+                TrajectoryContext ctx = new TrajectoryContext(this, speed, amplifier);
 
                 var result = traj.getResult(ctx);
 
@@ -327,10 +327,46 @@ public class TearBullet extends Entity implements IBulletObject {
 
     // ======== Owner ========
     @Nullable
+    @Override
     public LivingEntity getOwner() {
         if (cachedOwner == null && ownerUUID != null && level() instanceof ServerLevel server)
             cachedOwner = (LivingEntity) server.getEntity(ownerUUID);
         return cachedOwner;
+    }
+
+    @Override
+    public double getStartYRot() {
+        return this.yRotAngle;
+    }
+
+    @Override
+    public double getStartXRot() {
+        return this.xRotAngle;
+    }
+
+    @Override
+    public boolean noGravity() {
+        return false;
+    }
+
+    @Override
+    public boolean isHoming() {
+        return this.isHoming;
+    }
+
+    @Override
+    public boolean isSpectral() {
+        return this.isSpectral;
+    }
+
+    @Override
+    public boolean isControllable() {
+        return this.isControllable;
+    }
+
+    @Override
+    public boolean isPiercing() {
+        return this.isPiercing;
     }
 
     public void setOwner(LivingEntity entity) {
@@ -407,7 +443,14 @@ public class TearBullet extends Entity implements IBulletObject {
     public float getScale() { return this.entityData.get(SCALE); }
     public int getColor() { return this.entityData.get(COLOR); }
     public float getAlpha() { return this.entityData.get(ALPHA); }
-    public float getTraveled() { return this.entityData.get(TRAVELED); }
+    @Override
+    public double getTraveled() { return this.entityData.get(TRAVELED); }
+
+    @Override
+    public Vec3 getPosition() {
+        return this.position();
+    }
+
     public boolean isCurrentlySteering() { return this.entityData.get(IS_CURRENTLY_STEERING); }
 
     public void setScale(float scale) {
@@ -422,8 +465,10 @@ public class TearBullet extends Entity implements IBulletObject {
     public void setIsCurrentlySteering(boolean b) { this.entityData.set(IS_CURRENTLY_STEERING, b); }
 
     public void setDamage(float damage) { this.damage = damage; }
+    @Override
     public float getDamage() { return damage; }
 
+    @Override
     public Vec3 getVelocity() {
         Vector3f v = entityData.get(VELOCITY);
         return new Vec3(v.x(), v.y(), v.z());
@@ -465,6 +510,7 @@ public class TearBullet extends Entity implements IBulletObject {
         this.triggerModules.getQueue().addAll(triggerModuleQueue.getQueue());
     }
 
+    @Override
     public TriggerModuleQueue getTriggerModules() { return triggerModules; }
 
     public Set<UUID> getDamagedEntities() { return damagedEntities; }

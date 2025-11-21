@@ -1,6 +1,5 @@
 package net.luojiuoscar.isaac_disaster.item_ability.passive_item.items;
 
-import net.luojiuoscar.isaac_disaster.capability.player.PlayerStatModifierProvider;
 import net.luojiuoscar.isaac_disaster.entity.custom.TearBullet;
 import net.luojiuoscar.isaac_disaster.event.custom.attack.IsaacAttackAfterHitEvent;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
@@ -28,21 +27,12 @@ public class Polyphemus implements IPassiveItem {
     public void handleObtain(Player player, @Nullable ItemStack stack) {
         StatManager.DAMAGE_MULTIPLY_BASE.apply(player, 0.8);
         StatManager.DAMAGE.apply(player, 4);
-
-        // 增加一层“双倍延迟”
-        player.getCapability(PlayerStatModifierProvider.PLAYER_STAT_MODIFIER).ifPresent(
-                playerStatModifier -> playerStatModifier.modifyDoubleShotDelay(player, 1)
-        );
     }
 
     @Override
     public void handleRemove(Player player, @Nullable ItemStack stack) {
         StatManager.DAMAGE_MULTIPLY_BASE.apply(player, -0.8);
         StatManager.DAMAGE.apply(player, -4);
-
-        player.getCapability(PlayerStatModifierProvider.PLAYER_STAT_MODIFIER).ifPresent(
-                playerStatModifier -> playerStatModifier.modifyDoubleShotDelay(player, -1)
-        );
     }
 
     @Override

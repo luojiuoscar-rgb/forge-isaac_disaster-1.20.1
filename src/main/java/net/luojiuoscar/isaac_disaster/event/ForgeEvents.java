@@ -8,8 +8,6 @@ import net.luojiuoscar.isaac_disaster.capability.player.*;
 import net.luojiuoscar.isaac_disaster.commands.*;
 import net.luojiuoscar.isaac_disaster.effect.ModEffects;
 import net.luojiuoscar.isaac_disaster.entity.custom.TearBullet;
-import net.luojiuoscar.isaac_disaster.entity.tnt.IsaacBomb;
-import net.luojiuoscar.isaac_disaster.helper.EntityHelper;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.item.item.ActiveItem;
 import net.luojiuoscar.isaac_disaster.item.item.IIsaacCuriosItem;
@@ -17,8 +15,8 @@ import net.luojiuoscar.isaac_disaster.item.item.custom.FoodPassiveItem;
 import net.luojiuoscar.isaac_disaster.item.pickup.IsaacHead;
 import net.luojiuoscar.isaac_disaster.manager.EffectManager;
 import net.luojiuoscar.isaac_disaster.manager.data.PillShuffleData;
-import net.luojiuoscar.isaac_disaster.manager.item_managers.id.ItemId;
 import net.luojiuoscar.isaac_disaster.manager.item_managers.PillEffectManager;
+import net.luojiuoscar.isaac_disaster.manager.item_managers.id.ItemId;
 import net.luojiuoscar.isaac_disaster.networking.ModMessages;
 import net.luojiuoscar.isaac_disaster.networking.packet.PassiveItemMapSyncS2CPacket;
 import net.luojiuoscar.isaac_disaster.networking.packet.PillRecordsSyncS2CPacket;
@@ -36,8 +34,6 @@ import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.entity.EntityEvent;
@@ -47,7 +43,6 @@ import net.minecraftforge.event.entity.living.LivingKnockBackEvent;
 import net.minecraftforge.event.entity.living.MobEffectEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
-import net.minecraftforge.event.level.ExplosionEvent;
 import net.minecraftforge.event.level.LevelEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -285,41 +280,6 @@ public class ForgeEvents {
                 });
     }
 
-
-    @SubscribeEvent
-    public static void onExplosion(ExplosionEvent.Detonate event) {
-        // 获取爆炸源实体
-        Entity source = event.getExplosion().getDirectSourceEntity();
-        Level level = event.getLevel();
-
-        // 获取到tnt的owner属性；触发后续逻辑
-        if (source instanceof IsaacBomb tnt) {
-            LivingEntity owner = tnt.getOwner();
-            if (owner instanceof ServerPlayer player){
-                // 获取pos
-                Vec3 pos = new Vec3(tnt.getX(), tnt.getY(), tnt.getZ());
-                // bomber boy
-                if(PlayerHelper.hasItem(ItemId.BOMBER_BOY.getId(), player)){
-                    EntityHelper.bomberBoy(player, tnt, pos, level);
-                }
-
-                // scatter bomb
-                if(PlayerHelper.hasItem(ItemId.SCATTER_BOMB.getId(), player)){
-                    EntityHelper.scatterBomb(player, tnt, pos, level);
-                }
-
-                // hot bomb
-                if(PlayerHelper.hasItem(ItemId.HOT_BOMB.getId(), player)){
-                    EntityHelper.HotBomb(player, tnt, pos, level);
-                }
-            }
-        }
-    }
-
-
-    /**
-     * 受伤
-     */
     @SubscribeEvent
     public static void onLivingHurt(LivingHurtEvent event) {
         LivingEntity victim = event.getEntity();

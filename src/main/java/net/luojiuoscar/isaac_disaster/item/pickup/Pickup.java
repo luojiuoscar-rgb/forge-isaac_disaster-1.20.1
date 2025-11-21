@@ -1,6 +1,7 @@
 package net.luojiuoscar.isaac_disaster.item.pickup;
 
 import net.luojiuoscar.isaac_disaster.event.custom.misc.PickupUseEvent;
+import net.luojiuoscar.isaac_disaster.item.pickup.interfaces.IFoodPickup;
 import net.luojiuoscar.isaac_disaster.item.pickup.interfaces.IUsablePickup;
 import net.luojiuoscar.isaac_disaster.manager.item_managers.PickupManager;
 import net.minecraft.world.InteractionHand;
@@ -27,7 +28,12 @@ public class Pickup extends Item {
     @Override
     public InteractionResultHolder<ItemStack> use(@NotNull Level level, Player player, @NotNull InteractionHand hand){
         ItemStack stack = player.getItemInHand(hand);
-        if (!(stack.getItem() instanceof Pickup item && item instanceof IUsablePickup)) return InteractionResultHolder.fail(stack);
+
+        if (stack.getItem() instanceof IFoodPickup)
+            return super.use(level, player, hand);
+
+        if (!(stack.getItem() instanceof Pickup item && item instanceof IUsablePickup))
+            return InteractionResultHolder.fail(stack);
 
         // 触发事件
         PickupUseEvent event = new PickupUseEvent(player, stack);

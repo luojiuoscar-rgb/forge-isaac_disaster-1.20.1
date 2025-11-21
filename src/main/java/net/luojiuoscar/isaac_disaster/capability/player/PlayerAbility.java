@@ -26,13 +26,13 @@ public class PlayerAbility {
 
     private int extraTrinketSlotCounts;
 
-    private Map<Integer, Boolean> itemFlags;
+    private final Map<Integer, Boolean> itemFlags;
 
-    private Map<Integer, Integer> attackType;
-    private int bestBulletType;
-    private Map<ResourceLocation, Integer> bulletColor; // bullet color id : count
+    private final Map<Integer, Integer> attackType;
+    private int bestAttackType;
+    private final Map<ResourceLocation, Integer> bulletColor; // bullet color id : count
     private ResourceLocation bestBulletColor;
-    private HashMap<ResourceLocation, Integer> trajectories;
+    private final HashMap<ResourceLocation, Integer> trajectories;
 
     public PlayerAbility() {
         itemFlags = new HashMap<>();
@@ -49,6 +49,8 @@ public class PlayerAbility {
         spectral = 0;
         controllable = 0;
         extraTrinketSlotCounts = 0;
+        bestBulletColor = ModBulletColors.BASE.getId();
+        bestAttackType = ModAttackType.BULLET.getId();
 
         itemFlags.clear();
         attackType.clear();
@@ -63,11 +65,17 @@ public class PlayerAbility {
         this.spectral = source.spectral;
         this.controllable = source.controllable;
         this.extraTrinketSlotCounts = source.extraTrinketSlotCounts;
+        this.bestBulletColor = source.bestBulletColor;
+        this.bestAttackType = source.bestAttackType;
 
-        this.itemFlags = new HashMap<>(source.itemFlags);
-        this.attackType = new HashMap<>(source.attackType);
-        this.bulletColor = new HashMap<>(source.bulletColor);
-        this.trajectories = new HashMap<>(source.trajectories);
+        this.itemFlags.clear();
+        this.itemFlags.putAll(source.itemFlags);
+        this.attackType.clear();
+        this.attackType.putAll(source.attackType);
+        this.bulletColor.clear();
+        this.bulletColor.putAll(source.bulletColor);
+        this.trajectories.clear();
+        this.trajectories.putAll(source.trajectories);
     }
 
     public void saveNBTData(CompoundTag nbt) {
@@ -77,6 +85,8 @@ public class PlayerAbility {
         nbt.putInt("spectral", spectral);
         nbt.putInt("controllable", controllable);
         nbt.putInt("trinket_slot_counts", extraTrinketSlotCounts);
+        nbt.putString("best_bullet_color", bestBulletColor.toString());
+        nbt.putInt("best_attack_type", bestAttackType);
 
         ListTag itemFlagList = new ListTag();
         for (Map.Entry<Integer, Boolean> entry : itemFlags.entrySet()) {
@@ -122,6 +132,8 @@ public class PlayerAbility {
         this.homing = nbt.getInt("homing");
         this.controllable = nbt.getInt("controllable");
         this.extraTrinketSlotCounts = nbt.getInt("trinket_slot_counts");
+        this.bestBulletColor = ResourceLocation.parse(nbt.getString("best_bullet_color"));
+        this.bestAttackType = nbt.getInt("best_attack_type");
 
         itemFlags.clear();
         if (nbt.contains("item_flags", Tag.TAG_LIST)) {
@@ -238,9 +250,9 @@ public class PlayerAbility {
         int r = attackType.getOrDefault(id, 0) + count;
         if (r <= 0) {
             attackType.remove(id);
-            return;
+        }else{
+            attackType.put(id, r);
         }
-        attackType.put(id, r);
         updateBestAttackType();
     }
 
@@ -255,11 +267,11 @@ public class PlayerAbility {
                 bestId = id;
             }
         }
-        this.bestBulletType = bestId;
+        this.bestAttackType = bestId;
     }
 
-    public int getBestBulletType(){
-        return bestBulletType;
+    public int getBestAttackType(){
+        return bestAttackType;
     }
 
     public Map<ResourceLocation, Integer> getBulletColor(){

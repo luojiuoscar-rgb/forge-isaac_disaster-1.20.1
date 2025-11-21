@@ -3,24 +3,22 @@ package net.luojiuoscar.isaac_disaster.registries.trajectory;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.Vec3;
 
-/**
- * Built-in (default) trajectories. Each is an AttackTrajectory instance converted
- * from your original enum entries. Keep these stateless.
- */
+
 public final class BuiltinTrajectories {
     private BuiltinTrajectories() {}
 
     public static final IAttackTrajectory WIGGLE_WORM = ctx -> {
         double phaseScale = 1;
-        double t0 = ctx.distance * phaseScale;
-        double t1 = (ctx.distance + ctx.deltaDistance) * phaseScale;
+        double traveled = ctx.bulletObject.getTraveled();
+        double t0 = traveled * phaseScale;
+        double t1 = (traveled + ctx.deltaDistance) * phaseScale;
 
         double y0 = (t0 < Math.PI) ? Math.cos(t0) - 1 : 2 * Math.cos(t0);
         double y1 = (t1 < Math.PI) ? Math.cos(t1) - 1 : 2 * Math.cos(t1);
 
         double deltaY = y1 - y0;
 
-        Vec3 dir = ctx.dir;
+        Vec3 dir = ctx.bulletObject.getVelocity();
         Vec3 right = new Vec3(-dir.z, 0, dir.x).normalize();
         double offsetScale = 0.5 + ctx.amplifier * 0.25;
 
@@ -31,10 +29,12 @@ public final class BuiltinTrajectories {
     };
 
     public static final IAttackTrajectory TINY_PLANET = ctx -> {
-        LivingEntity owner = ctx.owner;
-        if (owner == null || ctx.pos == null) return TrajectoryResult.ZERO;
+        LivingEntity owner = ctx.bulletObject.getOwner();
+        Vec3 bulletPos = ctx.bulletObject.getPosition();
 
-        Vec3 bulletPos = ctx.pos;
+        if (owner == null || bulletPos == null) return TrajectoryResult.ZERO;
+
+
 
         double targetRadius = 3.0 + ctx.amplifier;
         double angularSpeed = 0.35;
@@ -52,21 +52,21 @@ public final class BuiltinTrajectories {
 
         Vec3 desiredRel = new Vec3(
                 Math.cos(nextAngle) * targetRadius,
-                Math.sin(ctx.distance * yFrequency) * yAmplitude,
+                Math.sin(ctx.bulletObject.getTraveled() * yFrequency) * yAmplitude,
                 Math.sin(nextAngle) * targetRadius
         );
 
         Vec3 desiredPos = ownerCenter.add(desiredRel);
 
         Vec3 desiredVel = desiredPos.subtract(bulletPos).normalize().scale(ctx.deltaDistance);
-        Vec3 currentVel = ctx.dir.scale(ctx.deltaDistance);
+        Vec3 currentVel = ctx.bulletObject.getVelocity().scale(ctx.deltaDistance);
         Vec3 velOffset = desiredVel.subtract(currentVel);
 
         return new TrajectoryResult(Vec3.ZERO, velOffset);
     };
 
     public static final IAttackTrajectory RING_WORM = ctx -> {
-        Vec3 dir = ctx.dir.normalize();
+        Vec3 dir = ctx.bulletObject.getVelocity().normalize();
 
         // 构建局部坐标系，确保 dir 是 x 轴，y-z 平面为圆面
         Vec3 up = new Vec3(0, 1, 0);
@@ -79,8 +79,8 @@ public final class BuiltinTrajectories {
         double angularSpeed = Math.PI * 0.25; // 每单位距离旋转 0.5 * PI 弧度
 
         // 累积角度
-        double angle0 = ctx.distance * angularSpeed;           // 当前帧起始角度
-        double angle1 = (ctx.distance + ctx.deltaDistance) * angularSpeed; // 当前帧结束角度
+        double angle0 = ctx.bulletObject.getTraveled() * angularSpeed;           // 当前帧起始角度
+        double angle1 = (ctx.bulletObject.getTraveled() + ctx.deltaDistance) * angularSpeed; // 当前帧结束角度
 
         // 计算增量偏移
         Vec3 offset0 = right.scale(Math.cos(angle0) * radius)
@@ -94,7 +94,7 @@ public final class BuiltinTrajectories {
     };
 
     public static final IAttackTrajectory OUROBOROS_WORM = ctx -> {
-        Vec3 forward = ctx.dir.normalize(); // 前进方向
+        Vec3 forward = ctx.bulletObject.getVelocity().normalize(); // 前进方向
         Vec3 up = new Vec3(0, 1, 0);        // 世界竖直方向
 
         // 参数
@@ -102,8 +102,9 @@ public final class BuiltinTrajectories {
         double angularSpeed = 2.0; // 角速度 = 2 rad/unit distance
 
         // 当前帧角度
-        double angle0 = Math.PI + angularSpeed * ctx.distance;                  // 初始角度 pi
-        double angle1 = Math.PI + angularSpeed * (ctx.distance + ctx.deltaDistance);
+        double traveled = ctx.bulletObject.getTraveled();
+        double angle0 = Math.PI + angularSpeed * traveled;                  // 初始角度 pi
+        double angle1 = Math.PI + angularSpeed * (traveled + ctx.deltaDistance);
 
         // 圆周偏移在前进方向 + 竖直方向平面
         Vec3 pos0 = forward.scale(-Math.cos(angle0) * radius) // -cos 对应初始 B 在左边
@@ -119,7 +120,7 @@ public final class BuiltinTrajectories {
 
     public static final IAttackTrajectory HOOK_WORM = ctx -> {
         // 当前方向
-        Vec3 forward = ctx.dir.normalize();
+        Vec3 forward = ctx.bulletObject.getVelocity().normalize();
 
         // 世界上方向
         Vec3 worldUp = new Vec3(0, 1, 0);
@@ -137,9 +138,10 @@ public final class BuiltinTrajectories {
         int cycleStart = 2;
 
         // 当前格子段
-        int currentIndex = (int) ctx.distance;
+        int traveled = (int) ctx.bulletObject.getTraveled();
+        int currentIndex = traveled;
         // 下一帧格子段（根据 deltaDistance 推算）
-        int nextIndex = (int) (ctx.distance + ctx.deltaDistance);
+        int nextIndex = (int) (traveled + ctx.deltaDistance);
 
         double xRot = 0.0;
         double yRot = 0.0;
@@ -157,7 +159,7 @@ public final class BuiltinTrajectories {
     };
 
     public static final IAttackTrajectory MY_REFLECTION = ctx -> {
-        Vec3 dir = ctx.dir.normalize();   // 发射方向
+        Vec3 dir = ctx.bulletObject.getVelocity().normalize();   // 发射方向
         Vec3 right = new Vec3(-dir.z, 0, dir.x).normalize(); // XZ平面垂直向量
 
         double a = 21;  // 长轴
@@ -165,10 +167,10 @@ public final class BuiltinTrajectories {
         double amplifier = 0.3;
 
         // 椭圆角度增量
-        double theta = ctx.distance / a;
+        double theta = ctx.bulletObject.getTraveled() / a;
         if(theta > Math.PI) theta = Math.PI; // 超过半椭圆就停
 
-        double sign = ctx.startYRot <= 0 ? 1.0 : -1.0; // 正 -> 右偏, 负 -> 左偏
+        double sign = ctx.bulletObject.getStartYRot() <= 0 ? 1.0 : -1.0; // 正 -> 右偏, 负 -> 左偏
 
         // 椭圆偏移
         double xOffset = a * (Math.cos(theta) - 1); // 左侧起点在原点
@@ -179,4 +181,12 @@ public final class BuiltinTrajectories {
 
         return new TrajectoryResult(posOffset, velOffset);
     };
+
+    public static final IAttackTrajectory GRAVITY = ctx -> {
+        double g = -0.05;
+        return ctx.bulletObject.noGravity() ? TrajectoryResult.ZERO
+                : new TrajectoryResult(Vec3.ZERO, new Vec3(0, g, 0));
+    };
+
+
 }

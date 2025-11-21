@@ -24,12 +24,14 @@ public class RubberCement implements IPassiveItem {
 
     @Override
     public void handleObtain(Player player, @Nullable ItemStack stack) {
-        StatManager.addTriggerModule(player, ModTriggerModule.RUBBER_CEMENT.getId(), 1);
+        StatManager.addTriggerModule(player, ModTriggerModule.BOUNCE_ON_ENTITY.getId(), 1);
+        StatManager.addTriggerModule(player, ModTriggerModule.BOUNCE_ON_BLOCK.getId(), 1);
     }
 
     @Override
     public void handleRemove(Player player, @Nullable ItemStack stack) {
-        StatManager.addTriggerModule(player, ModTriggerModule.RUBBER_CEMENT.getId(), -1);
+        StatManager.addTriggerModule(player, ModTriggerModule.BOUNCE_ON_ENTITY.getId(), -1);
+        StatManager.addTriggerModule(player, ModTriggerModule.BOUNCE_ON_BLOCK.getId(), -1);
     }
 
     @Override

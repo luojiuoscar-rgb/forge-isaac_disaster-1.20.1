@@ -6,6 +6,7 @@ import net.luojiuoscar.isaac_disaster.block.ModBlocks;
 import net.luojiuoscar.isaac_disaster.block.block_entity.PedestalBlockEntity;
 import net.luojiuoscar.isaac_disaster.capability.player.*;
 import net.luojiuoscar.isaac_disaster.entity.tnt.IsaacBomb;
+import net.luojiuoscar.isaac_disaster.event.custom.misc.GetShotDelayEvent;
 import net.luojiuoscar.isaac_disaster.item.ModItems;
 import net.luojiuoscar.isaac_disaster.item.item.ActiveItem;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
@@ -39,6 +40,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.server.ServerLifecycleHooks;
 import org.jetbrains.annotations.Nullable;
@@ -460,28 +462,17 @@ public class PlayerHelper {
             delay =  4;
         }
         delay -= getTearsCorrection(player);
-        // 当拥有双倍射击延迟时
-        if (hasDoubleShotDelay(player)){
-            delay *= 2;
+
+        GetShotDelayEvent event = new GetShotDelayEvent(player, delay);
+        MinecraftForge.EVENT_BUS.post(event);
+
+        if (!event.isCanceled()){
+            delay = event.getDelay();
         }
 
         return Math.max(delay, 0);
     }
-    public static boolean hasDoubleShotDelay(Player player){
-        int[] count = {0};
-        player.getCapability(PlayerStatModifierProvider.PLAYER_STAT_MODIFIER)
-                .ifPresent(provider -> count[0] = provider.getDoubleShotDelay());
 
-        // 当有完美视力时；取消双倍射击延迟
-        player.getCapability(PlayerPassiveItemProvider.PLAYER_PASSIVE_ITEM).ifPresent(
-                playerPassiveItem -> {
-                    if (playerPassiveItem.getItemCountFromAll(player, ItemId.PERFECT_VISION.getId()) > 0){
-                        count[0] = 0;
-                    }
-                });
-
-        return count[0] > 0;
-    }
     public static double getFireRate(Player player) {
         return 20 / getShotDelay(player);
     }

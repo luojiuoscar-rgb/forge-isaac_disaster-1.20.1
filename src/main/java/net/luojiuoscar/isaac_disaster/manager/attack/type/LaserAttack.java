@@ -32,6 +32,7 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.registries.IForgeRegistry;
 import net.minecraftforge.registries.RegistryManager;
+import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
 
 import java.util.HashSet;
@@ -77,10 +78,11 @@ public class LaserAttack implements IAttackType {
         public int tickCount;
         public LivingEntity homingTarget;
         public double yRotAngle;
+        public double xRotAngle;
         private final TriggerModuleQueue triggerModuleQueue;
 
         public LaserProjectile(LivingEntity shooter, Vec3 startPos, Vec3 direction, double step, double width,
-                               float damage, boolean homing, boolean spectral, double yRotAngle,
+                               float damage, boolean homing, boolean spectral, double yRotAngle, double xRotAngle,
                                TriggerModuleQueue triggerModuleQueue) {
             this.shooter = shooter;
             this.position = startPos;
@@ -95,12 +97,72 @@ public class LaserAttack implements IAttackType {
             this.tickCount = 0;
             this.homingTarget = null;
             this.yRotAngle = yRotAngle;
+            this.xRotAngle = xRotAngle;
             this.triggerModuleQueue = new TriggerModuleQueue(triggerModuleQueue.getQueue());
         }
 
         @Override
         public TriggerModuleQueue getTriggerModules() {
             return this.triggerModuleQueue;
+        }
+
+        @Override
+        public float getDamage() { return this.damage; }
+
+        @Override
+        public Vec3 getVelocity() {
+            return this.direction;
+        }
+
+        @Override
+        public double getTraveled() {
+            return this.traveled;
+        }
+
+        @Override
+        public Vec3 getPosition() {
+            return this.position;
+        }
+
+        @Nullable
+        @Override
+        public LivingEntity getOwner() {
+            return this.shooter;
+        }
+
+        @Override
+        public double getStartYRot() {
+            return this.yRotAngle;
+        }
+
+        @Override
+        public double getStartXRot() {
+            return this.xRotAngle;
+        }
+
+        @Override
+        public boolean noGravity(){
+            return true;
+        }
+
+        @Override
+        public boolean isHoming() {
+            return this.homing;
+        }
+
+        @Override
+        public boolean isSpectral() {
+            return this.spectral;
+        }
+
+        @Override
+        public boolean isControllable() {
+            return false;
+        }
+
+        @Override
+        public boolean isPiercing() {
+            return true;
         }
     }
 
@@ -139,6 +201,7 @@ public class LaserAttack implements IAttackType {
                 isHoming(entity),
                 isSpectral(entity),
                 entity.getYRot() - yRot,
+                entity.getXRot() - xRot,
                 context.getTriggerModuleQueue()
         );
 
@@ -185,16 +248,7 @@ public class LaserAttack implements IAttackType {
                 IAttackTrajectory traj = trajectoryIForgeRegistry.getValue(trajId);
                 if (traj == null) continue;
 
-                TrajectoryContext ctx =
-                        new TrajectoryContext(
-                                laser.direction,
-                                laser.traveled,
-                                laser.step,
-                                laser.shooter,
-                                laser.position,
-                                amplifier,
-                                laser.yRotAngle
-                        );
+                TrajectoryContext ctx = new TrajectoryContext(laser, laser.step, amplifier);
 
                 var result = traj.getResult(ctx);
                 totalPositionOffset = totalPositionOffset.add(result.positionOffset());
@@ -223,13 +277,16 @@ public class LaserAttack implements IAttackType {
 
         // --------- Block Collision ---------
         AABB box = createCollisionBox(nextPos, laser.width);
-        if (!laser.spectral && handleBlockCollision(laser, level, context.getTriggerModuleQueue())) {
+        if (handleBlockCollision(laser, level, context.getTriggerModuleQueue())) {
             laser.traveled = getRange(laser.shooter);
             return;
         }
 
         // --------- Entity Collision ---------
         handleEntityCollision(laser, level, box, context.getTriggerModuleQueue());
+
+        // -------- 重新计算nextPos以防pos被修改后行为出错 --------
+        nextPos = laser.position.add(laser.direction.scale(laser.step)).add(totalPositionOffset);
 
         // --------- 更新位置和行进距离 ---------
         laser.position = nextPos;
@@ -251,7 +308,7 @@ public class LaserAttack implements IAttackType {
             IsaacAttackHitBlockEvent blockEvent = new IsaacAttackHitBlockEvent(laser, laser.shooter, getId(), triggerModules, blockHit);
             MinecraftForge.EVENT_BUS.post(blockEvent);
 
-            return !blockEvent.isCanceled();
+            return !blockEvent.isCanceled() && !laser.spectral;
         }
         return false;
     }

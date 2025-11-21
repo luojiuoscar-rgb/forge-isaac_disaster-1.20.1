@@ -363,7 +363,7 @@ public class LevelHelper {
                 (1.0F + (level.random.nextFloat() - level.random.nextFloat()) * 0.2F) * 0.7F
         );
 
-        for (int i = 0; i < 20; i++) {
+        for (int i = 0; i < 10; i++) {
             double offsetX = (level.random.nextDouble() - 0.5) * power * 2;
             double offsetY = (level.random.nextDouble() - 0.5) * power * 2;
             double offsetZ = (level.random.nextDouble() - 0.5) * power * 2;

@@ -26,7 +26,8 @@ public class ModTriggerModule {
     public static final RegistryObject<ITriggerModule> CARTRIDGE            = TRIGGER_MODULE_REGISTRY.register("cartridge", Cartridge::new);
     public static final RegistryObject<ITriggerModule> BLIND_RAGE           = TRIGGER_MODULE_REGISTRY.register("blind_rage", BlindRage::new);
     public static final RegistryObject<ITriggerModule> IPECAC               = TRIGGER_MODULE_REGISTRY.register("ipecac", Ipecac::new);
-    public static final RegistryObject<ITriggerModule> RUBBER_CEMENT        = TRIGGER_MODULE_REGISTRY.register("rubber_cement", RubberCement::new);
+    public static final RegistryObject<ITriggerModule> BOUNCE_ON_BLOCK      = TRIGGER_MODULE_REGISTRY.register("bounce_on_block", BounceOnBlock::new);
+    public static final RegistryObject<ITriggerModule> BOUNCE_ON_ENTITY     = TRIGGER_MODULE_REGISTRY.register("bounce_on_entity", BounceOnEntity::new);
 
 
 }

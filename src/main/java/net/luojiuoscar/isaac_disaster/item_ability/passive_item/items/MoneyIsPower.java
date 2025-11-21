@@ -30,9 +30,8 @@ public class MoneyIsPower implements IRecursivePassiveItem {
         // 计算背包金币并更新
         int money = PlayerHelper.countMoney(player);
         double damage = money * Config.MONEY_IS_POWER_STRENGTH.get();
-        AttributeInstance instance = player.getAttribute(Attributes.ATTACK_DAMAGE);
-        if (instance == null) return;
-        StatManager.setModifierAdd(player, instance, damage, MONEY_IS_POWER_ADDER, "");
+        StatManager.setModifier(player, MONEY_IS_POWER_ADDER, Attributes.ATTACK_DAMAGE,
+                damage, null, null, 0);
     }
 
     @Override

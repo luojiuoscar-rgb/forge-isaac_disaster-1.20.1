@@ -43,13 +43,13 @@ public class Ipecac implements ITriggerModule {
         if (!(event.getSource().getEntity() instanceof LivingEntity attacker)) return;
         LivingEntity victim = event.getEntity();
 
-        applyEffect(attacker, victim.position());
+        AttributeInstance instance = attacker.getAttribute(Attributes.ATTACK_DAMAGE);
+        float damage = instance == null ? 0.0f : (float) instance.getValue();
+
+        applyEffect(attacker, victim.position(), damage);
     }
 
-    private void applyEffect(LivingEntity attacker, Vec3 pos){
-        AttributeInstance instance = attacker.getAttribute(Attributes.ATTACK_DAMAGE);
-
-        float damage = instance == null ? 0.0f : (float) instance.getValue();
+    private void applyEffect(LivingEntity attacker, Vec3 pos, float damage){
         damage = (float) computeDamageWithCompensation(damage);
 
         float power = powerFromDamage(damage);
@@ -101,13 +101,13 @@ public class Ipecac implements ITriggerModule {
     public void beforeBulletHitEntity(IsaacAttackBeforeHitEntityEvent event, int stacks, TriggerModuleQueue queue) {
         if (!(event.getHit().getEntity() instanceof LivingEntity victim)) return;
 
-        applyEffect(victim, victim.position());
+        applyEffect(victim, victim.position(), event.getBulletObject().getDamage());
     }
 
     @Override
     public void onBulletHitBlock(IsaacAttackHitBlockEvent event, int stacks, TriggerModuleQueue queue) {
         if (!(event.getSource() instanceof LivingEntity living)) return;
-        applyEffect(living, event.getHitResult().getLocation());
+        applyEffect(living, event.getHitResult().getLocation(), event.getBulletObject().getDamage());
     }
 
 }

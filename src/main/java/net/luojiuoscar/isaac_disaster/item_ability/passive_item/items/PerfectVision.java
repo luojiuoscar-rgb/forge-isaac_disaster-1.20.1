@@ -34,7 +34,8 @@ public class PerfectVision implements IPassiveItem {
         // 伤害修正
         AttributeInstance instance = player.getAttribute(Attributes.ATTACK_DAMAGE);
         if (instance == null) return;
-        StatManager.setModifierMultiplyBase(player, instance, -0.2, PERFECT_VISION_DAMAGE, "perfect_vision");
+        StatManager.setModifier(player, PERFECT_VISION_DAMAGE, Attributes.ATTACK_DAMAGE, -0.2,
+                0.1, null, 1);
     }
 
     @Override

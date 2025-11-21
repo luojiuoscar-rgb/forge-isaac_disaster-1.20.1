@@ -1,6 +1,5 @@
 package net.luojiuoscar.isaac_disaster.capability.player;
 
-
 import net.luojiuoscar.isaac_disaster.effect.ModEffects;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
@@ -9,60 +8,136 @@ import net.luojiuoscar.isaac_disaster.networking.packet.FlyUpdateS2CPacket;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.ai.attributes.AttributeInstance;
+import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.common.capabilities.AutoRegisterCapability;
+import net.minecraftforge.registries.ForgeRegistries;
+import org.jetbrains.annotations.NotNull;
 
+import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-
 @AutoRegisterCapability
 public class PlayerStatModifier {
-    private Map<UUID, Double> playerModifiers;
+
+    public static class StatInstance{
+        public UUID uuid;
+        public Attribute attribute;
+        private double value;
+        public Double maxVal;
+        public Double minVal;
+        private int operationType;
+
+        public StatInstance(UUID uuid, double value, @Nullable Double maxVal, @Nullable Double minVal,
+                            @Nullable Attribute attribute, int operationType){
+            this.uuid = uuid;
+            this.value = value;
+            this.maxVal = maxVal;
+            this.minVal = minVal;
+            this.attribute = attribute;
+            this.operationType = operationType;
+        }
+
+        public double getValue() {
+            if (maxVal != null && value > maxVal) return maxVal;
+            if (minVal != null && value < minVal) return minVal;
+            return value;
+        }
+
+        public void add(double val){
+            this.value += val;
+        }
+
+        public void set(double val){
+            this.value = val;
+        }
+
+        /**
+         * operation type
+         * 0 -> add
+         * 1 -> multiply_base
+         * 2 -> multiply_total
+         */
+        public int getOperationType(){
+            return operationType;
+        }
+
+        /**
+         * operation type
+         * 0 -> add
+         * 1 -> multiply_base
+         * 2 -> multiply_total
+         */
+        public void setOperationType(int operationType){
+            this.operationType = Math.min(2, Math.max(operationType, 0));
+        }
+    }
+
+    /** ← 原来是 Set，现在换成 Map 存 StatInstance **/
+    private final Map<UUID, StatInstance> playerModifiers;
+
     private double flyTimeCurrent;
 
-    private int doubleShotDelay;
-
-    // constructor
     public PlayerStatModifier(){
+        playerModifiers = new HashMap<>();
         init();
     }
 
     public void init(){
-        playerModifiers = new HashMap<>();
+        playerModifiers.clear();
 
         flyTimeCurrent = 0;
-        doubleShotDelay = 0;
     }
 
+    // -----------------------------
+    // Getter
+    // -----------------------------
+    public StatInstance getStatInstance(UUID uuid){
+        return playerModifiers.get(uuid);
+    }
 
-
-    /**
-     * Getter
-     */
-    public double getModifier(UUID uuid){
-        return playerModifiers.getOrDefault(uuid, 0.0);
+    public void removeStatInstance(UUID uuid){
+        playerModifiers.remove(uuid);
     }
 
     public double getFlyTimeCurrent(){
         return flyTimeCurrent;
     }
-    public int getDoubleShotDelay(){
-        return doubleShotDelay;
+
+    // -----------------------------
+    // Setter
+    // -----------------------------
+    /** set or create */
+    public void setModifierValue(UUID uuid, double amount, @Nullable Double maxVal, @Nullable Double minVal,
+                                 @NotNull Attribute attribute, int operationType){
+        StatInstance inst = playerModifiers.get(uuid);
+        if (inst != null){
+            inst.set(amount);
+            inst.attribute = attribute;
+        }else{
+            playerModifiers.put(uuid, new StatInstance(uuid, amount, maxVal, minVal, attribute, operationType));
+        }
     }
-    /**
-     * Setter
-     */
-    public void setModifier(UUID uuid, double amount){
-        playerModifiers.put(uuid, amount);
+
+    /** add or create */
+    public void addModifierValue(UUID uuid, double amount, @Nullable Double maxVal, @Nullable Double minVal,
+                                 @NotNull Attribute attribute, int operationType){
+        StatInstance inst = playerModifiers.get(uuid);
+        if (inst != null){
+            inst.add(amount);
+            inst.attribute = attribute;
+        }else{
+            playerModifiers.put(uuid, new StatInstance(uuid, amount, maxVal, minVal, attribute, operationType));
+        }
     }
+
     public void removeModifier(UUID uuid){
         playerModifiers.remove(uuid);
     }
-
 
     public void addCurrentFlyTime(ServerPlayer player, int amount){
         double flyTime = PlayerHelper.getFly(player);
@@ -71,96 +146,82 @@ public class PlayerStatModifier {
 
         flyTimeCurrent = Math.max(0, flyTimeCurrent + amount);
 
-        // 时间到达上限（且没有飞升效果）则取消飞行
         if (flyTimeCurrent >= flyTime && player.getEffect(ModEffects.TRANSCENDENCE.get()) == null){
             player.getAbilities().flying = false;
             player.onUpdateAbilities();
         }
 
         if (flyTimeCurrent < 0 || flyTimeCurrent > flyTime) return;
-        // 当飞行能力变化的情况越过了1/20（即存在状态更新）时，发包更新客户端数据
+
         double curr = pre + amount;
         if (curr >= (flyTime / 20) || curr < 0){
-            // 把百分比映射为 0..20
             int units = 20 - (int) Math.max((flyTimeCurrent / flyTime * 20), 0);
             ModMessages.sentToPlayer(new FlyUpdateS2CPacket(units), player);
         }
     }
-    public void setDoubleShotDelay(Player player, int amount){
-        this.doubleShotDelay = amount;
-    }
-    public void modifyDoubleShotDelay(Player player, int amount){
-        this.doubleShotDelay += amount;
-    }
 
-
-    private void refreshAllFromSource(Player player, PlayerStatModifier source){
-        for (Map.Entry<UUID, Double> entry : source.playerModifiers.entrySet()) {
-            UUID uuid = entry.getKey();
-            AttributeInstance instance = player.getAttribute(StatManager.fromUUID(uuid).getAttribute());
-            if (instance == null) continue;
-
-            // 重新设置uuid 并且通过这个设置函数更新玩家的attribute记录
-            if (!StatManager.fromUUID(uuid).isMultiplyBase()){
-                StatManager.setModifierAdd(
-                        player,
-                        instance,
-                        entry.getValue(),
-                        uuid,
-                        ""
-                );
-            }
-            else{
-                StatManager.setModifierMultiplyBase(
-                        player,
-                        instance,
-                        entry.getValue(),
-                        uuid,
-                        ""
-                );
-            }
+    // 复制属性 attribute同步
+    private void refreshAllModifiers(Player player, Map<UUID, StatInstance> source){
+        for (StatInstance inst : source.values()) {
+            StatManager.setModifier(player, inst.uuid, inst.attribute, inst.value,
+                    inst.minVal, inst.maxVal, inst.operationType);
         }
     }
 
-
-
-    /**
-     * 复制玩家属性
-     * 复制后立刻触发属性修改；以确保玩家属性正确继承
-     */
     public void copyFrom(PlayerStatModifier source, Player player) {
-        refreshAllFromSource(player, source);
-        this.doubleShotDelay = 0;
+        this.playerModifiers.clear();
+        refreshAllModifiers(player, source.playerModifiers);
     }
 
     public void saveNBTData(CompoundTag nbt) {
 
-        nbt.putInt("double_shot_delay", doubleShotDelay);
-
-        // 保存 playerModifiers
         ListTag listTag = new ListTag();
-        for (Map.Entry<UUID, Double> entry : playerModifiers.entrySet()) {
+        for (StatInstance inst : playerModifiers.values()) {
             CompoundTag tag = new CompoundTag();
-            tag.putUUID("uuid", entry.getKey());
-            tag.putDouble("value", entry.getValue());
+            tag.putUUID("uuid", inst.uuid);
+            tag.putDouble("value", inst.value);
+            tag.putInt("operation_type", inst.operationType);
+
+            if (inst.maxVal != null) tag.putDouble("max", inst.maxVal);
+            if (inst.minVal != null) tag.putDouble("min", inst.minVal);
+
+            if (inst.attribute != null) {
+                ResourceLocation rl = ForgeRegistries.ATTRIBUTES.getKey(inst.attribute);
+                if (rl != null) tag.putString("attribute", rl.toString());
+            }
+
             listTag.add(tag);
         }
         nbt.put("player_modifiers", listTag);
     }
+
     public void loadNBTData(CompoundTag nbt) {
 
         this.flyTimeCurrent = 0;
-        this.doubleShotDelay = nbt.getInt("double_shot_delay");
 
-        // 读取 playerModifiers
         this.playerModifiers.clear();
         if (nbt.contains("player_modifiers", Tag.TAG_LIST)) {
+
             ListTag listTag = nbt.getList("player_modifiers", Tag.TAG_COMPOUND);
-            for (int i = 0; i < listTag.size(); i++) {
+
+            for (int i = 0; i < listTag.size(); i++){
                 CompoundTag tag = listTag.getCompound(i);
+
                 UUID uuid = tag.getUUID("uuid");
                 double value = tag.getDouble("value");
-                this.playerModifiers.put(uuid, value);
+                int operationType = tag.getInt("operation_type");
+
+                Double max = tag.contains("max") ? tag.getDouble("max") : null;
+                Double min = tag.contains("min") ? tag.getDouble("min") : null;
+
+                Attribute attribute = null;
+                if (tag.contains("attribute")) {
+                    String attrStr = tag.getString("attribute");
+                    attribute = ForgeRegistries.ATTRIBUTES.getValue(ResourceLocation.parse(attrStr));
+                }
+
+                StatInstance inst = new StatInstance(uuid, value, max, min, attribute, operationType);
+                playerModifiers.put(uuid, inst);
             }
         }
     }
