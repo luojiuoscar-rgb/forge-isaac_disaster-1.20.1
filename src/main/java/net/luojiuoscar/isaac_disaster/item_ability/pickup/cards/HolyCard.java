@@ -1,7 +1,6 @@
 package net.luojiuoscar.isaac_disaster.item_ability.pickup.cards;
 
-import net.luojiuoscar.isaac_disaster.effect.ModEffects;
-import net.luojiuoscar.isaac_disaster.helper.EntityHelper;
+import net.luojiuoscar.isaac_disaster.effect.custom.HolyShieldEffect;
 import net.luojiuoscar.isaac_disaster.item_ability.pickup.IPickup;
 import net.luojiuoscar.isaac_disaster.manager.item_managers.id.PickupId;
 import net.luojiuoscar.isaac_disaster.sound.ModSounds;
@@ -22,7 +21,7 @@ public class HolyCard implements IPickup {
 
     @Override
     public void onUseEffect(Player player, ItemStack stack, InteractionHand hand) {
-        EntityHelper.addAmplifier(player, ModEffects.HOLY_SHIELD.get());
+        HolyShieldEffect.stack(player, 1);
     }
 
     @Override

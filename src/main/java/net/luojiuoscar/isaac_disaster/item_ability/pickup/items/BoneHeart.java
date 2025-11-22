@@ -1,7 +1,6 @@
 package net.luojiuoscar.isaac_disaster.item_ability.pickup.items;
 
-import net.luojiuoscar.isaac_disaster.effect.ModEffects;
-import net.luojiuoscar.isaac_disaster.helper.EntityHelper;
+import net.luojiuoscar.isaac_disaster.effect.custom.FragileHeartEffect;
 import net.luojiuoscar.isaac_disaster.item_ability.pickup.IFoodPickup;
 import net.luojiuoscar.isaac_disaster.manager.item_managers.id.PickupId;
 import net.luojiuoscar.isaac_disaster.sound.ModSounds;
@@ -20,7 +19,7 @@ public class BoneHeart implements IFoodPickup {
     @Override
     public void onUseEffect(Player player, ItemStack stack, InteractionHand hand) {
         // 增加一层脆弱的心
-        EntityHelper.addAmplifier(player, ModEffects.FRAGILE_HEART.get());
+        FragileHeartEffect.stack(player, 1);
     }
 
     @Override

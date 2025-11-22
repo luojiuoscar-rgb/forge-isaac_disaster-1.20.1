@@ -100,4 +100,23 @@ public class TriggerModuleQueue {
     public TriggerModuleQueue getCopy(){
         return new TriggerModuleQueue(queue);
     }
+
+    public boolean contains(ResourceLocation id) {
+        for (TriggerModuleInstance inst : queue) {
+            if (inst.id.equals(id)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public TriggerModuleInstance get(ResourceLocation id) {
+        for (TriggerModuleInstance inst : queue) {
+            if (inst.id.equals(id)) {
+                return inst;
+            }
+        }
+        return null;
+    }
+
 }

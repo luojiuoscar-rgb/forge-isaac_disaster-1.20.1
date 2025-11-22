@@ -8,6 +8,7 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
@@ -33,5 +34,25 @@ public class GildingEffect extends MobEffect {
 
         player.level().playSound(null, player.getX(), player.getY(), player.getZ(),
                 SoundEvents.GLASS_BREAK, SoundSource.PLAYERS, 1.0f, 1.0f);
+    }
+
+    public static void stack(LivingEntity entity, int count){
+        MobEffect effect = ModEffects.GILDING.get();
+
+        int amplifier = entity.getEffect(effect) == null ? -1 : entity.getEffect(effect).getAmplifier();
+        amplifier += count;
+
+        entity.removeEffect(effect);
+        if (amplifier < 0) return;
+
+        MobEffectInstance newEffect = new MobEffectInstance(
+                effect,
+                -1,
+                amplifier,
+                false,
+                false,
+                true
+        );
+        entity.addEffect(newEffect);
     }
 }

@@ -1,8 +1,7 @@
 package net.luojiuoscar.isaac_disaster.item_ability.pickup.cards;
 
 import net.luojiuoscar.isaac_disaster.client.ClientDataManager;
-import net.luojiuoscar.isaac_disaster.effect.ModEffects;
-import net.luojiuoscar.isaac_disaster.helper.EntityHelper;
+import net.luojiuoscar.isaac_disaster.effect.custom.FragileHeartEffect;
 import net.luojiuoscar.isaac_disaster.item_ability.pickup.ITarot;
 import net.luojiuoscar.isaac_disaster.manager.ColorManager;
 import net.luojiuoscar.isaac_disaster.manager.item_managers.id.ItemId;
@@ -28,13 +27,13 @@ public class TheEmpressR implements ITarot {
     @Override
     public void onUseEffect(Player player, ItemStack stack, InteractionHand hand) {
         player.addEffect(new MobEffectInstance(MobEffects.DIG_SPEED, 600, 1));
-        EntityHelper.addAmplifier(player, ModEffects.FRAGILE_HEART.get());
+        FragileHeartEffect.stack(player, 1);
     }
 
     @Override
     public void onUseEffectStronger(Player player, ItemStack stack, InteractionHand hand) {
         player.addEffect(new MobEffectInstance(MobEffects.DIG_SPEED, 1200, 1));
-        EntityHelper.addAmplifier(player, ModEffects.FRAGILE_HEART.get());
+        FragileHeartEffect.stack(player, 1);
     }
 
     @Override

@@ -3,7 +3,7 @@ package net.luojiuoscar.isaac_disaster.manager;
 import net.luojiuoscar.isaac_disaster.Config;
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.attribute.ModAttributes;
-import net.luojiuoscar.isaac_disaster.capability.entity.TriggerModuleProvider;
+import net.luojiuoscar.isaac_disaster.capability.entity.EffectModulesProvider;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerAbilityProvider;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerPassiveItemProvider;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerStatModifierProvider;
@@ -351,8 +351,14 @@ public enum StatManager {
     }
 
     public static void addTriggerModule(LivingEntity entity, ResourceLocation rl, int count){
-        entity.getCapability(TriggerModuleProvider.TRIGGER_MODULES).ifPresent(
-                triggerModule -> triggerModule.getTriggerModules().add(rl, count)
+        entity.getCapability(EffectModulesProvider.EFFECT_MODULES).ifPresent(
+                effectModules -> effectModules.getTriggerModules().add(rl, count)
+        );
+    }
+
+    public static void addRecursiveModule(LivingEntity entity, ResourceLocation rl, int count){
+        entity.getCapability(EffectModulesProvider.EFFECT_MODULES).ifPresent(
+                effectModules -> effectModules.getRecursiveModuleQueue().add(rl, count)
         );
     }
     /* ---------------------- 道具套装 ---------------------- */

@@ -3,7 +3,7 @@ package net.luojiuoscar.isaac_disaster.event;
 import net.luojiuoscar.isaac_disaster.Config;
 import net.luojiuoscar.isaac_disaster.attribute.ModAttributes;
 import net.luojiuoscar.isaac_disaster.capability.entity.EntityEffectProvider;
-import net.luojiuoscar.isaac_disaster.capability.entity.TriggerModuleProvider;
+import net.luojiuoscar.isaac_disaster.capability.entity.EffectModulesProvider;
 import net.luojiuoscar.isaac_disaster.capability.player.*;
 import net.luojiuoscar.isaac_disaster.commands.*;
 import net.luojiuoscar.isaac_disaster.effect.ModEffects;
@@ -100,8 +100,8 @@ public class ForgeEvents {
             if(!event.getObject().getCapability(EntityEffectProvider.ENTITY_EFFECT_CAP).isPresent()){
                 event.addCapability(ResourceLocation.fromNamespaceAndPath(MOD_ID, "entity_effect_cap"), new EntityEffectProvider());
             }
-            if(!event.getObject().getCapability(TriggerModuleProvider.TRIGGER_MODULES).isPresent()){
-                event.addCapability(ResourceLocation.fromNamespaceAndPath(MOD_ID, "trigger_module_cap"), new TriggerModuleProvider());
+            if(!event.getObject().getCapability(EffectModulesProvider.EFFECT_MODULES).isPresent()){
+                event.addCapability(ResourceLocation.fromNamespaceAndPath(MOD_ID, "effect_module_cap"), new EffectModulesProvider());
             }
         }
     }
@@ -150,8 +150,8 @@ public class ForgeEvents {
                 });
             });
             // trigger modules
-            event.getOriginal().getCapability(TriggerModuleProvider.TRIGGER_MODULES).ifPresent(oldStore -> {
-                event.getEntity().getCapability(TriggerModuleProvider.TRIGGER_MODULES).ifPresent(newStore -> {
+            event.getOriginal().getCapability(EffectModulesProvider.EFFECT_MODULES).ifPresent(oldStore -> {
+                event.getEntity().getCapability(EffectModulesProvider.EFFECT_MODULES).ifPresent(newStore -> {
                     newStore.copyFrom(oldStore);
                 });
             });

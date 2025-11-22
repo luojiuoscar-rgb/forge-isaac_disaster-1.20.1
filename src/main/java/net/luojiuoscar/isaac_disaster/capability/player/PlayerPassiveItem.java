@@ -3,7 +3,6 @@ package net.luojiuoscar.isaac_disaster.capability.player;
 import net.luojiuoscar.isaac_disaster.helper.CuriosHelper;
 import net.luojiuoscar.isaac_disaster.item.item.IsaacItem;
 import net.luojiuoscar.isaac_disaster.item.item.PassiveItem;
-import net.luojiuoscar.isaac_disaster.item_ability.passive_item.IRecursivePassiveItem;
 import net.luojiuoscar.isaac_disaster.item_ability.set.ISet;
 import net.luojiuoscar.isaac_disaster.manager.item_managers.PassiveItemManager;
 import net.luojiuoscar.isaac_disaster.manager.item_managers.SetManager;
@@ -30,7 +29,6 @@ public class PlayerPassiveItem {
     private List<ItemStack> playerPassiveItems;
     // 键为道具ID，值为道具数量
     private final Map<Integer, Integer> itemCountMap;
-    private final Map<Integer, Integer> recursiveItemMap; // itemId : remainTick
 
     private Map<Integer, Integer> setCountMap; // 当前套装计数
     private Set<Integer> obtainedSets; // 已经获得过的套装
@@ -41,7 +39,6 @@ public class PlayerPassiveItem {
         this.playerPassiveItems = new ArrayList<>();
 
         this.itemCountMap = new HashMap<>();
-        this.recursiveItemMap = new HashMap<>();
         this.setCountMap = new HashMap<>();
         this.obtainedSets = new HashSet<>();
         init();
@@ -51,7 +48,6 @@ public class PlayerPassiveItem {
         this.playerPassiveItems.clear();
 
         this.itemCountMap.clear();
-        this.recursiveItemMap.clear();
         this.setCountMap.clear();
         this.obtainedSets.clear();
     }
@@ -61,7 +57,6 @@ public class PlayerPassiveItem {
      */
     public void clearItemMap(){
         itemCountMap.clear();
-        recursiveItemMap.clear();
         setCountMap.clear();
         obtainedSets.clear();
     }
@@ -73,17 +68,6 @@ public class PlayerPassiveItem {
      */
     private void updateItemMap(int itemId, int amount) {
         itemCountMap.put(itemId, itemCountMap.getOrDefault(itemId, 0) + amount);
-        // 如果是循环型道具
-        if(PassiveItemManager.getInstance().getItemFromId(itemId) instanceof IRecursivePassiveItem item){
-            // 对于循环型道具需要移除计数器
-            int itemCount = itemCountMap.get(itemId);
-            if (itemCount == 0){
-                recursiveItemMap.remove(itemId);
-                return;
-            }
-            // 初始计时
-            recursiveItemMap.put(itemId, item.getTickInterval());
-        }
     }
 
     /**
@@ -103,26 +87,6 @@ public class PlayerPassiveItem {
         return new ArrayList<>(playerPassiveItems);
     }
 
-    public Map<Integer, Integer> getCapRecursiveItems(){
-        return new HashMap<>(recursiveItemMap);
-    }
-    /** 包含cap和curios在内的所有循环型道具 */
-    public Map<Integer, Integer> getAllRecursiveItems(Player player){
-        Map<Integer, Integer> map = new HashMap<>(recursiveItemMap);
-
-        List<ItemStack> curiosItems = CuriosHelper.getEquippedItemsInSlot(player, CuriosHelper.PASSIVE_ITEM);
-        for (ItemStack stack : curiosItems){
-            if (!(stack.getItem() instanceof PassiveItem item)) continue;
-            int itemId = item.getItemId();
-
-            if (!(PassiveItemManager.getInstance().getItemFromId(itemId) instanceof IRecursivePassiveItem)) continue;
-
-            map.put(itemId, 1 + map.getOrDefault(itemId, 0));
-        }
-
-        return map;
-    }
-
     public Map<Integer, Integer> getSetCountMap(){
         return new HashMap<>(setCountMap);
     }
@@ -132,23 +96,6 @@ public class PlayerPassiveItem {
     }
     public void setObtainedSet(int setId){
         this.obtainedSets.add(setId);
-    }
-
-    /**
-     * 循环型道具的任务计时器
-     */
-    public void recursiveItemTick(ServerPlayer player, int tick){
-        for (Map.Entry<Integer, Integer> entry : recursiveItemMap.entrySet()) {
-            entry.setValue(entry.getValue() - tick);
-            // 计数器归零时
-            if (entry.getValue() <= 0){
-                int itemId = entry.getKey();
-                IRecursivePassiveItem item = (IRecursivePassiveItem) PassiveItemManager.getInstance().getItemFromId(itemId);
-                // 触发循环效果
-                item.recursiveEffect(player);
-                entry.setValue(item.getTickInterval());
-            }
-        }
     }
 
 

@@ -3,8 +3,8 @@ package net.luojiuoscar.isaac_disaster.event;
 import net.luojiuoscar.isaac_disaster.Config;
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.attribute.ModAttributes;
+import net.luojiuoscar.isaac_disaster.capability.entity.EffectModulesProvider;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerAbilityProvider;
-import net.luojiuoscar.isaac_disaster.capability.player.PlayerPassiveItemProvider;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerStatModifierProvider;
 import net.luojiuoscar.isaac_disaster.effect.ModEffects;
 import net.luojiuoscar.isaac_disaster.helper.EntityHelper;
@@ -61,7 +61,6 @@ public class ServerTickEvent {
                 chargeActiveItem(player);
                 updateFly(player);
                 bugsFix(player);
-                recursiveItemTick(player);
                 onPlayerSprint(player);
             }
         }
@@ -78,6 +77,9 @@ public class ServerTickEvent {
                                 holdRightClick(player, player.getOffhandItem());
                             }
                         }
+
+                        // recursive modules
+                        recursiveModuleTick(player);
                     });
         }
 
@@ -140,11 +142,13 @@ public class ServerTickEvent {
             );
         }
     }
-    private static void recursiveItemTick(ServerPlayer player){
-        player.getCapability(PlayerPassiveItemProvider.PLAYER_PASSIVE_ITEM).ifPresent(
-                playerPassiveItem -> playerPassiveItem.recursiveItemTick(player, TICK_FREQUENCY)
+
+    private static void recursiveModuleTick(ServerPlayer player){
+        player.getCapability(EffectModulesProvider.EFFECT_MODULES).ifPresent(
+                playerPassiveItem -> playerPassiveItem.getRecursiveModuleQueue().tickAll(player)
         );
     }
+
     private static void onPlayerSprint(ServerPlayer player){
         // 仅限疾跑状态
         if (!player.isSprinting() || player.isCreative() || player.isSpectator()) return;

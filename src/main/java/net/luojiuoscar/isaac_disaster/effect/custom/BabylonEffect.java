@@ -87,16 +87,8 @@ public class BabylonEffect extends MobEffect {
         }
     }
 
-
-    @Override
-    public double getAttributeModifierValue(int amplifier, AttributeModifier modifier) {
-        // 原有伤害逻辑
-        return (amplifier + 1) * StatManager.DAMAGE.getBonus();
-    }
-
     @Override
     public List<ItemStack> getCurativeItems() {
-        // 不可被牛奶或药水清除
         return Collections.emptyList();
     }
 }

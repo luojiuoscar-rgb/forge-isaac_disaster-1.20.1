@@ -223,9 +223,8 @@ public class EntityHelper {
 
 
     /**
-     * 对于*可叠加*相关的药水效果
+     * 叠加药水效果
      * 其他参数均以最后一个执行的函数为准
-     *
      * @param stackDuration 是否叠加时间
      * @param stackAmplifier 是否叠加药水等级
      */
@@ -242,30 +241,6 @@ public class EntityHelper {
         }
 
         entity.addEffect(new MobEffectInstance(effect, duration, amplifier, isAmbient, isVisible, showIcon));
-    }
-
-    /**
-     * 对于*层数*相关的药水效果
-     */
-    public static void addAmplifier(LivingEntity entity, MobEffect effect){
-        addAmplifier(entity, effect, 1);
-    }
-    public static void addAmplifier(LivingEntity entity, MobEffect effect, int count){
-        int amplifier = entity.getEffect(effect) == null ? -1 : entity.getEffect(effect).getAmplifier();
-        amplifier += count;
-
-        entity.removeEffect(effect);
-        if (amplifier < 0) return;
-
-        MobEffectInstance newEffect = new MobEffectInstance(
-                effect,
-                -1,
-                amplifier,
-                false,
-                false,
-                true
-        );
-        entity.addEffect(newEffect);
     }
 
     public static void setFireAtEntity(Entity entity) {

@@ -16,7 +16,7 @@ import java.util.List;
 @AutoRegisterCapability
 public class PlayerSwallowedTrinkets {
 
-    private List<ItemStack> swallowedTrinkets;
+    private final List<ItemStack> swallowedTrinkets;
 
     public PlayerSwallowedTrinkets(){
         swallowedTrinkets = new ArrayList<>();
@@ -130,6 +130,6 @@ public class PlayerSwallowedTrinkets {
 
     public void copyFrom(PlayerSwallowedTrinkets source) {
         this.swallowedTrinkets.clear();
-        this.swallowedTrinkets = new ArrayList<>(source.swallowedTrinkets);
+        this.swallowedTrinkets.addAll(source.swallowedTrinkets);
     }
 }

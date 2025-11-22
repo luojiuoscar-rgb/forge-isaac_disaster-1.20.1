@@ -1,11 +1,11 @@
 package net.luojiuoscar.isaac_disaster.item_ability.passive_item.items;
 
-import net.luojiuoscar.isaac_disaster.effect.ModEffects;
-import net.luojiuoscar.isaac_disaster.item_ability.passive_item.IRecursivePassiveItem;
+import net.luojiuoscar.isaac_disaster.item_ability.passive_item.IPassiveItem;
 import net.luojiuoscar.isaac_disaster.manager.EffectManager;
+import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.manager.item_managers.id.ItemId;
+import net.luojiuoscar.isaac_disaster.registries.recursive_module.ModRecursiveModule;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
@@ -13,7 +13,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class WhoreOfBabylon implements IRecursivePassiveItem {
+public class WhoreOfBabylon implements IPassiveItem {
 
     @Override
     public int getItemId() {
@@ -26,11 +26,12 @@ public class WhoreOfBabylon implements IRecursivePassiveItem {
 
     @Override
     public void handleObtain(Player player, @Nullable ItemStack stack) {
-        recursiveEffect(player);
+        StatManager.addRecursiveModule(player, ModRecursiveModule.WHORE_OF_BABYLON.getId(), 1);
     }
 
     @Override
     public void handleRemove(Player player, @Nullable ItemStack stack) {
+        StatManager.addRecursiveModule(player, ModRecursiveModule.WHORE_OF_BABYLON.getId(), -1);
     }
 
     @Override
@@ -39,25 +40,6 @@ public class WhoreOfBabylon implements IRecursivePassiveItem {
                 Component.translatable("item.isaac_disaster.whore_of_babylon.lore.1"),
                 Component.translatable("item.isaac_disaster.whore_of_babylon.lore.2")
         );
-    }
-
-    @Override
-    public int getTickInterval() {
-        return 10;
-    }
-
-    @Override
-    public void recursiveEffect(Player player) {
-        if (player.getHealth() > player.getMaxHealth() * 0.1) return;
-        MobEffectInstance instance = player.getEffect(ModEffects.BABYLON.get());
-        if (instance != null){
-            double duration = instance.getDuration();
-            if (duration > 60){
-                return; // 小于3秒的时候再添加新的效果
-            }
-        }
-
-        player.addEffect(new MobEffectInstance(ModEffects.BABYLON.get(), 240, 0));
     }
 
     @Override

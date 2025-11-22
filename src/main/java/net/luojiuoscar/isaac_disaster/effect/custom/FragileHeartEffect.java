@@ -1,12 +1,12 @@
 package net.luojiuoscar.isaac_disaster.effect.custom;
 
 import net.luojiuoscar.isaac_disaster.effect.ModEffects;
-import net.luojiuoscar.isaac_disaster.helper.EntityHelper;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.sound.ModSounds;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
+import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeMap;
@@ -66,10 +66,32 @@ public class FragileHeartEffect extends MobEffect {
         double emptyHealth = player.getMaxHealth() - player.getHealth();
         // 当前骨心中有生命值时不消耗
         if (emptyHealth >= StatManager.MAX_HEALTH.getBonus()){
-            EntityHelper.addAmplifier(player, ModEffects.FRAGILE_HEART.get(), -1);
+
+            FragileHeartEffect.stack(player, -1);
+
             player.level().playSound(null, player.getX(), player.getY(), player.getZ(),
                     ModSounds.BONE_HEART.get(), SoundSource.PLAYERS, 1.0f, 1.0f);
             event.setAmount(0.0f); // 骨心破碎时不额外扣除生命值
         }
+    }
+
+    public static void stack(LivingEntity entity, int count){
+        MobEffect effect = ModEffects.FRAGILE_HEART.get();
+
+        int amplifier = entity.getEffect(effect) == null ? -1 : entity.getEffect(effect).getAmplifier();
+        amplifier += count;
+
+        entity.removeEffect(effect);
+        if (amplifier < 0) return;
+
+        MobEffectInstance newEffect = new MobEffectInstance(
+                effect,
+                -1,
+                amplifier,
+                false,
+                false,
+                true
+        );
+        entity.addEffect(newEffect);
     }
 }

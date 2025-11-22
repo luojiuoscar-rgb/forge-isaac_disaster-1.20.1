@@ -1,7 +1,6 @@
 package net.luojiuoscar.isaac_disaster.item_ability.pickup.items;
 
-import net.luojiuoscar.isaac_disaster.effect.ModEffects;
-import net.luojiuoscar.isaac_disaster.helper.EntityHelper;
+import net.luojiuoscar.isaac_disaster.effect.custom.NecronmiconShieldEffect;
 import net.luojiuoscar.isaac_disaster.item_ability.pickup.IFoodPickup;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.manager.item_managers.id.PickupId;
@@ -32,11 +31,9 @@ public class BlackHeart implements IFoodPickup {
                 true,
                 true
         );
-
-        // 增加一层死灵庇护
-        EntityHelper.addAmplifier(player, ModEffects.NECRONMICON_SHIELD.get());
-        // 将效果施加给玩家
         player.addEffect(strength);
+        // 增加一层死灵庇护
+        NecronmiconShieldEffect.stack(player, 1);
     }
 
     @Override

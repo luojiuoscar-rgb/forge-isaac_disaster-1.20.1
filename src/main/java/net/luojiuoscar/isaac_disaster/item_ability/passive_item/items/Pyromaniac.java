@@ -1,17 +1,17 @@
 package net.luojiuoscar.isaac_disaster.item_ability.passive_item.items;
 
-import net.luojiuoscar.isaac_disaster.item_ability.passive_item.IRecursivePassiveItem;
+import net.luojiuoscar.isaac_disaster.item_ability.passive_item.IPassiveItem;
+import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.manager.item_managers.id.ItemId;
+import net.luojiuoscar.isaac_disaster.registries.recursive_module.ModRecursiveModule;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-public class Pyromaniac implements IRecursivePassiveItem {
+public class Pyromaniac implements IPassiveItem {
 
     @Override
     public int getItemId() {
@@ -23,11 +23,13 @@ public class Pyromaniac implements IRecursivePassiveItem {
 
     @Override
     public void handleObtain(Player player, @Nullable ItemStack stack) {
-        recursiveEffect(player); // 获取时触发一次
+        StatManager.addRecursiveModule(player, ModRecursiveModule.FIRE_RESISTANCE.getId(), 1);
     }
 
     @Override
-    public void handleRemove(Player player, @Nullable ItemStack stack) {}
+    public void handleRemove(Player player, @Nullable ItemStack stack) {
+        StatManager.addRecursiveModule(player, ModRecursiveModule.FIRE_RESISTANCE.getId(), -1);
+    }
 
     @Override
     public List<Component> getDescription() {
@@ -35,16 +37,5 @@ public class Pyromaniac implements IRecursivePassiveItem {
                 Component.translatable("item.isaac_disaster.pyromaniac.lore.1"),
                 Component.translatable("item.isaac_disaster.pyromaniac.lore.2")
         );
-    }
-
-    @Override
-    public int getTickInterval() {
-        return 100; // 每5秒一次
-    }
-
-    @Override
-    public void recursiveEffect(Player player) {
-        // 防火
-        player.addEffect(new MobEffectInstance(MobEffects.FIRE_RESISTANCE, 200, 0, false, false, true));
     }
 }

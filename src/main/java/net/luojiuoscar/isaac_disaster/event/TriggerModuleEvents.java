@@ -1,7 +1,7 @@
 package net.luojiuoscar.isaac_disaster.event;
 
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
-import net.luojiuoscar.isaac_disaster.capability.entity.TriggerModuleProvider;
+import net.luojiuoscar.isaac_disaster.capability.entity.EffectModulesProvider;
 import net.luojiuoscar.isaac_disaster.event.custom.attack.IsaacAttackAfterHitEvent;
 import net.luojiuoscar.isaac_disaster.event.custom.attack.IsaacAttackBeforeHitEntityEvent;
 import net.luojiuoscar.isaac_disaster.event.custom.attack.IsaacAttackHitBlockEvent;
@@ -33,7 +33,7 @@ public class TriggerModuleEvents {
         IForgeRegistry<ITriggerModule> reg =
                 RegistryManager.ACTIVE.getRegistry(ModTriggerModule.TRIGGER_MODULE_KEY);
 
-        player.getCapability(TriggerModuleProvider.TRIGGER_MODULES).ifPresent(triggerModule -> {
+        player.getCapability(EffectModulesProvider.EFFECT_MODULES).ifPresent(triggerModule -> {
 
             var queue = triggerModule.getTriggerModules().getCopy();
 
@@ -63,7 +63,7 @@ public class TriggerModuleEvents {
         IForgeRegistry<ITriggerModule> reg  =
                 RegistryManager.ACTIVE.getRegistry(ModTriggerModule.TRIGGER_MODULE_KEY);
 
-        entity.getCapability(TriggerModuleProvider.TRIGGER_MODULES).ifPresent(
+        entity.getCapability(EffectModulesProvider.EFFECT_MODULES).ifPresent(
                 triggerModule -> {
                     var queue = triggerModule.getTriggerModules().getCopy();
 
@@ -143,7 +143,7 @@ public class TriggerModuleEvents {
         IForgeRegistry<ITriggerModule> reg  =
                 RegistryManager.ACTIVE.getRegistry(ModTriggerModule.TRIGGER_MODULE_KEY);
 
-        player.getCapability(TriggerModuleProvider.TRIGGER_MODULES).ifPresent(
+        player.getCapability(EffectModulesProvider.EFFECT_MODULES).ifPresent(
                 triggerModule -> {
                     var queue = triggerModule.getTriggerModules().getCopy();
 
@@ -177,7 +177,7 @@ public class TriggerModuleEvents {
 
         Player player = event.getPlayer();
 
-        player.getCapability(TriggerModuleProvider.TRIGGER_MODULES).ifPresent(
+        player.getCapability(EffectModulesProvider.EFFECT_MODULES).ifPresent(
                 triggerModule -> {
 
                     var queue = triggerModule.getTriggerModules().getCopy();

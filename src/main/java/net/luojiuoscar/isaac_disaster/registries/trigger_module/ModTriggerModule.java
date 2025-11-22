@@ -16,18 +16,30 @@ public class ModTriggerModule {
             DeferredRegister.create(TRIGGER_MODULE_KEY, IsaacDisaster.MOD_ID);
 
 
-    public static final RegistryObject<ITriggerModule> PIGGY_BANK           = TRIGGER_MODULE_REGISTRY.register("piggy_bank", PiggyBank::new);
-    public static final RegistryObject<ITriggerModule> CURSE_OF_THE_TOWER   = TRIGGER_MODULE_REGISTRY.register("curse_of_the_tower", CurseOfTheTower::new);
-    public static final RegistryObject<ITriggerModule> HABIT                = TRIGGER_MODULE_REGISTRY.register("habit", Habit::new);
-    public static final RegistryObject<ITriggerModule> THE_WAFER            = TRIGGER_MODULE_REGISTRY.register("the_wafer", TheWafer::new);
-    public static final RegistryObject<ITriggerModule> THE_COMMON_COLD      = TRIGGER_MODULE_REGISTRY.register("the_common_cold", TheCommonCold::new);
-    public static final RegistryObject<ITriggerModule> SWALLOWED_PENNY      = TRIGGER_MODULE_REGISTRY.register("swallowed_penny", SwallowedPenny::new);
-    public static final RegistryObject<ITriggerModule> LUCKY_ROCK           = TRIGGER_MODULE_REGISTRY.register("lucky_rock", LuckyRock::new);
-    public static final RegistryObject<ITriggerModule> CARTRIDGE            = TRIGGER_MODULE_REGISTRY.register("cartridge", Cartridge::new);
-    public static final RegistryObject<ITriggerModule> BLIND_RAGE           = TRIGGER_MODULE_REGISTRY.register("blind_rage", BlindRage::new);
-    public static final RegistryObject<ITriggerModule> IPECAC               = TRIGGER_MODULE_REGISTRY.register("ipecac", Ipecac::new);
-    public static final RegistryObject<ITriggerModule> BOUNCE_ON_BLOCK      = TRIGGER_MODULE_REGISTRY.register("bounce_on_block", BounceOnBlock::new);
-    public static final RegistryObject<ITriggerModule> BOUNCE_ON_ENTITY     = TRIGGER_MODULE_REGISTRY.register("bounce_on_entity", BounceOnEntity::new);
+    public static final RegistryObject<ITriggerModule> PIGGY_BANK =
+            TRIGGER_MODULE_REGISTRY.register("piggy_bank", PiggyBank::new);
+    public static final RegistryObject<ITriggerModule> CURSE_OF_THE_TOWER =
+            TRIGGER_MODULE_REGISTRY.register("curse_of_the_tower", CurseOfTheTower::new);
+    public static final RegistryObject<ITriggerModule> HABIT =
+            TRIGGER_MODULE_REGISTRY.register("habit", Habit::new);
+    public static final RegistryObject<ITriggerModule> THE_WAFER =
+            TRIGGER_MODULE_REGISTRY.register("the_wafer", TheWafer::new);
+    public static final RegistryObject<ITriggerModule> THE_COMMON_COLD =
+            TRIGGER_MODULE_REGISTRY.register("the_common_cold", TheCommonCold::new);
+    public static final RegistryObject<ITriggerModule> SWALLOWED_PENNY =
+            TRIGGER_MODULE_REGISTRY.register("swallowed_penny", SwallowedPenny::new);
+    public static final RegistryObject<ITriggerModule> LUCKY_ROCK =
+            TRIGGER_MODULE_REGISTRY.register("lucky_rock", LuckyRock::new);
+    public static final RegistryObject<ITriggerModule> CARTRIDGE =
+            TRIGGER_MODULE_REGISTRY.register("cartridge", Cartridge::new);
+    public static final RegistryObject<ITriggerModule> BLIND_RAGE =
+            TRIGGER_MODULE_REGISTRY.register("blind_rage", BlindRage::new);
+    public static final RegistryObject<ITriggerModule> IPECAC =
+            TRIGGER_MODULE_REGISTRY.register("ipecac", Ipecac::new);
+    public static final RegistryObject<ITriggerModule> BOUNCE_ON_BLOCK =
+            TRIGGER_MODULE_REGISTRY.register("bounce_on_block", BounceOnBlock::new);
+    public static final RegistryObject<ITriggerModule> BOUNCE_ON_ENTITY =
+            TRIGGER_MODULE_REGISTRY.register("bounce_on_entity", BounceOnEntity::new);
 
 
 }

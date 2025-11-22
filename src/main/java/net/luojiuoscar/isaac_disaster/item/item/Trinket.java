@@ -1,13 +1,11 @@
 package net.luojiuoscar.isaac_disaster.item.item;
 
-import net.luojiuoscar.isaac_disaster.item_ability.trinket.IRecursiveTrinket;
 import net.luojiuoscar.isaac_disaster.item_ability.trinket.ITrinket;
 import net.luojiuoscar.isaac_disaster.manager.ColorManager;
 import net.luojiuoscar.isaac_disaster.manager.item_managers.TrinketManager;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
@@ -54,15 +52,6 @@ public class Trinket extends Item implements IIsaacCuriosItem {
     public void tryUnequip(SlotContext slotContext, ItemStack prevStack, ItemStack stack) {
         if (isSwallowing(prevStack) || isSwallowing(stack)) return; // 不知道为什么 但是这样可以
         TrinketManager.getInstance().getTrinketFromId(getTrinketId()).onUnequipped(slotContext.entity(), isEnchanted(stack));
-    }
-
-    @Override
-    public void curioTick(SlotContext slotContext, ItemStack stack) {
-        if (!(slotContext.entity() instanceof ServerPlayer player)) return;
-        if (!(TrinketManager.getInstance().getTrinketFromId(getTrinketId()) instanceof IRecursiveTrinket item)) return;
-        if (player.tickCount % item.getTickInterval() != 0) return;
-
-        item.recursiveEffect(player, isEnchanted(stack));
     }
 
     @Override

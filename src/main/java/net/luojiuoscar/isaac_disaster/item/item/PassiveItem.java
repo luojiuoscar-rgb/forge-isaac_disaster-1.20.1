@@ -2,7 +2,6 @@ package net.luojiuoscar.isaac_disaster.item.item;
 
 import net.luojiuoscar.isaac_disaster.Config;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerPassiveItemProvider;
-import net.luojiuoscar.isaac_disaster.item_ability.passive_item.IRecursivePassiveItem;
 import net.luojiuoscar.isaac_disaster.manager.ColorManager;
 import net.luojiuoscar.isaac_disaster.manager.item_managers.PassiveItemManager;
 import net.minecraft.client.Minecraft;
@@ -99,15 +98,6 @@ public class PassiveItem extends IsaacItem implements IIsaacCuriosItem {
     public void tryUnequip(SlotContext slotContext, ItemStack prevStack, ItemStack stack) {
         if (!(slotContext.entity() instanceof ServerPlayer player)) return;
         PassiveItemManager.getInstance().getItemFromId(getItemId()).onRemove(player, stack);
-    }
-
-    @Override
-    public void curioTick(SlotContext slotContext, ItemStack stack) {
-        if (!(slotContext.entity() instanceof ServerPlayer player)) return;
-        if (!(PassiveItemManager.getInstance().getItemFromId(getItemId()) instanceof IRecursivePassiveItem item)) return;
-        if (player.tickCount % item.getTickInterval() != 0) return; // tick interval
-
-        item.recursiveEffect(player); // recursive effect
     }
 
     @Override

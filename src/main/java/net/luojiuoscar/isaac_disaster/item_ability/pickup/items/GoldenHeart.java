@@ -1,7 +1,6 @@
 package net.luojiuoscar.isaac_disaster.item_ability.pickup.items;
 
-import net.luojiuoscar.isaac_disaster.effect.ModEffects;
-import net.luojiuoscar.isaac_disaster.helper.EntityHelper;
+import net.luojiuoscar.isaac_disaster.effect.custom.GildingEffect;
 import net.luojiuoscar.isaac_disaster.item_ability.pickup.IFoodPickup;
 import net.luojiuoscar.isaac_disaster.manager.item_managers.id.PickupId;
 import net.luojiuoscar.isaac_disaster.sound.ModSounds;
@@ -20,7 +19,7 @@ public class GoldenHeart implements IFoodPickup {
     @Override
     public void onUseEffect(Player player, ItemStack stack, InteractionHand hand) {
         int amplifier = player.getRandom().nextInt(5, 9);
-        EntityHelper.addAmplifier(player, ModEffects.GILDING.get(), amplifier);
+        GildingEffect.stack(player, amplifier);
     }
 
     @Override

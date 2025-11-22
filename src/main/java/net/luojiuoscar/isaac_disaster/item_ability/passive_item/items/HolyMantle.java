@@ -1,9 +1,10 @@
 package net.luojiuoscar.isaac_disaster.item_ability.passive_item.items;
 
-import net.luojiuoscar.isaac_disaster.effect.ModEffects;
-import net.luojiuoscar.isaac_disaster.helper.EntityHelper;
-import net.luojiuoscar.isaac_disaster.item_ability.passive_item.IRecursivePassiveItem;
+import net.luojiuoscar.isaac_disaster.item_ability.passive_item.IPassiveItem;
+import net.luojiuoscar.isaac_disaster.manager.EffectManager;
+import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.manager.item_managers.id.ItemId;
+import net.luojiuoscar.isaac_disaster.registries.recursive_module.ModRecursiveModule;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -12,7 +13,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class HolyMantle implements IRecursivePassiveItem {
+public class HolyMantle implements IPassiveItem {
     @Override
     public int getItemId() {
         return ItemId.HOLY_MANTLE.getId();
@@ -20,16 +21,16 @@ public class HolyMantle implements IRecursivePassiveItem {
 
     @Override
     public void handleFirstObtain(Player player, @Nullable ItemStack stack) {
-
     }
 
     @Override
     public void handleObtain(Player player, @Nullable ItemStack stack) {
-        // 考虑到可能可拆装，不会在获取时立刻给予一层神圣护盾
+        StatManager.addRecursiveModule(player, ModRecursiveModule.HOLY_MANTLE.getId(), 1);
     }
 
     @Override
     public void handleRemove(Player player, @Nullable ItemStack stack) {
+        StatManager.addRecursiveModule(player, ModRecursiveModule.HOLY_MANTLE.getId(), -1);
     }
 
     @Override
@@ -43,20 +44,8 @@ public class HolyMantle implements IRecursivePassiveItem {
     public List<Component> getExplain(){
         List<Component> description = new ArrayList<>();
 
-        description.add(Component.translatable("effect.isaac_disaster.holy_shield").append(": ")
-                .append(Component.translatable("effect.isaac_disaster.holy_shield.explain.1")));
-        description.add(Component.translatable("effect.isaac_disaster.holy_shield.explain.2"));
+        description.add(EffectManager.HOLY_SHIELD.getExplainDesc());
 
         return description;
-    }
-
-    @Override
-    public int getTickInterval() {
-        return 400; // 20s
-    }
-
-    @Override
-    public void recursiveEffect(Player player) {
-        EntityHelper.addAmplifier(player, ModEffects.HOLY_SHIELD.get());
     }
 }

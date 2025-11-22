@@ -1,13 +1,13 @@
 package net.luojiuoscar.isaac_disaster.item_ability.passive_item.items;
 
-import net.luojiuoscar.isaac_disaster.effect.ModEffects;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.item.ModItems;
-import net.luojiuoscar.isaac_disaster.item_ability.passive_item.IRecursivePassiveItem;
+import net.luojiuoscar.isaac_disaster.item_ability.passive_item.IPassiveItem;
 import net.luojiuoscar.isaac_disaster.manager.EffectManager;
+import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.manager.item_managers.id.ItemId;
+import net.luojiuoscar.isaac_disaster.registries.recursive_module.ModRecursiveModule;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
@@ -15,7 +15,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TheSoul implements IRecursivePassiveItem {
+public class TheSoul implements IPassiveItem {
     @Override
     public int getItemId() {
         return ItemId.THE_SOUL.getId();
@@ -28,10 +28,12 @@ public class TheSoul implements IRecursivePassiveItem {
 
     @Override
     public void handleObtain(Player player, @Nullable ItemStack stack) {
+        StatManager.addRecursiveModule(player, ModRecursiveModule.THE_SOUL.getId(), 1);
     }
 
     @Override
     public void handleRemove(Player player, @Nullable ItemStack stack) {
+        StatManager.addRecursiveModule(player, ModRecursiveModule.THE_SOUL.getId(), -1);
     }
 
     @Override
@@ -49,16 +51,5 @@ public class TheSoul implements IRecursivePassiveItem {
         description.add(EffectManager.SOUL_STATE.getExplainDesc());
 
         return description;
-    }
-
-    @Override
-    public int getTickInterval() {
-        return 200;
-    }
-
-    @Override
-    public void recursiveEffect(Player player) {
-        player.addEffect(new MobEffectInstance(
-                ModEffects.SOUL_STATE.get(), 120, 0, false, false, true));
     }
 }
