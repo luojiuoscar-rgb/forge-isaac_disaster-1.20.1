@@ -8,6 +8,7 @@ import net.luojiuoscar.isaac_disaster.manager.item_managers.id.ItemId;
 import net.luojiuoscar.isaac_disaster.manager.item_managers.id.PickupId;
 import net.luojiuoscar.isaac_disaster.sound.ModSounds;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -24,13 +25,13 @@ public class TheMagicianR implements ITarot {
     }
 
     @Override
-    public void onUseEffect(Player player, ItemStack stack, InteractionHand hand) {
+    public void onUseEffect(ServerPlayer player, ItemStack stack, InteractionHand hand) {
         int duration = 300;
         player.addEffect(new MobEffectInstance(ModEffects.SOUL_STATE.get(), duration));
     }
 
     @Override
-    public void onUseEffectStronger(Player player, ItemStack stack, InteractionHand hand) {
+    public void onUseEffectStronger(ServerPlayer player, ItemStack stack, InteractionHand hand) {
         int duration = 600;
         player.addEffect(new MobEffectInstance(ModEffects.SOUL_STATE.get(), duration));
     }

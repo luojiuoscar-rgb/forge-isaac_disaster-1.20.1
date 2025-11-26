@@ -25,7 +25,7 @@ public class TheMoon implements ITarot {
     }
 
     @Override
-    public void onUseEffect(Player player, ItemStack stack, InteractionHand hand) {
+    public void onUseEffect(ServerPlayer player, ItemStack stack, InteractionHand hand) {
         boolean s = PlayerHelper.teleportToNearestIdentifier(
                 (ServerPlayer) player, ModBlockEntities.SECRET_IDENTIFIER_BLOCK_ENTITY.getId());
         if (!s){
@@ -35,7 +35,7 @@ public class TheMoon implements ITarot {
     }
 
     @Override
-    public void onUseEffectStronger(Player player, ItemStack stack, InteractionHand hand) {
+    public void onUseEffectStronger(ServerPlayer player, ItemStack stack, InteractionHand hand) {
         onUseEffect(player, stack, hand);
     }
 

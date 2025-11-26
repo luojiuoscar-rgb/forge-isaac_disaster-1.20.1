@@ -26,9 +26,9 @@ public class Pheromones implements IPillEffect {
     }
 
     @Override
-    public void onUse(Player player, boolean withSFX){
+    public void onUse(ServerPlayer player){
         if (PlayerHelper.getPillQuality(player) < 0){
-            PillEffectManager.getInstance().getEffectFromEffectId(PillEffectId.PARALYSIS.getId()).onUse(player, true);
+            PillEffectManager.getInstance().getEffectFromEffectId(PillEffectId.PARALYSIS.getId()).onUse(player);
             return;
         }
 
@@ -39,9 +39,9 @@ public class Pheromones implements IPillEffect {
     }
 
     @Override
-    public void onUseH(Player player, boolean withSFX){
+    public void onUseH(ServerPlayer player){
         if (PlayerHelper.getPillQuality(player) < 0){
-            PillEffectManager.getInstance().getEffectFromEffectId(PillEffectId.PARALYSIS.getId()).onUseH(player, true);
+            PillEffectManager.getInstance().getEffectFromEffectId(PillEffectId.PARALYSIS.getId()).onUseH(player);
             return;
         }
 
@@ -52,7 +52,7 @@ public class Pheromones implements IPillEffect {
     }
 
     @Override
-    public void onUseEffect(Player player) {
+    public void onUseEffect(ServerPlayer player) {
         List<LivingEntity> entities = LevelHelper.selectBySphere(
                 player.level(), player.getX(), player.getY(), player.getZ(), StatManager.getNearbyRange());
 
@@ -73,7 +73,7 @@ public class Pheromones implements IPillEffect {
     }
 
     @Override
-    public void onUseEffectH(Player player) {
+    public void onUseEffectH(ServerPlayer player) {
         List<LivingEntity> entities = LevelHelper.selectBySphere(
                 player.level(), player.getX(), player.getY(), player.getZ(), StatManager.getNearbyRange() * 2);
 

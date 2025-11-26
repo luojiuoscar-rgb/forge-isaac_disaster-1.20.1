@@ -9,6 +9,7 @@ import net.luojiuoscar.isaac_disaster.entity.tnt.IsaacBomb;
 import net.luojiuoscar.isaac_disaster.event.custom.misc.GetShotDelayEvent;
 import net.luojiuoscar.isaac_disaster.helper.EntityHelper;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
+import net.luojiuoscar.isaac_disaster.item.ModPassiveItems;
 import net.luojiuoscar.isaac_disaster.item_ability.trinket.items.Perfection;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.manager.item_managers.id.ItemId;
@@ -16,6 +17,7 @@ import net.luojiuoscar.isaac_disaster.manager.item_managers.id.SetId;
 import net.luojiuoscar.isaac_disaster.manager.item_managers.id.TrinketId;
 import net.luojiuoscar.isaac_disaster.sound.ModSounds;
 import net.minecraft.core.BlockPos;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.damagesource.DamageSource;
@@ -140,17 +142,17 @@ public class ItemEvents {
 
         player.getCapability(PlayerPassiveItemProvider.PLAYER_PASSIVE_ITEM).ifPresent(
                 playerPassiveItem -> {
-                    Set<Integer> keys = playerPassiveItem.getItemCountMapFromAll(player).keySet();
-                    if (keys.contains(ItemId.POLYPHEMUS.getId()) || keys.contains(ItemId.MUTANT_SPIDER.getId())
-                            || keys.contains(ItemId.THE_INNER_EYE.getId())){
+                    Set<ResourceLocation> keys = playerPassiveItem.getItemCountMapFromAll(player).keySet();
+                    if (keys.contains(ModPassiveItems.POLYPHEMUS.getId()) || keys.contains(ModPassiveItems.MUTANT_SPIDER.getId())
+                            || keys.contains(ModPassiveItems.THE_INNER_EYE.getId())){
                         event.setDelay(originalDelay * 2);
                     }
 
-                    if (keys.contains(ItemId.IPECAC.getId())){
+                    if (keys.contains(ModPassiveItems.IPECAC.getId())){
                         event.setDelay(originalDelay * 3);
                     }
 
-                    if (keys.contains(ItemId.PERFECT_VISION.getId())){
+                    if (keys.contains(ModPassiveItems.PERFECT_VISION.getId())){
                         if (event.getDelay() > originalDelay)
                             event.setDelay(originalDelay);
                     }

@@ -21,9 +21,9 @@ public class Percs implements IPillEffect {
     }
 
     @Override
-    public void onUse(Player player, boolean withSFX){
+    public void onUse(ServerPlayer player){
         if (PlayerHelper.getPillQuality(player) < 0){
-            PillEffectManager.getInstance().getEffectFromEffectId(PillEffectId.ADDICTED.getId()).onUse(player, true);
+            PillEffectManager.getInstance().getEffectFromEffectId(PillEffectId.ADDICTED.getId()).onUse(player);
             return;
         }
 
@@ -34,9 +34,9 @@ public class Percs implements IPillEffect {
     }
 
     @Override
-    public void onUseH(Player player, boolean withSFX){
+    public void onUseH(ServerPlayer player){
         if (PlayerHelper.getPillQuality(player) < 0){
-            PillEffectManager.getInstance().getEffectFromEffectId(PillEffectId.ADDICTED.getId()).onUseH(player, true);
+            PillEffectManager.getInstance().getEffectFromEffectId(PillEffectId.ADDICTED.getId()).onUseH(player);
             return;
         }
 
@@ -47,7 +47,7 @@ public class Percs implements IPillEffect {
     }
 
     @Override
-    public void onUseEffect(Player player) {
+    public void onUseEffect(ServerPlayer player) {
         MobEffectInstance percs = new MobEffectInstance(
                 MobEffects.DAMAGE_RESISTANCE,
                 600,
@@ -57,7 +57,7 @@ public class Percs implements IPillEffect {
     }
 
     @Override
-    public void onUseEffectH(Player player) {
+    public void onUseEffectH(ServerPlayer player) {
         MobEffectInstance percs = new MobEffectInstance(
                 MobEffects.DAMAGE_RESISTANCE,
                 1500,

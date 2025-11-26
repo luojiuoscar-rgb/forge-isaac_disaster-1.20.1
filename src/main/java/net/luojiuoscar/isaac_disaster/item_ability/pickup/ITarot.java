@@ -16,9 +16,9 @@ public interface ITarot extends IPickup {
         if (player.level().isClientSide) return;
 
         if (PlayerHelper.hasItem(ItemId.TAROT_CLOTH.getId(), (ServerPlayer) player)){
-            onUseEffectStronger(player, stack, hand);
+            onUseEffectStronger((ServerPlayer) player, stack, hand);
         }else{
-            onUseEffect(player, stack, hand);
+            onUseEffect((ServerPlayer) player, stack, hand);
         }
 
         // 客户端效果
@@ -29,5 +29,5 @@ public interface ITarot extends IPickup {
         }
     }
 
-    void onUseEffectStronger(Player player, ItemStack stack, InteractionHand hand);
+    void onUseEffectStronger(ServerPlayer player, ItemStack stack, InteractionHand hand);
 }

@@ -9,6 +9,7 @@ import net.luojiuoscar.isaac_disaster.manager.item_managers.id.ItemId;
 import net.luojiuoscar.isaac_disaster.manager.item_managers.id.PickupId;
 import net.luojiuoscar.isaac_disaster.sound.ModSounds;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
@@ -24,12 +25,12 @@ public class JusticeR implements ITarot {
     }
 
     @Override
-    public void onUseEffect(Player player, ItemStack stack, InteractionHand hand) {
+    public void onUseEffect(ServerPlayer player, ItemStack stack, InteractionHand hand) {
         PlayerHelper.giveItem(player, ModItems.LOCKED_CHEST_ITEM.get(), player.getRandom().nextInt(2,5));
     }
 
     @Override
-    public void onUseEffectStronger(Player player, ItemStack stack, InteractionHand hand) {
+    public void onUseEffectStronger(ServerPlayer player, ItemStack stack, InteractionHand hand) {
         PlayerHelper.giveItem(player, ModItems.LOCKED_CHEST_ITEM.get(), player.getRandom().nextInt(4,15));
     }
 

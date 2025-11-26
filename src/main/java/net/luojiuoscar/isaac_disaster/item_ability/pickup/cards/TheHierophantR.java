@@ -25,15 +25,13 @@ public class TheHierophantR implements ITarot {
     }
 
     @Override
-    public void onUseEffect(Player player, ItemStack stack, InteractionHand hand) {
-        if (!(player instanceof ServerPlayer serverPlayer)) return;
-        LootHelper.spawnItemViaLoot(serverPlayer, player.position(), ModItems.BONE_HEART.get(), 2);
+    public void onUseEffect(ServerPlayer player, ItemStack stack, InteractionHand hand) {
+        LootHelper.spawnItemViaLoot(player, player.position(), ModItems.BONE_HEART.get(), 2);
     }
 
     @Override
-    public void onUseEffectStronger(Player player, ItemStack stack, InteractionHand hand) {
-        if (!(player instanceof ServerPlayer serverPlayer)) return;
-        LootHelper.spawnItemViaLoot(serverPlayer, player.position(), ModItems.BONE_HEART.get(), 3);
+    public void onUseEffectStronger(ServerPlayer player, ItemStack stack, InteractionHand hand) {
+        LootHelper.spawnItemViaLoot(player, player.position(), ModItems.BONE_HEART.get(), 3);
     }
 
     @Override

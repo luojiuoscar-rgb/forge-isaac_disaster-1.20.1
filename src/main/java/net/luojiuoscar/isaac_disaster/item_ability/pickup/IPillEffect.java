@@ -10,25 +10,27 @@ public interface IPillEffect {
 
     int getPillEffectId();
 
-    default void onUse(Player player, boolean withSFX){
-        onUseEffect(player);
+    default void onUse(ServerPlayer player){
 
-        if (withSFX && !player.level().isClientSide){
+
+        if (!player.level().isClientSide){
             ModMessages.sentToPlayer(new PillOnUseS2CPacket(getPillEffectId(), false), (ServerPlayer) player);
+        }else{
+            onUseEffect(player);
         }
     }
 
-    default void onUseH(Player player, boolean withSFX){
-        onUseEffectH(player);
-
-        if (withSFX && !player.level().isClientSide){
+    default void onUseH(ServerPlayer player){
+        if (!player.level().isClientSide){
             ModMessages.sentToPlayer(new PillOnUseS2CPacket(getPillEffectId(), true), (ServerPlayer) player);
+        }else{
+            onUseEffectH(player);
         }
     }
 
-    void onUseEffect(Player player);
+    void onUseEffect(ServerPlayer player);
 
-    void onUseEffectH(Player player);
+    void onUseEffectH(ServerPlayer player);
 
     default void onUseClient(Player player){
         onUseSound(player);

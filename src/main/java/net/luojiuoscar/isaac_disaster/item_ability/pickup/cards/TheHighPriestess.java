@@ -9,6 +9,7 @@ import net.luojiuoscar.isaac_disaster.manager.item_managers.id.ItemId;
 import net.luojiuoscar.isaac_disaster.manager.item_managers.id.PickupId;
 import net.luojiuoscar.isaac_disaster.sound.ModSounds;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.LivingEntity;
@@ -25,7 +26,7 @@ public class TheHighPriestess implements ITarot {
     }
 
     @Override
-    public void onUseEffect(Player player, ItemStack stack, InteractionHand hand) {
+    public void onUseEffect(ServerPlayer player, ItemStack stack, InteractionHand hand) {
         List<LivingEntity> entities = LevelHelper.selectBySphere(player.level(), player.getX(), player.getY(), player.getZ(), StatManager.getNearbyRange() * 0.6);
         double highestHealth = player.getHealth();
         LivingEntity target = player;
@@ -42,7 +43,7 @@ public class TheHighPriestess implements ITarot {
     }
 
     @Override
-    public void onUseEffectStronger(Player player, ItemStack stack, InteractionHand hand) {
+    public void onUseEffectStronger(ServerPlayer player, ItemStack stack, InteractionHand hand) {
         List<LivingEntity> entities = LevelHelper.selectBySphere(player.level(), player.getX(), player.getY(), player.getZ(), StatManager.getNearbyRange() * 0.6);
         double highestHealth = player.getHealth();
         LivingEntity target = player;

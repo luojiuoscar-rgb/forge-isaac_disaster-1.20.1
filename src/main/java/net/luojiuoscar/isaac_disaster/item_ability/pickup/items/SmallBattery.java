@@ -22,7 +22,7 @@ public class SmallBattery implements IBattery {
     public void onUseEffect(Player player, ItemStack stack, ItemStack target, InteractionHand hand) {
         if (player.level().isClientSide()) return;
 
-        PlayerHelper.chargeItem(target, 4 * ActiveItem.DAMAGE_PER_CHARGE,
+        PlayerHelper.chargeItem(target, 4 * ActiveItem.DAMAGE_PER_CHARGE_RATE,
                 PlayerHelper.hasItem(ItemId.THE_BATTERY.getId(), (ServerPlayer) player));
 
         player.getCooldowns().addCooldown(player.getItemInHand(hand).getItem(), 5);

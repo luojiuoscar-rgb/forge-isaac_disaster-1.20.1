@@ -22,9 +22,9 @@ public class ImDrowsy implements IPillEffect {
     }
 
     @Override
-    public void onUse(Player player, boolean withSFX){
+    public void onUse(ServerPlayer player){
         if (PlayerHelper.getPillQuality(player) > 0){
-            PillEffectManager.getInstance().getEffectFromEffectId(PillEffectId.IM_EXCITED.getId()).onUse(player, true);
+            PillEffectManager.getInstance().getEffectFromEffectId(PillEffectId.IM_EXCITED.getId()).onUse(player);
             return;
         }
 
@@ -35,9 +35,9 @@ public class ImDrowsy implements IPillEffect {
     }
 
     @Override
-    public void onUseH(Player player, boolean withSFX){
+    public void onUseH(ServerPlayer player){
         if (PlayerHelper.getPillQuality(player) > 0){
-            PillEffectManager.getInstance().getEffectFromEffectId(PillEffectId.IM_EXCITED.getId()).onUseH(player, true);
+            PillEffectManager.getInstance().getEffectFromEffectId(PillEffectId.IM_EXCITED.getId()).onUseH(player);
             return;
         }
 
@@ -49,7 +49,7 @@ public class ImDrowsy implements IPillEffect {
 
 
     @Override
-    public void onUseEffect(Player player) {
+    public void onUseEffect(ServerPlayer player) {
         if (PlayerHelper.getPillQuality(player) < 0){
             PlayerHelper.giveItem(player, ModItems.BLACK_HEART.get(), 1);
         }
@@ -61,7 +61,7 @@ public class ImDrowsy implements IPillEffect {
     }
 
     @Override
-    public void onUseEffectH(Player player) {
+    public void onUseEffectH(ServerPlayer player) {
         if (PlayerHelper.getPillQuality(player) < 0){
             PlayerHelper.giveItem(player, ModItems.BLACK_HEART.get(), 1);
         }

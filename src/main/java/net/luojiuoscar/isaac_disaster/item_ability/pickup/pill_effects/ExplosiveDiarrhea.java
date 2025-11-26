@@ -22,9 +22,9 @@ public class ExplosiveDiarrhea implements IPillEffect {
     }
 
     @Override
-    public void onUse(Player player, boolean withSFX){
+    public void onUse(ServerPlayer player){
         if (PlayerHelper.getPillQuality(player) < 0){
-            PillEffectManager.getInstance().getEffectFromEffectId(PillEffectId.RANGE_DOWN.getId()).onUse(player, true);
+            PillEffectManager.getInstance().getEffectFromEffectId(PillEffectId.RANGE_DOWN.getId()).onUse(player);
             return;
         }
 
@@ -35,9 +35,9 @@ public class ExplosiveDiarrhea implements IPillEffect {
     }
 
     @Override
-    public void onUseH(Player player, boolean withSFX){
+    public void onUseH(ServerPlayer player){
         if (PlayerHelper.getPillQuality(player) < 0){
-            PillEffectManager.getInstance().getEffectFromEffectId(PillEffectId.RANGE_DOWN.getId()).onUseH(player, true);
+            PillEffectManager.getInstance().getEffectFromEffectId(PillEffectId.RANGE_DOWN.getId()).onUseH(player);
             return;
         }
 
@@ -48,13 +48,13 @@ public class ExplosiveDiarrhea implements IPillEffect {
     }
 
     @Override
-    public void onUseEffect(Player player) {
+    public void onUseEffect(ServerPlayer player) {
         ScheduledFuncHelper.schedule("explosive_diarrhea", 15, 5, false,
                 () -> EntityHelper.spawnBomb(player.position(), player, player.level(), Vec3.ZERO, 1));
     }
 
     @Override
-    public void onUseEffectH(Player player) {
+    public void onUseEffectH(ServerPlayer player) {
         ScheduledFuncHelper.schedule("explosive_diarrhea_h", 15, 8, false,
                 () -> EntityHelper.spawnBomb(player.position(), player, player.level(), Vec3.ZERO, 2));
     }

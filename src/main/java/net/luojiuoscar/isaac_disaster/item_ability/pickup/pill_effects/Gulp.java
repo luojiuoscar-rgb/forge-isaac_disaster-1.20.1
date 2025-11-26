@@ -5,6 +5,7 @@ import net.luojiuoscar.isaac_disaster.item_ability.pickup.IPillEffect;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.manager.item_managers.id.PillEffectId;
 import net.luojiuoscar.isaac_disaster.sound.ModSounds;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 
 
@@ -15,12 +16,12 @@ public class Gulp implements IPillEffect {
     }
 
     @Override
-    public void onUseEffect(Player player) {
+    public void onUseEffect(ServerPlayer player) {
         PlayerHelper.swallowAllTrinkets(player);
     }
 
     @Override
-    public void onUseEffectH(Player player) {
+    public void onUseEffectH(ServerPlayer player) {
         int count = PlayerHelper.swallowAllTrinkets(player);
         StatManager.healHealth(player, count * 0.5f);
     }

@@ -5,9 +5,10 @@ import net.luojiuoscar.isaac_disaster.item_ability.pickup.ITarot;
 import net.luojiuoscar.isaac_disaster.manager.ColorManager;
 import net.luojiuoscar.isaac_disaster.manager.item_managers.id.ItemId;
 import net.luojiuoscar.isaac_disaster.manager.item_managers.id.PickupId;
-import net.luojiuoscar.isaac_disaster.manager.item_managers.ActiveItemManager;
+import net.luojiuoscar.isaac_disaster.registries.ability.active.ModActiveAbility;
 import net.luojiuoscar.isaac_disaster.sound.ModSounds;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
@@ -23,13 +24,13 @@ public class Death implements ITarot {
     }
 
     @Override
-    public void onUseEffect(Player player, ItemStack stack, InteractionHand hand) {
-        ActiveItemManager.getInstance().getItemFromId(ItemId.THE_NECRONMICON.getId()).onTriggeredEffect(player);
+    public void onUseEffect(ServerPlayer player, ItemStack stack, InteractionHand hand) {
+        ModActiveAbility.THE_NECRONMICON.get().onTrigger(player, null);
     }
 
     @Override
-    public void onUseEffectStronger(Player player, ItemStack stack, InteractionHand hand) {
-        ActiveItemManager.getInstance().getItemFromId(ItemId.THE_NECRONMICON.getId()).onTriggeredEffectStronger(player);
+    public void onUseEffectStronger(ServerPlayer player, ItemStack stack, InteractionHand hand) {
+        ModActiveAbility.THE_NECRONMICON.get().onTriggerStronger(player, null);
     }
 
     @Override

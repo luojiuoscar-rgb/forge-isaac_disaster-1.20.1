@@ -25,13 +25,13 @@ public class TheTower implements ITarot {
     }
 
     @Override
-    public void onUseEffect(Player player, ItemStack stack, InteractionHand hand) {
+    public void onUseEffect(ServerPlayer player, ItemStack stack, InteractionHand hand) {
         if (player.level().isClientSide) return;
         PlayerHelper.spawnRandomBombsNearby((ServerPlayer) player, StatManager.getNearbyRange() * 0.5, 6);
     }
 
     @Override
-    public void onUseEffectStronger(Player player, ItemStack stack, InteractionHand hand) {
+    public void onUseEffectStronger(ServerPlayer player, ItemStack stack, InteractionHand hand) {
         if (player.level().isClientSide) return;
         PlayerHelper.spawnRandomBombsNearby((ServerPlayer) player, StatManager.getNearbyRange() * 0.8, 12);
     }

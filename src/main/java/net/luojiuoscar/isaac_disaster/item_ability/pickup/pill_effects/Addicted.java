@@ -22,35 +22,38 @@ public class Addicted implements IPillEffect {
     }
 
     @Override
-    public void onUse(Player player, boolean withSFX){
+    public void onUse(ServerPlayer player){
         if (PlayerHelper.getPillQuality(player) > 0){
-            PillEffectManager.getInstance().getEffectFromEffectId(PillEffectId.PERCS.getId()).onUse(player, true);
+            PillEffectManager.getInstance().getEffectFromEffectId(PillEffectId.PERCS.getId()).onUse(player);
             return;
         }
 
-        onUseEffect(player);
         if (!player.level().isClientSide){
             ModMessages.sentToPlayer(new PillOnUseS2CPacket(getPillEffectId(), false), (ServerPlayer) player);
+        }else{
+            onUseEffect((ServerPlayer) player);
         }
     }
 
     @Override
-    public void onUseH(Player player, boolean withSFX){
+    public void onUseH(ServerPlayer player){
         if (PlayerHelper.getPillQuality(player) > 0){
-            PillEffectManager.getInstance().getEffectFromEffectId(PillEffectId.PERCS.getId()).onUseH(player, true);
+            PillEffectManager.getInstance().getEffectFromEffectId(PillEffectId.PERCS.getId()).onUseH(player);
             return;
         }
 
-        onUseEffectH(player);
+
         if (!player.level().isClientSide){
             ModMessages.sentToPlayer(new PillOnUseS2CPacket(getPillEffectId(), true), (ServerPlayer) player);
+        }else{
+            onUseEffectH((ServerPlayer) player);
         }
     }
 
 
 
     @Override
-    public void onUseEffect(Player player) {
+    public void onUseEffect(ServerPlayer player) {
         if (PlayerHelper.getPillQuality(player) < 0){
             PlayerHelper.giveItem(player, ModItems.BLACK_HEART.get(), 1);
         }
@@ -64,7 +67,7 @@ public class Addicted implements IPillEffect {
     }
 
     @Override
-    public void onUseEffectH(Player player) {
+    public void onUseEffectH(ServerPlayer player) {
         if (PlayerHelper.getPillQuality(player) < 0){
             PlayerHelper.giveItem(player, ModItems.BLACK_HEART.get(), 1);
         }

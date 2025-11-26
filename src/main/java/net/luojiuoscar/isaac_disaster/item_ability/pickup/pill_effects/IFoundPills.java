@@ -3,6 +3,7 @@ package net.luojiuoscar.isaac_disaster.item_ability.pickup.pill_effects;
 import net.luojiuoscar.isaac_disaster.item_ability.pickup.IPillEffect;
 import net.luojiuoscar.isaac_disaster.manager.item_managers.id.PillEffectId;
 import net.luojiuoscar.isaac_disaster.sound.ModSounds;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 
 public class IFoundPills implements IPillEffect {
@@ -12,12 +13,12 @@ public class IFoundPills implements IPillEffect {
     }
 
     @Override
-    public void onUseEffect(Player player) {
+    public void onUseEffect(ServerPlayer player) {
         // no effect
     }
 
     @Override
-    public void onUseEffectH(Player player) {
+    public void onUseEffectH(ServerPlayer player) {
         // no effect
     }
 

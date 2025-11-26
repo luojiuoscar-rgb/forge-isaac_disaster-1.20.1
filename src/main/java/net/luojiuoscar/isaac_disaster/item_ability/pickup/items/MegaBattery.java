@@ -20,7 +20,7 @@ public class MegaBattery implements IBattery {
     public void onUseEffect(Player player, ItemStack stack, ItemStack target, InteractionHand hand) {
         if (player.level().isClientSide()) return;
 
-        PlayerHelper.chargeItem(target, 24 * ActiveItem.DAMAGE_PER_CHARGE, true);
+        PlayerHelper.chargeItem(target, 24 * ActiveItem.DAMAGE_PER_CHARGE_RATE, true);
 
         player.getCooldowns().addCooldown(player.getItemInHand(hand).getItem(), 5);
     }

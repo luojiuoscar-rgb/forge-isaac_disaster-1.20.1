@@ -7,9 +7,7 @@ import net.luojiuoscar.isaac_disaster.block.ModBlocks;
 import net.luojiuoscar.isaac_disaster.commands.gamerule.ModGameRules;
 import net.luojiuoscar.isaac_disaster.effect.ModEffects;
 import net.luojiuoscar.isaac_disaster.entity.ModEntities;
-import net.luojiuoscar.isaac_disaster.item.ModCreativeModeTabs;
-import net.luojiuoscar.isaac_disaster.item.ModItems;
-import net.luojiuoscar.isaac_disaster.item.registries.PillRegistry;
+import net.luojiuoscar.isaac_disaster.item.*;
 import net.luojiuoscar.isaac_disaster.loot.ModLootModifiers;
 import net.luojiuoscar.isaac_disaster.loot.ModLootTypes;
 import net.luojiuoscar.isaac_disaster.manager.attack.AttackManager;
@@ -52,8 +50,12 @@ public class IsaacDisaster
         ModAttributes.register(modEventBus);
 
         ModItems.register(modEventBus);
-        PillRegistry.register(modEventBus);
+        ModPassiveItems.register(modEventBus);
+        ModActiveItems.register(modEventBus);
+        ModPills.register(modEventBus);
+
         ModCreativeModeTabs.register(modEventBus);
+
 
         ModBlocks.register(modEventBus);
         ModBlockEntities.register(modEventBus);
@@ -78,8 +80,6 @@ public class IsaacDisaster
         ModMessages.register();
 
         event.enqueueWork(() -> {
-            PassiveItemManager.getInstance().init();
-            ActiveItemManager.getInstance().init();
             TrinketManager.getInstance().init();
             PickupManager.getInstance().init();
             SetManager.getInstance().init();

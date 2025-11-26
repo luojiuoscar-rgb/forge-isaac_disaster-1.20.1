@@ -2,9 +2,7 @@ package net.luojiuoscar.isaac_disaster.item.item;
 
 import net.luojiuoscar.isaac_disaster.Config;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerPassiveItemProvider;
-import net.luojiuoscar.isaac_disaster.manager.ColorManager;
-import net.luojiuoscar.isaac_disaster.manager.item_managers.PassiveItemManager;
-import net.minecraft.client.Minecraft;
+import net.luojiuoscar.isaac_disaster.registries.ability.passive.PassiveAbility;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
@@ -12,6 +10,7 @@ import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraftforge.registries.RegistryObject;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import top.theillusivec4.curios.api.SlotContext;
@@ -19,85 +18,32 @@ import top.theillusivec4.curios.api.SlotContext;
 import java.util.List;
 
 public class PassiveItem extends IsaacItem implements IIsaacCuriosItem {
-    private static final String CONSUMED = "consumed";
-    private boolean canEquip;
-    private boolean canUnequip;
-
-    public PassiveItem(Properties properties, int itemLevel, int itemId, boolean hasSpecialEffect, boolean useOriginalColor) {
-        super(properties.stacksTo(1).rarity(IsaacItem.getRarity(itemLevel)), itemLevel, itemId, hasSpecialEffect, useOriginalColor);
-        this.canEquip = true;
-        this.canUnequip = true;
+    public PassiveItem(Properties properties, RegistryObject<PassiveAbility> ability) {
+        super(properties.stacksTo(1), ability);
     }
-
-    @Override
-    public void addDescription(List<Component> tooltipComponents, ItemStack stack){
-        tooltipComponents.addAll(
-                PassiveItemManager.getInstance().getItemFromId(getItemId()).getDescription()
-        );
-    }
-
-    @Override
-    public void addSynergyDescription(List<Component> tooltipComponents){
-        Player player = Minecraft.getInstance().player;
-        if (player == null) return;
-
-        tooltipComponents.addAll(
-                PassiveItemManager.getInstance().getItemFromId(getItemId()).getSynergyDescription()
-        );
-    };
 
     @Override
     public void addAdditionalInfo(List<Component> tooltipComponents, @Nullable ItemStack stack){
-        tooltipComponents.add(Component.literal(""));
-        if (stack != null && isConsumed(stack)){
-            tooltipComponents.add(Component.translatable("item.isaac_disaster.action.consumed")
-                    .withStyle(style -> style.withColor(ColorManager.SYNERGY)));
-        }
     }
 
-    @Override
-    public void addExplainInfo(List<Component> tooltipComponents) {
-        tooltipComponents.addAll(
-                PassiveItemManager.getInstance().getItemFromId(getItemId()).getExplain()
-        );
-    }
-
-    public static boolean isConsumed(ItemStack stack) {
-        return stack.getOrCreateTag().getBoolean(CONSUMED);
-    }
-    public static void setConsumed(ItemStack stack, boolean b) {
-        stack.getOrCreateTag().putBoolean(CONSUMED, b);
-    }
-    @Override
-    public boolean canEquip(SlotContext slotContext, ItemStack stack) {
-        return this.canEquip;
-    }
     @Override
     public boolean canUnequip(SlotContext slotContext, ItemStack stack) {
-        return this.canUnequip;
-    }
-    public void setCanEquip(boolean val){
-        this.canEquip = val;
-    }
-    public void setCanUnequip(boolean val){
-        this.canUnequip = val;
+        return Config.ALLOW_CURIO_UNEQUIP.get();
     }
 
     @Override
     public void tryEquip(SlotContext slotContext, ItemStack prevStack, ItemStack stack) {
         if (!(slotContext.entity() instanceof ServerPlayer player)) return;
-        PassiveItemManager.getInstance().getItemFromId(getItemId()).onObtain(player, stack, false);
-        setConsumed(stack, true);
-
-        if (!Config.ALLOW_CURIO_UNEQUIP.get()){
-            this.canUnequip = false;
-        }
+        if (!(getAbility() instanceof PassiveAbility passiveAbility)) return;
+        passiveAbility.onObtain(player, stack);
+        setHasBeenUsed(stack, true);
     }
 
     @Override
     public void tryUnequip(SlotContext slotContext, ItemStack prevStack, ItemStack stack) {
         if (!(slotContext.entity() instanceof ServerPlayer player)) return;
-        PassiveItemManager.getInstance().getItemFromId(getItemId()).onRemove(player, stack);
+        if (!(getAbility() instanceof PassiveAbility passiveAbility)) return;
+        passiveAbility.onRemove(player, stack);
     }
 
     @Override

@@ -44,9 +44,9 @@ public class Pill extends Item implements ICommonPickup {
         // 触发药丸效果
         if (!level.isClientSide){
             if (isHorsePill){
-                PillEffectManager.getInstance().getEffectFromPill(pillId).onUseH(player, true);
+                PillEffectManager.getInstance().getEffectFromPill(pillId).onUseH((ServerPlayer) player);
             }else {
-                PillEffectManager.getInstance().getEffectFromPill(pillId).onUse(player, true);
+                PillEffectManager.getInstance().getEffectFromPill(pillId).onUse((ServerPlayer) player);
             }
 
             // 如果没有有正确的药丸记录，则更新

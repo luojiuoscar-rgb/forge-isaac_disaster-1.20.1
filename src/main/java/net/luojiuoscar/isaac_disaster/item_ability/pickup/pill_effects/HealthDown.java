@@ -20,18 +20,18 @@ public class HealthDown implements IPillEffect {
     }
 
     @Override
-    public void onUse(Player player, boolean withSFX){
+    public void onUse(ServerPlayer player){
         if (PlayerHelper.getPillQuality(player) > 0){
-            PillEffectManager.getInstance().getEffectFromEffectId(PillEffectId.HEALTH_UP.getId()).onUse(player, true);
+            PillEffectManager.getInstance().getEffectFromEffectId(PillEffectId.HEALTH_UP.getId()).onUse(player);
             return;
         }
         if (player.getMaxHealth() <= StatManager.MAX_HEALTH.getBonus() * 0.5){
             if (PlayerHelper.getPillQuality(player) < 0){
-                PillEffectManager.getInstance().getEffectFromEffectId(PillEffectId.I_FOUND_PILLS.getId()).onUse(player, true);
+                PillEffectManager.getInstance().getEffectFromEffectId(PillEffectId.I_FOUND_PILLS.getId()).onUse(player);
                 return;
             }
 
-            PillEffectManager.getInstance().getEffectFromEffectId(PillEffectId.HEALTH_UP.getId()).onUse(player, true);
+            PillEffectManager.getInstance().getEffectFromEffectId(PillEffectId.HEALTH_UP.getId()).onUse(player);
             return;
         }
 
@@ -42,18 +42,18 @@ public class HealthDown implements IPillEffect {
     }
 
     @Override
-    public void onUseH(Player player, boolean withSFX){
+    public void onUseH(ServerPlayer player){
         if (PlayerHelper.getPillQuality(player) > 0){
-            PillEffectManager.getInstance().getEffectFromEffectId(PillEffectId.HEALTH_UP.getId()).onUseH(player, true);
+            PillEffectManager.getInstance().getEffectFromEffectId(PillEffectId.HEALTH_UP.getId()).onUseH(player);
             return;
         }
         if (player.getMaxHealth() <= StatManager.MAX_HEALTH.getBonus()){
             if (PlayerHelper.getPillQuality(player) < 0){
-                PillEffectManager.getInstance().getEffectFromEffectId(PillEffectId.I_FOUND_PILLS.getId()).onUseH(player, true);
+                PillEffectManager.getInstance().getEffectFromEffectId(PillEffectId.I_FOUND_PILLS.getId()).onUseH(player);
                 return;
             }
 
-            PillEffectManager.getInstance().getEffectFromEffectId(PillEffectId.HEALTH_UP.getId()).onUseH(player, true);
+            PillEffectManager.getInstance().getEffectFromEffectId(PillEffectId.HEALTH_UP.getId()).onUseH(player);
             return;
         }
 
@@ -65,7 +65,7 @@ public class HealthDown implements IPillEffect {
     
 
     @Override
-    public void onUseEffect(Player player) {
+    public void onUseEffect(ServerPlayer player) {
         if (PlayerHelper.getPillQuality(player) < 0){
             StatManager.DAMAGE.apply(player, 0.4);
         }
@@ -74,7 +74,7 @@ public class HealthDown implements IPillEffect {
     }
 
     @Override
-    public void onUseEffectH(Player player) {
+    public void onUseEffectH(ServerPlayer player) {
         if (PlayerHelper.getPillQuality(player) < 0){
             StatManager.DAMAGE.apply(player, 0.8);
         }

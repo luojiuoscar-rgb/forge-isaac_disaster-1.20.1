@@ -2,10 +2,10 @@ package net.luojiuoscar.isaac_disaster.item_ability.pickup.cards;
 
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.item.item.ActiveItem;
+import net.luojiuoscar.isaac_disaster.registries.ability.active.ActiveAbility;
 import net.luojiuoscar.isaac_disaster.item_ability.pickup.IPickup;
 import net.luojiuoscar.isaac_disaster.manager.item_managers.id.ItemId;
 import net.luojiuoscar.isaac_disaster.manager.item_managers.id.PickupId;
-import net.luojiuoscar.isaac_disaster.manager.item_managers.ActiveItemManager;
 import net.luojiuoscar.isaac_disaster.sound.ModSounds;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
@@ -24,7 +24,7 @@ public class QuestionCard implements IPickup {
     }
 
     @Override
-    public void onUseEffect(Player player, ItemStack stack, InteractionHand hand) {
+    public void onUseEffect(ServerPlayer player, ItemStack stack, InteractionHand hand) {
         if (player.level().isClientSide) return;
 
         ItemStack target = player.getItemInHand(InteractionHand.MAIN_HAND);
@@ -33,12 +33,12 @@ public class QuestionCard implements IPickup {
         }
 
         if (!(target.getItem() instanceof ActiveItem activeItem)) return;
-        int id = activeItem.getItemId();
+        if (!(activeItem.getAbility() instanceof ActiveAbility activeAbility)) return;
 
-        if (PlayerHelper.hasItem(ItemId.CAR_BATTERY.getId(), (ServerPlayer) player)){
-            ActiveItemManager.getInstance().getItemFromId(id).onTriggeredEffectStronger(player);
+        if (PlayerHelper.hasItem(ItemId.CAR_BATTERY.getId(), player)){
+            activeAbility.onTriggerStronger(player, null);
         }else{
-            ActiveItemManager.getInstance().getItemFromId(id).onTriggeredEffect(player);
+            activeAbility.onTrigger(player, null);
         }
     }
 

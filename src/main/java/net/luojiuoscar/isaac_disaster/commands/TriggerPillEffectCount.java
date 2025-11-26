@@ -25,11 +25,11 @@ public class TriggerPillEffectCount {
                                                     if (flag){
                                                         PillEffectManager.getInstance()
                                                                 .getEffectFromEffectId(effectId)
-                                                                .onUseH(player, true);
+                                                                .onUseH(player);
                                                     }else{
                                                         PillEffectManager.getInstance()
                                                                 .getEffectFromEffectId(effectId)
-                                                                .onUse(player, true);
+                                                                .onUse(player);
                                                     }
                                                     return 1;
                                                 }))))));

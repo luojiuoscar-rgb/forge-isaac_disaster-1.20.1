@@ -24,9 +24,9 @@ public class ICanSeeForever implements IPillEffect {
     }
 
     @Override
-    public void onUse(Player player, boolean withSFX){
+    public void onUse(ServerPlayer player){
         if (PlayerHelper.getPillQuality(player) < 0){
-            PillEffectManager.getInstance().getEffectFromEffectId(PillEffectId.AMNESIA.getId()).onUse(player, true);
+            PillEffectManager.getInstance().getEffectFromEffectId(PillEffectId.AMNESIA.getId()).onUse(player);
             return;
         }
 
@@ -37,9 +37,9 @@ public class ICanSeeForever implements IPillEffect {
     }
 
     @Override
-    public void onUseH(Player player, boolean withSFX){
+    public void onUseH(ServerPlayer player){
         if (PlayerHelper.getPillQuality(player) < 0){
-            PillEffectManager.getInstance().getEffectFromEffectId(PillEffectId.AMNESIA.getId()).onUseH(player, true);
+            PillEffectManager.getInstance().getEffectFromEffectId(PillEffectId.AMNESIA.getId()).onUseH(player);
             return;
         }
 
@@ -50,7 +50,7 @@ public class ICanSeeForever implements IPillEffect {
     }
 
     @Override
-    public void onUseEffect(Player player) {
+    public void onUseEffect(ServerPlayer player) {
         int duration = 600;
         player.addEffect(new MobEffectInstance(MobEffects.NIGHT_VISION, duration));
         player.addEffect(new MobEffectInstance(ModEffects.X_RAY_VISION.get(), duration));
@@ -59,7 +59,7 @@ public class ICanSeeForever implements IPillEffect {
     }
 
     @Override
-    public void onUseEffectH(Player player) {
+    public void onUseEffectH(ServerPlayer player) {
         int duration = 1500;
         player.addEffect(new MobEffectInstance(MobEffects.NIGHT_VISION, duration));
         player.addEffect(new MobEffectInstance(ModEffects.X_RAY_VISION.get(), duration));

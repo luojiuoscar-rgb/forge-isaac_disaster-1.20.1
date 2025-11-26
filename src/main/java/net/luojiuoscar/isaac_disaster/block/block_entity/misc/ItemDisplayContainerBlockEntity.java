@@ -63,7 +63,7 @@ public interface ItemDisplayContainerBlockEntity {
                 if (!extra.isEmpty()) addItemDisplay(extra);
             }
 
-            PoolHelper.markAsRemoval(player, tableId, isaacItem.getItemId()); // 移出道具池
+            PoolHelper.markAsRemoval(player, tableId, isaacItem.getId()); // 移出道具池
             BlockData.get(serverLevel).addItemBlock(pos); // 记录当前坐标
             return true;
         }

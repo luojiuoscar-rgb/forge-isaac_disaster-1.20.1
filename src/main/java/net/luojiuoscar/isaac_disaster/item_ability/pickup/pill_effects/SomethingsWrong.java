@@ -4,6 +4,7 @@ import net.luojiuoscar.isaac_disaster.item_ability.pickup.IPillEffect;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.manager.item_managers.id.PillEffectId;
 import net.luojiuoscar.isaac_disaster.sound.ModSounds;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.AreaEffectCloud;
@@ -19,7 +20,7 @@ public class SomethingsWrong implements IPillEffect {
 
 
     @Override
-    public void onUseEffect(Player player) {
+    public void onUseEffect(ServerPlayer player) {
         AreaEffectCloud cloud = new AreaEffectCloud(player.level(), player.getX(), player.getY(), player.getZ());
         cloud.setFixedColor(0x000000);
         cloud.setPotion(new Potion(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 400, 0)));
@@ -30,7 +31,7 @@ public class SomethingsWrong implements IPillEffect {
     }
 
     @Override
-    public void onUseEffectH(Player player) {
+    public void onUseEffectH(ServerPlayer player) {
         AreaEffectCloud cloud = new AreaEffectCloud(player.level(), player.getX(), player.getY(), player.getZ());
         cloud.setFixedColor(0x000000);
         cloud.setPotion(new Potion(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 600, 2)));

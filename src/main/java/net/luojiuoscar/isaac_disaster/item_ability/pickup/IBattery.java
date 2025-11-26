@@ -48,7 +48,7 @@ public interface IBattery extends IPickup{
     }
 
     @Override
-    default void onUseEffect(Player player, ItemStack stack, InteractionHand hand){}
+    default void onUseEffect(ServerPlayer player, ItemStack stack, InteractionHand hand){}
 
     void onUseEffect(Player player, ItemStack stack, ItemStack target ,InteractionHand hand);
 

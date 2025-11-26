@@ -3,6 +3,7 @@ package net.luojiuoscar.isaac_disaster.item_ability.pickup.items;
 import net.luojiuoscar.isaac_disaster.helper.EntityHelper;
 import net.luojiuoscar.isaac_disaster.item_ability.pickup.IPickup;
 import net.luojiuoscar.isaac_disaster.manager.item_managers.id.PickupId;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.InteractionHand;
@@ -16,7 +17,7 @@ public class GigaBomb implements IPickup {
     }
 
     @Override
-    public void onUseEffect(Player player, ItemStack stack, InteractionHand hand) {
+    public void onUseEffect(ServerPlayer player, ItemStack stack, InteractionHand hand) {
         if (player.level().isClientSide()) return;
 
         EntityHelper.throwGigaBomb(player, 120);

@@ -1,17 +1,14 @@
 package net.luojiuoscar.isaac_disaster.item.item.custom;
 
 import net.luojiuoscar.isaac_disaster.item.item.PassiveItem;
-import net.luojiuoscar.isaac_disaster.manager.StatManager;
-import net.minecraft.ChatFormatting;
+import net.luojiuoscar.isaac_disaster.registries.ability.passive.PassiveAbility;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.Style;
 import net.minecraft.world.item.ItemStack;
+import net.minecraftforge.registries.RegistryObject;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -19,31 +16,8 @@ import java.util.UUID;
 public class ExperimentalTreatmentItem extends PassiveItem {
     private static final String NBT_MODIFIERS = "Modifiers";
 
-    public ExperimentalTreatmentItem(Properties properties, int itemLevel, int itemId) {
-        super(properties, itemLevel, itemId, true, false);
-    }
-
-
-    @Override
-    public void addDescription(List<Component> tooltipComponents, ItemStack stack){
-        Map<UUID, Double> map = getModifierMap(stack);
-        if (map.isEmpty()) {
-            super.addDescription(tooltipComponents, stack);
-            return;
-        }
-
-        for (Map.Entry<UUID, Double> entry : map.entrySet()) {
-            UUID key = entry.getKey();
-            Double value = entry.getValue();
-
-            if (value < 0){
-                tooltipComponents.add(StatManager.fromUUID(key).description(value, Style.EMPTY.withColor(ChatFormatting.RED)));
-            }else if (value <= 1){
-                tooltipComponents.add(StatManager.fromUUID(key).description(value, Style.EMPTY.withColor(ChatFormatting.GREEN)));
-            }else {
-                tooltipComponents.add(StatManager.fromUUID(key).description(value, Style.EMPTY.withColor(ChatFormatting.LIGHT_PURPLE)));
-            }
-        }
+    public ExperimentalTreatmentItem(Properties properties, RegistryObject<PassiveAbility> ability) {
+        super(properties, ability);
     }
 
     /** 将指定修正值写入 NBT */

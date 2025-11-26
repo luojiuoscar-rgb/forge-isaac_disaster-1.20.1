@@ -21,7 +21,7 @@ public class ModCreativeModeTabs {
 
 
     public static final RegistryObject<CreativeModeTab> PASSIVE_ITEMS_TAB = CREATIVE_MODE_TABS.register("passive_items_tab",
-            () -> CreativeModeTab.builder().icon(() -> new ItemStack(ModItems.BREAKFAST.get()))
+            () -> CreativeModeTab.builder().icon(() -> new ItemStack(ModPassiveItems.BREAKFAST.get()))
                     .title(Component.translatable("creativetab.isaac_disaster.passive_items"))
                     .displayItems((params, output) -> {
                         //将道具添加进创造模式面板
@@ -32,7 +32,7 @@ public class ModCreativeModeTabs {
 
 
     public static final RegistryObject<CreativeModeTab> ACTIVE_ITEMS_TAB = CREATIVE_MODE_TABS.register("active_items_tab",
-            () -> CreativeModeTab.builder().icon(() -> new ItemStack(ModItems.YUM_HEART.get()))
+            () -> CreativeModeTab.builder().icon(() -> new ItemStack(ModActiveItems.THE_D6.get()))
                     .withTabsBefore(ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "passive_items_tab"))
                     .title(Component.translatable("creativetab.isaac_disaster.active_items"))
                     .displayItems((params, output) -> {

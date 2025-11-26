@@ -20,9 +20,9 @@ public class LuckUp implements IPillEffect {
     }
 
     @Override
-    public void onUse(Player player, boolean withSFX){
+    public void onUse(ServerPlayer player){
         if (PlayerHelper.getPillQuality(player) < 0){
-            PillEffectManager.getInstance().getEffectFromEffectId(PillEffectId.LUCK_DOWN.getId()).onUse(player, true);
+            PillEffectManager.getInstance().getEffectFromEffectId(PillEffectId.LUCK_DOWN.getId()).onUse(player);
             return;
         }
 
@@ -33,9 +33,9 @@ public class LuckUp implements IPillEffect {
     }
 
     @Override
-    public void onUseH(Player player, boolean withSFX){
+    public void onUseH(ServerPlayer player){
         if (PlayerHelper.getPillQuality(player) < 0){
-            PillEffectManager.getInstance().getEffectFromEffectId(PillEffectId.LUCK_DOWN.getId()).onUseH(player, true);
+            PillEffectManager.getInstance().getEffectFromEffectId(PillEffectId.LUCK_DOWN.getId()).onUseH(player);
             return;
         }
 
@@ -47,12 +47,12 @@ public class LuckUp implements IPillEffect {
     }
 
     @Override
-    public void onUseEffect(Player player) {
+    public void onUseEffect(ServerPlayer player) {
         StatManager.LUCK.apply(player, 1);
     }
 
     @Override
-    public void onUseEffectH(Player player) {
+    public void onUseEffectH(ServerPlayer player) {
         StatManager.LUCK.apply(player, 2);
     }
 

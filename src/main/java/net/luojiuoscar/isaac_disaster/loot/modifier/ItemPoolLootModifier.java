@@ -4,7 +4,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.luojiuoscar.isaac_disaster.helper.PoolHelper;
-import net.luojiuoscar.isaac_disaster.item.ModItems;
+import net.luojiuoscar.isaac_disaster.item.ModPassiveItems;
 import net.luojiuoscar.isaac_disaster.item.item.IsaacItem;
 import net.luojiuoscar.isaac_disaster.loot.TempPoolManager;
 import net.luojiuoscar.isaac_disaster.manager.item_managers.id.ItemId;
@@ -76,7 +76,7 @@ public class ItemPoolLootModifier extends LootModifier {
                 ItemStack[] tempStack = new ItemStack[1];
                 lootItem.createItemStack(s -> tempStack[0] = s, lootContext);
                 Item item = tempStack[0].getItem();
-                if (item instanceof IsaacItem isaacItem && !PoolHelper.isRemoved(player, tableId, isaacItem.getItemId())) {
+                if (item instanceof IsaacItem isaacItem && !PoolHelper.isRemoved(player, tableId, isaacItem.getId())) {
                     newEntries.add(LootItem.lootTableItem(item));
                 }
             } else {
@@ -89,7 +89,7 @@ public class ItemPoolLootModifier extends LootModifier {
                     lootContext.getLevel().registryAccess().registryOrThrow(Registries.ITEM).getTag(tagKey).ifPresent(tagItems -> {
                         for (Holder<Item> holder : tagItems) {
                             Item item = holder.value();
-                            if (item instanceof IsaacItem isaacItem && !PoolHelper.isRemoved(player, tableId, isaacItem.getItemId())) {
+                            if (item instanceof IsaacItem isaacItem && !PoolHelper.isRemoved(player, tableId, isaacItem.getId())) {
                                 newEntries.add(LootItem.lootTableItem(item));
                             }
                         }
@@ -110,7 +110,7 @@ public class ItemPoolLootModifier extends LootModifier {
         // 构建临时 pool
         LootPool.Builder poolBuilder = LootPool.lootPool().setRolls(ConstantValue.exactly(1));
         if (newEntries.isEmpty()) {
-            poolBuilder.add(LootItem.lootTableItem(ModItems.BREAKFAST.get()));
+            poolBuilder.add(LootItem.lootTableItem(ModPassiveItems.BREAKFAST.get()));
         }else{
             for (LootPoolEntryContainer.Builder<?> builder : newEntries) {
                 poolBuilder.add(builder);

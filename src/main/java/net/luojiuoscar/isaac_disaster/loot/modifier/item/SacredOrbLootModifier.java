@@ -56,7 +56,7 @@ public class SacredOrbLootModifier extends LootModifier {
         ObjectArrayList<ItemStack> generated = new ObjectArrayList<>();
 
         // 从当前 stack 取出等级信息
-        int level = item.getItemLevel();
+        int level = item.getLevel();
         int attempts = 0;
         while (level <= 2 && attempts < 20) {
             generated.clear();
@@ -68,7 +68,7 @@ public class SacredOrbLootModifier extends LootModifier {
             }
 
             if (stack.getItem() instanceof IsaacItem newItem) {
-                level = newItem.getItemLevel();
+                level = newItem.getLevel();
                 if ((level == 2 && rand.nextDouble() < 0.5) || level > 2) {
                     break;
                 }

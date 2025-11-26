@@ -2,10 +2,11 @@ package net.luojiuoscar.isaac_disaster.item_ability.pickup.pill_effects;
 
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerItemUseRecordProvider;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
-import net.luojiuoscar.isaac_disaster.item.registries.PillRegistry;
+import net.luojiuoscar.isaac_disaster.item.ModPills;
 import net.luojiuoscar.isaac_disaster.item_ability.pickup.IPillEffect;
 import net.luojiuoscar.isaac_disaster.manager.item_managers.id.PillEffectId;
 import net.luojiuoscar.isaac_disaster.sound.ModSounds;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
@@ -18,30 +19,30 @@ public class Vurp implements IPillEffect {
 
 
     @Override
-    public void onUseEffect(Player player) {
+    public void onUseEffect(ServerPlayer player) {
         player.getCapability(PlayerItemUseRecordProvider.PLAYER_ITEM_USE_RECORD).ifPresent(
                 playerItemUseRecord -> {
                     var pills = playerItemUseRecord.getPillRecords();
                     if (pills.isEmpty()){
-                        PlayerHelper.giveItem(player, new ItemStack(PillRegistry.getGoldenPill(false).get()));
+                        PlayerHelper.giveItem(player, new ItemStack(ModPills.getGoldenPill(false).get()));
                     }else{
                         int id = pills.get(0).id();
-                        PlayerHelper.giveItem(player, new ItemStack(PillRegistry.getPillById(id, false).get()));
+                        PlayerHelper.giveItem(player, new ItemStack(ModPills.getPillById(id, false).get()));
                     }
                 }
         );
     }
 
     @Override
-    public void onUseEffectH(Player player) {
+    public void onUseEffectH(ServerPlayer player) {
         player.getCapability(PlayerItemUseRecordProvider.PLAYER_ITEM_USE_RECORD).ifPresent(
                 playerItemUseRecord -> {
                     var pills = playerItemUseRecord.getPillRecords();
                     if (pills.isEmpty()){
-                        PlayerHelper.giveItem(player, new ItemStack(PillRegistry.getGoldenPill(true).get()));
+                        PlayerHelper.giveItem(player, new ItemStack(ModPills.getGoldenPill(true).get()));
                     }else{
                         int id = pills.get(0).id();
-                        PlayerHelper.giveItem(player, new ItemStack(PillRegistry.getPillById(id, true).get()));
+                        PlayerHelper.giveItem(player, new ItemStack(ModPills.getPillById(id, true).get()));
                     }
                 }
         );

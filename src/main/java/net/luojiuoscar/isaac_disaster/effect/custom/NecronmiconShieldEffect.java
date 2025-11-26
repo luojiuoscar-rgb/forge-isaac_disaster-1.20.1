@@ -2,9 +2,9 @@ package net.luojiuoscar.isaac_disaster.effect.custom;
 
 import net.luojiuoscar.isaac_disaster.effect.ModEffects;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
-import net.luojiuoscar.isaac_disaster.manager.item_managers.ActiveItemManager;
-import net.luojiuoscar.isaac_disaster.manager.item_managers.id.ItemId;
+import net.luojiuoscar.isaac_disaster.registries.ability.active.ModActiveAbility;
 import net.luojiuoscar.isaac_disaster.sound.ModSounds;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
@@ -27,7 +27,7 @@ public class NecronmiconShieldEffect extends MobEffect {
 
     public static void onTriggered(LivingHurtEvent event){
         Entity attacker = event.getSource().getEntity();
-        if (!(event.getEntity() instanceof Player player)) return;
+        if (!(event.getEntity() instanceof ServerPlayer player)) return;
 
         if (event.getAmount() <= Math.max(1.0f, StatManager.MAX_HEALTH.getBonus() * 0.25f)) return;
         // 伤害来源不能是拥有死灵庇护的玩家；否则不生效
@@ -35,7 +35,7 @@ public class NecronmiconShieldEffect extends MobEffect {
                 attackerplayer.hasEffect(ModEffects.NECRONMICON_SHIELD.get())) return;
 
         // effect
-        ActiveItemManager.getInstance().getItemFromId(ItemId.THE_NECRONMICON.getId()).onTriggeredEffect(player);
+        ModActiveAbility.THE_NECRONMICON.get().onTrigger(player, null);
         // remove 1 amplifier
         NecronmiconShieldEffect.stack(player, -1);
         // sounds

@@ -1,7 +1,7 @@
 package net.luojiuoscar.isaac_disaster.effect.curse;
 
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
-import net.luojiuoscar.isaac_disaster.item.ModItems;
+import net.luojiuoscar.isaac_disaster.item.ModPassiveItems;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.effect.MobEffect;
@@ -18,7 +18,7 @@ public class CurseOfTheMaze extends MobEffect {
 
     @Override
     public List<ItemStack> getCurativeItems() {
-        return List.of(new ItemStack(ModItems.BLACK_CANDLE.get()));
+        return List.of(new ItemStack(ModPassiveItems.BLACK_CANDLE.get()));
     }
 
     public static void onTriggered(LivingHurtEvent event){

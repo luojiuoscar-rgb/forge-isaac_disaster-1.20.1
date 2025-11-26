@@ -41,13 +41,6 @@ public class ModMessages {
                 .consumerNetworkThread(ClearPassiveItemC2SPacket::handle)
                 .add();
 
-        // register UseActiveItemS2CPacket
-        net.messageBuilder(UseActiveItemS2CPacket.class, id(), NetworkDirection.PLAY_TO_CLIENT)
-                .decoder(UseActiveItemS2CPacket::new)
-                .encoder(UseActiveItemS2CPacket::toBytes)
-                .consumerNetworkThread(UseActiveItemS2CPacket::handle)
-                .add();
-
         // register PassiveItemModifyCountSyncS2CPacket
         net.messageBuilder(PassiveItemModifyCountSyncS2CPacket.class, id(), NetworkDirection.PLAY_TO_CLIENT)
                 .decoder(PassiveItemModifyCountSyncS2CPacket::new)

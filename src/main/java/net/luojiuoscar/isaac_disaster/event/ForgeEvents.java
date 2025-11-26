@@ -275,7 +275,7 @@ public class ForgeEvents {
     public static void syncItemDataToClient(ServerPlayer player) {
         player.getCapability(PlayerPassiveItemProvider.PLAYER_PASSIVE_ITEM).ifPresent(
                 playerPassiveItem -> {
-                    Map<Integer, Integer> items = playerPassiveItem.getItemCountMapFromAll(player);
+                    Map<ResourceLocation, Integer> items = playerPassiveItem.getItemCountMapFromAll(player);
                     ModMessages.sentToPlayer(new PassiveItemMapSyncS2CPacket(items), player);
                 });
     }

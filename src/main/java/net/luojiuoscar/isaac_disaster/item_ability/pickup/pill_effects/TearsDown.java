@@ -20,9 +20,9 @@ public class TearsDown implements IPillEffect {
     }
 
     @Override
-    public void onUse(Player player, boolean withSFX){
+    public void onUse(ServerPlayer player){
         if (PlayerHelper.getPillQuality(player) > 0){
-            PillEffectManager.getInstance().getEffectFromEffectId(PillEffectId.TEARS_UP.getId()).onUse(player, true);
+            PillEffectManager.getInstance().getEffectFromEffectId(PillEffectId.TEARS_UP.getId()).onUse(player);
             return;
         }
 
@@ -33,9 +33,9 @@ public class TearsDown implements IPillEffect {
     }
 
     @Override
-    public void onUseH(Player player, boolean withSFX){
+    public void onUseH(ServerPlayer player){
         if (PlayerHelper.getPillQuality(player) > 0){
-            PillEffectManager.getInstance().getEffectFromEffectId(PillEffectId.TEARS_UP.getId()).onUseH(player, true);
+            PillEffectManager.getInstance().getEffectFromEffectId(PillEffectId.TEARS_UP.getId()).onUseH(player);
             return;
         }
 
@@ -47,7 +47,7 @@ public class TearsDown implements IPillEffect {
     }
 
     @Override
-    public void onUseEffect(Player player) {
+    public void onUseEffect(ServerPlayer player) {
         if (PlayerHelper.getPillQuality(player) < 0){
             StatManager.MAX_HEALTH.apply(player, 0.4);
         }
@@ -55,7 +55,7 @@ public class TearsDown implements IPillEffect {
     }
 
     @Override
-    public void onUseEffectH(Player player) {
+    public void onUseEffectH(ServerPlayer player) {
         if (PlayerHelper.getPillQuality(player) < 0){
             StatManager.MAX_HEALTH.apply(player, 0.8);
         }

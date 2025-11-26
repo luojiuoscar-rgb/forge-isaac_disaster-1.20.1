@@ -22,9 +22,10 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 public class IsaacBomb extends PrimedTnt {
-    private static EntityDataAccessor<Float> DATA_SCALE =
+    private static final EntityDataAccessor<Float> SCALE =
             SynchedEntityData.defineId(IsaacBomb.class, EntityDataSerializers.FLOAT);
-    private static EntityDataAccessor<Boolean> DATA_IS_ORIGINAL =
+
+    private static final EntityDataAccessor<Boolean> IS_ORIGINAL =
             SynchedEntityData.defineId(IsaacBomb.class, EntityDataSerializers.BOOLEAN);
 
     private int power;
@@ -34,31 +35,31 @@ public class IsaacBomb extends PrimedTnt {
     public IsaacBomb(Level pLevel, double pX, double pY, double pZ, @Nullable LivingEntity pOwner, int power, float scale, boolean isOriginal) {
         super(pLevel, pX, pY, pZ, pOwner);
         this.power = power;
-        this.entityData.set(DATA_SCALE, scale);
-        this.entityData.set(DATA_IS_ORIGINAL, isOriginal);
+        this.entityData.set(SCALE, scale);
+        this.entityData.set(IS_ORIGINAL, isOriginal);
     }
 
     public boolean isOriginal(){
-        return this.entityData.get(DATA_IS_ORIGINAL);
+        return this.entityData.get(IS_ORIGINAL);
     }
 
     public void setOriginal(boolean isOriginal) {
-        this.entityData.set(DATA_IS_ORIGINAL, isOriginal);
+        this.entityData.set(IS_ORIGINAL, isOriginal);
     }
 
     @Override
     protected void defineSynchedData() {
         super.defineSynchedData();
-        this.entityData.define(DATA_SCALE, 1.0f);
-        this.entityData.define(DATA_IS_ORIGINAL, true);
+        this.entityData.define(SCALE, 1.0f);
+        this.entityData.define(IS_ORIGINAL, true);
     }
 
     public float getScale() {
-        return this.entityData.get(DATA_SCALE);
+        return this.entityData.get(SCALE);
     }
 
     public void setScale(float scale) {
-        this.entityData.set(DATA_SCALE, scale);
+        this.entityData.set(SCALE, scale);
     }
 
 

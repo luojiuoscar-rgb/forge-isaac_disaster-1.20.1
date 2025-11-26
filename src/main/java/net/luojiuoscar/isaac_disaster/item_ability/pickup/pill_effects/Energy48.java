@@ -21,9 +21,9 @@ public class Energy48 implements IPillEffect {
     }
 
     @Override
-    public void onUse(Player player, boolean withSFX){
+    public void onUse(ServerPlayer player){
         if (PlayerHelper.getPillQuality(player) < 0){
-            PillEffectManager.getInstance().getEffectFromEffectId(PillEffectId.SPEED_DOWN.getId()).onUse(player, true);
+            PillEffectManager.getInstance().getEffectFromEffectId(PillEffectId.SPEED_DOWN.getId()).onUse(player);
             return;
         }
 
@@ -34,9 +34,9 @@ public class Energy48 implements IPillEffect {
     }
 
     @Override
-    public void onUseH(Player player, boolean withSFX){
+    public void onUseH(ServerPlayer player){
         if (PlayerHelper.getPillQuality(player) < 0){
-            PillEffectManager.getInstance().getEffectFromEffectId(PillEffectId.SPEED_DOWN.getId()).onUseH(player, true);
+            PillEffectManager.getInstance().getEffectFromEffectId(PillEffectId.SPEED_DOWN.getId()).onUseH(player);
             return;
         }
 
@@ -47,21 +47,17 @@ public class Energy48 implements IPillEffect {
     }
 
     @Override
-    public void onUseEffect(Player player) {
-        if (player instanceof ServerPlayer serverPlayer){
-            PlayerHelper.chargeAll(serverPlayer, null);
-            LootHelper.spawnItemViaLoot(serverPlayer, player.position(), ModItems.SMALL_BATTERY.get(),
-                    serverPlayer.getRandom().nextInt(1,3));
-        }
+    public void onUseEffect(ServerPlayer player) {
+        PlayerHelper.chargeAll(player, null);
+        LootHelper.spawnItemViaLoot(player, player.position(), ModItems.SMALL_BATTERY.get(),
+                player.getRandom().nextInt(1,3));
     }
 
     @Override
-    public void onUseEffectH(Player player) {
-        if (player instanceof ServerPlayer serverPlayer){
-            PlayerHelper.chargeAll(serverPlayer, null, true);
-            LootHelper.spawnItemViaLoot(serverPlayer, player.position(), ModItems.SMALL_BATTERY.get(),
-                    serverPlayer.getRandom().nextInt(3,5));
-        }
+    public void onUseEffectH(ServerPlayer player) {
+        PlayerHelper.chargeAll(player, null, true);
+        LootHelper.spawnItemViaLoot(player, player.position(), ModItems.SMALL_BATTERY.get(),
+                player.getRandom().nextInt(3,5));
     }
 
     @Override

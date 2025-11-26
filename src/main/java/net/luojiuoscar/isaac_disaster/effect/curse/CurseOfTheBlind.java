@@ -1,6 +1,6 @@
 package net.luojiuoscar.isaac_disaster.effect.curse;
 
-import net.luojiuoscar.isaac_disaster.item.ModItems;
+import net.luojiuoscar.isaac_disaster.item.ModPassiveItems;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.item.ItemStack;
@@ -14,6 +14,6 @@ public class CurseOfTheBlind extends MobEffect {
 
     @Override
     public List<ItemStack> getCurativeItems() {
-        return List.of(new ItemStack(ModItems.BLACK_CANDLE.get()));
+        return List.of(new ItemStack(ModPassiveItems.BLACK_CANDLE.get()));
     }
 }

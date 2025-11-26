@@ -3,12 +3,11 @@ package net.luojiuoscar.isaac_disaster.item_ability.pickup.pill_effects;
 import net.luojiuoscar.isaac_disaster.client.ClientDataManager;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.item_ability.pickup.IPillEffect;
-import net.luojiuoscar.isaac_disaster.manager.item_managers.id.ItemId;
-import net.luojiuoscar.isaac_disaster.manager.item_managers.id.PillEffectId;
-import net.luojiuoscar.isaac_disaster.manager.item_managers.ActiveItemManager;
 import net.luojiuoscar.isaac_disaster.manager.item_managers.PillEffectManager;
+import net.luojiuoscar.isaac_disaster.manager.item_managers.id.PillEffectId;
 import net.luojiuoscar.isaac_disaster.networking.ModMessages;
 import net.luojiuoscar.isaac_disaster.networking.packet.PillOnUseS2CPacket;
+import net.luojiuoscar.isaac_disaster.registries.ability.active.ModActiveAbility;
 import net.luojiuoscar.isaac_disaster.sound.ModSounds;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
@@ -20,39 +19,42 @@ public class PowerPill implements IPillEffect {
         return PillEffectId.POWER_PILL.getId();
     }
     @Override
-    public void onUse(Player player, boolean withSFX){
+    public void onUse(ServerPlayer player){
         if (PlayerHelper.getPillQuality(player) < 0){
-            PillEffectManager.getInstance().getEffectFromEffectId(PillEffectId.RUA_WIZARD.getId()).onUse(player, true);
+            PillEffectManager.getInstance().getEffectFromEffectId(PillEffectId.RUA_WIZARD.getId()).onUse(player);
             return;
         }
 
-        onUseEffect(player);
+
         if (!player.level().isClientSide){
             ModMessages.sentToPlayer(new PillOnUseS2CPacket(getPillEffectId(), false), (ServerPlayer) player);
+        }else if (player instanceof ServerPlayer){
+            onUseEffect((ServerPlayer) player);
         }
     }
 
     @Override
-    public void onUseH(Player player, boolean withSFX){
+    public void onUseH(ServerPlayer player){
         if (PlayerHelper.getPillQuality(player) < 0){
-            PillEffectManager.getInstance().getEffectFromEffectId(PillEffectId.RUA_WIZARD.getId()).onUseH(player, true);
+            PillEffectManager.getInstance().getEffectFromEffectId(PillEffectId.RUA_WIZARD.getId()).onUseH(player);
             return;
         }
 
-        onUseEffectH(player);
         if (!player.level().isClientSide){
             ModMessages.sentToPlayer(new PillOnUseS2CPacket(getPillEffectId(), true), (ServerPlayer) player);
+        }else if (player instanceof ServerPlayer){
+            onUseEffect((ServerPlayer) player);
         }
     }
 
     @Override
-    public void onUseEffect(Player player) {
-        ActiveItemManager.getInstance().getItemFromId(ItemId.THE_GAMEKID.getId()).onTriggeredEffect(player);
+    public void onUseEffect(ServerPlayer player) {
+        ModActiveAbility.THE_GAMEKID.get().onTrigger(player, null);
     }
 
     @Override
-    public void onUseEffectH(Player player) {
-        ActiveItemManager.getInstance().getItemFromId(ItemId.THE_GAMEKID.getId()).onTriggeredEffectStronger(player);
+    public void onUseEffectH(ServerPlayer player) {
+        ModActiveAbility.THE_GAMEKID.get().onTriggerStronger(player, null);
     }
 
     @Override

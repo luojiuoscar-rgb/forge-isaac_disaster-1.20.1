@@ -6,10 +6,7 @@ import net.luojiuoscar.isaac_disaster.capability.player.PlayerSwallowedTrinketsP
 import net.luojiuoscar.isaac_disaster.event.custom.misc.ActiveItemUseEvent;
 import net.luojiuoscar.isaac_disaster.manager.ColorManager;
 import net.luojiuoscar.isaac_disaster.manager.item_managers.id.TrinketId;
-import net.luojiuoscar.isaac_disaster.manager.item_managers.ActiveItemManager;
-import net.luojiuoscar.isaac_disaster.networking.ModMessages;
-import net.luojiuoscar.isaac_disaster.networking.packet.UseActiveItemS2CPacket;
-import net.minecraft.client.Minecraft;
+import net.luojiuoscar.isaac_disaster.registries.ability.active.ActiveAbility;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
@@ -18,6 +15,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.registries.RegistryObject;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -25,47 +23,25 @@ import java.util.List;
 
 
 public class ActiveItem extends IsaacItem {
-    public static final int DAMAGE_PER_CHARGE = 100;
+    public static final int DAMAGE_PER_CHARGE_RATE = 100;
 
     private final int damage_per_use;
     private final int max_item_damage;
+
     private static final String OVERCHARGED_TAG = "OverCharged";
-    private static final String HAS_BEEN_USED = "has_been_used";
 
 
-    public ActiveItem(Properties properties, int itemLevel, int itemId, int chargePerUse, int maxCharge, boolean hasSpecialEffect, boolean useOriginalColor) {
-        super(properties.stacksTo(1).rarity(IsaacItem.getRarity(itemLevel))
-                        .durability(maxCharge * DAMAGE_PER_CHARGE),
-                itemLevel, itemId, hasSpecialEffect, useOriginalColor);
-        this.max_item_damage = maxCharge * DAMAGE_PER_CHARGE;
-        this.damage_per_use = chargePerUse * DAMAGE_PER_CHARGE;
+    public ActiveItem(Properties properties, int chargePerUse, int maxCharge, RegistryObject<ActiveAbility> ability) {
+        super(properties.stacksTo(1).durability(maxCharge * DAMAGE_PER_CHARGE_RATE),
+                ability);
+
+        this.max_item_damage = maxCharge * DAMAGE_PER_CHARGE_RATE;
+        this.damage_per_use = chargePerUse * DAMAGE_PER_CHARGE_RATE;
     }
-
-
-    @Override
-    public void addDescription(List<Component> tooltipComponents, ItemStack stack){
-        tooltipComponents.addAll(
-                ActiveItemManager.getInstance().getItemFromId(getItemId()).getDescription()
-        );
-    }
-
-    @Override
-    public void addSynergyDescription(List<Component> tooltipComponents){
-        Player player = Minecraft.getInstance().player;
-        if (player == null) return;
-
-        tooltipComponents.addAll(
-                ActiveItemManager.getInstance().getItemFromId(getItemId()).getSynergyDescription()
-        );
-    };
 
     @Override
     public void addAdditionalInfo(List<Component> tooltipComponents, @Nullable ItemStack stack){
         tooltipComponents.add(Component.literal(""));
-        if (stack != null && hasBeenUsed(stack)){
-            tooltipComponents.add(Component.translatable("item.isaac_disaster.action.consumed")
-                    .withStyle(style -> style.withColor(ColorManager.SYNERGY)));
-        }
         if (max_item_damage > 0 || !Config.ACTIVE_ITEM_AUTO_RESTORE.get()){
             tooltipComponents.add(
                     Component.translatable("item.isaac_disaster.special.recharge_require", (max_item_damage / 20))
@@ -75,22 +51,8 @@ public class ActiveItem extends IsaacItem {
         }
     }
 
-    @Override
-    public void addExplainInfo(List<Component> tooltipComponents) {
-        tooltipComponents.addAll(
-                ActiveItemManager.getInstance().getItemFromId(getItemId()).getExplain()
-        );
-    }
-
-
     /**
      * 关闭物品耐久变动的动画
-     * @param oldStack    The old stack that was equipped
-     * @param newStack    The new stack
-     * @param slotChanged If the current equipped slot was changed, Vanilla does not
-     *                    play the animation if you switch between two slots that
-     *                    hold the exact same item.
-     * @return boolean
      */
     @Override
     public boolean shouldCauseReequipAnimation(ItemStack oldStack, ItemStack newStack, boolean slotChanged) {
@@ -105,7 +67,6 @@ public class ActiveItem extends IsaacItem {
     /**
      * 获取每次使用时消耗的耐久值
      * 需要玩家实体参与获取道具信息
-     * 以便于减少消耗的道具参与
      */
     public int getDamagePerUse(Player player){
         int[] count = {0};
@@ -151,16 +112,6 @@ public class ActiveItem extends IsaacItem {
     }
 
 
-    public static boolean hasBeenUsed(ItemStack stack) {
-        return stack.getOrCreateTag().getBoolean(HAS_BEEN_USED);
-    }
-
-
-    public static void setHasBeenUsed(ItemStack stack, boolean state) {
-        stack.getOrCreateTag().putBoolean(HAS_BEEN_USED, state);
-    }
-
-
     public static void fullCharge(ItemStack stack, boolean hasTheBattery){
         stack.setDamageValue(0);
         if(hasTheBattery){
@@ -185,14 +136,15 @@ public class ActiveItem extends IsaacItem {
         }
 
         // effect
-        if (!(player.getItemInHand(hand).getItem() instanceof IIgnoreRecord) &&
-        !level.isClientSide && player instanceof ServerPlayer serverPlayer) {
-            ActiveItemManager.getInstance().getItemFromId(item.getItemId()).onUse(player, hand);
-            ModMessages.sentToPlayer(new UseActiveItemS2CPacket(item.getItemId()), serverPlayer);
+        if (!(player.getItemInHand(hand).getItem() instanceof IIgnoreRecord)
+                && !level.isClientSide && player instanceof ServerPlayer serverPlayer
+                && getAbility() instanceof ActiveAbility activeAbility) {
+
+            activeAbility.onUse(serverPlayer, hand);
 
             // 先触发后记录
             serverPlayer.getCapability(PlayerItemUseRecordProvider.PLAYER_ITEM_USE_RECORD).ifPresent(
-                    playerItemUseRecord -> playerItemUseRecord.addActiveRecord(getItemId()));
+                    playerItemUseRecord -> playerItemUseRecord.addActiveRecord(getId()));
         }
 
         return InteractionResultHolder.success(stack);

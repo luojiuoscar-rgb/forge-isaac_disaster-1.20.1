@@ -21,9 +21,9 @@ public class LemonParty implements IPillEffect {
     }
 
     @Override
-    public void onUse(Player player, boolean withSFX){
+    public void onUse(ServerPlayer player){
         if (PlayerHelper.getPillQuality(player) < 0){
-            PillEffectManager.getInstance().getEffectFromEffectId(PillEffectId.AMNESIA.getId()).onUse(player, true);
+            PillEffectManager.getInstance().getEffectFromEffectId(PillEffectId.AMNESIA.getId()).onUse(player);
             return;
         }
 
@@ -34,9 +34,9 @@ public class LemonParty implements IPillEffect {
     }
 
     @Override
-    public void onUseH(Player player, boolean withSFX){
+    public void onUseH(ServerPlayer player){
         if (PlayerHelper.getPillQuality(player) < 0){
-            PillEffectManager.getInstance().getEffectFromEffectId(PillEffectId.AMNESIA.getId()).onUseH(player, true);
+            PillEffectManager.getInstance().getEffectFromEffectId(PillEffectId.AMNESIA.getId()).onUseH(player);
             return;
         }
 
@@ -47,7 +47,7 @@ public class LemonParty implements IPillEffect {
     }
 
     @Override
-    public void onUseEffect(Player player) {
+    public void onUseEffect(ServerPlayer player) {
         LemonEffectCloud cloud = new LemonEffectCloud(player.level(), player.getX(), player.getY(), player.getZ(),
                 player, (float) StatManager.getNearbyRange() * 0.4f, 200, 0, 10,
                 (float) StatManager.DAMAGE.getBonus() * 2.5f);
@@ -55,7 +55,7 @@ public class LemonParty implements IPillEffect {
     }
 
     @Override
-    public void onUseEffectH(Player player) {
+    public void onUseEffectH(ServerPlayer player) {
         LemonEffectCloud cloud = new LemonEffectCloud(player.level(), player.getX(), player.getY(), player.getZ(),
                 player, (float) StatManager.getNearbyRange() * 0.8f, 400, 0, 10,
                 (float) StatManager.DAMAGE.getBonus() * 4f);

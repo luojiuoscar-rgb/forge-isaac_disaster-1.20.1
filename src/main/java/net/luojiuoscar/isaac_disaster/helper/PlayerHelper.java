@@ -129,14 +129,14 @@ public class PlayerHelper {
     }
 
 
-    public static void removeItemFromId(int itemId, ServerPlayer player){
+    public static void removeItemFromId(ResourceLocation itemId, ServerPlayer player){
         player.getCapability(PlayerPassiveItemProvider.PLAYER_PASSIVE_ITEM).ifPresent(
                 playerPassiveItem -> playerPassiveItem.removeFromId(player, itemId)
         );
     }
-    public static void removeItemFromIndex(int itemId, ServerPlayer player){
+    public static void removeItemFromIndex(int index, ServerPlayer player){
         player.getCapability(PlayerPassiveItemProvider.PLAYER_PASSIVE_ITEM).ifPresent(
-                playerPassiveItem -> playerPassiveItem.removeFromIndex(player, itemId)
+                playerPassiveItem -> playerPassiveItem.removeFromIndex(player, index)
         );
     }
     /**若amount为null则代表直接充满*/

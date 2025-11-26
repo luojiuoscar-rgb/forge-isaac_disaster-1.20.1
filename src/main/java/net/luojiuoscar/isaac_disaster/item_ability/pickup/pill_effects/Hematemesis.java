@@ -22,9 +22,9 @@ public class Hematemesis implements IPillEffect {
     }
 
     @Override
-    public void onUse(Player player, boolean withSFX){
+    public void onUse(ServerPlayer player){
         if (PlayerHelper.getPillQuality(player) < 0){
-            PillEffectManager.getInstance().getEffectFromEffectId(PillEffectId.BAD_TRIP.getId()).onUse(player, true);
+            PillEffectManager.getInstance().getEffectFromEffectId(PillEffectId.BAD_TRIP.getId()).onUse(player);
             return;
         }
 
@@ -35,9 +35,9 @@ public class Hematemesis implements IPillEffect {
     }
 
     @Override
-    public void onUseH(Player player, boolean withSFX){
+    public void onUseH(ServerPlayer player){
         if (PlayerHelper.getPillQuality(player) < 0){
-            PillEffectManager.getInstance().getEffectFromEffectId(PillEffectId.BAD_TRIP.getId()).onUseH(player, true);
+            PillEffectManager.getInstance().getEffectFromEffectId(PillEffectId.BAD_TRIP.getId()).onUseH(player);
             return;
         }
 
@@ -48,7 +48,7 @@ public class Hematemesis implements IPillEffect {
     }
 
     @Override
-    public void onUseEffect(Player player) {
+    public void onUseEffect(ServerPlayer player) {
         RandomSource random = player.getRandom();
 
         float health = player.getHealth() - 2;
@@ -59,7 +59,7 @@ public class Hematemesis implements IPillEffect {
     }
 
     @Override
-    public void onUseEffectH(Player player) {
+    public void onUseEffectH(ServerPlayer player) {
         RandomSource random = player.getRandom();
 
         float health = player.getHealth() - 2;

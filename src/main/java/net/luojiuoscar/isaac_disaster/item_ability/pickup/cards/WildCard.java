@@ -4,11 +4,11 @@ import net.luojiuoscar.isaac_disaster.capability.player.PlayerItemUseRecord;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerItemUseRecordProvider;
 import net.luojiuoscar.isaac_disaster.item_ability.pickup.IPickup;
 import net.luojiuoscar.isaac_disaster.manager.item_managers.id.PickupId;
-import net.luojiuoscar.isaac_disaster.manager.item_managers.ActiveItemManager;
 import net.luojiuoscar.isaac_disaster.manager.item_managers.PickupManager;
 import net.luojiuoscar.isaac_disaster.manager.item_managers.PillEffectManager;
 import net.luojiuoscar.isaac_disaster.sound.ModSounds;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
@@ -24,7 +24,7 @@ public class WildCard implements IPickup {
     }
 
     @Override
-    public void onUseEffect(Player player, ItemStack stack, InteractionHand hand) {
+    public void onUseEffect(ServerPlayer player, ItemStack stack, InteractionHand hand) {
         if (hand == null) return;
 
         player.getCapability(PlayerItemUseRecordProvider.PLAYER_ITEM_USE_RECORD).ifPresent(
@@ -41,8 +41,6 @@ public class WildCard implements IPickup {
                             activeRecords.get(activeRecords.size() - 1);
 
 
-
-
                     // 筛选最大
                     long seqEffect = effect != null ? effect.sequence() : -1;
                     long seqCard = card != null ? card.sequence() : -1;
@@ -51,13 +49,13 @@ public class WildCard implements IPickup {
                     long maxSeq = Math.max(seqEffect, Math.max(seqCard, seqActive));
 
                     if (maxSeq == seqEffect) {
-                        PillEffectManager.getInstance().getEffectFromEffectId(effect.id()).onUse(player, false);
+                        PillEffectManager.getInstance().getEffectFromEffectId(effect.id()).onUse(player);
                     }
                     else if (maxSeq == seqCard) {
                         PickupManager.getInstance().getItemFromId(card.id()).onUseEffect(player, null, null);
                     }
                     else if (maxSeq == seqActive) {
-                        ActiveItemManager.getInstance().getItemFromId(active.id()).onUse(player, null);
+//                        ActiveItemManager.getInstance().getItemFromId(active.id()).onUse(player, null);
                     }
                 }
         );

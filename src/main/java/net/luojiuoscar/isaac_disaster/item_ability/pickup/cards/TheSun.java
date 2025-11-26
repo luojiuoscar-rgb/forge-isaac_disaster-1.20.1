@@ -13,6 +13,7 @@ import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.effect.MobEffects;
@@ -30,7 +31,7 @@ public class TheSun implements ITarot {
     }
 
     @Override
-    public void onUseEffect(Player player, ItemStack stack, InteractionHand hand) {
+    public void onUseEffect(ServerPlayer player, ItemStack stack, InteractionHand hand) {
         ServerLevel level = (ServerLevel) player.level();
         level.setDayTime(6000); // 正午
         player.setHealth(player.getMaxHealth()); // 满血
@@ -52,7 +53,7 @@ public class TheSun implements ITarot {
     }
 
     @Override
-    public void onUseEffectStronger(Player player, ItemStack stack, InteractionHand hand) {
+    public void onUseEffectStronger(ServerPlayer player, ItemStack stack, InteractionHand hand) {
         // 仅伤害翻倍
         ServerLevel level = (ServerLevel) player.level();
         level.setDayTime(6000); // 正午

@@ -4,6 +4,7 @@ import net.luojiuoscar.isaac_disaster.item_ability.pickup.IPillEffect;
 import net.luojiuoscar.isaac_disaster.manager.item_managers.id.PillEffectId;
 import net.luojiuoscar.isaac_disaster.manager.item_managers.PillEffectManager;
 import net.luojiuoscar.isaac_disaster.sound.ModSounds;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.player.Player;
 
@@ -34,7 +35,7 @@ public class ExperimentalPill implements IPillEffect {
 
 
     @Override
-    public void onUseEffect(Player player) {
+    public void onUseEffect(ServerPlayer player) {
         RandomSource random = player.getRandom();
 
         PillEffectManager.getInstance().getEffectFromEffectId(effects_good[random.nextInt(effects_bad.length)]).onUseEffect(player);
@@ -42,7 +43,7 @@ public class ExperimentalPill implements IPillEffect {
     }
 
     @Override
-    public void onUseEffectH(Player player) {
+    public void onUseEffectH(ServerPlayer player) {
         RandomSource random = player.getRandom();
 
         PillEffectManager.getInstance().getEffectFromEffectId(effects_good[random.nextInt(effects_bad.length)]).onUseEffectH(player);

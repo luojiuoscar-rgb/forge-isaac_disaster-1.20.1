@@ -20,7 +20,7 @@ public class GoldenBomb implements IPickup {
     }
 
     @Override
-    public void onUseEffect(Player player, ItemStack stack, InteractionHand hand) {
+    public void onUseEffect(ServerPlayer player, ItemStack stack, InteractionHand hand) {
         if (player.level().isClientSide()) return;
 
         // throw bomb

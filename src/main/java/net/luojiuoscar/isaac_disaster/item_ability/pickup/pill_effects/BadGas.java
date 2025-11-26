@@ -30,9 +30,9 @@ public class BadGas implements IPillEffect {
     }
 
     @Override
-    public void onUse(Player player, boolean withSFX){
+    public void onUse(ServerPlayer player){
         if (PlayerHelper.getPillQuality(player) < 0){
-            PillEffectManager.getInstance().getEffectFromEffectId(PillEffectId.HEALTH_DOWN.getId()).onUse(player, true);
+            PillEffectManager.getInstance().getEffectFromEffectId(PillEffectId.HEALTH_DOWN.getId()).onUse(player);
             return;
         }
 
@@ -43,9 +43,9 @@ public class BadGas implements IPillEffect {
     }
 
     @Override
-    public void onUseH(Player player, boolean withSFX){
+    public void onUseH(ServerPlayer player){
         if (PlayerHelper.getPillQuality(player) < 0){
-            PillEffectManager.getInstance().getEffectFromEffectId(PillEffectId.HEALTH_DOWN.getId()).onUseH(player, true);
+            PillEffectManager.getInstance().getEffectFromEffectId(PillEffectId.HEALTH_DOWN.getId()).onUseH(player);
             return;
         }
 
@@ -56,7 +56,7 @@ public class BadGas implements IPillEffect {
     }
 
     @Override
-    public void onUseEffect(Player player) {
+    public void onUseEffect(ServerPlayer player) {
         Level level = player.level();
         Vec3 pos = player.blockPosition().getCenter();
         MobEffectInstance effect = new MobEffectInstance(MobEffects.POISON, 300, 0);
@@ -74,7 +74,7 @@ public class BadGas implements IPillEffect {
     }
 
     @Override
-    public void onUseEffectH(Player player) {
+    public void onUseEffectH(ServerPlayer player) {
         Level level = player.level();
         Vec3 pos = player.blockPosition().getCenter();
         MobEffectInstance effect = new MobEffectInstance(MobEffects.POISON, 600, 2);

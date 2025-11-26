@@ -21,9 +21,9 @@ public class QuestionPill implements IPillEffect {
     }
 
     @Override
-    public void onUse(Player player, boolean withSFX){
+    public void onUse(ServerPlayer player){
         if (PlayerHelper.getPillQuality(player) > 0){
-            PillEffectManager.getInstance().getEffectFromEffectId(PillEffectId.TELEPILLS.getId()).onUse(player, true);
+            PillEffectManager.getInstance().getEffectFromEffectId(PillEffectId.TELEPILLS.getId()).onUse(player);
             return;
         }
 
@@ -34,9 +34,9 @@ public class QuestionPill implements IPillEffect {
     }
 
     @Override
-    public void onUseH(Player player, boolean withSFX){
+    public void onUseH(ServerPlayer player){
         if (PlayerHelper.getPillQuality(player) > 0){
-            PillEffectManager.getInstance().getEffectFromEffectId(PillEffectId.TELEPILLS.getId()).onUseH(player, true);
+            PillEffectManager.getInstance().getEffectFromEffectId(PillEffectId.TELEPILLS.getId()).onUseH(player);
             return;
         }
 
@@ -49,12 +49,12 @@ public class QuestionPill implements IPillEffect {
 
 
     @Override
-    public void onUseEffect(Player player) {
+    public void onUseEffect(ServerPlayer player) {
         player.addEffect(new MobEffectInstance(ModEffects.CURSE_OF_THE_MAZE.get(), 600, 0));
     }
 
     @Override
-    public void onUseEffectH(Player player) {
+    public void onUseEffectH(ServerPlayer player) {
         player.addEffect(new MobEffectInstance(ModEffects.CURSE_OF_THE_MAZE.get(), 1500, 0));
     }
 

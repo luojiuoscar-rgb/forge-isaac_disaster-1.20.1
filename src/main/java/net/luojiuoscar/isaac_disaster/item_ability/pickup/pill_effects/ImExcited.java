@@ -21,9 +21,9 @@ public class ImExcited implements IPillEffect {
     }
 
     @Override
-    public void onUse(Player player, boolean withSFX){
+    public void onUse(ServerPlayer player){
         if (PlayerHelper.getPillQuality(player) < 0){
-            PillEffectManager.getInstance().getEffectFromEffectId(PillEffectId.IM_DROWSY.getId()).onUse(player, true);
+            PillEffectManager.getInstance().getEffectFromEffectId(PillEffectId.IM_DROWSY.getId()).onUse(player);
             return;
         }
 
@@ -34,9 +34,9 @@ public class ImExcited implements IPillEffect {
     }
 
     @Override
-    public void onUseH(Player player, boolean withSFX){
+    public void onUseH(ServerPlayer player){
         if (PlayerHelper.getPillQuality(player) < 0){
-            PillEffectManager.getInstance().getEffectFromEffectId(PillEffectId.IM_DROWSY.getId()).onUseH(player, true);
+            PillEffectManager.getInstance().getEffectFromEffectId(PillEffectId.IM_DROWSY.getId()).onUseH(player);
             return;
         }
 
@@ -47,7 +47,7 @@ public class ImExcited implements IPillEffect {
     }
 
     @Override
-    public void onUseEffect(Player player) {
+    public void onUseEffect(ServerPlayer player) {
         int duration = 600;
         int amplifier = 0;
         player.addEffect(new MobEffectInstance(MobEffects.DIG_SPEED, duration, amplifier));
@@ -55,7 +55,7 @@ public class ImExcited implements IPillEffect {
     }
 
     @Override
-    public void onUseEffectH(Player player) {
+    public void onUseEffectH(ServerPlayer player) {
         int duration = 1500;
         int amplifier = 2;
         player.addEffect(new MobEffectInstance(MobEffects.DIG_SPEED, duration, amplifier));

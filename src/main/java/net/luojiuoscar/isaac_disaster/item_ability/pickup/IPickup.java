@@ -17,7 +17,7 @@ public interface IPickup {
 
     default void onUse(Player player, @Nullable ItemStack stack, @Nullable InteractionHand hand){
         if (player.level().isClientSide) return;
-        onUseEffect(player, stack, hand);
+        onUseEffect((ServerPlayer) player, stack, hand);
 
         // 客户端效果
         ModMessages.sentToPlayer(new PickupOnUseS2CPacket(getItemId()), (ServerPlayer) player);
@@ -32,7 +32,7 @@ public interface IPickup {
         stack.shrink(1);
     }
 
-    void onUseEffect(Player player, @Nullable ItemStack stack, @Nullable InteractionHand hand);
+    void onUseEffect(ServerPlayer player, @Nullable ItemStack stack, @Nullable InteractionHand hand);
 
     void onUseSound(Player player);
 
