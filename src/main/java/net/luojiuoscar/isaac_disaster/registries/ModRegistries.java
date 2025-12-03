@@ -4,6 +4,7 @@ import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.registries.ability.active.ActiveAbility;
 import net.luojiuoscar.isaac_disaster.registries.ability.passive.PassiveAbility;
 import net.luojiuoscar.isaac_disaster.registries.bullet_color.BulletColor;
+import net.luojiuoscar.isaac_disaster.registries.pill_effect.IPillEffect;
 import net.luojiuoscar.isaac_disaster.registries.recursive_module.IRecursiveModule;
 import net.luojiuoscar.isaac_disaster.registries.trajectory.IAttackTrajectory;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.ITriggerModule;
@@ -13,9 +14,10 @@ import net.minecraftforge.registries.RegistryBuilder;
 
 import static net.luojiuoscar.isaac_disaster.registries.ability.active.ModActiveAbility.ACTIVE_ABILITY_REGISTRY;
 import static net.luojiuoscar.isaac_disaster.registries.ability.passive.ModPassiveAbility.PASSIVE_ABILITY_REGISTRY;
-import static net.luojiuoscar.isaac_disaster.registries.bullet_color.ModBulletColors.BULLET_COLOR_REGISTRY;
+import static net.luojiuoscar.isaac_disaster.registries.bullet_color.ModBulletColor.BULLET_COLOR_REGISTRY;
+import static net.luojiuoscar.isaac_disaster.registries.pill_effect.ModPillEffect.PILL_EFFECT_REGISTRY;
 import static net.luojiuoscar.isaac_disaster.registries.recursive_module.ModRecursiveModule.RECURSIVE_MODULE_REGISTRY;
-import static net.luojiuoscar.isaac_disaster.registries.trajectory.ModAttackTrajectories.ATTACK_TRAJECTORY_REGISTRY;
+import static net.luojiuoscar.isaac_disaster.registries.trajectory.ModAttackTrajectory.ATTACK_TRAJECTORY_REGISTRY;
 import static net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerModule.TRIGGER_MODULE_REGISTRY;
 
 
@@ -46,5 +48,8 @@ public class ModRegistries {
         ACTIVE_ABILITY_REGISTRY.makeRegistry(() -> {return new RegistryBuilder<ActiveAbility>()
                 .setName(ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "active_ability"));});
         ACTIVE_ABILITY_REGISTRY.register(modEventBus);
-    }
+
+        PILL_EFFECT_REGISTRY.makeRegistry(() -> {return new RegistryBuilder<IPillEffect>()
+                .setName(ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "pill_effect"));});
+        PILL_EFFECT_REGISTRY.register(modEventBus);    }
 }

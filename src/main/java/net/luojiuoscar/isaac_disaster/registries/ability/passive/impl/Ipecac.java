@@ -3,8 +3,8 @@ package net.luojiuoscar.isaac_disaster.registries.ability.passive.impl;
 import net.luojiuoscar.isaac_disaster.registries.ability.passive.PassiveAbility;
 import net.luojiuoscar.isaac_disaster.manager.EffectManager;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
-import net.luojiuoscar.isaac_disaster.registries.bullet_color.ModBulletColors;
-import net.luojiuoscar.isaac_disaster.registries.trajectory.ModAttackTrajectories;
+import net.luojiuoscar.isaac_disaster.registries.bullet_color.ModBulletColor;
+import net.luojiuoscar.isaac_disaster.registries.trajectory.ModAttackTrajectory;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerModule;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
@@ -26,16 +26,16 @@ public class Ipecac extends PassiveAbility {
 
     @Override
     public void handleObtain(ServerPlayer player, @Nullable ItemStack stack) {
-        StatManager.addBulletColor(player, ModBulletColors.IPECAC.getId(), 1);
+        StatManager.addBulletColor(player, ModBulletColor.IPECAC.getId(), 1);
         StatManager.addTriggerModule(player, ModTriggerModule.IPECAC.getId(), 1);
-        StatManager.addTrajectory(player, ModAttackTrajectories.GRAVITY.getId(), 1);
+        StatManager.addTrajectory(player, ModAttackTrajectory.GRAVITY.getId(), 1);
     }
 
     @Override
     public void handleRemove(ServerPlayer player, @Nullable ItemStack stack) {
-        StatManager.addBulletColor(player, ModBulletColors.IPECAC.getId(), -1);
+        StatManager.addBulletColor(player, ModBulletColor.IPECAC.getId(), -1);
         StatManager.addTriggerModule(player, ModTriggerModule.IPECAC.getId(), -1);
-        StatManager.addTrajectory(player, ModAttackTrajectories.GRAVITY.getId(), -1);
+        StatManager.addTrajectory(player, ModAttackTrajectory.GRAVITY.getId(), -1);
     }
 
     @Override

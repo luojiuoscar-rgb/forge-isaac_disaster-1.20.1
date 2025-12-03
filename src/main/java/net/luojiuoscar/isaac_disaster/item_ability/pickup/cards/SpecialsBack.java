@@ -8,6 +8,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -33,7 +34,7 @@ public class SpecialsBack implements IPickup {
 
     @Override
     public void onUseSound(Player player) {
-        player.playSound(SoundEvents.BOOK_PAGE_TURN);
+        player.playNotifySound(SoundEvents.BOOK_PAGE_TURN, SoundSource.PLAYERS, 1.0f, 1.0f);
     }
 
     @Override
@@ -45,3 +46,4 @@ public class SpecialsBack implements IPickup {
         return description;
     }
 }
+

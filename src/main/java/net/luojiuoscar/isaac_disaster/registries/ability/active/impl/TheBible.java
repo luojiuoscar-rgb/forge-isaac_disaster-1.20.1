@@ -13,6 +13,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
@@ -26,12 +27,12 @@ public class TheBible extends ActiveAbility {
     }
 
     @Override
-    public void onFirstUse(ServerPlayer player, ItemStack stack){
+    public void onFirstUse(ServerPlayer player, ItemStack stack, @javax.annotation.Nullable InteractionHand hand){
         StatManager.modifySetWithId(player, SetId.BOOK.getId(), 1);
     }
 
     @Override
-    public void onTrigger(ServerPlayer player, ItemStack stack) {
+    public void onTrigger(ServerPlayer player, ItemStack stack, @javax.annotation.Nullable InteractionHand hand) {
         MobEffectInstance effectInstance = new MobEffectInstance(
                 ModEffects.TRANSCENDENCE.get(),
                 (int) (StatManager.FLY_TIME.getBonus() * 2),
@@ -41,7 +42,7 @@ public class TheBible extends ActiveAbility {
     }
 
     @Override
-    public void onTriggerStronger(ServerPlayer player, ItemStack stack){
+    public void onTriggerStronger(ServerPlayer player, ItemStack stack, @javax.annotation.Nullable InteractionHand hand){
         MobEffectInstance effectInstance = new MobEffectInstance(
                 ModEffects.TRANSCENDENCE.get(),
                 (int) (StatManager.FLY_TIME.getBonus() * 4),

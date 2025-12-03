@@ -8,6 +8,7 @@ import net.luojiuoscar.isaac_disaster.manager.EffectManager;
 import net.luojiuoscar.isaac_disaster.manager.item_managers.id.ItemId;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.item.ItemStack;
@@ -22,12 +23,12 @@ public class MyLittleUnicorn extends ActiveAbility {
     }
 
     @Override
-    public void onFirstUse(ServerPlayer player, @Nullable ItemStack stack) {
+    public void onFirstUse(ServerPlayer player, @Nullable ItemStack stack, @javax.annotation.Nullable InteractionHand hand) {
 
     }
 
     @Override
-    public void onTrigger(ServerPlayer player, ItemStack stack) {
+    public void onTrigger(ServerPlayer player, ItemStack stack, @javax.annotation.Nullable InteractionHand hand) {
         int duration = 120;
         player.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SPEED, duration, 0));
         player.addEffect(new MobEffectInstance(ModEffects.INVINCIBLE.get(), duration));
@@ -36,7 +37,7 @@ public class MyLittleUnicorn extends ActiveAbility {
     }
 
     @Override
-    public void onTriggerStronger(ServerPlayer player, ItemStack stack){
+    public void onTriggerStronger(ServerPlayer player, ItemStack stack, @javax.annotation.Nullable InteractionHand hand){
         int duration = 240;
         player.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SPEED, duration, 0));
         player.addEffect(new MobEffectInstance(ModEffects.INVINCIBLE.get(), duration));

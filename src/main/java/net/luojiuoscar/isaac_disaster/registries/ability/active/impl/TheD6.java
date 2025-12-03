@@ -12,6 +12,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
@@ -26,12 +27,12 @@ public class TheD6 extends ActiveAbility {
     }
 
     @Override
-    public void onFirstUse(ServerPlayer player, @Nullable ItemStack stack) {
+    public void onFirstUse(ServerPlayer player, @Nullable ItemStack stack, @javax.annotation.Nullable InteractionHand hand) {
 
     }
 
     @Override
-    public void onTrigger(ServerPlayer player, ItemStack stack) {
+    public void onTrigger(ServerPlayer player, ItemStack stack, @javax.annotation.Nullable InteractionHand hand) {
         if (!(player.level() instanceof ServerLevel serverLevel)) return;
 
         Set<BlockPos> posList = BlockData.get(serverLevel).getAllItemBlocks();
@@ -53,8 +54,8 @@ public class TheD6 extends ActiveAbility {
     }
 
     @Override
-    public void onTriggerStronger(ServerPlayer player, ItemStack stack){
-        onTrigger(player, stack);
+    public void onTriggerStronger(ServerPlayer player, ItemStack stack, @javax.annotation.Nullable InteractionHand hand){
+        onTrigger(player, stack, hand);
     }
 
     @Override

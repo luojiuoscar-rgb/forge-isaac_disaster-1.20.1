@@ -2,7 +2,7 @@ package net.luojiuoscar.isaac_disaster.registries.ability.passive.impl;
 
 import net.luojiuoscar.isaac_disaster.registries.ability.passive.PassiveAbility;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
-import net.luojiuoscar.isaac_disaster.registries.trajectory.ModAttackTrajectories;
+import net.luojiuoscar.isaac_disaster.registries.trajectory.ModAttackTrajectory;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
@@ -24,14 +24,14 @@ public class TinyPlanet extends PassiveAbility {
     public void handleObtain(ServerPlayer player, @Nullable ItemStack stack) {
         StatManager.RANGE.apply(player, 2.5);
         StatManager.addSpectral(player, 1);
-        StatManager.addTrajectory(player, ModAttackTrajectories.TINY_PLANET.getId(), 1);
+        StatManager.addTrajectory(player, ModAttackTrajectory.TINY_PLANET.getId(), 1);
     }
 
     @Override
     public void handleRemove(ServerPlayer player, @Nullable ItemStack stack) {
         StatManager.RANGE.apply(player, -2.5);
         StatManager.addSpectral(player, -1);
-        StatManager.addTrajectory(player, ModAttackTrajectories.TINY_PLANET.getId(), -1);
+        StatManager.addTrajectory(player, ModAttackTrajectory.TINY_PLANET.getId(), -1);
     }
 
     @Override

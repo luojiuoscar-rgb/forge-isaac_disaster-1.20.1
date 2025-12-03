@@ -1,13 +1,14 @@
 package net.luojiuoscar.isaac_disaster.registries.ability.passive.impl;
 
-import net.luojiuoscar.isaac_disaster.registries.ability.passive.PassiveAbility;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.manager.item_managers.SetManager;
 import net.luojiuoscar.isaac_disaster.manager.item_managers.id.SetId;
+import net.luojiuoscar.isaac_disaster.registries.ability.passive.PassiveAbility;
 import net.luojiuoscar.isaac_disaster.sound.ModSounds;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
@@ -20,7 +21,7 @@ public class MagicMushroom extends PassiveAbility {
 
     @Override
     public void makeSound(LocalPlayer player) {
-        player.playSound(ModSounds.MAGIC_MUSHROOM_OBTAIN.get());
+        player.playNotifySound(ModSounds.MAGIC_MUSHROOM_OBTAIN.get(), SoundSource.PLAYERS, 1.0f, 1.0f);
     }
 
     @Override

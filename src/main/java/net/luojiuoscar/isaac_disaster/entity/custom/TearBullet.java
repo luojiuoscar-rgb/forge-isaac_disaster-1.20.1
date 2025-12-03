@@ -13,7 +13,7 @@ import net.luojiuoscar.isaac_disaster.manager.attack.ModAttackType;
 import net.luojiuoscar.isaac_disaster.manager.attack.IAttackType;
 import net.luojiuoscar.isaac_disaster.manager.attack.IBulletObject;
 import net.luojiuoscar.isaac_disaster.registries.trajectory.IAttackTrajectory;
-import net.luojiuoscar.isaac_disaster.registries.trajectory.ModAttackTrajectories;
+import net.luojiuoscar.isaac_disaster.registries.trajectory.ModAttackTrajectory;
 import net.luojiuoscar.isaac_disaster.registries.trajectory.TrajectoryContext;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerModuleQueue;
 import net.minecraft.core.BlockPos;
@@ -141,7 +141,7 @@ public class TearBullet extends Entity implements IBulletObject {
         Vec3 baseDir = getVelocity().normalize(); // 当前方向
         double speed = getVelocity().length();    // 当前速度大小
         IForgeRegistry<IAttackTrajectory> trajectoryIForgeRegistry =
-                RegistryManager.ACTIVE.getRegistry(ModAttackTrajectories.ATTACK_TRAJECTORY_KEY);
+                RegistryManager.ACTIVE.getRegistry(ModAttackTrajectory.ATTACK_TRAJECTORY_KEY);
 
         if (!isCurrentlySteering() && trajectoryIForgeRegistry != null) { // 非跟踪时
             for (Map.Entry<ResourceLocation, Integer> entry : getTrajectories().entrySet()) {

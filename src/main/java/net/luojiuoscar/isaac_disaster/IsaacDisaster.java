@@ -83,7 +83,6 @@ public class IsaacDisaster
             TrinketManager.getInstance().init();
             PickupManager.getInstance().init();
             SetManager.getInstance().init();
-            PillEffectManager.getInstance().init();
             AttackManager.getInstance().init();
         });
     }

@@ -7,6 +7,7 @@ import net.luojiuoscar.isaac_disaster.manager.item_managers.id.ItemId;
 import net.luojiuoscar.isaac_disaster.manager.item_managers.id.PickupId;
 import net.luojiuoscar.isaac_disaster.sound.ModSounds;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -30,6 +31,7 @@ public class SmallBattery implements IBattery {
 
     @Override
     public void onUseSound(Player player) {
-        player.playSound(ModSounds.BATTERY_SMALL.get(), 1.0F, 1.0F);
+        player.playNotifySound(ModSounds.BATTERY_SMALL.get(), SoundSource.PLAYERS, 1.0F, 1.0F);
     }
 }
+

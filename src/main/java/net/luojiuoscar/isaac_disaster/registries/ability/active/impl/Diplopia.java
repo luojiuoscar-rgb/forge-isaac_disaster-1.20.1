@@ -8,6 +8,7 @@ import net.luojiuoscar.isaac_disaster.manager.TagManager;
 import net.luojiuoscar.isaac_disaster.manager.item_managers.id.ItemId;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
@@ -22,11 +23,11 @@ public class Diplopia extends ActiveAbility {
     }
 
     @Override
-    public void onFirstUse(ServerPlayer player, @Nullable ItemStack stack) {
+    public void onFirstUse(ServerPlayer player, @Nullable ItemStack stack, @javax.annotation.Nullable InteractionHand hand) {
     }
 
     @Override
-    public void onTrigger(ServerPlayer player, ItemStack stack) {
+    public void onTrigger(ServerPlayer player, ItemStack stack, @javax.annotation.Nullable InteractionHand hand) {
         // 遍历背包并生成掉落
         Inventory inv = player.getInventory();
         List<ItemStack> invItems = new ArrayList<>();
@@ -46,8 +47,8 @@ public class Diplopia extends ActiveAbility {
     }
 
     @Override
-    public void onTriggerStronger(ServerPlayer player, ItemStack stack){
-        onTrigger(player, stack);
+    public void onTriggerStronger(ServerPlayer player, ItemStack stack, @javax.annotation.Nullable InteractionHand hand){
+        onTrigger(player, stack, hand);
     }
 
     @Override

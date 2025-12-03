@@ -90,13 +90,6 @@ public class ModMessages {
                 .consumerNetworkThread(SetCountSyncS2CPacket::handle)
                 .add();
 
-        // register PillOnUseS2CPacket
-        net.messageBuilder(PillOnUseS2CPacket.class, id(), NetworkDirection.PLAY_TO_CLIENT)
-                .decoder(PillOnUseS2CPacket::new)
-                .encoder(PillOnUseS2CPacket::toBytes)
-                .consumerNetworkThread(PillOnUseS2CPacket::handle)
-                .add();
-
         // register PillRecordsSyncS2CPacket
         net.messageBuilder(PillRecordsSyncS2CPacket.class, id(), NetworkDirection.PLAY_TO_CLIENT)
                 .decoder(PillRecordsSyncS2CPacket::new)

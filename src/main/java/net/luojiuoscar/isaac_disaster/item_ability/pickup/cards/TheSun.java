@@ -15,6 +15,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
@@ -97,9 +98,9 @@ public class TheSun implements ITarot {
 
     @Override
     public void onUseSound(Player player) {
-        player.playSound(SoundEvents.BOOK_PAGE_TURN);
-        player.playSound(SoundEvents.FIRECHARGE_USE);
-        player.playSound(ModSounds.THE_SUN.get());
+        player.playNotifySound(SoundEvents.BOOK_PAGE_TURN, SoundSource.PLAYERS, 1.0f, 1.0f);
+        player.playNotifySound(SoundEvents.FIRECHARGE_USE, SoundSource.PLAYERS, 1.0f, 1.0f);
+        player.playNotifySound(ModSounds.THE_SUN.get(), SoundSource.PLAYERS, 1.0f, 1.0f);
     }
 
     @Override

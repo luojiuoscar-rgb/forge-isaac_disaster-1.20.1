@@ -2,14 +2,15 @@ package net.luojiuoscar.isaac_disaster.item_ability.pickup.cards;
 
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.item.item.ActiveItem;
-import net.luojiuoscar.isaac_disaster.registries.ability.active.ActiveAbility;
 import net.luojiuoscar.isaac_disaster.item_ability.pickup.IPickup;
 import net.luojiuoscar.isaac_disaster.manager.item_managers.id.ItemId;
 import net.luojiuoscar.isaac_disaster.manager.item_managers.id.PickupId;
+import net.luojiuoscar.isaac_disaster.registries.ability.active.ActiveAbility;
 import net.luojiuoscar.isaac_disaster.sound.ModSounds;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -36,16 +37,16 @@ public class QuestionCard implements IPickup {
         if (!(activeItem.getAbility() instanceof ActiveAbility activeAbility)) return;
 
         if (PlayerHelper.hasItem(ItemId.CAR_BATTERY.getId(), player)){
-            activeAbility.onTriggerStronger(player, null);
+            activeAbility.onTriggerStronger(player, null, hand);
         }else{
-            activeAbility.onTrigger(player, null);
+            activeAbility.onTrigger(player, null, hand);
         }
     }
 
     @Override
     public void onUseSound(Player player) {
-        player.playSound(SoundEvents.BOOK_PAGE_TURN);
-        player.playSound(ModSounds.QUESTION_CARD.get());
+        player.playNotifySound(SoundEvents.BOOK_PAGE_TURN, SoundSource.PLAYERS, 1.0f, 1.0f);
+        player.playNotifySound(ModSounds.QUESTION_CARD.get(), SoundSource.PLAYERS, 1.0f, 1.0f);
     }
 
     @Override
@@ -57,3 +58,4 @@ public class QuestionCard implements IPickup {
         return description;
     }
 }
+

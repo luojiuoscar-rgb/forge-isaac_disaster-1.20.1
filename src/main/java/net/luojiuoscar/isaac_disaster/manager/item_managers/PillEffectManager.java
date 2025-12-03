@@ -1,203 +1,156 @@
 package net.luojiuoscar.isaac_disaster.manager.item_managers;
 
-import net.luojiuoscar.isaac_disaster.item_ability.pickup.IPillEffect;
-import net.luojiuoscar.isaac_disaster.item_ability.pickup.pill_effects.*;
 import net.luojiuoscar.isaac_disaster.manager.data.PillShuffleData;
-import net.luojiuoscar.isaac_disaster.manager.item_managers.id.PillEffectId;
+import net.luojiuoscar.isaac_disaster.registries.pill_effect.IPillEffect;
+import net.luojiuoscar.isaac_disaster.registries.pill_effect.ModPillEffect;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.util.RandomSource;
-import net.minecraft.world.entity.player.Player;
+import net.minecraftforge.registries.RegistryObject;
 
 import java.util.*;
 
 public class PillEffectManager {
+
     private static final PillEffectManager INSTANCE = new PillEffectManager();
     private PillEffectManager() {}
     public static PillEffectManager getInstance() {
         return INSTANCE;
     }
 
-    // 已注册的所有药丸效果
-    private final Map<Integer, IPillEffect> registeredEffects = new HashMap<>();
-    // 注册过的药丸ID
+    /** 所有注册过的胶囊 ID（int） */
     private final Set<Integer> registeredPillIds = new HashSet<>();
-    // 当前生效中的药丸ID → 效果ID 映射表
-    private final Map<Integer, Integer> PillEffectMap = new HashMap<>();
 
-    //================ 注册部分 =================//
-    public void registerEffect(IPillEffect item) {
-        int pillEffectId = item.getPillEffectId();
-        if (registeredEffects.containsKey(pillEffectId)) {
-            throw new IllegalArgumentException("重复的PillEffect ID: " + pillEffectId);
-        }
-        registeredEffects.put(pillEffectId, item);
-    }
+    /** 当前药丸ID → 效果RegistryObject 的映射 */
+    private final Map<Integer, RegistryObject<IPillEffect>> pillEffectMap = new HashMap<>();
 
-    public void registerEffects(IPillEffect... items) {
-        for (IPillEffect item : items) {
-            registerEffect(item);
-        }
-    }
+    // ---------------
+    // 注册
+    // ---------------
 
     public void registerNewPillId(int pillId) {
         registeredPillIds.add(pillId);
     }
 
-    //================ 查询部分 =================//
-    public IPillEffect getEffectFromPill(int pillId) {
-        int effectId = getEffectIdFromPill(pillId);
-        return registeredEffects.get(effectId);
+    /** 获取全部 PillEffect 注册对象 */
+    private List<RegistryObject<IPillEffect>> getAllPillEffects() {
+        return new ArrayList<>(ModPillEffect.PILL_EFFECT_REGISTRY.getEntries());
     }
 
-    public int getEffectIdFromPill(int pillId) {
-        return PillEffectMap.getOrDefault(pillId, PillEffectId.I_FOUND_PILLS.getId());  // 默认 IFoundPills
+    // ---------------
+    // 查询
+    // ---------------
+    /** 获取某胶囊的效果 RegistryObject */
+    public RegistryObject<IPillEffect> getEffectIdFromPill(int pillId) {
+        return pillEffectMap.getOrDefault(pillId, ModPillEffect.I_FOUND_PILLS);
     }
 
-    public IPillEffect getEffectFromEffectId(int effectId) {
-        return registeredEffects.get(effectId);
-    }
-
-    public Map<Integer, Integer> getPillEffectMap() {
-        return Map.copyOf(this.PillEffectMap);
-    }
-
-    public int getPillIdFromEffectId(int effectId) {
-        for (Map.Entry<Integer, Integer> entry : PillEffectMap.entrySet()) {
-            if (entry.getValue() == effectId) {
-                return entry.getKey();
-            }
-        }
-        return 0; // 未找到时返回 0
+    /** 获取某胶囊的真实效果实例 */
+    public RegistryObject<IPillEffect> getEffectFromPill(int pillId) {
+        return getEffectIdFromPill(pillId);
     }
 
     public boolean isReady() {
-        return !registeredEffects.isEmpty() && !registeredPillIds.isEmpty();
+        return (!registeredPillIds.isEmpty() && !ModPillEffect.PILL_EFFECT_REGISTRY.getEntries().isEmpty());
     }
 
-    //================ 世界交互部分 =================//
-    /**
-     * 在服务器启动或世界加载时调用
-     * 从已保存的PillShuffleData恢复映射
-     */
+
+    // ----------------
+    // load
+    // ----------------
+
+    /** load world saved data → restore pillEffectMap */
     public void loadFromWorld(ServerLevel level) {
         PillShuffleData data = PillShuffleData.get(level);
-        PillEffectMap.clear();
-        PillEffectMap.putAll(data.getPillEffectMap());
+        pillEffectMap.clear();
+
+        // SavedData 中用 ResourceLocation 字符串保存
+        data.getPillEffectMap().forEach((pillId, rl) -> {
+            RegistryObject<IPillEffect> ro = ModPillEffect.PILL_EFFECT_REGISTRY.getEntries().stream()
+                    .filter(e -> e.getId().equals(rl))
+                    .findFirst()
+                    .orElse(ModPillEffect.I_FOUND_PILLS);
+
+            pillEffectMap.put(pillId, ro);
+        });
     }
 
-    /**
-     * 重新随机药丸效果并自动保存到世界数据
-     */
-    public void shufflePills(ServerLevel level) {
-        PillEffectMap.clear();
 
-        if (!isReady()) {
-            return;
-        }
+    // ----------------
+    // 工具方法
+    // ----------------
+
+    /** 随机生成新的胶囊 → 效果映射 */
+    public void shufflePills(ServerLevel level) {
+        pillEffectMap.clear();
+
+        if (!isReady()) return;
 
         List<Integer> pills = new ArrayList<>(registeredPillIds);
-        List<Integer> effects = new ArrayList<>(registeredEffects.keySet());
+        List<RegistryObject<IPillEffect>> effects = getAllPillEffects();
 
-        // 打乱顺序
         Collections.shuffle(pills);
         Collections.shuffle(effects);
 
         int size = Math.min(pills.size(), effects.size());
         for (int i = 0; i < size; i++) {
-            PillEffectMap.put(pills.get(i), effects.get(i));
+            pillEffectMap.put(pills.get(i), effects.get(i));
         }
 
-        // 写入SavedData
+        // 保存到 savedData
         PillShuffleData data = PillShuffleData.get(level);
         data.clear();
-        PillEffectMap.forEach(data::setMapping);
 
-        // 立即写入磁盘
+        pillEffectMap.forEach((pillId, effectRO) ->
+                data.setMapping(pillId, effectRO.getId())
+        );
+
         try {
             level.getDataStorage().save();
-        } catch (Exception e) {}
+        } catch (Exception ignored) {}
     }
 
-    //================ NBT序列化部分 =================//
+    public void triggerRandomEffect(ServerPlayer player, boolean isHorse) {
+        if (pillEffectMap.isEmpty()) return;
+
+        List<RegistryObject<IPillEffect>> effects = new ArrayList<>(pillEffectMap.values());
+        RegistryObject<IPillEffect> ro = effects.get(player.level().random.nextInt(effects.size()));
+
+        IPillEffect effect = ro.get();
+
+        // trigger
+        effect.redirectAndUse(player, isHorse);
+        effect.redirectAndMakeSound(player, isHorse);
+    }
+
+    // ----------------
+    // nbt
+    // ----------------
+
     public CompoundTag toTag() {
         CompoundTag tag = new CompoundTag();
-        PillEffectMap.forEach((pillId, effectId) -> tag.putInt(String.valueOf(pillId), effectId));
+
+        pillEffectMap.forEach((pillId, effectRO) ->
+                tag.putString(String.valueOf(pillId), effectRO.getId().toString())
+        );
+
         return tag;
     }
 
     public void loadFromTag(CompoundTag tag) {
-        PillEffectMap.clear();
+        pillEffectMap.clear();
+
         for (String key : tag.getAllKeys()) {
-            PillEffectMap.put(Integer.parseInt(key), tag.getInt(key));
+            int pillId = Integer.parseInt(key);
+            ResourceLocation rl = ResourceLocation.parse(tag.getString(key));
+
+            RegistryObject<IPillEffect> ro = ModPillEffect.PILL_EFFECT_REGISTRY.getEntries().stream()
+                    .filter(e -> e.getId().equals(rl))
+                    .findFirst()
+                    .orElse(ModPillEffect.I_FOUND_PILLS);
+
+            pillEffectMap.put(pillId, ro);
         }
-    }
-
-    //================ 特殊方法 =================//
-    public void triggerRandomEffect(Player player, boolean isHorsePill){
-        RandomSource random = player.getRandom();
-
-        ArrayList<Integer> keyList = new ArrayList<>(registeredEffects.keySet());
-
-        int effectId = keyList.get(random.nextInt(keyList.size()));
-
-        if (player instanceof ServerPlayer serverPlayer){
-            if (isHorsePill){
-                getEffectFromEffectId(effectId).onUseH(serverPlayer);
-            }else{
-                getEffectFromEffectId(effectId).onUse(serverPlayer);
-            }
-        }
-    }
-
-
-    //================ 初始化 =================//
-    public void init() {
-        registerEffects(
-                new IFoundPills(),
-                new BallsOfSteel(),
-                new HealthDown(),
-                new HealthUp(),
-                new FullHealth(),
-                new BadGas(),
-                new BadTrip(),
-                new ExplosiveDiarrhea(),
-                new Puberty(),
-                new RangeDown(),
-                new RangeUp(),
-                new SpeedDown(),
-                new SpeedUp(),
-                new TearsDown(),
-                new TearsUp(),
-                new LuckDown(),
-                new LuckUp(),
-                new Telepills(),
-                new Hematemesis(),
-                new Paralysis(),
-                new ICanSeeForever(),
-                new Pheromones(),
-                new Amnesia(),
-                new LemonParty(),
-                new Percs(),
-                new Addicted(),
-                new OneMakesYouLarger(),
-                new OneMakesYouSmall(),
-                new PowerPill(),
-                new RetroVision(),
-                new FriendsTillTheEnd(),
-                new SomethingsWrong(),
-                new ImDrowsy(),
-                new ImExcited(),
-                new ShotSpeedDown(),
-                new ShotSpeedUp(),
-                new ExperimentalPill(),
-                new Gulp(),
-                new Vurp(),
-                new RUAWizard(),
-                new Energy48(),
-                new QuestionPill(),
-                new BombsAreKey()
-        );
     }
 }

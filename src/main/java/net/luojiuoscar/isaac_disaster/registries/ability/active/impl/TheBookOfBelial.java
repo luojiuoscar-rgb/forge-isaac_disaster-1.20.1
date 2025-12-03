@@ -13,6 +13,7 @@ import net.luojiuoscar.isaac_disaster.sound.ModSounds;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
@@ -25,19 +26,19 @@ public class TheBookOfBelial extends ActiveAbility {
     }
 
     @Override
-    public void onFirstUse(ServerPlayer player, ItemStack stack){
+    public void onFirstUse(ServerPlayer player, ItemStack stack, @javax.annotation.Nullable InteractionHand hand){
         StatManager.modifySetWithId(player, SetId.BOOK.getId(), 1);
     }
 
     @Override
-    public void onTrigger(ServerPlayer player, ItemStack stack) {
+    public void onTrigger(ServerPlayer player, ItemStack stack, @javax.annotation.Nullable InteractionHand hand) {
         EntityHelper.applyOrStackEffect(player, ModEffects.POWER_OF_BELIAL.get(), 240, 0, false, true);
     }
 
     @Override
-    public void onTriggerStronger(ServerPlayer player, ItemStack stack){
-        onTrigger(player, stack);
-        onTrigger(player, stack);
+    public void onTriggerStronger(ServerPlayer player, ItemStack stack, @javax.annotation.Nullable InteractionHand hand){
+        onTrigger(player, stack, hand);
+        onTrigger(player, stack, hand);
     }
 
     @Override

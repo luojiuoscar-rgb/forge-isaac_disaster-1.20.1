@@ -10,6 +10,7 @@ import net.luojiuoscar.isaac_disaster.registries.ability.active.ModActiveAbility
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
@@ -23,14 +24,14 @@ public class CrookedPenny extends ActiveAbility {
     }
 
     @Override
-    public void onFirstUse(ServerPlayer player, @Nullable ItemStack stack) {}
+    public void onFirstUse(ServerPlayer player, @Nullable ItemStack stack, @javax.annotation.Nullable InteractionHand hand) {}
 
     @Override
-    public void onTrigger(ServerPlayer player, ItemStack stack) {
+    public void onTrigger(ServerPlayer player, ItemStack stack, @javax.annotation.Nullable InteractionHand hand) {
         RandomSource random = player.getRandom();
 
         if (random.nextDouble() < 0.5){
-            ModActiveAbility.ANARCHIST_COOKBOOK.get().onTrigger(player, stack);
+            ModActiveAbility.ANARCHIST_COOKBOOK.get().onTrigger(player, stack, hand);
         }else{
             // 清空背包并给予1块钱，返还弯币
             Inventory inv = player.getInventory();
@@ -43,9 +44,9 @@ public class CrookedPenny extends ActiveAbility {
     }
 
     @Override
-    public void onTriggerStronger(ServerPlayer player, ItemStack stack){
-        onTrigger(player, stack);
-        onTrigger(player, stack);
+    public void onTriggerStronger(ServerPlayer player, ItemStack stack, @javax.annotation.Nullable InteractionHand hand){
+        onTrigger(player, stack, hand);
+        onTrigger(player, stack, hand);
     }
 
     @Override

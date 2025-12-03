@@ -8,6 +8,7 @@ import net.luojiuoscar.isaac_disaster.manager.EffectManager;
 import net.luojiuoscar.isaac_disaster.manager.item_managers.id.ItemId;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
@@ -21,11 +22,11 @@ public class TheGamekid extends ActiveAbility {
     }
 
     @Override
-    public void onFirstUse(ServerPlayer player, @Nullable ItemStack stack) {
+    public void onFirstUse(ServerPlayer player, @Nullable ItemStack stack, @javax.annotation.Nullable InteractionHand hand) {
     }
 
     @Override
-    public void onTrigger(ServerPlayer player, ItemStack stack) {
+    public void onTrigger(ServerPlayer player, ItemStack stack, @javax.annotation.Nullable InteractionHand hand) {
         int duration = 200;
         MobEffectInstance invincible = new MobEffectInstance(ModEffects.INVINCIBLE.get(), duration,0);
         MobEffectInstance no_bullet = new MobEffectInstance(ModEffects.LACRIMAL_HYPOSECRETION.get(), duration,0);
@@ -37,7 +38,7 @@ public class TheGamekid extends ActiveAbility {
     }
 
     @Override
-    public void onTriggerStronger(ServerPlayer player, ItemStack stack){
+    public void onTriggerStronger(ServerPlayer player, ItemStack stack, @javax.annotation.Nullable InteractionHand hand){
         int duration = 400;
         MobEffectInstance invincible = new MobEffectInstance(ModEffects.INVINCIBLE.get(), duration,0);
         MobEffectInstance no_bullet = new MobEffectInstance(ModEffects.LACRIMAL_HYPOSECRETION.get(), duration,0);

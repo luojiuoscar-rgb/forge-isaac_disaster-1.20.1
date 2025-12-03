@@ -2,7 +2,7 @@ package net.luojiuoscar.isaac_disaster.effect.custom;
 
 import net.luojiuoscar.isaac_disaster.attribute.ModAttributes;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
-import net.luojiuoscar.isaac_disaster.registries.bullet_color.ModBulletColors;
+import net.luojiuoscar.isaac_disaster.registries.bullet_color.ModBulletColor;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
@@ -34,7 +34,7 @@ public class TelepathyEffect extends MobEffect {
         }
 
         StatManager.addHoming(player, 1);
-        StatManager.addBulletColor(player, ModBulletColors.SPOON_BENDER.getId(), 1);
+        StatManager.addBulletColor(player, ModBulletColor.SPOON_BENDER.getId(), 1);
 
         AttributeInstance attr = player.getAttribute(ModAttributes.BULLET_RANGE.get());
         if (attr != null) {
@@ -58,7 +58,7 @@ public class TelepathyEffect extends MobEffect {
         if (!(entity instanceof ServerPlayer player)) return;
 
         StatManager.addHoming(player, -1);
-        StatManager.addBulletColor(player, ModBulletColors.SPOON_BENDER.getId(), -1);
+        StatManager.addBulletColor(player, ModBulletColor.SPOON_BENDER.getId(), -1);
 
         AttributeInstance attr = player.getAttribute(ModAttributes.BULLET_RANGE.get());
         if (attr != null) {

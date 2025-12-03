@@ -3,7 +3,7 @@ package net.luojiuoscar.isaac_disaster.capability.player;
 import net.luojiuoscar.isaac_disaster.manager.attack.AttackManager;
 import net.luojiuoscar.isaac_disaster.manager.attack.ModAttackType;
 import net.luojiuoscar.isaac_disaster.registries.bullet_color.BulletColor;
-import net.luojiuoscar.isaac_disaster.registries.bullet_color.ModBulletColors;
+import net.luojiuoscar.isaac_disaster.registries.bullet_color.ModBulletColor;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
@@ -49,7 +49,7 @@ public class PlayerAbility {
         spectral = 0;
         controllable = 0;
         extraTrinketSlotCounts = 0;
-        bestBulletColor = ModBulletColors.BASE.getId();
+        bestBulletColor = ModBulletColor.BASE.getId();
         bestAttackType = ModAttackType.BULLET.getId();
 
         itemFlags.clear();
@@ -279,11 +279,11 @@ public class PlayerAbility {
     }
 
     public void updateBestBulletColor() {
-        IForgeRegistry<BulletColor> registry = RegistryManager.ACTIVE.getRegistry(ModBulletColors.BULLET_COLOR_KEY);
+        IForgeRegistry<BulletColor> registry = RegistryManager.ACTIVE.getRegistry(ModBulletColor.BULLET_COLOR_KEY);
         if (registry == null) return;
 
-        double bestPriority = ModBulletColors.BASE.get().priority();
-        ResourceLocation bestKey = ModBulletColors.BASE.getId();
+        double bestPriority = ModBulletColor.BASE.get().priority();
+        ResourceLocation bestKey = ModBulletColor.BASE.getId();
 
         for (ResourceLocation key : this.bulletColor.keySet()) {
             BulletColor color = registry.getValue(key);

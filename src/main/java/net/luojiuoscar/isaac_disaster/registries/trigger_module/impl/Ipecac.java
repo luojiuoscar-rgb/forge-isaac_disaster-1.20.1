@@ -6,7 +6,7 @@ import net.luojiuoscar.isaac_disaster.event.custom.attack.IsaacAttackHitBlockEve
 import net.luojiuoscar.isaac_disaster.event.custom.attack.PlayerPerformAttackEvent;
 import net.luojiuoscar.isaac_disaster.helper.EntityHelper;
 import net.luojiuoscar.isaac_disaster.helper.LevelHelper;
-import net.luojiuoscar.isaac_disaster.registries.bullet_color.ModBulletColors;
+import net.luojiuoscar.isaac_disaster.registries.bullet_color.ModBulletColor;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.ITriggerModule;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerModule;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerCategory;
@@ -34,7 +34,7 @@ public class Ipecac implements ITriggerModule {
 
     @Override
     public void onShoot(PlayerPerformAttackEvent event, int stacks, TriggerModuleQueue queue) {
-        event.getContext().colorRl = ModBulletColors.IPECAC.getId();
+        event.getContext().colorRl = ModBulletColor.IPECAC.getId();
         event.getContext().addTriggerModule(ModTriggerModule.IPECAC.getId(), 1);
     }
 

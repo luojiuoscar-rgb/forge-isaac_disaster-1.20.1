@@ -10,6 +10,7 @@ import net.luojiuoscar.isaac_disaster.sound.ModSounds;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -35,8 +36,8 @@ public class TheFool implements ITarot {
 
     @Override
     public void onUseSound(Player player) {
-        player.playSound(SoundEvents.BOOK_PAGE_TURN);
-        player.playSound(ModSounds.THE_FOOL.get());
+        player.playNotifySound(SoundEvents.BOOK_PAGE_TURN, SoundSource.PLAYERS, 1.0f, 1.0f);
+        player.playNotifySound(ModSounds.THE_FOOL.get(), SoundSource.PLAYERS, 1.0f, 1.0f);
 
     }
 
@@ -56,3 +57,4 @@ public class TheFool implements ITarot {
         return description;
     }
 }
+

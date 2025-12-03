@@ -6,8 +6,10 @@ import net.luojiuoscar.isaac_disaster.registries.ability.active.ActiveAbility;
 import net.luojiuoscar.isaac_disaster.manager.ColorManager;
 import net.luojiuoscar.isaac_disaster.manager.item_managers.PillEffectManager;
 import net.luojiuoscar.isaac_disaster.manager.item_managers.id.ItemId;
+import net.luojiuoscar.isaac_disaster.registries.pill_effect.IPillEffect;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
@@ -20,27 +22,44 @@ public class Placebo extends ActiveAbility {
     }
 
     @Override
-    public void onFirstUse(ServerPlayer player, @Nullable ItemStack stack) {
+    public void onFirstUse(ServerPlayer player, @Nullable ItemStack stack, @Nullable InteractionHand hand) {
 
     }
 
     @Override
-    public void onTrigger(ServerPlayer player, ItemStack stack) {
-        ItemStack pill = player.getOffhandItem();
-        if (!(pill.getItem() instanceof Pill item)) return;
-        // 根据类型触发效果
-        if (item.isHorsePill()){
-            PillEffectManager.getInstance().getEffectFromPill(item.getPillId()).onUseH(player);
-        }else{
-            PillEffectManager.getInstance().getEffectFromPill(item.getPillId()).onUse(player);
+    public void onTrigger(ServerPlayer player, ItemStack stack, @Nullable InteractionHand hand) {
+        ItemStack pill = null;
+
+        if (hand == InteractionHand.MAIN_HAND){
+            pill = player.getOffhandItem();
+        }else if (hand == InteractionHand.OFF_HAND){
+            pill = player.getMainHandItem();
+        }
+
+        if (pill != null && pill.getItem() instanceof Pill item){
+            IPillEffect effect = PillEffectManager.getInstance().getEffectFromPill(item.getPillId()).get();
+
+            effect.redirectAndUse(player, item.isHorsePill());
+            effect.redirectAndMakeSound(player, item.isHorsePill());
         }
     }
 
     @Override
-    public void onTriggerStronger(ServerPlayer player, ItemStack stack){
-        ItemStack pill = player.getOffhandItem();
-        if (!(pill.getItem() instanceof Pill item)) return;
-        PillEffectManager.getInstance().getEffectFromPill(item.getPillId()).onUseH(player);
+    public void onTriggerStronger(ServerPlayer player, ItemStack stack, @Nullable InteractionHand hand){
+        ItemStack pill = null;
+
+        if (hand == InteractionHand.MAIN_HAND){
+            pill = player.getOffhandItem();
+        }else if (hand == InteractionHand.OFF_HAND){
+            pill = player.getMainHandItem();
+        }
+
+        if (pill != null && pill.getItem() instanceof Pill item){
+            IPillEffect effect = PillEffectManager.getInstance().getEffectFromPill(item.getPillId()).get();
+
+            effect.redirectAndUse(player, true);
+            effect.redirectAndMakeSound(player, true);
+        }
     }
 
     @Override

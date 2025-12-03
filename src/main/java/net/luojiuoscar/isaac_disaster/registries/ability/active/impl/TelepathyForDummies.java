@@ -14,6 +14,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
@@ -27,17 +28,17 @@ public class TelepathyForDummies extends ActiveAbility {
     }
 
     @Override
-    public void onFirstUse(ServerPlayer player, ItemStack stack){
+    public void onFirstUse(ServerPlayer player, ItemStack stack, @javax.annotation.Nullable InteractionHand hand){
         StatManager.modifySetWithId(player, SetId.BOOK.getId(), 1);
     }
 
     @Override
-    public void onTrigger(ServerPlayer player, ItemStack stack) {
+    public void onTrigger(ServerPlayer player, ItemStack stack, @javax.annotation.Nullable InteractionHand hand) {
         EntityHelper.applyOrStackEffect(player, ModEffects.TELEPATHY.get(), 200, 0, false, true);
     }
 
     @Override
-    public void onTriggerStronger(ServerPlayer player, ItemStack stack){
+    public void onTriggerStronger(ServerPlayer player, ItemStack stack, @javax.annotation.Nullable InteractionHand hand){
         EntityHelper.applyOrStackEffect(player, ModEffects.TELEPATHY.get(), 400, 0, false, true);
     }
 

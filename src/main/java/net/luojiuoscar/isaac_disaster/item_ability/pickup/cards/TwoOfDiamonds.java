@@ -7,6 +7,7 @@ import net.luojiuoscar.isaac_disaster.sound.ModSounds;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -32,8 +33,8 @@ public class TwoOfDiamonds implements IPickup {
 
     @Override
     public void onUseSound(Player player) {
-        player.playSound(SoundEvents.BOOK_PAGE_TURN);
-        player.playSound(ModSounds.TWO_OF_DIAMONDS.get());
+        player.playNotifySound(SoundEvents.BOOK_PAGE_TURN, SoundSource.PLAYERS, 1.0f, 1.0f);
+        player.playNotifySound(ModSounds.TWO_OF_DIAMONDS.get(), SoundSource.PLAYERS, 1.0f, 1.0f);
     }
 
     @Override
@@ -45,3 +46,4 @@ public class TwoOfDiamonds implements IPickup {
         return description;
     }
 }
+

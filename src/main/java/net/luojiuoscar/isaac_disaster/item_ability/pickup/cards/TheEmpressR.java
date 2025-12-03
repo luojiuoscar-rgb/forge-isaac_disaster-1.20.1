@@ -10,6 +10,7 @@ import net.luojiuoscar.isaac_disaster.sound.ModSounds;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
@@ -39,8 +40,8 @@ public class TheEmpressR implements ITarot {
 
     @Override
     public void onUseSound(Player player) {
-        player.playSound(SoundEvents.BOOK_PAGE_TURN);
-        player.playSound(ModSounds.THE_EMPRESS_R.get());
+        player.playNotifySound(SoundEvents.BOOK_PAGE_TURN, SoundSource.PLAYERS, 1.0f, 1.0f);
+        player.playNotifySound(ModSounds.THE_EMPRESS_R.get(), SoundSource.PLAYERS, 1.0f, 1.0f);
     }
 
     @Override
@@ -58,3 +59,4 @@ public class TheEmpressR implements ITarot {
         return description;
     }
 }
+

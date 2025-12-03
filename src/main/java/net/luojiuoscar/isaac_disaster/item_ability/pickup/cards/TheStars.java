@@ -47,8 +47,8 @@ public class TheStars implements ITarot {
 
     @Override
     public void onUseSound(Player player) {
-        player.playSound(SoundEvents.BOOK_PAGE_TURN);
-        player.playSound(ModSounds.THE_STARS.get());
+        player.playNotifySound(SoundEvents.BOOK_PAGE_TURN, SoundSource.PLAYERS, 1.0f, 1.0f);
+        player.playNotifySound(ModSounds.THE_STARS.get(), SoundSource.PLAYERS, 1.0f, 1.0f);
     }
 
     @Override

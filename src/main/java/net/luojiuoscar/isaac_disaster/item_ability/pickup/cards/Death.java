@@ -10,6 +10,7 @@ import net.luojiuoscar.isaac_disaster.sound.ModSounds;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -25,18 +26,18 @@ public class Death implements ITarot {
 
     @Override
     public void onUseEffect(ServerPlayer player, ItemStack stack, InteractionHand hand) {
-        ModActiveAbility.THE_NECRONMICON.get().onTrigger(player, null);
+        ModActiveAbility.THE_NECRONMICON.get().onTrigger(player, null, hand);
     }
 
     @Override
     public void onUseEffectStronger(ServerPlayer player, ItemStack stack, InteractionHand hand) {
-        ModActiveAbility.THE_NECRONMICON.get().onTriggerStronger(player, null);
+        ModActiveAbility.THE_NECRONMICON.get().onTriggerStronger(player, null, hand);
     }
 
     @Override
     public void onUseSound(Player player) {
-        player.playSound(SoundEvents.BOOK_PAGE_TURN);
-        player.playSound(ModSounds.DEATH.get());
+        player.playNotifySound(SoundEvents.BOOK_PAGE_TURN, SoundSource.PLAYERS, 1.0f, 1.0f);
+        player.playNotifySound(ModSounds.DEATH.get(), SoundSource.PLAYERS, 1.0f, 1.0f);
     }
 
     @Override
@@ -55,3 +56,4 @@ public class Death implements ITarot {
         return description;
     }
 }
+

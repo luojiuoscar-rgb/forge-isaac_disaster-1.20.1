@@ -5,6 +5,7 @@ import net.luojiuoscar.isaac_disaster.networking.packet.PillRecordsSyncS2CPacket
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 
 import java.util.*;
@@ -14,7 +15,7 @@ public class PlayerItemUseRecord {
     public record PillData(int id, boolean isHorse, long sequence) {}
     public record CardData(int id, long sequence) {}
     public record ActiveData(int id, long sequence) {}
-    public record PillEffectData(int id, boolean isHorse, long sequence) {}
+    public record PillEffectData(ResourceLocation id, boolean isHorse, long sequence) {}
 
     private final int MAX_RECORDS = 3;
 
@@ -23,7 +24,7 @@ public class PlayerItemUseRecord {
     private final List<ActiveData> activeRecords;
     private final List<PillEffectData> pillEffectRecords;
 
-    private final Map<Integer, Integer> pillEffectMap;
+    private final Map<Integer, ResourceLocation> pillEffectMap;
 
     private long sequenceCounter = 0;
 
@@ -64,7 +65,7 @@ public class PlayerItemUseRecord {
     }
 
     // 添加效果记录
-    public void addPillEffectRecord(int id, boolean isHorse) {
+    public void addPillEffectRecord(ResourceLocation id, boolean isHorse) {
         if (pillEffectRecords.size() >= MAX_RECORDS) pillEffectRecords.remove(0);
         pillEffectRecords.add(new PillEffectData(id, isHorse, sequenceCounter++));
     }
@@ -85,13 +86,13 @@ public class PlayerItemUseRecord {
         return new ArrayList<>(pillEffectRecords);
     }
 
-    public Map<Integer, Integer> getPillEffectMap() {
+    public Map<Integer, ResourceLocation> getPillEffectMap() {
         return Collections.unmodifiableMap(pillEffectMap);
     }
 
-    public void setPillEffectRecord(ServerPlayer pl, int pillId, int effectId) {
-        pillEffectMap.put(pillId, effectId);
-        ModMessages.sentToPlayer(new PillRecordsSyncS2CPacket(pillId, effectId), pl);
+    public void setPillEffectRecord(ServerPlayer pl, int pillId, ResourceLocation effectRl) {
+        pillEffectMap.put(pillId, effectRl);
+        ModMessages.sentToPlayer(new PillRecordsSyncS2CPacket(pillId, effectRl), pl);
     }
 
     public void removePillEffectRecord(int pillId) {
@@ -132,22 +133,26 @@ public class PlayerItemUseRecord {
         nbt.put("ActiveRecords", activeList);
 
         // EffectRecords
-        ListTag effectListTag = new ListTag();
-        for (PillEffectData effect : pillEffectRecords) {
-            CompoundTag tag = new CompoundTag();
-            tag.putInt("id", effect.id);
-            tag.putBoolean("isHorse", effect.isHorse);
-            tag.putLong("sequence", effect.sequence);
-            effectListTag.add(tag);
+        if (nbt.contains("EffectRecords", Tag.TAG_LIST)) {
+            ListTag list = nbt.getList("EffectRecords", Tag.TAG_COMPOUND);
+            for (Tag t : list) {
+                CompoundTag tag = (CompoundTag) t;
+                pillEffectRecords.add(
+                        new PillEffectData(
+                                ResourceLocation.parse(tag.getString("id")),
+                                tag.getBoolean("isHorse"),
+                                tag.getLong("sequence")
+                        )
+                );
+            }
         }
-        nbt.put("EffectRecords", effectListTag);
 
         // PillEffectMap
         ListTag pillEffectMapList = new ListTag();
-        for (Map.Entry<Integer, Integer> entry : pillEffectMap.entrySet()) {
+        for (Map.Entry<Integer, ResourceLocation> entry : pillEffectMap.entrySet()) {
             CompoundTag tag = new CompoundTag();
             tag.putInt("pill_id", entry.getKey());
-            tag.putInt("effect_id", entry.getValue());
+            tag.putString("effect_id", entry.getValue().toString());
             pillEffectMapList.add(tag);
         }
         nbt.put("PillEffectMap", pillEffectMapList);
@@ -191,20 +196,25 @@ public class PlayerItemUseRecord {
         }
 
         // EffectRecords
-        if (nbt.contains("EffectRecords", Tag.TAG_LIST)) {
-            ListTag list = nbt.getList("EffectRecords", Tag.TAG_COMPOUND);
-            for (Tag t : list) {
-                CompoundTag tag = (CompoundTag) t;
-                pillEffectRecords.add(new PillEffectData(tag.getInt("id"), tag.getBoolean("isHorse"), tag.getLong("sequence")));
-            }
+        ListTag effectListTag = new ListTag();
+        for (PillEffectData effect : pillEffectRecords) {
+            CompoundTag tag = new CompoundTag();
+            tag.putString("id", effect.id().toString());
+            tag.putBoolean("isHorse", effect.isHorse());
+            tag.putLong("sequence", effect.sequence());
+            effectListTag.add(tag);
         }
+        nbt.put("EffectRecords", effectListTag);
 
         // PillEffectMap
         if (nbt.contains("PillEffectMap", Tag.TAG_LIST)) {
             ListTag list = nbt.getList("PillEffectMap", Tag.TAG_COMPOUND);
             for (Tag t : list) {
                 CompoundTag tag = (CompoundTag) t;
-                pillEffectMap.put(tag.getInt("pill_id"), tag.getInt("effect_id"));
+                pillEffectMap.put(
+                        tag.getInt("pill_id"),
+                        ResourceLocation.parse(tag.getString("effect_id"))
+                );
             }
         }
 

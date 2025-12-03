@@ -4,12 +4,11 @@ import net.luojiuoscar.isaac_disaster.capability.player.PlayerItemUseRecord;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerItemUseRecordProvider;
 import net.luojiuoscar.isaac_disaster.item_ability.pickup.IPickup;
 import net.luojiuoscar.isaac_disaster.manager.item_managers.id.PickupId;
-import net.luojiuoscar.isaac_disaster.manager.item_managers.PickupManager;
-import net.luojiuoscar.isaac_disaster.manager.item_managers.PillEffectManager;
 import net.luojiuoscar.isaac_disaster.sound.ModSounds;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -49,10 +48,10 @@ public class WildCard implements IPickup {
                     long maxSeq = Math.max(seqEffect, Math.max(seqCard, seqActive));
 
                     if (maxSeq == seqEffect) {
-                        PillEffectManager.getInstance().getEffectFromEffectId(effect.id()).onUse(player);
+//                        PillEffectManager.getInstance().getEffectFromEffectId(effect.id()).onUse(player);
                     }
                     else if (maxSeq == seqCard) {
-                        PickupManager.getInstance().getItemFromId(card.id()).onUseEffect(player, null, null);
+//                        PickupManager.getInstance().getItemFromId(card.id()).onUseEffect(player, null, null);
                     }
                     else if (maxSeq == seqActive) {
 //                        ActiveItemManager.getInstance().getItemFromId(active.id()).onUse(player, null);
@@ -64,8 +63,8 @@ public class WildCard implements IPickup {
 
     @Override
     public void onUseSound(Player player) {
-        player.playSound(SoundEvents.BOOK_PAGE_TURN);
-        player.playSound(ModSounds.WILD_CARD.get());
+        player.playNotifySound(SoundEvents.BOOK_PAGE_TURN, SoundSource.PLAYERS, 1.0f, 1.0f);
+        player.playNotifySound(ModSounds.WILD_CARD.get(), SoundSource.PLAYERS, 1.0f, 1.0f);
     }
 
     @Override
@@ -77,3 +76,4 @@ public class WildCard implements IPickup {
         return description;
     }
 }
+

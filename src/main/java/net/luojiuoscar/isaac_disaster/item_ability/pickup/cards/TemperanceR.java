@@ -4,13 +4,14 @@ import net.luojiuoscar.isaac_disaster.client.ClientDataManager;
 import net.luojiuoscar.isaac_disaster.helper.ScheduledFuncHelper;
 import net.luojiuoscar.isaac_disaster.item_ability.pickup.ITarot;
 import net.luojiuoscar.isaac_disaster.manager.ColorManager;
+import net.luojiuoscar.isaac_disaster.manager.item_managers.PillEffectManager;
 import net.luojiuoscar.isaac_disaster.manager.item_managers.id.ItemId;
 import net.luojiuoscar.isaac_disaster.manager.item_managers.id.PickupId;
-import net.luojiuoscar.isaac_disaster.manager.item_managers.PillEffectManager;
 import net.luojiuoscar.isaac_disaster.sound.ModSounds;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -42,8 +43,8 @@ public class TemperanceR implements ITarot {
 
     @Override
     public void onUseSound(Player player) {
-        player.playSound(SoundEvents.BOOK_PAGE_TURN);
-        player.playSound(ModSounds.TEMPERANCE_R.get());
+        player.playNotifySound(SoundEvents.BOOK_PAGE_TURN, SoundSource.PLAYERS, 1.0f, 1.0f);
+        player.playNotifySound(ModSounds.TEMPERANCE_R.get(), SoundSource.PLAYERS, 1.0f, 1.0f);
     }
 
     @Override
@@ -61,3 +62,4 @@ public class TemperanceR implements ITarot {
         return description;
     }
 }
+

@@ -7,6 +7,8 @@ import net.luojiuoscar.isaac_disaster.item.item.IIgnoreRecord;
 import net.luojiuoscar.isaac_disaster.item.pickup.interfaces.ICommonPickup;
 import net.luojiuoscar.isaac_disaster.manager.item_managers.id.ItemId;
 import net.luojiuoscar.isaac_disaster.manager.item_managers.PillEffectManager;
+import net.luojiuoscar.isaac_disaster.registries.pill_effect.IPillEffect;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
@@ -29,7 +31,9 @@ public class Pill extends Item implements ICommonPickup {
         super(pProperties.rarity(Rarity.UNCOMMON));
         this.isHorsePill = isHorsePill;
         this.pillId = pillId;
-        PillEffectManager.getInstance().registerNewPillId(pillId); // 在注册物品的时候，加入列表
+
+        // 在注册物品的时候，加入列表
+        PillEffectManager.getInstance().registerNewPillId(pillId);
     }
 
     @Override
@@ -39,27 +43,32 @@ public class Pill extends Item implements ICommonPickup {
         // 触发事件
         PickupUseEvent event = new PickupUseEvent(player, stack);
         MinecraftForge.EVENT_BUS.post(event);
+
         if (event.isCanceled()) return InteractionResultHolder.pass(stack);
 
         // 触发药丸效果
         if (!level.isClientSide){
-            if (isHorsePill){
-                PillEffectManager.getInstance().getEffectFromPill(pillId).onUseH((ServerPlayer) player);
-            }else {
-                PillEffectManager.getInstance().getEffectFromPill(pillId).onUse((ServerPlayer) player);
-            }
+
+            IPillEffect effect = PillEffectManager.getInstance().getEffectFromPill(pillId).get();
+
+            effect.redirectAndUse((ServerPlayer) player, isHorsePill);
+            effect.redirectAndMakeSound((ServerPlayer) player, isHorsePill);
 
             // 如果没有有正确的药丸记录，则更新
             if (!(stack.getItem() instanceof IIgnoreRecord) &&
                     !ClientDataManager.getInstance().isPillRecordCorrectly(pillId)){
-                int effectId = PillEffectManager.getInstance().getEffectIdFromPill(pillId);
+
+                ResourceLocation effectId =
+                        PillEffectManager.getInstance().getEffectFromPill(pillId).getId();
+
 
                 player.getCapability(PlayerItemUseRecordProvider.PLAYER_ITEM_USE_RECORD).ifPresent(
                         playerItemUseRecord -> {
+                            // 添加使用的映射关系，药丸id，效果id
                             playerItemUseRecord.setPillEffectRecord((ServerPlayer) player, pillId, effectId);
                             playerItemUseRecord.addPillRecord(pillId, isHorsePill);
                             playerItemUseRecord.addPillEffectRecord(
-                                    PillEffectManager.getInstance().getEffectIdFromPill(pillId), isHorsePill);
+                                    PillEffectManager.getInstance().getEffectIdFromPill(pillId).getId(), isHorsePill);
                         });
             }}
 
@@ -69,11 +78,14 @@ public class Pill extends Item implements ICommonPickup {
 
     @Override
     public @NotNull String getDescriptionId(){
-        if (ClientDataManager.getInstance().isPillRecordCorrectly(pillId) ||
-        ClientDataManager.getInstance().getCountFromId(ItemId.PHD.getId()) > 0 ||
-                ClientDataManager.getInstance().getCountFromId(ItemId.FALSE_PHD.getId()) > 0){
+        // 当有办法显示名称的时候
+        if (ClientDataManager.getInstance().isPillRecordCorrectly(pillId)
+                || ClientDataManager.getInstance().getCountFromId(ItemId.PHD.getId()) > 0
+                || ClientDataManager.getInstance().getCountFromId(ItemId.FALSE_PHD.getId()) > 0){
 
-            return PillEffectManager.getInstance().getEffectFromPill(pillId).getDescriptionId();
+            return PillEffectManager.getInstance().getEffectFromPill(pillId).get()
+                    .getDescriptionId(ClientDataManager.getInstance().getPillQuality());
+
         }else{
             // 使用原名
             return this.getOrCreateDescriptionId();

@@ -12,7 +12,7 @@ public class ClientDataManager {
 
     private final Map<ResourceLocation, Integer> itemCountMap;
     private final Map<Integer, Integer> setCountMap;
-    private final Map<Integer, Integer> pillRecords;
+    private final Map<Integer, ResourceLocation> pillRecords;
     private int flyUnits;
     private int pillQuality;
 
@@ -44,8 +44,8 @@ public class ClientDataManager {
     }
     public boolean isPillRecordCorrectly(int pillId) {
         if (pillRecords.containsKey(pillId)){
-            int correctEffect = PillEffectManager.getInstance().getEffectIdFromPill(pillId);
-            return pillRecords.get(pillId) == correctEffect;
+            ResourceLocation correctEffect = PillEffectManager.getInstance().getEffectIdFromPill(pillId).getId();
+            return pillRecords.get(pillId).equals(correctEffect);
         }
         return false;
     }
@@ -74,7 +74,7 @@ public class ClientDataManager {
     public void setSetCountWithId(int setId, int count){
         setCountMap.put(setId, count);
     }
-    public void setPillRecordsWithId(int pillId, int effectId){
+    public void setPillRecordsWithId(int pillId, ResourceLocation effectId){
         pillRecords.put(pillId, effectId);
     }
     public void setPillQuality(int pillQuality){

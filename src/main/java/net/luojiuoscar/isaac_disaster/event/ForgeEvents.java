@@ -2,8 +2,8 @@ package net.luojiuoscar.isaac_disaster.event;
 
 import net.luojiuoscar.isaac_disaster.Config;
 import net.luojiuoscar.isaac_disaster.attribute.ModAttributes;
-import net.luojiuoscar.isaac_disaster.capability.entity.EntityEffectProvider;
 import net.luojiuoscar.isaac_disaster.capability.entity.EffectModulesProvider;
+import net.luojiuoscar.isaac_disaster.capability.entity.EntityEffectProvider;
 import net.luojiuoscar.isaac_disaster.capability.player.*;
 import net.luojiuoscar.isaac_disaster.commands.*;
 import net.luojiuoscar.isaac_disaster.effect.ModEffects;
@@ -167,7 +167,7 @@ public class ForgeEvents {
         new GetItemCountCommand(event.getDispatcher());
         new GetFlyCommand(event.getDispatcher());
         new ShufflePillCommand(event.getDispatcher());
-        new TriggerPillEffectCount(event.getDispatcher());
+        new TriggerPillEffectCommand(event.getDispatcher());
         new ResetPlayerCommand(event.getDispatcher());
         new ClearSwallowedTrinkets(event.getDispatcher());
         new SetTrinketEnchanted(event.getDispatcher());
@@ -265,8 +265,8 @@ public class ForgeEvents {
     public static void syncPillDataToClient(ServerPlayer player){
         player.getCapability(PlayerItemUseRecordProvider.PLAYER_ITEM_USE_RECORD).ifPresent(
                 playerItemUseRecord -> {
-                    Map<Integer,Integer> map = Map.copyOf(playerItemUseRecord.getPillEffectMap());
-                    for (Map.Entry<Integer, Integer> entry : map.entrySet()) {
+                    Map<Integer, ResourceLocation> map = Map.copyOf(playerItemUseRecord.getPillEffectMap());
+                    for (Map.Entry<Integer, ResourceLocation> entry : map.entrySet()) {
                         ModMessages.sentToPlayer(new PillRecordsSyncS2CPacket(entry.getKey(), entry.getValue()), player);
                     }
                 }

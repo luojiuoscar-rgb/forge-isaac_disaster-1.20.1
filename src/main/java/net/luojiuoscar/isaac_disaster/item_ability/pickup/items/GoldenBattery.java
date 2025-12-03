@@ -5,6 +5,7 @@ import net.luojiuoscar.isaac_disaster.item_ability.pickup.IBattery;
 import net.luojiuoscar.isaac_disaster.manager.item_managers.id.PickupId;
 import net.luojiuoscar.isaac_disaster.sound.ModSounds;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -27,6 +28,7 @@ public class GoldenBattery implements IBattery {
 
     @Override
     public void onUseSound(Player player) {
-        player.playSound(ModSounds.BATTERY.get(), 1.0F, 1.0F);
+        player.playNotifySound(ModSounds.BATTERY.get(), SoundSource.PLAYERS, 1.0F, 1.0F);
     }
 }
+

@@ -2,6 +2,7 @@ package net.luojiuoscar.isaac_disaster.item.pickup;
 
 import net.luojiuoscar.isaac_disaster.item.pickup.interfaces.ICommonPickup;
 import net.luojiuoscar.isaac_disaster.manager.item_managers.PillEffectManager;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
@@ -25,9 +26,7 @@ public class GoldenPill extends Item implements ICommonPickup {
         ItemStack stack = player.getItemInHand(hand);
 
         // 触发药丸效果
-        if (!level.isClientSide){
-            PillEffectManager.getInstance().triggerRandomEffect(player, isHorsePill);
-        }
+        PillEffectManager.getInstance().triggerRandomEffect((ServerPlayer) player, isHorsePill);
 
         // 物品-1
         if (!(player.isCreative() || player.isSpectator())) {

@@ -6,6 +6,7 @@ import net.luojiuoscar.isaac_disaster.manager.item_managers.id.PickupId;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -29,6 +30,7 @@ public class GigaBomb implements IPickup {
     @Override
     public void onUseSound(Player player) {
         SoundEvent sound = SoundEvents.TNT_PRIMED;
-        player.playSound(sound, 1.0F, 1.0F);
+        player.playNotifySound(sound, SoundSource.PLAYERS, 1.0F, 1.0F);
     }
 }
+

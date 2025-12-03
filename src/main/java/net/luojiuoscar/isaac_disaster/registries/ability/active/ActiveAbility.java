@@ -54,7 +54,7 @@ public abstract class ActiveAbility extends IsaacItemAbility {
 
             // 首次使用效果
             if (!ActiveItem.hasBeenUsed(stack)){
-                onFirstUse(player, stack);
+                onFirstUse(player, stack, hand);
                 ActiveItem.setHasBeenUsed(stack, true);
             }
             // 触发音效（由于主动道具为范围音效，因此需要在服务端触发）
@@ -63,17 +63,17 @@ public abstract class ActiveAbility extends IsaacItemAbility {
 
         // 判断车载电池
         if (PlayerHelper.hasItem(ItemId.CAR_BATTERY.getId(), player)){
-            onTriggerStronger(player, stack);
+            onTriggerStronger(player, stack, hand);
         }else {
-            onTrigger(player, stack);
+            onTrigger(player, stack, hand);
         }
     }
 
-    abstract public void onFirstUse(ServerPlayer player, @Nullable ItemStack stack);
+    abstract public void onFirstUse(ServerPlayer player, @Nullable ItemStack stack, @Nullable InteractionHand hand);
 
-    abstract public void onTrigger(ServerPlayer player, @Nullable ItemStack stack);
+    abstract public void onTrigger(ServerPlayer player, @Nullable ItemStack stack, @Nullable InteractionHand hand);
 
-    abstract public void onTriggerStronger(ServerPlayer player, @Nullable ItemStack stack);
+    abstract public void onTriggerStronger(ServerPlayer player, @Nullable ItemStack stack, @Nullable InteractionHand hand);
 
     public void rechargeSFX(ServerPlayer player) {
         player.level().playSound(null, player.blockPosition(), ModSounds.BALLS_OF_STEEL.get(),

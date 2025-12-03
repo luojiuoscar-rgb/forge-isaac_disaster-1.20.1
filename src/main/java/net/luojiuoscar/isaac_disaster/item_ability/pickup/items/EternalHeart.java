@@ -6,6 +6,7 @@ import net.luojiuoscar.isaac_disaster.item_ability.pickup.IFoodPickup;
 import net.luojiuoscar.isaac_disaster.manager.item_managers.id.PickupId;
 import net.luojiuoscar.isaac_disaster.sound.ModSounds;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -26,6 +27,7 @@ public class EternalHeart implements IFoodPickup {
 
     @Override
     public void onUseSound(Player player) {
-        player.playSound(ModSounds.ETERNAL_HEART.get());
+        player.playNotifySound(ModSounds.ETERNAL_HEART.get(), SoundSource.PLAYERS, 1.0f, 1.0f);
     }
 }
+

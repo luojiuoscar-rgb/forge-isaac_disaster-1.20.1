@@ -3,7 +3,7 @@ package net.luojiuoscar.isaac_disaster.registries.trigger_module.impl;
 import net.luojiuoscar.isaac_disaster.effect.ModEffects;
 import net.luojiuoscar.isaac_disaster.event.custom.attack.IsaacAttackBeforeHitEntityEvent;
 import net.luojiuoscar.isaac_disaster.event.custom.attack.PlayerPerformAttackEvent;
-import net.luojiuoscar.isaac_disaster.registries.bullet_color.ModBulletColors;
+import net.luojiuoscar.isaac_disaster.registries.bullet_color.ModBulletColor;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.ITriggerModule;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerModule;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerCategory;
@@ -30,7 +30,7 @@ public class TheCommonCold implements ITriggerModule {
         Player player = event.getPlayer();
 
         if (player.getRandom().nextDouble() < getTriggerChance(player)) {
-            event.getContext().colorRl = ModBulletColors.POISON.getId();
+            event.getContext().colorRl = ModBulletColor.POISON.getId();
             event.getContext().addTriggerModule(ModTriggerModule.THE_COMMON_COLD.getId(), 1);
         }
     }

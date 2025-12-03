@@ -35,7 +35,7 @@ public class NecronmiconShieldEffect extends MobEffect {
                 attackerplayer.hasEffect(ModEffects.NECRONMICON_SHIELD.get())) return;
 
         // effect
-        ModActiveAbility.THE_NECRONMICON.get().onTrigger(player, null);
+        ModActiveAbility.THE_NECRONMICON.get().onTrigger(player, null, null);
         // remove 1 amplifier
         NecronmiconShieldEffect.stack(player, -1);
         // sounds

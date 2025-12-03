@@ -6,6 +6,7 @@ import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.manager.item_managers.id.PickupId;
 import net.luojiuoscar.isaac_disaster.sound.ModSounds;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.player.Player;
@@ -38,6 +39,6 @@ public class DoubleRedHeart implements IFoodPickup {
 
     @Override
     public void onUseSound(Player player) {
-        player.playSound(ModSounds.RED_HEART.get());
+        player.playNotifySound(ModSounds.RED_HEART.get(), SoundSource.PLAYERS, 1.0f, 1.0f);
     }
 }
