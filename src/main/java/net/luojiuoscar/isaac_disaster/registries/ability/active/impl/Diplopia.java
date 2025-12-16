@@ -23,17 +23,17 @@ public class Diplopia extends ActiveAbility {
     }
 
     @Override
-    public void onFirstUse(ServerPlayer player, @Nullable ItemStack stack, @javax.annotation.Nullable InteractionHand hand) {
+    public void onFirstUse(ServerPlayer player, @Nullable ItemStack stack, @Nullable InteractionHand hand) {
     }
 
     @Override
-    public void onTrigger(ServerPlayer player, ItemStack stack, @javax.annotation.Nullable InteractionHand hand) {
-        // 遍历背包并生成掉落
+    public void onTrigger(ServerPlayer player, ItemStack stack, @Nullable InteractionHand hand) {
+        // 遍历背包并生成掉落，除了自身
         Inventory inv = player.getInventory();
         List<ItemStack> invItems = new ArrayList<>();
         invItems.addAll(inv.items);
         invItems.addAll(inv.offhand);
-
+        invItems.remove(stack);
 
         for (ItemStack s : invItems) {
             if (!s.isEmpty()) {

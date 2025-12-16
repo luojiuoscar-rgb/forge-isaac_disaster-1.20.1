@@ -1,9 +1,8 @@
 package net.luojiuoscar.isaac_disaster.registries.ability.passive.impl;
 
-import net.luojiuoscar.isaac_disaster.registries.ability.passive.PassiveAbility;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
-import net.luojiuoscar.isaac_disaster.manager.item_managers.SetManager;
-import net.luojiuoscar.isaac_disaster.manager.item_managers.id.SetId;
+import net.luojiuoscar.isaac_disaster.registries.ability.passive.PassiveAbility;
+import net.luojiuoscar.isaac_disaster.registries.ability.set.ModSetAbility;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
@@ -27,7 +26,7 @@ public class MiniMush extends PassiveAbility {
         StatManager.MOVEMENT_SPEED.apply(player,  1.5);
         StatManager.RANGE.apply(player,  1);
         StatManager.BLOCK_BREAKING.apply(player,  1);
-        StatManager.modifySetWithId(player, SetId.FUN_GUY.getId(), 1);
+        StatManager.modifySetWithId(player, ModSetAbility.FUN_GUY.getId(), 1);
     }
 
     @Override
@@ -36,7 +35,7 @@ public class MiniMush extends PassiveAbility {
         StatManager.MOVEMENT_SPEED.apply(player,  -1.5);
         StatManager.RANGE.apply(player,  -1);
         StatManager.BLOCK_BREAKING.apply(player,  -1);
-        StatManager.modifySetWithId(player, SetId.FUN_GUY.getId(), -1);
+        StatManager.modifySetWithId(player, ModSetAbility.FUN_GUY.getId(), -1);
     }
 
     @Override
@@ -53,11 +52,11 @@ public class MiniMush extends PassiveAbility {
 
     @Override
     public List<Component> getSynergyDesc(@Nullable ItemStack stack){
-        return SetManager.getInstance().getSetFromId(SetId.FUN_GUY.getId()).getSynergyDescription();
+        return ModSetAbility.FUN_GUY.get().getSynergyDesc();
     }
 
     @Override
     public List<Component> getExtraDesc(@Nullable ItemStack stack){
-        return SetManager.getInstance().getSetFromId(SetId.FUN_GUY.getId()).getExplain();
+        return ModSetAbility.FUN_GUY.get().getExtraDesc();
     }
 }

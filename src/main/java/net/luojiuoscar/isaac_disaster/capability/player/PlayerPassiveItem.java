@@ -1,14 +1,11 @@
 package net.luojiuoscar.isaac_disaster.capability.player;
 
 import net.luojiuoscar.isaac_disaster.helper.CuriosHelper;
-import net.luojiuoscar.isaac_disaster.item.item.IsaacItem;
 import net.luojiuoscar.isaac_disaster.item.item.PassiveItem;
-import net.luojiuoscar.isaac_disaster.item_ability.set.ISet;
-import net.luojiuoscar.isaac_disaster.manager.item_managers.SetManager;
-import net.luojiuoscar.isaac_disaster.networking.ModMessages;
-import net.luojiuoscar.isaac_disaster.networking.packet.SetCountSyncS2CPacket;
 import net.luojiuoscar.isaac_disaster.registries.ability.passive.ModPassiveAbility;
 import net.luojiuoscar.isaac_disaster.registries.ability.passive.PassiveAbility;
+import net.luojiuoscar.isaac_disaster.registries.ability.set.ModSetAbility;
+import net.luojiuoscar.isaac_disaster.registries.ability.set.SetAbility;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.IntTag;
 import net.minecraft.nbt.ListTag;
@@ -31,11 +28,9 @@ import static net.luojiuoscar.isaac_disaster.Config.PASSIVE_ITEM_LIMIT;
 @AutoRegisterCapability
 public class PlayerPassiveItem {
     // 用编号代表道具。需要查询道具的时候再使用道具管理器
-    private List<ItemStack> playerPassiveItems;
-    // 键为道具ID，值为道具数量
-    private final Map<ResourceLocation, Integer> itemCountMap;
+    private final List<ItemStack> playerPassiveItems;
 
-    private final Map<Integer, Integer> setCountMap; // 当前套装计数
+    private final Map<ResourceLocation, Integer> setCountMap; // 当前套装计数
     private final Set<Integer> obtainedSets; // 已经获得过的套装
 
 
@@ -43,7 +38,6 @@ public class PlayerPassiveItem {
     public PlayerPassiveItem(){
         this.playerPassiveItems = new ArrayList<>();
 
-        this.itemCountMap = new HashMap<>();
         this.setCountMap = new HashMap<>();
         this.obtainedSets = new HashSet<>();
         init();
@@ -52,7 +46,6 @@ public class PlayerPassiveItem {
     public void init(){
         this.playerPassiveItems.clear();
 
-        this.itemCountMap.clear();
         this.setCountMap.clear();
         this.obtainedSets.clear();
     }
@@ -60,40 +53,17 @@ public class PlayerPassiveItem {
     /**
      * 清空全部的哈希表
      */
-    public void clearItemMap(){
-        itemCountMap.clear();
+    public void clearSetMap(){
         setCountMap.clear();
         obtainedSets.clear();
     }
 
-
-    /**
-     * 移除道具后更新哈希表计数
-     * 不用删除值为0的映射；在玩家死亡等时机由于表格刷新会自动删除
-     */
-    private void updateItemMap(ResourceLocation id, int amount) {
-        itemCountMap.put(id, itemCountMap.getOrDefault(id, 0) + amount);
-    }
-
-    /**
-     * 根据当前道具列表重新计算哈希表（用于数据同步）
-     */
-    private void refreshItemCountMap() {
-        clearItemMap();
-        for (ItemStack stack : playerPassiveItems) {
-            if (!(stack.getItem() instanceof PassiveItem item)) continue;
-            updateItemMap(ForgeRegistries.ITEMS.getKey(item), 1); // 增加一个
-        }
-    }
-
-
-
     public List<ItemStack> getPassiveItems(){
-        return new ArrayList<>(playerPassiveItems);
+        return Collections.unmodifiableList(playerPassiveItems);
     }
 
-    public Map<Integer, Integer> getSetCountMap(){
-        return new HashMap<>(setCountMap);
+    public Map<ResourceLocation, Integer> getSetCountMap(){
+        return Collections.unmodifiableMap(setCountMap);
     }
 
     public boolean isObtainedSet(int setId){
@@ -113,51 +83,62 @@ public class PlayerPassiveItem {
         // 循环清除最先获取的道具 （用于触发效果）
         while(removeFromIndex(player, 0));
         // 清空哈希表
-        clearItemMap();
+        clearSetMap();
     }
 
     /**
      * 获取某个道具的总数
      */
-    public int getItemCountFromAll(Player player, int itemId) {
-        int count = itemCountMap.getOrDefault(itemId, 0);
+    public int getItemCountFromAll(Player player, int id) {
+        int count = (int) playerPassiveItems.stream()
+                .filter(s -> id == (((PassiveItem) s.getItem()).getId()))
+                .count();
         // curios
         List<ItemStack> stackList = CuriosHelper.getEquippedItemsInSlot(player, CuriosHelper.PASSIVE_ITEM);
-        for (ItemStack stack : stackList){
-            if (!(stack.getItem() instanceof PassiveItem item)) continue;
-            if (item.getId() == itemId){
-                count++;
-            }
-        }
+
+        count += (int) stackList.stream()
+                .filter(s -> ((s.getItem() instanceof PassiveItem item) && item.getId() == id))
+                .count();
 
         return count;
     }
 
-    public Map<ResourceLocation, Integer> getItemCountMapFromAll(Player player){
-        Map<ResourceLocation, Integer> map = new HashMap<>(itemCountMap);
+    public Map<Integer, Integer> getItemCountMap() {
+        Map<Integer, Integer> map = new HashMap<>();
 
-        List<ItemStack> stackList = CuriosHelper.getEquippedItemsInSlot(player, CuriosHelper.PASSIVE_ITEM);
-        for (ItemStack stack : stackList) {
-            if (stack.isEmpty() || !(stack.getItem() instanceof IsaacItem item)) continue;
+        for (ItemStack stack : playerPassiveItems){
+            int id = ((PassiveItem) stack.getItem()).getId();
 
-            ResourceLocation id = ForgeRegistries.ITEMS.getKey(item);
             map.put(id, map.getOrDefault(id, 0) + 1);
         }
 
         return map;
     }
 
-
-    public List<ItemStack> getItemWithList(int itemId){
-        List<ItemStack> list = new ArrayList<>();
+    public Map<Integer, Integer> getItemCountMapFromAll(Player player) {
+        Map<Integer, Integer> map = new HashMap<>();
 
         for (ItemStack stack : playerPassiveItems){
-            if (((PassiveItem) stack.getItem()).getId() == itemId){
-                list.add(stack.copy());
-            }
+            int id = ((PassiveItem) stack.getItem()).getId();
+
+            map.put(id, map.getOrDefault(id, 0) + 1);
         }
 
-        return list;
+        // curios
+        List<ItemStack> stackList = CuriosHelper.getEquippedItemsInSlot(player, CuriosHelper.PASSIVE_ITEM);
+
+        for (ItemStack stack : stackList){
+            int id = ((PassiveItem) stack.getItem()).getId();
+
+            map.put(id, map.getOrDefault(id, 0) + 1);
+        }
+        return map;
+    }
+
+    public List<ItemStack> getItemWithList(int id){
+        return playerPassiveItems.stream()
+                .filter(s -> ((PassiveItem) s.getItem()).getId() == id)
+                .toList();
     }
 
     /** 将一个新的道具添加到列表 */
@@ -170,20 +151,8 @@ public class PlayerPassiveItem {
             return;
         }
 
-        if (!(stack.getItem() instanceof PassiveItem item)) return;
-        if (!(item.getAbility() instanceof PassiveAbility passiveAbility)) return;
-
-        // 触发效果 (先触发效果以适配会对stack本身产生变化的道具；确保后续正确存入)
-        passiveAbility.onObtain(player, stack);
-        PassiveItem.setHasBeenUsed(stack, true);
-
         // 增加被动道具到列表
         playerPassiveItems.add(stack.copy());
-        // 更新哈希表：数量+1
-        updateItemMap(ForgeRegistries.ITEMS.getKey(item), 1);
-
-        // 删除道具(不论是否为创造模式)
-        stack.shrink(1);
     }
 
     public boolean removeFromIndex(ServerPlayer player, int index) {
@@ -194,9 +163,6 @@ public class PlayerPassiveItem {
 
         ItemStack stack = playerPassiveItems.remove(index);
         ResourceLocation removeId = ForgeRegistries.ITEMS.getKey(stack.getItem());
-
-        // 更新哈希表：数量-1（若数量为0则移除键）
-        updateItemMap(removeId, -1);
 
         IForgeRegistry<PassiveAbility> passiveAbilityIForgeRegistry =
                 RegistryManager.ACTIVE.getRegistry(ModPassiveAbility.PASSIVE_ABILITY_KEY);
@@ -218,8 +184,6 @@ public class PlayerPassiveItem {
             ResourceLocation id = (ForgeRegistries.ITEMS.getKey(stack.getItem()));
             if (id == itemId) {
                 iterator.remove();
-                // 更新哈希表：数量-1（若数量为0则移除键）
-                updateItemMap(itemId, -1);
 
                 IForgeRegistry<PassiveAbility> passiveAbilityIForgeRegistry =
                         RegistryManager.ACTIVE.getRegistry(ModPassiveAbility.PASSIVE_ABILITY_KEY);
@@ -234,29 +198,31 @@ public class PlayerPassiveItem {
         }
     }
 
-    public int getSetCountFromId(int setId){
-        return setCountMap.getOrDefault(setId, 0);
+    public int getSetCountFromId(ResourceLocation id){
+        return setCountMap.getOrDefault(id, 0);
     }
 
 
-    public void modifySetCount(ServerPlayer player, int setId, int amount){
-        int preCount = getSetCountFromId(setId);
-        int newCount = preCount + amount;
-        ISet set = SetManager.getInstance().getSetFromId(setId);
+    public void modifySetCount(ServerPlayer player, ResourceLocation id, int amount){
+        IForgeRegistry<SetAbility> registry =
+                RegistryManager.ACTIVE.getRegistry(ModSetAbility.SET_ABILITY_KEY);
+        if (registry == null) return;
 
-        int itemRequirement = set.getRequireCount();
+        SetAbility ability = registry.getValue(id);
+        if (ability == null) return;
+
+        int itemRequirement = ability.getRequirementCount();
+        int preCount = getSetCountFromId(id);
+        int newCount = preCount + amount;
 
         // 当道具数量突破套装需求时、触发对应效果
         if (preCount < itemRequirement && newCount >= itemRequirement){
-            set.onObtain(player);
+            ability.onObtain(player);
         }else if(preCount >= itemRequirement && newCount < itemRequirement){
-            set.onRemove(player);
+            ability.onRemove(player);
         }
 
-        setCountMap.put(setId, newCount);
-
-        // 同步到客户端
-        ModMessages.sentToPlayer(new SetCountSyncS2CPacket(setId, newCount), player);
+        setCountMap.put(id, newCount);
     }
 
 
@@ -271,8 +237,6 @@ public class PlayerPassiveItem {
 
         this.obtainedSets.clear();
         this.obtainedSets.addAll(source.obtainedSets);
-
-        refreshItemCountMap();
     }
 
     public void saveNBTData(CompoundTag nbt) {
@@ -287,9 +251,9 @@ public class PlayerPassiveItem {
 
         // 保存 setCountMap
         ListTag setList = new ListTag();
-        for (Map.Entry<Integer, Integer> entry : setCountMap.entrySet()) {
+        for (Map.Entry<ResourceLocation, Integer> entry : setCountMap.entrySet()) {
             CompoundTag setTag = new CompoundTag();
-            setTag.putInt("SetId", entry.getKey());
+            setTag.putString("SetId", entry.getKey().toString());
             setTag.putInt("Count", entry.getValue());
             setList.add(setTag);
         }
@@ -316,16 +280,13 @@ public class PlayerPassiveItem {
             }
         }
 
-        // 重新计算道具表
-        refreshItemCountMap();
-
         // 读取 setCountMap
         setCountMap.clear();
         if (nbt.contains("SetCounts", Tag.TAG_LIST)) {
             ListTag setList = nbt.getList("SetCounts", Tag.TAG_COMPOUND);
             for (Tag baseTag : setList) {
                 if (baseTag instanceof CompoundTag setTag) {
-                    int setId = setTag.getInt("SetId");
+                    ResourceLocation setId = ResourceLocation.parse(setTag.getString("SetId"));
                     int count = setTag.getInt("Count");
                     setCountMap.put(setId, count);
                 }

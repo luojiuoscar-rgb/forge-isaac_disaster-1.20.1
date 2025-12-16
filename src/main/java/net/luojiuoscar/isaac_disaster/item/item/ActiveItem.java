@@ -4,7 +4,9 @@ import net.luojiuoscar.isaac_disaster.Config;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerItemUseRecordProvider;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerSwallowedTrinketsProvider;
 import net.luojiuoscar.isaac_disaster.event.custom.misc.ActiveItemUseEvent;
+import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.manager.ColorManager;
+import net.luojiuoscar.isaac_disaster.manager.item_managers.id.ItemId;
 import net.luojiuoscar.isaac_disaster.manager.item_managers.id.TrinketId;
 import net.luojiuoscar.isaac_disaster.registries.ability.active.ActiveAbility;
 import net.minecraft.network.chat.Component;
@@ -137,7 +139,37 @@ public class ActiveItem extends IsaacItem {
                 && !level.isClientSide && player instanceof ServerPlayer serverPlayer
                 && getAbility() instanceof ActiveAbility activeAbility) {
 
+            // 修改服务器端的物品耐久度
+            stack = player.getItemInHand(hand);
+
+            // 基于物品的过载情况计算剩余充能
+            int damage = stack.getDamageValue();
+            if (ActiveItem.getOverCharged(stack)){
+                damage += item.getDamagePerUse(player) - stack.getMaxDamage();
+                ActiveItem.setOverCharged(stack, false);
+            }else{
+                damage += item.getDamagePerUse(player);
+            }
+            damage = Math.max(0, damage);
+
+            // 如果有9伏特，恢复20%的耐久
+            if (PlayerHelper.hasItem(ItemId.VOLT_9.getId(), (ServerPlayer) player)){
+                damage -= (int) (item.getOriginalDamagePerUse() * 0.2);
+            }
+
+            // 如果不是创造模式则消耗耐久
+            if (!player.isCreative()) stack.setDamageValue(damage);
+
+            // 设置0.25秒的冷却
+            player.getCooldowns().addCooldown(item, 5);
+
+            // 使用效果->首次使用？->音效
             activeAbility.onUse(serverPlayer, hand);
+            if (!ActiveItem.hasBeenUsed(stack)){
+                activeAbility.onFirstUse(serverPlayer, stack, hand);
+                ActiveItem.setHasBeenUsed(stack, true);
+            }
+            activeAbility.triggerSFX(serverPlayer);
 
             // 先触发后记录
             serverPlayer.getCapability(PlayerItemUseRecordProvider.PLAYER_ITEM_USE_RECORD).ifPresent(

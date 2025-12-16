@@ -21,6 +21,8 @@ import net.luojiuoscar.isaac_disaster.networking.ModMessages;
 import net.luojiuoscar.isaac_disaster.networking.packet.PassiveItemMapSyncS2CPacket;
 import net.luojiuoscar.isaac_disaster.networking.packet.PillRecordsSyncS2CPacket;
 import net.luojiuoscar.isaac_disaster.networking.packet.SetCountSyncS2CPacket;
+import net.luojiuoscar.isaac_disaster.registries.ability.set.ModSetAbility;
+import net.luojiuoscar.isaac_disaster.registries.ability.set.SetAbility;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -46,6 +48,8 @@ import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.level.LevelEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.registries.IForgeRegistry;
+import net.minecraftforge.registries.RegistryManager;
 import net.minecraftforge.server.command.ConfigCommand;
 import top.theillusivec4.curios.api.event.CurioUnequipEvent;
 
@@ -242,11 +246,14 @@ public class ForgeEvents {
     @SubscribeEvent
     public static void onPlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
         if (event.getEntity() instanceof ServerPlayer serverPlayer) {
-            // 同步套装
-            syncSetDataToClient(serverPlayer);
-            syncPillDataToClient(serverPlayer);
-            syncItemDataToClient(serverPlayer);
+            syncAllDataToClient(serverPlayer);
         }
+    }
+
+    public static void syncAllDataToClient(ServerPlayer player){
+        syncSetDataToClient(player);
+        syncPillDataToClient(player);
+        syncItemDataToClient(player);
     }
 
     /**
@@ -255,9 +262,17 @@ public class ForgeEvents {
     public static void syncSetDataToClient(ServerPlayer player){
         player.getCapability(PlayerPassiveItemProvider.PLAYER_PASSIVE_ITEM).ifPresent(
                 playerPassiveItem -> {
-                    Map<Integer,Integer> map = Map.copyOf(playerPassiveItem.getSetCountMap());
-                    for (Map.Entry<Integer, Integer> entry : map.entrySet()) {
-                        ModMessages.sentToPlayer(new SetCountSyncS2CPacket(entry.getKey(), entry.getValue()), player);
+                    Map<ResourceLocation, Integer> map = playerPassiveItem.getSetCountMap();
+
+                    IForgeRegistry<SetAbility> registry =
+                            RegistryManager.ACTIVE.getRegistry(ModSetAbility.SET_ABILITY_KEY);
+                    if (registry == null) return;
+
+                    for (Map.Entry<ResourceLocation, Integer> entry : map.entrySet()) {
+                        SetAbility ability = registry.getValue(entry.getKey());
+                        if (ability == null) return;
+
+                        ModMessages.sentToPlayer(new SetCountSyncS2CPacket(ability.getId(), entry.getValue()), player);
                     }
                 }
         );
@@ -275,7 +290,7 @@ public class ForgeEvents {
     public static void syncItemDataToClient(ServerPlayer player) {
         player.getCapability(PlayerPassiveItemProvider.PLAYER_PASSIVE_ITEM).ifPresent(
                 playerPassiveItem -> {
-                    Map<ResourceLocation, Integer> items = playerPassiveItem.getItemCountMapFromAll(player);
+                    Map<Integer, Integer> items = playerPassiveItem.getItemCountMapFromAll(player);
                     ModMessages.sentToPlayer(new PassiveItemMapSyncS2CPacket(items), player);
                 });
     }

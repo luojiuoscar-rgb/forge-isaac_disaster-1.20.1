@@ -62,7 +62,7 @@ public class MyReflection extends PassiveAbility {
 
     @Override
     public void handleRemove(ServerPlayer player, @Nullable ItemStack stack) {
-        if (!PlayerHelper.hasSet(ItemId.MY_REFLECTION.getId(), (ServerPlayer) player)){
+        if (!PlayerHelper.hasItem(ItemId.MY_REFLECTION.getId(), player)){
             AttributeInstance range = player.getAttribute(ModAttributes.BULLET_RANGE.get());
             AttributeInstance bullet_speed = player.getAttribute(ModAttributes.BULLET_SPEED.get());
             if (range != null) range.removeModifier(MY_REFLECTION_RANGE);

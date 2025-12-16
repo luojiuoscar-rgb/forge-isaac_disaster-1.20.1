@@ -10,7 +10,7 @@ import java.util.Map;
 public class ClientDataManager {
     private static final ClientDataManager INSTANCE = new ClientDataManager();
 
-    private final Map<ResourceLocation, Integer> itemCountMap;
+    private final Map<Integer, Integer> itemCountMap;
     private final Map<Integer, Integer> setCountMap;
     private final Map<Integer, ResourceLocation> pillRecords;
     private int flyUnits;
@@ -20,10 +20,17 @@ public class ClientDataManager {
     // constructor
     private ClientDataManager() {
         itemCountMap = new HashMap<>();
-        flyUnits = 0;
         setCountMap = new HashMap<>();
         pillRecords = new HashMap<>();
+        init();
+    }
+
+    public void init() {
+        itemCountMap.clear();
+        setCountMap.clear();
+        pillRecords.clear();
         pillQuality = 0;
+        flyUnits = 0;
     }
 
     public static ClientDataManager getInstance() {
@@ -33,14 +40,19 @@ public class ClientDataManager {
     /**
      * GETTER
      */
-    public int getCountFromId(int itemId) {
-        return itemCountMap.getOrDefault(itemId, 0);
+    public int getCountFromId(int id) {
+        return itemCountMap.getOrDefault(id, 0);
     }
     public int getFlyUnits() {
         return flyUnits;
     }
-    public int getSetCountFromId(int setId){
-        return setCountMap.getOrDefault(setId, 0);
+    public int getSetCountFromId(int id){
+
+
+
+
+
+        return setCountMap.getOrDefault(id, 0);
     }
     public boolean isPillRecordCorrectly(int pillId) {
         if (pillRecords.containsKey(pillId)){
@@ -57,10 +69,10 @@ public class ClientDataManager {
     /**
      * SETTER
      */
-    public void setItemWithId(ResourceLocation id, int count) {
+    public void setItemWithId(int id, int count) {
         itemCountMap.put(id, count);
     }
-    public void modifyItemCount(ResourceLocation id, int count) {
+    public void modifyItemCount(int id, int count) {
         int c = itemCountMap.getOrDefault(id, 0) + count;
         if (c <= 0){
             itemCountMap.remove(id);
@@ -71,23 +83,13 @@ public class ClientDataManager {
     public void setFlyPercentage(int flyUnits) {
         this.flyUnits = flyUnits;
     }
-    public void setSetCountWithId(int setId, int count){
-        setCountMap.put(setId, count);
+    public void setSetCountWithId(int id, int count){
+        setCountMap.put(id, count);
     }
     public void setPillRecordsWithId(int pillId, ResourceLocation effectId){
         pillRecords.put(pillId, effectId);
     }
     public void setPillQuality(int pillQuality){
         this.pillQuality = pillQuality;
-    }
-
-
-    // 重置数据
-    public void reset() {
-        itemCountMap.clear();
-        flyUnits = 0;
-        setCountMap.clear();
-        pillRecords.clear();
-        pillQuality = 0;
     }
 }

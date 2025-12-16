@@ -43,6 +43,7 @@ public class ExperimentalTreatmentItem extends PassiveItem {
         }
         return map;
     }
+
     private static void saveNBT(ItemStack stack, Map<UUID, Double> map) {
         ListTag list = new ListTag();
         for (Map.Entry<UUID, Double> entry : map.entrySet()) {

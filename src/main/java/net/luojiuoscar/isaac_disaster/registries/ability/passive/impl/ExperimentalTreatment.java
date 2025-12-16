@@ -2,10 +2,9 @@ package net.luojiuoscar.isaac_disaster.registries.ability.passive.impl;
 
 import net.luojiuoscar.isaac_disaster.item.item.PassiveItem;
 import net.luojiuoscar.isaac_disaster.item.item.custom.ExperimentalTreatmentItem;
-import net.luojiuoscar.isaac_disaster.registries.ability.passive.PassiveAbility;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
-import net.luojiuoscar.isaac_disaster.manager.item_managers.SetManager;
-import net.luojiuoscar.isaac_disaster.manager.item_managers.id.SetId;
+import net.luojiuoscar.isaac_disaster.registries.ability.passive.PassiveAbility;
+import net.luojiuoscar.isaac_disaster.registries.ability.set.ModSetAbility;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
@@ -49,7 +48,7 @@ public class ExperimentalTreatment extends PassiveAbility {
     @Override
     public void handleObtain(ServerPlayer player, @Nullable ItemStack stack) {
         if (stack == null) return;
-        StatManager.modifySetWithId(player, SetId.SPUN.getId(), 1);
+        StatManager.modifySetWithId(player, ModSetAbility.SPUN.getId(), 1);
         Map<UUID, Double> map = ExperimentalTreatmentItem.getModifierMap(stack);
 
         for (Map.Entry<UUID, Double> entry : map.entrySet()){
@@ -63,7 +62,7 @@ public class ExperimentalTreatment extends PassiveAbility {
     @Override
     public void handleRemove(ServerPlayer player, @Nullable ItemStack stack) {
         if (stack == null) return;
-        StatManager.modifySetWithId(player, SetId.SPUN.getId(), -1);
+        StatManager.modifySetWithId(player, ModSetAbility.SPUN.getId(), -1);
 
         Map<UUID, Double> map = ExperimentalTreatmentItem.getModifierMap(stack);
 
@@ -109,11 +108,11 @@ public class ExperimentalTreatment extends PassiveAbility {
 
     @Override
     public List<Component> getSynergyDesc(@Nullable ItemStack stack){
-        return SetManager.getInstance().getSetFromId(SetId.SPUN.getId()).getSynergyDescription();
+        return ModSetAbility.SPUN.get().getSynergyDesc();
     }
 
     @Override
     public List<Component> getExtraDesc(@Nullable ItemStack stack){
-        return SetManager.getInstance().getSetFromId(SetId.SPUN.getId()).getExplain();
+        return ModSetAbility.SPUN.get().getExtraDesc();
     }
 }

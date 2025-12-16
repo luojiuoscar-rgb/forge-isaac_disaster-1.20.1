@@ -2,6 +2,7 @@ package net.luojiuoscar.isaac_disaster.item;
 
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.item.item.ActiveItem;
+import net.luojiuoscar.isaac_disaster.item.item.DisposableActiveItem;
 import net.luojiuoscar.isaac_disaster.manager.ItemListManager;
 import net.luojiuoscar.isaac_disaster.registries.ability.active.ModActiveAbility;
 import net.minecraft.world.item.Item;
@@ -75,7 +76,7 @@ public class ModActiveItems {
     static {ItemListManager.ACTIVE_ITEM_LIST.add(PLACEBO);}
 
     public static final RegistryObject<Item> DIPLOPIA = ITEMS.register("diplopia",
-            () -> new ActiveItem(new Item.Properties(), 0, 0, ModActiveAbility.DIPLOPIA));
+            () -> new DisposableActiveItem(new Item.Properties(), 0, 0, ModActiveAbility.DIPLOPIA));
     static {ItemListManager.ACTIVE_ITEM_LIST.add(DIPLOPIA);}
 
     public static final RegistryObject<Item> CROOKED_PENNY = ITEMS.register("crooked_penny",

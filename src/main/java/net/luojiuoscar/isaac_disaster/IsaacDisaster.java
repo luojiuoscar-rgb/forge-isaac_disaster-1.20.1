@@ -82,7 +82,6 @@ public class IsaacDisaster
 
         event.enqueueWork(() -> {
             PickupManager.getInstance().init();
-            SetManager.getInstance().init();
             AttackManager.getInstance().init();
         });
     }

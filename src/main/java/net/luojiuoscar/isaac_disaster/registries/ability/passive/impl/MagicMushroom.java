@@ -1,11 +1,9 @@
 package net.luojiuoscar.isaac_disaster.registries.ability.passive.impl;
 
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
-import net.luojiuoscar.isaac_disaster.manager.item_managers.SetManager;
-import net.luojiuoscar.isaac_disaster.manager.item_managers.id.SetId;
 import net.luojiuoscar.isaac_disaster.registries.ability.passive.PassiveAbility;
+import net.luojiuoscar.isaac_disaster.registries.ability.set.ModSetAbility;
 import net.luojiuoscar.isaac_disaster.sound.ModSounds;
-import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
@@ -20,7 +18,7 @@ public class MagicMushroom extends PassiveAbility {
     }
 
     @Override
-    public void makeSound(LocalPlayer player) {
+    public void makeSound(ServerPlayer player) {
         player.playNotifySound(ModSounds.MAGIC_MUSHROOM_OBTAIN.get(), SoundSource.PLAYERS, 1.0f, 1.0f);
     }
 
@@ -39,7 +37,7 @@ public class MagicMushroom extends PassiveAbility {
         StatManager.RANGE.apply(player, 1);
         StatManager.BLOCK_REACH.apply(player, 1);
         StatManager.ENTITY_REACH.apply(player, 1);
-        StatManager.modifySetWithId(player, SetId.FUN_GUY.getId(), 1);
+        StatManager.modifySetWithId(player, ModSetAbility.FUN_GUY.getId(), 1);
     }
 
     @Override
@@ -52,7 +50,7 @@ public class MagicMushroom extends PassiveAbility {
         StatManager.RANGE.apply(player, -1);
         StatManager.BLOCK_REACH.apply(player, -1);
         StatManager.ENTITY_REACH.apply(player, -1);
-        StatManager.modifySetWithId(player, SetId.FUN_GUY.getId(), -1);
+        StatManager.modifySetWithId(player, ModSetAbility.FUN_GUY.getId(), -1);
     }
 
     @Override
@@ -72,11 +70,11 @@ public class MagicMushroom extends PassiveAbility {
 
     @Override
     public List<Component> getSynergyDesc(@Nullable ItemStack stack){
-        return SetManager.getInstance().getSetFromId(SetId.FUN_GUY.getId()).getSynergyDescription();
+        return ModSetAbility.FUN_GUY.get().getSynergyDesc();
     }
 
     @Override
     public List<Component> getExtraDesc(@Nullable ItemStack stack){
-        return SetManager.getInstance().getSetFromId(SetId.FUN_GUY.getId()).getExplain();
+        return ModSetAbility.FUN_GUY.get().getExtraDesc();
     }
 }

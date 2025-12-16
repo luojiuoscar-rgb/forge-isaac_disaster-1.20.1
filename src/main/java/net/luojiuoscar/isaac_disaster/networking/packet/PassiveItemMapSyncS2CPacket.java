@@ -2,18 +2,16 @@ package net.luojiuoscar.isaac_disaster.networking.packet;
 
 import net.luojiuoscar.isaac_disaster.client.ClientDataManager;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.network.NetworkEvent;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.ResourceBundle;
 import java.util.function.Supplier;
 
 public class PassiveItemMapSyncS2CPacket {
-    private final Map<ResourceLocation, Integer> itemMap;
+    private final Map<Integer, Integer> itemMap;
 
-    public PassiveItemMapSyncS2CPacket(Map<ResourceLocation, Integer> itemMap) {
+    public PassiveItemMapSyncS2CPacket(Map<Integer, Integer> itemMap) {
         this.itemMap = itemMap;
     }
 
@@ -21,7 +19,7 @@ public class PassiveItemMapSyncS2CPacket {
         int size = buf.readInt();
         this.itemMap = new HashMap<>(size);
         for (int i = 0; i < size; i++) {
-            ResourceLocation id = buf.readResourceLocation();
+            int id = buf.readInt();
             int count = buf.readInt();
             itemMap.put(id, count);
         }
@@ -29,8 +27,8 @@ public class PassiveItemMapSyncS2CPacket {
 
     public void toBytes(FriendlyByteBuf buf) {
         buf.writeInt(itemMap.size());
-        for (Map.Entry<ResourceLocation, Integer> entry : itemMap.entrySet()) {
-            buf.writeResourceLocation(entry.getKey());
+        for (Map.Entry<Integer, Integer> entry : itemMap.entrySet()) {
+            buf.writeInt(entry.getKey());
             buf.writeInt(entry.getValue());
         }
     }

@@ -302,9 +302,9 @@ public class PlayerHelper {
     }
 
 
-    public static boolean hasSet(int itemId, ServerPlayer player){
+    public static boolean hasSet(ResourceLocation id, ServerPlayer player){
         return player.getCapability(PlayerPassiveItemProvider.PLAYER_PASSIVE_ITEM)
-                .map(p -> p.getSetCountFromId(itemId) > 3)
+                .map(p -> p.getSetCountFromId(id) > 3)
                 .orElse(false);
     }
 

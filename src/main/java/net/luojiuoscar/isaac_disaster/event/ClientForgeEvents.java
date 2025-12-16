@@ -23,7 +23,7 @@ public class ClientForgeEvents {
     public static void onPlayerLoggedOut(PlayerEvent.PlayerLoggedOutEvent event) {
         // 只处理本地玩家的登出事件
         if (event.getEntity() == Minecraft.getInstance().player) {
-            ClientDataManager.getInstance().reset();
+            ClientDataManager.getInstance().init();
         }
     }
 

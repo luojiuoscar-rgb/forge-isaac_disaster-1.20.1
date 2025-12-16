@@ -7,23 +7,21 @@ import net.minecraftforge.network.NetworkEvent;
 import java.util.function.Supplier;
 
 public class SetCountSyncS2CPacket {
-    private final int setId;
+    private final int id;
     private final int count;
 
-    //客户端构造时的函数
-    public SetCountSyncS2CPacket(int itemId, int count){
-        this.setId = itemId;
+    public SetCountSyncS2CPacket(int id, int count){
+        this.id = id;
         this.count = count;
     }
 
-    //服务器接收时使用的构造函数（从缓冲区读取数据）
     public SetCountSyncS2CPacket(FriendlyByteBuf buf){
-        this.setId = buf.readInt();
+        this.id = buf.readInt();
         this.count = buf.readInt();
     }
 
     public void toBytes(FriendlyByteBuf buf){
-        buf.writeInt(setId);
+        buf.writeInt(id);
         buf.writeInt(count);
     }
 
@@ -31,7 +29,7 @@ public class SetCountSyncS2CPacket {
         NetworkEvent.Context context = supplier.get();
         context.enqueueWork(() -> {
 
-            ClientDataManager.getInstance().setSetCountWithId(setId, count);
+            ClientDataManager.getInstance().setSetCountWithId(id, count);
         });
         return true;
     }

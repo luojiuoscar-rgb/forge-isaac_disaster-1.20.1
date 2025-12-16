@@ -10,7 +10,7 @@ import net.minecraftforge.network.NetworkEvent;
 import java.util.function.Supplier;
 
 public class FlyUpdateS2CPacket {
-    private int units;
+    private final int units;
 
     //客户端构造时的函数
     public FlyUpdateS2CPacket(int percentage){

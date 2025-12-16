@@ -1,9 +1,8 @@
 package net.luojiuoscar.isaac_disaster.registries.ability.passive.impl;
 
-import net.luojiuoscar.isaac_disaster.registries.ability.passive.PassiveAbility;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
-import net.luojiuoscar.isaac_disaster.manager.item_managers.SetManager;
-import net.luojiuoscar.isaac_disaster.manager.item_managers.id.SetId;
+import net.luojiuoscar.isaac_disaster.registries.ability.passive.PassiveAbility;
+import net.luojiuoscar.isaac_disaster.registries.ability.set.ModSetAbility;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
@@ -28,7 +27,7 @@ public class BlueCap extends PassiveAbility {
         StatManager.ATTACK_SPEED.apply(player, 0.1);
         StatManager.BLOCK_BREAKING.apply(player, 1);
         StatManager.BULLET_SPEED.apply(player, -0.8);
-        StatManager.modifySetWithId(player, SetId.FUN_GUY.getId(), 1);
+        StatManager.modifySetWithId(player, ModSetAbility.FUN_GUY.getId(), 1);
     }
 
     @Override
@@ -38,7 +37,7 @@ public class BlueCap extends PassiveAbility {
         StatManager.ATTACK_SPEED.apply(player, -0.1);
         StatManager.BLOCK_BREAKING.apply(player, -1);
         StatManager.BULLET_SPEED.apply(player, 0.8);
-        StatManager.modifySetWithId(player, SetId.FUN_GUY.getId(), -1);
+        StatManager.modifySetWithId(player, ModSetAbility.FUN_GUY.getId(), -1);
     }
 
     @Override
@@ -54,11 +53,11 @@ public class BlueCap extends PassiveAbility {
 
     @Override
     public List<Component> getSynergyDesc(@Nullable ItemStack stack){
-        return SetManager.getInstance().getSetFromId(SetId.FUN_GUY.getId()).getSynergyDescription();
+        return ModSetAbility.FUN_GUY.get().getSynergyDesc();
     }
 
     @Override
     public List<Component> getExtraDesc(@Nullable ItemStack stack){
-        return SetManager.getInstance().getSetFromId(SetId.FUN_GUY.getId()).getExplain();
+        return ModSetAbility.FUN_GUY.get().getExtraDesc();
     }
 }

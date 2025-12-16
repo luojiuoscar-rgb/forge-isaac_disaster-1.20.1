@@ -41,13 +41,6 @@ public class ModMessages {
                 .consumerNetworkThread(ClearPassiveItemC2SPacket::handle)
                 .add();
 
-        // register PassiveItemModifyCountSyncS2CPacket
-        net.messageBuilder(PassiveItemModifyCountSyncS2CPacket.class, id(), NetworkDirection.PLAY_TO_CLIENT)
-                .decoder(PassiveItemModifyCountSyncS2CPacket::new)
-                .encoder(PassiveItemModifyCountSyncS2CPacket::toBytes)
-                .consumerNetworkThread(PassiveItemModifyCountSyncS2CPacket::handle)
-                .add();
-
         // register PassiveItemMapSyncS2CPacket
         net.messageBuilder(PassiveItemMapSyncS2CPacket.class, id(), NetworkDirection.PLAY_TO_CLIENT)
                 .decoder(PassiveItemMapSyncS2CPacket::new)
@@ -74,13 +67,6 @@ public class ModMessages {
                 .decoder(SetRightClickC2SPacket::new)
                 .encoder(SetRightClickC2SPacket::toBytes)
                 .consumerNetworkThread(SetRightClickC2SPacket::handle)
-                .add();
-
-        // register SetOnObtainS2CPacket
-        net.messageBuilder(SetOnObtainS2CPacket.class, id(), NetworkDirection.PLAY_TO_CLIENT)
-                .decoder(SetOnObtainS2CPacket::new)
-                .encoder(SetOnObtainS2CPacket::toBytes)
-                .consumerNetworkThread(SetOnObtainS2CPacket::handle)
                 .add();
 
         // register SetCountSyncS2CPacket

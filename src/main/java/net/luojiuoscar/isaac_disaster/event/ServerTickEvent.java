@@ -59,9 +59,17 @@ public class ServerTickEvent {
             for (ServerPlayer player : server.getPlayerList().getPlayers()){
 
                 chargeActiveItem(player);
+                onPlayerSprint(player);
+            }
+        }
+
+        // 每秒执行
+        if (tickCounter % 20 == 0){
+            for (ServerPlayer player : server.getPlayerList().getPlayers()){
+
                 updateFly(player);
                 bugsFix(player);
-                onPlayerSprint(player);
+                ForgeEvents.syncAllDataToClient(player);
             }
         }
 
@@ -170,7 +178,6 @@ public class ServerTickEvent {
             living.hurt(player.damageSources().playerAttack(player), damage);
         }
     }
-
 
     private static void holdRightClick(ServerPlayer player, ItemStack stack){
         // 若在冷却 or 有无泪症

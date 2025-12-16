@@ -35,6 +35,7 @@ public class PassiveItem extends IsaacItem implements IIsaacCuriosItem {
     public void tryEquip(SlotContext slotContext, ItemStack prevStack, ItemStack stack) {
         if (!(slotContext.entity() instanceof ServerPlayer player)) return;
         if (!(getAbility() instanceof PassiveAbility passiveAbility)) return;
+
         passiveAbility.onObtain(player, stack);
         setHasBeenUsed(stack, true);
     }
@@ -43,6 +44,7 @@ public class PassiveItem extends IsaacItem implements IIsaacCuriosItem {
     public void tryUnequip(SlotContext slotContext, ItemStack prevStack, ItemStack stack) {
         if (!(slotContext.entity() instanceof ServerPlayer player)) return;
         if (!(getAbility() instanceof PassiveAbility passiveAbility)) return;
+
         passiveAbility.onRemove(player, stack);
     }
 
@@ -53,6 +55,20 @@ public class PassiveItem extends IsaacItem implements IIsaacCuriosItem {
 
         player.getCapability(PlayerPassiveItemProvider.PLAYER_PASSIVE_ITEM).ifPresent(
                 playerPassiveItem -> playerPassiveItem.addItem((ServerPlayer) player, stack, hand));
+
+        PassiveAbility ability = (PassiveAbility) this.getAbility();
+
+        if (player instanceof ServerPlayer serverPlayer){
+            // 触发效果 (先触发效果以适配会对stack本身产生变化的道具；确保后续正确存入)
+            ability.onObtain(serverPlayer, stack);
+            ability.makeSound(serverPlayer);
+            PassiveItem.setHasBeenUsed(stack, true);
+        }
+
+        // shrink 1
+        if (!player.isCreative()){
+            stack.shrink(1);
+        }
 
         return InteractionResultHolder.pass(stack);
     }

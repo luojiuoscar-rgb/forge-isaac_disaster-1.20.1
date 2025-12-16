@@ -3,6 +3,7 @@ package net.luojiuoscar.isaac_disaster.item;
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.item.item.PassiveItem;
 import net.luojiuoscar.isaac_disaster.item.item.custom.ExperimentalTreatmentItem;
+import net.luojiuoscar.isaac_disaster.item.item.custom.FoodPassiveItem;
 import net.luojiuoscar.isaac_disaster.manager.ItemListManager;
 import net.luojiuoscar.isaac_disaster.manager.item_managers.id.ItemId;
 import net.luojiuoscar.isaac_disaster.registries.ability.passive.ModPassiveAbility;
@@ -21,35 +22,35 @@ public class ModPassiveItems {
     }
 
     public static final RegistryObject<Item> BREAKFAST = ITEMS.register("breakfast",
-            () -> new PassiveItem(new Item.Properties(), ModPassiveAbility.BREAKFAST));
+            () -> new FoodPassiveItem(new Item.Properties(), ModPassiveAbility.BREAKFAST));
     static {ItemListManager.PASSIVE_ITEM_LIST.add(BREAKFAST);}
 
     public static final RegistryObject<Item> DESSERT = ITEMS.register("dessert",
-            () -> new PassiveItem(new Item.Properties(), ModPassiveAbility.DESSERT));
+            () -> new FoodPassiveItem(new Item.Properties(), ModPassiveAbility.DESSERT));
     static {ItemListManager.PASSIVE_ITEM_LIST.add(DESSERT);}
 
     public static final RegistryObject<Item> DINNER = ITEMS.register("dinner",
-            () -> new PassiveItem(new Item.Properties(), ModPassiveAbility.DINNER));
+            () -> new FoodPassiveItem(new Item.Properties(), ModPassiveAbility.DINNER));
     static {ItemListManager.PASSIVE_ITEM_LIST.add(DINNER);}
 
     public static final RegistryObject<Item> LUNCH = ITEMS.register("lunch",
-            () -> new PassiveItem(new Item.Properties(), ModPassiveAbility.LUNCH));
+            () -> new FoodPassiveItem(new Item.Properties(), ModPassiveAbility.LUNCH));
     static {ItemListManager.PASSIVE_ITEM_LIST.add(LUNCH);}
 
     public static final RegistryObject<Item> SUPPER = ITEMS.register("supper",
-            () -> new PassiveItem(new Item.Properties(), ModPassiveAbility.SUPPER));
+            () -> new FoodPassiveItem(new Item.Properties(), ModPassiveAbility.SUPPER));
     static {ItemListManager.PASSIVE_ITEM_LIST.add(SUPPER);}
 
     public static final RegistryObject<Item> MIDNIGHT_SNACK = ITEMS.register("midnight_snack",
-            () -> new PassiveItem(new Item.Properties(), ModPassiveAbility.MIDNIGHT_SNACK));
+            () -> new FoodPassiveItem(new Item.Properties(), ModPassiveAbility.MIDNIGHT_SNACK));
     static {ItemListManager.PASSIVE_ITEM_LIST.add(MIDNIGHT_SNACK);}
 
     public static final RegistryObject<Item> ROTTEN_MEAT = ITEMS.register("rotten_meat",
-            () -> new PassiveItem(new Item.Properties(), ModPassiveAbility.ROTTEN_MEAT));
+            () -> new FoodPassiveItem(new Item.Properties(), ModPassiveAbility.ROTTEN_MEAT));
     static {ItemListManager.PASSIVE_ITEM_LIST.add(ROTTEN_MEAT);}
 
     public static final RegistryObject<Item> A_SNACK = ITEMS.register("a_snack",
-            () -> new PassiveItem(new Item.Properties(), ModPassiveAbility.A_SNACK));
+            () -> new FoodPassiveItem(new Item.Properties(), ModPassiveAbility.A_SNACK));
     static {ItemListManager.PASSIVE_ITEM_LIST.add(A_SNACK);}
 
     public static final RegistryObject<Item> WOODEN_SPOON = ITEMS.register("wooden_spoon",

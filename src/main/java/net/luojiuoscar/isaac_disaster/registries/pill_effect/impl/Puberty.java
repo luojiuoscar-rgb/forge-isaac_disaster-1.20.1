@@ -1,7 +1,7 @@
 package net.luojiuoscar.isaac_disaster.registries.pill_effect.impl;
 
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
-import net.luojiuoscar.isaac_disaster.manager.item_managers.id.SetId;
+import net.luojiuoscar.isaac_disaster.registries.ability.set.ModSetAbility;
 import net.luojiuoscar.isaac_disaster.registries.pill_effect.IPillEffect;
 import net.luojiuoscar.isaac_disaster.sound.ModSounds;
 import net.minecraft.server.level.ServerPlayer;
@@ -16,12 +16,12 @@ public class Puberty implements IPillEffect {
 
     @Override
     public void onUseEffect(ServerPlayer player) {
-        StatManager.modifySetWithId(player, SetId.ADULT.getId(), 1);
+        StatManager.modifySetWithId(player, ModSetAbility.ADULT.getId(), 1);
     }
 
     @Override
     public void onUseEffectH(ServerPlayer player) {
-        StatManager.modifySetWithId(player, SetId.ADULT.getId(), 2);
+        StatManager.modifySetWithId(player, ModSetAbility.ADULT.getId(), 2);
     }
 
     @Override

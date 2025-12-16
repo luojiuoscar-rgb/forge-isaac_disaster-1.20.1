@@ -3,13 +3,12 @@ package net.luojiuoscar.isaac_disaster.registries.ability.active.impl;
 import net.luojiuoscar.isaac_disaster.client.ClientDataManager;
 import net.luojiuoscar.isaac_disaster.effect.ModEffects;
 import net.luojiuoscar.isaac_disaster.helper.EntityHelper;
-import net.luojiuoscar.isaac_disaster.registries.ability.active.ActiveAbility;
 import net.luojiuoscar.isaac_disaster.manager.ColorManager;
 import net.luojiuoscar.isaac_disaster.manager.EffectManager;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
-import net.luojiuoscar.isaac_disaster.manager.item_managers.SetManager;
 import net.luojiuoscar.isaac_disaster.manager.item_managers.id.ItemId;
-import net.luojiuoscar.isaac_disaster.manager.item_managers.id.SetId;
+import net.luojiuoscar.isaac_disaster.registries.ability.active.ActiveAbility;
+import net.luojiuoscar.isaac_disaster.registries.ability.set.ModSetAbility;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
@@ -29,7 +28,7 @@ public class TelepathyForDummies extends ActiveAbility {
 
     @Override
     public void onFirstUse(ServerPlayer player, ItemStack stack, @javax.annotation.Nullable InteractionHand hand){
-        StatManager.modifySetWithId(player, SetId.BOOK.getId(), 1);
+        StatManager.modifySetWithId(player, ModSetAbility.BOOK.getId(), 1);
     }
 
     @Override
@@ -58,7 +57,7 @@ public class TelepathyForDummies extends ActiveAbility {
     public List<Component> getSynergyDesc(@Nullable ItemStack stack) {
         List<Component> description = new ArrayList<>();
 
-        description.addAll(SetManager.getInstance().getSetFromId(SetId.BOOK.getId()).getSynergyDescription());
+        description.addAll(ModSetAbility.BOOK.get().getSynergyDesc());
 
         if (ClientDataManager.getInstance().getCountFromId(ItemId.CAR_BATTERY.getId()) > 0){
             description.add(Component.translatable("item.isaac_disaster.car_battery").append(": ")
@@ -73,7 +72,7 @@ public class TelepathyForDummies extends ActiveAbility {
     public List<Component> getExtraDesc(@Nullable ItemStack stack){
         List<Component> description = new ArrayList<>();
 
-        description.addAll(SetManager.getInstance().getSetFromId(SetId.BOOK.getId()).getExplain());
+        description.addAll(ModSetAbility.BOOK.get().getExtraDesc());
         description.add(EffectManager.TELEPATHY.getExplainDesc());
 
         return description;

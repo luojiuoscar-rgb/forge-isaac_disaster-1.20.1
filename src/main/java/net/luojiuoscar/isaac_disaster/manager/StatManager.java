@@ -363,10 +363,10 @@ public enum StatManager {
     }
     /* ---------------------- 道具套装 ---------------------- */
 
-    public static void modifySetWithId(Player player, int setId, int amount){
+    public static void modifySetWithId(Player player, ResourceLocation rl, int amount){
         if(player instanceof ServerPlayer serverPlayer){
             player.getCapability(PlayerPassiveItemProvider.PLAYER_PASSIVE_ITEM).ifPresent(
-                    playerPassiveItem -> playerPassiveItem.modifySetCount(serverPlayer, setId, amount)
+                    playerPassiveItem -> playerPassiveItem.modifySetCount(serverPlayer, rl, amount)
             );
         }
     }
