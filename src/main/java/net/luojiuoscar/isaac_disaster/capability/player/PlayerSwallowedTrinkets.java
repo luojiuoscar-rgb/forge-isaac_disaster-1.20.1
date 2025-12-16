@@ -2,7 +2,7 @@ package net.luojiuoscar.isaac_disaster.capability.player;
 
 import net.luojiuoscar.isaac_disaster.helper.CuriosHelper;
 import net.luojiuoscar.isaac_disaster.item.item.Trinket;
-import net.luojiuoscar.isaac_disaster.manager.item_managers.TrinketManager;
+import net.luojiuoscar.isaac_disaster.registries.ability.trinket.TrinketAbilityContext;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
@@ -28,7 +28,7 @@ public class PlayerSwallowedTrinkets {
     }
 
     /** 添加一个饰品 */
-    public void swallow(Player player, ItemStack stack) {
+    public void swallow(ItemStack stack) {
         if (!(stack.getItem() instanceof Trinket)) return;
         addToList(stack.copy());
         Trinket.setSwallowing(stack, true);
@@ -55,7 +55,7 @@ public class PlayerSwallowedTrinkets {
     public void removeAt(Player player, int index){
         ItemStack stack = swallowedTrinkets.remove(index);
         if (stack.getItem() instanceof Trinket item){
-            TrinketManager.getInstance().getTrinketFromId(item.getTrinketId()).onUnequipped(player, Trinket.isEnchanted(stack));
+            item.getAbility().onUnequipped(player, new TrinketAbilityContext(stack));
         }
     }
 
@@ -63,7 +63,7 @@ public class PlayerSwallowedTrinkets {
         for (ItemStack stack : swallowedTrinkets){
             if (stack.getItem() instanceof Trinket item &&
                     item.getTrinketId() == id) {
-                TrinketManager.getInstance().getTrinketFromId(item.getTrinketId()).onUnequipped(player, Trinket.isEnchanted(stack));
+                item.getAbility().onUnequipped(player, new TrinketAbilityContext(stack));
                 swallowedTrinkets.remove(stack);
                 break;
             }

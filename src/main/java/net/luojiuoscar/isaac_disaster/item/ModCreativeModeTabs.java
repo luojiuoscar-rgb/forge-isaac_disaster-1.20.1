@@ -43,7 +43,7 @@ public class ModCreativeModeTabs {
                     }).build());
 
     public static final RegistryObject<CreativeModeTab> TRINKETS_TAB = CREATIVE_MODE_TABS.register("trinkets_tab",
-            () -> CreativeModeTab.builder().icon(() -> new ItemStack(ModItems.SWALLOWED_PENNY.get()))
+            () -> CreativeModeTab.builder().icon(() -> new ItemStack(ModTrinkets.SWALLOWED_PENNY.get()))
                     .withTabsBefore(ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "active_items_tab"))
                     .title(Component.translatable("creativetab.isaac_disaster.trinkets"))
                     .displayItems((params, output) -> {

@@ -29,7 +29,6 @@ public abstract class ActiveAbility extends IsaacItemAbility {
             // 消耗性主动
             if (item instanceof DisposableActiveItem) player.getItemInHand(hand).shrink(1);
 
-
             // 基于物品的过载情况计算剩余充能
             int damage = stack.getDamageValue();
             if (ActiveItem.getOverCharged(stack)){
@@ -50,7 +49,6 @@ public abstract class ActiveAbility extends IsaacItemAbility {
 
             // 设置0.25秒的冷却
             player.getCooldowns().addCooldown(item, 5);
-
 
             // 首次使用效果
             if (!ActiveItem.hasBeenUsed(stack)){

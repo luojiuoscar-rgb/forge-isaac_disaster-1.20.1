@@ -6,10 +6,8 @@ import net.luojiuoscar.isaac_disaster.item.block.IdentifierBlockItem;
 import net.luojiuoscar.isaac_disaster.item.block.IsaacChestBlockItem;
 import net.luojiuoscar.isaac_disaster.item.custom.ChestPlaceholder;
 import net.luojiuoscar.isaac_disaster.item.custom.DebugStick;
-import net.luojiuoscar.isaac_disaster.item.item.Trinket;
 import net.luojiuoscar.isaac_disaster.item.pickup.*;
 import net.luojiuoscar.isaac_disaster.manager.item_managers.id.PickupId;
-import net.luojiuoscar.isaac_disaster.manager.item_managers.id.TrinketId;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Rarity;
@@ -30,44 +28,6 @@ public class ModItems {
         ITEMS.register(eventBus);
     }
 
-    // trinket
-    private static RegistryObject<Item> registerTrinket(String name, TrinketId id) {
-        RegistryObject<Item> reg = ITEMS.register(name, () -> new Trinket(new Item.Properties(), id.getId()));
-        TRINKET_LIST.add(reg);
-        TrinketId.registerItem(id.getId(), reg);
-        return reg;
-    }
-
-    public static final RegistryObject<Item> SWALLOWED_PENNY = registerTrinket("swallowed_penny", TrinketId.SWALLOWED_PENNY);
-    public static final RegistryObject<Item> AAA_BATTERY    = registerTrinket("aaa_battery", TrinketId.AAA_BATTERY);
-    public static final RegistryObject<Item> BROKEN_REMOTE  = registerTrinket("broken_remote", TrinketId.BROKEN_REMOTE);
-    public static final RegistryObject<Item> CARTRIDGE      = registerTrinket("cartridge", TrinketId.CARTRIDGE);
-    public static final RegistryObject<Item> LUCKY_ROCK     = registerTrinket("lucky_rock", TrinketId.LUCKY_ROCK);
-    public static final RegistryObject<Item> LUCKY_TOE      = registerTrinket("lucky_toe", TrinketId.LUCKY_TOE);
-    public static final RegistryObject<Item> CANCER_TRINKET = registerTrinket("cancer_trinket", TrinketId.CANCER_TRINKET);
-    public static final RegistryObject<Item> BLIND_RAGE     = registerTrinket("blind_rage", TrinketId.BLIND_RAGE);
-    public static final RegistryObject<Item> PERFECTION     = registerTrinket("perfection", TrinketId.PERFECTION);
-    public static final RegistryObject<Item> DAEMONS_TAIL   = registerTrinket("daemons_tail", TrinketId.DAEMONS_TAIL);
-    public static final RegistryObject<Item> PAPER_CLIP     = registerTrinket("paper_clip", TrinketId.PAPER_CLIP);
-    public static final RegistryObject<Item> SAFETY_CAP     = registerTrinket("safety_cap", TrinketId.SAFETY_CAP);
-    public static final RegistryObject<Item> ACE_OF_SPADES_TRINKET = registerTrinket("ace_of_spades_trinket", TrinketId.ACE_OF_SPADES_TRINKET);
-    public static final RegistryObject<Item> CHILDS_HEART   = registerTrinket("childs_heart", TrinketId.CHILDS_HEART);
-    public static final RegistryObject<Item> MATCH_STICK    = registerTrinket("match_stick", TrinketId.MATCH_STICK);
-    public static final RegistryObject<Item> RUSTED_KEY     = registerTrinket("rusted_key", TrinketId.RUSTED_KEY);
-    public static final RegistryObject<Item> POKER_CHIP     = registerTrinket("poker_chip", TrinketId.POKER_CHIP);
-    public static final RegistryObject<Item> GILDED_KEY     = registerTrinket("gilded_key", TrinketId.GILDED_KEY);
-    public static final RegistryObject<Item> THE_LEFT_HAND  = registerTrinket("the_left_hand", TrinketId.THE_LEFT_HAND);
-    public static final RegistryObject<Item> WIGGLE_WORM    = registerTrinket("wiggle_worm", TrinketId.WIGGLE_WORM);
-    public static final RegistryObject<Item> BRAIN_WORM     = registerTrinket("brain_worm", TrinketId.BRAIN_WORM);
-    public static final RegistryObject<Item> WHIP_WORM      = registerTrinket("whip_worm", TrinketId.WHIP_WORM);
-    public static final RegistryObject<Item> TAPE_WORM      = registerTrinket("tape_worm", TrinketId.TAPE_WORM);
-    public static final RegistryObject<Item> LAZY_WORM      = registerTrinket("lazy_worm", TrinketId.LAZY_WORM);
-    public static final RegistryObject<Item> RING_WORM      = registerTrinket("ring_worm", TrinketId.RING_WORM);
-    public static final RegistryObject<Item> OUROBOROS_WORM = registerTrinket("ouroboros_worm", TrinketId.OUROBOROS_WORM);
-    public static final RegistryObject<Item> HOOK_WORM      = registerTrinket("hook_worm", TrinketId.HOOK_WORM);
-
-
-    // trinket end
     // pickups
     public static final RegistryObject<Item> ISAAC_HEAD = ITEMS.register("isaac_head",
             () -> new IsaacHead(new Item.Properties(), PickupId.ISAAC_HEAD.getId()));

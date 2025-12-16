@@ -52,6 +52,7 @@ public class IsaacDisaster
         ModItems.register(modEventBus);
         ModPassiveItems.register(modEventBus);
         ModActiveItems.register(modEventBus);
+        ModTrinkets.register(modEventBus);
         ModPills.register(modEventBus);
 
         ModCreativeModeTabs.register(modEventBus);
@@ -80,7 +81,6 @@ public class IsaacDisaster
         ModMessages.register();
 
         event.enqueueWork(() -> {
-            TrinketManager.getInstance().init();
             PickupManager.getInstance().init();
             SetManager.getInstance().init();
             AttackManager.getInstance().init();

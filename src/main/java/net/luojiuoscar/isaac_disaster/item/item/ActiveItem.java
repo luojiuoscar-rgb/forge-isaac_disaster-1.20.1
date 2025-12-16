@@ -41,7 +41,6 @@ public class ActiveItem extends IsaacItem {
 
     @Override
     public void addAdditionalInfo(List<Component> tooltipComponents, @Nullable ItemStack stack){
-        tooltipComponents.add(Component.literal(""));
         if (max_item_damage > 0 || !Config.ACTIVE_ITEM_AUTO_RESTORE.get()){
             tooltipComponents.add(
                     Component.translatable("item.isaac_disaster.special.recharge_require", (max_item_damage / 20))
@@ -99,7 +98,6 @@ public class ActiveItem extends IsaacItem {
      * 检查物品是否处于overcharged状态
      */
     public static boolean getOverCharged(ItemStack stack) {
-        // 从物品的NBT中获取状态，如果标签不存在则返回false
         return stack.getOrCreateTag().getBoolean(OVERCHARGED_TAG);
     }
 
@@ -107,7 +105,6 @@ public class ActiveItem extends IsaacItem {
      * 将物品设置为overcharged状态
      */
     public static void setOverCharged(ItemStack stack, boolean state) {
-        // 将状态写入物品的NBT
         stack.getOrCreateTag().putBoolean(OVERCHARGED_TAG, state);
     }
 

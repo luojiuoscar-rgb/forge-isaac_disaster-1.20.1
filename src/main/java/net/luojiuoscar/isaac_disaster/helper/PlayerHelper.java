@@ -558,7 +558,7 @@ public class PlayerHelper {
         player.getCapability(PlayerSwallowedTrinketsProvider.PLAYER_SWALLOWED_TRINKETS).ifPresent(
                 playerSwallowedTrinkets -> {
                     for (ItemStack stack : stackList){
-                        playerSwallowedTrinkets.swallow(player, stack);
+                        playerSwallowedTrinkets.swallow(stack);
                         count[0]++;
                     }
                 });
