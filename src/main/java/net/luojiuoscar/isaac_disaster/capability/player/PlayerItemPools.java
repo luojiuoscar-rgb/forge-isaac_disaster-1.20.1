@@ -1,8 +1,8 @@
 package net.luojiuoscar.isaac_disaster.capability.player;
 
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.IntTag;
+import net.minecraft.nbt.ListTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.common.capabilities.AutoRegisterCapability;
 
@@ -49,6 +49,7 @@ public class PlayerItemPools {
     public void removeFromAll(int itemId){
         removeAll.add(itemId);
     }
+
     public void addToAll(int itemId){
         addAll.add(itemId);
     }

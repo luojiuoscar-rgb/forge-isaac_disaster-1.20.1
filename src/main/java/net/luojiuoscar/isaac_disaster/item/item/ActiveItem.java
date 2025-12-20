@@ -173,7 +173,7 @@ public class ActiveItem extends IsaacItem {
 
             // 先触发后记录
             serverPlayer.getCapability(PlayerItemUseRecordProvider.PLAYER_ITEM_USE_RECORD).ifPresent(
-                    playerItemUseRecord -> playerItemUseRecord.addActiveRecord(getId()));
+                    playerItemUseRecord -> playerItemUseRecord.addActiveRecord(ability.getId()));
         }
 
         return InteractionResultHolder.success(stack);

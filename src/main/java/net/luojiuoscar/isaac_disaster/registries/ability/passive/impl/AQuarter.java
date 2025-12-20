@@ -33,6 +33,4 @@ public class AQuarter extends PassiveAbility {
                 Component.translatable("item.isaac_disaster.action.give_money", 25)
         );
     }
-
-
 }

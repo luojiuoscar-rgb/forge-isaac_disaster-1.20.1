@@ -48,13 +48,6 @@ public class ModMessages {
                 .consumerNetworkThread(PassiveItemMapSyncS2CPacket::handle)
                 .add();
 
-        // register PickupOnUseS2CPacket
-        net.messageBuilder(PickupOnUseS2CPacket.class, id(), NetworkDirection.PLAY_TO_CLIENT)
-                .decoder(PickupOnUseS2CPacket::new)
-                .encoder(PickupOnUseS2CPacket::toBytes)
-                .consumerNetworkThread(PickupOnUseS2CPacket::handle)
-                .add();
-
         // register FlyUpdateS2CPacket
         net.messageBuilder(FlyUpdateS2CPacket.class, id(), NetworkDirection.PLAY_TO_CLIENT)
                 .decoder(FlyUpdateS2CPacket::new)

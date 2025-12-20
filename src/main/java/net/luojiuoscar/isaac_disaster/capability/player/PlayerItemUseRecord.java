@@ -13,8 +13,8 @@ import java.util.*;
 public class PlayerItemUseRecord {
 
     public record PillData(int id, boolean isHorse, long sequence) {}
-    public record CardData(int id, long sequence) {}
-    public record ActiveData(int id, long sequence) {}
+    public record CardData(ResourceLocation id, long sequence) {}
+    public record ActiveData(ResourceLocation id, long sequence) {}
     public record PillEffectData(ResourceLocation id, boolean isHorse, long sequence) {}
 
     private final int MAX_RECORDS = 3;
@@ -53,13 +53,13 @@ public class PlayerItemUseRecord {
     }
 
     // 添加卡牌记录
-    public void addCardRecord(int id) {
+    public void addCardRecord(ResourceLocation id) {
         if (cardRecords.size() >= MAX_RECORDS) cardRecords.remove(0);
         cardRecords.add(new CardData(id, sequenceCounter++));
     }
 
     // 添加主动道具记录
-    public void addActiveRecord(int id) {
+    public void addActiveRecord(ResourceLocation id) {
         if (activeRecords.size() >= MAX_RECORDS) activeRecords.remove(0);
         activeRecords.add(new ActiveData(id, sequenceCounter++));
     }
@@ -116,7 +116,7 @@ public class PlayerItemUseRecord {
         ListTag cardList = new ListTag();
         for (CardData card : cardRecords) {
             CompoundTag tag = new CompoundTag();
-            tag.putInt("id", card.id);
+            tag.putString("id", card.id.toString());
             tag.putLong("sequence", card.sequence);
             cardList.add(tag);
         }
@@ -126,7 +126,7 @@ public class PlayerItemUseRecord {
         ListTag activeList = new ListTag();
         for (ActiveData active : activeRecords) {
             CompoundTag tag = new CompoundTag();
-            tag.putInt("id", active.id);
+            tag.putString("id", active.id.toString());
             tag.putLong("sequence", active.sequence);
             activeList.add(tag);
         }
@@ -182,7 +182,7 @@ public class PlayerItemUseRecord {
             ListTag list = nbt.getList("CardRecords", Tag.TAG_COMPOUND);
             for (Tag t : list) {
                 CompoundTag tag = (CompoundTag) t;
-                cardRecords.add(new CardData(tag.getInt("id"), tag.getLong("sequence")));
+                cardRecords.add(new CardData(ResourceLocation.parse(tag.getString("id")), tag.getLong("sequence")));
             }
         }
 
@@ -191,7 +191,7 @@ public class PlayerItemUseRecord {
             ListTag list = nbt.getList("ActiveRecords", Tag.TAG_COMPOUND);
             for (Tag t : list) {
                 CompoundTag tag = (CompoundTag) t;
-                activeRecords.add(new ActiveData(tag.getInt("id"), tag.getLong("sequence")));
+                activeRecords.add(new ActiveData(ResourceLocation.parse(tag.getString("id")), tag.getLong("sequence")));
             }
         }
 

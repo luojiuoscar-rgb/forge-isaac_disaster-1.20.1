@@ -21,7 +21,7 @@ import java.util.List;
  * 仅在需要时将lore文本列表自动实现appendHoverText方法
  */
 public abstract class IsaacItem extends Item {
-    private final RegistryObject<? extends IsaacItemAbility> ability;
+    protected final RegistryObject<? extends IsaacItemAbility> ability;
     private static final String HAS_BEEN_USED = "has_been_used";
 
     protected static final String ITEM_POOL = "pool";

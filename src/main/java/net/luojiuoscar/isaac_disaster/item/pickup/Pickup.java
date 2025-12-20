@@ -1,9 +1,9 @@
 package net.luojiuoscar.isaac_disaster.item.pickup;
 
 import net.luojiuoscar.isaac_disaster.event.custom.misc.PickupUseEvent;
-import net.luojiuoscar.isaac_disaster.item.pickup.interfaces.IFoodPickup;
 import net.luojiuoscar.isaac_disaster.item.pickup.interfaces.IUsablePickup;
-import net.luojiuoscar.isaac_disaster.manager.item_managers.PickupManager;
+import net.luojiuoscar.isaac_disaster.registries.ability.pickup.PickupAbility;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.player.Player;
@@ -11,26 +11,24 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.registries.RegistryObject;
 import org.jetbrains.annotations.NotNull;
 
 public class Pickup extends Item {
-    private final int itemId;
+    protected final RegistryObject<PickupAbility> ability;
 
-    public Pickup(Properties pProperties, int itemId) {
+    public Pickup(Properties pProperties, RegistryObject<PickupAbility> ability) {
         super(pProperties);
-        this.itemId = itemId;
+        this.ability = ability;
     }
 
-    public int getPickupId() {
-        return itemId;
+    public PickupAbility getAbility(){
+        return ability.get();
     }
 
     @Override
-    public InteractionResultHolder<ItemStack> use(@NotNull Level level, Player player, @NotNull InteractionHand hand){
+    public @NotNull InteractionResultHolder<ItemStack> use(@NotNull Level level, Player player, @NotNull InteractionHand hand){
         ItemStack stack = player.getItemInHand(hand);
-
-        if (stack.getItem() instanceof IFoodPickup)
-            return super.use(level, player, hand);
 
         if (!(stack.getItem() instanceof Pickup item && item instanceof IUsablePickup))
             return InteractionResultHolder.fail(stack);
@@ -40,8 +38,11 @@ public class Pickup extends Item {
         MinecraftForge.EVENT_BUS.post(event);
         if (event.isCanceled()) return InteractionResultHolder.pass(stack);
 
-        if (!level.isClientSide)
-            PickupManager.getInstance().getItemFromId(item.getPickupId()).onUse(player, stack, hand);
+        if (player instanceof ServerPlayer serverPlayer){
+            getAbility().onUse(serverPlayer, stack, hand);
+            getAbility().makeSound(serverPlayer);
+        }
+
 
         return InteractionResultHolder.success(stack);
     }

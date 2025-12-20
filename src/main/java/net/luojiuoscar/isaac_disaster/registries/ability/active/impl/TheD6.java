@@ -27,12 +27,11 @@ public class TheD6 extends ActiveAbility {
     }
 
     @Override
-    public void onFirstUse(ServerPlayer player, @Nullable ItemStack stack, @javax.annotation.Nullable InteractionHand hand) {
-
+    public void onFirstUse(ServerPlayer player, @Nullable ItemStack stack, @Nullable InteractionHand hand) {
     }
 
     @Override
-    public void onTrigger(ServerPlayer player, ItemStack stack, @javax.annotation.Nullable InteractionHand hand) {
+    public void onTrigger(ServerPlayer player, ItemStack stack, @Nullable InteractionHand hand) {
         if (!(player.level() instanceof ServerLevel serverLevel)) return;
 
         Set<BlockPos> posList = BlockData.get(serverLevel).getAllItemBlocks();
@@ -54,7 +53,7 @@ public class TheD6 extends ActiveAbility {
     }
 
     @Override
-    public void onTriggerStronger(ServerPlayer player, ItemStack stack, @javax.annotation.Nullable InteractionHand hand){
+    public void onTriggerStronger(ServerPlayer player, ItemStack stack, @Nullable InteractionHand hand){
         onTrigger(player, stack, hand);
     }
 

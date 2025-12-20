@@ -95,7 +95,7 @@ public class IsaacDisasterEvents {
 
         if ((stack.getItem() instanceof Pill || stack.getItem() instanceof Card) &&
                 PlayerHelper.hasItem(ItemId.ECHO_CHAMBER.getId(), (ServerPlayer) player)){
-            EchoChamber.onTriggered(player);
+            EchoChamber.onTriggered((ServerPlayer) player);
         }
     }
 

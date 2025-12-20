@@ -28,8 +28,6 @@ public interface ItemDisplayContainerBlockEntity {
 
     DisplayItemListCap getItemDisplayCap();
 
-
-
     boolean tryLootItem(ServerLevel serverLevel, Player player, BlockPos pos);
 
     /**
@@ -64,6 +62,7 @@ public interface ItemDisplayContainerBlockEntity {
             }
 
             PoolHelper.markAsRemoval(player, tableId, isaacItem.getId()); // 移出道具池
+
             BlockData.get(serverLevel).addItemBlock(pos); // 记录当前坐标
             return true;
         }
@@ -105,7 +104,6 @@ public interface ItemDisplayContainerBlockEntity {
     }
 
     void setItemDisplay(ItemStack stack);
-
 
     // 新增方法：清空列表
     default void clearItemDisplayList() {

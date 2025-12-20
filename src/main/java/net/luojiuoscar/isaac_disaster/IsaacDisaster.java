@@ -11,7 +11,6 @@ import net.luojiuoscar.isaac_disaster.item.*;
 import net.luojiuoscar.isaac_disaster.loot.ModLootModifiers;
 import net.luojiuoscar.isaac_disaster.loot.ModLootTypes;
 import net.luojiuoscar.isaac_disaster.manager.attack.AttackManager;
-import net.luojiuoscar.isaac_disaster.manager.item_managers.*;
 import net.luojiuoscar.isaac_disaster.networking.ModMessages;
 import net.luojiuoscar.isaac_disaster.registries.ModRegistries;
 import net.luojiuoscar.isaac_disaster.sound.ModSounds;
@@ -81,7 +80,6 @@ public class IsaacDisaster
         ModMessages.register();
 
         event.enqueueWork(() -> {
-            PickupManager.getInstance().init();
             AttackManager.getInstance().init();
         });
     }
