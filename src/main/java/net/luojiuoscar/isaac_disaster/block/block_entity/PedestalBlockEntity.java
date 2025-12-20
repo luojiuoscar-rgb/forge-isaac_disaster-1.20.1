@@ -100,7 +100,7 @@ public class PedestalBlockEntity extends BlockEntity implements ItemDisplayConta
         setChanged();
     }
 
-    public int getLiftCost() {return lifeCost; }
+    public int getLifeCost() {return lifeCost; }
     public void setLifeCost(int c) {
         this.lifeCost = c;
         setChanged();

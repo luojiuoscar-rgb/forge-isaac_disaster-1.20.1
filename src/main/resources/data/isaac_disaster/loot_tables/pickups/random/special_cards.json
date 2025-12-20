@@ -5,7 +5,8 @@
       "entries": [
         {"type": "minecraft:item", "name": "isaac_disaster:holy_card"},
         {"type": "minecraft:item", "name": "isaac_disaster:ancient_recall"},
-        {"type": "minecraft:item", "name": "isaac_disaster:wild_card"}
+        {"type": "minecraft:item", "name": "isaac_disaster:wild_card"},
+        {"type": "minecraft:item", "name": "isaac_disaster:credit_card"}
       ]
     }
   ]

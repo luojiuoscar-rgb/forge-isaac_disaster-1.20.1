@@ -125,7 +125,7 @@ public class PedestalBlock extends BaseEntityBlock {
         else if (held.isEmpty() && !stored.isEmpty()){
             // 如果不是装饰性、且空手，则取下物品；并删除linked pedestal上的物品
             // 如果需求购买
-            double liftCost = pedestal.getLiftCost() * StatManager.MAX_HEALTH.getBonus();
+            double liftCost = pedestal.getLifeCost() * StatManager.MAX_HEALTH.getBonus();
             int moneyCost = pedestal.getMoneyCost();
             boolean buySuccess = true;
 
@@ -137,7 +137,7 @@ public class PedestalBlock extends BaseEntityBlock {
                 if ((playerMaxHealth + playerAbsorption / 2) >= liftCost){
                     double remain = liftCost - playerMaxHealth;
 
-                    StatManager.MAX_HEALTH.apply(player, -pedestal.getLiftCost());
+                    StatManager.MAX_HEALTH.apply(player, -pedestal.getLifeCost());
                     if (remain > 0){
                         player.setAbsorptionAmount((float) (playerAbsorption - remain * 2));
                     }

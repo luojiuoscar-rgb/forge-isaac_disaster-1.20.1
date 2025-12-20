@@ -545,6 +545,9 @@
   "item.isaac_disaster.question_card.lore.1": "使用一次另一只手上的主动道具的效果",
   "item.isaac_disaster.wild_card": "万用牌",
   "item.isaac_disaster.wild_card.lore.1": "触发上一次触发的物品效果",
+  "item.isaac_disaster.credit_card": "信用卡",
+  "item.isaac_disaster.credit_card.lore.1": "使周围的底座道具免费",
+  "item.isaac_disaster.credit_card.lore.2": "将村民和流浪商人转化为他们的交易所得物",
 
   "item.isaac_disaster.tarots_back": "塔罗牌卡背",
   "item.isaac_disaster.tarots_back.lore.1": "抽取一张随机的塔罗牌",

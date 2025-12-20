@@ -198,4 +198,7 @@ public class ModPickupAbility {
 
     public static final RegistryObject<PickupAbility> WILD_CARD =
             PICKUP_ABILITY_REGISTRY.register("wild_card", WildCard::new);
+
+    public static final RegistryObject<PickupAbility> CREDIT_CARD =
+            PICKUP_ABILITY_REGISTRY.register("credit_card", CreditCard::new);
 }

@@ -47,7 +47,7 @@ public class PedestalRenderer implements BlockEntityRenderer<PedestalBlockEntity
                 pedestal.getBlockPos(), 0.75f, 0.6f);
         // ======= shop =======
         // 生命成本优先
-        if (!pedestal.isDecoration() && (pedestal.getLiftCost() != 0 || pedestal.getMoneyCost() != 0)){
+        if (!pedestal.isDecoration() && (pedestal.getLifeCost() != 0 || pedestal.getMoneyCost() != 0)){
             poseStack.pushPose();
 
             // 获取方块朝向
@@ -69,14 +69,14 @@ public class PedestalRenderer implements BlockEntityRenderer<PedestalBlockEntity
 
             String cost = "";
 
-            if (pedestal.getLiftCost() != 0) {
+            if (pedestal.getLifeCost() != 0) {
                 ItemStack heartStack = new ItemStack(ModItems.RED_HEART.get());
 
                 itemRenderer.renderStatic(heartStack, ItemDisplayContext.FIXED,
                         getLightLevel(level, pedestal.getBlockPos()), OverlayTexture.NO_OVERLAY,
                         poseStack, buffer, level, 1);
 
-                cost = String.valueOf(pedestal.getLiftCost() * StatManager.MAX_HEALTH.getBonus());
+                cost = String.valueOf(pedestal.getLifeCost() * StatManager.MAX_HEALTH.getBonus());
 
             } else { // 金钱成本仅在 liftCost == 0 时生效
                 ItemStack coinStack = LevelHelper.getMoney(1).get(0);

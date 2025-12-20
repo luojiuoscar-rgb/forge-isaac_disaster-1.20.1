@@ -286,7 +286,9 @@ public class ModItems {
             () -> new WildCard(new Item.Properties(), ModPickupAbility.WILD_CARD));
     static { PICKUP_LIST.add(WILD_CARD); }
 
-
+    public static final RegistryObject<Item> CREDIT_CARD = ITEMS.register("credit_card",
+            () -> new Card(new Item.Properties(), ModPickupAbility.CREDIT_CARD));
+    static { PICKUP_LIST.add(CREDIT_CARD); }
 
     public static final RegistryObject<Item> TAROTS_BACK = ITEMS.register("tarots_back",
             () -> new Card(new Item.Properties(), ModPickupAbility.TAROTS_BACK));
