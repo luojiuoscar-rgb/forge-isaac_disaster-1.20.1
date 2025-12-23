@@ -12,6 +12,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.List;
 import java.util.UUID;
 
 public class DizzinessEffect extends MobEffect {
@@ -39,8 +40,8 @@ public class DizzinessEffect extends MobEffect {
     }
 
     @Override
-    public java.util.List<ItemStack> getCurativeItems() {
-        return java.util.Collections.emptyList();
+    public List<ItemStack> getCurativeItems() {
+        return List.of();
     }
 
     @Override

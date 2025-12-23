@@ -93,11 +93,11 @@ public class ModItems {
     static { PICKUP_LIST.add(BOMB); }
 
     public static final RegistryObject<Item> GIGA_BOMB = ITEMS.register("giga_bomb",
-            () -> new Bomb(new Item.Properties().stacksTo(16).rarity(Rarity.RARE), ModPickupAbility.GOLDEN_BOMB));
+            () -> new Bomb(new Item.Properties().stacksTo(16).rarity(Rarity.RARE), ModPickupAbility.GIGA_BOMB));
     static { PICKUP_LIST.add(GIGA_BOMB); }
 
     public static final RegistryObject<Item> GOLDEN_BOMB = ITEMS.register("golden_bomb",
-            () -> new Bomb(new Item.Properties().stacksTo(1).rarity(Rarity.EPIC), ModPickupAbility.GIGA_BOMB));
+            () -> new Bomb(new Item.Properties().stacksTo(1).rarity(Rarity.EPIC), ModPickupAbility.GOLDEN_BOMB));
     static { PICKUP_LIST.add(GOLDEN_BOMB); }
 
 

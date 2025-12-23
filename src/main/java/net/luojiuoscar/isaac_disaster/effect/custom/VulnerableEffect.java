@@ -5,6 +5,8 @@ import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.item.ItemStack;
 
+import java.util.List;
+
 
 public class VulnerableEffect extends MobEffect {
     public VulnerableEffect(MobEffectCategory pCategory, int pColor) {
@@ -12,7 +14,7 @@ public class VulnerableEffect extends MobEffect {
     }
 
     @Override
-    public java.util.List<ItemStack> getCurativeItems() {
-        return java.util.Collections.emptyList();
+    public List<ItemStack> getCurativeItems() {
+        return List.of();
     }
 }

@@ -96,7 +96,6 @@ public class PowerOfBelialEffect extends MobEffect {
 
     @Override
     public List<ItemStack> getCurativeItems() {
-        // 不可被牛奶或药水清除
-        return Collections.emptyList();
+        return List.of();
     }
 }

@@ -50,20 +50,17 @@ public class PlayerPassiveItem {
         this.obtainedSets.clear();
     }
 
-    /**
-     * 清空全部的哈希表
-     */
     public void clearSetMap(){
         setCountMap.clear();
         obtainedSets.clear();
     }
 
     public List<ItemStack> getPassiveItems(){
-        return Collections.unmodifiableList(playerPassiveItems);
+        return new ArrayList<>(playerPassiveItems);
     }
 
     public Map<ResourceLocation, Integer> getSetCountMap(){
-        return Collections.unmodifiableMap(setCountMap);
+        return new HashMap<>(setCountMap);
     }
 
     public boolean isObtainedSet(int setId){

@@ -41,7 +41,7 @@ public abstract class IsaacItem extends Item {
 
         List<Component> extraDesc = getAbility().getExtraDesc(stack);
 
-        if (extraDesc.isEmpty() && Screen.hasShiftDown()){
+        if (!extraDesc.isEmpty() && Screen.hasShiftDown()){
             // 添加解释性文本组件
             tooltipComponents.addAll(extraDesc);
         }else{
@@ -55,7 +55,7 @@ public abstract class IsaacItem extends Item {
             // 添加额外信息 (hook)
             addAdditionalInfo(tooltipComponents, stack);
             // 添加shift提示
-            if (extraDesc.isEmpty()){
+            if (!extraDesc.isEmpty()){
                 tooltipComponents.add(Component.translatable("item.isaac_disaster.special.require_shift"));
             }
             if (hasBeenUsed(stack)){

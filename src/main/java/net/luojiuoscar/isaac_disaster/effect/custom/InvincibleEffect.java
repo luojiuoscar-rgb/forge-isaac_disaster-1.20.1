@@ -9,14 +9,16 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.List;
+
 public class InvincibleEffect extends MobEffect {
     public InvincibleEffect(MobEffectCategory pCategory, int pColor) {
         super(pCategory, pColor);
     }
 
     @Override
-    public java.util.List<ItemStack> getCurativeItems() {
-        return java.util.Collections.emptyList();
+    public List<ItemStack> getCurativeItems() {
+        return List.of();
     }
 
 

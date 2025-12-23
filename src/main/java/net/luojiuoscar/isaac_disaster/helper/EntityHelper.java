@@ -115,10 +115,13 @@ public class EntityHelper {
         // 炸弹初始速度：方向 * 投掷力度 + 玩家速度
         double throwStrength = 1.3;
         double inherit = 1.0;
+        boolean flying = player.getAbilities().flying;
 
         Vec3 velocity = look.scale(throwStrength)
-                .add(playerVel.scale(inherit))
-                .add(0, 0.25, 0); // 略微向上
+                .add(playerVel.x * inherit,
+                        flying ? 0 : playerVel.y * inherit,
+                        playerVel.z * inherit)
+                .add(0, 0.25, 0);
 
         spawnBomb(spawnPos, player, player.level(), velocity, fuse, power, scale);
     }

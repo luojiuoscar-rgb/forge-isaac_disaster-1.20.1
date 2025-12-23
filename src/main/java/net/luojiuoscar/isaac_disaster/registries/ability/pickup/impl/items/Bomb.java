@@ -18,14 +18,14 @@ public class Bomb extends PickupAbility {
         if (player.level().isClientSide()) return;
 
         // throw bomb
-        if(PlayerHelper.hasItem(ItemId.MR_MEGA.getId(), (ServerPlayer) player)){
+        if(PlayerHelper.hasItem(ItemId.MR_MEGA.getId(), player)){
             EntityHelper.throwBomb(player, 80, 7, 1.4f);
         }else {
             EntityHelper.throwBomb(player, 80, 4);
         }
 
         // cd
-        if(PlayerHelper.hasItem(ItemId.FAST_BOMB.getId(), (ServerPlayer) player)){
+        if(PlayerHelper.hasItem(ItemId.FAST_BOMB.getId(), player)){
             player.getCooldowns().addCooldown(player.getItemInHand(hand).getItem(), 5);
         }else {
             player.getCooldowns().addCooldown(player.getItemInHand(hand).getItem(), 10);

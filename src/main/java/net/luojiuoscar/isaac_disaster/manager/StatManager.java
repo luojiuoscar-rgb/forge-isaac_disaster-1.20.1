@@ -115,6 +115,7 @@ public enum StatManager {
         public void apply(Player player, double ratio){
             StatManager.addModifier(player, getUUID(), getAttribute(),ratio * getBonus(),
                     getMinVal(), getMaxVal(), getOperationType());
+
             if (!PlayerHelper.canFly(player)){
                 player.getAbilities().mayfly = false;
                 player.getAbilities().flying = false;

@@ -89,6 +89,6 @@ public class BabylonEffect extends MobEffect {
 
     @Override
     public List<ItemStack> getCurativeItems() {
-        return Collections.emptyList();
+        return List.of();
     }
 }

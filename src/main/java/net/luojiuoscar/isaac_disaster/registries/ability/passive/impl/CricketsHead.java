@@ -26,7 +26,7 @@ public class CricketsHead extends PassiveAbility {
 
     @Override
     public void handleRemove(ServerPlayer player, @Nullable ItemStack stack) {
-        StatManager.DAMAGE.apply(player, 0.5);
+        StatManager.DAMAGE.apply(player, -0.5);
         StatManager.DAMAGE_MULTIPLY_BASE.apply(player, -0.5);
     }
 

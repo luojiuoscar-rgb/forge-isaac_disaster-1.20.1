@@ -25,8 +25,8 @@ public class PacManEffect extends MobEffect {
     }
 
     @Override
-    public java.util.List<ItemStack> getCurativeItems() {
-        return java.util.Collections.emptyList();
+    public List<ItemStack> getCurativeItems() {
+        return List.of();
     }
 
 

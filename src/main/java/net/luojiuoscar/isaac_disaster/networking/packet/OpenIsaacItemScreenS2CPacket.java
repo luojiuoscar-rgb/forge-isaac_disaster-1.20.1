@@ -1,5 +1,6 @@
 package net.luojiuoscar.isaac_disaster.networking.packet;
 
+import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.screen.IsaacItemScreen;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
@@ -56,6 +57,9 @@ public class OpenIsaacItemScreenS2CPacket {
         context.enqueueWork(() -> {
             Minecraft mc = Minecraft.getInstance();
             if (mc.player != null) {
+
+                IsaacDisaster.LOGGER.info("items: {}, trinkets: {}", passiveItems.size(), trinketItems.size());
+
                 mc.setScreen(new IsaacItemScreen(passiveItems, trinketItems));
             }
         });

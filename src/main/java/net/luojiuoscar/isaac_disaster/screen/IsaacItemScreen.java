@@ -200,7 +200,8 @@ public class IsaacItemScreen extends Screen {
 
         int sliderHeight = Math.max(10, (int) (barHeight * ((float) visibleRows / getTotalRowsCombined())));
         int sliderY = (barHeight - sliderHeight) > 0
-                ? startY + (int) ((barHeight - sliderHeight) * (scrollOffset / currentMaxScroll))
+                ? startY + (int) ((barHeight - sliderHeight)
+                * (currentMaxScroll > 0 ? (scrollOffset / currentMaxScroll) : 0f))
                 : startY;
 
         if (mouseX >= barX1 && mouseX <= barX2) {

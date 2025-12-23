@@ -227,7 +227,7 @@ public class PlayerAbility {
     }
 
     public Map<Integer, Boolean> getItemFlags() {
-        return Collections.unmodifiableMap(itemFlags);
+        return new HashMap<>(itemFlags);
     }
 
     public void setItemFlags(ServerPlayer player, int ItemId, boolean flag) {

@@ -15,14 +15,16 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 
+import java.util.List;
+
 public class NecronmiconShieldEffect extends MobEffect {
     public NecronmiconShieldEffect(MobEffectCategory pCategory, int pColor) {
         super(pCategory, pColor);
     }
 
     @Override
-    public java.util.List<ItemStack> getCurativeItems() {
-        return java.util.Collections.emptyList();
+    public List<ItemStack> getCurativeItems() {
+        return List.of();
     }
 
     public static void onTriggered(LivingHurtEvent event){

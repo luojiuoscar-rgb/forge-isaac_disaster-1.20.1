@@ -55,11 +55,12 @@ public class ServerTickEvent {
         if (server == null) return;
 
         // 每tickCounter执行一次
-        if (tickCounter % ServerTickEvent.TICK_FREQUENCY == 0){
+        if (tickCounter % TICK_FREQUENCY == 0){
             for (ServerPlayer player : server.getPlayerList().getPlayers()){
 
                 chargeActiveItem(player);
                 onPlayerSprint(player);
+                updateFly(player);
             }
         }
 
@@ -67,7 +68,6 @@ public class ServerTickEvent {
         if (tickCounter % 20 == 0){
             for (ServerPlayer player : server.getPlayerList().getPlayers()){
 
-                updateFly(player);
                 bugsFix(player);
                 ForgeEvents.syncAllDataToClient(player);
             }
@@ -142,11 +142,11 @@ public class ServerTickEvent {
         // 正在飞
         if (player.getAbilities().flying && player.getEffect(ModEffects.TRANSCENDENCE.get()) == null){
             player.getCapability(PlayerStatModifierProvider.PLAYER_STAT_MODIFIER).ifPresent(
-                    playerStatModifier -> playerStatModifier.addCurrentFlyTime(player, 4)
+                    playerStatModifier -> playerStatModifier.addCurrentFlyTime(player, TICK_FREQUENCY)
             );
         }else{
             player.getCapability(PlayerStatModifierProvider.PLAYER_STAT_MODIFIER).ifPresent(
-                    playerStatModifier -> playerStatModifier.addCurrentFlyTime(player, -1)
+                    playerStatModifier -> playerStatModifier.addCurrentFlyTime(player, -(int)TICK_FREQUENCY/4)
             );
         }
     }

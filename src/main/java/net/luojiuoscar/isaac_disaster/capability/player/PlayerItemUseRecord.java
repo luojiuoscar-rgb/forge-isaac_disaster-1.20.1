@@ -87,7 +87,7 @@ public class PlayerItemUseRecord {
     }
 
     public Map<Integer, ResourceLocation> getPillEffectMap() {
-        return Collections.unmodifiableMap(pillEffectMap);
+        return new HashMap<>(pillEffectMap);
     }
 
     public void setPillEffectRecord(ServerPlayer pl, int pillId, ResourceLocation effectRl) {
