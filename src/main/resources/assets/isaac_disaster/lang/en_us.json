@@ -388,7 +388,15 @@
   "item.isaac_disaster.ipecac.lore.4": "当伤害较低时，提供伤害补偿",
   "item.isaac_disaster.ipecac.lore.5": "对其他的攻击也有效",
   "item.isaac_disaster.ipecac.lore.6": "射速大幅下降",
-
+  "item.isaac_disaster.brimstone": "硫磺火",
+  "item.isaac_disaster.brimstone.lore.1": "发射鲜血激光束",
+  "item.isaac_disaster.brimstone.lore.2": "激光束共造成13次伤害",
+  "item.isaac_disaster.brimstone.lore.3": "每次造成60%面板伤害",
+  "item.isaac_disaster.brimstone.synergy.technology.1": "每次造成的伤害增加1.5倍",
+  "item.isaac_disaster.c_section": "剖腹产",
+  "item.isaac_disaster.c_section.lore.1": "发射胎儿子弹",
+  "item.isaac_disaster.c_section.lore.2": "胎儿子弹持续追踪敌人，具有较低弹速",
+  "item.isaac_disaster.c_section.lore.3": "并且持续追踪敌人，每秒造成4次伤害",
 
   "item end": "",
 

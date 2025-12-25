@@ -2,12 +2,9 @@ package net.luojiuoscar.isaac_disaster.event;
 
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.capability.entity.EffectModulesProvider;
-import net.luojiuoscar.isaac_disaster.event.custom.attack.IsaacAttackAfterHitEvent;
-import net.luojiuoscar.isaac_disaster.event.custom.attack.IsaacAttackBeforeHitEntityEvent;
-import net.luojiuoscar.isaac_disaster.event.custom.attack.IsaacAttackHitBlockEvent;
-import net.luojiuoscar.isaac_disaster.event.custom.attack.PlayerPerformAttackEvent;
+import net.luojiuoscar.isaac_disaster.event.custom.attack.*;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
-import net.luojiuoscar.isaac_disaster.manager.attack.IBulletObject;
+import net.luojiuoscar.isaac_disaster.registries.attack_type.IBulletObject;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.ITriggerModule;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerModule;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerCategory;
@@ -28,7 +25,7 @@ import java.util.Set;
 public class TriggerModuleEvents {
 
     @SubscribeEvent
-    public static void onShoot(PlayerPerformAttackEvent event) {
+    public static void getAttackContext(GetAttackContextEvent event) {
         Player player = event.getPlayer();
         IForgeRegistry<ITriggerModule> reg =
                 RegistryManager.ACTIVE.getRegistry(ModTriggerModule.TRIGGER_MODULE_KEY);
@@ -37,7 +34,6 @@ public class TriggerModuleEvents {
 
             var queue = triggerModule.getTriggerModules().getCopy();
 
-            //使用索引遍历，允许在遍历过程中添加/删除元素
             for (int i = 0; i < queue.getQueue().size(); i++) {
                 TriggerModuleInstance inst = queue.getQueue().get(i);
                 ITriggerModule val = reg.getValue(inst.id);
@@ -45,14 +41,12 @@ public class TriggerModuleEvents {
 
                 Set<TriggerCategory> types = val.getTriggerType();
 
-                if (types.contains(TriggerCategory.ON_SHOOT)) {
-                    // 将 queue 引用传入，允许在 onShoot 内部修改列表
-                    val.onShoot(event, inst.stacks, queue);
+                if (types.contains(TriggerCategory.GET_ATTACK_CONTEXT)) {
+                    val.getAttackContext(event, inst.stacks, queue);
                 }
             }
         });
     }
-
 
     @SubscribeEvent
     public static void onHitEntity(LivingAttackEvent event) {

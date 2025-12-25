@@ -1,13 +1,10 @@
 package net.luojiuoscar.isaac_disaster.registries.trigger_module.impl;
 
 import net.luojiuoscar.isaac_disaster.entity.custom.TearBullet;
+import net.luojiuoscar.isaac_disaster.event.custom.attack.GetAttackContextEvent;
 import net.luojiuoscar.isaac_disaster.event.custom.attack.IsaacAttackHitBlockEvent;
-import net.luojiuoscar.isaac_disaster.event.custom.attack.PlayerPerformAttackEvent;
-import net.luojiuoscar.isaac_disaster.manager.attack.type.LaserAttack;
-import net.luojiuoscar.isaac_disaster.registries.trigger_module.ITriggerModule;
-import net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerModule;
-import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerCategory;
-import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerModuleQueue;
+import net.luojiuoscar.isaac_disaster.registries.attack_type.impl.LaserAttack;
+import net.luojiuoscar.isaac_disaster.registries.trigger_module.*;
 import net.minecraft.world.entity.MoverType;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
@@ -18,19 +15,19 @@ public class BounceOnBlock implements ITriggerModule {
     @Override
     public Set<TriggerCategory> getTriggerType() {
         return Set.of(
-                TriggerCategory.ON_SHOOT,
+                TriggerCategory.GET_ATTACK_CONTEXT,
                 TriggerCategory.BULLET_HIT_BLOCK
                 );
     }
 
     @Override
-    public void onShoot(PlayerPerformAttackEvent event, int stacks, TriggerModuleQueue queue) {
+    public void getAttackContext(GetAttackContextEvent event, int stacks, TriggerModuleQueue queue) {
         event.getContext().addTriggerModule(ModTriggerModule.BOUNCE_ON_BLOCK.getId(), 1);
     }
 
     @Override
     public double getPriority(){
-        return 100;
+        return TriggerModulePriority.HIGHEST.priority;
     }
 
     @Override

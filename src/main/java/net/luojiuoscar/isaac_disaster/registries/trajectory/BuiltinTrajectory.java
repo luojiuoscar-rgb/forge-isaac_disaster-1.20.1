@@ -5,8 +5,6 @@ import net.minecraft.world.phys.Vec3;
 
 
 public final class BuiltinTrajectory {
-    private BuiltinTrajectory() {}
-
     public static final IAttackTrajectory WIGGLE_WORM = ctx -> {
         double phaseScale = 1;
         double traveled = ctx.bulletObject.getTraveled();

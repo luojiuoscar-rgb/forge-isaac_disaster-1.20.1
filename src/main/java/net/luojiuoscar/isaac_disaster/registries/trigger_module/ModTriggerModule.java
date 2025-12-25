@@ -40,6 +40,7 @@ public class ModTriggerModule {
             TRIGGER_MODULE_REGISTRY.register("bounce_on_block", BounceOnBlock::new);
     public static final RegistryObject<ITriggerModule> BOUNCE_ON_ENTITY =
             TRIGGER_MODULE_REGISTRY.register("bounce_on_entity", BounceOnEntity::new);
-
+    public static final RegistryObject<ITriggerModule> LASER =
+            TRIGGER_MODULE_REGISTRY.register("laser", Laser::new);
 
 }

@@ -8,8 +8,8 @@ import net.luojiuoscar.isaac_disaster.registries.ability.trinket.TrinketAbilityC
 import net.luojiuoscar.isaac_disaster.registries.trajectory.ModAttackTrajectory;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
 import javax.annotation.Nullable;
@@ -27,7 +27,7 @@ public class OuroborosWorm extends TrinketAbility {
 
     @Override
     public void onEquipped(LivingEntity entity, TrinketAbilityContext ctx) {
-        if (!(entity instanceof Player player)) return;
+        if (!(entity instanceof ServerPlayer player)) return;
 
         StatManager.addTrajectory(player, ModAttackTrajectory.OUROBOROS_WORM.getId(), 1);
         if (ctx.isEnchanted){
@@ -42,7 +42,7 @@ public class OuroborosWorm extends TrinketAbility {
 
     @Override
     public void onUnequipped(LivingEntity entity, TrinketAbilityContext ctx) {
-        if (!(entity instanceof Player player)) return;
+        if (!(entity instanceof ServerPlayer player)) return;
 
         StatManager.addTrajectory(player, ModAttackTrajectory.OUROBOROS_WORM.getId(), -1);
         if (ctx.isEnchanted){

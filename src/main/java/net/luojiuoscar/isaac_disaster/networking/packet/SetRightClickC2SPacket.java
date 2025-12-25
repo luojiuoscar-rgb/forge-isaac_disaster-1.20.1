@@ -1,14 +1,16 @@
 package net.luojiuoscar.isaac_disaster.networking.packet;
 
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerAbilityProvider;
+import net.luojiuoscar.isaac_disaster.event.custom.misc.PlayerRightClickEvent;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
 public class SetRightClickC2SPacket {
-    private boolean isRightClick;
+    private final boolean isRightClick;
 
     //客户端构造时的函数
     public SetRightClickC2SPacket(boolean isRightClick){
@@ -32,9 +34,10 @@ public class SetRightClickC2SPacket {
 
             if (player == null) return;
             player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY).ifPresent(
-                    playerAbility -> playerAbility.setHoldRightClick(isRightClick)
-                    );
-
+                    playerAbility -> {
+                        playerAbility.setHoldRightClick(isRightClick);
+                        MinecraftForge.EVENT_BUS.post(new PlayerRightClickEvent(player, isRightClick, !isRightClick));
+                    });
         });
         return true;
     }

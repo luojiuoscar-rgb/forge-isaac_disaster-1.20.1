@@ -1,12 +1,14 @@
-package net.luojiuoscar.isaac_disaster.manager.attack.type;
+package net.luojiuoscar.isaac_disaster.registries.attack_type.impl;
 
 import net.luojiuoscar.isaac_disaster.entity.custom.TearBullet;
 import net.luojiuoscar.isaac_disaster.event.custom.attack.tear_bullet.TearBulletShootEvent;
-import net.luojiuoscar.isaac_disaster.manager.attack.IAttackType;
-import net.luojiuoscar.isaac_disaster.manager.attack.ModAttackType;
+import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackContext;
+import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackType;
+import net.luojiuoscar.isaac_disaster.registries.attack_type.ModAttackType;
 import net.luojiuoscar.isaac_disaster.registries.bullet_color.BulletColor;
 import net.luojiuoscar.isaac_disaster.registries.bullet_color.ModBulletColor;
 import net.luojiuoscar.isaac_disaster.sound.ModSounds;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -15,15 +17,15 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.registries.IForgeRegistry;
 import net.minecraftforge.registries.RegistryManager;
 
-public class BulletAttack implements IAttackType {
-    @Override
-    public int getId() {
-        return ModAttackType.BULLET.getId();
+public class BulletAttack extends AttackType {
+    public BulletAttack(double priority) {
+        super(priority);
     }
 
     @Override
-    public double getPriority() {return ModAttackType.BULLET.getPriority();}
-
+    public ResourceLocation getId() {
+        return ModAttackType.BULLET.getId();
+    }
 
     @Override
     public void makeSound(LivingEntity entity){
@@ -37,7 +39,7 @@ public class BulletAttack implements IAttackType {
         );
     }
 
-    public void handleAttack(LivingEntity entity, AttackContext context) {
+    public void performAttack(LivingEntity entity, AttackContext context) {
         int count = entity instanceof Player player ? getBulletCount(player) : 1;
 
         if (count <= 1) {
@@ -67,11 +69,11 @@ public class BulletAttack implements IAttackType {
         shooter.level().addFreshEntity(bullet);
     }
 
-    private void shotBullet(LivingEntity entity, AttackContext context, float xRot, float yRot) {
+    protected void shotBullet(LivingEntity entity, AttackContext context, float xRot, float yRot) {
         shoot(entity, context, Vec3.ZERO, xRot, yRot);
     }
 
-    private void shot2Bullet(LivingEntity entity, AttackContext context) {
+    protected void shot2Bullet(LivingEntity entity, AttackContext context) {
         Vec3 look = entity.getLookAngle();
         Vec3 right = look.cross(new Vec3(0, 1, 0)).normalize();
 
@@ -79,7 +81,7 @@ public class BulletAttack implements IAttackType {
         shoot(entity, context, right.scale(-0.25), entity.getXRot(), entity.getYRot());
     }
 
-    private TearBullet createBullet(LivingEntity shooter, Vec3 spawnPos, float xRot, float yRot, AttackContext context) {
+    protected TearBullet createBullet(LivingEntity shooter, Vec3 spawnPos, float xRot, float yRot, AttackContext context) {
         double width = shooter.getBbWidth();
         double forwardOffset = 0.4 * (width / 0.6);
         Vec3 look = Vec3.directionFromRotation(xRot, yRot);

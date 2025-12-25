@@ -6,10 +6,12 @@ import net.luojiuoscar.isaac_disaster.block.ModBlockEntities;
 import net.luojiuoscar.isaac_disaster.block.renderer.IdentifierRenderer;
 import net.luojiuoscar.isaac_disaster.block.renderer.IsaacChestRenderer;
 import net.luojiuoscar.isaac_disaster.block.renderer.PedestalRenderer;
-import net.luojiuoscar.isaac_disaster.client.FlyHudOverlay;
 import net.luojiuoscar.isaac_disaster.client.ModKeyMappings;
+import net.luojiuoscar.isaac_disaster.client.hud.ChargeBarHudOverlay;
+import net.luojiuoscar.isaac_disaster.client.hud.FlyHudOverlay;
 import net.luojiuoscar.isaac_disaster.entity.ModEntities;
 import net.luojiuoscar.isaac_disaster.entity.tnt.CustomTntRenderer;
+import net.luojiuoscar.isaac_disaster.renderer.FetusBulletRenderer;
 import net.luojiuoscar.isaac_disaster.renderer.InvincibleChargeLayer;
 import net.luojiuoscar.isaac_disaster.renderer.IsaacBulletRenderer;
 import net.minecraft.client.renderer.entity.player.PlayerRenderer;
@@ -33,6 +35,7 @@ public class ClientModEvents {
         event.registerEntityRenderer(ModEntities.ISAAC_BOMB.get(), CustomTntRenderer::new);
         event.registerEntityRenderer(ModEntities.GIGA_BOMB.get(), CustomTntRenderer::new);
         event.registerEntityRenderer(ModEntities.TEAR_BULLET.get(), IsaacBulletRenderer::new);
+        event.registerEntityRenderer(ModEntities.FETUS_BULLET.get(), FetusBulletRenderer::new);
 
         event.registerBlockEntityRenderer(ModBlockEntities.PEDESTAL_BLOCK_ENTITY.get(), PedestalRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.NORMAL_CHEST_BLOCK_ENTITY.get(), IsaacChestRenderer::new);
@@ -103,6 +106,7 @@ public class ClientModEvents {
     @SubscribeEvent
     public static void registerGuiOverlays(RegisterGuiOverlaysEvent event) {
         event.registerAbove(VanillaGuiOverlay.FOOD_LEVEL.id(), "fly", FlyHudOverlay.HUD_FLY);
+        event.registerAbove(VanillaGuiOverlay.CROSSHAIR.id(), "charge_bar", ChargeBarHudOverlay.HUD_CHARGE_BAR);
     }
 
     @SubscribeEvent

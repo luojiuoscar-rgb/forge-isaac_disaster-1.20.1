@@ -1,9 +1,6 @@
 package net.luojiuoscar.isaac_disaster.registries.trigger_module;
 
-import net.luojiuoscar.isaac_disaster.event.custom.attack.IsaacAttackAfterHitEvent;
-import net.luojiuoscar.isaac_disaster.event.custom.attack.IsaacAttackBeforeHitEntityEvent;
-import net.luojiuoscar.isaac_disaster.event.custom.attack.IsaacAttackHitBlockEvent;
-import net.luojiuoscar.isaac_disaster.event.custom.attack.PlayerPerformAttackEvent;
+import net.luojiuoscar.isaac_disaster.event.custom.attack.*;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -25,8 +22,8 @@ public interface ITriggerModule {
 
     default double getPriority() {return 0; }
 
-    /** 发射前（玩家攻击时） */
-    default void onShoot(PlayerPerformAttackEvent event, int stacks, TriggerModuleQueue queue) {}
+    /** 攻击上下文 */
+    default void getAttackContext(GetAttackContextEvent event, int stacks, TriggerModuleQueue queue) {}
 
     /** 子弹命中实体 - 前 */
     default void beforeBulletHitEntity(IsaacAttackBeforeHitEntityEvent event, int stacks, TriggerModuleQueue queue) {}

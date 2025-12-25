@@ -16,6 +16,7 @@ public class ClientDataManager {
     private int flyUnits;
     private int pillQuality;
 
+    private float chargeProgress;
 
     // constructor
     private ClientDataManager() {
@@ -31,6 +32,7 @@ public class ClientDataManager {
         pillRecords.clear();
         pillQuality = 0;
         flyUnits = 0;
+        chargeProgress = 0;
     }
 
     public static ClientDataManager getInstance() {
@@ -43,17 +45,15 @@ public class ClientDataManager {
     public int getCountFromId(int id) {
         return itemCountMap.getOrDefault(id, 0);
     }
+
     public int getFlyUnits() {
         return flyUnits;
     }
+
     public int getSetCountFromId(int id){
-
-
-
-
-
         return setCountMap.getOrDefault(id, 0);
     }
+
     public boolean isPillRecordCorrectly(int pillId) {
         if (pillRecords.containsKey(pillId)){
             ResourceLocation correctEffect = PillEffectManager.getInstance().getEffectIdFromPill(pillId).getId();
@@ -65,6 +65,13 @@ public class ClientDataManager {
         return pillQuality;
     }
 
+    public float getChargeProgress() {
+        return chargeProgress;
+    }
+
+    public void setChargeProgress(float chargeProgress) {
+        this.chargeProgress = chargeProgress;
+    }
 
     /**
      * SETTER

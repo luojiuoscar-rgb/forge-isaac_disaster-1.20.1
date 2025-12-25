@@ -1,9 +1,9 @@
 package net.luojiuoscar.isaac_disaster.registries.trigger_module.impl;
 
 import net.luojiuoscar.isaac_disaster.effect.ModEffects;
+import net.luojiuoscar.isaac_disaster.event.custom.attack.GetAttackContextEvent;
 import net.luojiuoscar.isaac_disaster.event.custom.attack.IsaacAttackBeforeHitEntityEvent;
 import net.luojiuoscar.isaac_disaster.event.custom.attack.IsaacAttackHitBlockEvent;
-import net.luojiuoscar.isaac_disaster.event.custom.attack.PlayerPerformAttackEvent;
 import net.luojiuoscar.isaac_disaster.helper.EntityHelper;
 import net.luojiuoscar.isaac_disaster.helper.LevelHelper;
 import net.luojiuoscar.isaac_disaster.registries.bullet_color.ModBulletColor;
@@ -25,7 +25,7 @@ public class Ipecac implements ITriggerModule {
     @Override
     public Set<TriggerCategory> getTriggerType() {
         return Set.of(
-                TriggerCategory.ON_SHOOT,
+                TriggerCategory.GET_ATTACK_CONTEXT,
                 TriggerCategory.HIT_ENTITY,
                 TriggerCategory.BULLET_HIT_ENTITY_BEFORE,
                 TriggerCategory.BULLET_HIT_BLOCK
@@ -33,7 +33,7 @@ public class Ipecac implements ITriggerModule {
     }
 
     @Override
-    public void onShoot(PlayerPerformAttackEvent event, int stacks, TriggerModuleQueue queue) {
+    public void getAttackContext(GetAttackContextEvent event, int stacks, TriggerModuleQueue queue) {
         event.getContext().colorRl = ModBulletColor.IPECAC.getId();
         event.getContext().addTriggerModule(ModTriggerModule.IPECAC.getId(), 1);
     }
@@ -50,6 +50,8 @@ public class Ipecac implements ITriggerModule {
     }
 
     private void applyEffect(LivingEntity attacker, Vec3 pos, float damage){
+        if (attacker == null) return;
+
         damage = (float) computeDamageWithCompensation(damage);
 
         float power = powerFromDamage(damage);
@@ -62,6 +64,7 @@ public class Ipecac implements ITriggerModule {
         for (LivingEntity entity : livingEntities){
 
             if(EntityHelper.isFriendly(entity, attacker)) continue;
+
             MobEffectInstance poisonEffect = new MobEffectInstance(
                     ModEffects.POISON.get(),
                     (int) Math.min(320, damage * 10),

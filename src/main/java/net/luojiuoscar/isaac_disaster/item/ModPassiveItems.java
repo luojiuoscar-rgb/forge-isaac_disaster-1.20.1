@@ -225,6 +225,10 @@ public class ModPassiveItems {
             () -> new PassiveItem(new Item.Properties(), ModPassiveAbility.SYNTHOIL));
     static {ItemListManager.PASSIVE_ITEM_LIST.add(SYNTHOIL);}
 
+    public static final RegistryObject<Item> EXPERIMENTAL_TREATMENT = ITEMS.register("experimental_treatment",
+            () -> new ExperimentalTreatmentItem(new Item.Properties(), ModPassiveAbility.EXPERIMENTAL_TREATMENT));
+    static { ItemListManager.PASSIVE_ITEM_LIST.add(EXPERIMENTAL_TREATMENT); ItemId.registerItem(ItemId.EXPERIMENTAL_TREATMENT.getId(), EXPERIMENTAL_TREATMENT);}
+
     public static final RegistryObject<Item> TORN_PHOTO = ITEMS.register("torn_photo",
             () -> new PassiveItem(new Item.Properties(), ModPassiveAbility.TORN_PHOTO));
     static {ItemListManager.PASSIVE_ITEM_LIST.add(TORN_PHOTO);}
@@ -353,8 +357,11 @@ public class ModPassiveItems {
             () -> new PassiveItem(new Item.Properties(), ModPassiveAbility.IPECAC));
     static {ItemListManager.PASSIVE_ITEM_LIST.add(IPECAC);}
 
-    public static final RegistryObject<Item> EXPERIMENTAL_TREATMENT = ITEMS.register("experimental_treatment",
-            () -> new ExperimentalTreatmentItem(new Item.Properties(), ModPassiveAbility.EXPERIMENTAL_TREATMENT));
-    static { ItemListManager.PASSIVE_ITEM_LIST.add(EXPERIMENTAL_TREATMENT); ItemId.registerItem(ItemId.EXPERIMENTAL_TREATMENT.getId(), EXPERIMENTAL_TREATMENT);}
+    public static final RegistryObject<Item> BRIMSTONE = ITEMS.register("brimstone",
+            () -> new PassiveItem(new Item.Properties(), ModPassiveAbility.BRIMSTONE));
+    static {ItemListManager.PASSIVE_ITEM_LIST.add(BRIMSTONE);}
 
+    public static final RegistryObject<Item> C_SECTION = ITEMS.register("c_section",
+            () -> new PassiveItem(new Item.Properties(), ModPassiveAbility.C_SECTION));
+    static {ItemListManager.PASSIVE_ITEM_LIST.add(C_SECTION);}
 }

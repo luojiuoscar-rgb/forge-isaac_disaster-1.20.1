@@ -111,7 +111,9 @@ public enum ItemId {
     MARKED(1),
     THE_WIZ(0),
     MY_REFLECTION(2),
-    IPECAC(4);
+    IPECAC(4),
+    BRIMSTONE(4),
+    C_SECTION(4);
 
 
 

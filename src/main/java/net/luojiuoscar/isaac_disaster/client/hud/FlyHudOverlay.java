@@ -1,7 +1,8 @@
-package net.luojiuoscar.isaac_disaster.client;
+package net.luojiuoscar.isaac_disaster.client.hud;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
+import net.luojiuoscar.isaac_disaster.client.ClientDataManager;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
@@ -42,7 +43,7 @@ public class FlyHudOverlay {
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
         RenderSystem.enableBlend();
 
-        // 从右往左绘制；i=0 是最右侧
+        // 从右往左绘制
         for (int i = 0; i < 10; i++) {
             int iconX = rightX + ICON_SIZE * (10 - i);
 

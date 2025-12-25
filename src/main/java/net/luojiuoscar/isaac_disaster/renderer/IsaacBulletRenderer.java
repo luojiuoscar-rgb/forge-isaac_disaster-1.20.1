@@ -55,7 +55,6 @@ public class IsaacBulletRenderer extends EntityRenderer<TearBullet> {
         Minecraft mc = Minecraft.getInstance();
         Player cameraPlayer = mc.player;
 
-
         if (cameraPlayer != null) {
             if (scale > SCALE_FADE_THRESHOLD && bullet.tickCount < FADE_DURATION_TICKS) {
                 double dx = bullet.getX() - cameraPlayer.getX();

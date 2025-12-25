@@ -245,9 +245,11 @@ public class ForgeEvents {
      */
     @SubscribeEvent
     public static void onPlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
-        if (event.getEntity() instanceof ServerPlayer serverPlayer) {
-            syncAllDataToClient(serverPlayer);
-        }
+        if (!(event.getEntity() instanceof ServerPlayer player)) return;
+        syncAllDataToClient(player);
+
+        // update cached attack type
+        player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY).ifPresent(PlayerAbility::updateBestAttackType);
     }
 
     public static void syncAllDataToClient(ServerPlayer player){

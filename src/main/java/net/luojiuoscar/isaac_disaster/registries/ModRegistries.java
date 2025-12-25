@@ -6,6 +6,7 @@ import net.luojiuoscar.isaac_disaster.registries.ability.passive.PassiveAbility;
 import net.luojiuoscar.isaac_disaster.registries.ability.pickup.PickupAbility;
 import net.luojiuoscar.isaac_disaster.registries.ability.set.SetAbility;
 import net.luojiuoscar.isaac_disaster.registries.ability.trinket.TrinketAbility;
+import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackType;
 import net.luojiuoscar.isaac_disaster.registries.bullet_color.BulletColor;
 import net.luojiuoscar.isaac_disaster.registries.pill_effect.IPillEffect;
 import net.luojiuoscar.isaac_disaster.registries.recursive_module.IRecursiveModule;
@@ -20,6 +21,7 @@ import static net.luojiuoscar.isaac_disaster.registries.ability.passive.ModPassi
 import static net.luojiuoscar.isaac_disaster.registries.ability.pickup.ModPickupAbility.PICKUP_ABILITY_REGISTRY;
 import static net.luojiuoscar.isaac_disaster.registries.ability.set.ModSetAbility.SET_ABILITY_REGISTRY;
 import static net.luojiuoscar.isaac_disaster.registries.ability.trinket.ModTrinketAbility.TRINKET_ABILITY_REGISTRY;
+import static net.luojiuoscar.isaac_disaster.registries.attack_type.ModAttackType.ATTACK_TYPE_REGISTER;
 import static net.luojiuoscar.isaac_disaster.registries.bullet_color.ModBulletColor.BULLET_COLOR_REGISTRY;
 import static net.luojiuoscar.isaac_disaster.registries.pill_effect.ModPillEffect.PILL_EFFECT_REGISTRY;
 import static net.luojiuoscar.isaac_disaster.registries.recursive_module.ModRecursiveModule.RECURSIVE_MODULE_REGISTRY;
@@ -71,5 +73,8 @@ public class ModRegistries {
                 .setName(ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "pickup_ability"));});
         PICKUP_ABILITY_REGISTRY.register(modEventBus);
 
+        ATTACK_TYPE_REGISTER.makeRegistry(() -> {return new RegistryBuilder<AttackType>()
+                .setName(ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "attack_type"));});
+        ATTACK_TYPE_REGISTER.register(modEventBus);
     }
 }

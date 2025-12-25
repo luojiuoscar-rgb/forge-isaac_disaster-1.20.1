@@ -1,6 +1,8 @@
 package net.luojiuoscar.isaac_disaster.event;
 
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
+import net.luojiuoscar.isaac_disaster.capability.player.PlayerAbility;
+import net.luojiuoscar.isaac_disaster.capability.player.PlayerAbilityProvider;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerSwallowedTrinketsProvider;
 import net.luojiuoscar.isaac_disaster.effect.ModEffects;
 import net.luojiuoscar.isaac_disaster.effect.custom.TheWizEffect;
@@ -17,6 +19,9 @@ import net.luojiuoscar.isaac_disaster.registries.ability.passive.impl.BingeEater
 import net.luojiuoscar.isaac_disaster.registries.ability.passive.impl.EchoChamber;
 import net.luojiuoscar.isaac_disaster.registries.ability.passive.impl.GlitchedCrown;
 import net.luojiuoscar.isaac_disaster.registries.ability.set.ModSetAbility;
+import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackType;
+import net.luojiuoscar.isaac_disaster.registries.attack_type.IChargeableAttack;
+import net.luojiuoscar.isaac_disaster.registries.attack_type.ModAttackType;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -120,6 +125,26 @@ public class IsaacDisasterEvents {
     public static void onCreateShootEvent(BeforeCreateShootEvent event){
         if (event.getShooter().hasEffect(ModEffects.THE_WIZ.get())){
             TheWizEffect.onTriggered(event);
+        }
+    }
+
+    @SubscribeEvent
+    public static void onPlayerRightClick(PlayerRightClickEvent event){
+        ServerPlayer player = event.getPlayer();
+        if (player.hasEffect(ModEffects.LACRIMAL_HYPOSECRETION.get())) return;
+
+        AttackType attack = player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY)
+                .map(PlayerAbility::getCachedAttackType)
+                .orElse(ModAttackType.BULLET.get());
+
+        if (attack instanceof IChargeableAttack a){
+            if (event.isOnPressed()){
+                a.onPressed(player, PlayerHelper.getAttackContext(player));
+            }
+
+            else if(event.isOnReleased()){
+                a.onReleased(player, PlayerHelper.getAttackContext(player));
+            }
         }
     }
 

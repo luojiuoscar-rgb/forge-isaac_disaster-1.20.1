@@ -351,4 +351,12 @@ public class ModPassiveAbility {
     public static final RegistryObject<PassiveAbility> WOODEN_SPOON =
             PASSIVE_ABILITY_REGISTRY.register("wooden_spoon",
                     () -> new WoodenSpoon(ItemId.WOODEN_SPOON.getId(), ItemId.WOODEN_SPOON.getLevel()));
+
+    public static final RegistryObject<PassiveAbility> BRIMSTONE =
+            PASSIVE_ABILITY_REGISTRY.register("brimstone",
+                    () -> new Brimstone(ItemId.BRIMSTONE.getId(), ItemId.BRIMSTONE.getLevel()));
+
+    public static final RegistryObject<PassiveAbility> C_SECTION =
+            PASSIVE_ABILITY_REGISTRY.register("c_section",
+                    () -> new CSection(ItemId.C_SECTION.getId(), ItemId.C_SECTION.getLevel()));
 }

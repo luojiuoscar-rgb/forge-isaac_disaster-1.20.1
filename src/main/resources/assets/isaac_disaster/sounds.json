@@ -1048,5 +1048,20 @@
     "sounds": [
       "isaac_disaster:laser_shot"
     ]
+  },
+  "brimstone_shot.normal": {
+    "sounds": [
+      "isaac_disaster:brimstone_normal"
+    ]
+  },
+  "brimstone_shot.huge": {
+    "sounds": [
+      "isaac_disaster:brimstone_huge"
+    ]
+  },
+  "c_section_shot": {
+    "sounds": [
+      "isaac_disaster:c_section_shot"
+    ]
   }
 }

@@ -333,19 +333,19 @@ public enum StatManager {
         );
     }
     /* ---------------------- 子弹类型与颜色 ---------------------- */
-    public static void addAttackType(Player player, int id, int count){
+    public static void addAttackType(ServerPlayer player, ResourceLocation id, int count){
         player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY).ifPresent(
                 playerAbility -> playerAbility.addAttackType(id, count)
         );
     }
 
-    public static void addBulletColor(Player player, ResourceLocation rl, int count){
+    public static void addBulletColor(ServerPlayer player, ResourceLocation rl, int count){
         player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY).ifPresent(
                 playerAbility -> playerAbility.addBulletColor(rl, count)
         );
     }
 
-    public static void addTrajectory(Player player, ResourceLocation rl, int count){
+    public static void addTrajectory(ServerPlayer player, ResourceLocation rl, int count){
         player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY).ifPresent(
                 playerAbility -> playerAbility.addTrajectory(rl, count)
         );

@@ -1,13 +1,11 @@
-package net.luojiuoscar.isaac_disaster.manager.attack.type;
+package net.luojiuoscar.isaac_disaster.registries.attack_type.impl;
 
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.event.custom.attack.IsaacAttackAfterHitEvent;
 import net.luojiuoscar.isaac_disaster.event.custom.attack.IsaacAttackBeforeHitEntityEvent;
 import net.luojiuoscar.isaac_disaster.event.custom.attack.IsaacAttackHitBlockEvent;
 import net.luojiuoscar.isaac_disaster.helper.EntityHelper;
-import net.luojiuoscar.isaac_disaster.manager.attack.ModAttackType;
-import net.luojiuoscar.isaac_disaster.manager.attack.IAttackType;
-import net.luojiuoscar.isaac_disaster.manager.attack.IBulletObject;
+import net.luojiuoscar.isaac_disaster.registries.attack_type.*;
 import net.luojiuoscar.isaac_disaster.registries.bullet_color.BulletColor;
 import net.luojiuoscar.isaac_disaster.registries.bullet_color.ModBulletColor;
 import net.luojiuoscar.isaac_disaster.registries.trajectory.IAttackTrajectory;
@@ -40,15 +38,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class LaserAttack implements IAttackType {
+public class LaserAttack extends AttackType {
 
-    @Override
-    public int getId() {
-        return ModAttackType.LASER.getId();
+    public LaserAttack(double priority) {
+        super(priority);
     }
 
     @Override
-    public double getPriority() {return ModAttackType.LASER.getPriority();}
+    public ResourceLocation getId() {
+        return ModAttackType.LASER.getId();
+    }
 
     @Override
     public void makeSound(LivingEntity entity) {
@@ -168,7 +167,7 @@ public class LaserAttack implements IAttackType {
 
     // ================== handleAttack ==================
     @Override
-    public void handleAttack(LivingEntity entity, AttackContext context) {
+    public void performAttack(LivingEntity entity, AttackContext context) {
         int count = entity instanceof Player player ? getBulletCount(player) : 1;
         float angleInterval = 6;
         float curAngle = -angleInterval * (count - 1) / 2.0f;
@@ -211,7 +210,7 @@ public class LaserAttack implements IAttackType {
     }
 
     // ================== stepLaser ==================
-    private void stepLaser(LaserProjectile laser, ServerLevel level, AttackContext context) {
+    protected void stepLaser(LaserProjectile laser, ServerLevel level, AttackContext context) {
         // --------- Homing ---------
         laser.isCurrentlyHoming = false;
         if (laser.homing) {
@@ -257,11 +256,11 @@ public class LaserAttack implements IAttackType {
                 // ---- 应用旋转到方向 ----
                 // yRot 绕世界上方向旋转
                 Vec3 up = new Vec3(0, 1, 0);
-                laser.direction = IAttackType.rotateAroundAxis(laser.direction, up, result.yRot());
+                laser.direction = AttackType.rotateAroundAxis(laser.direction, up, result.yRot());
 
                 // xRot 绕局部右方向旋转（如果 xRot 不为0）
                 Vec3 right = laser.direction.cross(up).normalize();
-                laser.direction = IAttackType.rotateAroundAxis(laser.direction, right, result.xRot());
+                laser.direction = AttackType.rotateAroundAxis(laser.direction, right, result.xRot());
             }
         }
 
@@ -277,7 +276,7 @@ public class LaserAttack implements IAttackType {
 
         // --------- Block Collision ---------
         AABB box = createCollisionBox(nextPos, laser.width);
-        if (handleBlockCollision(laser, level, context.getTriggerModuleQueue())) {
+        if (handleBlockCollision(laser, level, context.getTriggerModuleQueue()) && !laser.spectral) {
             laser.traveled = getRange(laser.shooter);
             return;
         }
@@ -295,7 +294,7 @@ public class LaserAttack implements IAttackType {
     }
 
     // ================== Collision & Damage ==================
-    private boolean handleBlockCollision(LaserProjectile laser, ServerLevel level, TriggerModuleQueue triggerModules) {
+    protected boolean handleBlockCollision(LaserProjectile laser, ServerLevel level, TriggerModuleQueue triggerModules) {
         BlockHitResult blockHit = level.clip(new ClipContext(
                 laser.position,
                 laser.position.add(laser.direction.scale(laser.step)),
@@ -308,12 +307,12 @@ public class LaserAttack implements IAttackType {
             IsaacAttackHitBlockEvent blockEvent = new IsaacAttackHitBlockEvent(laser, laser.shooter, getId(), triggerModules, blockHit);
             MinecraftForge.EVENT_BUS.post(blockEvent);
 
-            return !blockEvent.isCanceled() && !laser.spectral;
+            return !blockEvent.isCanceled();
         }
         return false;
     }
 
-    private void handleEntityCollision(LaserProjectile laser, ServerLevel level, AABB box, TriggerModuleQueue triggerModules) {
+    protected void handleEntityCollision(LaserProjectile laser, ServerLevel level, AABB box, TriggerModuleQueue triggerModules) {
         List<LivingEntity> entities = level.getEntitiesOfClass(LivingEntity.class, box,
                 e -> e != laser.shooter && e.isAlive() && !laser.hitEntities.contains(e)
         );
@@ -330,20 +329,20 @@ public class LaserAttack implements IAttackType {
                 laser.hitEntities.add(makeDamage(laser.shooter, target,(float) actualDamage));
 
                 IsaacAttackAfterHitEvent afterHit = new IsaacAttackAfterHitEvent(
-                        laser, laser.shooter, getId(), triggerModules, hitResult, actualDamage, target.getHealth()
+                        laser, laser.shooter, ModAttackType.LASER.getId(), triggerModules, hitResult, actualDamage, target.getHealth()
                 );
                 MinecraftForge.EVENT_BUS.post(afterHit);
             }
         }
     }
 
-    private LivingEntity makeDamage(LivingEntity source, LivingEntity target, float damage) {
+    protected LivingEntity makeDamage(LivingEntity source, LivingEntity target, float damage) {
         target.invulnerableTime = 0;
         target.hurt(getDamageSource(source), damage);
         return target;
     }
 
-    private DamageSource getDamageSource(LivingEntity source){
+    protected DamageSource getDamageSource(LivingEntity source){
         if (!(source.level() instanceof ServerLevel level)) return source.damageSources().generic();
         var damageTypeHolder = level.registryAccess()
                 .registryOrThrow(Registries.DAMAGE_TYPE)
@@ -396,7 +395,7 @@ public class LaserAttack implements IAttackType {
         );
     }
 
-    public double getWidth(LivingEntity living) {
+    protected double getWidth(LivingEntity living) {
         return getBulletScale(living) * 0.25;
     }
 }

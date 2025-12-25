@@ -1,7 +1,8 @@
 package net.luojiuoscar.isaac_disaster.capability.player;
 
-import net.luojiuoscar.isaac_disaster.manager.attack.AttackManager;
-import net.luojiuoscar.isaac_disaster.manager.attack.ModAttackType;
+import net.luojiuoscar.isaac_disaster.IsaacDisaster;
+import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackType;
+import net.luojiuoscar.isaac_disaster.registries.attack_type.ModAttackType;
 import net.luojiuoscar.isaac_disaster.registries.bullet_color.BulletColor;
 import net.luojiuoscar.isaac_disaster.registries.bullet_color.ModBulletColor;
 import net.minecraft.nbt.CompoundTag;
@@ -12,7 +13,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.registries.IForgeRegistry;
 import net.minecraftforge.registries.RegistryManager;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -25,11 +25,14 @@ public class PlayerAbility {
     private int controllable;
 
     private int extraTrinketSlotCounts;
+    private int chargeAmount;
+    private int preChargeAmount;
 
     private final Map<Integer, Boolean> itemFlags;
 
-    private final Map<Integer, Integer> attackType;
-    private int bestAttackType;
+    private final Map<ResourceLocation, Integer> attackType;
+    private ResourceLocation bestAttackType;
+    private AttackType cachedAttackType;
     private final Map<ResourceLocation, Integer> bulletColor; // bullet color id : count
     private ResourceLocation bestBulletColor;
     private final HashMap<ResourceLocation, Integer> trajectories;
@@ -49,8 +52,11 @@ public class PlayerAbility {
         spectral = 0;
         controllable = 0;
         extraTrinketSlotCounts = 0;
+        chargeAmount = 0;
+
         bestBulletColor = ModBulletColor.BASE.getId();
         bestAttackType = ModAttackType.BULLET.getId();
+        cachedAttackType = ModAttackType.BULLET.get();
 
         itemFlags.clear();
         attackType.clear();
@@ -67,6 +73,7 @@ public class PlayerAbility {
         this.extraTrinketSlotCounts = source.extraTrinketSlotCounts;
         this.bestBulletColor = source.bestBulletColor;
         this.bestAttackType = source.bestAttackType;
+        this.cachedAttackType = source.cachedAttackType;
 
         this.itemFlags.clear();
         this.itemFlags.putAll(source.itemFlags);
@@ -79,14 +86,13 @@ public class PlayerAbility {
     }
 
     public void saveNBTData(CompoundTag nbt) {
-        nbt.putBoolean("holdRightClick", holdRightClick);
         nbt.putInt("piercing", piercing);
         nbt.putInt("homing", homing);
         nbt.putInt("spectral", spectral);
         nbt.putInt("controllable", controllable);
         nbt.putInt("trinket_slot_counts", extraTrinketSlotCounts);
         nbt.putString("best_bullet_color", bestBulletColor.toString());
-        nbt.putInt("best_attack_type", bestAttackType);
+        nbt.putString("best_attack_type", bestAttackType.toString());
 
         ListTag itemFlagList = new ListTag();
         for (Map.Entry<Integer, Boolean> entry : itemFlags.entrySet()) {
@@ -98,9 +104,9 @@ public class PlayerAbility {
         nbt.put("item_flags", itemFlagList);
 
         ListTag bulletTypeList = new ListTag();
-        for (Map.Entry<Integer, Integer> entry : attackType.entrySet()) {
+        for (Map.Entry<ResourceLocation, Integer> entry : attackType.entrySet()) {
             CompoundTag tag = new CompoundTag();
-            tag.putInt("bullet_type_id", entry.getKey());
+            tag.putString("bullet_type_id", entry.getKey().toString());
             tag.putInt("count", entry.getValue());
             bulletTypeList.add(tag);
         }
@@ -126,14 +132,13 @@ public class PlayerAbility {
     }
 
     public void loadNBTData(CompoundTag nbt) {
-        this.holdRightClick = nbt.getBoolean("holdRightClick");
         this.spectral = nbt.getInt("spectral");
         this.piercing = nbt.getInt("piercing");
         this.homing = nbt.getInt("homing");
         this.controllable = nbt.getInt("controllable");
         this.extraTrinketSlotCounts = nbt.getInt("trinket_slot_counts");
         this.bestBulletColor = ResourceLocation.parse(nbt.getString("best_bullet_color"));
-        this.bestAttackType = nbt.getInt("best_attack_type");
+        this.bestAttackType = ResourceLocation.parse(nbt.getString("best_attack_type"));
 
         itemFlags.clear();
         if (nbt.contains("item_flags", Tag.TAG_LIST)) {
@@ -151,9 +156,9 @@ public class PlayerAbility {
             ListTag list = nbt.getList("bullet_types", Tag.TAG_COMPOUND);
             for (Tag t : list) {
                 CompoundTag tag = (CompoundTag) t;
-                int color = tag.getInt("bullet_type_id");
+                ResourceLocation type = ResourceLocation.parse(tag.getString("bullet_type_id"));
                 int count = tag.getInt("count");
-                attackType.put(color, count);
+                attackType.put(type, count);
             }
         }
 
@@ -186,7 +191,7 @@ public class PlayerAbility {
         }
     }
 
-    public boolean isHoldRightClick() {
+    public boolean isHoldingRightClick() {
         return holdRightClick;
     }
 
@@ -242,11 +247,31 @@ public class PlayerAbility {
         this.extraTrinketSlotCounts = amount;
     }
 
-    public Map<Integer, Integer> getBulletTypeMap() {
+    public int getChargeAmount() {
+        return chargeAmount;
+    }
+
+    public void setChargeAmount(int chargeAmount) {
+        this.chargeAmount = chargeAmount;
+    }
+
+    public int getPreChargeAmount() {
+        return preChargeAmount;
+    }
+
+    public void setPreChargeAmount(int preChargeAmount) {
+        this.preChargeAmount = preChargeAmount;
+    }
+
+    public Map<ResourceLocation, Integer> getBulletTypeMap() {
         return new HashMap<>(attackType);
     }
 
-    public void addAttackType(int id, int count) {
+    public AttackType getCachedAttackType() {
+        return cachedAttackType;
+    }
+
+    public void addAttackType(ResourceLocation id, int count) {
         int r = attackType.getOrDefault(id, 0) + count;
         if (r <= 0) {
             attackType.remove(id);
@@ -257,20 +282,38 @@ public class PlayerAbility {
     }
 
     public void updateBestAttackType(){
-        int bestId = ModAttackType.BULLET.getId();
-        double bestPriority = AttackManager.getInstance().getPriority(bestId);
+        IForgeRegistry<AttackType> registry = RegistryManager.ACTIVE.getRegistry(ModAttackType.ATTACK_TYPE_KEY);
+        IsaacDisaster.LOGGER.info("Updating best attack type 1");
+        if (registry == null) return;
 
-        for (int id : attackType.keySet()) {
-            double priority = AttackManager.getInstance().getPriority(id);
+        ResourceLocation bestId = ModAttackType.BULLET.getId();
+
+        AttackType best = registry.getValue(bestId);
+        IsaacDisaster.LOGGER.info("Updating best attack type 2");
+        if (best == null) return;
+        double bestPriority = best.getPriority();
+
+        for (ResourceLocation id : attackType.keySet()) {
+            AttackType at = registry.getValue(id);
+            IsaacDisaster.LOGGER.info("Updating best attack type 3: {}", id);
+            if (at == null) continue;
+
+            double priority = at.getPriority();
+            IsaacDisaster.LOGGER.info("Updating best attack type 4: {} : {}", priority, bestPriority);
             if (priority > bestPriority) {
                 bestPriority = priority;
                 bestId = id;
             }
         }
         this.bestAttackType = bestId;
+        this.cachedAttackType = registry.getValue(bestId);
     }
 
-    public int getBestAttackType(){
+    public Map<ResourceLocation, Integer> getAttackTypes() {
+        return attackType;
+    }
+
+    public ResourceLocation getBestAttackType(){
         return bestAttackType;
     }
 

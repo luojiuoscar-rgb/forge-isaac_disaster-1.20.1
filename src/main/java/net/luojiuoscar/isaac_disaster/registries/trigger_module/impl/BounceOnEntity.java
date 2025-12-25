@@ -1,13 +1,10 @@
 package net.luojiuoscar.isaac_disaster.registries.trigger_module.impl;
 
 import net.luojiuoscar.isaac_disaster.entity.custom.TearBullet;
+import net.luojiuoscar.isaac_disaster.event.custom.attack.GetAttackContextEvent;
 import net.luojiuoscar.isaac_disaster.event.custom.attack.IsaacAttackAfterHitEvent;
-import net.luojiuoscar.isaac_disaster.event.custom.attack.PlayerPerformAttackEvent;
 import net.luojiuoscar.isaac_disaster.helper.EntityHelper;
-import net.luojiuoscar.isaac_disaster.registries.trigger_module.ITriggerModule;
-import net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerModule;
-import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerCategory;
-import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerModuleQueue;
+import net.luojiuoscar.isaac_disaster.registries.trigger_module.*;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.Vec3;
 
@@ -17,19 +14,19 @@ public class BounceOnEntity implements ITriggerModule {
     @Override
     public Set<TriggerCategory> getTriggerType() {
         return Set.of(
-                TriggerCategory.ON_SHOOT,
+                TriggerCategory.GET_ATTACK_CONTEXT,
                 TriggerCategory.BULLET_HIT_ENTITY_AFTER
                 );
     }
 
     @Override
-    public void onShoot(PlayerPerformAttackEvent event, int stacks, TriggerModuleQueue queue) {
+    public void getAttackContext(GetAttackContextEvent event, int stacks, TriggerModuleQueue queue) {
         event.getContext().addTriggerModule(ModTriggerModule.BOUNCE_ON_ENTITY.getId(), 1);
     }
 
     @Override
     public double getPriority(){
-        return 100;
+        return TriggerModulePriority.HIGHEST.priority;
     }
 
     @Override
@@ -45,7 +42,7 @@ public class BounceOnEntity implements ITriggerModule {
                     bullet.level(),
                     bullet.getOwner(),
                     bullet.position(),
-                    TearBullet.HOMING_RANGE,
+                    bullet.getHomingRange(),
                     e -> !bullet.getDamagedEntities().contains(e.getUUID())
             );
 

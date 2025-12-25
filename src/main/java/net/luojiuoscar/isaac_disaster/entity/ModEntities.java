@@ -1,6 +1,7 @@
 package net.luojiuoscar.isaac_disaster.entity;
 
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
+import net.luojiuoscar.isaac_disaster.entity.custom.FetusBullet;
 import net.luojiuoscar.isaac_disaster.entity.custom.TearBullet;
 import net.luojiuoscar.isaac_disaster.entity.custom.LemonEffectCloud;
 import net.luojiuoscar.isaac_disaster.entity.tnt.GigaBomb;
@@ -48,4 +49,12 @@ public class ModEntities {
                     () -> EntityType.Builder.<LemonEffectCloud>of(LemonEffectCloud::new, MobCategory.MISC)
                             .sized(6.0F, 0.5F) // 大概大小
                             .build("selective_effect_cloud"));
+
+    public static final RegistryObject<EntityType<FetusBullet>> FETUS_BULLET =
+            MOD_ENTITIES.register("fetus_bullet",
+                    () -> EntityType.Builder.<FetusBullet>of(FetusBullet::new, MobCategory.MISC)
+                            .sized(0.5f, 0.5f) // 小一点的碰撞箱
+                            .clientTrackingRange(64) // 客户端追踪距离
+                            .updateInterval(2) // 同步tick
+                            .build("fetus_bullet"));
 }

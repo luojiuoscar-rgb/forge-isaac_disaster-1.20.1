@@ -1,14 +1,15 @@
-package net.luojiuoscar.isaac_disaster.manager.attack;
+package net.luojiuoscar.isaac_disaster.registries.attack_type;
 
 import net.luojiuoscar.isaac_disaster.attribute.ModAttributes;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerAbilityProvider;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerPassiveItemProvider;
 import net.luojiuoscar.isaac_disaster.event.custom.attack.BeforeCreateShootEvent;
+import net.luojiuoscar.isaac_disaster.event.custom.misc.GetShotDelayEvent;
 import net.luojiuoscar.isaac_disaster.event.custom.misc.IsaacGetBulletCountEvent;
 import net.luojiuoscar.isaac_disaster.manager.item_managers.id.ItemId;
-import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerModuleInstance;
-import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerModuleQueue;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -16,56 +17,24 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.MinecraftForge;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+public abstract class AttackType {
+    private final double priority;
 
-public interface IAttackType {
-    int getId();
-
-    double getPriority();
-
-    default void performAttack(LivingEntity entity, AttackContext context) {
-        handleAttack(entity, context);
-        makeSound(entity);
+    public AttackType(double priority){
+        this.priority = priority;
     }
 
-    void handleAttack(LivingEntity entity, AttackContext context);
-
-    void makeSound(LivingEntity entity);
-
-    class AttackContext {
-
-        public ResourceLocation colorRl;
-        private final TriggerModuleQueue triggerModuleQueue;
-        public Map<ResourceLocation, Integer> trajectories;
-
-        public AttackContext(ResourceLocation colorRl,
-                             TriggerModuleQueue triggerModuleQueue,
-                             Map<ResourceLocation, Integer> trajectories) {
-            this.colorRl = colorRl;
-
-            // 深拷贝，避免外部修改影响 AttackContext 内部
-            this.triggerModuleQueue = new TriggerModuleQueue(triggerModuleQueue.getQueue());
-            this.trajectories = new HashMap<>(trajectories);
-        }
-
-        public TriggerModuleQueue getTriggerModuleQueue() {
-            return triggerModuleQueue;
-        }
-
-        public void copyTriggerModule(List<TriggerModuleInstance> source){
-            this.triggerModuleQueue.clear();
-            this.triggerModuleQueue.getQueue().addAll(source);
-        }
-
-        public void addTriggerModule(ResourceLocation id, int count) {
-            triggerModuleQueue.add(id, count);
-        }
-
+    public double getPriority() {
+        return priority;
     }
 
-    default void shoot(LivingEntity shooter, AttackContext context, Vec3 offset, float xRot, float yRot){
+    public abstract ResourceLocation getId();
+    public abstract void performAttack(LivingEntity entity, AttackContext context);
+    public abstract void makeSound(LivingEntity entity);
+    public abstract void handleShoot(LivingEntity shooter, AttackContext context, Vec3 offset, float xRot, float yRot);
+    public void onTick(Player player, AttackContext context){};
+
+    public void shoot(LivingEntity shooter, AttackContext context, Vec3 offset, float xRot, float yRot){
         BeforeCreateShootEvent event = new BeforeCreateShootEvent(shooter, context, offset, xRot, yRot);
         MinecraftForge.EVENT_BUS.post(event);
 
@@ -83,11 +52,8 @@ public interface IAttackType {
         }
     }
 
-
-    void handleShoot(LivingEntity shooter, AttackContext context, Vec3 offset, float xRot, float yRot);
-
     // ============ 属性相关 =============
-    default boolean isSpectral(LivingEntity entity){
+    protected boolean isSpectral(LivingEntity entity){
         if (entity instanceof Player player){
             return player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY)
                     .map(a -> a.getSpectral() > 0)
@@ -96,7 +62,7 @@ public interface IAttackType {
         return false;
     }
 
-    default boolean isHoming(LivingEntity entity){
+    protected boolean isHoming(LivingEntity entity){
         if (entity instanceof Player player){
             return player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY)
                     .map(a -> a.getHoming() > 0)
@@ -105,7 +71,7 @@ public interface IAttackType {
         return false;
     }
 
-    default boolean isPiercing(LivingEntity entity){
+    protected boolean isPiercing(LivingEntity entity){
         if (entity instanceof Player player){
             return player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY)
                     .map(a -> a.getPiercing() > 0)
@@ -114,7 +80,7 @@ public interface IAttackType {
         return false;
     }
 
-    default boolean isControllable(LivingEntity entity){
+    protected boolean isControllable(LivingEntity entity){
         if (entity instanceof Player player){
             return player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY)
                     .map(a -> a.getControllable() > 0)
@@ -123,7 +89,7 @@ public interface IAttackType {
         return false;
     }
 
-    default int getBulletCount(Player player){
+    protected int getBulletCount(Player player){
         AttributeInstance bulletCount = player.getAttribute(ModAttributes.BULLET_COUNT.get());
         int[] count = {bulletCount == null ? 1 : (int) bulletCount.getValue()};
 
@@ -151,22 +117,22 @@ public interface IAttackType {
         return Math.min(event.getCount(), 17);
     }
 
-    default float getDamage(LivingEntity entity) {
+    protected float getDamage(LivingEntity entity) {
         AttributeInstance attr = entity.getAttribute(Attributes.ATTACK_DAMAGE);
         return attr != null ? (float) attr.getValue() : 1f;
     }
 
-    default double getBulletSpeed(LivingEntity entity) {
+    protected double getBulletSpeed(LivingEntity entity) {
         AttributeInstance attr = entity.getAttribute(ModAttributes.BULLET_SPEED.get());
         return attr != null ? Math.max(attr.getValue(), 0.1) : 1.0;
     }
 
-    default double getRange(LivingEntity entity) {
+    protected double getRange(LivingEntity entity) {
         AttributeInstance attr = entity.getAttribute(ModAttributes.BULLET_RANGE.get());
         return attr != null ? Math.max(Math.min(attr.getValue(), 64), 1) : 18.0;
     }
 
-    default float getBulletScale(LivingEntity entity) {
+    protected float getBulletScale(LivingEntity entity) {
         double damage = entity.getAttribute(Attributes.ATTACK_DAMAGE) != null ? entity.getAttribute(Attributes.ATTACK_DAMAGE).getValue() : 1.0;
         AttributeInstance extraAttr = entity.getAttribute(ModAttributes.BULLET_SCALE.get());
         float extra = extraAttr != null ? (float) extraAttr.getValue() : 0f;
@@ -180,7 +146,50 @@ public interface IAttackType {
         return scale + extra;
     }
 
-    static Vec3 rotateAroundAxis(Vec3 v, Vec3 axis, double radians) {
+    protected double getTears(Player player) {
+        AttributeInstance instance = player.getAttribute(ModAttributes.TEARS.get());
+        if (instance == null) return 0.0;
+
+        return  Math.max(instance.getValue(),-7);
+    }
+
+    protected double getTearsCorrection(Player player) {
+        AttributeInstance instance = player.getAttribute(ModAttributes.TEARS_CORRECTION.get());
+        MobEffectInstance effect = player.getEffect(MobEffects.DIG_SPEED);
+
+        double value = 0;
+        value += effect != null ? effect.getAmplifier() + 1 : 0;
+        value += instance != null ? instance.getValue() : 0;
+
+        return  value;
+    }
+
+    protected double getShotDelay(Player player) {
+        double tears = getTears(player);
+        double delay;
+
+        if (tears < -(10.0/13.0)){
+            delay = (11 - 4*tears);
+        }else if(tears >= -(10.0/13.0) && tears < 0){
+            delay = (11 - 4*Math.sqrt(1.3*tears+1) - 4*tears);
+        }else if(tears >= 0 && tears < (165.0/104.0)){
+            delay = (11 - 4*Math.sqrt(1.3*tears+1));
+        }else{
+            delay =  4;
+        }
+        delay -= getTearsCorrection(player);
+
+        GetShotDelayEvent event = new GetShotDelayEvent(player, delay);
+        MinecraftForge.EVENT_BUS.post(event);
+
+        if (!event.isCanceled()){
+            delay = event.getDelay();
+        }
+
+        return Math.max(delay, 0);
+    }
+
+    public static Vec3 rotateAroundAxis(Vec3 v, Vec3 axis, double radians) {
         axis = axis.normalize();
         double cos = Math.cos(radians);
         double sin = Math.sin(radians);

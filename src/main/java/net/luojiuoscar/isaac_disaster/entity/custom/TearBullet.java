@@ -9,9 +9,9 @@ import net.luojiuoscar.isaac_disaster.event.custom.attack.tear_bullet.TearBullet
 import net.luojiuoscar.isaac_disaster.event.custom.attack.tear_bullet.TearBulletShootEvent;
 import net.luojiuoscar.isaac_disaster.event.custom.attack.tear_bullet.TearBulletTickEvent;
 import net.luojiuoscar.isaac_disaster.helper.EntityHelper;
-import net.luojiuoscar.isaac_disaster.manager.attack.ModAttackType;
-import net.luojiuoscar.isaac_disaster.manager.attack.IAttackType;
-import net.luojiuoscar.isaac_disaster.manager.attack.IBulletObject;
+import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackType;
+import net.luojiuoscar.isaac_disaster.registries.attack_type.IBulletObject;
+import net.luojiuoscar.isaac_disaster.registries.attack_type.ModAttackType;
 import net.luojiuoscar.isaac_disaster.registries.trajectory.IAttackTrajectory;
 import net.luojiuoscar.isaac_disaster.registries.trajectory.ModAttackTrajectory;
 import net.luojiuoscar.isaac_disaster.registries.trajectory.TrajectoryContext;
@@ -55,13 +55,13 @@ import java.util.*;
 public class TearBullet extends Entity implements IBulletObject {
 
     // ======== 基础属性 ========
-    private int lifeTick;
-    private int totalLifeTick;
-    private float damage;
-    private UUID ownerUUID;
-    private LivingEntity cachedOwner;
-    private double yRotAngle;
-    private double xRotAngle;
+    protected int lifeTick;
+    protected int totalLifeTick;
+    protected float damage;
+    protected UUID ownerUUID;
+    protected LivingEntity cachedOwner;
+    protected double yRotAngle;
+    protected double xRotAngle;
 
     // ======== 特性 ========
     public boolean isSpectral = false;
@@ -69,31 +69,31 @@ public class TearBullet extends Entity implements IBulletObject {
     public boolean isHoming = false;
     public boolean isControllable = false;
 
-    public static final double HOMING_RANGE = 4.0;
-    public static final double HOMING_SPEED = 1.0;
-    public static final double HOMING_STEER = 0.6;
+    protected double homingRange = 4.0;
+    protected double homingSpeed = 1.0;
+    protected double homingSteer = 0.6;
 
-    public static final double CONTROL_RANGE = 64.0;
-    public static final double CONTROL_STEER = 0.8;
+    protected double controlRange = 64.0;
+    protected double controlSteer = 0.8;
 
     // ======== 状态 ========
-    private final Set<UUID> damagedEntities = new HashSet<>();
-    private final TriggerModuleQueue triggerModules = new TriggerModuleQueue();
+    protected final Set<UUID> damagedEntities = new HashSet<>();
+    protected final TriggerModuleQueue triggerModules = new TriggerModuleQueue();
 
     // ======== 客户端同步属性 ========
-    private static final EntityDataAccessor<Float> SCALE =
+    protected static final EntityDataAccessor<Float> SCALE =
             SynchedEntityData.defineId(TearBullet.class, EntityDataSerializers.FLOAT);
-    private static final EntityDataAccessor<Integer> COLOR =
+    protected static final EntityDataAccessor<Integer> COLOR =
             SynchedEntityData.defineId(TearBullet.class, EntityDataSerializers.INT);
-    private static final EntityDataAccessor<Float> ALPHA =
+    protected static final EntityDataAccessor<Float> ALPHA =
             SynchedEntityData.defineId(TearBullet.class, EntityDataSerializers.FLOAT);
-    private static final EntityDataAccessor<Float> TRAVELED =
+    protected static final EntityDataAccessor<Float> TRAVELED =
             SynchedEntityData.defineId(TearBullet.class, EntityDataSerializers.FLOAT);
-    private static final EntityDataAccessor<Vector3f> VELOCITY =
+    protected static final EntityDataAccessor<Vector3f> VELOCITY =
             SynchedEntityData.defineId(TearBullet.class, EntityDataSerializers.VECTOR3);
-    private static final EntityDataAccessor<String> TRAJECTORIES =
+    protected static final EntityDataAccessor<String> TRAJECTORIES =
             SynchedEntityData.defineId(TearBullet.class, EntityDataSerializers.STRING);
-    private static final EntityDataAccessor<Boolean> IS_CURRENTLY_STEERING =
+    protected static final EntityDataAccessor<Boolean> IS_CURRENTLY_STEERING =
             SynchedEntityData.defineId(TearBullet.class, EntityDataSerializers.BOOLEAN);
 
     // ======== 构造函数 ========
@@ -108,7 +108,21 @@ public class TearBullet extends Entity implements IBulletObject {
     }
 
     public TearBullet(Level level, LivingEntity shooter, int lifeTick, double bulletSpeed, float scale, float damage, float xRot, float yRot) {
-        this(ModEntities.TEAR_BULLET.get(), level);
+        this(ModEntities.TEAR_BULLET.get(), level, shooter, lifeTick, bulletSpeed, scale, damage, xRot, yRot);
+    }
+
+    protected TearBullet(EntityType<? extends TearBullet> type,
+                         Level level,
+                         LivingEntity shooter,
+                         int lifeTick,
+                         double bulletSpeed,
+                         float scale,
+                         float damage,
+                         float xRot,
+                         float yRot) {
+
+        this(type, level);
+
         this.ownerUUID = shooter.getUUID();
         this.cachedOwner = shooter;
         this.lifeTick = lifeTick;
@@ -116,8 +130,11 @@ public class TearBullet extends Entity implements IBulletObject {
         this.damage = damage;
         this.yRotAngle = shooter.getYRot() - yRot;
         this.xRotAngle = shooter.getXRot() - xRot;
+
         setScale(scale);
+
         moveTo(shooter.getX(), shooter.getEyeY(), shooter.getZ(), yRot, xRot);
+
         Vec3 look = Vec3.directionFromRotation(xRot, yRot);
         setVelocity(look.scale(bulletSpeed));
 
@@ -157,9 +174,9 @@ public class TearBullet extends Entity implements IBulletObject {
 
                 // ---- 应用旋转到方向 ----
                 Vec3 up = new Vec3(0, 1, 0);
-                baseDir = IAttackType.rotateAroundAxis(baseDir, up, result.yRot());
+                baseDir = AttackType.rotateAroundAxis(baseDir, up, result.yRot());
                 Vec3 right = baseDir.cross(up).normalize();
-                baseDir = IAttackType.rotateAroundAxis(baseDir, right, result.xRot());
+                baseDir = AttackType.rotateAroundAxis(baseDir, right, result.xRot());
 
                 // ---- 将旋转后的方向应用到速度 ----
                 Vec3 newVelocity = baseDir.scale(speed).add(result.velocityOffset());
@@ -197,7 +214,7 @@ public class TearBullet extends Entity implements IBulletObject {
 
 
     // ======== 碰撞与追踪 ========
-    private boolean handleBlockCollision(Vec3 start, Vec3 end) {
+    protected boolean handleBlockCollision(Vec3 start, Vec3 end) {
         if (isSpectral) return false;
 
         BlockHitResult blockHit = level().clip(
@@ -222,26 +239,26 @@ public class TearBullet extends Entity implements IBulletObject {
         return true;
     }
 
-    private boolean handleSteering() {
+    protected boolean handleSteering() {
         LivingEntity owner = getOwner();
         LivingEntity target = isHoming ? getTrackingTarget() : null;
 
         if (target == null && isControllable && owner != null) {
-            Vec3 targetPos = owner.getEyePosition().add(Vec3.directionFromRotation(owner.getXRot(), owner.getYRot()).scale(CONTROL_RANGE));
-            steerTowards(targetPos, CONTROL_STEER, true);
+            Vec3 targetPos = owner.getEyePosition().add(Vec3.directionFromRotation(owner.getXRot(), owner.getYRot()).scale(getControlRange()));
+            steerTowards(targetPos, getControlSteer(), true);
             return true;
         }
 
         if (target != null) {
-            steerTowards(target, HOMING_STEER);
-            if (getVelocity().length() < HOMING_SPEED) setVelocity(getVelocity().normalize().scale(HOMING_SPEED));
+            steerTowards(target, getHomingSteer());
+            if (getVelocity().length() < getHomingSpeed()) setVelocity(getVelocity().normalize().scale(getHomingSpeed()));
             return true;
         }
         return false;
     }
 
-    private void handleEntityCollision(Vec3 start, Vec3 end, Vec3 motion) {
-        AABB box = getBoundingBox().expandTowards(motion).inflate(getScale() * 0.5);
+    protected void handleEntityCollision(Vec3 start, Vec3 end, Vec3 motion) {
+        AABB box = getAABB(motion);
         EntityHitResult entityHit = ProjectileUtil.getEntityHitResult(level(), this, start, end, box,
                 e -> e.isAlive() && e != this && e != getOwner());
 
@@ -260,7 +277,10 @@ public class TearBullet extends Entity implements IBulletObject {
 
         double damageValue = beforeEvent.getDamage();
 
-        makeDamage(living, (float) damageValue);
+        boolean success = makeDamage(living, (float) damageValue);
+        if (!success){
+            return;
+        }
 
         IsaacAttackAfterHitEvent event = new IsaacAttackAfterHitEvent(
                 this, getOwner(), ModAttackType.BULLET.getId(), triggerModules, entityHit, damageValue, living.getHealth());
@@ -271,10 +291,11 @@ public class TearBullet extends Entity implements IBulletObject {
         }
     }
 
-    public LivingEntity getTrackingTarget() {
-        LivingEntity owner = getOwner();
-        if (!(owner instanceof LivingEntity)) return null;
+    protected AABB getAABB(Vec3 motion){
+        return getBoundingBox().expandTowards(motion).inflate(getScale() * 0.5);
+    }
 
+    public LivingEntity getTrackingTarget() {
         Vec3 bulletPos = this.position();
         Vec3 forwardPos = bulletPos.add(getVelocity().normalize().scale(3.0));
 
@@ -282,7 +303,7 @@ public class TearBullet extends Entity implements IBulletObject {
                 level(),
                 getOwner(),
                 forwardPos,
-                HOMING_RANGE,
+                getHomingRange(),
                 e -> !damagedEntities.contains(e.getUUID())
         );
     }
@@ -308,13 +329,14 @@ public class TearBullet extends Entity implements IBulletObject {
     }
 
     // ======== DamageSource ========
-    private void makeDamage(LivingEntity victim, float damage){
+    protected boolean makeDamage(LivingEntity victim, float damage){
         victim.invulnerableTime = 0;
         victim.hurt(getDamageSource(), damage);
         damagedEntities.add(victim.getUUID());
+        return true;
     }
 
-    private DamageSource getDamageSource() {
+    protected DamageSource getDamageSource() {
         if (!(level() instanceof ServerLevel serverLevel)) return this.damageSources().generic();
 
         var damageTypeHolder = serverLevel.registryAccess()
@@ -449,6 +471,26 @@ public class TearBullet extends Entity implements IBulletObject {
     @Override
     public Vec3 getPosition() {
         return this.position();
+    }
+
+    public double getHomingRange() {
+        return homingRange;
+    }
+
+    public double getHomingSpeed() {
+        return homingSpeed;
+    }
+
+    public double getHomingSteer() {
+        return homingSteer;
+    }
+
+    public double getControlRange() {
+        return controlRange;
+    }
+
+    public double getControlSteer() {
+        return controlSteer;
     }
 
     public boolean isCurrentlySteering() { return this.entityData.get(IS_CURRENTLY_STEERING); }

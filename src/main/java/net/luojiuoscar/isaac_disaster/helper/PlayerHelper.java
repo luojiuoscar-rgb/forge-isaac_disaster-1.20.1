@@ -6,6 +6,7 @@ import net.luojiuoscar.isaac_disaster.block.ModBlocks;
 import net.luojiuoscar.isaac_disaster.block.block_entity.PedestalBlockEntity;
 import net.luojiuoscar.isaac_disaster.capability.player.*;
 import net.luojiuoscar.isaac_disaster.entity.tnt.IsaacBomb;
+import net.luojiuoscar.isaac_disaster.event.custom.attack.GetAttackContextEvent;
 import net.luojiuoscar.isaac_disaster.event.custom.misc.GetShotDelayEvent;
 import net.luojiuoscar.isaac_disaster.item.ModItems;
 import net.luojiuoscar.isaac_disaster.item.item.ActiveItem;
@@ -13,6 +14,8 @@ import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.manager.data.BlockData;
 import net.luojiuoscar.isaac_disaster.manager.item_managers.id.ItemId;
 import net.luojiuoscar.isaac_disaster.manager.item_managers.id.TrinketId;
+import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackContext;
+import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerModuleQueue;
 import net.luojiuoscar.isaac_disaster.sound.ModSounds;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
@@ -686,6 +689,22 @@ public class PlayerHelper {
                 || source.is(DamageTypes.MOB_ATTACK_NO_AGGRO);
     }
 
+    public static AttackContext getAttackContext(ServerPlayer player) {
+        return player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY)
+                .map(playerAbility -> {
+                    ResourceLocation colorRl = playerAbility.getBestBulletColor();
+                    Map<ResourceLocation, Integer> trajectories = playerAbility.getTrajectories();
+
+                    AttackContext context =
+                            new AttackContext(colorRl, new TriggerModuleQueue(), trajectories);
+
+                    GetAttackContextEvent event = new GetAttackContextEvent(player, context);
+                    MinecraftForge.EVENT_BUS.post(event);
+
+                    return event.getContext();
+                })
+                .orElse(new AttackContext());
+    }
 
 }
 

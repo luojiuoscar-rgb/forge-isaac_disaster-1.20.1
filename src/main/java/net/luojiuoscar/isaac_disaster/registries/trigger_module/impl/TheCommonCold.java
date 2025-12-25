@@ -1,8 +1,8 @@
 package net.luojiuoscar.isaac_disaster.registries.trigger_module.impl;
 
 import net.luojiuoscar.isaac_disaster.effect.ModEffects;
+import net.luojiuoscar.isaac_disaster.event.custom.attack.GetAttackContextEvent;
 import net.luojiuoscar.isaac_disaster.event.custom.attack.IsaacAttackBeforeHitEntityEvent;
-import net.luojiuoscar.isaac_disaster.event.custom.attack.PlayerPerformAttackEvent;
 import net.luojiuoscar.isaac_disaster.registries.bullet_color.ModBulletColor;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.ITriggerModule;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerModule;
@@ -19,14 +19,14 @@ public class TheCommonCold implements ITriggerModule {
     @Override
     public Set<TriggerCategory> getTriggerType() {
         return Set.of(
-                TriggerCategory.ON_SHOOT,
+                TriggerCategory.GET_ATTACK_CONTEXT,
                 TriggerCategory.HIT_ENTITY,
                 TriggerCategory.BULLET_HIT_ENTITY_BEFORE
         );
     }
 
     @Override
-    public void onShoot(PlayerPerformAttackEvent event, int stacks, TriggerModuleQueue queue) {
+    public void getAttackContext(GetAttackContextEvent event, int stacks, TriggerModuleQueue queue) {
         Player player = event.getPlayer();
 
         if (player.getRandom().nextDouble() < getTriggerChance(player)) {

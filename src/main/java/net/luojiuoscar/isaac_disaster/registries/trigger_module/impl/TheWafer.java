@@ -2,6 +2,7 @@ package net.luojiuoscar.isaac_disaster.registries.trigger_module.impl;
 
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.ITriggerModule;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerCategory;
+import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerModulePriority;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerModuleQueue;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 
@@ -20,6 +21,6 @@ public class TheWafer implements ITriggerModule {
 
     @Override
     public double getPriority(){
-        return -1;
+        return TriggerModulePriority.LOWEST.priority;
     }
 }

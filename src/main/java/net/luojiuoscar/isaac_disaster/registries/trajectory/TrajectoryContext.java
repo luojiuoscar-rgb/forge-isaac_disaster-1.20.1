@@ -1,6 +1,6 @@
 package net.luojiuoscar.isaac_disaster.registries.trajectory;
 
-import net.luojiuoscar.isaac_disaster.manager.attack.IBulletObject;
+import net.luojiuoscar.isaac_disaster.registries.attack_type.IBulletObject;
 
 // ================================
 // 轨迹上下文

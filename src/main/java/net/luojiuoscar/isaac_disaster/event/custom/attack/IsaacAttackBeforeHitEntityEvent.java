@@ -1,7 +1,8 @@
 package net.luojiuoscar.isaac_disaster.event.custom.attack;
 
-import net.luojiuoscar.isaac_disaster.manager.attack.IBulletObject;
+import net.luojiuoscar.isaac_disaster.registries.attack_type.IBulletObject;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerModuleQueue;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraftforge.eventbus.api.Cancelable;
@@ -11,7 +12,7 @@ public class IsaacAttackBeforeHitEntityEvent extends IsaacAttackEvent {
     private final EntityHitResult hit;
     private double damage;
 
-    public IsaacAttackBeforeHitEntityEvent(IBulletObject bulletObject, Entity source, int attackType, TriggerModuleQueue triggerModules,
+    public IsaacAttackBeforeHitEntityEvent(IBulletObject bulletObject, Entity source, ResourceLocation attackType, TriggerModuleQueue triggerModules,
                                            EntityHitResult hit, float damage) {
         super(bulletObject, source, attackType, triggerModules);
         this.hit = hit;

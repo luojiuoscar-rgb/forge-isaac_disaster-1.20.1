@@ -13,8 +13,13 @@ import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.helper.ScheduledFuncHelper;
 import net.luojiuoscar.isaac_disaster.item.item.ActiveItem;
 import net.luojiuoscar.isaac_disaster.item.pickup.special.IsaacHead;
-import net.luojiuoscar.isaac_disaster.manager.attack.AttackManager;
 import net.luojiuoscar.isaac_disaster.manager.item_managers.id.ItemId;
+import net.luojiuoscar.isaac_disaster.networking.ModMessages;
+import net.luojiuoscar.isaac_disaster.networking.packet.ChargeBarUpdateS2CPacket;
+import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackContext;
+import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackType;
+import net.luojiuoscar.isaac_disaster.registries.attack_type.IChargeableAttack;
+import net.luojiuoscar.isaac_disaster.registries.attack_type.ModAttackType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
@@ -77,17 +82,22 @@ public class ServerTickEvent {
         for (ServerPlayer player : server.getPlayerList().getPlayers()){
             player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY).ifPresent(
                     playerAbility -> {
-                        if (playerAbility.isHoldRightClick()){
+                        if (playerAbility.isHoldingRightClick()){
                             // right click effect
                             if (player.getMainHandItem().getItem() instanceof IsaacHead){
-                                holdRightClick(player, player.getMainHandItem());
+                                holdingRightClick(player, player.getMainHandItem());
+
                             }else if(player.getOffhandItem().getItem() instanceof IsaacHead){
-                                holdRightClick(player, player.getOffhandItem());
+                                holdingRightClick(player, player.getOffhandItem());
                             }
                         }
 
                         // recursive modules
                         recursiveModuleTick(player);
+
+                        if (tickCounter % 3 == 0){
+                            updateClientCharge(player);
+                        }
                     });
         }
 
@@ -151,6 +161,26 @@ public class ServerTickEvent {
         }
     }
 
+    private static void updateClientCharge(ServerPlayer player){
+        player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY).ifPresent(
+                playerAbility -> {
+                    float maxCharge = 1f;
+                    if (playerAbility.getCachedAttackType() instanceof IChargeableAttack attack) {
+                        maxCharge = attack.getTargetValue(player);
+                        if (maxCharge <= 0) maxCharge = 1f;
+                    }
+
+                    float progress = playerAbility.getChargeAmount() / maxCharge;
+                    progress = Math.min(progress, 1f);
+
+                    if (playerAbility.getChargeAmount() != playerAbility.getPreChargeAmount()){
+                        playerAbility.setPreChargeAmount(playerAbility.getChargeAmount());
+                        ModMessages.sentToPlayer(new ChargeBarUpdateS2CPacket(progress), player);
+                    }
+                }
+        );
+    }
+
     private static void recursiveModuleTick(ServerPlayer player){
         player.getCapability(EffectModulesProvider.EFFECT_MODULES).ifPresent(
                 playerPassiveItem -> playerPassiveItem.getRecursiveModuleQueue().tickAll(player)
@@ -179,15 +209,30 @@ public class ServerTickEvent {
         }
     }
 
-    private static void holdRightClick(ServerPlayer player, ItemStack stack){
+    private static void holdingRightClick(ServerPlayer player, ItemStack stack){
+
+        AttackType attack = player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY)
+                .map(playerAbility -> {
+                    AttackType attackType = playerAbility.getCachedAttackType();
+                    return attackType != null ? attackType : ModAttackType.BULLET.get();
+                })
+                .orElse(ModAttackType.BULLET.get());
+
+        AttackContext context = PlayerHelper.getAttackContext(player);
+        // tick method
+        attack.onTick(player, context);
+
         // 若在冷却 or 有无泪症
         if (player.getCooldowns().isOnCooldown(stack.getItem()) ||
                 player.hasEffect(ModEffects.LACRIMAL_HYPOSECRETION.get())) return;
 
-        AttackManager.getInstance().playerPerformAttack(player);
+        // perform attack
+        if (!(attack instanceof IChargeableAttack)){
+            attack.performAttack(player, context);
+            attack.makeSound(player);
 
-        // 射击延迟
-        player.getCooldowns().addCooldown(stack.getItem(), (int) PlayerHelper.getShotDelay(player));
+            // 射击延迟
+            player.getCooldowns().addCooldown(stack.getItem(), (int) PlayerHelper.getShotDelay(player));
+        }
     }
-
 }

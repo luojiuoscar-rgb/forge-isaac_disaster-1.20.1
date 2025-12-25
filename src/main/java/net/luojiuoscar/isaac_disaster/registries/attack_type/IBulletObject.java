@@ -1,4 +1,4 @@
-package net.luojiuoscar.isaac_disaster.manager.attack;
+package net.luojiuoscar.isaac_disaster.registries.attack_type;
 
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerModuleQueue;
 import net.minecraft.world.entity.LivingEntity;

@@ -50,7 +50,6 @@ public class ClientForgeEvents {
                 return;
             }
 
-
             if (event.getAction() == 1) { // 按下
                 ModMessages.sendToServer(new SetRightClickC2SPacket(true));
             } else if (event.getAction() == 0) { // 松开
@@ -61,8 +60,6 @@ public class ClientForgeEvents {
 
     @SubscribeEvent
     public static void onKeyInput(InputEvent.Key event) {
-        Minecraft mc = Minecraft.getInstance();
-
         if (ModKeyMappings.OPEN_ISAAC_ITEM_SCREEN.isDown()) {
             ModMessages.sendToServer(new OpenIsaacItemScreenC2SPacket());
         }
