@@ -5,17 +5,16 @@ import net.luojiuoscar.isaac_disaster.event.custom.attack.tear_bullet.TearBullet
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackContext;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackType;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.ModAttackType;
-import net.luojiuoscar.isaac_disaster.registries.bullet_color.BulletColor;
-import net.luojiuoscar.isaac_disaster.registries.bullet_color.ModBulletColor;
 import net.luojiuoscar.isaac_disaster.sound.ModSounds;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.registries.IForgeRegistry;
-import net.minecraftforge.registries.RegistryManager;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class BulletAttack extends AttackType {
     public BulletAttack(double priority) {
@@ -25,6 +24,41 @@ public class BulletAttack extends AttackType {
     @Override
     public ResourceLocation getId() {
         return ModAttackType.BULLET.getId();
+    }
+
+    @Override
+    public List<AttackContext> getAttackContexts(ServerPlayer player, int bulletCount) {
+        AttackContext ctx = getOneAttackContext(player, player);
+
+        List<AttackContext> contexts = new ArrayList<>();
+        if (ctx == null) return contexts;
+
+        if (bulletCount == 2) {
+            Vec3 look = player.getLookAngle();
+            Vec3 right = look.cross(new Vec3(0, 1, 0)).normalize();
+
+            AttackContext c = ctx.copy();
+            c.setPos(ctx.getPos().add(right.scale(0.25)));
+            contexts.add(c);
+
+            c = ctx.copy();
+            c.setPos(ctx.getPos().add(right.scale(-0.25)));
+            contexts.add(c);
+
+        } else {
+            float angleInterval = Math.max(11 - bulletCount, 5) * 2;
+            float curAngle = -angleInterval * (bulletCount - 1) / 2.0f;
+
+            for (int i = 0; i < bulletCount; i++) {
+                AttackContext c = ctx.copy();
+                c.setYRot(ctx.getYRot() + curAngle);
+                contexts.add(c);
+
+                curAngle += angleInterval;
+            }
+        }
+
+        return contexts;
     }
 
     @Override
@@ -39,94 +73,64 @@ public class BulletAttack extends AttackType {
         );
     }
 
-    public void performAttack(LivingEntity entity, AttackContext context) {
-        int count = entity instanceof Player player ? getBulletCount(player) : 1;
-
-        if (count <= 1) {
-            shotBullet(entity, context, entity.getXRot(), entity.getYRot());
-        } else if (count == 2) {
-            shot2Bullet(entity, context);
-        } else {
-            float angleInterval = Math.max(11 - count, 5) * 2;
-            float curAngle = -angleInterval * (count - 1) / 2.0f;
-
-            for (int i = 0; i < count; i++) {
-                shotBullet(entity, context, entity.getXRot(), entity.getYRot() + curAngle);
-                curAngle += angleInterval;
-            }
+    public void performAttack(List<AttackContext> ctxList) {
+        for (AttackContext c : ctxList){
+            shoot(c);
         }
     }
 
     // =================== 子弹发射 ===================
     @Override
-    public void handleShoot(LivingEntity shooter, AttackContext context, Vec3 offset, float xRot, float yRot) {
-        if (shooter.level().isClientSide()) return;
+    public void shoot(AttackContext ctx) {
+        if (ctx.getOwner().level().isClientSide()) return;
 
-        Vec3 eyePos = shooter.getEyePosition().add(0, shooter.getBbHeight() * -0.15, 0);
-        Vec3 spawnPos = eyePos.add(offset);
-
-        TearBullet bullet = createBullet(shooter, spawnPos, xRot, yRot, context);
-        shooter.level().addFreshEntity(bullet);
+        TearBullet bullet = createBullet(ctx);
+        ctx.getOwner().level().addFreshEntity(bullet);
     }
 
-    protected void shotBullet(LivingEntity entity, AttackContext context, float xRot, float yRot) {
-        shoot(entity, context, Vec3.ZERO, xRot, yRot);
-    }
-
-    protected void shot2Bullet(LivingEntity entity, AttackContext context) {
-        Vec3 look = entity.getLookAngle();
-        Vec3 right = look.cross(new Vec3(0, 1, 0)).normalize();
-
-        shoot(entity, context, right.scale(0.25), entity.getXRot(), entity.getYRot());
-        shoot(entity, context, right.scale(-0.25), entity.getXRot(), entity.getYRot());
-    }
-
-    protected TearBullet createBullet(LivingEntity shooter, Vec3 spawnPos, float xRot, float yRot, AttackContext context) {
-        double width = shooter.getBbWidth();
+    protected TearBullet createBullet(AttackContext context) {
+        LivingEntity owner = context.getOwner();
+        double width = owner.getBbWidth();
         double forwardOffset = 0.4 * (width / 0.6);
-        Vec3 look = Vec3.directionFromRotation(xRot, yRot);
-        Vec3 adjustedPos = spawnPos.add(look.scale(forwardOffset));
+        Vec3 look = Vec3.directionFromRotation(context.getXRot(), context.getYRot());
+        Vec3 adjustedPos = context.getPos().add(look.scale(forwardOffset));
 
-        TearBullet bullet = getBulletObject(shooter, xRot, yRot);
+        TearBullet bullet = getBulletObject(context);
 
-        bullet.setSpectral(isSpectral(shooter));
-        bullet.setPiercing(isPiercing(shooter));
-        bullet.setHoming(isHoming(shooter));
-        bullet.setControllable(isControllable(shooter));
+        bullet.setSpectral(isSpectral(owner));
+        bullet.setPiercing(isPiercing(owner));
+        bullet.setHoming(isHoming(owner));
+        bullet.setControllable(isControllable(owner));
 
         bullet.setTriggerModules(context.getTriggerModuleQueue());
         bullet.setTrajectories(context.trajectories);
 
-        // 从registry获取
-        IForgeRegistry<BulletColor> registry = RegistryManager.ACTIVE.getRegistry(ModBulletColor.BULLET_COLOR_KEY);
+        bullet.setBulletColor(context.colorRl);
 
-        BulletColor c = registry != null ? registry.getValue(context.colorRl) : ModBulletColor.BASE.get();
-        c = c == null ? ModBulletColor.BASE.get() : c;
+        bullet.moveTo(adjustedPos.x, adjustedPos.y, adjustedPos.z, context.getYRot(), context.getXRot());
+        bullet.setDeltaMovement(look.scale(getBulletSpeed(owner)));
 
-        bullet.setColor(c.color());
-        bullet.setAlpha(c.alpha());
-
-
-        bullet.moveTo(adjustedPos.x, adjustedPos.y, adjustedPos.z, yRot, xRot);
-        bullet.setDeltaMovement(look.scale(getBulletSpeed(shooter)));
-
-        if (!shooter.level().isClientSide)
+        if (!owner.level().isClientSide)
             MinecraftForge.EVENT_BUS.post(
                     new TearBulletShootEvent(bullet, bullet.getOwner(), getId(), context.getTriggerModuleQueue(), bullet));
 
         return bullet;
     }
 
-    public TearBullet getBulletObject(LivingEntity shooter, float xRot, float yRot){
+    public TearBullet getBulletObject(AttackContext c){
+        LivingEntity owner = c.getOwner();
+
         return new TearBullet(
-                shooter.level(),
-                shooter,
-                getBulletLiftTime(shooter),
-                getBulletSpeed(shooter),
-                getBulletScale(shooter),
-                getDamage(shooter),
-                xRot,
-                yRot
+                owner.level(),
+                c.getOwner(),
+                c.getShooter(),
+                getBulletLiftTime(owner),
+                getBulletSpeed(owner),
+                getBulletScale(owner),
+                getDamage(owner),
+                c.getXRot(),
+                c.getYRot(),
+                c.getPos()
         );
     }
 

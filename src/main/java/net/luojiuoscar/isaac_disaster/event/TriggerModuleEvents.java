@@ -3,6 +3,7 @@ package net.luojiuoscar.isaac_disaster.event;
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.capability.entity.EffectModulesProvider;
 import net.luojiuoscar.isaac_disaster.event.custom.attack.*;
+import net.luojiuoscar.isaac_disaster.event.custom.attack.tear_bullet.BulletTickEvent;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.IBulletObject;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.ITriggerModule;
@@ -26,13 +27,13 @@ public class TriggerModuleEvents {
 
     @SubscribeEvent
     public static void getAttackContext(GetAttackContextEvent event) {
-        Player player = event.getPlayer();
+        LivingEntity entity = event.getPlayer();
         IForgeRegistry<ITriggerModule> reg =
                 RegistryManager.ACTIVE.getRegistry(ModTriggerModule.TRIGGER_MODULE_KEY);
 
-        player.getCapability(EffectModulesProvider.EFFECT_MODULES).ifPresent(triggerModule -> {
+        entity.getCapability(EffectModulesProvider.EFFECT_MODULES).ifPresent(triggerModule -> {
 
-            var queue = triggerModule.getTriggerModules().getCopy();
+            var queue = triggerModule.getTriggerModules().copy();
 
             for (int i = 0; i < queue.getQueue().size(); i++) {
                 TriggerModuleInstance inst = queue.getQueue().get(i);
@@ -49,6 +50,30 @@ public class TriggerModuleEvents {
     }
 
     @SubscribeEvent
+    public static void beforePerformAttack(BeforePerformAttackEvent event) {
+        LivingEntity entity = event.getEntity();
+        IForgeRegistry<ITriggerModule> reg =
+                RegistryManager.ACTIVE.getRegistry(ModTriggerModule.TRIGGER_MODULE_KEY);
+
+        entity.getCapability(EffectModulesProvider.EFFECT_MODULES).ifPresent(triggerModule -> {
+
+            var queue = triggerModule.getTriggerModules().copy();
+
+            for (int i = 0; i < queue.getQueue().size(); i++) {
+                TriggerModuleInstance inst = queue.getQueue().get(i);
+                ITriggerModule val = reg.getValue(inst.id);
+                if (val == null) continue;
+
+                Set<TriggerCategory> types = val.getTriggerType();
+
+                if (types.contains(TriggerCategory.BEFORE_PERFORM_ATTACK)) {
+                    val.beforePerformAttack(event, inst.stacks, queue);
+                }
+            }
+        });
+    }
+
+    @SubscribeEvent
     public static void onHitEntity(LivingAttackEvent event) {
         // restricted damage types
         if (!PlayerHelper.isHitAllowedType(event.getSource())) return;
@@ -59,7 +84,7 @@ public class TriggerModuleEvents {
 
         entity.getCapability(EffectModulesProvider.EFFECT_MODULES).ifPresent(
                 triggerModule -> {
-                    var queue = triggerModule.getTriggerModules().getCopy();
+                    var queue = triggerModule.getTriggerModules().copy();
 
                     for (var inst : queue.getQueue()){
                         ITriggerModule val = reg.getValue(inst.id);
@@ -80,7 +105,7 @@ public class TriggerModuleEvents {
                 RegistryManager.ACTIVE.getRegistry(ModTriggerModule.TRIGGER_MODULE_KEY);
 
         IBulletObject bulletObject = event.getBulletObject();
-        var queue = bulletObject.getTriggerModules().getCopy();
+        var queue = bulletObject.getTriggerModules().copy();
 
         for (var inst : queue.getQueue()){
             ITriggerModule val = reg.getValue(inst.id);
@@ -99,7 +124,7 @@ public class TriggerModuleEvents {
                 RegistryManager.ACTIVE.getRegistry(ModTriggerModule.TRIGGER_MODULE_KEY);
 
         IBulletObject bulletObject = event.getBulletObject();
-        var queue = bulletObject.getTriggerModules().getCopy();
+        var queue = bulletObject.getTriggerModules().copy();
 
         for (var inst : queue.getQueue()){
             ITriggerModule val = reg.getValue(inst.id);
@@ -118,7 +143,7 @@ public class TriggerModuleEvents {
                 RegistryManager.ACTIVE.getRegistry(ModTriggerModule.TRIGGER_MODULE_KEY);
 
         IBulletObject bulletObject = event.getBulletObject();
-        var queue = bulletObject.getTriggerModules().getCopy();
+        var queue = bulletObject.getTriggerModules().copy();
 
         for (var inst : queue.getQueue()){
             ITriggerModule val = reg.getValue(inst.id);
@@ -139,7 +164,7 @@ public class TriggerModuleEvents {
 
         player.getCapability(EffectModulesProvider.EFFECT_MODULES).ifPresent(
                 triggerModule -> {
-                    var queue = triggerModule.getTriggerModules().getCopy();
+                    var queue = triggerModule.getTriggerModules().copy();
 
                     for (var inst : queue.getQueue()){
                         ITriggerModule val = reg.getValue(inst.id);
@@ -174,7 +199,7 @@ public class TriggerModuleEvents {
         player.getCapability(EffectModulesProvider.EFFECT_MODULES).ifPresent(
                 triggerModule -> {
 
-                    var queue = triggerModule.getTriggerModules().getCopy();
+                    var queue = triggerModule.getTriggerModules().copy();
 
                     for (var inst : queue.getQueue()){
                         ITriggerModule val = reg.getValue(inst.id);
@@ -183,6 +208,32 @@ public class TriggerModuleEvents {
 
                         if (types.contains(TriggerCategory.HIT_ENTITY)){
                             val.onBlockBreak(event, inst.stacks, queue);
+                        }
+                    }
+                }
+        );
+    }
+
+    @SubscribeEvent
+    public static void onBulletTick(BulletTickEvent event) {
+        IBulletObject bullet = event.getBullet();
+        if (!(bullet.getOwner() instanceof Player player)) return;
+
+        IForgeRegistry<ITriggerModule> reg  =
+                RegistryManager.ACTIVE.getRegistry(ModTriggerModule.TRIGGER_MODULE_KEY);
+
+        player.getCapability(EffectModulesProvider.EFFECT_MODULES).ifPresent(
+                triggerModule -> {
+
+                    var queue = triggerModule.getTriggerModules().copy();
+
+                    for (var inst : queue.getQueue()){
+                        ITriggerModule val = reg.getValue(inst.id);
+                        if (val == null) continue;
+                        Set<TriggerCategory> types = val.getTriggerType();
+
+                        if (types.contains(TriggerCategory.BULLET_TICK)){
+                            val.onTick(event, inst.stacks, queue);
                         }
                     }
                 }

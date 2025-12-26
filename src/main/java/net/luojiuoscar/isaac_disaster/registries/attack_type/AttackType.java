@@ -3,19 +3,26 @@ package net.luojiuoscar.isaac_disaster.registries.attack_type;
 import net.luojiuoscar.isaac_disaster.attribute.ModAttributes;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerAbilityProvider;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerPassiveItemProvider;
-import net.luojiuoscar.isaac_disaster.event.custom.attack.BeforeCreateShootEvent;
+import net.luojiuoscar.isaac_disaster.event.custom.attack.GetAttackContextEvent;
 import net.luojiuoscar.isaac_disaster.event.custom.misc.GetShotDelayEvent;
 import net.luojiuoscar.isaac_disaster.event.custom.misc.IsaacGetBulletCountEvent;
 import net.luojiuoscar.isaac_disaster.manager.item_managers.id.ItemId;
+import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerModuleQueue;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.MinecraftForge;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.List;
+import java.util.Map;
 
 public abstract class AttackType {
     private final double priority;
@@ -29,27 +36,41 @@ public abstract class AttackType {
     }
 
     public abstract ResourceLocation getId();
-    public abstract void performAttack(LivingEntity entity, AttackContext context);
-    public abstract void makeSound(LivingEntity entity);
-    public abstract void handleShoot(LivingEntity shooter, AttackContext context, Vec3 offset, float xRot, float yRot);
-    public void onTick(Player player, AttackContext context){};
 
-    public void shoot(LivingEntity shooter, AttackContext context, Vec3 offset, float xRot, float yRot){
-        BeforeCreateShootEvent event = new BeforeCreateShootEvent(shooter, context, offset, xRot, yRot);
+    public List<AttackContext> getAttackContextsWithEvent(ServerPlayer player, int bulletCount){
+        List<AttackContext> contexts = getAttackContexts(player, bulletCount);
+
+        GetAttackContextEvent event = new GetAttackContextEvent(player, contexts, this);
         MinecraftForge.EVENT_BUS.post(event);
 
-        if (!event.isCanceled()) {
-            Vec3 usedOffset = event.getOffset();
-            float usedX = event.getXRot();
-            float usedY = event.getYRot();
+        return event.getContexts();
+    }
 
-            handleShoot(shooter, context, usedOffset, usedX, usedY);
-        }
+    public abstract List<AttackContext> getAttackContexts(ServerPlayer player, int bulletCount);
+    public abstract void performAttack(List<AttackContext> ctxList);
+    public abstract void makeSound(LivingEntity entity);
+    public abstract void shoot(AttackContext ctx);
+    public void onTick(ServerPlayer player){}
 
-        // 额外子弹
-        for (BeforeCreateShootEvent.ExtraShot extra : event.getExtraShots()) {
-            handleShoot(shooter, context, extra.offset(), extra.xRot(), extra.yRot());
-        }
+    @Nullable
+    public AttackContext getOneAttackContext(ServerPlayer player, Entity shooter) {
+        return player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY)
+                .map(playerAbility -> {
+                    ResourceLocation colorRl = playerAbility.getBestBulletColor();
+                    Map<ResourceLocation, Integer> trajectories = playerAbility.getTrajectories();
+                    Vec3 eyePos = player.getEyePosition().add(0, player.getBbHeight() * -0.15, 0);
+
+                    return new AttackContext(
+                            player,
+                            shooter,
+                            colorRl,
+                            new TriggerModuleQueue(),
+                            trajectories,
+                            eyePos,
+                            player.getXRot(),
+                            player.getYRot());
+                })
+                .orElse(new AttackContext());
     }
 
     // ============ 属性相关 =============
@@ -89,7 +110,7 @@ public abstract class AttackType {
         return false;
     }
 
-    protected int getBulletCount(Player player){
+    public int getBulletCount(Player player){
         AttributeInstance bulletCount = player.getAttribute(ModAttributes.BULLET_COUNT.get());
         int[] count = {bulletCount == null ? 1 : (int) bulletCount.getValue()};
 

@@ -7,6 +7,7 @@ import net.luojiuoscar.isaac_disaster.capability.entity.EffectModulesProvider;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerAbilityProvider;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerStatModifierProvider;
 import net.luojiuoscar.isaac_disaster.effect.ModEffects;
+import net.luojiuoscar.isaac_disaster.event.custom.attack.BeforePerformAttackEvent;
 import net.luojiuoscar.isaac_disaster.helper.EntityHelper;
 import net.luojiuoscar.isaac_disaster.helper.LevelHelper;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
@@ -16,7 +17,6 @@ import net.luojiuoscar.isaac_disaster.item.pickup.special.IsaacHead;
 import net.luojiuoscar.isaac_disaster.manager.item_managers.id.ItemId;
 import net.luojiuoscar.isaac_disaster.networking.ModMessages;
 import net.luojiuoscar.isaac_disaster.networking.packet.ChargeBarUpdateS2CPacket;
-import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackContext;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackType;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.IChargeableAttack;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.ModAttackType;
@@ -27,6 +27,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -218,9 +219,8 @@ public class ServerTickEvent {
                 })
                 .orElse(ModAttackType.BULLET.get());
 
-        AttackContext context = PlayerHelper.getAttackContext(player);
         // tick method
-        attack.onTick(player, context);
+        attack.onTick(player);
 
         // 若在冷却 or 有无泪症
         if (player.getCooldowns().isOnCooldown(stack.getItem()) ||
@@ -228,7 +228,12 @@ public class ServerTickEvent {
 
         // perform attack
         if (!(attack instanceof IChargeableAttack)){
-            attack.performAttack(player, context);
+
+            BeforePerformAttackEvent event = new BeforePerformAttackEvent(player, attack);
+            MinecraftForge.EVENT_BUS.post(event);
+            if (event.isCanceled()) return;
+
+            attack.performAttack(attack.getAttackContextsWithEvent(player, attack.getBulletCount(player)));
             attack.makeSound(player);
 
             // 射击延迟

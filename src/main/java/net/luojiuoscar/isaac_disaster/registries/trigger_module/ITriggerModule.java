@@ -1,6 +1,7 @@
 package net.luojiuoscar.isaac_disaster.registries.trigger_module;
 
 import net.luojiuoscar.isaac_disaster.event.custom.attack.*;
+import net.luojiuoscar.isaac_disaster.event.custom.attack.tear_bullet.BulletTickEvent;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -22,8 +23,11 @@ public interface ITriggerModule {
 
     default double getPriority() {return 0; }
 
-    /** 攻击上下文 */
+    /** 获取攻击上下文 */
     default void getAttackContext(GetAttackContextEvent event, int stacks, TriggerModuleQueue queue) {}
+
+    /** 攻击之前 */
+    default void beforePerformAttack(BeforePerformAttackEvent event, int stacks, TriggerModuleQueue queue) {}
 
     /** 子弹命中实体 - 前 */
     default void beforeBulletHitEntity(IsaacAttackBeforeHitEntityEvent event, int stacks, TriggerModuleQueue queue) {}
@@ -48,6 +52,9 @@ public interface ITriggerModule {
 
     /** 方块破坏 */
     default void onBlockBreak(BlockEvent.BreakEvent event, int stacks, TriggerModuleQueue queue) {}
+
+    /** 每tick触发，只有Bullet类子弹会触发 */
+    default void onTick(BulletTickEvent event, int stacks, TriggerModuleQueue queue){}
 
     /** 任意事件（扩展用） */
     default void onGeneric(Event event, int stacks, TriggerModuleQueue queue) {}

@@ -393,10 +393,12 @@
   "item.isaac_disaster.brimstone.lore.2": "激光束共造成13次伤害",
   "item.isaac_disaster.brimstone.lore.3": "每次造成60%面板伤害",
   "item.isaac_disaster.brimstone.synergy.technology.1": "每次造成的伤害增加1.5倍",
+  "item.isaac_disaster.brimstone.synergy.c_section.1": "同时发射4个胎儿子弹",
   "item.isaac_disaster.c_section": "剖腹产",
   "item.isaac_disaster.c_section.lore.1": "发射胎儿子弹",
   "item.isaac_disaster.c_section.lore.2": "胎儿子弹持续追踪敌人，具有较低弹速",
   "item.isaac_disaster.c_section.lore.3": "并且持续追踪敌人，每秒造成4次伤害",
+  "item.isaac_disaster.c_section.synergy.technology.1": "胎儿子弹持续发射激光",
 
   "item end": "",
 

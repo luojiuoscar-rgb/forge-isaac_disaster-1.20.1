@@ -1,25 +1,36 @@
 package net.luojiuoscar.isaac_disaster.event.custom.attack;
 
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackContext;
-import net.minecraft.world.entity.player.Player;
-import net.minecraftforge.eventbus.api.Cancelable;
+import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackType;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.eventbus.api.Event;
 
-@Cancelable
-public class GetAttackContextEvent extends Event {
-    private final Player player;
-    private final AttackContext attackContext;
+import java.util.List;
 
-    public GetAttackContextEvent(Player player, AttackContext attackContext) {
+public class GetAttackContextEvent extends Event {
+    private final ServerPlayer player;
+    private List<AttackContext> contexts;
+    private final AttackType attackType;
+
+    public GetAttackContextEvent(ServerPlayer player, List<AttackContext> contexts, AttackType attackType) {
         this.player = player;
-        this.attackContext = attackContext;
+        this.contexts = contexts;
+        this.attackType = attackType;
     }
 
-    public Player getPlayer() {
+    public ServerPlayer getPlayer() {
         return player;
     }
 
-    public AttackContext getContext() {
-        return attackContext;
+    public List<AttackContext> getContexts() {
+        return contexts;
+    }
+
+    public void setContexts(List<AttackContext> contexts) {
+        this.contexts = contexts;
+    }
+
+    public AttackType getAttackType() {
+        return attackType;
     }
 }

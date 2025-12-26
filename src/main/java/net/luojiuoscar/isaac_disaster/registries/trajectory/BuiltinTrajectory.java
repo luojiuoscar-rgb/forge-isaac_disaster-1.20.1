@@ -32,15 +32,13 @@ public final class BuiltinTrajectory {
 
         if (owner == null || bulletPos == null) return TrajectoryResult.ZERO;
 
-
-
         double targetRadius = 3.0 + ctx.amplifier;
         double angularSpeed = 0.35;
         double yAmplitude = 0.2;
         double yFrequency = 1.2;
 
-        Vec3 ownerCenter = owner.position().add(0, owner.getBbHeight() * 0.5, 0);
-        Vec3 rel = bulletPos.subtract(ownerCenter);
+        Vec3 orbitCenter = ctx.trajectoryPos;
+        Vec3 rel = bulletPos.subtract(orbitCenter);
 
         double currentR = Math.max(0.001, Math.sqrt(rel.x * rel.x + rel.z * rel.z));
         rel = rel.scale(targetRadius / currentR);
@@ -54,7 +52,7 @@ public final class BuiltinTrajectory {
                 Math.sin(nextAngle) * targetRadius
         );
 
-        Vec3 desiredPos = ownerCenter.add(desiredRel);
+        Vec3 desiredPos = orbitCenter.add(desiredRel);
 
         Vec3 desiredVel = desiredPos.subtract(bulletPos).normalize().scale(ctx.deltaDistance);
         Vec3 currentVel = ctx.bulletObject.getVelocity().scale(ctx.deltaDistance);

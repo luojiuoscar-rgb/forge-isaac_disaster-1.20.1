@@ -97,7 +97,7 @@ public class TriggerModuleQueue {
         return queue;
     }
 
-    public TriggerModuleQueue getCopy(){
+    public TriggerModuleQueue copy(){
         return new TriggerModuleQueue(queue);
     }
 

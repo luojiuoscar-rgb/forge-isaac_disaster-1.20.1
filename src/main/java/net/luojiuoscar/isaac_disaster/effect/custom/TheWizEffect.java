@@ -1,13 +1,15 @@
 package net.luojiuoscar.isaac_disaster.effect.custom;
 
 import net.luojiuoscar.isaac_disaster.effect.ModEffects;
-import net.luojiuoscar.isaac_disaster.event.custom.attack.BeforeCreateShootEvent;
+import net.luojiuoscar.isaac_disaster.event.custom.attack.GetAttackContextEvent;
+import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackContext;
+import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackType;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.phys.Vec3;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -21,22 +23,35 @@ public class TheWizEffect extends MobEffect {
         return Collections.emptyList();
     }
 
-    public static void onTriggered(BeforeCreateShootEvent event){
-        LivingEntity entity = event.getShooter();
-        int amplifier = entity.getEffect(ModEffects.THE_WIZ.get()).getAmplifier();
-        float xRot = event.getXRot();
-        float yRot = event.getYRot();
+    public static void onTriggered(GetAttackContextEvent event){
+        ServerPlayer player = event.getPlayer();
+
+        if (!player.hasEffect(ModEffects.THE_WIZ.get())) return;
+        int amplifier = player.getEffect(ModEffects.THE_WIZ.get()).getAmplifier();
+        int bulletCount = (event.getContexts().size() + 1) / 2;
+        AttackType attack = event.getAttackType();
 
         if (amplifier > 0){
-            event.addExtraShot(Vec3.ZERO, xRot, yRot - 45);
-            event.addExtraShot(Vec3.ZERO, xRot, yRot + 45);
+            List<AttackContext> newContexts = new ArrayList<>();
+            for (AttackContext context : attack.getAttackContexts(player, bulletCount)) {
+                context.setYRot(context.getYRot() - 45);
+                newContexts.add(context);
+            }
 
-        }else if (entity.getRandom().nextDouble() < 0.5){
-            event.addExtraShot(Vec3.ZERO, xRot, yRot - 45);
+            for (AttackContext context : attack.getAttackContexts(player, bulletCount)){
+                context.setYRot(context.getYRot() + 45);
+                newContexts.add(context);
+            }
+            event.setContexts(newContexts);
+
+        }else if (player.getRandom().nextDouble() < 0.5){
+            for (AttackContext context : event.getContexts()){
+                context.setYRot(context.getYRot() - 45);
+            }
         }else{
-            event.addExtraShot(Vec3.ZERO, xRot, yRot + 45);
+            for (AttackContext context : event.getContexts()){
+                context.setYRot(context.getYRot() + 45);
+            }
         }
-
-        event.setCanceled(true);
     }
 }

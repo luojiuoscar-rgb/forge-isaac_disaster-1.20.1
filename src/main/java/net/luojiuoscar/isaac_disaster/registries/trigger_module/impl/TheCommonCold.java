@@ -3,6 +3,7 @@ package net.luojiuoscar.isaac_disaster.registries.trigger_module.impl;
 import net.luojiuoscar.isaac_disaster.effect.ModEffects;
 import net.luojiuoscar.isaac_disaster.event.custom.attack.GetAttackContextEvent;
 import net.luojiuoscar.isaac_disaster.event.custom.attack.IsaacAttackBeforeHitEntityEvent;
+import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackContext;
 import net.luojiuoscar.isaac_disaster.registries.bullet_color.ModBulletColor;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.ITriggerModule;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerModule;
@@ -29,9 +30,11 @@ public class TheCommonCold implements ITriggerModule {
     public void getAttackContext(GetAttackContextEvent event, int stacks, TriggerModuleQueue queue) {
         Player player = event.getPlayer();
 
-        if (player.getRandom().nextDouble() < getTriggerChance(player)) {
-            event.getContext().colorRl = ModBulletColor.POISON.getId();
-            event.getContext().addTriggerModule(ModTriggerModule.THE_COMMON_COLD.getId(), 1);
+        for (AttackContext context : event.getContexts()){
+            if (player.getRandom().nextDouble() < getTriggerChance(player)) {
+                context.colorRl = ModBulletColor.POISON.getId();
+                context.addTriggerModule(ModTriggerModule.THE_COMMON_COLD.getId(), 1);
+            }
         }
     }
 

@@ -18,7 +18,6 @@ public class TearBulletShootEvent extends IsaacAttackEvent {
         this.bullet = bullet;
     }
 
-
     public TearBullet getBullet() {
         return bullet;
     }

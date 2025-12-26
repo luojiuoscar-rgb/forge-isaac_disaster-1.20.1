@@ -50,6 +50,10 @@ public class Brimstone extends PassiveAbility {
             desc.add(Component.translatable("item.isaac_disaster.brimstone.synergy.technology.1"));
         }
 
+        if (ClientDataManager.getInstance().getCountFromId(ItemId.C_SECTION.getId()) > 0){
+            desc.add(Component.translatable("item.isaac_disaster.brimstone.synergy.c_section.1"));
+        }
+
         return desc;
     }
 

@@ -2,6 +2,7 @@ package net.luojiuoscar.isaac_disaster.registries.attack_type.impl;
 
 import net.luojiuoscar.isaac_disaster.attribute.ModAttributes;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerAbilityProvider;
+import net.luojiuoscar.isaac_disaster.event.custom.attack.BeforePerformAttackEvent;
 import net.luojiuoscar.isaac_disaster.helper.ScheduledFuncHelper;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackContext;
@@ -9,11 +10,12 @@ import net.luojiuoscar.isaac_disaster.registries.attack_type.IChargeableAttack;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.ModAttackType;
 import net.luojiuoscar.isaac_disaster.sound.ModSounds;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.common.MinecraftForge;
 
 public class BrimstoneAttack extends LaserAttack implements IChargeableAttack {
     private static final float DAMAGE_PERCENTAGE = 0.6f;
@@ -30,9 +32,9 @@ public class BrimstoneAttack extends LaserAttack implements IChargeableAttack {
 
     // ================== handleAttack ==================
     @Override
-    public void handleShoot(LivingEntity entity, AttackContext context, Vec3 offset, float xRot, float yRot) {
+    public void shoot(AttackContext ctx) {
         ScheduledFuncHelper.schedule(SCHEDULE_NAME, 1, 13, false,
-                () -> super.handleShoot(entity, context, offset, xRot, yRot));
+                () -> super.shoot(ctx));
     }
 
     @Override
@@ -76,7 +78,7 @@ public class BrimstoneAttack extends LaserAttack implements IChargeableAttack {
 
     // =================== Chargeable ===================
     @Override
-    public void onTick(Player player, AttackContext context) {
+    public void onTick(ServerPlayer player) {
         player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY).ifPresent(
                 playerAbility -> {
                     if (playerAbility.isHoldingRightClick() &&
@@ -88,17 +90,22 @@ public class BrimstoneAttack extends LaserAttack implements IChargeableAttack {
     }
 
     @Override
-    public void onPressed(Player player, AttackContext context) {
+    public void onPressed(ServerPlayer player) {
         ScheduledFuncHelper.clear(SCHEDULE_NAME);
     }
 
     @Override
-    public void onReleased(Player player, AttackContext context) {
+    public void onReleased(ServerPlayer player) {
         player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY).ifPresent(
                 playerAbility -> {
                     if (playerAbility.getChargeAmount() >= getTargetValue(player)){
+
+                        BeforePerformAttackEvent event = new BeforePerformAttackEvent(player, this);
+                        MinecraftForge.EVENT_BUS.post(event);
+                        if (event.isCanceled()) return;
+
                         // attack
-                        performAttack(player, context);
+                        performAttack(getAttackContextsWithEvent(player, getBulletCount(player)));
                         makeSound(player);
                     }
                     playerAbility.setChargeAmount(0);

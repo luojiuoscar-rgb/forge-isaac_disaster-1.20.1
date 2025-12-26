@@ -3,6 +3,7 @@ package net.luojiuoscar.isaac_disaster.registries.trigger_module.impl;
 import net.luojiuoscar.isaac_disaster.entity.custom.TearBullet;
 import net.luojiuoscar.isaac_disaster.event.custom.attack.GetAttackContextEvent;
 import net.luojiuoscar.isaac_disaster.event.custom.attack.IsaacAttackHitBlockEvent;
+import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackContext;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.impl.LaserAttack;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.*;
 import net.minecraft.world.entity.MoverType;
@@ -22,7 +23,9 @@ public class BounceOnBlock implements ITriggerModule {
 
     @Override
     public void getAttackContext(GetAttackContextEvent event, int stacks, TriggerModuleQueue queue) {
-        event.getContext().addTriggerModule(ModTriggerModule.BOUNCE_ON_BLOCK.getId(), 1);
+        for (AttackContext context : event.getContexts()){
+            context.addTriggerModule(ModTriggerModule.BOUNCE_ON_BLOCK.getId(), 1);
+        }
     }
 
     @Override

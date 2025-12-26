@@ -42,5 +42,7 @@ public class ModTriggerModule {
             TRIGGER_MODULE_REGISTRY.register("bounce_on_entity", BounceOnEntity::new);
     public static final RegistryObject<ITriggerModule> LASER =
             TRIGGER_MODULE_REGISTRY.register("laser", Laser::new);
+    public static final RegistryObject<ITriggerModule> C_SECTION =
+            TRIGGER_MODULE_REGISTRY.register("c_section", CSection::new);
 
 }

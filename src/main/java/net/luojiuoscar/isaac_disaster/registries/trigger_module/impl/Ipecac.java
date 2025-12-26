@@ -6,6 +6,7 @@ import net.luojiuoscar.isaac_disaster.event.custom.attack.IsaacAttackBeforeHitEn
 import net.luojiuoscar.isaac_disaster.event.custom.attack.IsaacAttackHitBlockEvent;
 import net.luojiuoscar.isaac_disaster.helper.EntityHelper;
 import net.luojiuoscar.isaac_disaster.helper.LevelHelper;
+import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackContext;
 import net.luojiuoscar.isaac_disaster.registries.bullet_color.ModBulletColor;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.ITriggerModule;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerModule;
@@ -34,8 +35,10 @@ public class Ipecac implements ITriggerModule {
 
     @Override
     public void getAttackContext(GetAttackContextEvent event, int stacks, TriggerModuleQueue queue) {
-        event.getContext().colorRl = ModBulletColor.IPECAC.getId();
-        event.getContext().addTriggerModule(ModTriggerModule.IPECAC.getId(), 1);
+        for (AttackContext context : event.getContexts()){
+            context.colorRl = ModBulletColor.IPECAC.getId();
+            context.addTriggerModule(ModTriggerModule.IPECAC.getId(), 1);
+        }
     }
 
     @Override

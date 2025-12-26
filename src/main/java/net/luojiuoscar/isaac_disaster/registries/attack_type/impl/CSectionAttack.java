@@ -4,19 +4,26 @@ import net.luojiuoscar.isaac_disaster.attribute.ModAttributes;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerAbilityProvider;
 import net.luojiuoscar.isaac_disaster.entity.custom.FetusBullet;
 import net.luojiuoscar.isaac_disaster.entity.custom.TearBullet;
+import net.luojiuoscar.isaac_disaster.event.custom.attack.BeforePerformAttackEvent;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackContext;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.IChargeableAttack;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.ModAttackType;
+import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerModuleQueue;
 import net.luojiuoscar.isaac_disaster.sound.ModSounds;
 import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.common.MinecraftForge;
 import org.joml.Vector3f;
+
+import java.util.Map;
 
 public class CSectionAttack extends BulletAttack implements IChargeableAttack {
     private static final float DAMAGE_PERCENTAGE = 0.75f;
@@ -43,31 +50,29 @@ public class CSectionAttack extends BulletAttack implements IChargeableAttack {
     }
 
     @Override
-    public TearBullet getBulletObject(LivingEntity shooter, float xRot, float yRot){
+    public TearBullet getBulletObject(AttackContext c){
+        LivingEntity owner = c.getOwner();
+
         return new FetusBullet(
-                shooter.level(),
-                shooter,
-                getBulletLiftTime(shooter),
-                getBulletSpeed(shooter),
-                getBulletScale(shooter),
-                getDamage(shooter) * DAMAGE_PERCENTAGE,
-                xRot,
-                yRot
+                owner.level(),
+                c.getOwner(),
+                c.getShooter(),
+                getBulletLiftTime(owner),
+                getBulletSpeed(owner),
+                getBulletScale(owner),
+                getDamage(owner),
+                c.getXRot(),
+                c.getYRot(),
+                c.getPos()
         );
     }
 
     @Override
-    public void handleShoot(LivingEntity shooter, AttackContext context, Vec3 offset, float xRot, float yRot) {
-        if (shooter.level().isClientSide) return;
+    public void shoot(AttackContext ctx) {
+        super.shoot(ctx);
 
-        Vec3 bodyPos = shooter.position().add(0, shooter.getBbHeight() * 0.5, 0);
-        Vec3 spawnPos = bodyPos.add(offset);
-
-        TearBullet bullet = createBullet(shooter, spawnPos, xRot, yRot, context);
-        shooter.level().addFreshEntity(bullet);
-
-        spawnBloodParticles((ServerLevel) shooter.level(), bodyPos,
-                shooter.getLookAngle(), 10, 0.35, 0.35);
+        spawnBloodParticles((ServerLevel) ctx.getOwner().level(), ctx.getPos(),
+                ctx.getOwner().getLookAngle(), 10, 0.35, 0.35);
     }
 
     private void spawnBloodParticles(ServerLevel level, Vec3 pos, Vec3 direction, int count, double spread, double verticalOffset) {
@@ -104,9 +109,30 @@ public class CSectionAttack extends BulletAttack implements IChargeableAttack {
         return true;
     }
 
-    // =================== Chargeable ===================
+    /** 胎儿子弹从腹部发射 */
     @Override
-    public void onTick(Player player, AttackContext context) {
+    public AttackContext getOneAttackContext(ServerPlayer player, Entity shooter) {
+        return player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY)
+                .map(playerAbility -> {
+                    ResourceLocation colorRl = playerAbility.getBestBulletColor();
+                    Map<ResourceLocation, Integer> trajectories = playerAbility.getTrajectories();
+                    Vec3 eyePos = player.position().add(0, player.getBbHeight() * 0.5, 0);
+
+                    return new AttackContext(
+                            player,
+                            shooter,
+                            colorRl,
+                            new TriggerModuleQueue(),
+                            trajectories,
+                            eyePos,
+                            player.getXRot(),
+                            player.getYRot());
+                })
+                .orElse(new AttackContext());
+    }
+
+    @Override
+    public void onTick(ServerPlayer player) {
         player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY).ifPresent(
                 playerAbility -> {
                     int charge = playerAbility.getChargeAmount();
@@ -116,7 +142,11 @@ public class CSectionAttack extends BulletAttack implements IChargeableAttack {
                         if (charge + 1 >= getTargetValue(player)){
                             playerAbility.setChargeAmount(0);
 
-                            performAttack(player, context);
+                            BeforePerformAttackEvent event = new BeforePerformAttackEvent(player, this);
+                            MinecraftForge.EVENT_BUS.post(event);
+                            if (event.isCanceled()) return;
+
+                            performAttack(getAttackContextsWithEvent(player, getBulletCount(player)));
                             makeSound(player);
 
                         }else{
@@ -126,14 +156,14 @@ public class CSectionAttack extends BulletAttack implements IChargeableAttack {
                 }
         );
     }
-
+    // =================== Chargeable ===================
     @Override
-    public void onPressed(Player player, AttackContext context) {
+    public void onPressed(ServerPlayer player) {
 
     }
 
     @Override
-    public void onReleased(Player player, AttackContext context) {
+    public void onReleased(ServerPlayer player) {
         player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY).ifPresent(
                 playerAbility -> playerAbility.setChargeAmount(0)
         );
@@ -149,4 +179,5 @@ public class CSectionAttack extends BulletAttack implements IChargeableAttack {
         AttributeInstance attr = entity.getAttribute(ModAttributes.BULLET_SPEED.get());
         return attr != null ? Math.max(attr.getValue(), 0.1) * 0.7 : 0.7;
     }
+
 }

@@ -10,5 +10,7 @@ public enum TriggerCategory {
     ON_HURT_NEGATIVE,
     BREAK_BLOCK,
     GENERIC,
-    GET_ATTACK_CONTEXT
+    GET_ATTACK_CONTEXT,
+    BULLET_TICK,
+    BEFORE_PERFORM_ATTACK,
 }

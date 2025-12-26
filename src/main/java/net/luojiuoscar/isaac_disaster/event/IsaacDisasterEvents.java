@@ -6,7 +6,7 @@ import net.luojiuoscar.isaac_disaster.capability.player.PlayerAbilityProvider;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerSwallowedTrinketsProvider;
 import net.luojiuoscar.isaac_disaster.effect.ModEffects;
 import net.luojiuoscar.isaac_disaster.effect.custom.TheWizEffect;
-import net.luojiuoscar.isaac_disaster.event.custom.attack.BeforeCreateShootEvent;
+import net.luojiuoscar.isaac_disaster.event.custom.attack.GetAttackContextEvent;
 import net.luojiuoscar.isaac_disaster.event.custom.misc.*;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.item.item.Trinket;
@@ -122,13 +122,6 @@ public class IsaacDisasterEvents {
     }
 
     @SubscribeEvent
-    public static void onCreateShootEvent(BeforeCreateShootEvent event){
-        if (event.getShooter().hasEffect(ModEffects.THE_WIZ.get())){
-            TheWizEffect.onTriggered(event);
-        }
-    }
-
-    @SubscribeEvent
     public static void onPlayerRightClick(PlayerRightClickEvent event){
         ServerPlayer player = event.getPlayer();
         if (player.hasEffect(ModEffects.LACRIMAL_HYPOSECRETION.get())) return;
@@ -139,12 +132,21 @@ public class IsaacDisasterEvents {
 
         if (attack instanceof IChargeableAttack a){
             if (event.isOnPressed()){
-                a.onPressed(player, PlayerHelper.getAttackContext(player));
+                a.onPressed(player);
             }
 
             else if(event.isOnReleased()){
-                a.onReleased(player, PlayerHelper.getAttackContext(player));
+                a.onReleased(player);
             }
+        }
+    }
+
+    @SubscribeEvent
+    public static void onGettingAttackCtx(GetAttackContextEvent event){
+        LivingEntity entity = event.getPlayer();
+
+        if (entity.hasEffect(ModEffects.THE_WIZ.get())){
+            TheWizEffect.onTriggered(event);
         }
     }
 

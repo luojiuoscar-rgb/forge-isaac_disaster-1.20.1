@@ -4,6 +4,7 @@ import net.luojiuoscar.isaac_disaster.entity.custom.TearBullet;
 import net.luojiuoscar.isaac_disaster.event.custom.attack.GetAttackContextEvent;
 import net.luojiuoscar.isaac_disaster.event.custom.attack.IsaacAttackAfterHitEvent;
 import net.luojiuoscar.isaac_disaster.helper.EntityHelper;
+import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackContext;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.*;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.Vec3;
@@ -21,7 +22,9 @@ public class BounceOnEntity implements ITriggerModule {
 
     @Override
     public void getAttackContext(GetAttackContextEvent event, int stacks, TriggerModuleQueue queue) {
-        event.getContext().addTriggerModule(ModTriggerModule.BOUNCE_ON_ENTITY.getId(), 1);
+        for (AttackContext context : event.getContexts()){
+            context.addTriggerModule(ModTriggerModule.BOUNCE_ON_ENTITY.getId(), 1);
+        }
     }
 
     @Override

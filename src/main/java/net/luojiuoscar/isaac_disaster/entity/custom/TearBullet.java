@@ -2,16 +2,17 @@ package net.luojiuoscar.isaac_disaster.entity.custom;
 
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.entity.ModEntities;
+import net.luojiuoscar.isaac_disaster.event.custom.attack.tear_bullet.BulletTickEvent;
 import net.luojiuoscar.isaac_disaster.event.custom.attack.IsaacAttackAfterHitEvent;
 import net.luojiuoscar.isaac_disaster.event.custom.attack.IsaacAttackBeforeHitEntityEvent;
 import net.luojiuoscar.isaac_disaster.event.custom.attack.IsaacAttackHitBlockEvent;
 import net.luojiuoscar.isaac_disaster.event.custom.attack.tear_bullet.TearBulletDiscardEvent;
-import net.luojiuoscar.isaac_disaster.event.custom.attack.tear_bullet.TearBulletShootEvent;
-import net.luojiuoscar.isaac_disaster.event.custom.attack.tear_bullet.TearBulletTickEvent;
 import net.luojiuoscar.isaac_disaster.helper.EntityHelper;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackType;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.IBulletObject;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.ModAttackType;
+import net.luojiuoscar.isaac_disaster.registries.bullet_color.BulletColor;
+import net.luojiuoscar.isaac_disaster.registries.bullet_color.ModBulletColor;
 import net.luojiuoscar.isaac_disaster.registries.trajectory.IAttackTrajectory;
 import net.luojiuoscar.isaac_disaster.registries.trajectory.ModAttackTrajectory;
 import net.luojiuoscar.isaac_disaster.registries.trajectory.TrajectoryContext;
@@ -60,6 +61,7 @@ public class TearBullet extends Entity implements IBulletObject {
     protected float damage;
     protected UUID ownerUUID;
     protected LivingEntity cachedOwner;
+    protected Entity shooter;
     protected double yRotAngle;
     protected double xRotAngle;
 
@@ -79,6 +81,7 @@ public class TearBullet extends Entity implements IBulletObject {
     // ======== 状态 ========
     protected final Set<UUID> damagedEntities = new HashSet<>();
     protected final TriggerModuleQueue triggerModules = new TriggerModuleQueue();
+    protected ResourceLocation colorRl = ModBulletColor.BASE.getId();
 
     // ======== 客户端同步属性 ========
     protected static final EntityDataAccessor<Float> SCALE =
@@ -95,6 +98,9 @@ public class TearBullet extends Entity implements IBulletObject {
             SynchedEntityData.defineId(TearBullet.class, EntityDataSerializers.STRING);
     protected static final EntityDataAccessor<Boolean> IS_CURRENTLY_STEERING =
             SynchedEntityData.defineId(TearBullet.class, EntityDataSerializers.BOOLEAN);
+    protected static final EntityDataAccessor<Vector3f> PREV_SHOOTER_POS =
+            SynchedEntityData.defineId(TearBullet.class, EntityDataSerializers.VECTOR3);
+
 
     // ======== 构造函数 ========
     public TearBullet(EntityType<? extends TearBullet> type, Level level) {
@@ -107,24 +113,30 @@ public class TearBullet extends Entity implements IBulletObject {
         setVelocity(Vec3.ZERO);
     }
 
-    public TearBullet(Level level, LivingEntity shooter, int lifeTick, double bulletSpeed, float scale, float damage, float xRot, float yRot) {
-        this(ModEntities.TEAR_BULLET.get(), level, shooter, lifeTick, bulletSpeed, scale, damage, xRot, yRot);
+    public TearBullet(Level level,
+                      LivingEntity owner, Entity shooter,
+                      int lifeTick, double bulletSpeed, float scale, float damage,
+                      float xRot, float yRot, Vec3 pos) {
+        this(ModEntities.TEAR_BULLET.get(), level, owner, shooter, lifeTick, bulletSpeed, scale, damage, xRot, yRot, pos);
     }
 
     protected TearBullet(EntityType<? extends TearBullet> type,
                          Level level,
-                         LivingEntity shooter,
+                         LivingEntity owner,
+                         Entity shooter,
                          int lifeTick,
                          double bulletSpeed,
                          float scale,
                          float damage,
                          float xRot,
-                         float yRot) {
+                         float yRot,
+                         Vec3 pos) {
 
         this(type, level);
 
         this.ownerUUID = shooter.getUUID();
-        this.cachedOwner = shooter;
+        this.cachedOwner = owner;
+        this.shooter = shooter;
         this.lifeTick = lifeTick;
         this.totalLifeTick = lifeTick;
         this.damage = damage;
@@ -133,14 +145,10 @@ public class TearBullet extends Entity implements IBulletObject {
 
         setScale(scale);
 
-        moveTo(shooter.getX(), shooter.getEyeY(), shooter.getZ(), yRot, xRot);
+        moveTo(pos.x, pos.y, pos.z, yRot, xRot);
 
         Vec3 look = Vec3.directionFromRotation(xRot, yRot);
         setVelocity(look.scale(bulletSpeed));
-
-        if (!level.isClientSide)
-            MinecraftForge.EVENT_BUS.post(new TearBulletShootEvent(
-                    this, getOwner(), ModAttackType.BULLET.getId(), triggerModules, this));
     }
 
     // ======== 核心逻辑 ========
@@ -168,7 +176,7 @@ public class TearBullet extends Entity implements IBulletObject {
                 IAttackTrajectory traj = trajectoryIForgeRegistry.getValue(trajId);
                 if (traj == null) continue;
 
-                TrajectoryContext ctx = new TrajectoryContext(this, speed, amplifier);
+                TrajectoryContext ctx = new TrajectoryContext(this, speed, amplifier, getPrevShooterPos());
 
                 var result = traj.getResult(ctx);
 
@@ -194,7 +202,7 @@ public class TearBullet extends Entity implements IBulletObject {
 
         // ================== 碰撞检测 ==================
         if (!level().isClientSide) {
-            MinecraftForge.EVENT_BUS.post(new TearBulletTickEvent(this));
+            MinecraftForge.EVENT_BUS.post(new BulletTickEvent(this));
 
             if (--lifeTick <= 0) {
                 if (!MinecraftForge.EVENT_BUS.post(new TearBulletDiscardEvent(this))) discard();
@@ -210,8 +218,23 @@ public class TearBullet extends Entity implements IBulletObject {
 
         move(MoverType.SELF, finalMove);
         setTraveled((float)(traveled + velocityMove.length()));
+
+        updateDirection();
     }
 
+    protected void updateDirection(){
+        Vec3 vel = getVelocity();
+        if (vel.lengthSqr() > 1.0e-6) {
+            double yaw = Math.atan2(vel.z, vel.x) * Mth.RAD_TO_DEG - 90.0;
+            double pitch = -Math.atan2(vel.y, Math.sqrt(vel.x * vel.x + vel.z * vel.z)) * Mth.RAD_TO_DEG;
+
+            setYRot((float) yaw);
+            setXRot((float) pitch);
+
+            yRotO = getYRot();
+            xRotO = getXRot();
+        }
+    }
 
     // ======== 碰撞与追踪 ========
     protected boolean handleBlockCollision(Vec3 start, Vec3 end) {
@@ -356,6 +379,12 @@ public class TearBullet extends Entity implements IBulletObject {
         return cachedOwner;
     }
 
+    @Nullable
+    @Override
+    public Object getShooter() {
+        return this.shooter;
+    }
+
     @Override
     public double getStartYRot() {
         return this.yRotAngle;
@@ -391,6 +420,16 @@ public class TearBullet extends Entity implements IBulletObject {
         return this.isPiercing;
     }
 
+    @Override
+    public ResourceLocation getColorId() {
+        return colorRl;
+    }
+
+    @Override
+    public TriggerModuleQueue getTriggerModules() {
+        return triggerModules;
+    }
+
     public void setOwner(LivingEntity entity) {
         this.cachedOwner = entity;
         this.ownerUUID = entity == null ? null : entity.getUUID();
@@ -406,6 +445,7 @@ public class TearBullet extends Entity implements IBulletObject {
         entityData.define(VELOCITY, new Vector3f(0f, 0f, 0f));
         entityData.define(TRAJECTORIES, "");
         entityData.define(IS_CURRENTLY_STEERING, false);
+        entityData.define(PREV_SHOOTER_POS, new Vector3f(0f, 0f, 0f));
     }
 
     // ======== NBT读写 ========
@@ -501,6 +541,17 @@ public class TearBullet extends Entity implements IBulletObject {
                 getX() + scale * 0.25, getY() + scale * 0.25, getZ() + scale * 0.25));
     }
 
+    public void setBulletColor(ResourceLocation id){
+        IForgeRegistry<BulletColor> registry = RegistryManager.ACTIVE.getRegistry(ModBulletColor.BULLET_COLOR_KEY);
+
+        BulletColor c = registry != null ? registry.getValue(id) : ModBulletColor.BASE.get();
+        c = c == null ? ModBulletColor.BASE.get() : c;
+
+        setColor(c.color());
+        setAlpha(c.alpha());
+        colorRl = id;
+    }
+
     public void setColor(int rgb) { this.entityData.set(COLOR, rgb); }
     public void setAlpha(float alpha) { this.entityData.set(ALPHA, Mth.clamp(alpha, 0.0F, 1.0F)); }
     public void setTraveled(float traveled) { this.entityData.set(TRAVELED, traveled); }
@@ -520,6 +571,20 @@ public class TearBullet extends Entity implements IBulletObject {
         entityData.set(VELOCITY, new Vector3f((float) vel.x, (float) vel.y, (float) vel.z));
     }
 
+    @Override
+    public Vec3 getPrevShooterPos() {
+        if (shooter != null){
+            setPrevShooterPos(shooter.position());
+        }
+
+        Vector3f p = entityData.get(PREV_SHOOTER_POS);
+        return new Vec3(p.x(), p.y(), p.z());
+    }
+
+    public void setPrevShooterPos(Vec3 pos) {
+        entityData.set(PREV_SHOOTER_POS, new Vector3f((float) pos.x, (float) pos.y, (float) pos.z));
+    }
+
     public void setTrajectories(Map<ResourceLocation, Integer> map) {
         // 格式 "namespace:path:value,namespace:path:value"
         String s = map.entrySet().stream()
@@ -529,6 +594,7 @@ public class TearBullet extends Entity implements IBulletObject {
         entityData.set(TRAJECTORIES, s);
     }
 
+    @Override
     public Map<ResourceLocation, Integer> getTrajectories() {
         String s = entityData.get(TRAJECTORIES);
         Map<ResourceLocation, Integer> map = new HashMap<>();
@@ -551,9 +617,6 @@ public class TearBullet extends Entity implements IBulletObject {
         this.triggerModules.clear();
         this.triggerModules.getQueue().addAll(triggerModuleQueue.getQueue());
     }
-
-    @Override
-    public TriggerModuleQueue getTriggerModules() { return triggerModules; }
 
     public Set<UUID> getDamagedEntities() { return damagedEntities; }
 }

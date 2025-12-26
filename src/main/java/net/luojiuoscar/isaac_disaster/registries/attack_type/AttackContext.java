@@ -1,12 +1,13 @@
 package net.luojiuoscar.isaac_disaster.registries.attack_type;
 
 import net.luojiuoscar.isaac_disaster.registries.bullet_color.ModBulletColor;
-import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerModuleInstance;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerModuleQueue;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.phys.Vec3;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class AttackContext {
@@ -14,32 +15,91 @@ public class AttackContext {
     private final TriggerModuleQueue triggerModuleQueue;
     public final Map<ResourceLocation, Integer> trajectories;
 
+    private Vec3 pos;
+    private float xRot;
+    private float yRot;
+
+    private final Entity shooter;
+    private final LivingEntity owner;
+
     public AttackContext(){
         this.colorRl = ModBulletColor.BASE.getId();
         this.trajectories = new HashMap<>();
         this.triggerModuleQueue = new TriggerModuleQueue();
+        this.pos = Vec3.ZERO;
+        this.xRot = 0.0f;
+        this.yRot = 0.0f;
+        this.shooter = null;
+        this.owner = null;
     }
 
-    public AttackContext(ResourceLocation colorRl,
+    public AttackContext(LivingEntity owner, Entity shooter,
+                         ResourceLocation colorRl,
                          TriggerModuleQueue triggerModuleQueue,
-                         Map<ResourceLocation, Integer> trajectories) {
+                         Map<ResourceLocation, Integer> trajectories,
+                         Vec3 pos, float xRot, float yRot) {
+        this.owner = owner;
+        this.shooter = shooter;
         this.colorRl = colorRl;
         // 避免外部修改影响 AttackContext 内部
         this.triggerModuleQueue = new TriggerModuleQueue(triggerModuleQueue.getQueue());
         this.trajectories = new HashMap<>(trajectories);
+        this.pos = pos;
+        this.xRot = xRot;
+        this.yRot = yRot;
+
     }
 
     public TriggerModuleQueue getTriggerModuleQueue() {
         return triggerModuleQueue;
     }
 
-    public void copyTriggerModule(List<TriggerModuleInstance> source) {
-        this.triggerModuleQueue.clear();
-        this.triggerModuleQueue.getQueue().addAll(source);
+    public AttackContext copy(){
+        return new AttackContext(
+                this.owner,
+                this.shooter,
+                this.colorRl,
+                this.triggerModuleQueue.copy(),
+                new HashMap<>(this.trajectories),
+                this.pos,
+                this.xRot,
+                this.yRot
+        );
     }
 
     public void addTriggerModule(ResourceLocation id, int count) {
         triggerModuleQueue.add(id, count);
     }
 
+    public Vec3 getPos() {
+        return pos;
+    }
+
+    public void setPos(Vec3 pos) {
+        this.pos = pos;
+    }
+
+    public float getXRot() {
+        return xRot;
+    }
+
+    public void setXRot(float xRot) {
+        this.xRot = xRot;
+    }
+
+    public float getYRot() {
+        return yRot;
+    }
+
+    public void setYRot(float yRot) {
+        this.yRot = yRot;
+    }
+
+    public Entity getShooter() {
+        return shooter;
+    }
+
+    public LivingEntity getOwner() {
+        return owner;
+    }
 }
