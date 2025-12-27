@@ -1,10 +1,10 @@
 package net.luojiuoscar.isaac_disaster.registries.attack_type.impl;
 
-import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.event.custom.attack.IsaacAttackAfterHitEvent;
 import net.luojiuoscar.isaac_disaster.event.custom.attack.IsaacAttackBeforeHitEntityEvent;
 import net.luojiuoscar.isaac_disaster.event.custom.attack.IsaacAttackHitBlockEvent;
 import net.luojiuoscar.isaac_disaster.helper.EntityHelper;
+import net.luojiuoscar.isaac_disaster.manager.ModDamageType;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackContext;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackType;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.IBulletObject;
@@ -18,7 +18,6 @@ import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerModuleQue
 import net.luojiuoscar.isaac_disaster.sound.ModSounds;
 import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -209,12 +208,12 @@ public class LaserAttack extends AttackType {
         List<AttackContext> contexts = new ArrayList<>();
         if (ctx == null) return contexts;
 
-        float angleInterval = 6;
+        float angleInterval = 8;
         float curAngle = -angleInterval * (bulletCount - 1) / 2.0f;
 
         for (int i = 0; i < bulletCount; i++) {
             AttackContext c = ctx.copy();
-            c.setYRot(ctx.getYRot() + curAngle);
+            c.setYRotOffset(curAngle);
             contexts.add(c);
 
             curAngle += angleInterval;
@@ -296,8 +295,6 @@ public class LaserAttack extends AttackType {
 
                 IAttackTrajectory traj = trajectoryIForgeRegistry.getValue(trajId);
                 if (traj == null) continue;
-
-                // 默认目标位置是owner，若为子弹发射则目标点为shooter
 
                 TrajectoryContext ctx = new TrajectoryContext(laser, laser.step, amplifier, laser.getPrevShooterPos());
 
@@ -398,10 +395,7 @@ public class LaserAttack extends AttackType {
         if (!(source.level() instanceof ServerLevel level)) return source.damageSources().generic();
         var damageTypeHolder = level.registryAccess()
                 .registryOrThrow(Registries.DAMAGE_TYPE)
-                .getHolderOrThrow(ResourceKey.create(
-                        Registries.DAMAGE_TYPE,
-                        ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "laser")
-                ));
+                .getHolderOrThrow(ModDamageType.LASER);
         return new DamageSource(damageTypeHolder, source, source);
     }
 

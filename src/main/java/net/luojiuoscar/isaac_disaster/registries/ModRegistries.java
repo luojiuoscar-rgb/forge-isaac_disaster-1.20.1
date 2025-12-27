@@ -7,6 +7,7 @@ import net.luojiuoscar.isaac_disaster.registries.ability.pickup.PickupAbility;
 import net.luojiuoscar.isaac_disaster.registries.ability.set.SetAbility;
 import net.luojiuoscar.isaac_disaster.registries.ability.trinket.TrinketAbility;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackType;
+import net.luojiuoscar.isaac_disaster.registries.attack_type.combination.AttackCombinationRule;
 import net.luojiuoscar.isaac_disaster.registries.bullet_color.BulletColor;
 import net.luojiuoscar.isaac_disaster.registries.pill_effect.IPillEffect;
 import net.luojiuoscar.isaac_disaster.registries.recursive_module.IRecursiveModule;
@@ -22,6 +23,7 @@ import static net.luojiuoscar.isaac_disaster.registries.ability.pickup.ModPickup
 import static net.luojiuoscar.isaac_disaster.registries.ability.set.ModSetAbility.SET_ABILITY_REGISTRY;
 import static net.luojiuoscar.isaac_disaster.registries.ability.trinket.ModTrinketAbility.TRINKET_ABILITY_REGISTRY;
 import static net.luojiuoscar.isaac_disaster.registries.attack_type.ModAttackType.ATTACK_TYPE_REGISTER;
+import static net.luojiuoscar.isaac_disaster.registries.attack_type.combination.ModCombinationRules.ATTACK_COMBINATION_RULE_REGISTRY;
 import static net.luojiuoscar.isaac_disaster.registries.bullet_color.ModBulletColor.BULLET_COLOR_REGISTRY;
 import static net.luojiuoscar.isaac_disaster.registries.pill_effect.ModPillEffect.PILL_EFFECT_REGISTRY;
 import static net.luojiuoscar.isaac_disaster.registries.recursive_module.ModRecursiveModule.RECURSIVE_MODULE_REGISTRY;
@@ -76,5 +78,9 @@ public class ModRegistries {
         ATTACK_TYPE_REGISTER.makeRegistry(() -> {return new RegistryBuilder<AttackType>()
                 .setName(ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "attack_type"));});
         ATTACK_TYPE_REGISTER.register(modEventBus);
+
+        ATTACK_COMBINATION_RULE_REGISTRY.makeRegistry(() -> {return new RegistryBuilder<AttackCombinationRule>()
+                .setName(ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "attack_combination_rule"));});
+        ATTACK_COMBINATION_RULE_REGISTRY.register(modEventBus);
     }
 }

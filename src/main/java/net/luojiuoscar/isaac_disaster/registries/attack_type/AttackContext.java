@@ -18,6 +18,8 @@ public class AttackContext {
     private Vec3 pos;
     private float xRot;
     private float yRot;
+    private float xRotOffset = 0.0f;
+    private float yRotOffset = 0.0f;
 
     private final Entity shooter;
     private final LivingEntity owner;
@@ -80,7 +82,7 @@ public class AttackContext {
     }
 
     public float getXRot() {
-        return xRot;
+        return xRot + xRotOffset;
     }
 
     public void setXRot(float xRot) {
@@ -88,7 +90,7 @@ public class AttackContext {
     }
 
     public float getYRot() {
-        return yRot;
+        return yRot + yRotOffset;
     }
 
     public void setYRot(float yRot) {
@@ -101,5 +103,13 @@ public class AttackContext {
 
     public LivingEntity getOwner() {
         return owner;
+    }
+
+    public void setXRotOffset(float xRotOffset) {
+        this.xRotOffset = xRotOffset;
+    }
+
+    public void setYRotOffset(float yRotOffset) {
+        this.yRotOffset = yRotOffset;
     }
 }

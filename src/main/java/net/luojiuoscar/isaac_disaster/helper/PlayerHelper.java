@@ -11,8 +11,8 @@ import net.luojiuoscar.isaac_disaster.item.ModItems;
 import net.luojiuoscar.isaac_disaster.item.item.ActiveItem;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.manager.data.BlockData;
-import net.luojiuoscar.isaac_disaster.manager.item_managers.id.ItemId;
-import net.luojiuoscar.isaac_disaster.manager.item_managers.id.TrinketId;
+import net.luojiuoscar.isaac_disaster.manager.id.ItemId;
+import net.luojiuoscar.isaac_disaster.manager.id.TrinketId;
 import net.luojiuoscar.isaac_disaster.sound.ModSounds;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
@@ -28,7 +28,6 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Inventory;
@@ -198,7 +197,7 @@ public class PlayerHelper {
     }
     public static void setItemFlag(ServerPlayer player, int ItemId, boolean flag){
         player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY).ifPresent(
-                playerAbility -> playerAbility.setItemFlags(player, ItemId, flag)
+                playerAbility -> playerAbility.setItemFlags(ItemId, flag)
         );
     }
     public static int countMoney(Player player) {
@@ -330,85 +329,6 @@ public class PlayerHelper {
         if (id == null) return null;
         return ForgeRegistries.ITEMS.getValue(id);
     }
-
-    /**
-     * 将玩家传送到一个随机安全位置
-     */
-    public static void teleportToRandomLocation(Entity entity, double radius) {
-        if (entity.level().isClientSide()) return;
-
-        Level world = entity.level();
-        Vec3 currentPos = entity.position();
-        int minY = world.getMinBuildHeight();
-        int maxY = world.getMaxBuildHeight();
-
-        RandomSource random = world.getRandom();
-        float playerHeight = entity.getBbHeight();
-
-        // 最多尝试5次
-        for (int retry = 0; retry < 5; retry++) {
-            // 生成随机X和Z坐标（在半径范围内）
-            int randomX = (int) (currentPos.x + (random.nextDouble() * radius * 2 - radius));
-            int randomZ = (int) (currentPos.z + (random.nextDouble() * radius * 2 - radius));
-            // 生成初始Y坐标（在世界高度范围内）
-            int initialY = (int) (currentPos.y + (random.nextDouble() * radius * 2 - radius));
-            initialY = Math.max(minY, Math.min(maxY, initialY));
-
-            // 从初始Y位置向上寻找安全位置
-            BlockPos safePos = findSafePositionUpwards(world, randomX, randomZ, initialY, maxY, playerHeight);
-
-            if (safePos != null) {
-                // 找到安全位置，执行传送（Y坐标稍微向上偏移，避免卡进方块）
-                entity.teleportTo(
-                        safePos.getX() + 0.5, // 方块中心X
-                        safePos.getY() + 0.1, // 稍微高于方块
-                        safePos.getZ() + 0.5  // 方块中心Z
-                );
-                return;
-            }
-        }
-    }
-    private static BlockPos findSafePositionUpwards(Level world, int x, int z, int startY, int maxY, double playerHeight) {
-        BlockPos currentPos = new BlockPos(x, startY, z);
-
-        // 从初始Y向上搜索，直到达到世界高度上限
-        for (int y = startY; y <= maxY; y++) {
-            currentPos = currentPos.atY(y);
-
-            // 检查当前位置是否可以安全站立
-            if (isSafeToStand(world, currentPos, playerHeight)) {
-                return currentPos;
-            }
-        }
-
-        // 到达世界上限仍未找到安全位置
-        return null;
-    }
-    private static boolean isSafeToStand(Level world, BlockPos pos, double playerHeight) {
-        // 检查脚下是否有支撑（有碰撞箱）
-        BlockPos standPos = pos.below();
-        BlockState groundState = world.getBlockState(standPos);
-        if (groundState.getCollisionShape(world, standPos).isEmpty()) {
-            return false; // 脚下无支撑，不安全
-        }
-
-        // 计算需要检查的总高度（向上取整，确保覆盖完整碰撞箱）
-        int checkHeight = (int) Math.ceil(playerHeight);
-
-        // 检查玩家身体占据的每一格空间是否有碰撞箱
-        for (int y = 0; y < checkHeight; y++) {
-            BlockPos bodyPos = pos.offset(0, y, 0); // 当前检查的身体位置
-            BlockState bodyState = world.getBlockState(bodyPos);
-
-            // 如果身体位置存在碰撞箱，则不安全
-            if (!bodyState.getCollisionShape(world, bodyPos).isEmpty()) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
 
     // 基础
     public static double getTears(Player player) {

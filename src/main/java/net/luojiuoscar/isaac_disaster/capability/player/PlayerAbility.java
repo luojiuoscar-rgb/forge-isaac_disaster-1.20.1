@@ -1,17 +1,18 @@
 package net.luojiuoscar.isaac_disaster.capability.player;
 
-import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackType;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.ModAttackType;
+import net.luojiuoscar.isaac_disaster.registries.attack_type.combination.AttackCombinationRule;
+import net.luojiuoscar.isaac_disaster.registries.attack_type.combination.ModCombinationRules;
 import net.luojiuoscar.isaac_disaster.registries.bullet_color.BulletColor;
 import net.luojiuoscar.isaac_disaster.registries.bullet_color.ModBulletColor;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.registries.IForgeRegistry;
 import net.minecraftforge.registries.RegistryManager;
+import net.minecraftforge.registries.RegistryObject;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -235,7 +236,7 @@ public class PlayerAbility {
         return new HashMap<>(itemFlags);
     }
 
-    public void setItemFlags(ServerPlayer player, int ItemId, boolean flag) {
+    public void setItemFlags(int ItemId, boolean flag) {
         itemFlags.put(ItemId, flag);
     }
 
@@ -281,33 +282,74 @@ public class PlayerAbility {
         updateBestAttackType();
     }
 
-    public void updateBestAttackType(){
+    public void updateBestAttackType() {
         IForgeRegistry<AttackType> registry = RegistryManager.ACTIVE.getRegistry(ModAttackType.ATTACK_TYPE_KEY);
-        IsaacDisaster.LOGGER.info("Updating best attack type 1");
         if (registry == null) return;
 
-        ResourceLocation bestId = ModAttackType.BULLET.getId();
+        // 找到单体最高优先级
+        ResourceLocation bestSingleId = ModAttackType.BULLET.getId();
+        AttackType bestSingle = registry.getValue(bestSingleId);
+        if (bestSingle == null) return;
 
-        AttackType best = registry.getValue(bestId);
-        IsaacDisaster.LOGGER.info("Updating best attack type 2");
-        if (best == null) return;
-        double bestPriority = best.getPriority();
+        double bestSinglePriority = bestSingle.getPriority();
 
         for (ResourceLocation id : attackType.keySet()) {
             AttackType at = registry.getValue(id);
-            IsaacDisaster.LOGGER.info("Updating best attack type 3: {}", id);
             if (at == null) continue;
 
             double priority = at.getPriority();
-            IsaacDisaster.LOGGER.info("Updating best attack type 4: {} : {}", priority, bestPriority);
-            if (priority > bestPriority) {
-                bestPriority = priority;
-                bestId = id;
+            if (priority > bestSinglePriority) {
+                bestSinglePriority = priority;
+                bestSingleId = id;
+                bestSingle = at;
             }
         }
-        this.bestAttackType = bestId;
-        this.cachedAttackType = registry.getValue(bestId);
+
+        // 尝试匹配组合规则
+        AttackCombinationRule bestCombo = null;
+        double bestComboPriority = -1;
+
+        IForgeRegistry<AttackCombinationRule> comboRegistry =
+                RegistryManager.ACTIVE.getRegistry(ModCombinationRules.ATTACK_COMBINATION_RULE_KEY);
+
+        if (comboRegistry != null){
+            for (AttackCombinationRule combo : comboRegistry.getValues()) {
+
+                // 检查组合 triggerSet 是否都在当前攻击类型中
+                boolean allInAttackType = combo.triggerSet.stream()
+                        .map(RegistryObject::get)
+                        .allMatch(trigger -> attackType.containsKey(trigger.getId()));
+
+                if (!allInAttackType) continue;
+
+                // 检查是否有更高优先级的单体攻击，不属于组合内
+                boolean blocked = attackType.keySet().stream()
+                        .map(registry::getValue)
+                        .filter(at -> at != null)
+                        .anyMatch(at -> at.getPriority() > combo.priority
+                                && combo.triggerSet.stream().map(RegistryObject::get).noneMatch(t -> t == at));
+
+                if (blocked) continue;
+
+                // 找到优先级最大的组合
+                double comboPriority = combo.priority;
+                if (comboPriority > bestComboPriority) {
+                    bestComboPriority = comboPriority;
+                    bestCombo = combo;
+                }
+            }
+        }
+
+        // 最终：组合优先级高于单体优先级时才生效
+        if (bestCombo != null) {
+            this.bestAttackType = bestCombo.result.getId();
+            this.cachedAttackType = bestCombo.result.get();
+        } else {
+            this.bestAttackType = bestSingleId;
+            this.cachedAttackType = bestSingle;
+        }
     }
+
 
     public Map<ResourceLocation, Integer> getAttackTypes() {
         return attackType;

@@ -2,7 +2,7 @@ package net.luojiuoscar.isaac_disaster.registries.pill_effect.impl;
 
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.item.ModItems;
-import net.luojiuoscar.isaac_disaster.manager.item_managers.PillEffectManager;
+import net.luojiuoscar.isaac_disaster.manager.PillEffectManager;
 import net.luojiuoscar.isaac_disaster.registries.pill_effect.IPillEffect;
 import net.luojiuoscar.isaac_disaster.registries.pill_effect.ModPillEffect;
 import net.luojiuoscar.isaac_disaster.sound.ModSounds;

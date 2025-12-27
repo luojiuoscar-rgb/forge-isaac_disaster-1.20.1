@@ -1,6 +1,6 @@
 package net.luojiuoscar.isaac_disaster.effect.curse;
 
-import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
+import net.luojiuoscar.isaac_disaster.helper.EntityHelper;
 import net.luojiuoscar.isaac_disaster.item.ModPassiveItems;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.minecraft.util.RandomSource;
@@ -25,7 +25,7 @@ public class CurseOfTheMaze extends MobEffect {
         RandomSource random = event.getEntity().getRandom();
 
         if (random.nextDouble() < 0.2){ // 20%
-            PlayerHelper.teleportToRandomLocation(event.getEntity(), 0.5 * StatManager.getNearbyRange());
+            EntityHelper.teleportToRandomLocation(event.getEntity(), 0.5 * StatManager.getNearbyRange());
         }
 
     }

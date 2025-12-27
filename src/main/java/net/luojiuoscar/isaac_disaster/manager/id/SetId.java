@@ -1,4 +1,4 @@
-package net.luojiuoscar.isaac_disaster.manager.item_managers.id;
+package net.luojiuoscar.isaac_disaster.manager.id;
 
 public enum SetId {
     SPUN,

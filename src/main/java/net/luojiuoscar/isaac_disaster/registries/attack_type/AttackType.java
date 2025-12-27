@@ -6,7 +6,7 @@ import net.luojiuoscar.isaac_disaster.capability.player.PlayerPassiveItemProvide
 import net.luojiuoscar.isaac_disaster.event.custom.attack.GetAttackContextEvent;
 import net.luojiuoscar.isaac_disaster.event.custom.misc.GetShotDelayEvent;
 import net.luojiuoscar.isaac_disaster.event.custom.misc.IsaacGetBulletCountEvent;
-import net.luojiuoscar.isaac_disaster.manager.item_managers.id.ItemId;
+import net.luojiuoscar.isaac_disaster.manager.id.ItemId;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerModuleQueue;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
@@ -19,8 +19,12 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.registries.IForgeRegistry;
+import net.minecraftforge.registries.RegistryManager;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
@@ -210,6 +214,38 @@ public abstract class AttackType {
         return Math.max(delay, 0);
     }
 
+    /** 获取攻击方式列表中第n个具有更低优先级的攻击方式 */
+    protected AttackType pickLowerAttackType(Map<ResourceLocation, Integer> attackType, int index) {
+        IForgeRegistry<AttackType> registry = RegistryManager.ACTIVE.getRegistry(ModAttackType.ATTACK_TYPE_KEY);
+
+        AttackType defaultAttack = ModAttackType.BULLET.get();
+        if (registry == null) return defaultAttack;
+
+        // 收集优先级低于自己的攻击方式
+        List<AttackType> lowerList = new ArrayList<>();
+        double selfPriority = this.getPriority();
+
+        for (ResourceLocation id : attackType.keySet()) {
+            AttackType at = registry.getValue(id);
+            if (at == null) continue;
+
+            if (at.getPriority() < selfPriority) {
+                lowerList.add(at);
+            }
+        }
+
+        // 按优先级降序排列（从高到低）
+        lowerList.sort(Comparator.comparingDouble(AttackType::getPriority).reversed());
+
+        // 返回第 n 个攻击方式，如果越界则返回默认值
+        if (index >= 0 && index < lowerList.size()) {
+            return lowerList.get(index);
+        } else {
+            return defaultAttack;
+        }
+    }
+
+
     public static Vec3 rotateAroundAxis(Vec3 v, Vec3 axis, double radians) {
         axis = axis.normalize();
         double cos = Math.cos(radians);
@@ -221,5 +257,7 @@ public abstract class AttackType {
 
         return term1.add(term2).add(term3);
     }
+
+
 
 }

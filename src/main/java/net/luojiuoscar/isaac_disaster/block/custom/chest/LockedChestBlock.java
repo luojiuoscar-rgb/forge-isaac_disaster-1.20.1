@@ -5,7 +5,7 @@ import net.luojiuoscar.isaac_disaster.block.block_entity.chest.ItemChestBlockEnt
 import net.luojiuoscar.isaac_disaster.block.block_entity.chest.LockedChestBlockEntity;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.manager.LootTableManager;
-import net.luojiuoscar.isaac_disaster.manager.item_managers.id.TrinketId;
+import net.luojiuoscar.isaac_disaster.manager.id.TrinketId;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;

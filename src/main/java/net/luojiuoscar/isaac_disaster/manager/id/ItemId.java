@@ -1,4 +1,4 @@
-package net.luojiuoscar.isaac_disaster.manager.item_managers.id;
+package net.luojiuoscar.isaac_disaster.manager.id;
 
 import net.minecraft.world.item.Item;
 import net.minecraftforge.registries.RegistryObject;
@@ -113,7 +113,9 @@ public enum ItemId {
     MY_REFLECTION(2),
     IPECAC(4),
     BRIMSTONE(4),
-    C_SECTION(4);
+    C_SECTION(4),
+    CURSED_EYE(0),
+    NEPTUNUS(3);
 
 
 

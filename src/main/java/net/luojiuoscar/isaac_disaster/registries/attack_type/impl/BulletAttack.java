@@ -51,7 +51,7 @@ public class BulletAttack extends AttackType {
 
             for (int i = 0; i < bulletCount; i++) {
                 AttackContext c = ctx.copy();
-                c.setYRot(ctx.getYRot() + curAngle);
+                c.setYRotOffset(curAngle);
                 contexts.add(c);
 
                 curAngle += angleInterval;

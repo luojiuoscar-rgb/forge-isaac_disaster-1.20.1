@@ -25,11 +25,12 @@ public class Heart extends FoodPickup implements ICommonPickup {
 
     @Override
     public @NotNull ItemStack finishUsingItem(@NotNull ItemStack stack, @NotNull Level level, @NotNull LivingEntity entity) {
+        ItemStack before = stack.copy();
         ItemStack itemstack = super.finishUsingItem(stack, level, entity);
         if (!(entity instanceof ServerPlayer player)) return itemstack;
 
         // server side
-        getAbility().onUse(player, itemstack, null);
+        getAbility().onUse(player, before, player.getUsedItemHand());
         getAbility().makeSound(player);
 
         return itemstack;

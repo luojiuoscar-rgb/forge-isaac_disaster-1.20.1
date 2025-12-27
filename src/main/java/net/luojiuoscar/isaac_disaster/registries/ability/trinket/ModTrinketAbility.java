@@ -1,7 +1,7 @@
 package net.luojiuoscar.isaac_disaster.registries.ability.trinket;
 
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
-import net.luojiuoscar.isaac_disaster.manager.item_managers.id.TrinketId;
+import net.luojiuoscar.isaac_disaster.manager.id.TrinketId;
 import net.luojiuoscar.isaac_disaster.registries.ability.trinket.impl.*;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;

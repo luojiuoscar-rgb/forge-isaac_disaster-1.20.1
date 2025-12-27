@@ -44,5 +44,6 @@ public class ModTriggerModule {
             TRIGGER_MODULE_REGISTRY.register("laser", Laser::new);
     public static final RegistryObject<ITriggerModule> C_SECTION =
             TRIGGER_MODULE_REGISTRY.register("c_section", CSection::new);
-
+    public static final RegistryObject<ITriggerModule> CURSED_EYE =
+            TRIGGER_MODULE_REGISTRY.register("cursed_eye", CursedEye::new);
 }

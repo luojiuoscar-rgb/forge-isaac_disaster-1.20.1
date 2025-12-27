@@ -179,7 +179,7 @@ public class PlayerPassiveItem {
         for (Iterator<ItemStack> iterator = playerPassiveItems.iterator(); iterator.hasNext(); ) {
             ItemStack stack = iterator.next();
             ResourceLocation id = (ForgeRegistries.ITEMS.getKey(stack.getItem()));
-            if (id == itemId) {
+            if (id != null && id.equals(itemId)) {
                 iterator.remove();
 
                 IForgeRegistry<PassiveAbility> passiveAbilityIForgeRegistry =

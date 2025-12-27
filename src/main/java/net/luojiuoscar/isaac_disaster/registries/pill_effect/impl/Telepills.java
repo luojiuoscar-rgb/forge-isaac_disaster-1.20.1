@@ -1,5 +1,6 @@
 package net.luojiuoscar.isaac_disaster.registries.pill_effect.impl;
 
+import net.luojiuoscar.isaac_disaster.helper.EntityHelper;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.registries.pill_effect.IPillEffect;
 import net.luojiuoscar.isaac_disaster.registries.pill_effect.ModPillEffect;
@@ -17,14 +18,14 @@ public class Telepills implements IPillEffect {
 
     @Override
     public void onUseEffect(ServerPlayer player) {
-        PlayerHelper.teleportToRandomLocation(player, 64);
+        EntityHelper.teleportToRandomLocation(player, 64);
         player.level().playSound(null, player.getX(), player.getY(), player.getZ(),
                 SoundEvents.ENDERMAN_TELEPORT, SoundSource.PLAYERS, 1.0f, 1.0f);
     }
 
     @Override
     public void onUseEffectH(ServerPlayer player) {
-        PlayerHelper.teleportToRandomLocation(player, 256);
+        EntityHelper.teleportToRandomLocation(player, 256);
         player.level().playSound(null, player.getX(), player.getY(), player.getZ(),
                 SoundEvents.ENDERMAN_TELEPORT, SoundSource.PLAYERS, 1.0f, 1.0f);
     }

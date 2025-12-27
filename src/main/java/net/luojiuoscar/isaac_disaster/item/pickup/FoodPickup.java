@@ -9,13 +9,14 @@ import net.minecraft.world.level.Level;
 import net.minecraftforge.registries.RegistryObject;
 import org.jetbrains.annotations.NotNull;
 
-public class FoodPickup extends Pickup{
+public abstract class FoodPickup extends Pickup{
     public FoodPickup(Properties pProperties, RegistryObject<PickupAbility> ability) {
         super(pProperties, ability);
     }
 
     @Override
     public @NotNull InteractionResultHolder<ItemStack> use(@NotNull Level level, Player player, @NotNull InteractionHand hand){
-        return super.use(level, player, hand);
+        player.startUsingItem(hand);
+        return InteractionResultHolder.consume(player.getItemInHand(hand));
     }
 }

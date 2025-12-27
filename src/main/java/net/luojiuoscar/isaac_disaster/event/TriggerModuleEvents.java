@@ -9,7 +9,6 @@ import net.luojiuoscar.isaac_disaster.registries.attack_type.IBulletObject;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.ITriggerModule;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerModule;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerCategory;
-import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerModuleInstance;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
@@ -34,9 +33,9 @@ public class TriggerModuleEvents {
         entity.getCapability(EffectModulesProvider.EFFECT_MODULES).ifPresent(triggerModule -> {
 
             var queue = triggerModule.getTriggerModules().copy();
+            queue.lock();
 
-            for (int i = 0; i < queue.getQueue().size(); i++) {
-                TriggerModuleInstance inst = queue.getQueue().get(i);
+            for (var inst : queue.getQueue()) {
                 ITriggerModule val = reg.getValue(inst.id);
                 if (val == null) continue;
 
@@ -58,9 +57,9 @@ public class TriggerModuleEvents {
         entity.getCapability(EffectModulesProvider.EFFECT_MODULES).ifPresent(triggerModule -> {
 
             var queue = triggerModule.getTriggerModules().copy();
+            queue.lock();
 
-            for (int i = 0; i < queue.getQueue().size(); i++) {
-                TriggerModuleInstance inst = queue.getQueue().get(i);
+            for (var inst : queue.getQueue()) {
                 ITriggerModule val = reg.getValue(inst.id);
                 if (val == null) continue;
 
@@ -85,6 +84,7 @@ public class TriggerModuleEvents {
         entity.getCapability(EffectModulesProvider.EFFECT_MODULES).ifPresent(
                 triggerModule -> {
                     var queue = triggerModule.getTriggerModules().copy();
+                    queue.lock();
 
                     for (var inst : queue.getQueue()){
                         ITriggerModule val = reg.getValue(inst.id);
@@ -106,6 +106,7 @@ public class TriggerModuleEvents {
 
         IBulletObject bulletObject = event.getBulletObject();
         var queue = bulletObject.getTriggerModules().copy();
+        queue.lock();
 
         for (var inst : queue.getQueue()){
             ITriggerModule val = reg.getValue(inst.id);
@@ -125,6 +126,7 @@ public class TriggerModuleEvents {
 
         IBulletObject bulletObject = event.getBulletObject();
         var queue = bulletObject.getTriggerModules().copy();
+        queue.lock();
 
         for (var inst : queue.getQueue()){
             ITriggerModule val = reg.getValue(inst.id);
@@ -144,6 +146,7 @@ public class TriggerModuleEvents {
 
         IBulletObject bulletObject = event.getBulletObject();
         var queue = bulletObject.getTriggerModules().copy();
+        queue.lock();
 
         for (var inst : queue.getQueue()){
             ITriggerModule val = reg.getValue(inst.id);
@@ -165,6 +168,7 @@ public class TriggerModuleEvents {
         player.getCapability(EffectModulesProvider.EFFECT_MODULES).ifPresent(
                 triggerModule -> {
                     var queue = triggerModule.getTriggerModules().copy();
+                    queue.lock();
 
                     for (var inst : queue.getQueue()){
                         ITriggerModule val = reg.getValue(inst.id);
@@ -200,6 +204,7 @@ public class TriggerModuleEvents {
                 triggerModule -> {
 
                     var queue = triggerModule.getTriggerModules().copy();
+                    queue.lock();
 
                     for (var inst : queue.getQueue()){
                         ITriggerModule val = reg.getValue(inst.id);
@@ -226,6 +231,7 @@ public class TriggerModuleEvents {
                 triggerModule -> {
 
                     var queue = triggerModule.getTriggerModules().copy();
+                    queue.lock();
 
                     for (var inst : queue.getQueue()){
                         ITriggerModule val = reg.getValue(inst.id);

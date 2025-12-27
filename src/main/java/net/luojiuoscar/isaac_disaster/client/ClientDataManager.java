@@ -1,6 +1,6 @@
 package net.luojiuoscar.isaac_disaster.client;
 
-import net.luojiuoscar.isaac_disaster.manager.item_managers.PillEffectManager;
+import net.luojiuoscar.isaac_disaster.manager.PillEffectManager;
 import net.minecraft.resources.ResourceLocation;
 
 import java.util.HashMap;

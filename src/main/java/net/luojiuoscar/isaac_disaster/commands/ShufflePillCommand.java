@@ -1,8 +1,7 @@
 package net.luojiuoscar.isaac_disaster.commands;
 
 import com.mojang.brigadier.CommandDispatcher;
-import net.luojiuoscar.isaac_disaster.capability.player.PlayerPassiveItemProvider;
-import net.luojiuoscar.isaac_disaster.manager.item_managers.PillEffectManager;
+import net.luojiuoscar.isaac_disaster.manager.PillEffectManager;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;

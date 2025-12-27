@@ -1,7 +1,7 @@
 package net.luojiuoscar.isaac_disaster.registries.ability.active;
 
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
-import net.luojiuoscar.isaac_disaster.manager.item_managers.id.ItemId;
+import net.luojiuoscar.isaac_disaster.manager.id.ItemId;
 import net.luojiuoscar.isaac_disaster.registries.ability.active.impl.*;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;

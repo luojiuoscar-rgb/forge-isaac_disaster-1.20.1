@@ -8,13 +8,14 @@ import net.luojiuoscar.isaac_disaster.effect.ModEffects;
 import net.luojiuoscar.isaac_disaster.effect.custom.TheWizEffect;
 import net.luojiuoscar.isaac_disaster.event.custom.attack.GetAttackContextEvent;
 import net.luojiuoscar.isaac_disaster.event.custom.misc.*;
+import net.luojiuoscar.isaac_disaster.helper.EntityHelper;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.item.item.Trinket;
 import net.luojiuoscar.isaac_disaster.item.pickup.Card;
 import net.luojiuoscar.isaac_disaster.item.pickup.Pill;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
-import net.luojiuoscar.isaac_disaster.manager.item_managers.id.ItemId;
-import net.luojiuoscar.isaac_disaster.manager.item_managers.id.TrinketId;
+import net.luojiuoscar.isaac_disaster.manager.id.ItemId;
+import net.luojiuoscar.isaac_disaster.manager.id.TrinketId;
 import net.luojiuoscar.isaac_disaster.registries.ability.passive.impl.BingeEater;
 import net.luojiuoscar.isaac_disaster.registries.ability.passive.impl.EchoChamber;
 import net.luojiuoscar.isaac_disaster.registries.ability.passive.impl.GlitchedCrown;
@@ -51,7 +52,7 @@ public class IsaacDisasterEvents {
             creeper.explodeCreeper();
         }
         if (eatenEntity instanceof EnderMan || eatenEntity instanceof Endermite){
-            PlayerHelper.teleportToRandomLocation(player, 10);
+            EntityHelper.teleportToRandomLocation(player, 10);
             level.playSound(null, player.getX(), player.getY(), player.getZ(),
                     SoundEvents.ENDERMAN_TELEPORT, SoundSource.PLAYERS, 1.0f, 1.0f);
         }
@@ -70,9 +71,9 @@ public class IsaacDisasterEvents {
                             trinket.getTrinketId() == TrinketId.BROKEN_REMOTE.getId())){
                         List<ItemStack> s = playerSwallowedTrinkets.getAllTrinketListFromId(player, TrinketId.BROKEN_REMOTE.getId());
                         if (s.stream().anyMatch(Trinket::isEnchanted)){
-                            PlayerHelper.teleportToRandomLocation(player, StatManager.getNearbyRange() * 6);
+                            EntityHelper.teleportToRandomLocation(player, StatManager.getNearbyRange() * 6);
                         }else{
-                            PlayerHelper.teleportToRandomLocation(player, StatManager.getNearbyRange() * 3);
+                            EntityHelper.teleportToRandomLocation(player, StatManager.getNearbyRange() * 3);
                         }
                     }
                 });

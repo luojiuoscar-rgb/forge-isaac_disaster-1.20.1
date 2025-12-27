@@ -5,7 +5,7 @@ import net.luojiuoscar.isaac_disaster.item.item.PassiveItem;
 import net.luojiuoscar.isaac_disaster.item.item.custom.ExperimentalTreatmentItem;
 import net.luojiuoscar.isaac_disaster.item.item.custom.FoodPassiveItem;
 import net.luojiuoscar.isaac_disaster.manager.ItemListManager;
-import net.luojiuoscar.isaac_disaster.manager.item_managers.id.ItemId;
+import net.luojiuoscar.isaac_disaster.manager.id.ItemId;
 import net.luojiuoscar.isaac_disaster.registries.ability.passive.ModPassiveAbility;
 import net.minecraft.world.item.Item;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -364,4 +364,12 @@ public class ModPassiveItems {
     public static final RegistryObject<Item> C_SECTION = ITEMS.register("c_section",
             () -> new PassiveItem(new Item.Properties(), ModPassiveAbility.C_SECTION));
     static {ItemListManager.PASSIVE_ITEM_LIST.add(C_SECTION);}
+
+    public static final RegistryObject<Item> CURSED_EYE = ITEMS.register("cursed_eye",
+            () -> new PassiveItem(new Item.Properties(), ModPassiveAbility.CURSED_EYE));
+    static {ItemListManager.PASSIVE_ITEM_LIST.add(CURSED_EYE);}
+
+    public static final RegistryObject<Item> NEPTUNUS = ITEMS.register("neptunus",
+            () -> new PassiveItem(new Item.Properties(), ModPassiveAbility.NEPTUNUS));
+    static {ItemListManager.PASSIVE_ITEM_LIST.add(NEPTUNUS);}
 }

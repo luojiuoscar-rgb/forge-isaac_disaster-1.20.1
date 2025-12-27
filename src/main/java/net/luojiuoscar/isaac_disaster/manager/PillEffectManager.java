@@ -1,4 +1,4 @@
-package net.luojiuoscar.isaac_disaster.manager.item_managers;
+package net.luojiuoscar.isaac_disaster.manager;
 
 import net.luojiuoscar.isaac_disaster.manager.data.PillShuffleData;
 import net.luojiuoscar.isaac_disaster.registries.pill_effect.IPillEffect;

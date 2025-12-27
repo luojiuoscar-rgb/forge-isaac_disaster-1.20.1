@@ -399,6 +399,11 @@
   "item.isaac_disaster.c_section.lore.2": "胎儿子弹持续追踪敌人，具有较低弹速",
   "item.isaac_disaster.c_section.lore.3": "并且持续追踪敌人，每秒造成4次伤害",
   "item.isaac_disaster.c_section.synergy.technology.1": "胎儿子弹持续发射激光",
+  "item.isaac_disaster.cursed_eye": "诅咒之眼",
+  "item.isaac_disaster.cursed_eye.lore.1": "蓄力发射多个子弹",
+  "item.isaac_disaster.cursed_eye.lore.2": "蓄力时受伤会随机传送",
+  "item.isaac_disaster.neptunus": "海王星",
+  "item.isaac_disaster.neptunus.lore.1": "开闸放水！",
 
   "item end": "",
 

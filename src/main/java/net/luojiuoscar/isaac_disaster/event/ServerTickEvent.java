@@ -14,12 +14,11 @@ import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.helper.ScheduledFuncHelper;
 import net.luojiuoscar.isaac_disaster.item.item.ActiveItem;
 import net.luojiuoscar.isaac_disaster.item.pickup.special.IsaacHead;
-import net.luojiuoscar.isaac_disaster.manager.item_managers.id.ItemId;
+import net.luojiuoscar.isaac_disaster.manager.id.ItemId;
 import net.luojiuoscar.isaac_disaster.networking.ModMessages;
 import net.luojiuoscar.isaac_disaster.networking.packet.ChargeBarUpdateS2CPacket;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackType;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.IChargeableAttack;
-import net.luojiuoscar.isaac_disaster.registries.attack_type.ModAttackType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
@@ -81,25 +80,13 @@ public class ServerTickEvent {
 
         // 每tick执行一次
         for (ServerPlayer player : server.getPlayerList().getPlayers()){
-            player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY).ifPresent(
-                    playerAbility -> {
-                        if (playerAbility.isHoldingRightClick()){
-                            // right click effect
-                            if (player.getMainHandItem().getItem() instanceof IsaacHead){
-                                holdingRightClick(player, player.getMainHandItem());
 
-                            }else if(player.getOffhandItem().getItem() instanceof IsaacHead){
-                                holdingRightClick(player, player.getOffhandItem());
-                            }
-                        }
+            IsaacHeadAttack(player);
+            recursiveModuleTick(player);
 
-                        // recursive modules
-                        recursiveModuleTick(player);
-
-                        if (tickCounter % 3 == 0){
-                            updateClientCharge(player);
-                        }
-                    });
+            if (tickCounter % 3 == 0){
+                updateClientCharge(player);
+            }
         }
 
         // 更新所有scheduled function
@@ -167,13 +154,14 @@ public class ServerTickEvent {
                 playerAbility -> {
                     float maxCharge = 1f;
                     if (playerAbility.getCachedAttackType() instanceof IChargeableAttack attack) {
-                        maxCharge = attack.getTargetValue(player);
+                        maxCharge = attack.getTotalCharge(player);
                         if (maxCharge <= 0) maxCharge = 1f;
                     }
 
                     float progress = playerAbility.getChargeAmount() / maxCharge;
                     progress = Math.min(progress, 1f);
 
+                    // if current charge amount is not equal to pre-charge amount
                     if (playerAbility.getChargeAmount() != playerAbility.getPreChargeAmount()){
                         playerAbility.setPreChargeAmount(playerAbility.getChargeAmount());
                         ModMessages.sentToPlayer(new ChargeBarUpdateS2CPacket(progress), player);
@@ -210,34 +198,45 @@ public class ServerTickEvent {
         }
     }
 
-    private static void holdingRightClick(ServerPlayer player, ItemStack stack){
+    private static void IsaacHeadAttack(ServerPlayer player){
+        player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY).ifPresent(
+                playerAbility -> {
+                    ItemStack stack = null;
+                    if (playerAbility.isHoldingRightClick()){
+                        // right click effect
+                        if (player.getMainHandItem().getItem() instanceof IsaacHead){
+                            stack = player.getMainHandItem();
 
-        AttackType attack = player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY)
-                .map(playerAbility -> {
-                    AttackType attackType = playerAbility.getCachedAttackType();
-                    return attackType != null ? attackType : ModAttackType.BULLET.get();
-                })
-                .orElse(ModAttackType.BULLET.get());
+                        }else if(player.getOffhandItem().getItem() instanceof IsaacHead){
+                            stack = player.getOffhandItem();
+                        }
+                    }
+                    if (stack == null) return;
 
-        // tick method
-        attack.onTick(player);
+                    AttackType attack = playerAbility.getCachedAttackType();
+                    // tick method
+                    attack.onTick(player);
 
-        // 若在冷却 or 有无泪症
-        if (player.getCooldowns().isOnCooldown(stack.getItem()) ||
-                player.hasEffect(ModEffects.LACRIMAL_HYPOSECRETION.get())) return;
+                    // 若在冷却 or 有无泪症
+                    if (player.getCooldowns().isOnCooldown(stack.getItem())
+                            || player.hasEffect(ModEffects.LACRIMAL_HYPOSECRETION.get())) return;
 
-        // perform attack
-        if (!(attack instanceof IChargeableAttack)){
+                    // perform attack
+                    if (!(attack instanceof IChargeableAttack)){
 
-            BeforePerformAttackEvent event = new BeforePerformAttackEvent(player, attack);
-            MinecraftForge.EVENT_BUS.post(event);
-            if (event.isCanceled()) return;
+                        BeforePerformAttackEvent event = new BeforePerformAttackEvent(player, attack);
+                        MinecraftForge.EVENT_BUS.post(event);
+                        if (event.isCanceled()) return;
 
-            attack.performAttack(attack.getAttackContextsWithEvent(player, attack.getBulletCount(player)));
-            attack.makeSound(player);
+                        attack.performAttack(attack.getAttackContextsWithEvent(player, attack.getBulletCount(player)));
+                        attack.makeSound(player);
 
-            // 射击延迟
-            player.getCooldowns().addCooldown(stack.getItem(), (int) PlayerHelper.getShotDelay(player));
-        }
+                        // 射击延迟
+                        player.getCooldowns().addCooldown(stack.getItem(), (int) PlayerHelper.getShotDelay(player));
+
+                        // 重置charge bar
+                        if (playerAbility.getChargeAmount() > 0) playerAbility.setChargeAmount(0);
+                    }
+                });
     }
 }

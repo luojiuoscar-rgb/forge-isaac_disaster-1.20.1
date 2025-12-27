@@ -9,6 +9,7 @@ import java.util.List;
 
 public class TriggerModuleQueue {
     private final List<TriggerModuleInstance> queue;
+    private boolean locked = false;
 
     public TriggerModuleQueue(){
         this.queue = new ArrayList<>();
@@ -19,18 +20,25 @@ public class TriggerModuleQueue {
     }
 
     public void clear() {
+        if (locked) return;
+
         queue.clear();
     }
 
     public void rawAdd(TriggerModuleInstance inst) {
+        if (locked) return;
+
         queue.add(inst);
     }
 
     public void add(TriggerModuleInstance inst){
+        if (locked) return;
+
         add(inst.id, inst.stacks);
     }
 
     public void add(ResourceLocation id, int stacks) {
+        if (locked) return;
         // 获取注册表
         IForgeRegistry<ITriggerModule> registry =
                 RegistryManager.ACTIVE.getRegistry(ModTriggerModule.TRIGGER_MODULE_KEY);
@@ -90,6 +98,8 @@ public class TriggerModuleQueue {
 
 
     public void remove(ResourceLocation id) {
+        if (locked) return;
+
         queue.removeIf(inst -> inst.id.equals(id));
     }
 
@@ -119,4 +129,11 @@ public class TriggerModuleQueue {
         return null;
     }
 
+    public void lock() {
+        this.locked = true;
+    }
+
+    public void unlock(){
+        this.locked = false;
+    }
 }

@@ -8,7 +8,7 @@ import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.item.ModItems;
 import net.luojiuoscar.isaac_disaster.item.pickup.interfaces.ICommonPickup;
 import net.luojiuoscar.isaac_disaster.manager.LootTableManager;
-import net.luojiuoscar.isaac_disaster.manager.item_managers.id.ItemId;
+import net.luojiuoscar.isaac_disaster.manager.id.ItemId;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.RandomSource;
@@ -44,7 +44,7 @@ public class SackheadLootModifier extends LootModifier {
 
         ResourceLocation tableId = lootContext.getQueriedLootTableId();
 
-        if (tableId == LootTableManager.BLACK_SACK || tableId == LootTableManager.GRAB_BAG){
+        if (tableId.equals(LootTableManager.BLACK_SACK) || tableId.equals(LootTableManager.GRAB_BAG)){
             return objectArrayList;
         }
 

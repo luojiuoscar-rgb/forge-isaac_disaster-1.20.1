@@ -12,9 +12,11 @@ import net.luojiuoscar.isaac_disaster.sound.ModSounds;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.MinecraftForge;
 
 public class BrimstoneAttack extends LaserAttack implements IChargeableAttack {
@@ -33,8 +35,18 @@ public class BrimstoneAttack extends LaserAttack implements IChargeableAttack {
     // ================== handleAttack ==================
     @Override
     public void shoot(AttackContext ctx) {
-        ScheduledFuncHelper.schedule(SCHEDULE_NAME, 1, 13, false,
-                () -> super.shoot(ctx));
+        ScheduledFuncHelper.schedule(SCHEDULE_NAME, 1, 13, false, () -> {
+            Entity s = ctx.getShooter();
+            Vec3 eyePos = s.getEyePosition().add(0, s.getBbHeight() * -0.15, 0);
+            ctx.setPos(eyePos);
+
+            if (isControllable(ctx.getOwner())){
+                ctx.setXRot(s.getXRot());
+                ctx.setYRot(s.getYRot());
+            }
+
+            super.shoot(ctx);
+        });
     }
 
     @Override
@@ -71,18 +83,13 @@ public class BrimstoneAttack extends LaserAttack implements IChargeableAttack {
         return true;
     }
 
-    @Override
-    protected boolean isControllable(LivingEntity entity){
-        return false;
-    }
-
     // =================== Chargeable ===================
     @Override
     public void onTick(ServerPlayer player) {
         player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY).ifPresent(
                 playerAbility -> {
                     if (playerAbility.isHoldingRightClick() &&
-                            playerAbility.getChargeAmount() < getTargetValue(player)){
+                            playerAbility.getChargeAmount() < getTotalCharge(player)){
                         playerAbility.setChargeAmount(playerAbility.getChargeAmount() + 1);
                     }
                 }
@@ -98,7 +105,7 @@ public class BrimstoneAttack extends LaserAttack implements IChargeableAttack {
     public void onReleased(ServerPlayer player) {
         player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY).ifPresent(
                 playerAbility -> {
-                    if (playerAbility.getChargeAmount() >= getTargetValue(player)){
+                    if (playerAbility.getChargeAmount() >= getTotalCharge(player)){
 
                         BeforePerformAttackEvent event = new BeforePerformAttackEvent(player, this);
                         MinecraftForge.EVENT_BUS.post(event);
@@ -114,7 +121,7 @@ public class BrimstoneAttack extends LaserAttack implements IChargeableAttack {
     }
 
     @Override
-    public int getTargetValue(Player player) {
+    public int getTotalCharge(Player player) {
         return (int) getShotDelay(player) * 3;
     }
 

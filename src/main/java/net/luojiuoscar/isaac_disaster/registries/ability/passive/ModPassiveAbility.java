@@ -1,7 +1,7 @@
 package net.luojiuoscar.isaac_disaster.registries.ability.passive;
 
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
-import net.luojiuoscar.isaac_disaster.manager.item_managers.id.ItemId;
+import net.luojiuoscar.isaac_disaster.manager.id.ItemId;
 import net.luojiuoscar.isaac_disaster.registries.ability.passive.impl.*;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
@@ -359,4 +359,13 @@ public class ModPassiveAbility {
     public static final RegistryObject<PassiveAbility> C_SECTION =
             PASSIVE_ABILITY_REGISTRY.register("c_section",
                     () -> new CSection(ItemId.C_SECTION.getId(), ItemId.C_SECTION.getLevel()));
+
+    public static final RegistryObject<PassiveAbility> CURSED_EYE =
+            PASSIVE_ABILITY_REGISTRY.register("cursed_eye",
+                    () -> new CursedEye(ItemId.CURSED_EYE.getId(), ItemId.CURSED_EYE.getLevel()));
+
+    public static final RegistryObject<PassiveAbility> NEPTUNUS =
+            PASSIVE_ABILITY_REGISTRY.register("neptunus",
+                    () -> new Neptunus(ItemId.NEPTUNUS.getId(), ItemId.NEPTUNUS.getLevel()));
+
 }

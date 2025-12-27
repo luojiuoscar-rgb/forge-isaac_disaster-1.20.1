@@ -6,6 +6,8 @@ import net.luojiuoscar.isaac_disaster.entity.tnt.GigaBomb;
 import net.luojiuoscar.isaac_disaster.entity.tnt.IsaacBomb;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.Mth;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.*;
@@ -14,6 +16,7 @@ import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
@@ -323,4 +326,111 @@ public class EntityHelper {
         return playerTarget;
     }
 
+    public static void teleportToRandomLocation(Entity entity, double radius) {
+        if (entity.level().isClientSide()) return;
+
+        Level world = entity.level();
+        Vec3 currentPos = entity.position();
+        int minY = world.getMinBuildHeight();
+        int maxY = world.getMaxBuildHeight();
+
+        RandomSource random = world.getRandom();
+        float height = entity.getBbHeight();
+
+        // 最多尝试5次
+        for (int retry = 0; retry < 5; retry++) {
+            // 生成随机X和Z坐标（在半径范围内）
+            int randomX = (int) (currentPos.x + (random.nextDouble() * radius * 2 - radius));
+            int randomZ = (int) (currentPos.z + (random.nextDouble() * radius * 2 - radius));
+            // 生成初始Y坐标（在世界高度范围内）
+            int initialY = (int) (currentPos.y + (random.nextDouble() * radius * 2 - radius));
+            initialY = Mth.clamp(initialY, minY, maxY);
+
+            // 从初始Y位置向上寻找安全位置
+            BlockPos safePos = findSafePosition(world, randomX, randomZ, initialY, minY, maxY, height);
+
+            if (safePos != null) {
+                // 找到安全位置，执行传送（Y坐标稍微向上偏移，避免卡进方块）
+                entity.teleportTo(
+                        safePos.getX() + 0.5, // 方块中心X
+                        safePos.getY() + 0.1, // 稍微高于方块
+                        safePos.getZ() + 0.5  // 方块中心Z
+                );
+                return;
+            }
+        }
+    }
+
+    private static BlockPos findSafePosition(
+            Level world,
+            int x, int z,
+            int startY,
+            int minY, int maxY,
+            double entityHeight
+    ) {
+        // 向下搜索
+        for (int y = startY; y >= minY; y--) {
+            BlockPos pos = new BlockPos(x, y, z);
+            if (isSafeToStand(world, pos, entityHeight)) {
+                return pos;
+            }
+
+            y -= skipDownUnsafe(world, pos, entityHeight);
+        }
+
+        // 向上搜索
+        for (int y = startY + 1; y <= maxY; y++) {
+            BlockPos pos = new BlockPos(x, y, z);
+            if (isSafeToStand(world, pos, entityHeight)) {
+                return pos;
+            }
+        }
+
+        return null;
+    }
+
+    private static int skipDownUnsafe(Level world, BlockPos pos, double entityHeight) {
+        int height = (int) Math.ceil(entityHeight);
+
+        // 如果脚下都没支撑，不能跳过（可能下一格才有地面）
+        BlockPos below = pos.below();
+        if (world.getBlockState(below).getCollisionShape(world, below).isEmpty()) {
+            return 0;
+        }
+
+        // 如果身体被方块阻挡，可以安全跳过 height - 1 格
+        for (int i = 0; i < height; i++) {
+            BlockPos bodyPos = pos.above(i);
+            if (!world.getBlockState(bodyPos).getCollisionShape(world, bodyPos).isEmpty()) {
+                return height - 1;
+            }
+        }
+
+        return 0;
+    }
+
+    private static boolean isSafeToStand(Level world, BlockPos pos, double playerHeight) {
+        // 检查脚下是否有支撑（有碰撞箱）
+        BlockPos standPos = pos.below();
+        BlockState groundState = world.getBlockState(standPos);
+        if (groundState.getCollisionShape(world, standPos).isEmpty()) {
+            return false; // 脚下无支撑，不安全
+        }
+
+        // 计算需要检查的总高度（向上取整，确保覆盖完整碰撞箱）
+        int checkHeight = (int) Math.ceil(playerHeight);
+
+        // 检查玩家身体占据的每一格空间是否有碰撞箱
+        for (int y = 0; y < checkHeight; y++) {
+            BlockPos bodyPos = pos.offset(0, y, 0); // 当前检查的身体位置
+            BlockState bodyState = world.getBlockState(bodyPos);
+
+            // 如果身体位置存在碰撞箱，则不安全
+            if (!bodyState.getCollisionShape(world, bodyPos).isEmpty()) {
+                return false;
+            }
+        }
+
+        return true;
+    }
 }

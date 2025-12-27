@@ -137,9 +137,9 @@ public class CSectionAttack extends BulletAttack implements IChargeableAttack {
                 playerAbility -> {
                     int charge = playerAbility.getChargeAmount();
 
-                    if (playerAbility.isHoldingRightClick() && charge < getTargetValue(player)){
+                    if (playerAbility.isHoldingRightClick() && charge < getTotalCharge(player)){
 
-                        if (charge + 1 >= getTargetValue(player)){
+                        if (charge + 1 >= getTotalCharge(player)){
                             playerAbility.setChargeAmount(0);
 
                             BeforePerformAttackEvent event = new BeforePerformAttackEvent(player, this);
@@ -170,7 +170,7 @@ public class CSectionAttack extends BulletAttack implements IChargeableAttack {
     }
 
     @Override
-    public int getTargetValue(Player player) {
+    public int getTotalCharge(Player player) {
         return (int) (6 * getShotDelay(player) + 4) / 3;
     }
 

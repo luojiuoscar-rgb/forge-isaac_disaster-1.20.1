@@ -28,12 +28,6 @@ public class ModMessages {
 
         INSTANCE = net;
 
-        net.messageBuilder(RemovePassiveItemFromIdC2SPacket.class, id(), NetworkDirection.PLAY_TO_SERVER)
-                .decoder(RemovePassiveItemFromIdC2SPacket::new)
-                .encoder(RemovePassiveItemFromIdC2SPacket::toBytes)
-                .consumerNetworkThread(RemovePassiveItemFromIdC2SPacket::handle)
-                .add();
-
         net.messageBuilder(ClearPassiveItemC2SPacket.class, id(), NetworkDirection.PLAY_TO_SERVER)
                 .decoder(ClearPassiveItemC2SPacket::new)
                 .encoder(ClearPassiveItemC2SPacket::toBytes)

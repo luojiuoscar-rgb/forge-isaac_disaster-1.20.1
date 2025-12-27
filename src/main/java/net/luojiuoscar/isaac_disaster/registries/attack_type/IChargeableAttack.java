@@ -9,5 +9,5 @@ public interface IChargeableAttack {
 
     void onReleased(ServerPlayer player);
 
-    int getTargetValue(Player player);
+    int getTotalCharge(Player player);
 }

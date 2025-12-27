@@ -31,8 +31,8 @@ public class SetRightClickC2SPacket {
         context.enqueueWork(() -> {
             // On the server
             ServerPlayer player = context.getSender();
-
             if (player == null) return;
+
             player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY).ifPresent(
                     playerAbility -> {
                         playerAbility.setHoldRightClick(isRightClick);
