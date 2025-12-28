@@ -22,3 +22,4 @@ public class Habit implements ITriggerModule {
         PlayerHelper.chargeAll(player, 100);
     }
 }
+

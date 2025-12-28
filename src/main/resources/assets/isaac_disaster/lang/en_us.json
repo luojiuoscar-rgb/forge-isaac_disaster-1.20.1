@@ -404,6 +404,13 @@
   "item.isaac_disaster.cursed_eye.lore.2": "蓄力时受伤会随机传送",
   "item.isaac_disaster.neptunus": "海王星",
   "item.isaac_disaster.neptunus.lore.1": "开闸放水！",
+  "item.isaac_disaster.technology2": "科技II",
+  "item.isaac_disaster.technology2.lore.1": "额外持续发射激光",
+  "item.isaac_disaster.technology2.lore.2": "激光会造成7%的面板伤害",
+  "item.isaac_disaster.technology2.lore.3": "每秒发射20次",
+  "item.isaac_disaster.rock_bottom": "谷底石",
+  "item.isaac_disaster.rock_bottom.lore.1": "将基础属性保持在最高值",
+
 
   "item end": "",
 

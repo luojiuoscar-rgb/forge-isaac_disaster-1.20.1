@@ -5,10 +5,10 @@ import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.registries.recursive_module.IRecursiveModule;
 import net.luojiuoscar.isaac_disaster.registries.recursive_module.RecursiveModuleQueue;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.entity.player.Player;
 
 import java.nio.charset.StandardCharsets;
 import java.util.UUID;
@@ -25,7 +25,7 @@ public class MoneyIsPower implements IRecursiveModule {
 
     @Override
     public void recursiveEffect(LivingEntity entity, int stacks, RecursiveModuleQueue queue) {
-        if (!(entity instanceof Player player)) return;
+        if (!(entity instanceof ServerPlayer player)) return;
 
         int money = PlayerHelper.countMoney(player);
         double damage = money * Config.MONEY_IS_POWER_STRENGTH.get();

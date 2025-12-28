@@ -368,4 +368,13 @@ public class ModPassiveAbility {
             PASSIVE_ABILITY_REGISTRY.register("neptunus",
                     () -> new Neptunus(ItemId.NEPTUNUS.getId(), ItemId.NEPTUNUS.getLevel()));
 
+    public static final RegistryObject<PassiveAbility> TECHNOLOGY2 =
+            PASSIVE_ABILITY_REGISTRY.register("technology2",
+                    () -> new Technology2(ItemId.TECHNOLOGY2.getId(), ItemId.TECHNOLOGY2.getLevel()));
+
+    public static final RegistryObject<PassiveAbility> ROCK_BOTTOM =
+            PASSIVE_ABILITY_REGISTRY.register("rock_bottom",
+                    () -> new RockBottom(ItemId.ROCK_BOTTOM.getId(), ItemId.ROCK_BOTTOM.getLevel()));
+
+
 }

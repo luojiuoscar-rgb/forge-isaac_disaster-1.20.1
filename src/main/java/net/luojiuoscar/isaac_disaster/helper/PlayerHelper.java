@@ -188,18 +188,13 @@ public class PlayerHelper {
             player.setYRot(respawnAngle);
         }
     }
-    public static boolean getItemFlag(ServerPlayer player, int ItemId){
-        boolean[] flag = {false};
-        player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY).ifPresent(
-                playerAbility -> flag[0] = playerAbility.getItemFlags().getOrDefault(ItemId, false)
-        );
-        return flag[0];
+    /** 默认为0 */
+    public static Map<String, Double> getExtraData(ServerPlayer player){
+        return player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY)
+                .map(PlayerAbility::getExtraData)
+                .orElse(null);
     }
-    public static void setItemFlag(ServerPlayer player, int ItemId, boolean flag){
-        player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY).ifPresent(
-                playerAbility -> playerAbility.setItemFlags(ItemId, flag)
-        );
-    }
+
     public static int countMoney(Player player) {
         int money = 0;
 

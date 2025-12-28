@@ -372,4 +372,12 @@ public class ModPassiveItems {
     public static final RegistryObject<Item> NEPTUNUS = ITEMS.register("neptunus",
             () -> new PassiveItem(new Item.Properties(), ModPassiveAbility.NEPTUNUS));
     static {ItemListManager.PASSIVE_ITEM_LIST.add(NEPTUNUS);}
+
+    public static final RegistryObject<Item> TECHNOLOGY2 = ITEMS.register("technology2",
+            () -> new PassiveItem(new Item.Properties(), ModPassiveAbility.TECHNOLOGY2));
+    static {ItemListManager.PASSIVE_ITEM_LIST.add(TECHNOLOGY2);}
+
+    public static final RegistryObject<Item> ROCK_BOTTOM = ITEMS.register("rock_bottom",
+            () -> new PassiveItem(new Item.Properties(), ModPassiveAbility.ROCK_BOTTOM));
+    static {ItemListManager.PASSIVE_ITEM_LIST.add(ROCK_BOTTOM);}
 }

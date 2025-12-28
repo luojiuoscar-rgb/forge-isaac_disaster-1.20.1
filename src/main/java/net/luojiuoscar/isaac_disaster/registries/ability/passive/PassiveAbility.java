@@ -26,8 +26,8 @@ public abstract class PassiveAbility extends IsaacItemAbility {
         handleRemove(player, stack);
     }
 
-    abstract public void handleObtain(ServerPlayer player, @Nullable ItemStack stack);
     abstract public void handleFirstObtain(ServerPlayer player, @Nullable ItemStack stack);
+    abstract public void handleObtain(ServerPlayer player, @Nullable ItemStack stack);
     abstract public void handleRemove(ServerPlayer player, @Nullable ItemStack stack);
 
     public void makeSound(ServerPlayer player){

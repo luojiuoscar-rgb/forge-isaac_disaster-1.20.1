@@ -4,11 +4,14 @@ import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.capability.entity.EffectModulesProvider;
 import net.luojiuoscar.isaac_disaster.event.custom.attack.*;
 import net.luojiuoscar.isaac_disaster.event.custom.attack.tear_bullet.BulletTickEvent;
+import net.luojiuoscar.isaac_disaster.event.custom.misc.UpdateStatusDisplayValueEvent;
+import net.luojiuoscar.isaac_disaster.event.custom.misc.RightClickTickEvent;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.IBulletObject;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.ITriggerModule;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerModule;
-import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerCategory;
+import net.luojiuoscar.isaac_disaster.registries.trigger_module.impl.RockBottom;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
@@ -18,8 +21,6 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.registries.IForgeRegistry;
 import net.minecraftforge.registries.RegistryManager;
-
-import java.util.Set;
 
 @Mod.EventBusSubscriber(modid = IsaacDisaster.MOD_ID)
 public class TriggerModuleEvents {
@@ -39,11 +40,7 @@ public class TriggerModuleEvents {
                 ITriggerModule val = reg.getValue(inst.id);
                 if (val == null) continue;
 
-                Set<TriggerCategory> types = val.getTriggerType();
-
-                if (types.contains(TriggerCategory.GET_ATTACK_CONTEXT)) {
-                    val.getAttackContext(event, inst.stacks, queue);
-                }
+                val.getAttackContext(event, inst.stacks, queue);
             }
         });
     }
@@ -63,11 +60,7 @@ public class TriggerModuleEvents {
                 ITriggerModule val = reg.getValue(inst.id);
                 if (val == null) continue;
 
-                Set<TriggerCategory> types = val.getTriggerType();
-
-                if (types.contains(TriggerCategory.BEFORE_PERFORM_ATTACK)) {
-                    val.beforePerformAttack(event, inst.stacks, queue);
-                }
+                val.beforePerformAttack(event, inst.stacks, queue);
             }
         });
     }
@@ -81,22 +74,17 @@ public class TriggerModuleEvents {
         IForgeRegistry<ITriggerModule> reg  =
                 RegistryManager.ACTIVE.getRegistry(ModTriggerModule.TRIGGER_MODULE_KEY);
 
-        entity.getCapability(EffectModulesProvider.EFFECT_MODULES).ifPresent(
-                triggerModule -> {
-                    var queue = triggerModule.getTriggerModules().copy();
-                    queue.lock();
+        entity.getCapability(EffectModulesProvider.EFFECT_MODULES).ifPresent(triggerModule -> {
+            var queue = triggerModule.getTriggerModules().copy();
+            queue.lock();
 
-                    for (var inst : queue.getQueue()){
-                        ITriggerModule val = reg.getValue(inst.id);
-                        if (val == null) continue;
-                        Set<TriggerCategory> types = val.getTriggerType();
+            for (var inst : queue.getQueue()){
+                ITriggerModule val = reg.getValue(inst.id);
+                if (val == null) continue;
 
-                        if (types.contains(TriggerCategory.HIT_ENTITY)){
-                            val.onHitEntity(event, inst.stacks, queue);
-                        }
-                    }
-                }
-        );
+                val.onHitEntity(event, inst.stacks, queue);
+            }
+        });
     }
 
     @SubscribeEvent
@@ -111,11 +99,8 @@ public class TriggerModuleEvents {
         for (var inst : queue.getQueue()){
             ITriggerModule val = reg.getValue(inst.id);
             if (val == null) continue;
-            Set<TriggerCategory> types = val.getTriggerType();
 
-            if (types.contains(TriggerCategory.BULLET_HIT_ENTITY_BEFORE)){
-                val.beforeBulletHitEntity(event, inst.stacks, queue);
-            }
+            val.beforeBulletHitEntity(event, inst.stacks, queue);
         }
     }
 
@@ -131,11 +116,8 @@ public class TriggerModuleEvents {
         for (var inst : queue.getQueue()){
             ITriggerModule val = reg.getValue(inst.id);
             if (val == null) continue;
-            Set<TriggerCategory> types = val.getTriggerType();
 
-            if (types.contains(TriggerCategory.BULLET_HIT_ENTITY_AFTER)){
-                val.afterBulletHitEntity(event, inst.stacks, queue);
-            }
+            val.afterBulletHitEntity(event, inst.stacks, queue);
         }
     }
 
@@ -151,11 +133,8 @@ public class TriggerModuleEvents {
         for (var inst : queue.getQueue()){
             ITriggerModule val = reg.getValue(inst.id);
             if (val == null) continue;
-            Set<TriggerCategory> types = val.getTriggerType();
 
-            if (types.contains(TriggerCategory.BULLET_HIT_BLOCK)){
-                val.onBulletHitBlock(event, inst.stacks, queue);
-            }
+            val.onBulletHitBlock(event, inst.stacks, queue);
         }
     }
 
@@ -165,32 +144,25 @@ public class TriggerModuleEvents {
         IForgeRegistry<ITriggerModule> reg  =
                 RegistryManager.ACTIVE.getRegistry(ModTriggerModule.TRIGGER_MODULE_KEY);
 
-        player.getCapability(EffectModulesProvider.EFFECT_MODULES).ifPresent(
-                triggerModule -> {
-                    var queue = triggerModule.getTriggerModules().copy();
-                    queue.lock();
+        player.getCapability(EffectModulesProvider.EFFECT_MODULES).ifPresent(triggerModule -> {
+            var queue = triggerModule.getTriggerModules().copy();
+            queue.lock();
 
-                    for (var inst : queue.getQueue()){
-                        ITriggerModule val = reg.getValue(inst.id);
-                        if (val == null) continue;
-                        Set<TriggerCategory> types = val.getTriggerType();
+            for (var inst : queue.getQueue()){
+                ITriggerModule val = reg.getValue(inst.id);
+                if (val == null) continue;
 
-                        if (types.contains(TriggerCategory.ON_HURT)){
-                            val.onHurt(event, inst.stacks, queue);
-                        }
-                        // 暂时将generic_kill作为判断依据
-                        if (types.contains(TriggerCategory.ON_HURT_POSITIVE) &&
-                                PlayerHelper.isSelfDamage(event.getSource())){
-                            val.onHurtPositive(event, inst.stacks, queue);
+                val.onHurt(event, inst.stacks, queue);
+                // 暂时将generic_kill作为判断依据
+                if (PlayerHelper.isSelfDamage(event.getSource())){
+                    val.onHurtPositive(event, inst.stacks, queue);
 
-                        }
-                        if (types.contains(TriggerCategory.ON_HURT_NEGATIVE) &&
-                                !PlayerHelper.isSelfDamage(event.getSource())){
-                            val.onHurtNegative(event, inst.stacks, queue);
-                        }
-                    }
                 }
-        );
+                if (!PlayerHelper.isSelfDamage(event.getSource())){
+                    val.onHurtNegative(event, inst.stacks, queue);
+                }
+            }
+        });
     }
 
     @SubscribeEvent
@@ -200,23 +172,17 @@ public class TriggerModuleEvents {
 
         Player player = event.getPlayer();
 
-        player.getCapability(EffectModulesProvider.EFFECT_MODULES).ifPresent(
-                triggerModule -> {
+        player.getCapability(EffectModulesProvider.EFFECT_MODULES).ifPresent(triggerModule -> {
+            var queue = triggerModule.getTriggerModules().copy();
+            queue.lock();
 
-                    var queue = triggerModule.getTriggerModules().copy();
-                    queue.lock();
+            for (var inst : queue.getQueue()){
+                ITriggerModule val = reg.getValue(inst.id);
+                if (val == null) continue;
 
-                    for (var inst : queue.getQueue()){
-                        ITriggerModule val = reg.getValue(inst.id);
-                        if (val == null) continue;
-                        Set<TriggerCategory> types = val.getTriggerType();
-
-                        if (types.contains(TriggerCategory.HIT_ENTITY)){
-                            val.onBlockBreak(event, inst.stacks, queue);
-                        }
-                    }
-                }
-        );
+                val.onBlockBreak(event, inst.stacks, queue);
+            }
+        });
     }
 
     @SubscribeEvent
@@ -227,23 +193,58 @@ public class TriggerModuleEvents {
         IForgeRegistry<ITriggerModule> reg  =
                 RegistryManager.ACTIVE.getRegistry(ModTriggerModule.TRIGGER_MODULE_KEY);
 
-        player.getCapability(EffectModulesProvider.EFFECT_MODULES).ifPresent(
-                triggerModule -> {
+        player.getCapability(EffectModulesProvider.EFFECT_MODULES).ifPresent(triggerModule -> {
+            var queue = triggerModule.getTriggerModules().copy();
+            queue.lock();
 
-                    var queue = triggerModule.getTriggerModules().copy();
-                    queue.lock();
+            for (var inst : queue.getQueue()){
+                ITriggerModule val = reg.getValue(inst.id);
+                if (val == null) continue;
 
-                    for (var inst : queue.getQueue()){
-                        ITriggerModule val = reg.getValue(inst.id);
-                        if (val == null) continue;
-                        Set<TriggerCategory> types = val.getTriggerType();
-
-                        if (types.contains(TriggerCategory.BULLET_TICK)){
-                            val.onTick(event, inst.stacks, queue);
-                        }
-                    }
-                }
-        );
+                val.onBulletTick(event, inst.stacks, queue);
+            }
+        });
     }
+
+    @SubscribeEvent
+    public static void onRightClickTick(RightClickTickEvent event) {
+        ServerPlayer player = event.getPlayer();
+
+        IForgeRegistry<ITriggerModule> reg  =
+                RegistryManager.ACTIVE.getRegistry(ModTriggerModule.TRIGGER_MODULE_KEY);
+
+        player.getCapability(EffectModulesProvider.EFFECT_MODULES).ifPresent(triggerModule -> {
+            var queue = triggerModule.getTriggerModules().copy();
+            queue.lock();
+
+            for (var inst : queue.getQueue()){
+                ITriggerModule val = reg.getValue(inst.id);
+                if (val == null) continue;
+
+                val.onRightClickTick(event, inst.stacks, queue);
+            }
+        });
+    }
+
+    // ================= 边缘事件 =================
+    @SubscribeEvent
+    public static void onUpdateDisplayValue(UpdateStatusDisplayValueEvent event){
+        ServerPlayer player = event.getPlayer();
+        IsaacDisaster.LOGGER.info("Event Triggered");
+
+        player.getCapability(EffectModulesProvider.EFFECT_MODULES).ifPresent(triggerModule -> {
+            IsaacDisaster.LOGGER.info("Module contains? {}",
+                    triggerModule.getTriggerModules().contains(ModTriggerModule.ROCK_BOTTOM.getId()));
+
+            if (triggerModule.getTriggerModules().contains(ModTriggerModule.ROCK_BOTTOM.getId())){
+                ((RockBottom) ModTriggerModule.ROCK_BOTTOM.get()).onTriggered(event);
+            }
+
+
+        });
+
+    }
+
+
 }
 

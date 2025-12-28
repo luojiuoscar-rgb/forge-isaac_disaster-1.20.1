@@ -1,6 +1,7 @@
 package net.luojiuoscar.isaac_disaster.capability.player;
 
 import net.luojiuoscar.isaac_disaster.effect.ModEffects;
+import net.luojiuoscar.isaac_disaster.event.custom.misc.UpdateStatusDisplayValueEvent;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.networking.ModMessages;
@@ -12,6 +13,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.player.Player;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.AutoRegisterCapability;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.NotNull;
@@ -27,33 +29,55 @@ public class PlayerStatModifier {
     public static class StatInstance{
         public UUID uuid;
         public Attribute attribute;
-        private double value;
+        private double actualValue;
+        private double displayValue = 0.0;
         public Double maxVal;
         public Double minVal;
         private int operationType;
 
-        public StatInstance(UUID uuid, double value, @Nullable Double maxVal, @Nullable Double minVal,
+        public StatInstance(UUID uuid, double actualValue, @Nullable Double maxVal, @Nullable Double minVal,
                             @Nullable Attribute attribute, int operationType){
             this.uuid = uuid;
-            this.value = value;
+            this.actualValue = actualValue;
             this.maxVal = maxVal;
             this.minVal = minVal;
             this.attribute = attribute;
             this.operationType = operationType;
         }
 
-        public double getValue() {
-            if (maxVal != null && value > maxVal) return maxVal;
-            if (minVal != null && value < minVal) return minVal;
-            return value;
+        public double getActualValue() {
+            return actualValue;
         }
 
-        public void add(double val){
-            this.value += val;
+        public double getDisplayValue(){
+            return displayValue;
         }
 
-        public void set(double val){
-            this.value = val;
+        public void setDisplayValue(double displayValue) {
+            this.displayValue = displayValue;
+        }
+
+        public void updateValue(ServerPlayer player){
+            if (maxVal != null && actualValue > maxVal) {
+                displayValue = maxVal;
+            }
+            else if (minVal != null && actualValue < minVal) {
+                displayValue = minVal;
+            }
+            else{
+                displayValue = actualValue;
+            }
+
+            UpdateStatusDisplayValueEvent event = new UpdateStatusDisplayValueEvent(player, this);
+            MinecraftForge.EVENT_BUS.post(event);
+        }
+
+        public void addActualValue(double val){
+            this.actualValue += val;
+        }
+
+        public void setActualValue(double val){
+            this.actualValue = val;
         }
 
         /**
@@ -96,6 +120,7 @@ public class PlayerStatModifier {
     // -----------------------------
     // Getter
     // -----------------------------
+    @Nullable
     public StatInstance getStatInstance(UUID uuid){
         return playerModifiers.get(uuid);
     }
@@ -111,24 +136,24 @@ public class PlayerStatModifier {
     // -----------------------------
     // Setter
     // -----------------------------
-    /** set or create */
+    /** 存在则修改，不存在则创建，不会覆盖 */
     public void setModifierValue(UUID uuid, double amount, @Nullable Double maxVal, @Nullable Double minVal,
                                  @NotNull Attribute attribute, int operationType){
         StatInstance inst = playerModifiers.get(uuid);
         if (inst != null){
-            inst.set(amount);
+            inst.setActualValue(amount);
             inst.attribute = attribute;
         }else{
             playerModifiers.put(uuid, new StatInstance(uuid, amount, maxVal, minVal, attribute, operationType));
         }
     }
 
-    /** add or create */
+    /** 存在则修改，不存在则创建，不会覆盖 */
     public void addModifierValue(UUID uuid, double amount, @Nullable Double maxVal, @Nullable Double minVal,
                                  @NotNull Attribute attribute, int operationType){
         StatInstance inst = playerModifiers.get(uuid);
         if (inst != null){
-            inst.add(amount);
+            inst.addActualValue(amount);
             inst.attribute = attribute;
         }else{
             playerModifiers.put(uuid, new StatInstance(uuid, amount, maxVal, minVal, attribute, operationType));
@@ -161,16 +186,18 @@ public class PlayerStatModifier {
     }
 
     // 复制属性 attribute同步
-    private void refreshAllModifiers(Player player, Map<UUID, StatInstance> source){
+    private void refreshAllModifiers(ServerPlayer player, Map<UUID, StatInstance> source){
         for (StatInstance inst : source.values()) {
-            StatManager.setModifier(player, inst.uuid, inst.attribute, inst.value,
+            StatManager.setModifier(player, inst.uuid, inst.attribute, inst.actualValue,
                     inst.minVal, inst.maxVal, inst.operationType);
         }
     }
 
     public void copyFrom(PlayerStatModifier source, Player player) {
         this.playerModifiers.clear();
-        refreshAllModifiers(player, source.playerModifiers);
+        if (player instanceof ServerPlayer){
+            refreshAllModifiers((ServerPlayer) player, source.playerModifiers);
+        }
     }
 
     public void saveNBTData(CompoundTag nbt) {
@@ -179,7 +206,7 @@ public class PlayerStatModifier {
         for (StatInstance inst : playerModifiers.values()) {
             CompoundTag tag = new CompoundTag();
             tag.putUUID("uuid", inst.uuid);
-            tag.putDouble("value", inst.value);
+            tag.putDouble("value", inst.actualValue);
             tag.putInt("operation_type", inst.operationType);
 
             if (inst.maxVal != null) tag.putDouble("max", inst.maxVal);

@@ -1,5 +1,6 @@
 package net.luojiuoscar.isaac_disaster.registries.attack_type.impl;
 
+import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerAbilityProvider;
 import net.luojiuoscar.isaac_disaster.event.custom.attack.BeforePerformAttackEvent;
 import net.luojiuoscar.isaac_disaster.item.ModItems;
@@ -55,6 +56,8 @@ public class NeptunusAttack extends AttackType implements IChargeableAttack {
                 playerAbility -> {
                     int totalCharge = getTotalCharge(player);
                     int chargeAmount = playerAbility.getChargeAmount();
+                    IsaacDisaster.LOGGER.info("Neptunus: {}, {}, {}",
+                            chargeAmount, totalCharge, playerAbility.isHoldingRightClick());
 
                     // 按下右键，有充能，不在冷却->发射子弹
                     if (playerAbility.isHoldingRightClick()
@@ -72,16 +75,16 @@ public class NeptunusAttack extends AttackType implements IChargeableAttack {
                         attack.makeSound(player);
 
                         int coolDownTick = getCoolDownTicks(getShotDelay(player), chargeAmount);
-                        player.getCooldowns().addCooldown(ModItems.ISAAC_HEAD.get(),coolDownTick);
+                        player.getCooldowns().addCooldown(ModItems.ISAAC_HEAD.get(), coolDownTick);
                         playerAbility.setChargeAmount(chargeAmount - coolDownTick);
                     }
                     // 没有按下右键，充能未满->充能
                     else if (chargeAmount < totalCharge
                             && !playerAbility.isHoldingRightClick()){
-                        // auto charge
                         playerAbility.setChargeAmount(chargeAmount + 1);
 
-                    }else if (chargeAmount > totalCharge){
+                    }
+                    else if (chargeAmount > totalCharge){
                         playerAbility.setChargeAmount(totalCharge);
                     }
                 }

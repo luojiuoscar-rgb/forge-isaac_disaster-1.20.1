@@ -23,9 +23,7 @@ public abstract class IsaacItemAbility {
         return level;
     }
 
-    public List<Component> getDesc(@Nullable ItemStack stack){
-        return List.of();
-    }
+    abstract public List<Component> getDesc(@Nullable ItemStack stack);
 
     public List<Component> getExtraDesc(@Nullable ItemStack stack){
         return List.of();

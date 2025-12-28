@@ -46,4 +46,10 @@ public class ModTriggerModule {
             TRIGGER_MODULE_REGISTRY.register("c_section", CSection::new);
     public static final RegistryObject<ITriggerModule> CURSED_EYE =
             TRIGGER_MODULE_REGISTRY.register("cursed_eye", CursedEye::new);
+    public static final RegistryObject<ITriggerModule> TECHNOLOGY2 =
+            TRIGGER_MODULE_REGISTRY.register("technology2", Technology2::new);
+    public static final RegistryObject<ITriggerModule> ROCK_BOTTOM =
+            TRIGGER_MODULE_REGISTRY.register("rock_bottom", RockBottom::new);
+
+
 }

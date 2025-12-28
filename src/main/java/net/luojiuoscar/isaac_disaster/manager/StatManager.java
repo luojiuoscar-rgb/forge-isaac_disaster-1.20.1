@@ -8,6 +8,9 @@ import net.luojiuoscar.isaac_disaster.capability.player.PlayerAbilityProvider;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerPassiveItemProvider;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerStatModifierProvider;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
+import net.luojiuoscar.isaac_disaster.registries.trigger_module.ITriggerModule;
+import net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerModule;
+import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerModuleQueue;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
@@ -20,6 +23,8 @@ import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.common.ForgeMod;
+import net.minecraftforge.registries.IForgeRegistry;
+import net.minecraftforge.registries.RegistryManager;
 import org.jetbrains.annotations.Nullable;
 
 import java.nio.charset.StandardCharsets;
@@ -34,8 +39,7 @@ public enum StatManager {
             () -> Config.HEALTH_BONUS.get(), -20.0, null){
         @Override
         public void apply(Player player, double ratio){
-            StatManager.addModifier(player, getUUID(), getAttribute(),ratio * getBonus(),
-                    getMinVal(), getMaxVal(), getOperationType());
+            super.apply(player, ratio);
             player.setHealth(player.getHealth()); // 刷新血量状态，避免显示溢出
 
             if (player.getMaxHealth() + player.getAbsorptionAmount() <= 0)
@@ -80,8 +84,7 @@ public enum StatManager {
             () -> Config.SCALE_BONUS.get(), 0.25, 10.0){
         @Override
         public void apply(Player player, double ratio){
-            StatManager.addModifier(player, getUUID(), getAttribute(),ratio * getBonus(),
-                    getMinVal(), getMaxVal(), getOperationType());
+            super.apply(player, ratio);
             player.refreshDimensions();
         }
     },
@@ -113,8 +116,7 @@ public enum StatManager {
             () -> Config.FLY_TIME.get(), null, null){
         @Override
         public void apply(Player player, double ratio){
-            StatManager.addModifier(player, getUUID(), getAttribute(),ratio * getBonus(),
-                    getMinVal(), getMaxVal(), getOperationType());
+            super.apply(player, ratio);
 
             if (!PlayerHelper.canFly(player)){
                 player.getAbilities().mayfly = false;
@@ -169,7 +171,23 @@ public enum StatManager {
 
     /** 通用 apply 方法，可被 override */
     public void apply(Player player, double ratio){
-        StatManager.addModifier(player, uuid, attribute,ratio * getBonus(), minVal, maxVal, operationType);
+        if (!(player instanceof ServerPlayer p)) return;
+        StatManager.addModifier(p, uuid, attribute,ratio * getBonus(), minVal, maxVal, operationType);
+    }
+
+    public void refresh(ServerPlayer player) {
+        player.getCapability(PlayerStatModifierProvider.PLAYER_STAT_MODIFIER).ifPresent(
+                playerStatModifier -> {
+                    var statInst = playerStatModifier.getStatInstance(uuid);
+                    if (statInst == null) return;
+
+                    double val = statInst.getDisplayValue();
+                    AttributeInstance inst = player.getAttribute(attribute);
+                    if (inst == null) return;
+
+                    StatManager.setModifierValue(inst, uuid, val, operationType);
+                }
+        );
     }
 
     /** 获取属性的描述性文本 */
@@ -216,7 +234,7 @@ public enum StatManager {
 
     /* ---------------------- 通用修改方法 ---------------------- */
 
-    public static void removeModifier(Player player, @Nullable AttributeInstance attribute, UUID uuid) {
+    public static void removeModifier(ServerPlayer player, @Nullable AttributeInstance attribute, UUID uuid) {
         if (attribute == null) return;
         attribute.removeModifier(uuid);
         player.getCapability(PlayerStatModifierProvider.PLAYER_STAT_MODIFIER).ifPresent(
@@ -224,8 +242,8 @@ public enum StatManager {
         );
     }
 
-    /** set or create */
-    public static void setModifier(Player player, UUID uuid, @Nullable Attribute attribute, double amount,
+    /** 存在则修改，不存在则创建，不会覆盖 */
+    public static void setModifier(ServerPlayer player, UUID uuid, @Nullable Attribute attribute, double amount,
                                    @Nullable Double minValue, @Nullable Double maxValue, int operationType) {
         if (attribute == null) return;
         AttributeInstance instance = player.getAttribute(attribute);
@@ -235,27 +253,19 @@ public enum StatManager {
                 playerStatModifier -> {
                     playerStatModifier.setModifierValue(uuid, amount, maxValue, minValue, attribute, operationType);
 
-                    AttributeModifier.Operation operation = AttributeModifier.Operation.ADDITION;
-                    if (operationType == 1){
-                        operation = AttributeModifier.Operation.MULTIPLY_BASE;
-                    }else if (operationType == 2){
-                        operation = AttributeModifier.Operation.MULTIPLY_TOTAL;
-                    }
+                    var statInst = playerStatModifier.getStatInstance(uuid);
+                    if (statInst == null) return;
 
-                    instance.removeModifier(uuid);
-                    double val = playerStatModifier.getStatInstance(uuid).getValue();
-                    instance.addPermanentModifier(new AttributeModifier(
-                            uuid,
-                            "",
-                            val,
-                            operation
-                    ));
+                    statInst.updateValue(player);
+                    double val = statInst.getDisplayValue();
+
+                    setModifierValue(instance, uuid, val, operationType);
                 }
         );
     }
 
-    /** add or create */
-    public static void addModifier(Player player, UUID uuid, @Nullable Attribute attribute, double amount,
+    /** 存在则修改，不存在则创建，不会覆盖 */
+    public static void addModifier(ServerPlayer player, UUID uuid, @Nullable Attribute attribute, double amount,
                                    @Nullable Double minValue, @Nullable Double maxValue, int operationType){
         if (attribute == null) return;
         AttributeInstance instance = player.getAttribute(attribute);
@@ -265,23 +275,37 @@ public enum StatManager {
                 playerStatModifier -> {
                     playerStatModifier.addModifierValue(uuid, amount, maxValue, minValue, attribute, operationType);
 
-                    AttributeModifier.Operation operation = AttributeModifier.Operation.ADDITION;
-                    if (operationType == 1){
-                        operation = AttributeModifier.Operation.MULTIPLY_BASE;
-                    }else if (operationType == 2){
-                        operation = AttributeModifier.Operation.MULTIPLY_TOTAL;
-                    }
+                    var statInst = playerStatModifier.getStatInstance(uuid);
+                    if (statInst == null) return;
 
-                    instance.removeModifier(uuid);
-                    double val = playerStatModifier.getStatInstance(uuid).getValue();
-                    instance.addPermanentModifier(new AttributeModifier(
-                            uuid,
-                            "",
-                            val,
-                            operation
-                    ));
+                    statInst.updateValue(player);
+                    double val = statInst.getDisplayValue();
+
+                    setModifierValue(instance, uuid, val, operationType);
                 }
         );
+    }
+
+    /**
+     * 设置modifier的最终值
+     * @param operationType 0 -> add; 1-> multiply_base; 2 -> multiply_total
+     */
+    public static void setModifierValue(AttributeInstance instance, UUID uuid, double value, int operationType){
+        AttributeModifier.Operation operation = AttributeModifier.Operation.ADDITION;
+        if (operationType == 1){
+            operation = AttributeModifier.Operation.MULTIPLY_BASE;
+        }else if (operationType == 2){
+            operation = AttributeModifier.Operation.MULTIPLY_TOTAL;
+        }
+
+        instance.removeModifier(uuid);
+
+        instance.addPermanentModifier(new AttributeModifier(
+                uuid,
+                "",
+                value,
+                operation
+        ));
     }
 
     /* ---------------------- 基础属性数值获取 ---------------------- */
@@ -332,7 +356,7 @@ public enum StatManager {
                 playerAbility -> playerAbility.setControllable(playerAbility.getControllable() + amount)
         );
     }
-    /* ---------------------- 子弹类型与颜色 ---------------------- */
+    /* ---------------------- 注册项目 ---------------------- */
     public static void addAttackType(ServerPlayer player, ResourceLocation id, int count){
         player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY).ifPresent(
                 playerAbility -> playerAbility.addAttackType(id, count)
@@ -352,8 +376,25 @@ public enum StatManager {
     }
 
     public static void addTriggerModule(LivingEntity entity, ResourceLocation rl, int count){
+        IForgeRegistry<ITriggerModule> reg =
+                RegistryManager.ACTIVE.getRegistry(ModTriggerModule.TRIGGER_MODULE_KEY);
+
         entity.getCapability(EffectModulesProvider.EFFECT_MODULES).ifPresent(
-                effectModules -> effectModules.getTriggerModules().add(rl, count)
+                effectModules -> {
+                    effectModules.getTriggerModules().add(rl, count);
+
+                    ITriggerModule module = reg.getValue(rl);
+                    if (module == null) return;
+
+                    TriggerModuleQueue queue = effectModules.getTriggerModules().copy();
+                    queue.lock();
+
+                    if (count > 0){
+                        module.onAdded(entity, queue);
+                    }else if (count < 0){
+                        module.onRemove(entity, queue);
+                    }
+                }
         );
     }
 

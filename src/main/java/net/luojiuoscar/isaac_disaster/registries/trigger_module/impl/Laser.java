@@ -38,7 +38,7 @@ public class Laser implements ITriggerModule {
     }
 
     @Override
-    public void onTick(BulletTickEvent event, int stacks, TriggerModuleQueue queue) {
+    public void onBulletTick(BulletTickEvent event, int stacks, TriggerModuleQueue queue) {
         if (!(event.getBullet() instanceof FetusBullet bullet)) return;
         if (!(bullet.getOwner() instanceof Player player)) return;
 

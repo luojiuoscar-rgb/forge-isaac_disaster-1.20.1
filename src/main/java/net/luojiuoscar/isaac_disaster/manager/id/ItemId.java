@@ -115,7 +115,9 @@ public enum ItemId {
     BRIMSTONE(4),
     C_SECTION(4),
     CURSED_EYE(0),
-    NEPTUNUS(3);
+    NEPTUNUS(3),
+    TECHNOLOGY2(2),
+    ROCK_BOTTOM(3);
 
 
 

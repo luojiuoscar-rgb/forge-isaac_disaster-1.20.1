@@ -29,7 +29,7 @@ public class PlayerAbility {
     private int chargeAmount;
     private int preChargeAmount;
 
-    private final Map<Integer, Boolean> itemFlags;
+    private final Map<String, Double> extraData;
 
     private final Map<ResourceLocation, Integer> attackType;
     private ResourceLocation bestAttackType;
@@ -39,7 +39,7 @@ public class PlayerAbility {
     private final HashMap<ResourceLocation, Integer> trajectories;
 
     public PlayerAbility() {
-        itemFlags = new HashMap<>();
+        extraData = new HashMap<>();
         attackType = new HashMap<>();
         bulletColor = new HashMap<>();
         trajectories = new HashMap<>();
@@ -59,7 +59,7 @@ public class PlayerAbility {
         bestAttackType = ModAttackType.BULLET.getId();
         cachedAttackType = ModAttackType.BULLET.get();
 
-        itemFlags.clear();
+        extraData.clear();
         attackType.clear();
         bulletColor.clear();
         trajectories.clear();
@@ -76,8 +76,8 @@ public class PlayerAbility {
         this.bestAttackType = source.bestAttackType;
         this.cachedAttackType = source.cachedAttackType;
 
-        this.itemFlags.clear();
-        this.itemFlags.putAll(source.itemFlags);
+        this.extraData.clear();
+        this.extraData.putAll(source.extraData);
         this.attackType.clear();
         this.attackType.putAll(source.attackType);
         this.bulletColor.clear();
@@ -96,10 +96,10 @@ public class PlayerAbility {
         nbt.putString("best_attack_type", bestAttackType.toString());
 
         ListTag itemFlagList = new ListTag();
-        for (Map.Entry<Integer, Boolean> entry : itemFlags.entrySet()) {
+        for (Map.Entry<String, Double> entry : extraData.entrySet()) {
             CompoundTag tag = new CompoundTag();
-            tag.putInt("item_id", entry.getKey());
-            tag.putBoolean("flag", entry.getValue());
+            tag.putString("item_id", entry.getKey());
+            tag.putDouble("data", entry.getValue());
             itemFlagList.add(tag);
         }
         nbt.put("item_flags", itemFlagList);
@@ -141,14 +141,14 @@ public class PlayerAbility {
         this.bestBulletColor = ResourceLocation.parse(nbt.getString("best_bullet_color"));
         this.bestAttackType = ResourceLocation.parse(nbt.getString("best_attack_type"));
 
-        itemFlags.clear();
+        extraData.clear();
         if (nbt.contains("item_flags", Tag.TAG_LIST)) {
             ListTag list = nbt.getList("item_flags", Tag.TAG_COMPOUND);
             for (Tag t : list) {
                 CompoundTag tag = (CompoundTag) t;
-                int itemId = tag.getInt("item_id");
-                boolean flag = tag.getBoolean("flag");
-                itemFlags.put(itemId, flag);
+                String itemId = tag.getString("item_id");
+                double data = tag.getDouble("data");
+                extraData.put(itemId, data);
             }
         }
 
@@ -232,12 +232,8 @@ public class PlayerAbility {
         controllable = amount;
     }
 
-    public Map<Integer, Boolean> getItemFlags() {
-        return new HashMap<>(itemFlags);
-    }
-
-    public void setItemFlags(int ItemId, boolean flag) {
-        itemFlags.put(ItemId, flag);
+    public Map<String, Double> getExtraData() {
+        return extraData;
     }
 
     public int getExtraTrinketSlotCounts() {

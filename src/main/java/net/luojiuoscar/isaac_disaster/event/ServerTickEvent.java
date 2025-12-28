@@ -8,6 +8,7 @@ import net.luojiuoscar.isaac_disaster.capability.player.PlayerAbilityProvider;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerStatModifierProvider;
 import net.luojiuoscar.isaac_disaster.effect.ModEffects;
 import net.luojiuoscar.isaac_disaster.event.custom.attack.BeforePerformAttackEvent;
+import net.luojiuoscar.isaac_disaster.event.custom.misc.RightClickTickEvent;
 import net.luojiuoscar.isaac_disaster.helper.EntityHelper;
 import net.luojiuoscar.isaac_disaster.helper.LevelHelper;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
@@ -202,23 +203,25 @@ public class ServerTickEvent {
         player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY).ifPresent(
                 playerAbility -> {
                     ItemStack stack = null;
-                    if (playerAbility.isHoldingRightClick()){
-                        // right click effect
-                        if (player.getMainHandItem().getItem() instanceof IsaacHead){
-                            stack = player.getMainHandItem();
+                    if (player.getMainHandItem().getItem() instanceof IsaacHead){
+                        stack = player.getMainHandItem();
 
-                        }else if(player.getOffhandItem().getItem() instanceof IsaacHead){
-                            stack = player.getOffhandItem();
-                        }
+                    }else if(player.getOffhandItem().getItem() instanceof IsaacHead){
+                        stack = player.getOffhandItem();
                     }
                     if (stack == null) return;
 
                     AttackType attack = playerAbility.getCachedAttackType();
-                    // tick method
                     attack.onTick(player);
 
-                    // 若在冷却 or 有无泪症
-                    if (player.getCooldowns().isOnCooldown(stack.getItem())
+                    if (playerAbility.isHoldingRightClick()){
+                        RightClickTickEvent rcEvent = new RightClickTickEvent(player);
+                        MinecraftForge.EVENT_BUS.post(rcEvent);
+                    }
+
+                    // 没有按下右键 or 若在冷却 or 有无泪症
+                    if (!playerAbility.isHoldingRightClick()
+                            || player.getCooldowns().isOnCooldown(stack.getItem())
                             || player.hasEffect(ModEffects.LACRIMAL_HYPOSECRETION.get())) return;
 
                     // perform attack

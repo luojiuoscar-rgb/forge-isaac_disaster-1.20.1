@@ -2,13 +2,13 @@ package net.luojiuoscar.isaac_disaster.registries.trigger_module;
 
 import net.luojiuoscar.isaac_disaster.event.custom.attack.*;
 import net.luojiuoscar.isaac_disaster.event.custom.attack.tear_bullet.BulletTickEvent;
+import net.luojiuoscar.isaac_disaster.event.custom.misc.RightClickTickEvent;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.level.BlockEvent;
-import net.minecraftforge.eventbus.api.Event;
 
 import java.util.Set;
 
@@ -22,6 +22,12 @@ public interface ITriggerModule {
     }
 
     default double getPriority() {return 0; }
+
+    /** 每一次获取模块的时候都会触发 */
+    default void onAdded(LivingEntity entity, TriggerModuleQueue queue){}
+
+    /** 每一次失去该模块的时候都会触发 */
+    default void onRemove(LivingEntity entity, TriggerModuleQueue queue){}
 
     /** 获取攻击上下文 */
     default void getAttackContext(GetAttackContextEvent event, int stacks, TriggerModuleQueue queue) {}
@@ -54,8 +60,8 @@ public interface ITriggerModule {
     default void onBlockBreak(BlockEvent.BreakEvent event, int stacks, TriggerModuleQueue queue) {}
 
     /** 每tick触发，只有Bullet类子弹会触发 */
-    default void onTick(BulletTickEvent event, int stacks, TriggerModuleQueue queue){}
+    default void onBulletTick(BulletTickEvent event, int stacks, TriggerModuleQueue queue){}
 
-    /** 任意事件（扩展用） */
-    default void onGeneric(Event event, int stacks, TriggerModuleQueue queue) {}
+    /** 按住右键的时候触发 */
+    default void onRightClickTick(RightClickTickEvent event, int stacks, TriggerModuleQueue queue){}
 }
