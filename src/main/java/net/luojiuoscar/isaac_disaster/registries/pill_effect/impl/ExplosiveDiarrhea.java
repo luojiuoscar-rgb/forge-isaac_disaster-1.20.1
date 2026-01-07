@@ -1,17 +1,22 @@
 package net.luojiuoscar.isaac_disaster.registries.pill_effect.impl;
 
+import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.helper.EntityHelper;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.helper.ScheduledFuncHelper;
 import net.luojiuoscar.isaac_disaster.registries.pill_effect.IPillEffect;
 import net.luojiuoscar.isaac_disaster.registries.pill_effect.ModPillEffect;
 import net.luojiuoscar.isaac_disaster.sound.ModSounds;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.phys.Vec3;
 
 
 public class ExplosiveDiarrhea implements IPillEffect {
+
+    private static final ResourceLocation SCHEDULE_TYPE =
+            ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "explosive_diarrhea");
 
     @Override
     public IPillEffect redirect(ServerPlayer player) {
@@ -20,13 +25,13 @@ public class ExplosiveDiarrhea implements IPillEffect {
 
     @Override
     public void onUseEffect(ServerPlayer player) {
-        ScheduledFuncHelper.schedule("explosive_diarrhea", 15, 5, false,
+        ScheduledFuncHelper.scheduleForPlayer(player.getUUID(), SCHEDULE_TYPE, 15, 5, false,
                 () -> EntityHelper.spawnBomb(player.position(), player, player.level(), Vec3.ZERO, 1));
     }
 
     @Override
     public void onUseEffectH(ServerPlayer player) {
-        ScheduledFuncHelper.schedule("explosive_diarrhea_h", 15, 8, false,
+        ScheduledFuncHelper.scheduleForPlayer(player.getUUID(), SCHEDULE_TYPE, 15, 8, false,
                 () -> EntityHelper.spawnBomb(player.position(), player, player.level(), Vec3.ZERO, 2));
     }
 

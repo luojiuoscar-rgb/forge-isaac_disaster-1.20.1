@@ -4,13 +4,11 @@ import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.capability.entity.EffectModulesProvider;
 import net.luojiuoscar.isaac_disaster.event.custom.attack.*;
 import net.luojiuoscar.isaac_disaster.event.custom.attack.tear_bullet.BulletTickEvent;
-import net.luojiuoscar.isaac_disaster.event.custom.misc.UpdateStatusDisplayValueEvent;
 import net.luojiuoscar.isaac_disaster.event.custom.misc.RightClickTickEvent;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.IBulletObject;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.ITriggerModule;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerModule;
-import net.luojiuoscar.isaac_disaster.registries.trigger_module.impl.RockBottom;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -225,26 +223,5 @@ public class TriggerModuleEvents {
             }
         });
     }
-
-    // ================= 边缘事件 =================
-    @SubscribeEvent
-    public static void onUpdateDisplayValue(UpdateStatusDisplayValueEvent event){
-        ServerPlayer player = event.getPlayer();
-        IsaacDisaster.LOGGER.info("Event Triggered");
-
-        player.getCapability(EffectModulesProvider.EFFECT_MODULES).ifPresent(triggerModule -> {
-            IsaacDisaster.LOGGER.info("Module contains? {}",
-                    triggerModule.getTriggerModules().contains(ModTriggerModule.ROCK_BOTTOM.getId()));
-
-            if (triggerModule.getTriggerModules().contains(ModTriggerModule.ROCK_BOTTOM.getId())){
-                ((RockBottom) ModTriggerModule.ROCK_BOTTOM.get()).onTriggered(event);
-            }
-
-
-        });
-
-    }
-
-
 }
 

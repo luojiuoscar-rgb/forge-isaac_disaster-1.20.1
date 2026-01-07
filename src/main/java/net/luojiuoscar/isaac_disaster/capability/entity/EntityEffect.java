@@ -28,6 +28,7 @@ public class EntityEffect {
 
     // 从目标处复制
     public void copyFrom(EntityEffect source) {
+        this.sourceDamageMap.clear();
         this.sourceDamageMap = new HashMap<>(source.sourceDamageMap);
     }
 

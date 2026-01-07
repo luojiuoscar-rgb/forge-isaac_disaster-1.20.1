@@ -1,5 +1,6 @@
 package net.luojiuoscar.isaac_disaster.registries.trigger_module.impl;
 
+import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.event.custom.attack.BeforePerformAttackEvent;
 import net.luojiuoscar.isaac_disaster.event.custom.attack.GetAttackContextEvent;
 import net.luojiuoscar.isaac_disaster.helper.ScheduledFuncHelper;
@@ -10,12 +11,16 @@ import net.luojiuoscar.isaac_disaster.registries.trigger_module.ITriggerModule;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerModule;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerCategory;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerModuleQueue;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 
 import java.util.Set;
 
 public class CSection implements ITriggerModule {
+    private static final ResourceLocation SCHEDULE_TYPE =
+            ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "c_section_attack");
+
     @Override
     public Set<TriggerCategory> getTriggerType() {
         return Set.of(
@@ -38,7 +43,8 @@ public class CSection implements ITriggerModule {
             LivingEntity entity = event.getEntity();
             if (!(entity instanceof ServerPlayer player)) return;
 
-            ScheduledFuncHelper.schedule("CSectionAttack", 3, 4, false, () -> {
+            ScheduledFuncHelper.scheduleForPlayer(player.getUUID(), SCHEDULE_TYPE, 3, 4, false, () -> {
+
                         attack.shoot(attack.getOneAttackContext(player, player));
                         attack.makeSound(player);
                     });

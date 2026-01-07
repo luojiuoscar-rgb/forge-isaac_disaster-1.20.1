@@ -59,7 +59,6 @@ public class Config
     public static ForgeConfigSpec.DoubleValue BLOCK_BREAKING_SPEED_BONUS;
     public static ForgeConfigSpec.DoubleValue ATTACK_KNOCKBACK_BONUS;
     public static ForgeConfigSpec.DoubleValue BULLET_SCALE_BONUS;
-    public static ForgeConfigSpec.DoubleValue EXTRA_SHOT_DELAY;
 
     // 其他可配置项目
     public static ForgeConfigSpec.IntValue PASSIVE_ITEM_LIMIT;
@@ -76,6 +75,8 @@ public class Config
     public static ForgeConfigSpec.BooleanValue ITEM_REMOVAL_FROM_POOL;
     public static ForgeConfigSpec.BooleanValue ITEM_REMOVAL_FROM_ALL_POOL;
     public static ForgeConfigSpec.BooleanValue PLAYERS_SHARE_ITEM_POOLS;
+    public static ForgeConfigSpec.BooleanValue AUTO_USE_PASSIVE_ITEM;
+
 
     // 钱币
     public static ForgeConfigSpec.ConfigValue<String> COIN_TIER_1_ID;
@@ -249,6 +250,9 @@ public class Config
                 .comment("All player shares the same item pool.")
                 .define("players_share_item_pools", false);
 
+        AUTO_USE_PASSIVE_ITEM = BUILDER
+                .comment("Automatically use passive item once it is acquired by player.")
+                .define("auto_use_passive_item", false);
 
         BUILDER.pop();
     }

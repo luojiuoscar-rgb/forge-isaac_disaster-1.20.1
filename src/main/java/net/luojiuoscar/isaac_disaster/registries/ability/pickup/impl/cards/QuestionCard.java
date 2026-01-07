@@ -27,7 +27,7 @@ public class QuestionCard extends PickupAbility {
         }
 
         if (!(target.getItem() instanceof ActiveItem activeItem)) return;
-        if (!(activeItem.getAbility() instanceof ActiveAbility activeAbility)) return;
+        ActiveAbility activeAbility = (ActiveAbility) activeItem.getAbility();
 
         if (PlayerHelper.hasItem(ItemId.CAR_BATTERY.getId(), player)){
             activeAbility.onTriggerStronger(player, null, hand);

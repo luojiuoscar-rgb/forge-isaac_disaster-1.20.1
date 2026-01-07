@@ -188,12 +188,6 @@ public class PlayerHelper {
             player.setYRot(respawnAngle);
         }
     }
-    /** 默认为0 */
-    public static Map<String, Double> getExtraData(ServerPlayer player){
-        return player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY)
-                .map(PlayerAbility::getExtraData)
-                .orElse(null);
-    }
 
     public static int countMoney(Player player) {
         int money = 0;

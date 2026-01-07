@@ -25,7 +25,10 @@ public class EffectModules {
     }
 
     public void copyFrom(EffectModules source) {
+        triggerModuleQueue.clear();
         this.triggerModuleQueue.getQueue().addAll(source.triggerModuleQueue.getQueue());
+
+        recursiveModuleQueue.clear();
         this.recursiveModuleQueue.getQueue().addAll(source.recursiveModuleQueue.getQueue());
     }
 

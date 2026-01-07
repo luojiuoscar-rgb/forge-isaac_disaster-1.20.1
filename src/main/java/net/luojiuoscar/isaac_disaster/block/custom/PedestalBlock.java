@@ -40,7 +40,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Set;
 
-public class PedestalBlock extends BaseEntityBlock {
+public class PedestalBlock extends BaseEntityBlock implements ItemDisplayContainerBlock {
 
     public PedestalBlock(Properties properties) {
         super(properties);
@@ -153,7 +153,8 @@ public class PedestalBlock extends BaseEntityBlock {
             }
 
             if (buySuccess){
-                player.setItemInHand(hand, stored);
+                acquireItem(player, hand, stored); // 获取物品
+
                 pedestal.clearContent();
                 BlockData.get(serverLevel).removeItemBlock(pos); // 从nbt处移除
                 level.playSound(null, pos.getX(), pos.getY(), pos.getZ(),
@@ -232,6 +233,4 @@ public class PedestalBlock extends BaseEntityBlock {
     public BlockState getStateForPlacement(BlockPlaceContext context) {
         return this.defaultBlockState().setValue(FACING, context.getHorizontalDirection().getOpposite());
     }
-
-
 }

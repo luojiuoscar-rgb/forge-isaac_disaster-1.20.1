@@ -36,7 +36,7 @@ public abstract class IsaacItem extends Item {
      * 在ItemManager中获取文本
      */
     @Override
-    public final void appendHoverText(@NotNull ItemStack stack, @Nullable Level level, @NotNull List<Component> tooltipComponents, @NotNull TooltipFlag isAdvanced) {
+    public void appendHoverText(@NotNull ItemStack stack, @Nullable Level level, @NotNull List<Component> tooltipComponents, @NotNull TooltipFlag isAdvanced) {
         super.appendHoverText(stack, level, tooltipComponents, isAdvanced);
 
         List<Component> extraDesc = getAbility().getExtraDesc(stack);

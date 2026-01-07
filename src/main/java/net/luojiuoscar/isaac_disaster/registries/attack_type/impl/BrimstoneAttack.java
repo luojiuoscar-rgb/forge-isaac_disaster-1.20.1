@@ -1,5 +1,6 @@
 package net.luojiuoscar.isaac_disaster.registries.attack_type.impl;
 
+import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.attribute.ModAttributes;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerAbilityProvider;
 import net.luojiuoscar.isaac_disaster.event.custom.attack.BeforePerformAttackEvent;
@@ -21,7 +22,8 @@ import net.minecraftforge.common.MinecraftForge;
 
 public class BrimstoneAttack extends LaserAttack implements IChargeableAttack {
     private static final float DAMAGE_PERCENTAGE = 0.6f;
-    private static final String SCHEDULE_NAME = "brimstone_shoot";
+    private static final ResourceLocation SCHEDULE_TYPE =
+            ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "brimstone_attack");
 
     public BrimstoneAttack(double priority) {
         super(priority);
@@ -35,7 +37,10 @@ public class BrimstoneAttack extends LaserAttack implements IChargeableAttack {
     // ================== handleAttack ==================
     @Override
     public void shoot(AttackContext ctx) {
-        ScheduledFuncHelper.schedule(SCHEDULE_NAME, 1, 13, false, () -> {
+        // 玩家域的schedule
+        ScheduledFuncHelper.scheduleForPlayer(ctx.getOwner().getUUID(),
+                SCHEDULE_TYPE, 1, 13, true, () -> {
+
             Entity s = ctx.getShooter();
             Vec3 eyePos = s.getEyePosition().add(0, s.getBbHeight() * -0.15, 0);
             ctx.setPos(eyePos);
@@ -96,14 +101,15 @@ public class BrimstoneAttack extends LaserAttack implements IChargeableAttack {
         );
     }
 
-    @Override
-    public void onPressed(ServerPlayer player) {
-        ScheduledFuncHelper.clear(SCHEDULE_NAME);
-    }
+        @Override
+        public void onPressed(ServerPlayer player) {
+            // 清除当前玩家域的schedule
+            ScheduledFuncHelper.clearByType(SCHEDULE_TYPE,player.getUUID());
+        }
 
-    @Override
-    public void onReleased(ServerPlayer player) {
-        player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY).ifPresent(
+        @Override
+        public void onReleased(ServerPlayer player) {
+            player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY).ifPresent(
                 playerAbility -> {
                     if (playerAbility.getChargeAmount() >= getTotalCharge(player)){
 

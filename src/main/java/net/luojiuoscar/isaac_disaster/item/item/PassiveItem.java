@@ -53,9 +53,6 @@ public class PassiveItem extends IsaacItem implements IIsaacCuriosItem {
         ItemStack stack = player.getItemInHand(hand);
         if (!Config.USABLE_PASSIVE_ITEM.get() || player.level().isClientSide) return InteractionResultHolder.fail(stack);
 
-        player.getCapability(PlayerPassiveItemProvider.PLAYER_PASSIVE_ITEM).ifPresent(
-                playerPassiveItem -> playerPassiveItem.addItem((ServerPlayer) player, stack, hand));
-
         PassiveAbility ability = (PassiveAbility) this.getAbility();
 
         if (player instanceof ServerPlayer serverPlayer){
@@ -63,6 +60,10 @@ public class PassiveItem extends IsaacItem implements IIsaacCuriosItem {
             ability.onObtain(serverPlayer, stack);
             ability.makeSound(serverPlayer);
             PassiveItem.setHasBeenUsed(stack, true);
+
+            // 记录
+            player.getCapability(PlayerPassiveItemProvider.PLAYER_PASSIVE_ITEM).ifPresent(
+                    playerPassiveItem -> playerPassiveItem.addItem(serverPlayer, stack, hand));
         }
 
         // shrink 1

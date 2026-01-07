@@ -49,7 +49,7 @@ public class PedestalBlockEntity extends BlockEntity implements ItemDisplayConta
     };
 
     private float rotation;
-    private Set<BlockPos> linkedOffsets = new HashSet<>();
+    private final Set<BlockPos> linkedOffsets = new HashSet<>();
     private boolean isDecoration = true;
     private String itemLootTable = "";
     private boolean generated = false;

@@ -34,6 +34,7 @@ public class ModRecursiveModule {
             RECURSIVE_MODULE_REGISTRY.register("gilded_key", GildedKey::new);
     public static final RegistryObject<IRecursiveModule> THE_LEFT_HAND =
             RECURSIVE_MODULE_REGISTRY.register("the_left_hand", TheLeftHand::new);
-
+    public static final RegistryObject<IRecursiveModule> ROCK_BOTTOM =
+            RECURSIVE_MODULE_REGISTRY.register("rock_bottom", RockBottom::new);
 
 }

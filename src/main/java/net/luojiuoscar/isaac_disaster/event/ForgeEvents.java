@@ -4,6 +4,7 @@ import net.luojiuoscar.isaac_disaster.Config;
 import net.luojiuoscar.isaac_disaster.attribute.ModAttributes;
 import net.luojiuoscar.isaac_disaster.capability.entity.EffectModulesProvider;
 import net.luojiuoscar.isaac_disaster.capability.entity.EntityEffectProvider;
+import net.luojiuoscar.isaac_disaster.capability.entity.ExtraDataProvider;
 import net.luojiuoscar.isaac_disaster.capability.player.*;
 import net.luojiuoscar.isaac_disaster.commands.*;
 import net.luojiuoscar.isaac_disaster.effect.ModEffects;
@@ -14,8 +15,8 @@ import net.luojiuoscar.isaac_disaster.item.item.custom.FoodPassiveItem;
 import net.luojiuoscar.isaac_disaster.item.pickup.special.IsaacHead;
 import net.luojiuoscar.isaac_disaster.manager.EffectManager;
 import net.luojiuoscar.isaac_disaster.manager.ModDamageType;
-import net.luojiuoscar.isaac_disaster.manager.data.PillShuffleData;
 import net.luojiuoscar.isaac_disaster.manager.PillEffectManager;
+import net.luojiuoscar.isaac_disaster.manager.data.PillShuffleData;
 import net.luojiuoscar.isaac_disaster.manager.id.ItemId;
 import net.luojiuoscar.isaac_disaster.networking.ModMessages;
 import net.luojiuoscar.isaac_disaster.networking.packet.PassiveItemMapSyncS2CPacket;
@@ -107,6 +108,9 @@ public class ForgeEvents {
             if(!event.getObject().getCapability(EffectModulesProvider.EFFECT_MODULES).isPresent()){
                 event.addCapability(ResourceLocation.fromNamespaceAndPath(MOD_ID, "effect_module_cap"), new EffectModulesProvider());
             }
+            if(!event.getObject().getCapability(ExtraDataProvider.EXTRA_DATA_CAP).isPresent()){
+                event.addCapability(ResourceLocation.fromNamespaceAndPath(MOD_ID, "extra_data_cap"), new ExtraDataProvider());
+            }
         }
     }
 
@@ -159,6 +163,13 @@ public class ForgeEvents {
                     newStore.copyFrom(oldStore);
                 });
             });
+            // extra data
+            event.getOriginal().getCapability(ExtraDataProvider.EXTRA_DATA_CAP).ifPresent(oldStore -> {
+                event.getEntity().getCapability(ExtraDataProvider.EXTRA_DATA_CAP).ifPresent(newStore -> {
+                    newStore.copyFrom(oldStore);
+                });
+            });
+
 
             event.getOriginal().invalidateCaps();
         }

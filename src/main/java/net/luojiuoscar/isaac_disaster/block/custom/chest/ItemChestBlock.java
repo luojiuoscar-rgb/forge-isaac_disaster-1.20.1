@@ -1,6 +1,7 @@
 package net.luojiuoscar.isaac_disaster.block.custom.chest;
 
 import net.luojiuoscar.isaac_disaster.block.block_entity.chest.ItemChestBlockEntity;
+import net.luojiuoscar.isaac_disaster.block.custom.ItemDisplayContainerBlock;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.manager.data.BlockData;
 import net.minecraft.core.BlockPos;
@@ -22,7 +23,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Supplier;
 
-public abstract class ItemChestBlock extends IsaacChestBlock{
+public abstract class ItemChestBlock extends IsaacChestBlock implements ItemDisplayContainerBlock {
     public ItemChestBlock(Properties properties, Supplier<BlockEntityType<? extends ChestBlockEntity>> blockEntitySupplier) {
         super(properties, blockEntitySupplier);
     }
@@ -57,7 +58,8 @@ public abstract class ItemChestBlock extends IsaacChestBlock{
 
         } else if (chest.isDisplayingItem()){ // 获取物品
             if (held.isEmpty()){
-                player.setItemInHand(hand, store);
+                acquireItem(player, hand, store);
+
                 chest.clearItemDisplayList();
                 chest.clearContent();
                 chest.setDisplayingItem(false);

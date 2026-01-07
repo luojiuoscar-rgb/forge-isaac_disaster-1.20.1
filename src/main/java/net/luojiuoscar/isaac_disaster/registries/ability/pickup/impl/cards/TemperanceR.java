@@ -1,5 +1,6 @@
 package net.luojiuoscar.isaac_disaster.registries.ability.pickup.impl.cards;
 
+import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.client.ClientDataManager;
 import net.luojiuoscar.isaac_disaster.helper.ScheduledFuncHelper;
 import net.luojiuoscar.isaac_disaster.manager.ColorManager;
@@ -8,6 +9,7 @@ import net.luojiuoscar.isaac_disaster.manager.id.ItemId;
 import net.luojiuoscar.isaac_disaster.registries.ability.pickup.TarotAbility;
 import net.luojiuoscar.isaac_disaster.sound.ModSounds;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -18,18 +20,23 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TemperanceR extends TarotAbility {
+    private static final ResourceLocation SCHEDULE_TYPE =
+            ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "temperance_r");
+
     @Override
     public void onUseEffect(ServerPlayer player, ItemStack stack, InteractionHand hand) {
-        ScheduledFuncHelper.schedule("temperance_r", 20, 5, false,
-                () -> {
+        ScheduledFuncHelper.scheduleForPlayer(player.getUUID(), SCHEDULE_TYPE
+                , 20, 5, false, () -> {
+
                     PillEffectManager.getInstance().triggerRandomEffect(player, false);
                 });
     }
 
     @Override
     public void onUseEffectS(ServerPlayer player, ItemStack stack, InteractionHand hand) {
-        ScheduledFuncHelper.schedule("temperance_r", 20, 10, false,
-                () -> {
+        ScheduledFuncHelper.scheduleForPlayer(player.getUUID(), SCHEDULE_TYPE
+                , 20, 10, false, () -> {
+
                     PillEffectManager.getInstance().triggerRandomEffect(player, false);
                 });
     }

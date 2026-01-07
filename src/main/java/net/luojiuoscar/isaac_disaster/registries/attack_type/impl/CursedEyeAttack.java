@@ -1,5 +1,6 @@
 package net.luojiuoscar.isaac_disaster.registries.attack_type.impl;
 
+import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerAbilityProvider;
 import net.luojiuoscar.isaac_disaster.event.custom.attack.BeforePerformAttackEvent;
 import net.luojiuoscar.isaac_disaster.helper.ScheduledFuncHelper;
@@ -16,6 +17,10 @@ import net.minecraftforge.common.MinecraftForge;
 import java.util.List;
 
 public class CursedEyeAttack extends AttackType implements IChargeableAttack {
+    private static final ResourceLocation SCHEDULE_TYPE =
+            ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "cursed_eye_attack");
+
+
     public CursedEyeAttack(double priority) {
         super(priority);
     }
@@ -78,7 +83,9 @@ public class CursedEyeAttack extends AttackType implements IChargeableAttack {
                         int count = (int) (playerAbility.getChargeAmount() / getShotDelay(player));
 
                         // attack
-                        ScheduledFuncHelper.schedule("cursedEyeAttack", 1, count, false, () -> {
+                        ScheduledFuncHelper.scheduleForPlayer(player.getUUID(), SCHEDULE_TYPE,
+                                1, count, false, () -> {
+
                             attack.performAttack(attack.getAttackContextsWithEvent(player, attack.getBulletCount(player)));
                             attack.makeSound(player);
                         });
