@@ -1,5 +1,6 @@
 package net.luojiuoscar.isaac_disaster.effect.custom;
 
+import net.luojiuoscar.isaac_disaster.effect.ModEffects;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.entity.LivingEntity;
@@ -24,7 +25,10 @@ public class PanicEffect extends MobEffect {
         if (!(entity instanceof PathfinderMob mob)) {
             entity.removeEffect(this);
             return;
-        };
+        }
+
+        // 被魅惑覆盖
+        if (entity.hasEffect(ModEffects.CHARM.get())) return;
 
         // 已经添加过就不重复添加
         if (goalMap.containsKey(mob)) return;

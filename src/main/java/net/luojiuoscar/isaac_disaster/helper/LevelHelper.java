@@ -339,16 +339,16 @@ public class LevelHelper {
     }
 
     public static void explodeCustom(LivingEntity source, Vec3 pos, float power,
-                                     float damage, boolean ignoreFriendly){
+                                     float damage, boolean ignoreFriendly, boolean hasFire){
         if (!(source.level() instanceof ServerLevel level)) return;
         Explosion explosion = new Explosion(
                 level,
                 source,                  // 爆炸来源实体
                 null,                    // DamageSource
-                null,                    // ExplosionDamageCalculator，使用默认
+                null,                    // 伤害计算器使用自定义的
                 pos.x, pos.y, pos.z,
                 power,
-                false,                   // 不点火
+                hasFire,
                 Explosion.BlockInteraction.DESTROY // 破坏方块
         );
         explosion.explode();
@@ -359,7 +359,7 @@ public class LevelHelper {
                 pos.x, pos.y, pos.z,
                 SoundEvents.GENERIC_EXPLODE,
                 SoundSource.BLOCKS,
-                4.0F,
+                0.8F,
                 (1.0F + (level.random.nextFloat() - level.random.nextFloat()) * 0.2F) * 0.7F
         );
 

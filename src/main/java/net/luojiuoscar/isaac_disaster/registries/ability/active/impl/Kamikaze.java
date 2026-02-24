@@ -42,7 +42,7 @@ public class Kamikaze extends ActiveAbility {
     }
 
     private void explode(Player player, float power, float damage){
-        LevelHelper.explodeCustom(player, player.position(), power, damage, true);
+        LevelHelper.explodeCustom(player, player.position(), power, damage, true, false);
         player.hurt(player.damageSources().genericKill(), (float) StatManager.MAX_HEALTH.getBonus());
     }
 

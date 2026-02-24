@@ -33,7 +33,7 @@ public class TheCommonCold implements ITriggerModule {
         for (AttackContext context : event.getContexts()){
             if (player.getRandom().nextDouble() < getTriggerChance(player)) {
                 context.colorRl = ModBulletColor.POISON.getId();
-                context.addTriggerModule(ModTriggerModule.THE_COMMON_COLD.getId(), 1);
+                context.addTriggerModule(ModTriggerModule.THE_COMMON_COLD.getId(), stacks);
             }
         }
     }

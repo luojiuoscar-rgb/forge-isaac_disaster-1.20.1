@@ -117,7 +117,9 @@ public enum ItemId {
     CURSED_EYE(0),
     NEPTUNUS(3),
     TECHNOLOGY2(2),
-    ROCK_BOTTOM(3);
+    ROCK_BOTTOM(3),
+    TERRA(3),
+    VENUS(1);
 
 
 

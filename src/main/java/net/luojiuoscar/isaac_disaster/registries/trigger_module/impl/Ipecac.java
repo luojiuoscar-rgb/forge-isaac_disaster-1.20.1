@@ -37,7 +37,7 @@ public class Ipecac implements ITriggerModule {
     public void getAttackContext(GetAttackContextEvent event, int stacks, TriggerModuleQueue queue) {
         for (AttackContext context : event.getContexts()){
             context.colorRl = ModBulletColor.IPECAC.getId();
-            context.addTriggerModule(ModTriggerModule.IPECAC.getId(), 1);
+            context.addTriggerModule(ModTriggerModule.IPECAC.getId(), stacks);
         }
     }
 
@@ -59,7 +59,7 @@ public class Ipecac implements ITriggerModule {
 
         float power = powerFromDamage(damage);
 
-        LevelHelper.explodeCustom(attacker, pos, power, damage, false);
+        LevelHelper.explodeCustom(attacker, pos, power, damage, false, false);
 
         List<LivingEntity> livingEntities = LevelHelper.selectBySquare(attacker.level(), pos.x, pos.y, pos.z,
                 power + 2);

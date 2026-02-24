@@ -26,7 +26,7 @@ public class Laser implements ITriggerModule {
     @Override
     public void getAttackContext(GetAttackContextEvent event, int stacks, TriggerModuleQueue queue) {
         for (AttackContext context : event.getContexts()){
-            context.addTriggerModule(ModTriggerModule.LASER.getId(), 1);
+            context.addTriggerModule(ModTriggerModule.LASER.getId(), stacks);
         }
     }
 

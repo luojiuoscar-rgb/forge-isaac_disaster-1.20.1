@@ -30,7 +30,6 @@ public abstract class PassiveAbility extends IsaacItemAbility {
             MinecraftForge.EVENT_BUS.post(e2);
 
             handleFirstObtain(player, stack);
-
         }
     }
 
@@ -41,6 +40,7 @@ public abstract class PassiveAbility extends IsaacItemAbility {
         handleRemove(player, stack);
     }
 
+    /** First Obtain is executed after Obtain as default */
     abstract public void handleFirstObtain(ServerPlayer player, @Nullable ItemStack stack);
     abstract public void handleObtain(ServerPlayer player, @Nullable ItemStack stack);
     abstract public void handleRemove(ServerPlayer player, @Nullable ItemStack stack);

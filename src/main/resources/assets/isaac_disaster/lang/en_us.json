@@ -409,7 +409,14 @@
   "item.isaac_disaster.technology2.lore.2": "激光会造成7%的面板伤害",
   "item.isaac_disaster.technology2.lore.3": "每秒发射20次",
   "item.isaac_disaster.rock_bottom": "谷底石",
-  "item.isaac_disaster.rock_bottom.lore.1": "将基础属性保持在最高值",
+  "item.isaac_disaster.rock_bottom.lore.1": "将属性的加区保持在最高值",
+  "item.isaac_disaster.rock_bottom.lore.2": "生效范围：",
+  "item.isaac_disaster.rock_bottom.lore.3": "攻击力，移速，射速，射速修正",
+  "item.isaac_disaster.rock_bottom.lore.4": "幸运，弹速，射程",
+  "item.isaac_disaster.terra": "地球",
+  "item.isaac_disaster.terra.lore.1": "破坏子弹接触到的方块",
+  "item.isaac_disaster.venus": "金星",
+  "item.isaac_disaster.venus.lore.1": "魅惑近距离内的生物",
 
 
   "item end": "",

@@ -296,7 +296,8 @@ public class LaserAttack extends AttackType {
                 IAttackTrajectory traj = trajectoryIForgeRegistry.getValue(trajId);
                 if (traj == null) continue;
 
-                TrajectoryContext ctx = new TrajectoryContext(laser, laser.step, amplifier, laser.getPrevShooterPos());
+                TrajectoryContext ctx = new TrajectoryContext(laser, laser.step, amplifier,
+                        laser.getPrevShooterPos());
 
                 var result = traj.getResult(ctx);
                 totalPositionOffset = totalPositionOffset.add(result.positionOffset());

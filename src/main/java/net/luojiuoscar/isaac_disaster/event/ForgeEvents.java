@@ -157,6 +157,12 @@ public class ForgeEvents {
                     newStore.copyFrom(oldStore);
                 });
             });
+            // effect
+            event.getOriginal().getCapability(EntityEffectProvider.ENTITY_EFFECT_CAP).ifPresent(oldStore -> {
+                event.getEntity().getCapability(EntityEffectProvider.ENTITY_EFFECT_CAP).ifPresent(newStore -> {
+                    newStore.copyFrom(oldStore);
+                });
+            });
             // trigger modules
             event.getOriginal().getCapability(EffectModulesProvider.EFFECT_MODULES).ifPresent(oldStore -> {
                 event.getEntity().getCapability(EffectModulesProvider.EFFECT_MODULES).ifPresent(newStore -> {

@@ -7,6 +7,8 @@ import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.ai.attributes.AttributeMap;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.schedule.Activity;
 
@@ -26,7 +28,7 @@ public class CharmEffect extends MobEffect {
 
         if (entity instanceof Mob mob) {
             // 跳过无攻击属性的被动生物
-            if (mob.getAttribute(net.minecraft.world.entity.ai.attributes.Attributes.ATTACK_DAMAGE) == null)
+            if (mob.getAttribute(Attributes.ATTACK_DAMAGE) == null)
                 return;
 
             LivingEntity target = LevelHelper.findNearestLivingEntity(
@@ -36,24 +38,23 @@ public class CharmEffect extends MobEffect {
             if (target != null && target != mob) {
                 mob.setTarget(target);
                 mob.getBrain().setActiveActivityIfPossible(Activity.FIGHT);
-
-                try {
-                    mob.doHurtTarget(target);
-                } catch (Exception e) {
-                    // 兜底
-                }
             }
         }
     }
 
+    @Override
+    public void removeAttributeModifiers(LivingEntity entity, AttributeMap map, int amplifier) {
+        super.removeAttributeModifiers(entity, map, amplifier);
+
+        if (entity instanceof Mob mob) {
+            mob.setTarget(null);
+            mob.getBrain().setActiveActivityIfPossible(Activity.IDLE);
+        }
+    }
 
     @Override
     public boolean isDurationEffectTick(int duration, int amplifier) {
         return duration % 20 == 0;
     }
-
-
-
-
 
 }

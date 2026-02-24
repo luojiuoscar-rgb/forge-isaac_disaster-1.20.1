@@ -24,7 +24,7 @@ public class BounceOnBlock implements ITriggerModule {
     @Override
     public void getAttackContext(GetAttackContextEvent event, int stacks, TriggerModuleQueue queue) {
         for (AttackContext context : event.getContexts()){
-            context.addTriggerModule(ModTriggerModule.BOUNCE_ON_BLOCK.getId(), 1);
+            context.addTriggerModule(ModTriggerModule.BOUNCE_ON_BLOCK.getId(), stacks);
         }
     }
 
@@ -46,7 +46,7 @@ public class BounceOnBlock implements ITriggerModule {
             if (speed < 1e-6) return;
 
             Vec3 reflected = motion.subtract(normal.scale(2 * motion.dot(normal)));
-            bullet.setVelocity(reflected);
+            bullet.setDeltaMovement(reflected);
             bullet.move(MoverType.SELF, reflected.scale(1));
         }
         // ---------------- LaserProjectile ----------------

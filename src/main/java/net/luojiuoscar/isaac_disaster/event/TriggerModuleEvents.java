@@ -4,6 +4,7 @@ import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.capability.entity.EffectModulesProvider;
 import net.luojiuoscar.isaac_disaster.event.custom.attack.*;
 import net.luojiuoscar.isaac_disaster.event.custom.attack.tear_bullet.BulletTickEvent;
+import net.luojiuoscar.isaac_disaster.event.custom.misc.BeforeTriggerModuleActiveEvent;
 import net.luojiuoscar.isaac_disaster.event.custom.misc.RightClickTickEvent;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.IBulletObject;
@@ -12,6 +13,7 @@ import net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerModule
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.level.BlockEvent;
@@ -32,6 +34,10 @@ public class TriggerModuleEvents {
         entity.getCapability(EffectModulesProvider.EFFECT_MODULES).ifPresent(triggerModule -> {
 
             var queue = triggerModule.getTriggerModules().copy();
+
+            BeforeTriggerModuleActiveEvent e = new BeforeTriggerModuleActiveEvent(event, queue);
+            MinecraftForge.EVENT_BUS.post(e);
+
             queue.lock();
 
             for (var inst : queue.getQueue()) {
@@ -52,6 +58,10 @@ public class TriggerModuleEvents {
         entity.getCapability(EffectModulesProvider.EFFECT_MODULES).ifPresent(triggerModule -> {
 
             var queue = triggerModule.getTriggerModules().copy();
+
+            BeforeTriggerModuleActiveEvent e = new BeforeTriggerModuleActiveEvent(event, queue);
+            MinecraftForge.EVENT_BUS.post(e);
+
             queue.lock();
 
             for (var inst : queue.getQueue()) {
@@ -74,6 +84,10 @@ public class TriggerModuleEvents {
 
         entity.getCapability(EffectModulesProvider.EFFECT_MODULES).ifPresent(triggerModule -> {
             var queue = triggerModule.getTriggerModules().copy();
+
+            BeforeTriggerModuleActiveEvent e = new BeforeTriggerModuleActiveEvent(event, queue);
+            MinecraftForge.EVENT_BUS.post(e);
+
             queue.lock();
 
             for (var inst : queue.getQueue()){
@@ -92,6 +106,10 @@ public class TriggerModuleEvents {
 
         IBulletObject bulletObject = event.getBulletObject();
         var queue = bulletObject.getTriggerModules().copy();
+
+        BeforeTriggerModuleActiveEvent e = new BeforeTriggerModuleActiveEvent(event, queue);
+        MinecraftForge.EVENT_BUS.post(e);
+
         queue.lock();
 
         for (var inst : queue.getQueue()){
@@ -109,6 +127,10 @@ public class TriggerModuleEvents {
 
         IBulletObject bulletObject = event.getBulletObject();
         var queue = bulletObject.getTriggerModules().copy();
+
+        BeforeTriggerModuleActiveEvent e = new BeforeTriggerModuleActiveEvent(event, queue);
+        MinecraftForge.EVENT_BUS.post(e);
+
         queue.lock();
 
         for (var inst : queue.getQueue()){
@@ -126,6 +148,10 @@ public class TriggerModuleEvents {
 
         IBulletObject bulletObject = event.getBulletObject();
         var queue = bulletObject.getTriggerModules().copy();
+
+        BeforeTriggerModuleActiveEvent e = new BeforeTriggerModuleActiveEvent(event, queue);
+        MinecraftForge.EVENT_BUS.post(e);
+
         queue.lock();
 
         for (var inst : queue.getQueue()){
@@ -144,6 +170,10 @@ public class TriggerModuleEvents {
 
         player.getCapability(EffectModulesProvider.EFFECT_MODULES).ifPresent(triggerModule -> {
             var queue = triggerModule.getTriggerModules().copy();
+
+            BeforeTriggerModuleActiveEvent e = new BeforeTriggerModuleActiveEvent(event, queue);
+            MinecraftForge.EVENT_BUS.post(e);
+
             queue.lock();
 
             for (var inst : queue.getQueue()){
@@ -172,6 +202,10 @@ public class TriggerModuleEvents {
 
         player.getCapability(EffectModulesProvider.EFFECT_MODULES).ifPresent(triggerModule -> {
             var queue = triggerModule.getTriggerModules().copy();
+
+            BeforeTriggerModuleActiveEvent e = new BeforeTriggerModuleActiveEvent(event, queue);
+            MinecraftForge.EVENT_BUS.post(e);
+
             queue.lock();
 
             for (var inst : queue.getQueue()){
@@ -193,6 +227,10 @@ public class TriggerModuleEvents {
 
         player.getCapability(EffectModulesProvider.EFFECT_MODULES).ifPresent(triggerModule -> {
             var queue = triggerModule.getTriggerModules().copy();
+
+            BeforeTriggerModuleActiveEvent e = new BeforeTriggerModuleActiveEvent(event, queue);
+            MinecraftForge.EVENT_BUS.post(e);
+
             queue.lock();
 
             for (var inst : queue.getQueue()){
@@ -213,6 +251,10 @@ public class TriggerModuleEvents {
 
         player.getCapability(EffectModulesProvider.EFFECT_MODULES).ifPresent(triggerModule -> {
             var queue = triggerModule.getTriggerModules().copy();
+
+            BeforeTriggerModuleActiveEvent e = new BeforeTriggerModuleActiveEvent(event, queue);
+            MinecraftForge.EVENT_BUS.post(e);
+
             queue.lock();
 
             for (var inst : queue.getQueue()){

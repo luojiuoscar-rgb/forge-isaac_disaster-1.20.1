@@ -32,7 +32,7 @@ public class CSection implements ITriggerModule {
     @Override
     public void getAttackContext(GetAttackContextEvent event, int stacks, TriggerModuleQueue queue) {
         for (AttackContext context : event.getContexts()){
-            context.addTriggerModule(ModTriggerModule.C_SECTION.getId(), 1);
+            context.addTriggerModule(ModTriggerModule.C_SECTION.getId(), stacks);
         }
     }
 

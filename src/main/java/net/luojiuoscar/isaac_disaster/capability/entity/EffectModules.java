@@ -50,7 +50,7 @@ public class EffectModules {
             CompoundTag tag = new CompoundTag();
             tag.putString("id", inst.id.toString());
             tag.putInt("stacks", inst.stacks);
-            tag.putLong("nextPos", inst.nextPos);
+            tag.putInt("coolDown", inst.coolDown);
             recursiveList.add(tag);
         }
         nbt.put("recursive_modules", recursiveList);
@@ -83,9 +83,9 @@ public class EffectModules {
                 try {
                     ResourceLocation id = ResourceLocation.parse(tag.getString("id"));
                     int stacks = tag.getInt("stacks");
-                    long nextPos = tag.getLong("nextPos");
+                    int coolDown = tag.getInt("coolDown");
 
-                    RecursiveModuleInstance inst = new RecursiveModuleInstance(id, stacks, nextPos);
+                    RecursiveModuleInstance inst = new RecursiveModuleInstance(id, stacks, coolDown);
 
                     recursiveModuleQueue.rawAdd(inst);
                 } catch (Exception ignored) {}

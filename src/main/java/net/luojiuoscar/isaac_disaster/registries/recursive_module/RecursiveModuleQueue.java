@@ -27,30 +27,37 @@ public class RecursiveModuleQueue {
         queue.add(inst);
     }
 
-    public void add(ResourceLocation id, int stacks) {
+    public void add(LivingEntity entity, ResourceLocation id, int stacks) {
+
+        boolean found = false;
+        RecursiveModuleInstance instance = null;
+
         for (RecursiveModuleInstance inst : queue) {
             if (inst.id.equals(id)) {
                 inst.stacks += stacks;
-                // 这里不处理remove
-                return;
+
+                found = true;
+                instance = inst;
+                break;
             }
         }
-        if (stacks > 0) {
+
+        if (!found){
             queue.add(new RecursiveModuleInstance(id, stacks, 0));
-        }
-    }
+        }else{
+            if (instance.stacks <= 0){
+                // 从queue中移除
+                queue.remove(instance);
 
-    public void remove(ResourceLocation id, LivingEntity entity) {
-        boolean removed = queue.removeIf(inst -> inst.id.equals(id));
-        if (removed){
-            IForgeRegistry<IRecursiveModule> registry =
-                    RegistryManager.ACTIVE.getRegistry(ModRecursiveModule.RECURSIVE_MODULE_KEY);
-            if (registry == null) return;
+                IForgeRegistry<IRecursiveModule> registry =
+                        RegistryManager.ACTIVE.getRegistry(ModRecursiveModule.RECURSIVE_MODULE_KEY);
+                if (registry == null) return;
 
-            IRecursiveModule instance = registry.getValue(id);
-            if (instance == null) return;
+                IRecursiveModule module = registry.getValue(id);
+                if (module == null) return;
 
-            instance.handleRemove(entity);
+                module.handleRemove(entity);
+            }
         }
     }
 
@@ -66,15 +73,10 @@ public class RecursiveModuleQueue {
         List<RecursiveModuleInstance> copy = getCopy().queue;
 
         for (RecursiveModuleInstance inst : copy) {
-            if (inst.nextPos > entity.tickCount)
-                continue;
-
-            if (inst.stacks <= 0) {
-                this.remove(inst.id, entity);
-                continue;
+            inst.coolDown--;
+            if (inst.coolDown <= 0) {
+                inst.trigger(entity, this);
             }
-
-            inst.trigger(entity, this);
         }
     }
 

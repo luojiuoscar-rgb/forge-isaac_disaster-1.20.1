@@ -376,5 +376,11 @@ public class ModPassiveAbility {
             PASSIVE_ABILITY_REGISTRY.register("rock_bottom",
                     () -> new RockBottom(ItemId.ROCK_BOTTOM.getId(), ItemId.ROCK_BOTTOM.getLevel()));
 
+    public static final RegistryObject<PassiveAbility> TERRA =
+            PASSIVE_ABILITY_REGISTRY.register("terra",
+                    () -> new Terra(ItemId.TERRA.getId(), ItemId.TERRA.getLevel()));
 
+    public static final RegistryObject<PassiveAbility> VENUS =
+            PASSIVE_ABILITY_REGISTRY.register("venus",
+                    () -> new Venus(ItemId.VENUS.getId(), ItemId.VENUS.getLevel()));
 }

@@ -400,7 +400,7 @@ public enum StatManager {
 
     public static void addRecursiveModule(LivingEntity entity, ResourceLocation rl, int count){
         entity.getCapability(EffectModulesProvider.EFFECT_MODULES).ifPresent(
-                effectModules -> effectModules.getRecursiveModuleQueue().add(rl, count)
+                effectModules -> effectModules.getRecursiveModuleQueue().add(entity, rl, count)
         );
     }
     /* ---------------------- 道具套装 ---------------------- */

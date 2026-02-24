@@ -23,7 +23,7 @@ public class BounceOnEntity implements ITriggerModule {
     @Override
     public void getAttackContext(GetAttackContextEvent event, int stacks, TriggerModuleQueue queue) {
         for (AttackContext context : event.getContexts()){
-            context.addTriggerModule(ModTriggerModule.BOUNCE_ON_ENTITY.getId(), 1);
+            context.addTriggerModule(ModTriggerModule.BOUNCE_ON_ENTITY.getId(), stacks);
         }
     }
 
@@ -51,7 +51,7 @@ public class BounceOnEntity implements ITriggerModule {
 
             if (target != null) {
                 Vec3 dir = target.getEyePosition().subtract(bullet.position()).normalize();
-                bullet.setVelocity(dir.scale(speed));
+                bullet.setDeltaMovement(dir.scale(speed));
                 event.setCanceled(true);
                 return;
             }
@@ -65,7 +65,7 @@ public class BounceOnEntity implements ITriggerModule {
         double z = Math.cos(phi);
         Vec3 randomDir = new Vec3(x, y, z).normalize();
 
-        bullet.setVelocity(randomDir.scale(speed));
+        bullet.setDeltaMovement(randomDir.scale(speed));
         event.setCanceled(true);
     }
 }

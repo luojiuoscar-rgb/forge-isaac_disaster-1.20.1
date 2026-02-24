@@ -20,9 +20,6 @@ import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerModuleQue
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.NbtUtils;
-import net.minecraft.nbt.Tag;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -175,7 +172,8 @@ public class TearBullet extends Entity implements IBulletObject {
                 IAttackTrajectory traj = trajectoryIForgeRegistry.getValue(trajId);
                 if (traj == null) continue;
 
-                TrajectoryContext ctx = new TrajectoryContext(this, speed, amplifier, getPrevShooterPos());
+                TrajectoryContext ctx = new TrajectoryContext(
+                        this, speed, amplifier, getPrevShooterPos());
 
                 var result = traj.getResult(ctx);
 
@@ -446,37 +444,18 @@ public class TearBullet extends Entity implements IBulletObject {
         entityData.define(PREV_SHOOTER_POS, new Vector3f(0f, 0f, 0f));
     }
 
-    // ======== NBT读写 ========
+    // ======== NBT读写(不保存子弹) ========
+    @Override
+    public boolean shouldBeSaved() {
+        return false;
+    }
+
     @Override
     protected void readAdditionalSaveData(CompoundTag tag) {
-        lifeTick = tag.getInt("life_tick");
-        setScale(tag.getFloat("scale"));
-        isSpectral = tag.getBoolean("is_spectral");
-        isPiercing = tag.getBoolean("is_piercing");
-        if (tag.hasUUID("owner")) ownerUUID = tag.getUUID("owner");
-        isHoming = tag.getBoolean("is_homing");
-        isControllable = tag.getBoolean("is_controllable");
-
-        damagedEntities.clear();
-        if (tag.contains("DamagedEntities", Tag.TAG_LIST)) {
-            ListTag listTag = tag.getList("DamagedEntities", Tag.TAG_COMPOUND);
-            for (int i = 0; i < listTag.size(); i++) damagedEntities.add(NbtUtils.loadUUID(listTag.getCompound(i)));
-        }
     }
 
     @Override
     protected void addAdditionalSaveData(CompoundTag tag) {
-        tag.putInt("life_tick", lifeTick);
-        tag.putFloat("scale", getScale());
-        tag.putBoolean("is_spectral", isSpectral);
-        tag.putBoolean("is_piercing", isPiercing);
-        if (ownerUUID != null) tag.putUUID("owner", ownerUUID);
-        tag.putBoolean("is_homing", isHoming);
-        tag.putBoolean("is_controllable", isControllable);
-
-        ListTag listTag = new ListTag();
-        for (UUID id : damagedEntities) listTag.add(NbtUtils.createUUID(id));
-        tag.put("DamagedEntities", listTag);
     }
 
     // ======== 客户端 ========
@@ -572,7 +551,8 @@ public class TearBullet extends Entity implements IBulletObject {
     @Override
     public Vec3 getPrevShooterPos() {
         if (shooter != null){
-            setPrevShooterPos(shooter.position());
+            setPrevShooterPos(shooter.position()
+                    .add(0, shooter.getBbHeight() * 0.6, 0));
         }
 
         Vector3f p = entityData.get(PREV_SHOOTER_POS);

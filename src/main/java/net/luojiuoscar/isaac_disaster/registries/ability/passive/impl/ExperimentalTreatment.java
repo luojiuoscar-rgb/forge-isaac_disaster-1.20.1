@@ -1,5 +1,7 @@
 package net.luojiuoscar.isaac_disaster.registries.ability.passive.impl;
 
+import net.luojiuoscar.isaac_disaster.event.custom.misc.PassiveItemFirstObtainEvent;
+import net.luojiuoscar.isaac_disaster.event.custom.misc.PassiveItemObtainEvent;
 import net.luojiuoscar.isaac_disaster.item.item.PassiveItem;
 import net.luojiuoscar.isaac_disaster.item.item.custom.ExperimentalTreatmentItem;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
@@ -11,6 +13,7 @@ import net.minecraft.network.chat.Style;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.ItemStack;
+import net.minecraftforge.common.MinecraftForge;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
@@ -23,7 +26,16 @@ public class ExperimentalTreatment extends PassiveAbility {
 
     @Override
     public void onObtain(ServerPlayer player, @Nullable ItemStack stack){
-        if (stack != null && !PassiveItem.hasBeenUsed(stack)) handleFirstObtain(player, stack);
+        if (stack != null && !PassiveItem.hasBeenUsed(stack)) {
+            PassiveItemFirstObtainEvent e2 = new PassiveItemFirstObtainEvent(player, stack, this);
+            MinecraftForge.EVENT_BUS.post(e2);
+
+            handleFirstObtain(player, stack);
+        }
+
+        PassiveItemObtainEvent e1 = new PassiveItemObtainEvent(player, stack, this);
+        MinecraftForge.EVENT_BUS.post(e1);
+
         handleObtain(player, stack);
     }
 

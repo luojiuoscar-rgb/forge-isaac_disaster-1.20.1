@@ -8,24 +8,25 @@ import net.minecraftforge.registries.RegistryManager;
 public class RecursiveModuleInstance {
     public ResourceLocation id;
     public int stacks;
-    public long nextPos;
+    public int coolDown;
+    private final IRecursiveModule recursiveModule;
 
-    public RecursiveModuleInstance(ResourceLocation id, int stacks, long nextPos){
+    public RecursiveModuleInstance(ResourceLocation id, int stacks, int coolDown){
         this.id = id;
         this.stacks = stacks;
-        this.nextPos = nextPos;
+        this.coolDown = coolDown;
+
+        IForgeRegistry<IRecursiveModule> registry =
+                RegistryManager.ACTIVE.getRegistry(ModRecursiveModule.RECURSIVE_MODULE_KEY);
+        this.recursiveModule = registry == null ? null : registry.getValue(id);
     }
 
     public void trigger(LivingEntity entity, RecursiveModuleQueue queue){
-        IForgeRegistry<IRecursiveModule> registry =
-                RegistryManager.ACTIVE.getRegistry(ModRecursiveModule.RECURSIVE_MODULE_KEY);
-        if (registry == null) return;
+        // 需要动态获取；可能存在可变的interval
+        if (recursiveModule == null) return;
+        recursiveModule.recursiveEffect(entity, stacks, queue);
 
-        IRecursiveModule inst = registry.getValue(id);
-        if (inst == null) return;
-
-        inst.recursiveEffect(entity, stacks, queue);
-
-        nextPos += inst.getTickInterval(entity, stacks, queue);
+        // 完成任务后重置coolDown
+        coolDown = recursiveModule.getTickInterval(entity, stacks, queue);
     }
 }
