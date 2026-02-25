@@ -7,6 +7,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
+import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.level.BlockEvent;
 
@@ -41,8 +42,11 @@ public interface ITriggerModule {
     /** 子弹命中实体 - 后 */
     default void afterBulletHitEntity(IsaacAttackAfterHitEvent event, int stacks, TriggerModuleQueue queue) {}
 
-    /** 实体造成伤害 */
+    /** 造成伤害 */
     default void onHitEntity(LivingAttackEvent event, int stacks, TriggerModuleQueue queue) {}
+
+    /** 杀死实体 */
+    default void onKilledEntity(LivingDeathEvent event, int stacks, TriggerModuleQueue queue) {}
 
     /** 子弹命中方块 */
     default void onBulletHitBlock(IsaacAttackHitBlockEvent event, int stacks, TriggerModuleQueue queue) {}

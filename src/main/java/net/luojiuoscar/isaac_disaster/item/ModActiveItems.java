@@ -103,4 +103,17 @@ public class ModActiveItems {
             () -> new ActiveItem(new Item.Properties(), 0, 0, ModActiveAbility.KAMIKAZE));
     static {ItemListManager.ACTIVE_ITEM_LIST.add(KAMIKAZE);}
 
+    public static final RegistryObject<Item> MR_BOOM = ITEMS.register("mr_boom",
+            () -> new ActiveItem(new Item.Properties(), 4, 4, ModActiveAbility.MR_BOOM));
+    static {ItemListManager.ACTIVE_ITEM_LIST.add(MR_BOOM);}
+
+    public static final RegistryObject<Item> TAMMYS_HEAD = ITEMS.register("tammys_head",
+            () -> new ActiveItem(new Item.Properties(), 4, 4, ModActiveAbility.TAMMYS_HEAD));
+    static {ItemListManager.ACTIVE_ITEM_LIST.add(TAMMYS_HEAD);}
+
+    public static final RegistryObject<Item> THE_HOURGLASS = ITEMS.register("the_hourglass",
+            () -> new ActiveItem(new Item.Properties(), 8, 8, ModActiveAbility.THE_HOURGLASS));
+    static {ItemListManager.ACTIVE_ITEM_LIST.add(THE_HOURGLASS);}
+
+
 }

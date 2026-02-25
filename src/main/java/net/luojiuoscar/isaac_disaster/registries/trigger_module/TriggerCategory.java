@@ -4,6 +4,7 @@ public enum TriggerCategory {
     BULLET_HIT_ENTITY_BEFORE,
     BULLET_HIT_ENTITY_AFTER,
     HIT_ENTITY,
+    KILL_ENTITY,
     BULLET_HIT_BLOCK,
     ON_HURT,
     ON_HURT_POSITIVE,

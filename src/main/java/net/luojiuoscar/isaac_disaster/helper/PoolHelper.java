@@ -11,7 +11,7 @@ import net.minecraft.world.entity.player.Player;
 import java.util.Collections;
 import java.util.Set;
 
-public final class PoolHelper {
+public class PoolHelper {
 
     private PoolHelper() {}
 

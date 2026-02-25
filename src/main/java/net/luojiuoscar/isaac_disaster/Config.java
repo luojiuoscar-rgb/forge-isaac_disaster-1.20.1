@@ -64,6 +64,7 @@ public class Config
     public static ForgeConfigSpec.IntValue PASSIVE_ITEM_LIMIT;
     public static ForgeConfigSpec.DoubleValue DAMAGE_MULTIPLIER_BASE;
     public static ForgeConfigSpec.DoubleValue NEARBY_RANGE;
+    public static ForgeConfigSpec.DoubleValue BASIC_TIME_INTERVAL;
     public static ForgeConfigSpec.DoubleValue HOLY_SHIELD_STRENGTH;
     public static ForgeConfigSpec.DoubleValue MONEY_IS_POWER_STRENGTH;
     public static ForgeConfigSpec.BooleanValue USABLE_PASSIVE_ITEM;
@@ -184,6 +185,11 @@ public class Config
                 .comment("Defines the range of NEARBY." +
                         "Affects most items with a description of NEARBY")
                 .defineInRange("nearby_range", 12.0, 0.0, 99999.0);
+
+        // 基础单次时间间隔
+        BASIC_TIME_INTERVAL = BUILDER
+                .comment("Defines time interval for items with recursive effects.(s)")
+                .defineInRange("basic_time_interval", 10.0, 0.0, 99999.0);
 
 
         BUILDER.pop();

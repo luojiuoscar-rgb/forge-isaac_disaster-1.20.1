@@ -31,8 +31,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.function.Supplier;
 
-import static net.luojiuoscar.isaac_disaster.Config.HOLY_SHIELD_STRENGTH;
-import static net.luojiuoscar.isaac_disaster.Config.NEARBY_RANGE;
+import static net.luojiuoscar.isaac_disaster.Config.*;
 
 public enum StatManager {
     MAX_HEALTH("max_health", Attributes.MAX_HEALTH, 0, true,
@@ -311,6 +310,8 @@ public enum StatManager {
     /* ---------------------- 基础属性数值获取 ---------------------- */
 
     public static double getNearbyRange(){return NEARBY_RANGE.get();}
+    /** 返回ticks */
+    public static int getTimeInterval(int ratio){return (int) (BASIC_TIME_INTERVAL.get() * ratio * 20);}
     public static double getHolyShieldStrength(){return HOLY_SHIELD_STRENGTH.get();}
 
     /* ---------------------- 生命 ---------------------- */

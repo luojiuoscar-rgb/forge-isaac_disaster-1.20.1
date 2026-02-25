@@ -84,7 +84,7 @@ public class CursedEyeAttack extends AttackType implements IChargeableAttack {
 
                         // attack
                         ScheduledFuncHelper.scheduleForPlayer(player.getUUID(), SCHEDULE_TYPE,
-                                1, count, false, () -> {
+                                1,1, count, false, () -> {
 
                             attack.performAttack(attack.getAttackContextsWithEvent(player, attack.getBulletCount(player)));
                             attack.makeSound(player);

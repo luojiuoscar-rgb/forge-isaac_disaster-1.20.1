@@ -38,6 +38,11 @@ public class ModRecursiveModule {
             RECURSIVE_MODULE_REGISTRY.register("rock_bottom", RockBottom::new);
     public static final RegistryObject<IRecursiveModule> VENUS =
             RECURSIVE_MODULE_REGISTRY.register("venus", Venus::new);
-
+    public static final RegistryObject<IRecursiveModule> SACK_OF_PENNIES =
+            RECURSIVE_MODULE_REGISTRY.register("sack_of_pennies", SackOfPennies::new);
+    public static final RegistryObject<IRecursiveModule> THE_RELIC =
+            RECURSIVE_MODULE_REGISTRY.register("the_relic", TheRelic::new);
+    public static final RegistryObject<IRecursiveModule> BOMB_BAG =
+            RECURSIVE_MODULE_REGISTRY.register("bomb_bag", BombBag::new);
 
 }

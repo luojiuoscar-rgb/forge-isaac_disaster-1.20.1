@@ -35,11 +35,11 @@ public class CurseOfTheTower implements ITriggerModule {
 
         player.getCapability(ExtraDataProvider.EXTRA_DATA_CAP).ifPresent(
                 extraData -> {
-                    double cd = extraData.getDouble(DATA_KEY);
+                    double cd = extraData.getDouble(DATA_KEY) == null ? 0 : extraData.getDouble(DATA_KEY);
 
                     if (cd > 0){
                         ScheduledFuncHelper.scheduleForPlayer(player.getUUID(),
-                                SCHEDULE_TYPE, 20, (int) cd, true, () -> {
+                                SCHEDULE_TYPE, 20, 20, (int) cd, true, () -> {
                                     extraData.setDouble(DATA_KEY, extraData.getDouble(DATA_KEY) - 1);
                                 });
                         return;
@@ -50,7 +50,7 @@ public class CurseOfTheTower implements ITriggerModule {
 
                     extraData.setDouble(DATA_KEY, 6);
                     ScheduledFuncHelper.scheduleForPlayer(player.getUUID(),
-                            SCHEDULE_TYPE, 20, 6, true, () -> {
+                            SCHEDULE_TYPE, 20,20, 6, true, () -> {
                         extraData.setDouble(DATA_KEY, extraData.getDouble(DATA_KEY) - 1);
                     });
                 }

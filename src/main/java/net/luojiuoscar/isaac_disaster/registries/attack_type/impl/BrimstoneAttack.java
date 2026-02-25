@@ -39,7 +39,7 @@ public class BrimstoneAttack extends LaserAttack implements IChargeableAttack {
     public void shoot(AttackContext ctx) {
         // 玩家域的schedule
         ScheduledFuncHelper.scheduleForPlayer(ctx.getOwner().getUUID(),
-                SCHEDULE_TYPE, 1, 13, true, () -> {
+                SCHEDULE_TYPE, 1,1, 13, false, () -> {
 
             Entity s = ctx.getShooter();
             Vec3 eyePos = s.getEyePosition().add(0, s.getBbHeight() * -0.15, 0);
@@ -104,7 +104,7 @@ public class BrimstoneAttack extends LaserAttack implements IChargeableAttack {
         @Override
         public void onPressed(ServerPlayer player) {
             // 清除当前玩家域的schedule
-            ScheduledFuncHelper.clearByType(SCHEDULE_TYPE,player.getUUID());
+            ScheduledFuncHelper.clearByType(SCHEDULE_TYPE, player.getUUID());
         }
 
         @Override

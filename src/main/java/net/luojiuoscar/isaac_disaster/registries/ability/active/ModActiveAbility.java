@@ -100,6 +100,20 @@ public class ModActiveAbility {
             ACTIVE_ABILITY_REGISTRY.register("yum_heart",
                     () -> new YumHeart(ItemId.YUM_HEART.getId(), ItemId.YUM_HEART.getLevel()));
 
+    public static final RegistryObject<ActiveAbility> MR_BOOM =
+            ACTIVE_ABILITY_REGISTRY.register("mr_boom",
+                    () -> new MrBoom(ItemId.MR_BOOM.getId(), ItemId.MR_BOOM.getLevel()));
 
+    public static final RegistryObject<ActiveAbility> TAMMYS_HEAD =
+            ACTIVE_ABILITY_REGISTRY.register("tammys_head",
+                    () -> new TammysHead(ItemId.TAMMYS_HEAD.getId(), ItemId.TAMMYS_HEAD.getLevel()));
+
+    public static final RegistryObject<ActiveAbility> THE_HOURGLASS =
+            ACTIVE_ABILITY_REGISTRY.register("the_hourglass",
+                    () -> new TheHourglass(ItemId.THE_HOURGLASS.getId(), ItemId.THE_HOURGLASS.getLevel()));
 
 }
+
+
+
+

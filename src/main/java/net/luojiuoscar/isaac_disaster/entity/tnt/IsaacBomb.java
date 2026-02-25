@@ -152,7 +152,7 @@ public class IsaacBomb extends PrimedTnt {
         if (!this.level().isClientSide()) {
 
             this.setDeltaMovement(Vec3.ZERO);
-            entity.addEffect(new MobEffectInstance(ModEffects.DIZZINESS.get(), 20, 0));
+            entity.addEffect(new MobEffectInstance(ModEffects.DIZZINESS.get(), 20, 255));
         }
     }
 }

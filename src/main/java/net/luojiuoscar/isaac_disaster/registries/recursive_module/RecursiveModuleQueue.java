@@ -42,19 +42,23 @@ public class RecursiveModuleQueue {
             }
         }
 
+        // 获取循环模块
+        IForgeRegistry<IRecursiveModule> registry =
+                RegistryManager.ACTIVE.getRegistry(ModRecursiveModule.RECURSIVE_MODULE_KEY);
+        if (registry == null) return;
+
+        IRecursiveModule module = registry.getValue(id);
+        if (module == null) return;
+
+        // 如果首次添加则从initial tick开始倒计时
         if (!found){
-            queue.add(new RecursiveModuleInstance(id, stacks, 0));
+            queue.add(new RecursiveModuleInstance(id, stacks, module.getInitialTick()));
         }else{
             if (instance.stacks <= 0){
                 // 从queue中移除
                 queue.remove(instance);
 
-                IForgeRegistry<IRecursiveModule> registry =
-                        RegistryManager.ACTIVE.getRegistry(ModRecursiveModule.RECURSIVE_MODULE_KEY);
-                if (registry == null) return;
 
-                IRecursiveModule module = registry.getValue(id);
-                if (module == null) return;
 
                 module.handleRemove(entity);
             }

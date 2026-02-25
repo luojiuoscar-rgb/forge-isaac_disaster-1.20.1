@@ -3,7 +3,6 @@ package net.luojiuoscar.isaac_disaster.capability.entity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 
-import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -19,7 +18,7 @@ public class ExtraData {
         doubleValues.clear();
     }
 
-    public @Nullable Double getDouble(ResourceLocation key) {
+    public Double getDouble(ResourceLocation key) {
         return doubleValues.getOrDefault(key, null);
     }
 

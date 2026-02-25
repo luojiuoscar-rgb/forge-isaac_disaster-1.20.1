@@ -383,4 +383,63 @@ public class ModPassiveAbility {
     public static final RegistryObject<PassiveAbility> VENUS =
             PASSIVE_ABILITY_REGISTRY.register("venus",
                     () -> new Venus(ItemId.VENUS.getId(), ItemId.VENUS.getLevel()));
+
+    public static final RegistryObject<PassiveAbility> THE_VIRUS =
+            PASSIVE_ABILITY_REGISTRY.register("the_virus",
+                    () -> new TheVirus(ItemId.THE_VIRUS.getId(), ItemId.THE_VIRUS.getLevel()));
+
+    public static final RegistryObject<PassiveAbility> SKELETON_KEY =
+            PASSIVE_ABILITY_REGISTRY.register("skeleton_key",
+                    () -> new SkeletonKey(ItemId.SKELETON_KEY.getId(), ItemId.SKELETON_KEY.getLevel()));
+
+    public static final RegistryObject<PassiveAbility> THE_BELT =
+            PASSIVE_ABILITY_REGISTRY.register("the_belt",
+                    () -> new TheBelt(ItemId.THE_BELT.getId(), ItemId.THE_BELT.getLevel()));
+
+    public static final RegistryObject<PassiveAbility> LUCKY_FOOT =
+            PASSIVE_ABILITY_REGISTRY.register("lucky_foot",
+                    () -> new LuckyFoot(ItemId.LUCKY_FOOT.getId(), ItemId.LUCKY_FOOT.getLevel()));
+
+    public static final RegistryObject<PassiveAbility> CHARM_OF_THE_VAMPIRE =
+            PASSIVE_ABILITY_REGISTRY.register("charm_of_the_vampire",
+                    () -> new CharmOfTheVampire(ItemId.CHARM_OF_THE_VAMPIRE.getId(), ItemId.CHARM_OF_THE_VAMPIRE.getLevel()));
+
+    public static final RegistryObject<PassiveAbility> SUPER_BANDAGE =
+            PASSIVE_ABILITY_REGISTRY.register("super_bandage",
+                    () -> new SuperBandage(ItemId.SUPER_BANDAGE.getId(), ItemId.SUPER_BANDAGE.getLevel()));
+
+    public static final RegistryObject<PassiveAbility> THE_SMALL_ROCK =
+            PASSIVE_ABILITY_REGISTRY.register("the_small_rock",
+                    () -> new TheSmallRock(ItemId.THE_SMALL_ROCK.getId(), ItemId.THE_SMALL_ROCK.getLevel()));
+
+    public static final RegistryObject<PassiveAbility> SACK_OF_PENNIES =
+            PASSIVE_ABILITY_REGISTRY.register("sack_of_pennies",
+                    () -> new SackOfPennies(ItemId.SACK_OF_PENNIES.getId(), ItemId.SACK_OF_PENNIES.getLevel()));
+
+    public static final RegistryObject<PassiveAbility> THE_RELIC =
+            PASSIVE_ABILITY_REGISTRY.register("the_relic",
+                    () -> new TheRelic(ItemId.THE_RELIC.getId(), ItemId.THE_RELIC.getLevel()));
+
+    public static final RegistryObject<PassiveAbility> BOMB_BAG =
+            PASSIVE_ABILITY_REGISTRY.register("bomb_bag",
+                    () -> new BombBag(ItemId.BOMB_BAG.getId(), ItemId.BOMB_BAG.getLevel()));
+
+    public static final RegistryObject<PassiveAbility> THE_HALO =
+            PASSIVE_ABILITY_REGISTRY.register("the_halo",
+                    () -> new TheHalo(ItemId.THE_HALO.getId(), ItemId.THE_HALO.getLevel()));
+
+    public static final RegistryObject<PassiveAbility> OUIJA_BOARD =
+            PASSIVE_ABILITY_REGISTRY.register("ouija_board",
+                    () -> new OuijaBoard(ItemId.OUIJA_BOARD.getId(), ItemId.OUIJA_BOARD.getLevel()));
+
+    public static final RegistryObject<PassiveAbility> THIN_ODD_MUSHROOM =
+            PASSIVE_ABILITY_REGISTRY.register("thin_odd_mushroom",
+                    () -> new ThinOddMushroom(ItemId.THIN_ODD_MUSHROOM.getId(), ItemId.THIN_ODD_MUSHROOM.getLevel()));
+
+    public static final RegistryObject<PassiveAbility> LARGE_ODD_MUSHROOM =
+            PASSIVE_ABILITY_REGISTRY.register("large_odd_mushroom",
+                    () -> new LargeOddMushroom(ItemId.LARGE_ODD_MUSHROOM.getId(), ItemId.LARGE_ODD_MUSHROOM.getLevel()));
+
+
+
 }

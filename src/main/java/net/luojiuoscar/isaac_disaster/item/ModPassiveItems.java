@@ -388,4 +388,62 @@ public class ModPassiveItems {
     public static final RegistryObject<Item> VENUS = ITEMS.register("venus",
             () -> new PassiveItem(new Item.Properties(), ModPassiveAbility.VENUS));
     static {ItemListManager.PASSIVE_ITEM_LIST.add(VENUS);}
+
+    public static final RegistryObject<Item> THE_VIRUS = ITEMS.register("the_virus",
+            () -> new PassiveItem(new Item.Properties(), ModPassiveAbility.THE_VIRUS));
+    static {ItemListManager.PASSIVE_ITEM_LIST.add(THE_VIRUS);}
+
+    public static final RegistryObject<Item> SKELETON_KEY = ITEMS.register("skeleton_key",
+            () -> new PassiveItem(new Item.Properties(), ModPassiveAbility.SKELETON_KEY));
+    static {ItemListManager.PASSIVE_ITEM_LIST.add(SKELETON_KEY);}
+
+    public static final RegistryObject<Item> THE_BELT = ITEMS.register("the_belt",
+            () -> new PassiveItem(new Item.Properties(), ModPassiveAbility.THE_BELT));
+    static {ItemListManager.PASSIVE_ITEM_LIST.add(THE_BELT);}
+
+    public static final RegistryObject<Item> LUCKY_FOOT = ITEMS.register("lucky_foot",
+            () -> new PassiveItem(new Item.Properties(), ModPassiveAbility.LUCKY_FOOT));
+    static {ItemListManager.PASSIVE_ITEM_LIST.add(LUCKY_FOOT);}
+
+    public static final RegistryObject<Item> CHARM_OF_THE_VAMPIRE = ITEMS.register("charm_of_the_vampire",
+            () -> new PassiveItem(new Item.Properties(), ModPassiveAbility.CHARM_OF_THE_VAMPIRE));
+    static {ItemListManager.PASSIVE_ITEM_LIST.add(CHARM_OF_THE_VAMPIRE);}
+
+    public static final RegistryObject<Item> SUPER_BANDAGE = ITEMS.register("super_bandage",
+            () -> new PassiveItem(new Item.Properties(), ModPassiveAbility.SUPER_BANDAGE));
+    static {ItemListManager.PASSIVE_ITEM_LIST.add(SUPER_BANDAGE);}
+
+    public static final RegistryObject<Item> THE_SMALL_ROCK = ITEMS.register("the_small_rock",
+            () -> new PassiveItem(new Item.Properties(), ModPassiveAbility.THE_SMALL_ROCK));
+    static {ItemListManager.PASSIVE_ITEM_LIST.add(THE_SMALL_ROCK);}
+
+    public static final RegistryObject<Item> SACK_OF_PENNIES = ITEMS.register("sack_of_pennies",
+            () -> new PassiveItem(new Item.Properties(), ModPassiveAbility.SACK_OF_PENNIES));
+    static {ItemListManager.PASSIVE_ITEM_LIST.add(SACK_OF_PENNIES);}
+
+    public static final RegistryObject<Item> THE_RELIC = ITEMS.register("the_relic",
+            () -> new PassiveItem(new Item.Properties(), ModPassiveAbility.THE_RELIC));
+    static {ItemListManager.PASSIVE_ITEM_LIST.add(THE_RELIC);}
+
+    public static final RegistryObject<Item> BOMB_BAG = ITEMS.register("bomb_bag",
+            () -> new PassiveItem(new Item.Properties(), ModPassiveAbility.BOMB_BAG));
+    static {ItemListManager.PASSIVE_ITEM_LIST.add(BOMB_BAG);}
+
+    public static final RegistryObject<Item> THE_HALO = ITEMS.register("the_halo",
+            () -> new PassiveItem(new Item.Properties(), ModPassiveAbility.THE_HALO));
+    static {ItemListManager.PASSIVE_ITEM_LIST.add(THE_HALO);}
+
+    public static final RegistryObject<Item> OUIJA_BOARD = ITEMS.register("ouija_board",
+            () -> new PassiveItem(new Item.Properties(), ModPassiveAbility.OUIJA_BOARD));
+    static {ItemListManager.PASSIVE_ITEM_LIST.add(OUIJA_BOARD);}
+
+    public static final RegistryObject<Item> THIN_ODD_MUSHROOM = ITEMS.register("thin_odd_mushroom",
+            () -> new PassiveItem(new Item.Properties(), ModPassiveAbility.THIN_ODD_MUSHROOM));
+    static {ItemListManager.PASSIVE_ITEM_LIST.add(THIN_ODD_MUSHROOM);}
+
+    public static final RegistryObject<Item> LARGE_ODD_MUSHROOM = ITEMS.register("large_odd_mushroom",
+            () -> new PassiveItem(new Item.Properties(), ModPassiveAbility.LARGE_ODD_MUSHROOM));
+    static {ItemListManager.PASSIVE_ITEM_LIST.add(LARGE_ODD_MUSHROOM);}
+
+
 }

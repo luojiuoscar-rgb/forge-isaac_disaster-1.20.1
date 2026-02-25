@@ -15,6 +15,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
+import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.level.BlockEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -165,6 +166,7 @@ public class TriggerModuleEvents {
     @SubscribeEvent
     public static void onLivingHurt(LivingHurtEvent event) {
         if (!(event.getEntity() instanceof Player player)) return;
+
         IForgeRegistry<ITriggerModule> reg  =
                 RegistryManager.ACTIVE.getRegistry(ModTriggerModule.TRIGGER_MODULE_KEY);
 
@@ -189,6 +191,30 @@ public class TriggerModuleEvents {
                 if (!PlayerHelper.isSelfDamage(event.getSource())){
                     val.onHurtNegative(event, inst.stacks, queue);
                 }
+            }
+        });
+    }
+
+    @SubscribeEvent
+    public static void onKilledEntity(LivingDeathEvent event) {
+        if (!(event.getSource().getEntity() instanceof Player player)) return;
+
+        IForgeRegistry<ITriggerModule> reg  =
+                RegistryManager.ACTIVE.getRegistry(ModTriggerModule.TRIGGER_MODULE_KEY);
+
+        player.getCapability(EffectModulesProvider.EFFECT_MODULES).ifPresent(triggerModule -> {
+            var queue = triggerModule.getTriggerModules().copy();
+
+            BeforeTriggerModuleActiveEvent e = new BeforeTriggerModuleActiveEvent(event, queue);
+            MinecraftForge.EVENT_BUS.post(e);
+
+            queue.lock();
+
+            for (var inst : queue.getQueue()){
+                ITriggerModule val = reg.getValue(inst.id);
+                if (val == null) continue;
+
+                val.onKilledEntity(event, inst.stacks, queue);
             }
         });
     }

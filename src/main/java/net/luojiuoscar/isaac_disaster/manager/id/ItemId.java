@@ -119,7 +119,24 @@ public enum ItemId {
     TECHNOLOGY2(2),
     ROCK_BOTTOM(3),
     TERRA(3),
-    VENUS(1);
+    VENUS(1),
+    THE_VIRUS(3),
+    SKELETON_KEY(2),
+    THE_BELT(1),
+    MR_BOOM(1),
+    TAMMYS_HEAD(2),
+    LUCKY_FOOT(2),
+    CHARM_OF_THE_VAMPIRE(2),
+    THE_HOURGLASS(1),
+    SUPER_BANDAGE(1),
+    THE_SMALL_ROCK(2),
+    SACK_OF_PENNIES(1),
+    THE_RELIC(3),
+    BOMB_BAG(2),
+    THE_HALO(2),
+    OUIJA_BOARD(2),
+    THIN_ODD_MUSHROOM(2),
+    LARGE_ODD_MUSHROOM(2);
 
 
 

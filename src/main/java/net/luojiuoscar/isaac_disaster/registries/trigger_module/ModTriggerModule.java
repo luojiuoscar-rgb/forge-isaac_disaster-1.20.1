@@ -50,6 +50,8 @@ public class ModTriggerModule {
             TRIGGER_MODULE_REGISTRY.register("technology2", Technology2::new);
     public static final RegistryObject<ITriggerModule> TERRA =
             TRIGGER_MODULE_REGISTRY.register("terra", Terra::new);
-
-
+    public static final RegistryObject<ITriggerModule> THE_VIRUS =
+            TRIGGER_MODULE_REGISTRY.register("the_virus", TheVirus::new);
+    public static final RegistryObject<ITriggerModule> CHARM_OF_THE_VAMPIRE =
+            TRIGGER_MODULE_REGISTRY.register("charm_of_the_vampire", CharmOfTheVampire::new);
 }

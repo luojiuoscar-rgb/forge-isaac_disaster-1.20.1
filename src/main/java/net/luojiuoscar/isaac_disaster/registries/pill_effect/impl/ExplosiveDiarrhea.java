@@ -25,14 +25,20 @@ public class ExplosiveDiarrhea implements IPillEffect {
 
     @Override
     public void onUseEffect(ServerPlayer player) {
-        ScheduledFuncHelper.scheduleForPlayer(player.getUUID(), SCHEDULE_TYPE, 15, 5, false,
-                () -> EntityHelper.spawnBomb(player.position(), player, player.level(), Vec3.ZERO, 1));
+        ScheduledFuncHelper.scheduleForPlayer(player.getUUID(), SCHEDULE_TYPE, 15,15, 5, false,
+                () -> {
+            EntityHelper.spawnBomb(player.position(), player, player.level(), Vec3.ZERO, 1);
+            player.playNotifySound(ModSounds.FART_NORMAL.get(), SoundSource.PLAYERS, 1.0f, 1.0f);
+        });
     }
 
     @Override
     public void onUseEffectH(ServerPlayer player) {
-        ScheduledFuncHelper.scheduleForPlayer(player.getUUID(), SCHEDULE_TYPE, 15, 8, false,
-                () -> EntityHelper.spawnBomb(player.position(), player, player.level(), Vec3.ZERO, 2));
+        ScheduledFuncHelper.scheduleForPlayer(player.getUUID(), SCHEDULE_TYPE, 15, 15, 8, false,
+                () -> {
+            EntityHelper.spawnBomb(player.position(), player, player.level(), Vec3.ZERO, 2);
+            player.playNotifySound(ModSounds.FART_HUGE.get(), SoundSource.PLAYERS, 1.0f, 1.0f);
+        });
     }
 
     @Override

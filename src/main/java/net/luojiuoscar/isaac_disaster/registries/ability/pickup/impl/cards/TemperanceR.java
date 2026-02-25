@@ -26,7 +26,7 @@ public class TemperanceR extends TarotAbility {
     @Override
     public void onUseEffect(ServerPlayer player, ItemStack stack, InteractionHand hand) {
         ScheduledFuncHelper.scheduleForPlayer(player.getUUID(), SCHEDULE_TYPE
-                , 20, 5, false, () -> {
+                , 20, 20, 5, false, () -> {
 
                     PillEffectManager.getInstance().triggerRandomEffect(player, false);
                 });
@@ -35,7 +35,7 @@ public class TemperanceR extends TarotAbility {
     @Override
     public void onUseEffectS(ServerPlayer player, ItemStack stack, InteractionHand hand) {
         ScheduledFuncHelper.scheduleForPlayer(player.getUUID(), SCHEDULE_TYPE
-                , 20, 10, false, () -> {
+                , 20, 20, 10, false, () -> {
 
                     PillEffectManager.getInstance().triggerRandomEffect(player, false);
                 });

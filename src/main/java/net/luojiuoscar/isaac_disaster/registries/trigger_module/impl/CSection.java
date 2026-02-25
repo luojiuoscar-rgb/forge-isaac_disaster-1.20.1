@@ -43,7 +43,7 @@ public class CSection implements ITriggerModule {
             LivingEntity entity = event.getEntity();
             if (!(entity instanceof ServerPlayer player)) return;
 
-            ScheduledFuncHelper.scheduleForPlayer(player.getUUID(), SCHEDULE_TYPE, 3, 4, false, () -> {
+            ScheduledFuncHelper.scheduleForPlayer(player.getUUID(), SCHEDULE_TYPE, 3,3, 4, false, () -> {
 
                         attack.shoot(attack.getOneAttackContext(player, player));
                         attack.makeSound(player);
