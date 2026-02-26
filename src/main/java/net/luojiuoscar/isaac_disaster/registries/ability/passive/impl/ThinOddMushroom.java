@@ -23,7 +23,7 @@ public class ThinOddMushroom extends PassiveAbility {
     public void handleObtain(ServerPlayer player, @Nullable ItemStack stack) {
         StatManager.SCALE.apply(player, -1);
         StatManager.MOVEMENT_SPEED.apply(player, 1.5);
-        StatManager.TEARS.apply(player, 1.5);
+        StatManager.TEARS.apply(player, 1.75);
         StatManager.DAMAGE_MULTIPLY_BASE.apply(player, -0.1);
         StatManager.modifySetWithId(player, ModSetAbility.FUN_GUY.getId(), 1);
     }
@@ -42,7 +42,7 @@ public class ThinOddMushroom extends PassiveAbility {
         return List.of(
                 Component.translatable("attribute.isaac_disaster.scale_down"),
                 StatManager.MOVEMENT_SPEED.description(1.5),
-                StatManager.TEARS.description(1.5),
+                StatManager.TEARS.description(1.75),
                 StatManager.DAMAGE_MULTIPLY_BASE.description(-0.1)
         );
     }

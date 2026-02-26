@@ -9,6 +9,7 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
+import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
 import net.minecraftforge.event.level.BlockEvent;
 
 import java.util.Set;
@@ -68,4 +69,9 @@ public interface ITriggerModule {
 
     /** 按住右键的时候触发 */
     default void onRightClickTick(RightClickTickEvent event, int stacks, TriggerModuleQueue queue){}
+
+    /** 捡起物品的时候触发 */
+    default void onPickupItem(EntityItemPickupEvent event, int stacks, TriggerModuleQueue queue) {}
+
+
 }

@@ -1,0 +1,18 @@
+{
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {"type": "minecraft:item", "name": "isaac_disaster:bloody_penny"},
+        {"type": "minecraft:item", "name": "isaac_disaster:burnt_penny"},
+        {"type": "minecraft:item", "name": "isaac_disaster:flat_penny"},
+        {"type": "minecraft:item", "name": "isaac_disaster:counterfeit_penny"},
+        {"type": "minecraft:item", "name": "isaac_disaster:blessed_penny"},
+        {"type": "minecraft:item", "name": "isaac_disaster:charged_penny"},
+        {"type": "minecraft:item", "name": "isaac_disaster:cursed_penny"},
+        {"type": "minecraft:item", "name": "isaac_disaster:butt_penny"}
+      ]
+    }
+  ]
+}
+

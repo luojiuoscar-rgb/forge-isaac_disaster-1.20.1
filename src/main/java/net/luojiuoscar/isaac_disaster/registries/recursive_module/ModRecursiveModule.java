@@ -44,5 +44,8 @@ public class ModRecursiveModule {
             RECURSIVE_MODULE_REGISTRY.register("the_relic", TheRelic::new);
     public static final RegistryObject<IRecursiveModule> BOMB_BAG =
             RECURSIVE_MODULE_REGISTRY.register("bomb_bag", BombBag::new);
-
+    public static final RegistryObject<IRecursiveModule> ATTRACT_ITEM =
+            RECURSIVE_MODULE_REGISTRY.register("attract_item", AttractItem::new);
+    public static final RegistryObject<IRecursiveModule> MAGNETO =
+            RECURSIVE_MODULE_REGISTRY.register("magneto", Magneto::new);
 }

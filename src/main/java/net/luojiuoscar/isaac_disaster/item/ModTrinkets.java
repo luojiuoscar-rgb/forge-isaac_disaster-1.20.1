@@ -125,4 +125,37 @@ public class ModTrinkets {
     public static final RegistryObject<Item> HOOK_WORM = ITEMS.register("hook_worm",
             () -> new Trinket(new Item.Properties(), ModTrinketAbility.HOOK_WORM));
     static {ItemListManager.TRINKET_LIST.add(HOOK_WORM);}
+
+    public static final RegistryObject<Item> BLOODY_PENNY = ITEMS.register("bloody_penny",
+            () -> new Trinket(new Item.Properties(), ModTrinketAbility.BLOODY_PENNY));
+    static {ItemListManager.TRINKET_LIST.add(BLOODY_PENNY);}
+
+    public static final RegistryObject<Item> BURNT_PENNY = ITEMS.register("burnt_penny",
+            () -> new Trinket(new Item.Properties(), ModTrinketAbility.BURNT_PENNY));
+    static {ItemListManager.TRINKET_LIST.add(BURNT_PENNY);}
+
+    public static final RegistryObject<Item> FLAT_PENNY = ITEMS.register("flat_penny",
+            () -> new Trinket(new Item.Properties(), ModTrinketAbility.FLAT_PENNY));
+    static {ItemListManager.TRINKET_LIST.add(FLAT_PENNY);}
+
+    public static final RegistryObject<Item> BLESSED_PENNY = ITEMS.register("blessed_penny",
+            () -> new Trinket(new Item.Properties(), ModTrinketAbility.BLESSED_PENNY));
+    static {ItemListManager.TRINKET_LIST.add(BLESSED_PENNY);}
+
+    public static final RegistryObject<Item> CHARGED_PENNY = ITEMS.register("charged_penny",
+            () -> new Trinket(new Item.Properties(), ModTrinketAbility.CHARGED_PENNY));
+    static {ItemListManager.TRINKET_LIST.add(CHARGED_PENNY);}
+
+    public static final RegistryObject<Item> COUNTERFEIT_PENNY = ITEMS.register("counterfeit_penny",
+            () -> new Trinket(new Item.Properties(), ModTrinketAbility.COUNTERFEIT_PENNY));
+    static {ItemListManager.TRINKET_LIST.add(COUNTERFEIT_PENNY);}
+
+    public static final RegistryObject<Item> BUTT_PENNY = ITEMS.register("butt_penny",
+            () -> new Trinket(new Item.Properties(), ModTrinketAbility.BUTT_PENNY));
+    static {ItemListManager.TRINKET_LIST.add(BUTT_PENNY);}
+
+    public static final RegistryObject<Item> CURSED_PENNY = ITEMS.register("cursed_penny",
+            () -> new Trinket(new Item.Properties(), ModTrinketAbility.CURSED_PENNY));
+    static {ItemListManager.TRINKET_LIST.add(CURSED_PENNY);}
+
 }

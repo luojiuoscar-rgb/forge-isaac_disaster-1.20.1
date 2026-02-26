@@ -33,7 +33,15 @@ public enum TrinketId {
     LAZY_WORM(1),
     RING_WORM(1),
     OUROBOROS_WORM(1),
-    HOOK_WORM(1);
+    HOOK_WORM(1),
+    BLOODY_PENNY(1),
+    BURNT_PENNY(2),
+    FLAT_PENNY(2),
+    BLESSED_PENNY(2),
+    CHARGED_PENNY(2),
+    COUNTERFEIT_PENNY(2),
+    BUTT_PENNY(0),
+    CURSED_PENNY(0);
 
 
     private final int id;

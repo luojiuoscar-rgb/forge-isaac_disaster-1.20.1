@@ -190,6 +190,15 @@ public class PlayerHelper {
     }
 
     public static int countMoney(Player player) {
+        Inventory inv = player.getInventory();
+        List<ItemStack> items = new ArrayList<>();
+        items.addAll(inv.items);
+        items.addAll(inv.offhand);
+
+        return countMoney(items);
+    }
+
+    public static int countMoney(List<ItemStack> items) {
         int money = 0;
 
         // 从配置中读取三个钱币及其对应价值
@@ -201,13 +210,7 @@ public class PlayerHelper {
         int value2 = Config.COIN_TIER_2_VALUE.get();
         int value3 = Config.COIN_TIER_3_VALUE.get();
 
-        Inventory inv = player.getInventory();
-        List<ItemStack> items = new ArrayList<>();
-        items.addAll(inv.items);
-        items.addAll(inv.offhand);
-
-
-        // 遍历背包所有物品
+        // 遍历所有物品
         for (ItemStack stack : items) {
             if (stack.isEmpty()) continue;
 
@@ -224,6 +227,34 @@ public class PlayerHelper {
 
         return money;
     }
+
+    public static int countMoneyItemCount(List<ItemStack> items) {
+        int count = 0;
+
+        // 从配置中读取三个钱币及其对应价值
+        Item tier1Coin = getItemFromConfig(Config.COIN_TIER_1_ID.get());
+        Item tier2Coin = getItemFromConfig(Config.COIN_TIER_2_ID.get());
+        Item tier3Coin = getItemFromConfig(Config.COIN_TIER_3_ID.get());
+
+        // 遍历所有物品
+        for (ItemStack stack : items) {
+            if (stack.isEmpty()) continue;
+
+            Item item = stack.getItem();
+
+            if (item == tier1Coin) {
+                count += stack.getCount();
+            } else if (item == tier2Coin) {
+                count += stack.getCount();
+            } else if (item == tier3Coin) {
+                count += stack.getCount();
+            }
+        }
+
+        return count;
+    }
+
+
     public static boolean takeMoney(Player player, int amount) {
         // 读取配置
         int value1 = Config.COIN_TIER_1_VALUE.get();

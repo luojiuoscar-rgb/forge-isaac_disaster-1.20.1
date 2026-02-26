@@ -3,10 +3,7 @@ package net.luojiuoscar.isaac_disaster.loot;
 import com.mojang.serialization.Codec;
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.loot.modifier.*;
-import net.luojiuoscar.isaac_disaster.loot.modifier.item.DaemonsTailLootModifier;
-import net.luojiuoscar.isaac_disaster.loot.modifier.item.MitreLootModifier;
-import net.luojiuoscar.isaac_disaster.loot.modifier.item.SackheadLootModifier;
-import net.luojiuoscar.isaac_disaster.loot.modifier.item.SacredOrbLootModifier;
+import net.luojiuoscar.isaac_disaster.loot.modifier.item.*;
 import net.minecraftforge.common.loot.IGlobalLootModifier;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.registries.DeferredRegister;
@@ -44,4 +41,6 @@ public class ModLootModifiers {
             LOOT_MODIFIER_SERIALIZERS.register("mitre", () -> MitreLootModifier.CODEC);
     public static final RegistryObject<Codec<? extends IGlobalLootModifier>> DAEMONS_TAIL =
             LOOT_MODIFIER_SERIALIZERS.register("daemons_tail", () -> DaemonsTailLootModifier.CODEC);
+    public static final RegistryObject<Codec<? extends IGlobalLootModifier>> PENNY_TRINKET =
+            LOOT_MODIFIER_SERIALIZERS.register("penny_trinket", () -> PennyTrinketLootModifier.CODEC);
 }

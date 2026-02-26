@@ -14,4 +14,5 @@ public enum TriggerCategory {
     BULLET_TICK,
     BEFORE_PERFORM_ATTACK,
     RIGHT_CLICK_TICK,
+    PICKUP_ITEM
 }

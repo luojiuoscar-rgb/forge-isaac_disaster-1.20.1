@@ -54,4 +54,11 @@ public class ModTriggerModule {
             TRIGGER_MODULE_REGISTRY.register("the_virus", TheVirus::new);
     public static final RegistryObject<ITriggerModule> CHARM_OF_THE_VAMPIRE =
             TRIGGER_MODULE_REGISTRY.register("charm_of_the_vampire", CharmOfTheVampire::new);
+    public static final RegistryObject<ITriggerModule> BUTT_PENNY =
+            TRIGGER_MODULE_REGISTRY.register("butt_penny", ButtPenny::new);
+    public static final RegistryObject<ITriggerModule> CURSED_PENNY =
+            TRIGGER_MODULE_REGISTRY.register("cursed_penny", CursedPenny::new);
+
+
+
 }

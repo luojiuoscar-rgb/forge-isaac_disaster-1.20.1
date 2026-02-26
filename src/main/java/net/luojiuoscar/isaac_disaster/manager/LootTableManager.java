@@ -76,7 +76,8 @@ public class LootTableManager {
     // items
     public static final ResourceLocation CHAOS =
             ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "pickups/chaos");
-
+    public static final ResourceLocation COIN_TRINKET =
+            ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "pickups/coin_trinket");
 
 
 

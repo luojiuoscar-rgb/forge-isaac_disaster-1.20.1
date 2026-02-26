@@ -440,6 +440,39 @@ public class ModPassiveAbility {
             PASSIVE_ABILITY_REGISTRY.register("large_odd_mushroom",
                     () -> new LargeOddMushroom(ItemId.LARGE_ODD_MUSHROOM.getId(), ItemId.LARGE_ODD_MUSHROOM.getLevel()));
 
+    public static final RegistryObject<PassiveAbility> PENTAGRAM =
+            PASSIVE_ABILITY_REGISTRY.register("pentagram",
+                    () -> new Pentagram(ItemId.PENTAGRAM.getId(), ItemId.PENTAGRAM.getLevel()));
 
+    public static final RegistryObject<PassiveAbility> MAGNETO =
+            PASSIVE_ABILITY_REGISTRY.register("magneto",
+                    () -> new Magneto(ItemId.MAGNETO.getId(), ItemId.MAGNETO.getLevel()));
 
+    public static final RegistryObject<PassiveAbility> THE_MARK =
+            PASSIVE_ABILITY_REGISTRY.register("the_mark",
+                    () -> new TheMark(ItemId.THE_MARK.getId(), ItemId.THE_MARK.getLevel()));
+
+    public static final RegistryObject<PassiveAbility> THE_PACT =
+            PASSIVE_ABILITY_REGISTRY.register("the_pact",
+                    () -> new ThePact(ItemId.THE_PACT.getId(), ItemId.THE_PACT.getLevel()));
+
+    public static final RegistryObject<PassiveAbility> LORD_OF_THE_PIT =
+            PASSIVE_ABILITY_REGISTRY.register("lord_of_the_pit",
+                    () -> new LordOfThePit(ItemId.LORD_OF_THE_PIT.getId(), ItemId.LORD_OF_THE_PIT.getLevel()));
+
+    public static final RegistryObject<PassiveAbility> BUCKET_OF_LARD =
+            PASSIVE_ABILITY_REGISTRY.register("bucket_of_lard",
+                    () -> new BucketOfLard(ItemId.BUCKET_OF_LARD.getId(), ItemId.BUCKET_OF_LARD.getLevel()));
+
+    public static final RegistryObject<PassiveAbility> STIGMATA =
+            PASSIVE_ABILITY_REGISTRY.register("stigmata",
+                    () -> new Stigmata(ItemId.STIGMATA.getId(), ItemId.STIGMATA.getLevel()));
+
+    public static final RegistryObject<PassiveAbility> PAGEANT_BOY =
+            PASSIVE_ABILITY_REGISTRY.register("pageant_boy",
+                    () -> new PageantBoy(ItemId.PAGEANT_BOY.getId(), ItemId.PAGEANT_BOY.getLevel()));
+
+    public static final RegistryObject<PassiveAbility> SPIRIT_OF_THE_NIGHT =
+            PASSIVE_ABILITY_REGISTRY.register("spirit_of_the_night",
+                    () -> new SpiritOfTheNight(ItemId.SPIRIT_OF_THE_NIGHT.getId(), ItemId.SPIRIT_OF_THE_NIGHT.getLevel()));
 }

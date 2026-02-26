@@ -45,7 +45,6 @@ import net.minecraftforge.registries.IForgeRegistry;
 import net.minecraftforge.registries.RegistryManager;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.joml.Vector3f;
 
 import java.util.*;
 
@@ -60,6 +59,11 @@ public class TearBullet extends Entity implements IBulletObject {
     protected Entity shooter;
     protected double yRotAngle;
     protected double xRotAngle;
+
+    private float traveled = 0f;
+    private Vec3 velocity = Vec3.ZERO;
+    private boolean isCurrentlySteering = false;
+    private Vec3 prevShooterPos = null;
 
     // ======== 特性 ========
     public boolean isSpectral = false;
@@ -86,16 +90,9 @@ public class TearBullet extends Entity implements IBulletObject {
             SynchedEntityData.defineId(TearBullet.class, EntityDataSerializers.INT);
     protected static final EntityDataAccessor<Float> ALPHA =
             SynchedEntityData.defineId(TearBullet.class, EntityDataSerializers.FLOAT);
-    protected static final EntityDataAccessor<Float> TRAVELED =
-            SynchedEntityData.defineId(TearBullet.class, EntityDataSerializers.FLOAT);
-    protected static final EntityDataAccessor<Vector3f> VELOCITY =
-            SynchedEntityData.defineId(TearBullet.class, EntityDataSerializers.VECTOR3);
+
     protected static final EntityDataAccessor<String> TRAJECTORIES =
             SynchedEntityData.defineId(TearBullet.class, EntityDataSerializers.STRING);
-    protected static final EntityDataAccessor<Boolean> IS_CURRENTLY_STEERING =
-            SynchedEntityData.defineId(TearBullet.class, EntityDataSerializers.BOOLEAN);
-    protected static final EntityDataAccessor<Vector3f> PREV_SHOOTER_POS =
-            SynchedEntityData.defineId(TearBullet.class, EntityDataSerializers.VECTOR3);
 
 
     // ======== 构造函数 ========
@@ -152,71 +149,74 @@ public class TearBullet extends Entity implements IBulletObject {
     public void tick() {
         super.tick();
 
-        Vec3 positionOffset = Vec3.ZERO; // 额外位置偏移
-        double traveled = getTraveled();
+        move(MoverType.SELF, getDeltaMovement());
 
-        // ================== 跟踪/控制 ==================
-        if (tickCount % 4 == 0) setIsCurrentlySteering(handleSteering());
+        if (!level().isClientSide){
+            Vec3 positionOffset = Vec3.ZERO; // 额外位置偏移
+            double traveled = getTraveled();
 
-        // ================== 轨迹偏移 ==================
-        Vec3 baseDir = getVelocity().normalize(); // 当前方向
-        double speed = getVelocity().length();    // 当前速度大小
-        IForgeRegistry<IAttackTrajectory> trajectoryIForgeRegistry =
-                RegistryManager.ACTIVE.getRegistry(ModAttackTrajectory.ATTACK_TRAJECTORY_KEY);
+            // ================== 跟踪/控制 ==================
+            if (tickCount % 4 == 0) setIsCurrentlySteering(handleSteering());
 
-        if (!isCurrentlySteering() && trajectoryIForgeRegistry != null) { // 非跟踪时
-            for (Map.Entry<ResourceLocation, Integer> entry : getTrajectories().entrySet()) {
-                ResourceLocation trajId = entry.getKey();
-                int amplifier = entry.getValue() - 1;
+            // ================== 轨迹偏移 ==================
+            Vec3 baseDir = getVelocity().normalize(); // 当前方向
+            double speed = getVelocity().length();    // 当前速度大小
+            IForgeRegistry<IAttackTrajectory> trajectoryIForgeRegistry =
+                    RegistryManager.ACTIVE.getRegistry(ModAttackTrajectory.ATTACK_TRAJECTORY_KEY);
 
-                IAttackTrajectory traj = trajectoryIForgeRegistry.getValue(trajId);
-                if (traj == null) continue;
+            if (!isCurrentlySteering() && trajectoryIForgeRegistry != null) { // 非跟踪时
+                for (Map.Entry<ResourceLocation, Integer> entry : getTrajectories().entrySet()) {
+                    ResourceLocation trajId = entry.getKey();
+                    int amplifier = entry.getValue() - 1;
 
-                TrajectoryContext ctx = new TrajectoryContext(
-                        this, speed, amplifier, getPrevShooterPos());
+                    IAttackTrajectory traj = trajectoryIForgeRegistry.getValue(trajId);
+                    if (traj == null) continue;
 
-                var result = traj.getResult(ctx);
+                    TrajectoryContext ctx = new TrajectoryContext(
+                            this, speed, amplifier, getPrevShooterPos());
 
-                // ---- 应用旋转到方向 ----
-                Vec3 up = new Vec3(0, 1, 0);
-                baseDir = AttackType.rotateAroundAxis(baseDir, up, result.yRot());
-                Vec3 right = baseDir.cross(up).normalize();
-                baseDir = AttackType.rotateAroundAxis(baseDir, right, result.xRot());
+                    var result = traj.getResult(ctx);
 
-                // ---- 将旋转后的方向应用到速度 ----
-                Vec3 newVelocity = baseDir.scale(speed).add(result.velocityOffset());
-                setVelocity(newVelocity);
+                    // ---- 应用旋转到方向 ----
+                    Vec3 up = new Vec3(0, 1, 0);
+                    baseDir = AttackType.rotateAroundAxis(baseDir, up, result.yRot());
+                    Vec3 right = baseDir.cross(up).normalize();
+                    baseDir = AttackType.rotateAroundAxis(baseDir, right, result.xRot());
 
-                // ---- 累积位置偏移 ----
-                positionOffset = positionOffset.add(result.positionOffset());
-            }
-        }
+                    // ---- 将旋转后的方向应用到速度 ----
+                    Vec3 newVelocity = baseDir.scale(speed).add(result.velocityOffset());
+                    setVelocity(newVelocity);
 
-        // 最终位移 = velocity + 额外位置偏移
-        Vec3 velocityMove = getVelocity(); // 当前速度向量
-        Vec3 finalMove = velocityMove.add(positionOffset);
-        setDeltaMovement(finalMove);
-
-        // ================== 碰撞检测 ==================
-        if (!level().isClientSide) {
-            MinecraftForge.EVENT_BUS.post(new BulletTickEvent(this));
-
-            if (--lifeTick <= 0) {
-                if (!MinecraftForge.EVENT_BUS.post(new TearBulletDiscardEvent(this))) discard();
-                return;
+                    // ---- 累积位置偏移 ----
+                    positionOffset = positionOffset.add(result.positionOffset());
+                }
             }
 
-            Vec3 start = position();
-            Vec3 end = start.add(finalMove);
+            // 最终位移 = velocity + 额外位置偏移
+            Vec3 velocityMove = getVelocity(); // 当前速度向量
+            Vec3 finalMove = velocityMove.add(positionOffset);
+            setDeltaMovement(finalMove);
 
-            if (handleBlockCollision(start, end)) return;
-            handleEntityCollision(start, end, finalMove);
+            // ================== 碰撞检测 ==================
+            if (!level().isClientSide) {
+                MinecraftForge.EVENT_BUS.post(new BulletTickEvent(this));
+
+                if (--lifeTick <= 0) {
+                    if (!MinecraftForge.EVENT_BUS.post(new TearBulletDiscardEvent(this))) discard();
+                    return;
+                }
+
+                Vec3 start = position();
+                Vec3 end = start.add(finalMove);
+
+                if (handleBlockCollision(start, end)) return;
+                handleEntityCollision(start, end, finalMove);
+            }
+
+            setTraveled((float)(traveled + velocityMove.length()));
+
+            updateDirection();
         }
-
-        move(MoverType.SELF, finalMove);
-        setTraveled((float)(traveled + velocityMove.length()));
-
-        updateDirection();
     }
 
     protected void updateDirection(){
@@ -437,11 +437,7 @@ public class TearBullet extends Entity implements IBulletObject {
         entityData.define(SCALE, 1.0F);
         entityData.define(COLOR, 0xFFFFFF);
         entityData.define(ALPHA, 1.0F);
-        entityData.define(TRAVELED, 0.0F);
-        entityData.define(VELOCITY, new Vector3f(0f, 0f, 0f));
         entityData.define(TRAJECTORIES, "");
-        entityData.define(IS_CURRENTLY_STEERING, false);
-        entityData.define(PREV_SHOOTER_POS, new Vector3f(0f, 0f, 0f));
     }
 
     // ======== NBT读写(不保存子弹) ========
@@ -483,7 +479,7 @@ public class TearBullet extends Entity implements IBulletObject {
     public int getColor() { return this.entityData.get(COLOR); }
     public float getAlpha() { return this.entityData.get(ALPHA); }
     @Override
-    public double getTraveled() { return this.entityData.get(TRAVELED); }
+    public double getTraveled() { return this.traveled; }
 
     @Override
     public Vec3 getPosition() {
@@ -510,7 +506,7 @@ public class TearBullet extends Entity implements IBulletObject {
         return controlSteer;
     }
 
-    public boolean isCurrentlySteering() { return this.entityData.get(IS_CURRENTLY_STEERING); }
+    public boolean isCurrentlySteering() { return this.isCurrentlySteering; }
 
     public void setScale(float scale) {
         this.entityData.set(SCALE, scale);
@@ -531,8 +527,8 @@ public class TearBullet extends Entity implements IBulletObject {
 
     public void setColor(int rgb) { this.entityData.set(COLOR, rgb); }
     public void setAlpha(float alpha) { this.entityData.set(ALPHA, Mth.clamp(alpha, 0.0F, 1.0F)); }
-    public void setTraveled(float traveled) { this.entityData.set(TRAVELED, traveled); }
-    public void setIsCurrentlySteering(boolean b) { this.entityData.set(IS_CURRENTLY_STEERING, b); }
+    public void setTraveled(float traveled) { this.traveled = traveled; }
+    public void setIsCurrentlySteering(boolean b) { this.isCurrentlySteering = b; }
 
     public void setDamage(float damage) { this.damage = damage; }
     @Override
@@ -540,12 +536,11 @@ public class TearBullet extends Entity implements IBulletObject {
 
     @Override
     public Vec3 getVelocity() {
-        Vector3f v = entityData.get(VELOCITY);
-        return new Vec3(v.x(), v.y(), v.z());
+        return this.velocity;
     }
 
     public void setVelocity(Vec3 vel) {
-        entityData.set(VELOCITY, new Vector3f((float) vel.x, (float) vel.y, (float) vel.z));
+        this.velocity = vel;
     }
 
     @Override
@@ -555,12 +550,11 @@ public class TearBullet extends Entity implements IBulletObject {
                     .add(0, shooter.getBbHeight() * 0.6, 0));
         }
 
-        Vector3f p = entityData.get(PREV_SHOOTER_POS);
-        return new Vec3(p.x(), p.y(), p.z());
+        return this.prevShooterPos;
     }
 
     public void setPrevShooterPos(Vec3 pos) {
-        entityData.set(PREV_SHOOTER_POS, new Vector3f((float) pos.x, (float) pos.y, (float) pos.z));
+        this.prevShooterPos = pos;
     }
 
     public void setTrajectories(Map<ResourceLocation, Integer> map) {

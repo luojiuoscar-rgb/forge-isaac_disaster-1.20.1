@@ -1,10 +1,7 @@
 package net.luojiuoscar.isaac_disaster.datagen;
 
 import net.luojiuoscar.isaac_disaster.loot.modifier.*;
-import net.luojiuoscar.isaac_disaster.loot.modifier.item.DaemonsTailLootModifier;
-import net.luojiuoscar.isaac_disaster.loot.modifier.item.MitreLootModifier;
-import net.luojiuoscar.isaac_disaster.loot.modifier.item.SackheadLootModifier;
-import net.luojiuoscar.isaac_disaster.loot.modifier.item.SacredOrbLootModifier;
+import net.luojiuoscar.isaac_disaster.loot.modifier.item.*;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 import net.minecraftforge.common.loot.LootModifier;
 
@@ -38,6 +35,8 @@ public class LootModifierManager {
         register("daemons_tail", new DaemonsTailLootModifier(new LootItemCondition[0]));
         register("sack_head", new SackheadLootModifier(new LootItemCondition[0]));
         register("mitre", new MitreLootModifier(new LootItemCondition[0]));
+
+        register("penny_trinket", new PennyTrinketLootModifier(new LootItemCondition[0]));
 
     }
 }

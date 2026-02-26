@@ -112,7 +112,15 @@ public class ModActiveAbility {
             ACTIVE_ABILITY_REGISTRY.register("the_hourglass",
                     () -> new TheHourglass(ItemId.THE_HOURGLASS.getId(), ItemId.THE_HOURGLASS.getLevel()));
 
+    public static final RegistryObject<ActiveAbility> IV_BAG =
+            ACTIVE_ABILITY_REGISTRY.register("iv_bag",
+                    () -> new IVBag(ItemId.IV_BAG.getId(), ItemId.IV_BAG.getLevel()));
+
+    public static final RegistryObject<ActiveAbility> PRAYER_CARD =
+            ACTIVE_ABILITY_REGISTRY.register("prayer_card",
+                    () -> new PrayerCard(ItemId.PRAYER_CARD.getId(), ItemId.PRAYER_CARD.getLevel()));
 }
+
 
 
 

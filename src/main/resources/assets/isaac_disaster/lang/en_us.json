@@ -435,7 +435,7 @@
   "item.isaac_disaster.super_bandage": "超级绷带",
   "item.isaac_disaster.the_small_rock": "小石头",
   "item.isaac_disaster.sack_of_pennies": "硬币袋",
-  "item.isaac_disaster.sack_of_pennies.lore.1": "每过一段时间给予随机钱币",
+  "item.isaac_disaster.sack_of_pennies.lore.1": "每过一段时间生成钱币",
   "item.isaac_disaster.the_relic": "圣遗物",
   "item.isaac_disaster.the_relic.lore.1": "每过一段时间给予魂心",
   "item.isaac_disaster.bomb_bag": "炸弹袋",
@@ -445,8 +445,29 @@
   "item.isaac_disaster.blood_bag": "血袋",
   "item.isaac_disaster.thin_odd_mushroom": "怪异蘑菇（细）",
   "item.isaac_disaster.large_odd_mushroom": "怪异蘑菇（大）",
+  "item.isaac_disaster.pentagram": "五芒星",
+  "item.isaac_disaster.magneto": "万磁王",
+  "item.isaac_disaster.magneto.lore.1": "吸引掉落物",
+  "item.isaac_disaster.the_mark": "咒印",
+  "item.isaac_disaster.the_pact": "契约",
+  "item.isaac_disaster.lord_of_the_pit": "深渊领主",
+  "item.isaac_disaster.bucket_of_lard": "桶装猪油",
+  "item.isaac_disaster.iv_bag": "献血袋",
+  "item.isaac_disaster.iv_bag.lore.1": "使用后造成%d点伤害",
+  "item.isaac_disaster.iv_bag.lore.2": "并且生成1-2枚硬币",
+  "item.isaac_disaster.stigmata": "圣痕",
+  "item.isaac_disaster.pageant_boy": "盛装男孩",
+  "item.isaac_disaster.pageant_boy.lore.1": "生成7枚随机硬币",
+  "item.isaac_disaster.pageant_boy.lore.2": "生成一枚随机硬币饰品",
+  "item.isaac_disaster.prayer_card": "祈祷卡",
+  "item.isaac_disaster.prayer_card.lore.1": "给予1个永恒之心",
+  "item.isaac_disaster.spirit_of_the_night": "夜之幽魂",
+
+
 
   "item end": "",
+
+
 
 
 
@@ -511,6 +532,25 @@
   "item.isaac_disaster.ouroboros_worm.lore.1": "泪弹在竖直平面内以环状前进",
   "item.isaac_disaster.hook_worm": "钩形虫",
   "item.isaac_disaster.hook_worm.lore.1": "泪弹以城墙状路径前进",
+  "item.isaac_disaster.bloody_penny": "染血硬币",
+  "item.isaac_disaster.on_spawn_penny": "生成硬币时",
+  "item.isaac_disaster.bloody_penny.lore.1": "有概率生成半红心",
+  "item.isaac_disaster.burnt_penny": "焦灼硬币",
+  "item.isaac_disaster.burnt_penny.lore.1": "有概率生成炸弹",
+  "item.isaac_disaster.flat_penny": "扁平硬币",
+  "item.isaac_disaster.flat_penny.lore.1": "有概率生成钥匙",
+  "item.isaac_disaster.blessed_penny": "神圣硬币",
+  "item.isaac_disaster.blessed_penny.lore.1": "有概率生成半魂心",
+  "item.isaac_disaster.charged_penny": "充能硬币",
+  "item.isaac_disaster.charged_penny.lore.1": "有概率生成微型电池",
+  "item.isaac_disaster.counterfeit_penny": "假币",
+  "item.isaac_disaster.counterfeit_penny.lore.1": "有概率生成钱币",
+  "item.isaac_disaster.butt_penny": "屁股硬币",
+  "item.isaac_disaster.butt_penny.lore.1": "捡起硬币时，概率放屁，并施加中毒",
+  "item.isaac_disaster.cursed_penny": "诅咒硬币",
+  "item.isaac_disaster.cursed_penny.lore.1": "捡起硬币时，小概率随机传送",
+
+
   "trinket end": "",
 
 

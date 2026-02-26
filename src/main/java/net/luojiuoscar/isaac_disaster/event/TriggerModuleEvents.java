@@ -17,6 +17,7 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
+import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
 import net.minecraftforge.event.level.BlockEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -288,6 +289,30 @@ public class TriggerModuleEvents {
                 if (val == null) continue;
 
                 val.onRightClickTick(event, inst.stacks, queue);
+            }
+        });
+    }
+
+    @SubscribeEvent
+    public static void onRightClickTick(EntityItemPickupEvent event) {
+        if (!(event.getEntity() instanceof ServerPlayer player)) return;
+
+        IForgeRegistry<ITriggerModule> reg  =
+                RegistryManager.ACTIVE.getRegistry(ModTriggerModule.TRIGGER_MODULE_KEY);
+
+        player.getCapability(EffectModulesProvider.EFFECT_MODULES).ifPresent(triggerModule -> {
+            var queue = triggerModule.getTriggerModules().copy();
+
+            BeforeTriggerModuleActiveEvent e = new BeforeTriggerModuleActiveEvent(event, queue);
+            MinecraftForge.EVENT_BUS.post(e);
+
+            queue.lock();
+
+            for (var inst : queue.getQueue()){
+                ITriggerModule val = reg.getValue(inst.id);
+                if (val == null) continue;
+
+                val.onPickupItem(event, inst.stacks, queue);
             }
         });
     }

@@ -115,5 +115,12 @@ public class ModActiveItems {
             () -> new ActiveItem(new Item.Properties(), 8, 8, ModActiveAbility.THE_HOURGLASS));
     static {ItemListManager.ACTIVE_ITEM_LIST.add(THE_HOURGLASS);}
 
+    public static final RegistryObject<Item> IV_BAG = ITEMS.register("iv_bag",
+            () -> new ActiveItem(new Item.Properties(), 0, 0, ModActiveAbility.IV_BAG));
+    static {ItemListManager.ACTIVE_ITEM_LIST.add(IV_BAG);}
+
+    public static final RegistryObject<Item> PRAYER_CARD = ITEMS.register("prayer_card",
+            () -> new ActiveItem(new Item.Properties(), 24, 24, ModActiveAbility.PRAYER_CARD));
+    static {ItemListManager.ACTIVE_ITEM_LIST.add(PRAYER_CARD);}
 
 }

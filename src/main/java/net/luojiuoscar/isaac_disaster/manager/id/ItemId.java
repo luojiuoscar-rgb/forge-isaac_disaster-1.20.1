@@ -136,7 +136,18 @@ public enum ItemId {
     THE_HALO(2),
     OUIJA_BOARD(2),
     THIN_ODD_MUSHROOM(2),
-    LARGE_ODD_MUSHROOM(2);
+    LARGE_ODD_MUSHROOM(3),
+    PENTAGRAM(3),
+    MAGNETO(1),
+    THE_MARK(3),
+    THE_PACT(3),
+    LORD_OF_THE_PIT(3),
+    BUCKET_OF_LARD(1),
+    IV_BAG(1),
+    STIGMATA(1),
+    PAGEANT_BOY(0),
+    PRAYER_CARD(3),
+    SPIRIT_OF_THE_NIGHT(3);
 
 
 

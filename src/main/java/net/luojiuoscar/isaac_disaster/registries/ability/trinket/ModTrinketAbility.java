@@ -124,4 +124,36 @@ public class ModTrinketAbility {
             TRINKET_ABILITY_REGISTRY.register("wiggle_worm",
                     () -> new WiggleWorm(TrinketId.WIGGLE_WORM.getId(), TrinketId.WIGGLE_WORM.getLevel()));
 
+    public static final RegistryObject<TrinketAbility> BLOODY_PENNY =
+            TRINKET_ABILITY_REGISTRY.register("bloody_penny",
+                    () -> new BloodyPenny(TrinketId.BLOODY_PENNY.getId(), TrinketId.BLOODY_PENNY.getLevel()));
+
+    public static final RegistryObject<TrinketAbility> BURNT_PENNY =
+            TRINKET_ABILITY_REGISTRY.register("burnt_penny",
+                    () -> new BurntPenny(TrinketId.BURNT_PENNY.getId(), TrinketId.BURNT_PENNY.getLevel()));
+
+    public static final RegistryObject<TrinketAbility> FLAT_PENNY =
+            TRINKET_ABILITY_REGISTRY.register("flat_penny",
+                    () -> new FlatPenny(TrinketId.FLAT_PENNY.getId(), TrinketId.FLAT_PENNY.getLevel()));
+
+    public static final RegistryObject<TrinketAbility> BLESSED_PENNY =
+            TRINKET_ABILITY_REGISTRY.register("blessed_penny",
+                    () -> new BlessedPenny(TrinketId.BLESSED_PENNY.getId(), TrinketId.BLESSED_PENNY.getLevel()));
+
+    public static final RegistryObject<TrinketAbility> CHARGED_PENNY =
+            TRINKET_ABILITY_REGISTRY.register("charged_penny",
+                    () -> new ChargedPenny(TrinketId.CHARGED_PENNY.getId(), TrinketId.CHARGED_PENNY.getLevel()));
+
+    public static final RegistryObject<TrinketAbility> COUNTERFEIT_PENNY =
+            TRINKET_ABILITY_REGISTRY.register("counterfeit_penny",
+                    () -> new CounterfeitPenny(TrinketId.COUNTERFEIT_PENNY.getId(), TrinketId.COUNTERFEIT_PENNY.getLevel()));
+
+    public static final RegistryObject<TrinketAbility> BUTT_PENNY =
+            TRINKET_ABILITY_REGISTRY.register("butt_penny",
+                    () -> new ButtPenny(TrinketId.BUTT_PENNY.getId(), TrinketId.BUTT_PENNY.getLevel()));
+
+    public static final RegistryObject<TrinketAbility> CURSED_PENNY =
+            TRINKET_ABILITY_REGISTRY.register("cursed_penny",
+                    () -> new CursedPenny(TrinketId.CURSED_PENNY.getId(), TrinketId.CURSED_PENNY.getLevel()));
+
 }

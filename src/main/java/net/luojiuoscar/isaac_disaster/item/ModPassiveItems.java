@@ -445,5 +445,40 @@ public class ModPassiveItems {
             () -> new PassiveItem(new Item.Properties(), ModPassiveAbility.LARGE_ODD_MUSHROOM));
     static {ItemListManager.PASSIVE_ITEM_LIST.add(LARGE_ODD_MUSHROOM);}
 
+    public static final RegistryObject<Item> PENTAGRAM = ITEMS.register("pentagram",
+            () -> new PassiveItem(new Item.Properties(), ModPassiveAbility.PENTAGRAM));
+    static {ItemListManager.PASSIVE_ITEM_LIST.add(PENTAGRAM);}
+
+    public static final RegistryObject<Item> MAGNETO = ITEMS.register("magneto",
+            () -> new PassiveItem(new Item.Properties(), ModPassiveAbility.MAGNETO));
+    static {ItemListManager.PASSIVE_ITEM_LIST.add(MAGNETO);}
+
+    public static final RegistryObject<Item> THE_MARK = ITEMS.register("the_mark",
+            () -> new PassiveItem(new Item.Properties(), ModPassiveAbility.THE_MARK));
+    static {ItemListManager.PASSIVE_ITEM_LIST.add(THE_MARK);}
+
+    public static final RegistryObject<Item> THE_PACT = ITEMS.register("the_pact",
+            () -> new PassiveItem(new Item.Properties(), ModPassiveAbility.THE_PACT));
+    static {ItemListManager.PASSIVE_ITEM_LIST.add(THE_PACT);}
+
+    public static final RegistryObject<Item> LORD_OF_THE_PIT = ITEMS.register("lord_of_the_pit",
+            () -> new PassiveItem(new Item.Properties(), ModPassiveAbility.LORD_OF_THE_PIT));
+    static {ItemListManager.PASSIVE_ITEM_LIST.add(LORD_OF_THE_PIT);}
+
+    public static final RegistryObject<Item> BUCKET_OF_LARD = ITEMS.register("bucket_of_lard",
+            () -> new PassiveItem(new Item.Properties(), ModPassiveAbility.BUCKET_OF_LARD));
+    static {ItemListManager.PASSIVE_ITEM_LIST.add(BUCKET_OF_LARD);}
+
+    public static final RegistryObject<Item> STIGMATA = ITEMS.register("stigmata",
+            () -> new PassiveItem(new Item.Properties(), ModPassiveAbility.STIGMATA));
+    static {ItemListManager.PASSIVE_ITEM_LIST.add(STIGMATA);}
+
+    public static final RegistryObject<Item> PAGEANT_BOY = ITEMS.register("pageant_boy",
+            () -> new PassiveItem(new Item.Properties(), ModPassiveAbility.PAGEANT_BOY));
+    static {ItemListManager.PASSIVE_ITEM_LIST.add(PAGEANT_BOY);}
+
+    public static final RegistryObject<Item> SPIRIT_OF_THE_NIGHT = ITEMS.register("spirit_of_the_night",
+            () -> new PassiveItem(new Item.Properties(), ModPassiveAbility.SPIRIT_OF_THE_NIGHT));
+    static {ItemListManager.PASSIVE_ITEM_LIST.add(SPIRIT_OF_THE_NIGHT);}
 
 }
