@@ -1,12 +1,13 @@
 package net.luojiuoscar.isaac_disaster.registries.ability.active.impl;
 
 import net.luojiuoscar.isaac_disaster.client.ClientDataManager;
-import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.manager.ColorManager;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.manager.id.ItemId;
 import net.luojiuoscar.isaac_disaster.registries.ability.active.ActiveAbility;
 import net.luojiuoscar.isaac_disaster.registries.ability.set.ModSetAbility;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.IAbilityEffect;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.ModAbilityEffects;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
@@ -19,23 +20,30 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class AnarchistCookbook extends ActiveAbility {
+    private final IAbilityEffect effect = ModAbilityEffects.SPAWN_BOMB_NEARBY.get();
+
     public AnarchistCookbook(int id, int level) {
         super(id, level);
     }
 
     @Override
-    public void onFirstUse(ServerPlayer player, ItemStack stack, @javax.annotation.Nullable InteractionHand hand){
+    protected IAbilityEffect getAbilityEffect() {
+        return effect;
+    }
+
+    @Override
+    protected int getNormalAmplifier() {
+        return 6;
+    }
+
+    @Override
+    protected int getStrongerAmplifier() {
+        return 12;
+    }
+
+    @Override
+    public void onFirstUse(ServerPlayer player, ItemStack stack, @Nullable InteractionHand hand){
         StatManager.modifySetWithId(player, ModSetAbility.BOOK.getId(), 1);
-    }
-
-    @Override
-    public void onTrigger(ServerPlayer player, ItemStack stack, @javax.annotation.Nullable InteractionHand hand) {
-        PlayerHelper.spawnRandomBombsNearby(player, StatManager.getNearbyRange() * 0.5, 6);
-    }
-
-    @Override
-    public void onTriggerStronger(ServerPlayer player, ItemStack stack, @javax.annotation.Nullable InteractionHand hand){
-        PlayerHelper.spawnRandomBombsNearby(player, StatManager.getNearbyRange() * 0.8, 12);
     }
 
     @Override
@@ -59,7 +67,7 @@ public class AnarchistCookbook extends ActiveAbility {
 
         if (ClientDataManager.getInstance().getCountFromId(ItemId.CAR_BATTERY.getId()) > 0){
             description.add(Component.translatable("item.isaac_disaster.car_battery").append(": ")
-                    .append(Component.translatable("item.isaac_disaster.synergy.description.double"))
+                    .append(Component.translatable("item.isaac_disaster.synergy.description.stronger"))
                     .withStyle(style -> style.withColor(ColorManager.SYNERGY)));
         }
 

@@ -2,14 +2,18 @@ package net.luojiuoscar.isaac_disaster.registries.ability.active.impl;
 
 import net.luojiuoscar.isaac_disaster.client.ClientDataManager;
 import net.luojiuoscar.isaac_disaster.effect.ModEffects;
-import net.luojiuoscar.isaac_disaster.registries.ability.active.ActiveAbility;
 import net.luojiuoscar.isaac_disaster.manager.ColorManager;
 import net.luojiuoscar.isaac_disaster.manager.EffectManager;
 import net.luojiuoscar.isaac_disaster.manager.id.ItemId;
+import net.luojiuoscar.isaac_disaster.registries.ability.active.ActiveAbility;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.AbilityEffectContext;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.ContextKeys;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.IAbilityEffect;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.ModAbilityEffects;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.profile.PotionProfile;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
@@ -18,36 +22,28 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MyLittleUnicorn extends ActiveAbility {
+    private final IAbilityEffect effect = ModAbilityEffects.POTION.get();
+
     public MyLittleUnicorn(int id, int level) {
         super(id, level);
     }
 
     @Override
-    public void onFirstUse(ServerPlayer player, @Nullable ItemStack stack, @javax.annotation.Nullable InteractionHand hand) {
-
+    protected IAbilityEffect getAbilityEffect() {
+        return effect;
     }
 
     @Override
-    public void onTrigger(ServerPlayer player, ItemStack stack, @javax.annotation.Nullable InteractionHand hand) {
+    protected AbilityEffectContext getCtx(ServerPlayer player, ItemStack stack, @Nullable InteractionHand hand, int amplifier) {
+        AbilityEffectContext ctx = super.getCtx(player, stack, hand, amplifier);
         int duration = 120;
-        player.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SPEED, duration, 0));
-        player.addEffect(new MobEffectInstance(ModEffects.INVINCIBLE.get(), duration));
-        player.addEffect(new MobEffectInstance(ModEffects.LACRIMAL_HYPOSECRETION.get(), duration));
-        player.addEffect(new MobEffectInstance(ModEffects.RAMPAGE.get(), duration, 3));
-    }
-
-    @Override
-    public void onTriggerStronger(ServerPlayer player, ItemStack stack, @javax.annotation.Nullable InteractionHand hand){
-        int duration = 240;
-        player.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SPEED, duration, 0));
-        player.addEffect(new MobEffectInstance(ModEffects.INVINCIBLE.get(), duration));
-        player.addEffect(new MobEffectInstance(ModEffects.LACRIMAL_HYPOSECRETION.get(), duration));
-        player.addEffect(new MobEffectInstance(ModEffects.RAMPAGE.get(), duration, 3));
-    }
-
-    @Override
-    public void triggerSFX(ServerPlayer player) {
-
+        ctx.set(ContextKeys.POTIONS, List.of(
+                new PotionProfile(MobEffects.MOVEMENT_SPEED, duration, 0),
+                new PotionProfile(ModEffects.INVINCIBLE.get(), duration, 0),
+                new PotionProfile(ModEffects.LACRIMAL_HYPOSECRETION.get(), duration, 0),
+                new PotionProfile(ModEffects.RAMPAGE.get(), duration, 3)
+        ));
+        return ctx;
     }
 
     @Override

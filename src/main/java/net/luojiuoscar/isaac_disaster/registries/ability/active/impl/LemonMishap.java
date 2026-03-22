@@ -1,11 +1,13 @@
 package net.luojiuoscar.isaac_disaster.registries.ability.active.impl;
 
 import net.luojiuoscar.isaac_disaster.client.ClientDataManager;
-import net.luojiuoscar.isaac_disaster.entity.custom.LemonEffectCloud;
-import net.luojiuoscar.isaac_disaster.registries.ability.active.ActiveAbility;
 import net.luojiuoscar.isaac_disaster.manager.ColorManager;
-import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.manager.id.ItemId;
+import net.luojiuoscar.isaac_disaster.registries.ability.active.ActiveAbility;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.AbilityEffectContext;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.ContextKeys;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.IAbilityEffect;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.ModAbilityEffects;
 import net.luojiuoscar.isaac_disaster.sound.ModSounds;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
@@ -18,30 +20,22 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class LemonMishap extends ActiveAbility {
+    private final IAbilityEffect effect = ModAbilityEffects.LEMON.get();
+
     public LemonMishap(int id, int level) {
         super(id, level);
     }
 
     @Override
-    public void onFirstUse(ServerPlayer player, @Nullable ItemStack stack, @javax.annotation.Nullable InteractionHand hand) {
-
+    protected AbilityEffectContext getCtx(ServerPlayer player, ItemStack stack, @Nullable InteractionHand hand, int amplifier) {
+        var ctx = super.getCtx(player, stack, hand, amplifier);
+        ctx.set(ContextKeys.DOUBLE, List.of(0.4, 100., 0., 10., 2.5));
+        return ctx;
     }
 
     @Override
-    public void onTrigger(ServerPlayer player, ItemStack stack, @javax.annotation.Nullable InteractionHand hand) {
-
-        // 创建药水云
-        LemonEffectCloud cloud = new LemonEffectCloud(player.level(), player.getX(), player.getY(), player.getZ(),
-        player, (float) StatManager.getNearbyRange() * 0.4f, 100, 0, 10,
-                (float) StatManager.DAMAGE.getBonus() * 2.5f);
-
-        // 生成实体
-        player.level().addFreshEntity(cloud);
-    }
-
-    @Override
-    public void onTriggerStronger(ServerPlayer player, ItemStack stack, @javax.annotation.Nullable InteractionHand hand){
-        onTrigger(player, stack, hand);
+    protected IAbilityEffect getAbilityEffect() {
+        return effect;
     }
 
     @Override

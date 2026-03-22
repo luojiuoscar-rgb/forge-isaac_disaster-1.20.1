@@ -15,9 +15,9 @@ public class ClearPassiveItemsCommand {
                     ServerPlayer player = context.getSource().getPlayerOrException();
                     // 移除玩家的全部道具
                     player.getCapability(PlayerPassiveItemProvider.PLAYER_PASSIVE_ITEM).ifPresent(
-                            playerPassiveItem -> {playerPassiveItem.clearPlayerPassiveItems(player);
+                            playerPassiveItem -> {
+                                playerPassiveItem.clearPlayerPassiveItems(player);
                             });
-
                     return 1;
                 }))));
     }

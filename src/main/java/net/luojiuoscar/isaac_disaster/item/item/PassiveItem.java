@@ -63,7 +63,7 @@ public class PassiveItem extends IsaacItem implements IIsaacCuriosItem {
 
             // 记录
             player.getCapability(PlayerPassiveItemProvider.PLAYER_PASSIVE_ITEM).ifPresent(
-                    playerPassiveItem -> playerPassiveItem.addItem(serverPlayer, stack, hand));
+                    playerPassiveItem -> playerPassiveItem.addItem(serverPlayer, stack));
         }
 
         // shrink 1

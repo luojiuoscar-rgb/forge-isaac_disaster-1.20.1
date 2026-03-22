@@ -46,6 +46,14 @@ public class ClientDataManager {
         return itemCountMap.getOrDefault(id, 0);
     }
 
+    public void resetItemCountMap(){
+        itemCountMap.clear();
+    }
+
+    public void resetSetCountMap(){
+        setCountMap.clear();
+    }
+
     public int getFlyUnits() {
         return flyUnits;
     }

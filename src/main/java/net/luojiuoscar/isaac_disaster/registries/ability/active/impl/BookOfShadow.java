@@ -2,13 +2,18 @@ package net.luojiuoscar.isaac_disaster.registries.ability.active.impl;
 
 import net.luojiuoscar.isaac_disaster.client.ClientDataManager;
 import net.luojiuoscar.isaac_disaster.effect.ModEffects;
-import net.luojiuoscar.isaac_disaster.helper.EntityHelper;
 import net.luojiuoscar.isaac_disaster.manager.ColorManager;
 import net.luojiuoscar.isaac_disaster.manager.EffectManager;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.manager.id.ItemId;
 import net.luojiuoscar.isaac_disaster.registries.ability.active.ActiveAbility;
 import net.luojiuoscar.isaac_disaster.registries.ability.set.ModSetAbility;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.AbilityEffectContext;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.ContextKeys;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.IAbilityEffect;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.ModAbilityEffects;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.profile.PotionProfile;
+import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
@@ -21,26 +26,31 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class BookOfShadow extends ActiveAbility {
+    private final IAbilityEffect effect = ModAbilityEffects.STACK_POTION.get();
+
     public BookOfShadow(int id, int level) {
         super(id, level);
     }
 
     @Override
-    public void onFirstUse(ServerPlayer player, ItemStack stack, @javax.annotation.Nullable InteractionHand hand){
+    public void onFirstUse(ServerPlayer player, ItemStack stack, @Nullable InteractionHand hand){
         StatManager.modifySetWithId(player, ModSetAbility.BOOK.getId(), 1);
     }
 
     @Override
-    public void onTrigger(ServerPlayer player, ItemStack stack, @javax.annotation.Nullable InteractionHand hand) {
-        EntityHelper.applyOrStackEffect(player,
-                ModEffects.INVINCIBLE.get(), 200, 0, true, false);
+    protected IAbilityEffect getAbilityEffect() {
+        return effect;
     }
 
     @Override
-    public void onTriggerStronger(ServerPlayer player, ItemStack stack, @javax.annotation.Nullable InteractionHand hand){
-        EntityHelper.applyOrStackEffect(player,
-                ModEffects.INVINCIBLE.get(), 400, 0, true, false);
+    protected AbilityEffectContext getCtx(ServerPlayer player, ItemStack stack, @Nullable InteractionHand hand, int amplifier) {
+        var ctx = super.getCtx(player, stack, hand, amplifier);
 
+        ctx.set(ContextKeys.POTIONS, List.of(
+                new PotionProfile(ModEffects.INVINCIBLE.get(), 200, 0)
+        ));
+        ctx.set(ContextKeys.BOOLEAN, List.of(true, false));
+        return ctx;
     }
 
     @Override
@@ -64,6 +74,11 @@ public class BookOfShadow extends ActiveAbility {
         description.addAll(ModSetAbility.BOOK.get().getSynergyDesc());
 
         if (ClientDataManager.getInstance().getCountFromId(ItemId.CAR_BATTERY.getId()) > 0){
+
+            Minecraft.getInstance().player.sendSystemMessage(Component.literal(
+                    ClientDataManager.getInstance().getItemCountMap().toString()
+            ));
+
             description.add(Component.translatable("item.isaac_disaster.car_battery").append(": ")
                     .append(Component.translatable("item.isaac_disaster.synergy.description.double"))
                     .withStyle(style -> style.withColor(ColorManager.SYNERGY)));

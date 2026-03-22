@@ -459,20 +459,19 @@ public class PlayerHelper {
         return !state.getCollisionShape(level, pos).isEmpty();
     }
     public static void spawnRandomBombsNearby(ServerPlayer player, double range, int count){
-        final double RANGE = StatManager.getNearbyRange() * 0.5;
         final int MAX_ATTEMPTS = 20;
         RandomSource random = player.getRandom();
 
-        for (int i = 0; i < 6; i++) {
+        for (int i = 0; i < count; i++) {
             IsaacBomb tnt = PlayerHelper.spawnBombFromPlayer(player, Vec3.ZERO);
             if (tnt == null) continue;
 
             boolean placed = false;
             for (int attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
                 // 随机
-                double offsetX = (random.nextDouble() * 2 * RANGE) - RANGE;
-                double offsetY = (random.nextDouble() * RANGE); // 在玩家y轴的上方
-                double offsetZ = (random.nextDouble() * 2 * RANGE) - RANGE;
+                double offsetX = (random.nextDouble() * 2 * range) - range;
+                double offsetY = (random.nextDouble() * range); // 在玩家y轴的上方
+                double offsetZ = (random.nextDouble() * 2 * range) - range;
 
                 double x = player.getX() + offsetX;
                 double y = player.getY() + offsetY;

@@ -1,15 +1,12 @@
 package net.luojiuoscar.isaac_disaster.registries.ability.active.impl;
 
 import net.luojiuoscar.isaac_disaster.client.ClientDataManager;
-import net.luojiuoscar.isaac_disaster.helper.LevelHelper;
-import net.luojiuoscar.isaac_disaster.registries.ability.active.ActiveAbility;
 import net.luojiuoscar.isaac_disaster.manager.ColorManager;
-import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.manager.id.ItemId;
+import net.luojiuoscar.isaac_disaster.registries.ability.active.ActiveAbility;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.IAbilityEffect;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.ModAbilityEffects;
 import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
@@ -17,35 +14,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Kamikaze extends ActiveAbility {
+    private final IAbilityEffect effect = ModAbilityEffects.KAMIKAZE.get();
+
     public Kamikaze(int id, int level) {
         super(id, level);
     }
 
     @Override
-    public void onFirstUse(ServerPlayer player, @Nullable ItemStack stack, @javax.annotation.Nullable InteractionHand hand) {
-
+    protected IAbilityEffect getAbilityEffect() {
+        return effect;
     }
-
-    @Override
-    public void onTrigger(ServerPlayer player, ItemStack stack, @javax.annotation.Nullable InteractionHand hand) {
-        explode(player, 4, 35);
-    }
-
-    @Override
-    public void onTriggerStronger(ServerPlayer player, ItemStack stack, @javax.annotation.Nullable InteractionHand hand){
-        explode(player, 7, 80);
-    }
-
-    @Override
-    public void triggerSFX(ServerPlayer player) {
-
-    }
-
-    private void explode(Player player, float power, float damage){
-        LevelHelper.explodeCustom(player, player.position(), power, damage, true, false);
-        player.hurt(player.damageSources().genericKill(), (float) StatManager.MAX_HEALTH.getBonus());
-    }
-
 
     @Override
     public List<Component> getDesc(@Nullable ItemStack stack) {

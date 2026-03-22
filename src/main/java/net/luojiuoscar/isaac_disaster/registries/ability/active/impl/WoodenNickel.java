@@ -1,14 +1,12 @@
 package net.luojiuoscar.isaac_disaster.registries.ability.active.impl;
 
 import net.luojiuoscar.isaac_disaster.client.ClientDataManager;
-import net.luojiuoscar.isaac_disaster.helper.LootHelper;
-import net.luojiuoscar.isaac_disaster.registries.ability.active.ActiveAbility;
 import net.luojiuoscar.isaac_disaster.manager.ColorManager;
-import net.luojiuoscar.isaac_disaster.manager.LootTableManager;
 import net.luojiuoscar.isaac_disaster.manager.id.ItemId;
+import net.luojiuoscar.isaac_disaster.registries.ability.active.ActiveAbility;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.IAbilityEffect;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.ModAbilityEffects;
 import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
@@ -16,32 +14,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class WoodenNickel extends ActiveAbility {
+    private final IAbilityEffect effect = ModAbilityEffects.WOODEN_NICKEL.get();
+
     public WoodenNickel(int id, int level) {
         super(id, level);
     }
 
     @Override
-    public void onFirstUse(ServerPlayer player, @Nullable ItemStack stack, @javax.annotation.Nullable InteractionHand hand) {
-
-    }
-
-    @Override
-    public void onTrigger(ServerPlayer player, ItemStack stack, @javax.annotation.Nullable InteractionHand hand) {
-        // 60%概率触发
-        if (Math.random() < 0.6 && !player.level().isClientSide){
-            LootHelper.spawnLootAtPos(player, player.blockPosition().getCenter(), LootTableManager.RANDOM_COINS);
-        }
-    }
-
-    @Override
-    public void onTriggerStronger(ServerPlayer player, ItemStack stack, @javax.annotation.Nullable InteractionHand hand){
-        onTrigger(player, stack, hand);
-        onTrigger(player, stack, hand);
-    }
-
-    @Override
-    public void triggerSFX(ServerPlayer player) {
-
+    protected IAbilityEffect getAbilityEffect() {
+        return effect;
     }
 
     @Override

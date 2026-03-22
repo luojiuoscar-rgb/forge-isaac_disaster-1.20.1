@@ -37,6 +37,7 @@ public class PassiveItemMapSyncS2CPacket {
         NetworkEvent.Context context = supplier.get();
         context.enqueueWork(() -> {
             ClientDataManager clientData = ClientDataManager.getInstance();
+            clientData.resetItemCountMap();
             itemMap.forEach(clientData::setItemWithId); // 逐个同步
         });
         return true;

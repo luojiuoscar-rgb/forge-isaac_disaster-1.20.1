@@ -1,18 +1,18 @@
 package net.luojiuoscar.isaac_disaster.registries.ability.active.impl;
 
 import net.luojiuoscar.isaac_disaster.client.ClientDataManager;
-import net.luojiuoscar.isaac_disaster.helper.EntityHelper;
-import net.luojiuoscar.isaac_disaster.helper.LevelHelper;
 import net.luojiuoscar.isaac_disaster.manager.ColorManager;
-import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.manager.id.ItemId;
 import net.luojiuoscar.isaac_disaster.registries.ability.active.ActiveAbility;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.AbilityEffectContext;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.ContextKeys;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.IAbilityEffect;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.ModAbilityEffects;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.profile.PotionProfile;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
@@ -20,55 +20,30 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TheHourglass extends ActiveAbility {
+    private final IAbilityEffect effect = ModAbilityEffects.APPLY_EFFECT_TO_NEARBY.get();
+
     public TheHourglass(int id, int level) {
         super(id, level);
     }
 
     @Override
-    public void onFirstUse(ServerPlayer player, @Nullable ItemStack stack, @javax.annotation.Nullable InteractionHand hand) {
+    protected AbilityEffectContext getCtx(ServerPlayer player, ItemStack stack, @Nullable InteractionHand hand, int amplifier) {
+        var ctx = super.getCtx(player, stack, hand, amplifier);
+        ctx.set(ContextKeys.BOOLEAN, List.of(true));
+        ctx.set(ContextKeys.ABILITY_EFFECT, ModAbilityEffects.POTION.get());
 
+        ctx.set(ContextKeys.POTIONS, List.of(
+                new PotionProfile(MobEffects.MOVEMENT_SLOWDOWN, 160,
+                        1, 160, 1, true)
+        ));
+
+        return ctx;
     }
 
     @Override
-    public void onTrigger(ServerPlayer player, ItemStack stack, @javax.annotation.Nullable InteractionHand hand) {
-        List<LivingEntity> entities = LevelHelper.selectBySphere(player.level(),
-                player.getX(), player.getY(), player.getZ(), StatManager.getNearbyRange());
-
-        for (LivingEntity entity : entities){
-            if (EntityHelper.isFriendly(entity, player)) continue;
-
-            MobEffectInstance slowness = new MobEffectInstance(
-                    MobEffects.MOVEMENT_SLOWDOWN,
-                    160,
-                    1
-            );
-
-            entity.addEffect(slowness);
-        }
+    protected IAbilityEffect getAbilityEffect() {
+        return effect;
     }
-
-    @Override
-    public void onTriggerStronger(ServerPlayer player, ItemStack stack, @javax.annotation.Nullable InteractionHand hand){
-        List<LivingEntity> entities = LevelHelper.selectBySphere(player.level(),
-                player.getX(), player.getY(), player.getZ(), StatManager.getNearbyRange());
-
-        for (LivingEntity entity : entities){
-            if (EntityHelper.isFriendly(entity, player)) continue;
-
-            MobEffectInstance slowness = new MobEffectInstance(
-                    MobEffects.MOVEMENT_SLOWDOWN,
-                    320,
-                    2
-            );
-
-            entity.addEffect(slowness);
-        }
-    }
-
-    @Override
-    public void triggerSFX(ServerPlayer player) {
-    }
-
 
     @Override
     public List<Component> getDesc(@Nullable ItemStack stack) {

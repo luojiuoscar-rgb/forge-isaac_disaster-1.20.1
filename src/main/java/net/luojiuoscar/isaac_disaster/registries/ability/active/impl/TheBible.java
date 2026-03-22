@@ -8,12 +8,16 @@ import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.manager.id.ItemId;
 import net.luojiuoscar.isaac_disaster.registries.ability.active.ActiveAbility;
 import net.luojiuoscar.isaac_disaster.registries.ability.set.ModSetAbility;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.AbilityEffectContext;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.ContextKeys;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.IAbilityEffect;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.ModAbilityEffects;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.profile.PotionProfile;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
@@ -21,33 +25,31 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TheBible extends ActiveAbility {
+    private final IAbilityEffect effect = ModAbilityEffects.POTION.get();
+
     public TheBible(int id, int level) {
         super(id, level);
     }
 
     @Override
-    public void onFirstUse(ServerPlayer player, ItemStack stack, @javax.annotation.Nullable InteractionHand hand){
+    public void onFirstUse(ServerPlayer player, ItemStack stack, @Nullable InteractionHand hand){
         StatManager.modifySetWithId(player, ModSetAbility.BOOK.getId(), 1);
     }
 
     @Override
-    public void onTrigger(ServerPlayer player, ItemStack stack, @javax.annotation.Nullable InteractionHand hand) {
-        MobEffectInstance effectInstance = new MobEffectInstance(
-                ModEffects.TRANSCENDENCE.get(),
-                (int) (StatManager.FLY_TIME.getBonus() * 2),
-                0
-        );
-        player.addEffect(effectInstance, player);
+    protected IAbilityEffect getAbilityEffect() {
+        return effect;
     }
 
     @Override
-    public void onTriggerStronger(ServerPlayer player, ItemStack stack, @javax.annotation.Nullable InteractionHand hand){
-        MobEffectInstance effectInstance = new MobEffectInstance(
-                ModEffects.TRANSCENDENCE.get(),
-                (int) (StatManager.FLY_TIME.getBonus() * 4),
-                0
-        );
-        player.addEffect(effectInstance, player);
+    protected AbilityEffectContext getCtx(ServerPlayer player, ItemStack stack, @Nullable InteractionHand hand, int amplifier) {
+        var ctx = super.getCtx(player, stack, hand, amplifier);
+        ctx.set(ContextKeys.POTIONS, List.of(
+                new PotionProfile(ModEffects.TRANSCENDENCE.get(),
+                        (int) StatManager.FLY_TIME.getBonus() * 2,
+                        0)
+        ));
+        return ctx;
     }
 
     @Override

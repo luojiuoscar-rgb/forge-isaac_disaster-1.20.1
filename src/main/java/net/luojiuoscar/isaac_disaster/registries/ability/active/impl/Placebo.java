@@ -1,12 +1,13 @@
 package net.luojiuoscar.isaac_disaster.registries.ability.active.impl;
 
 import net.luojiuoscar.isaac_disaster.client.ClientDataManager;
-import net.luojiuoscar.isaac_disaster.item.pickup.Pill;
-import net.luojiuoscar.isaac_disaster.registries.ability.active.ActiveAbility;
 import net.luojiuoscar.isaac_disaster.manager.ColorManager;
-import net.luojiuoscar.isaac_disaster.manager.PillEffectManager;
 import net.luojiuoscar.isaac_disaster.manager.id.ItemId;
-import net.luojiuoscar.isaac_disaster.registries.pill_effect.IPillEffect;
+import net.luojiuoscar.isaac_disaster.registries.ability.active.ActiveAbility;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.AbilityEffectContext;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.ContextKeys;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.IAbilityEffect;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.ModAbilityEffects;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
@@ -17,54 +18,32 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Placebo extends ActiveAbility {
+    private final IAbilityEffect effect = ModAbilityEffects.USE_PILL.get();
+
     public Placebo(int id, int level) {
         super(id, level);
     }
 
     @Override
-    public void onFirstUse(ServerPlayer player, @Nullable ItemStack stack, @Nullable InteractionHand hand) {
-
+    protected IAbilityEffect getAbilityEffect() {
+        return effect;
     }
 
     @Override
-    public void onTrigger(ServerPlayer player, ItemStack stack, @Nullable InteractionHand hand) {
-        ItemStack pill = null;
+    protected AbilityEffectContext getCtx(ServerPlayer player, ItemStack stack, @Nullable InteractionHand hand, int amplifier) {
+        var ctx = super.getCtx(player, stack, hand, amplifier);
 
+        ItemStack pill = null;
         if (hand == InteractionHand.MAIN_HAND){
             pill = player.getOffhandItem();
         }else if (hand == InteractionHand.OFF_HAND){
             pill = player.getMainHandItem();
         }
+        if (pill == null) return ctx;
 
-        if (pill != null && pill.getItem() instanceof Pill item){
-            IPillEffect effect = PillEffectManager.getInstance().getEffectFromPill(item.getPillId()).get();
+        ctx.set(ContextKeys.ITEM, pill.getItem());
 
-            effect.redirectAndUse(player, item.isHorsePill());
-            effect.redirectAndMakeSound(player, item.isHorsePill());
-        }
-    }
-
-    @Override
-    public void onTriggerStronger(ServerPlayer player, ItemStack stack, @Nullable InteractionHand hand){
-        ItemStack pill = null;
-
-        if (hand == InteractionHand.MAIN_HAND){
-            pill = player.getOffhandItem();
-        }else if (hand == InteractionHand.OFF_HAND){
-            pill = player.getMainHandItem();
-        }
-
-        if (pill != null && pill.getItem() instanceof Pill item){
-            IPillEffect effect = PillEffectManager.getInstance().getEffectFromPill(item.getPillId()).get();
-
-            effect.redirectAndUse(player, true);
-            effect.redirectAndMakeSound(player, true);
-        }
-    }
-
-    @Override
-    public void triggerSFX(ServerPlayer player) {
-
+        return ctx;
     }
 
     @Override

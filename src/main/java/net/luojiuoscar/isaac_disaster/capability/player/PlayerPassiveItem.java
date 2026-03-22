@@ -13,7 +13,6 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.common.capabilities.AutoRegisterCapability;
@@ -139,7 +138,7 @@ public class PlayerPassiveItem {
     }
 
     /** 将一个新的道具添加到列表 */
-    public void addItem(ServerPlayer player, ItemStack stack, InteractionHand hand){
+    public void addItem(ServerPlayer player, ItemStack stack){
         // 如果道具数量已达上限
         if(this.getTotalItemsCountInCap() >= PASSIVE_ITEM_LIMIT.get()){
             player.sendSystemMessage(Component.translatable("message.isaac_disaster.warning.too_many_items").withStyle(

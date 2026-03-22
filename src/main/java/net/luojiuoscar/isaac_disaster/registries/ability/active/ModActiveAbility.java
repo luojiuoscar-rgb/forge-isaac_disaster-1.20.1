@@ -114,7 +114,7 @@ public class ModActiveAbility {
 
     public static final RegistryObject<ActiveAbility> IV_BAG =
             ACTIVE_ABILITY_REGISTRY.register("iv_bag",
-                    () -> new IVBag(ItemId.IV_BAG.getId(), ItemId.IV_BAG.getLevel()));
+                    () -> new IvBag(ItemId.IV_BAG.getId(), ItemId.IV_BAG.getLevel()));
 
     public static final RegistryObject<ActiveAbility> PRAYER_CARD =
             ACTIVE_ABILITY_REGISTRY.register("prayer_card",

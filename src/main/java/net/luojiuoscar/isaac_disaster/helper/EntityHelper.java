@@ -65,14 +65,14 @@ public class EntityHelper {
     }
 
 
-    public static void spawnGigaBomb(Vec3 position, Player player, Vec3 tntVelocity, int fuse, Level level){
+    public static void spawnGigaBomb(Vec3 position, LivingEntity entity, Vec3 tntVelocity, int fuse, Level level){
         if (level.isClientSide) return;
 
-        IsaacBomb tnt = ModEntities.GIGA_BOMB.get().create(player.level());
+        IsaacBomb tnt = ModEntities.GIGA_BOMB.get().create(entity.level());
         if (tnt == null) return;
 
         tnt.moveTo(position.x, position.y, position.z, 0, 0);
-        tnt.setOwner(player);
+        tnt.setOwner(entity);
         tnt.setFuse(fuse);
         tnt.setPower(10);
         tnt.setScale(2.5f);
@@ -81,14 +81,14 @@ public class EntityHelper {
 
         level.addFreshEntity(tnt);
     }
-    public static void throwGigaBomb(Player player, int fuse){
+    public static void throwGigaBomb(LivingEntity entity, int fuse){
         // 获取玩家朝向向量
-        Vec3 lookVec = player.getLookAngle();
+        Vec3 lookVec = entity.getLookAngle();
         // 获取玩家当前速度
-        Vec3 playerVelocity = player.getDeltaMovement();
+        Vec3 playerVelocity = entity.getDeltaMovement();
 
         // 计算TNT生成位置（玩家眼睛位置略微偏移）
-        Vec3 spawnPos = player.getEyePosition()
+        Vec3 spawnPos = entity.getEyePosition()
                 .add(lookVec.x * 0.5, lookVec.y * 0.5, lookVec.z * 0.5);
 
         // 计算TNT初速度：结合玩家朝向和玩家自身速度
@@ -101,36 +101,48 @@ public class EntityHelper {
                 lookVec.z * throwStrength + playerVelocity.z * velocityInheritance
         );
 
-        spawnGigaBomb(spawnPos, player, tntVelocity, fuse, player.level());
+        spawnGigaBomb(spawnPos, entity, tntVelocity, fuse, entity.level());
     }
 
-    public static void throwBomb(Player player, int fuse, int power) {
-        throwBomb(player, fuse, power, 0.98f);
+    public static void throwBomb(LivingEntity entity, int fuse, int power) {
+        float scale = 1.4f;
+        if (power < 4){
+            scale = 0.4f;
+        }else if (power < 7){
+            scale = 0.98f;
+        }
+
+        throwBomb(entity, fuse, power, scale);
     }
 
-    public static void throwBomb(Player player, int fuse, int power, float scale) {
-        Vec3 look = player.getLookAngle();
-        Vec3 playerVel = player.getDeltaMovement();
+    public static void throwBomb(LivingEntity entity, int fuse, int power, float scale) {
+        Vec3 look = entity.getLookAngle();
+        Vec3 playerVel = entity.getDeltaMovement();
 
         // 炸弹生成点：眼睛位置略前
-        Vec3 spawnPos = player.getEyePosition().add(look.scale(0.5));
+        Vec3 spawnPos = entity.getEyePosition().add(look.scale(0.5));
 
-        // 炸弹初始速度：方向 * 投掷力度 + 玩家速度
+        // 炸弹初始速度：方向 * 投掷力度
         double throwStrength = 1.3;
         double inherit = 1.0;
-        boolean flying = player.getAbilities().flying;
-
         Vec3 velocity = look.scale(throwStrength)
                 .add(playerVel.x * inherit,
-                        flying ? 0 : playerVel.y * inherit,
+                        0,
                         playerVel.z * inherit)
                 .add(0, 0.25, 0);
 
-        spawnBomb(spawnPos, player, player.level(), velocity, fuse, power, scale);
+        // 若为玩家丢出，且处在飞行状态，则会继承一部分速度
+        if (entity instanceof Player player){
+            boolean flying = player.getAbilities().flying;
+            velocity = look.scale(throwStrength).add(0, flying ? 0 : playerVel.y * inherit, 0);
+        }
+
+
+        spawnBomb(spawnPos, entity, entity.level(), velocity, fuse, power, scale);
     }
 
 
-    public static void bomberBoy(Player player, IsaacBomb source, Vec3 center, Level level) {
+    public static void bomberBoy(LivingEntity entity, IsaacBomb source, Vec3 center, Level level) {
         if (!isValidOrigin(source)) return;
 
         int power = source.getPower();
@@ -144,14 +156,14 @@ public class EntityHelper {
         };
 
         for (Vec3 delta : offsets) {
-            spawnBomb(center.add(delta), player, level, Vec3.ZERO, 0, power, source.getScale(), false);
+            spawnBomb(center.add(delta), entity, level, Vec3.ZERO, 0, power, source.getScale(), false);
         }
     }
 
     /**
      * 炸弹碎裂效果（分裂炸弹）
      */
-    public static void scatterBomb(Player player, IsaacBomb source, Vec3 center, Level level) {
+    public static void scatterBomb(LivingEntity entity, IsaacBomb source, Vec3 center, Level level) {
         if (!isValidOrigin(source)) return;
 
         int power = source.getPower() - 3;
@@ -163,7 +175,7 @@ public class EntityHelper {
                     Math.random() * 0.4,
                     Math.random() * 0.6 - 0.3
             );
-            spawnBomb(center, player, level, randomVel, 30, power, scale, power != 1);
+            spawnBomb(center, entity, level, randomVel, 30, power, scale, power != 1);
         }
     }
 
@@ -171,7 +183,7 @@ public class EntityHelper {
         return bomb != null && bomb.isOriginal() && !(bomb instanceof GigaBomb);
     }
 
-    public static void HotBomb(Player player, IsaacBomb tnt, Vec3 pos, Level level){
+    public static void HotBomb(LivingEntity entity, IsaacBomb tnt, Vec3 pos, Level level){
         if(!isValidOrigin(tnt)) return;
 
         int power = 0;
@@ -186,7 +198,7 @@ public class EntityHelper {
             double vy = (level.random.nextDouble() - 0.5) * 0.5;
             double vz = (level.random.nextDouble() - 0.5) * 0.5;
 
-            TimedFireball fireball = new TimedFireball(level, player, vx, vy, vz, power);
+            TimedFireball fireball = new TimedFireball(level, entity, vx, vy, vz, power);
 
             fireball.setPos(pos);
             fireball.setDeltaMovement(new Vec3(vx, vy, vz)); // 设速度
