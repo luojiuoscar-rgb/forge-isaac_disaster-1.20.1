@@ -1,4 +1,4 @@
-package net.luojiuoscar.isaac_disaster.registries.ability_effect.impl;
+package net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.normal;
 
 import net.luojiuoscar.isaac_disaster.block.block_entity.misc.ItemDisplayContainerBlockEntity;
 import net.luojiuoscar.isaac_disaster.manager.data.BlockData;
@@ -13,9 +13,9 @@ import java.util.Set;
 
 public class D6 implements IAbilityEffect {
     @Override
-    public void apply(AbilityEffectContext context) {
-        if (!(context.getEntity() instanceof Player player)) return;
-        if (!(player.level() instanceof ServerLevel serverLevel)) return;
+    public boolean applyEffect(AbilityEffectContext context) {
+        if (!(context.getEntity() instanceof Player player)) return false;
+        if (!(player.level() instanceof ServerLevel serverLevel)) return true;
 
         Set<BlockPos> posList = BlockData.get(serverLevel).getAllItemBlocks();
         Vec3 playerPos = player.position();
@@ -32,5 +32,6 @@ public class D6 implements IAbilityEffect {
                 be.itemRollFromPlayer(player);
             }
         }
+        return true;
     }
 }

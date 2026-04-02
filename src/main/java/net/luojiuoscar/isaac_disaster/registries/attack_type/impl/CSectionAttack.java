@@ -8,7 +8,6 @@ import net.luojiuoscar.isaac_disaster.event.custom.attack.BeforePerformAttackEve
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackContext;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.IChargeableAttack;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.ModAttackType;
-import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerModuleQueue;
 import net.luojiuoscar.isaac_disaster.sound.ModSounds;
 import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.resources.ResourceLocation;
@@ -23,6 +22,7 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.MinecraftForge;
 import org.joml.Vector3f;
 
+import java.util.List;
 import java.util.Map;
 
 public class CSectionAttack extends BulletAttack implements IChargeableAttack {
@@ -122,7 +122,7 @@ public class CSectionAttack extends BulletAttack implements IChargeableAttack {
                             player,
                             shooter,
                             colorRl,
-                            new TriggerModuleQueue(),
+                            List.of(),
                             trajectories,
                             eyePos,
                             player.getXRot(),

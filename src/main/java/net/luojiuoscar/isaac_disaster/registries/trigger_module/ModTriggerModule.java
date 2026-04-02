@@ -2,6 +2,7 @@ package net.luojiuoscar.isaac_disaster.registries.trigger_module;
 
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.impl.*;
+import net.luojiuoscar.isaac_disaster.registries.trigger_module.impl.special.BulletTriggerModule;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -58,6 +59,8 @@ public class ModTriggerModule {
             TRIGGER_MODULE_REGISTRY.register("butt_penny", ButtPenny::new);
     public static final RegistryObject<ITriggerModule> CURSED_PENNY =
             TRIGGER_MODULE_REGISTRY.register("cursed_penny", CursedPenny::new);
+    public static final RegistryObject<ITriggerModule> BULLET_TRIGGER_MODULE =
+            TRIGGER_MODULE_REGISTRY.register("bullet_trigger_module", BulletTriggerModule::new);
 
 
 

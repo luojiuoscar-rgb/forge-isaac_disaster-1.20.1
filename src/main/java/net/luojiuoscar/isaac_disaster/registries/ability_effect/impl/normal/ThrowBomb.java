@@ -1,4 +1,4 @@
-package net.luojiuoscar.isaac_disaster.registries.ability_effect.impl;
+package net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.normal;
 
 import net.luojiuoscar.isaac_disaster.helper.EntityHelper;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.AbilityEffectContext;
@@ -10,7 +10,7 @@ import java.util.List;
 
 public class ThrowBomb implements IAbilityEffect {
     @Override
-    public void apply(AbilityEffectContext context) {
+    public boolean applyEffect(AbilityEffectContext context) {
         LivingEntity entity = context.getEntity();
         List<Double> nums = context.getOrDefault(ContextKeys.DOUBLE, List.of());
         if (nums.size() < 2) {
@@ -18,5 +18,6 @@ public class ThrowBomb implements IAbilityEffect {
         }
 
         EntityHelper.throwBomb(entity, nums.get(0).intValue(), nums.get(1).intValue());
+        return true;
     }
 }

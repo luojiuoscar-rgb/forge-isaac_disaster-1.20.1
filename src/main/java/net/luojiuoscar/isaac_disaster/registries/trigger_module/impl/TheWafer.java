@@ -1,22 +1,18 @@
 package net.luojiuoscar.isaac_disaster.registries.trigger_module.impl;
 
-import net.luojiuoscar.isaac_disaster.registries.trigger_module.ITriggerModule;
-import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerCategory;
-import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerModulePriority;
-import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerModuleQueue;
-import net.minecraftforge.event.entity.living.LivingHurtEvent;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.ModAbilityEffects;
+import net.luojiuoscar.isaac_disaster.registries.trigger_module.*;
 
-import java.util.Set;
+import java.util.List;
 
 public class TheWafer implements ITriggerModule {
-    @Override
-    public Set<TriggerCategory> getTriggerType() {
-        return Set.of(TriggerCategory.ON_HURT);
-    }
+    private final List<SimpleTrigger> triggers = List.of(
+            new SimpleTrigger(ModTriggerTypes.ON_HURT, ModAbilityEffects.THE_WAFER)
+    );
 
     @Override
-    public void onHurt(LivingHurtEvent event, int stacks, TriggerModuleQueue queue) {
-        event.setAmount(event.getAmount() * 0.5f);
+    public List<SimpleTrigger> getTriggers() {
+        return triggers;
     }
 
     @Override

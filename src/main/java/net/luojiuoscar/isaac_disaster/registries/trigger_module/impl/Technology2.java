@@ -1,25 +1,19 @@
 package net.luojiuoscar.isaac_disaster.registries.trigger_module.impl;
 
-import net.luojiuoscar.isaac_disaster.event.custom.misc.RightClickTickEvent;
-import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackType;
-import net.luojiuoscar.isaac_disaster.registries.attack_type.ModAttackType;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.ModAbilityEffects;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.ITriggerModule;
-import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerCategory;
-import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerModuleQueue;
+import net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerTypes;
+import net.luojiuoscar.isaac_disaster.registries.trigger_module.SimpleTrigger;
 
-import java.util.Set;
+import java.util.List;
 
 public class Technology2 implements ITriggerModule {
-    @Override
-    public Set<TriggerCategory> getTriggerType() {
-        return Set.of(
-                TriggerCategory.RIGHT_CLICK_TICK
-        );
-    }
+    private final List<SimpleTrigger> triggers = List.of(
+            new SimpleTrigger(ModTriggerTypes.RIGHT_CLICK_TICK, ModAbilityEffects.SHOOT_LASER)
+    );
 
     @Override
-    public void onRightClickTick(RightClickTickEvent event, int stacks, TriggerModuleQueue queue) {
-        AttackType attack = ModAttackType.TECHNOLOGY2.get();
-        attack.performAttack(attack.getAttackContexts(event.getPlayer(), 1));
+    public List<SimpleTrigger> getTriggers() {
+        return triggers;
     }
 }

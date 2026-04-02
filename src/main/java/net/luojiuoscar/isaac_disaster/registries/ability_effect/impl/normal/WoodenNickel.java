@@ -1,4 +1,4 @@
-package net.luojiuoscar.isaac_disaster.registries.ability_effect.impl;
+package net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.normal;
 
 import net.luojiuoscar.isaac_disaster.helper.LootHelper;
 import net.luojiuoscar.isaac_disaster.manager.LootTableManager;
@@ -9,7 +9,7 @@ import net.minecraft.world.entity.LivingEntity;
 
 public class WoodenNickel implements IAbilityEffect {
     @Override
-    public void apply(AbilityEffectContext context) {
+    public boolean applyEffect(AbilityEffectContext context) {
         LivingEntity entity = context.getEntity();
 
         for (int i = 0; i < context.getOrDefault(ContextKeys.AMPLIFIER, 1); i++){
@@ -20,5 +20,6 @@ public class WoodenNickel implements IAbilityEffect {
                         LootTableManager.RANDOM_COINS);
             }
         }
+        return true;
     }
 }

@@ -1,4 +1,4 @@
-package net.luojiuoscar.isaac_disaster.registries.ability_effect.impl;
+package net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.normal;
 
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.AbilityEffectContext;
@@ -9,13 +9,15 @@ import net.minecraft.world.item.Item;
 
 public class GiveItem implements IAbilityEffect {
     @Override
-    public void apply(AbilityEffectContext context) {
+    public boolean applyEffect(AbilityEffectContext context) {
         if (context.getEntity() instanceof Player player){
             Item item = context.get(ContextKeys.ITEM);
             int count = context.get(ContextKeys.AMPLIFIER);
-            if (item == null || count < 1) return;
+            if (item == null) return false;
+            if (count < 1) count = 1;
 
             PlayerHelper.giveItem(player, item, count);
         }
+        return true;
     }
 }

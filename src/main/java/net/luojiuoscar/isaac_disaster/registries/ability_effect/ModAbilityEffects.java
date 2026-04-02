@@ -1,7 +1,7 @@
 package net.luojiuoscar.isaac_disaster.registries.ability_effect;
 
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
-import net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.*;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.normal.*;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -55,6 +55,50 @@ public class ModAbilityEffects {
             ABILITY_EFFECT_REGISTRY.register("crooked_penny", CrookedPenny::new);
     public static final RegistryObject<IAbilityEffect> SPAWN_BOMB_NEARBY =
             ABILITY_EFFECT_REGISTRY.register("spawn_bomb_nearby", SpawnBombNearby::new);
+    public static final RegistryObject<IAbilityEffect> THE_WAFER =
+            ABILITY_EFFECT_REGISTRY.register("the_wafer", TheWafer::new);
+    public static final RegistryObject<IAbilityEffect> RANDOM_HARMFUL_POTION =
+            ABILITY_EFFECT_REGISTRY.register("random_harmful_potion", RandomHarmfulPotion::new);
+    public static final RegistryObject<IAbilityEffect> BREAK_BLOCK_AND_DROP =
+            ABILITY_EFFECT_REGISTRY.register("break_block_and_drop", BreakBlockAndDrop::new);
+    public static final RegistryObject<IAbilityEffect> SHOOT_LASER =
+            ABILITY_EFFECT_REGISTRY.register("shoot_laser", ShootLaser::new);
+    public static final RegistryObject<IAbilityEffect> SWALLOWED_PENNY =
+            ABILITY_EFFECT_REGISTRY.register("swallowed_penny", SwallowedPenny::new);
+    public static final RegistryObject<IAbilityEffect> PIGGY_BANK =
+            ABILITY_EFFECT_REGISTRY.register("piggy_bank", PiggyBank::new);
+    public static final RegistryObject<IAbilityEffect> LUCKY_ROCK =
+            ABILITY_EFFECT_REGISTRY.register("lucky_rock", LuckyRock::new);
+    public static final RegistryObject<IAbilityEffect> LASER_PLUS_BRIMSTONE =
+            ABILITY_EFFECT_REGISTRY.register("laser_plus_brimstone", LaserPlusBrimstone::new);
+    public static final RegistryObject<IAbilityEffect> LASER_PLUS_FETUS =
+            ABILITY_EFFECT_REGISTRY.register("laser_plus_fetus", LaserPlusFetus::new);
+    public static final RegistryObject<IAbilityEffect> IPECAC =
+            ABILITY_EFFECT_REGISTRY.register("ipecac", Ipecac::new);
+    public static final RegistryObject<IAbilityEffect> HABIT =
+            ABILITY_EFFECT_REGISTRY.register("habit", Habit::new);
+    public static final RegistryObject<IAbilityEffect> CURSE_OF_THE_TOWER =
+            ABILITY_EFFECT_REGISTRY.register("curse_of_the_tower", CurseOfTheTower::new);
+    public static final RegistryObject<IAbilityEffect> CURSED_PENNY =
+            ABILITY_EFFECT_REGISTRY.register("cursed_penny", CursedPenny::new);
+    public static final RegistryObject<IAbilityEffect> CURSED_EYE =
+            ABILITY_EFFECT_REGISTRY.register("cursed_eye", CursedEye::new);
+    public static final RegistryObject<IAbilityEffect> BRIMSTONE_PLUS_C_SECTION =
+            ABILITY_EFFECT_REGISTRY.register("brimstone_plus_c_section", BrimstonePlusCSection::new);
+    public static final RegistryObject<IAbilityEffect> CHARM_OF_THE_VAMPIRE =
+            ABILITY_EFFECT_REGISTRY.register("charm_of_the_vampire", CharmOfTheVampire::new);
+    public static final RegistryObject<IAbilityEffect> CARTRIDGE =
+            ABILITY_EFFECT_REGISTRY.register("cartridge", Cartridge::new);
+    public static final RegistryObject<IAbilityEffect> FART =
+            ABILITY_EFFECT_REGISTRY.register("fart", Fart::new);
+    public static final RegistryObject<IAbilityEffect> BUTT_PENNY =
+            ABILITY_EFFECT_REGISTRY.register("butt_penny", ButtPenny::new);
+    public static final RegistryObject<IAbilityEffect> BULLET_BOUNCE_ON_ENTITY =
+            ABILITY_EFFECT_REGISTRY.register("bullet_bounce_on_entity", BulletBounceOnEntity::new);
+    public static final RegistryObject<IAbilityEffect> BULLET_BOUNCE_ON_BLOCK =
+            ABILITY_EFFECT_REGISTRY.register("bullet_bounce_on_block", BulletBounceOnBlock::new);
+    public static final RegistryObject<IAbilityEffect> BLIND_RAGE =
+            ABILITY_EFFECT_REGISTRY.register("blind_rage", BlindRage::new);
 
 
 

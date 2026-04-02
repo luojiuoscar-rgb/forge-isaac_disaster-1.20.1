@@ -13,7 +13,6 @@ import net.luojiuoscar.isaac_disaster.registries.ability_effect.ContextKeys;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.IAbilityEffect;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ModAbilityEffects;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.profile.PotionProfile;
-import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
@@ -74,11 +73,6 @@ public class BookOfShadow extends ActiveAbility {
         description.addAll(ModSetAbility.BOOK.get().getSynergyDesc());
 
         if (ClientDataManager.getInstance().getCountFromId(ItemId.CAR_BATTERY.getId()) > 0){
-
-            Minecraft.getInstance().player.sendSystemMessage(Component.literal(
-                    ClientDataManager.getInstance().getItemCountMap().toString()
-            ));
-
             description.add(Component.translatable("item.isaac_disaster.car_battery").append(": ")
                     .append(Component.translatable("item.isaac_disaster.synergy.description.double"))
                     .withStyle(style -> style.withColor(ColorManager.SYNERGY)));

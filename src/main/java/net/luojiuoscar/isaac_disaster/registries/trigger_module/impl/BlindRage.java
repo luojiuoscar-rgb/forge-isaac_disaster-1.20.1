@@ -1,24 +1,21 @@
 package net.luojiuoscar.isaac_disaster.registries.trigger_module.impl;
 
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.ModAbilityEffects;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.ITriggerModule;
-import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerCategory;
+import net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerTypes;
+import net.luojiuoscar.isaac_disaster.registries.trigger_module.SimpleTrigger;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerModulePriority;
-import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerModuleQueue;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraftforge.event.entity.living.LivingHurtEvent;
 
-import java.util.Set;
+import java.util.List;
 
 public class BlindRage implements ITriggerModule {
-    @Override
-    public Set<TriggerCategory> getTriggerType() {
-        return Set.of(TriggerCategory.ON_HURT);
-    }
+    private final List<SimpleTrigger> triggers = List.of(
+            new SimpleTrigger(ModTriggerTypes.ON_HURT, ModAbilityEffects.BLIND_RAGE)
+    );
 
     @Override
-    public void onHurt(LivingHurtEvent event, int stacks, TriggerModuleQueue queue) {
-        LivingEntity entity = event.getEntity();
-        entity.invulnerableTime = Math.min(25 * stacks, 50);
+    public List<SimpleTrigger> getTriggers() {
+        return triggers;
     }
 
     @Override

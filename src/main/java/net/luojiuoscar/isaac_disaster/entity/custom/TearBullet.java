@@ -11,12 +11,13 @@ import net.luojiuoscar.isaac_disaster.manager.ModDamageType;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackType;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.IBulletObject;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.ModAttackType;
+import net.luojiuoscar.isaac_disaster.registries.attack_type.util.DamagedEntities;
 import net.luojiuoscar.isaac_disaster.registries.bullet_color.BulletColor;
 import net.luojiuoscar.isaac_disaster.registries.bullet_color.ModBulletColor;
 import net.luojiuoscar.isaac_disaster.registries.trajectory.IAttackTrajectory;
 import net.luojiuoscar.isaac_disaster.registries.trajectory.ModAttackTrajectory;
 import net.luojiuoscar.isaac_disaster.registries.trajectory.TrajectoryContext;
-import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerModuleQueue;
+import net.luojiuoscar.isaac_disaster.registries.trigger_module.SimpleTrigger;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
@@ -79,9 +80,10 @@ public class TearBullet extends Entity implements IBulletObject {
     protected double controlSteer = 0.8;
 
     // ======== 状态 ========
-    protected final Set<UUID> damagedEntities = new HashSet<>();
-    protected final TriggerModuleQueue triggerModules = new TriggerModuleQueue();
+    protected final DamagedEntities damagedEntities = new DamagedEntities();
     protected ResourceLocation colorRl = ModBulletColor.BASE.getId();
+    protected final List<SimpleTrigger> simpleTriggers = new ArrayList<>();
+    protected Vec3 extraPositionOffset = Vec3.ZERO;
 
     // ======== 客户端同步属性 ========
     protected static final EntityDataAccessor<Float> SCALE =
@@ -152,7 +154,9 @@ public class TearBullet extends Entity implements IBulletObject {
         move(MoverType.SELF, getDeltaMovement());
 
         if (!level().isClientSide){
-            Vec3 positionOffset = Vec3.ZERO; // 额外位置偏移
+            MinecraftForge.EVENT_BUS.post(new BulletTickEvent(this));
+
+            Vec3 positionOffset = extraPositionOffset; // 额外位置偏移
             double traveled = getTraveled();
 
             // ================== 跟踪/控制 ==================
@@ -198,24 +202,21 @@ public class TearBullet extends Entity implements IBulletObject {
             setDeltaMovement(finalMove);
 
             // ================== 碰撞检测 ==================
-            if (!level().isClientSide) {
-                MinecraftForge.EVENT_BUS.post(new BulletTickEvent(this));
-
-                if (--lifeTick <= 0) {
-                    if (!MinecraftForge.EVENT_BUS.post(new TearBulletDiscardEvent(this))) discard();
-                    return;
-                }
-
-                Vec3 start = position();
-                Vec3 end = start.add(finalMove);
-
-                if (handleBlockCollision(start, end)) return;
-                handleEntityCollision(start, end, finalMove);
+            if (--lifeTick <= 0) {
+                if (!MinecraftForge.EVENT_BUS.post(new TearBulletDiscardEvent(this))) discard();
+                return;
             }
+
+            Vec3 start = position();
+            Vec3 end = start.add(finalMove);
+
+            if (handleBlockCollision(start, end)) return;
+            handleEntityCollision(start, end, finalMove);
 
             setTraveled((float)(traveled + velocityMove.length()));
 
             updateDirection();
+            extraPositionOffset = Vec3.ZERO;
         }
     }
 
@@ -249,7 +250,8 @@ public class TearBullet extends Entity implements IBulletObject {
 
         if (shape.isEmpty() || shape.bounds().getSize() < 0.01) return false;
 
-        IsaacAttackHitBlockEvent event = new IsaacAttackHitBlockEvent(this, getOwner(), ModAttackType.BULLET.getId(), triggerModules, blockHit);
+        IsaacAttackHitBlockEvent event =
+                new IsaacAttackHitBlockEvent(this, getOwner(), ModAttackType.BULLET.getId(), simpleTriggers, blockHit);
         if (!MinecraftForge.EVENT_BUS.post(event)) {
             if (!MinecraftForge.EVENT_BUS.post(new TearBulletDiscardEvent(this))) {
                 discard();
@@ -291,8 +293,7 @@ public class TearBullet extends Entity implements IBulletObject {
             return;
 
         IsaacAttackBeforeHitEntityEvent beforeEvent = new IsaacAttackBeforeHitEntityEvent(
-                this, getOwner(), ModAttackType.BULLET.getId(), triggerModules, entityHit, damage);
-
+                this, getOwner(), ModAttackType.BULLET.getId(), simpleTriggers, entityHit, damage);
         if (MinecraftForge.EVENT_BUS.post(beforeEvent)) return;
 
         double damageValue = beforeEvent.getDamage();
@@ -302,9 +303,10 @@ public class TearBullet extends Entity implements IBulletObject {
             return;
         }
 
-        IsaacAttackAfterHitEvent event = new IsaacAttackAfterHitEvent(
-                this, getOwner(), ModAttackType.BULLET.getId(), triggerModules, entityHit, damageValue, living.getHealth());
-        MinecraftForge.EVENT_BUS.post(event);
+        IsaacAttackAfterHitEvent afterEvent = new IsaacAttackAfterHitEvent(
+                this, getOwner(), ModAttackType.BULLET.getId(), simpleTriggers, entityHit, damageValue, living.getHealth());
+        if (MinecraftForge.EVENT_BUS.post(afterEvent)) return;
+
 
         if (!isPiercing) {
             if (!MinecraftForge.EVENT_BUS.post(new TearBulletDiscardEvent(this))) discard();
@@ -419,11 +421,6 @@ public class TearBullet extends Entity implements IBulletObject {
     @Override
     public ResourceLocation getColorId() {
         return colorRl;
-    }
-
-    @Override
-    public TriggerModuleQueue getTriggerModules() {
-        return triggerModules;
     }
 
     public void setOwner(LivingEntity entity) {
@@ -585,10 +582,19 @@ public class TearBullet extends Entity implements IBulletObject {
         return map;
     }
 
-    public void setTriggerModules(TriggerModuleQueue triggerModuleQueue) {
-        this.triggerModules.clear();
-        this.triggerModules.getQueue().addAll(triggerModuleQueue.getQueue());
+    @Override
+    public List<SimpleTrigger> getTriggers() {
+        return simpleTriggers;
     }
 
-    public Set<UUID> getDamagedEntities() { return damagedEntities; }
+    @Override
+    public DamagedEntities getDamagedEntities() { return damagedEntities; }
+
+    public void setExtraPositionOffset(Vec3 extraPositionOffset) {
+        this.extraPositionOffset = extraPositionOffset;
+    }
+
+    public Vec3 getExtraPositionOffset() {
+        return extraPositionOffset;
+    }
 }

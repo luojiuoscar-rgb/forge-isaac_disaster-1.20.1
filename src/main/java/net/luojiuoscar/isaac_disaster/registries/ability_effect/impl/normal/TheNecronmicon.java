@@ -1,4 +1,4 @@
-package net.luojiuoscar.isaac_disaster.registries.ability_effect.impl;
+package net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.normal;
 
 import net.luojiuoscar.isaac_disaster.helper.EntityHelper;
 import net.luojiuoscar.isaac_disaster.helper.LevelHelper;
@@ -14,17 +14,22 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.MobType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
 
 import java.util.List;
 
 public class TheNecronmicon implements IAbilityEffect {
     @Override
-    public void apply(AbilityEffectContext context) {
-        damageNearby(context.getEntity(), StatManager.DAMAGE.getBonus() * 20 *
+    public boolean applyEffect(AbilityEffectContext context) {
+        LivingEntity entity = context.getEntity();
+        Vec3 position = context.getOrDefault(ContextKeys.TARGET_POSITION, entity.position());
+
+        damageNearby(position, context.getEntity(), StatManager.DAMAGE.getBonus() * 20 *
                 context.getOrDefault(ContextKeys.AMPLIFIER, 1));
+        return true;
     }
 
-    private void damageNearby(LivingEntity entity, double amount){
+    private void damageNearby(Vec3 pos, LivingEntity entity, double amount){
         Level level = entity.level();
 
         if (level.isClientSide) return;
@@ -32,7 +37,8 @@ public class TheNecronmicon implements IAbilityEffect {
         // 设定范围半径
         double radius = StatManager.getNearbyRange();
 
-        List<LivingEntity> entities = LevelHelper.selectBySphere(level, entity.getX(), entity.getY(), entity.getZ(), radius);
+        List<LivingEntity> entities = LevelHelper.selectBySphere(
+                level, pos.x, pos.y, pos.z, radius);
 
         // 遍历并造成伤害
         for (LivingEntity target : entities) {

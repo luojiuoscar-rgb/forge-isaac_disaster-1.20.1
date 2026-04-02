@@ -49,7 +49,7 @@ public class Technology2Attack extends LaserAttack {
                             player,
                             shooter,
                             colorRl,
-                            new TriggerModuleQueue(),
+                            List.of(),
                             trajectories,
                             eyePos,
                             player.getXRot(),

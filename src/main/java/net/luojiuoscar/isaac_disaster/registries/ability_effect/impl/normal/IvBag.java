@@ -1,4 +1,4 @@
-package net.luojiuoscar.isaac_disaster.registries.ability_effect.impl;
+package net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.normal;
 
 import net.luojiuoscar.isaac_disaster.helper.LootHelper;
 import net.luojiuoscar.isaac_disaster.manager.LootTableManager;
@@ -9,10 +9,10 @@ import net.minecraft.world.entity.player.Player;
 
 public class IvBag implements IAbilityEffect {
     @Override
-    public void apply(AbilityEffectContext context) {
-        if (!(context.getEntity() instanceof Player player)) return;
+    public boolean applyEffect(AbilityEffectContext context) {
+        if (!(context.getEntity() instanceof Player player)) return false;
 
-        if (player.invulnerableTime > 0) return;
+        if (player.invulnerableTime > 0) return true;
 
         float health = player.getHealth();
         float damage = (float) (StatManager.MAX_HEALTH.getBonus() * 0.5);
@@ -31,5 +31,6 @@ public class IvBag implements IAbilityEffect {
         // 缩短受伤冷却时间
         player.invulnerableTime = 10;
         LootHelper.spawnLootAtPos(player, player.position(), LootTableManager.RANDOM_COINS);
+        return true;
     }
 }

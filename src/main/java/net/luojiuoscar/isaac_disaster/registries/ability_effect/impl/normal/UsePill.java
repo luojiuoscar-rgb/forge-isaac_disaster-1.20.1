@@ -1,4 +1,4 @@
-package net.luojiuoscar.isaac_disaster.registries.ability_effect.impl;
+package net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.normal;
 
 import net.luojiuoscar.isaac_disaster.item.pickup.Pill;
 import net.luojiuoscar.isaac_disaster.manager.PillEffectManager;
@@ -10,8 +10,8 @@ import net.minecraft.server.level.ServerPlayer;
 
 public class UsePill implements IAbilityEffect {
     @Override
-    public void apply(AbilityEffectContext context) {
-        if (!(context.get(ContextKeys.ITEM) instanceof Pill pill)) return;
+    public boolean applyEffect(AbilityEffectContext context) {
+        if (!(context.get(ContextKeys.ITEM) instanceof Pill pill)) return false;
 
         if (context.getEntity() instanceof ServerPlayer player){
 
@@ -23,5 +23,6 @@ public class UsePill implements IAbilityEffect {
             effect.redirectAndUse(player, isHorse);
             effect.redirectAndMakeSound(player, isHorse);
         }
+        return true;
     }
 }

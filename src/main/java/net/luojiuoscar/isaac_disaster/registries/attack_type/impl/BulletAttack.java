@@ -102,7 +102,7 @@ public class BulletAttack extends AttackType {
         bullet.setHoming(isHoming(owner));
         bullet.setControllable(isControllable(owner));
 
-        bullet.setTriggerModules(context.getTriggerModuleQueue());
+        bullet.getTriggers().addAll(context.getTriggers());
         bullet.setTrajectories(context.trajectories);
 
         bullet.setBulletColor(context.colorRl);
@@ -112,7 +112,7 @@ public class BulletAttack extends AttackType {
 
         if (!owner.level().isClientSide)
             MinecraftForge.EVENT_BUS.post(
-                    new TearBulletShootEvent(bullet, bullet.getOwner(), getId(), context.getTriggerModuleQueue(), bullet));
+                    new TearBulletShootEvent(bullet, bullet.getOwner(), getId(), context.getTriggers(), bullet));
 
         return bullet;
     }

@@ -53,6 +53,7 @@ public abstract class ActiveAbility extends IsaacItemAbility {
         ctx.set(ContextKeys.AMPLIFIER, amplifier);
         ctx.set(ContextKeys.ITEM_STACK, stack);
         ctx.set(ContextKeys.HAND, hand);
+        ctx.set(ContextKeys.TARGET_POSITION, player.position());
 
         return ctx;
     }

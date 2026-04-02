@@ -1,4 +1,4 @@
-package net.luojiuoscar.isaac_disaster.registries.ability_effect.impl;
+package net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.normal;
 
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerAbilityProvider;
@@ -8,7 +8,6 @@ import net.luojiuoscar.isaac_disaster.registries.ability_effect.ContextKeys;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.IAbilityEffect;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackContext;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackType;
-import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerModuleQueue;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
@@ -22,12 +21,13 @@ public class TammysHead implements IAbilityEffect {
             ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "tammys_head");
 
     @Override
-    public void apply(AbilityEffectContext context) {
-        if (!(context.getEntity() instanceof Player player)) return;
+    public boolean applyEffect(AbilityEffectContext context) {
+        if (!(context.getEntity() instanceof Player player)) return false;
 
         ScheduledFuncHelper.scheduleForPlayer(player.getUUID(), SCHEDULE_TYPE,
                 5,5, context.getOrDefault(ContextKeys.AMPLIFIER, 1), true,
                 () -> shoot(player));
+        return true;
     }
 
     private void shoot(Player player){
@@ -49,7 +49,7 @@ public class TammysHead implements IAbilityEffect {
                             player,
                             player,
                             colorRl,
-                            new TriggerModuleQueue(),
+                            List.of(),
                             trajectories,
                             eyePos,
                             player.getXRot(),

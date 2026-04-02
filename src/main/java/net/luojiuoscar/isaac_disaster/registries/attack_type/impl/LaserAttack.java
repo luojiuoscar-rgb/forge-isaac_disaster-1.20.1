@@ -9,12 +9,13 @@ import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackContext;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackType;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.IBulletObject;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.ModAttackType;
+import net.luojiuoscar.isaac_disaster.registries.attack_type.util.DamagedEntities;
 import net.luojiuoscar.isaac_disaster.registries.bullet_color.BulletColor;
 import net.luojiuoscar.isaac_disaster.registries.bullet_color.ModBulletColor;
 import net.luojiuoscar.isaac_disaster.registries.trajectory.IAttackTrajectory;
 import net.luojiuoscar.isaac_disaster.registries.trajectory.ModAttackTrajectory;
 import net.luojiuoscar.isaac_disaster.registries.trajectory.TrajectoryContext;
-import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerModuleQueue;
+import net.luojiuoscar.isaac_disaster.registries.trigger_module.SimpleTrigger;
 import net.luojiuoscar.isaac_disaster.sound.ModSounds;
 import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.core.registries.Registries;
@@ -71,7 +72,7 @@ public class LaserAttack extends AttackType {
         public float damage;
         public boolean homing;
         public boolean spectral;
-        public Set<LivingEntity> hitEntities = new HashSet<>();
+        private final DamagedEntities damagedEntities = new DamagedEntities();
         public final LivingEntity owner;
         public final Entity shooter;
         private Vec3 prevShooterPos = null;
@@ -190,13 +191,18 @@ public class LaserAttack extends AttackType {
         }
 
         @Override
-        public TriggerModuleQueue getTriggerModules() {
-            return attackContext.getTriggerModuleQueue();
+        public Map<ResourceLocation, Integer> getTrajectories() {
+            return attackContext.trajectories;
         }
 
         @Override
-        public Map<ResourceLocation, Integer> getTrajectories() {
-            return attackContext.trajectories;
+        public List<SimpleTrigger> getTriggers() {
+            return attackContext.getTriggers();
+        }
+
+        @Override
+        public DamagedEntities getDamagedEntities() {
+            return damagedEntities;
         }
     }
 
@@ -270,7 +276,7 @@ public class LaserAttack extends AttackType {
                         laser.owner,
                         laser.position,
                         8.0,
-                        e -> !laser.hitEntities.contains(e)
+                        e -> !laser.damagedEntities.contains(e.getUUID())
                 );
             }
 
@@ -326,13 +332,13 @@ public class LaserAttack extends AttackType {
 
         // --------- Block Collision ---------
         AABB box = createCollisionBox(nextPos, laser.width);
-        if (handleBlockCollision(laser, level, context.getTriggerModuleQueue()) && !laser.spectral) {
+        if (handleBlockCollision(laser, level, context.getTriggers()) && !laser.spectral) {
             laser.traveled = getRange(laser.owner);
             return;
         }
 
         // --------- Entity Collision ---------
-        handleEntityCollision(laser, level, box, context.getTriggerModuleQueue());
+        handleEntityCollision(laser, level, box, context.getTriggers());
 
         // -------- 重新计算nextPos以防pos被修改后行为出错 --------
         nextPos = laser.position.add(laser.direction.scale(laser.step)).add(totalPositionOffset);
@@ -344,7 +350,7 @@ public class LaserAttack extends AttackType {
     }
 
     // ================== Collision & Damage ==================
-    protected boolean handleBlockCollision(LaserProjectile laser, ServerLevel level, TriggerModuleQueue triggerModules) {
+    protected boolean handleBlockCollision(LaserProjectile laser, ServerLevel level, List<SimpleTrigger> triggers) {
         BlockHitResult blockHit = level.clip(new ClipContext(
                 laser.position,
                 laser.position.add(laser.direction.scale(laser.step)),
@@ -354,7 +360,8 @@ public class LaserAttack extends AttackType {
         ));
 
         if (blockHit.getType() == BlockHitResult.Type.BLOCK) {
-            IsaacAttackHitBlockEvent blockEvent = new IsaacAttackHitBlockEvent(laser, laser.owner, getId(), triggerModules, blockHit);
+            IsaacAttackHitBlockEvent blockEvent =
+                    new IsaacAttackHitBlockEvent(laser, laser.owner, getId(), triggers, blockHit);
             MinecraftForge.EVENT_BUS.post(blockEvent);
 
             return !blockEvent.isCanceled();
@@ -362,24 +369,25 @@ public class LaserAttack extends AttackType {
         return false;
     }
 
-    protected void handleEntityCollision(LaserProjectile laser, ServerLevel level, AABB box, TriggerModuleQueue triggerModules) {
+    protected void handleEntityCollision(LaserProjectile laser, ServerLevel level, AABB box,
+                                         List<SimpleTrigger> triggers) {
         List<LivingEntity> entities = level.getEntitiesOfClass(LivingEntity.class, box,
-                e -> e != laser.owner && e.isAlive() && !laser.hitEntities.contains(e)
+                e -> e != laser.owner && e.isAlive() && !laser.damagedEntities.contains(e.getUUID())
         );
 
         for (LivingEntity target : entities) {
             EntityHitResult hitResult = new EntityHitResult(target);
 
             IsaacAttackBeforeHitEntityEvent beforeHit = new IsaacAttackBeforeHitEntityEvent(
-                    laser, laser.owner, getId(), triggerModules, hitResult, laser.damage
+                    laser, laser.owner, getId(), triggers, hitResult, laser.damage
             );
 
             if (!MinecraftForge.EVENT_BUS.post(beforeHit)) {
                 double actualDamage = beforeHit.getDamage();
-                laser.hitEntities.add(makeDamage(laser.owner, target,(float) actualDamage));
+                laser.damagedEntities.add(makeDamage(laser.owner, target,(float) actualDamage).getUUID());
 
                 IsaacAttackAfterHitEvent afterHit = new IsaacAttackAfterHitEvent(
-                        laser, laser.owner, ModAttackType.LASER.getId(), triggerModules, hitResult, actualDamage, target.getHealth()
+                        laser, laser.owner, ModAttackType.LASER.getId(), triggers, hitResult, actualDamage, target.getHealth()
                 );
                 MinecraftForge.EVENT_BUS.post(afterHit);
             }

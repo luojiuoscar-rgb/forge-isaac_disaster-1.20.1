@@ -129,6 +129,10 @@ public class TriggerModuleQueue {
         return null;
     }
 
+    public boolean isEmpty(){
+        return queue.isEmpty();
+    }
+
     public void lock() {
         this.locked = true;
     }

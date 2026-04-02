@@ -1,4 +1,4 @@
-package net.luojiuoscar.isaac_disaster.registries.ability_effect.impl;
+package net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.normal;
 
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.item.ModActiveItems;
@@ -11,8 +11,8 @@ import net.minecraft.world.entity.player.Player;
 
 public class CrookedPenny implements IAbilityEffect {
     @Override
-    public void apply(AbilityEffectContext context) {
-        if (!(context.getEntity() instanceof Player player)) return;
+    public boolean applyEffect(AbilityEffectContext context) {
+        if (!(context.getEntity() instanceof Player player)) return false;
 
         RandomSource random = player.getRandom();
 
@@ -27,5 +27,6 @@ public class CrookedPenny implements IAbilityEffect {
             PlayerHelper.giveItem(player, ModActiveItems.CROOKED_PENNY.get(), 1);
             PlayerHelper.giveMoney(player, 1);
         }
+        return true;
     }
 }

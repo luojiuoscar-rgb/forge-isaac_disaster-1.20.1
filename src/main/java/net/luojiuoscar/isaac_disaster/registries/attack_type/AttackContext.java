@@ -1,18 +1,20 @@
 package net.luojiuoscar.isaac_disaster.registries.attack_type;
 
 import net.luojiuoscar.isaac_disaster.registries.bullet_color.ModBulletColor;
-import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerModuleQueue;
+import net.luojiuoscar.isaac_disaster.registries.trigger_module.SimpleTrigger;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.Vec3;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class AttackContext {
     public ResourceLocation colorRl;
-    private final TriggerModuleQueue triggerModuleQueue;
+    private final List<SimpleTrigger> triggers;
     public final Map<ResourceLocation, Integer> trajectories;
 
     private Vec3 pos;
@@ -27,7 +29,7 @@ public class AttackContext {
     public AttackContext(){
         this.colorRl = ModBulletColor.BASE.getId();
         this.trajectories = new HashMap<>();
-        this.triggerModuleQueue = new TriggerModuleQueue();
+        this.triggers = new ArrayList<>();
         this.pos = Vec3.ZERO;
         this.xRot = 0.0f;
         this.yRot = 0.0f;
@@ -37,14 +39,14 @@ public class AttackContext {
 
     public AttackContext(LivingEntity owner, Entity shooter,
                          ResourceLocation colorRl,
-                         TriggerModuleQueue triggerModuleQueue,
+                         List<SimpleTrigger> triggers,
                          Map<ResourceLocation, Integer> trajectories,
                          Vec3 pos, float xRot, float yRot) {
         this.owner = owner;
         this.shooter = shooter;
         this.colorRl = colorRl;
         // 避免外部修改影响 AttackContext 内部
-        this.triggerModuleQueue = new TriggerModuleQueue(triggerModuleQueue.getQueue());
+        this.triggers = new ArrayList<>(triggers);
         this.trajectories = new HashMap<>(trajectories);
         this.pos = pos;
         this.xRot = xRot;
@@ -52,8 +54,8 @@ public class AttackContext {
 
     }
 
-    public TriggerModuleQueue getTriggerModuleQueue() {
-        return triggerModuleQueue;
+    public List<SimpleTrigger> getTriggers() {
+        return triggers;
     }
 
     public AttackContext copy(){
@@ -61,7 +63,7 @@ public class AttackContext {
                 this.owner,
                 this.shooter,
                 this.colorRl,
-                this.triggerModuleQueue.copy(),
+                this.triggers,
                 new HashMap<>(this.trajectories),
                 this.pos,
                 this.xRot,
@@ -69,8 +71,8 @@ public class AttackContext {
         );
     }
 
-    public void addTriggerModule(ResourceLocation id, int count) {
-        triggerModuleQueue.add(id, count);
+    public void addSimpleTrigger(SimpleTrigger trigger) {
+        this.triggers.add(trigger);
     }
 
     public Vec3 getPos() {

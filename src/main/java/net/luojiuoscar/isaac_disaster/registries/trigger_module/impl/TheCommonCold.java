@@ -2,40 +2,31 @@ package net.luojiuoscar.isaac_disaster.registries.trigger_module.impl;
 
 import net.luojiuoscar.isaac_disaster.effect.ModEffects;
 import net.luojiuoscar.isaac_disaster.event.custom.attack.GetAttackContextEvent;
-import net.luojiuoscar.isaac_disaster.event.custom.attack.IsaacAttackBeforeHitEntityEvent;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.AbilityEffectContext;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.ContextKeys;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.ModAbilityEffects;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.profile.PotionProfile;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackContext;
 import net.luojiuoscar.isaac_disaster.registries.bullet_color.ModBulletColor;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.ITriggerModule;
-import net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerModule;
-import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerCategory;
-import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerModuleQueue;
-import net.minecraft.world.effect.MobEffectInstance;
+import net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerTypes;
+import net.luojiuoscar.isaac_disaster.registries.trigger_module.SimpleTrigger;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.player.Player;
-import net.minecraftforge.event.entity.living.LivingAttackEvent;
 
-import java.util.Set;
+import java.util.List;
 
 public class TheCommonCold implements ITriggerModule {
-    @Override
-    public Set<TriggerCategory> getTriggerType() {
-        return Set.of(
-                TriggerCategory.GET_ATTACK_CONTEXT,
-                TriggerCategory.HIT_ENTITY,
-                TriggerCategory.BULLET_HIT_ENTITY_BEFORE
-        );
-    }
+    private final List<SimpleTrigger> triggers = List.of(
+            new SimpleTrigger(ModTriggerTypes.HIT_ENTITY, ModAbilityEffects.POTION)
+    );
+    private final List<SimpleTrigger> bullet_triggers = List.of(
+            new SimpleTrigger(ModTriggerTypes.BULLET_HIT_ENTITY_BEFORE, ModAbilityEffects.POTION)
+    );
+
 
     @Override
-    public void getAttackContext(GetAttackContextEvent event, int stacks, TriggerModuleQueue queue) {
-        Player player = event.getPlayer();
-
-        for (AttackContext context : event.getContexts()){
-            if (player.getRandom().nextDouble() < getTriggerChance(player)) {
-                context.colorRl = ModBulletColor.POISON.getId();
-                context.addTriggerModule(ModTriggerModule.THE_COMMON_COLD.getId(), stacks);
-            }
-        }
+    public List<SimpleTrigger> getTriggers() {
+        return triggers;
     }
 
     private double getTriggerChance(LivingEntity entity){
@@ -43,33 +34,27 @@ public class TheCommonCold implements ITriggerModule {
     }
 
     @Override
-    public void onHitEntity(LivingAttackEvent event, int stacks, TriggerModuleQueue queue) {
-        if (!(event.getSource().getEntity() instanceof LivingEntity attacker)) return;
-        LivingEntity victim = event.getEntity();
-
-        if (attacker.getRandom().nextDouble() < getTriggerChance(attacker)){
-            applyEffect(attacker, victim);
+    public void modifyContext(AbilityEffectContext context) {
+        LivingEntity entity = context.getEntity();
+        if (entity.getRandom().nextDouble() < getTriggerChance(entity)){
+            context.set(ContextKeys.POTIONS, List.of(
+                    new PotionProfile(ModEffects.POISON.get(), 70, 0)
+            ));
         }
     }
 
-    private void applyEffect(LivingEntity attacker, LivingEntity target){
-        MobEffectInstance poisonEffect = new MobEffectInstance(
-                ModEffects.POISON.get(),
-                70,
-                0,
-                false,
-                true,
-                true
-        );
-
-        target.addEffect(poisonEffect, attacker);
-    }
-
     @Override
-    public void beforeBulletHitEntity(IsaacAttackBeforeHitEntityEvent event, int stacks, TriggerModuleQueue queue) {
-        if (!(event.getHit().getEntity() instanceof LivingEntity victim)) return;
-        if (!(event.getSource() instanceof LivingEntity attacker)) return;
-
-        applyEffect(attacker, victim);
+    public void attachToBullet(AbilityEffectContext context) {
+        LivingEntity entity = context.getEntity();
+        // 添加simpleTrigger到bullet中
+        if (context.get(ContextKeys.EVENT) instanceof GetAttackContextEvent event) {
+            List<AttackContext> attCtxs = event.getContexts();
+            for (var ctx : attCtxs) {
+                if (entity.getRandom().nextDouble() < getTriggerChance(entity)){
+                    ctx.colorRl = ModBulletColor.POISON.getId();
+                    ctx.getTriggers().addAll(bullet_triggers);
+                }
+            }
+        }
     }
 }

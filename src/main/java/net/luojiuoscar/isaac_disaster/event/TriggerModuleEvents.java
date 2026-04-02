@@ -7,11 +7,15 @@ import net.luojiuoscar.isaac_disaster.event.custom.attack.tear_bullet.BulletTick
 import net.luojiuoscar.isaac_disaster.event.custom.misc.BeforeTriggerModuleActiveEvent;
 import net.luojiuoscar.isaac_disaster.event.custom.misc.RightClickTickEvent;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.AbilityEffectContext;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.ContextKeys;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.IBulletObject;
-import net.luojiuoscar.isaac_disaster.registries.trigger_module.ITriggerModule;
-import net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerModule;
+import net.luojiuoscar.isaac_disaster.registries.trigger_module.*;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
@@ -24,54 +28,67 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.registries.IForgeRegistry;
 import net.minecraftforge.registries.RegistryManager;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Mod.EventBusSubscriber(modid = IsaacDisaster.MOD_ID)
 public class TriggerModuleEvents {
+
+    public static void dispatch(AbilityEffectContext context, TriggerType type) {
+        TriggerModuleQueue queue = context.get(ContextKeys.TRIGGER_MODULE_QUEUE);
+        if (queue == null || queue.isEmpty()) return;
+
+        IForgeRegistry<ITriggerModule> reg =
+                RegistryManager.ACTIVE.getRegistry(ModTriggerModule.TRIGGER_MODULE_KEY);
+
+        // 触发前事件
+        BeforeTriggerModuleActiveEvent preEvent = new BeforeTriggerModuleActiveEvent(context);
+        MinecraftForge.EVENT_BUS.post(preEvent);
+
+        queue.lock();
+
+        for (var inst : queue.getQueue()) {
+            context.set(ContextKeys.AMPLIFIER, inst.stacks);
+            ITriggerModule module = reg.getValue(inst.id);
+            if (module == null) continue;
+
+            // 调用模块的 fire 方法，触发对应 TriggerType 的 SimpleTrigger
+            module.fire(context, type);
+        }
+    }
+
+    public static void bulletDispatch(AbilityEffectContext context, TriggerType type){
+        context.set(ContextKeys.AMPLIFIER, 1);
+        ModTriggerModule.BULLET_TRIGGER_MODULE.get().fire(context, type);
+    }
 
     @SubscribeEvent
     public static void getAttackContext(GetAttackContextEvent event) {
         LivingEntity entity = event.getPlayer();
-        IForgeRegistry<ITriggerModule> reg =
-                RegistryManager.ACTIVE.getRegistry(ModTriggerModule.TRIGGER_MODULE_KEY);
+        AbilityEffectContext context = new AbilityEffectContext(entity);
+        context.set(ContextKeys.EVENT, event);
+        context.set(ContextKeys.TARGET_POSITION, entity.position());
 
         entity.getCapability(EffectModulesProvider.EFFECT_MODULES).ifPresent(triggerModule -> {
-
             var queue = triggerModule.getTriggerModules().copy();
+            context.set(ContextKeys.TRIGGER_MODULE_QUEUE, queue);
 
-            BeforeTriggerModuleActiveEvent e = new BeforeTriggerModuleActiveEvent(event, queue);
-            MinecraftForge.EVENT_BUS.post(e);
-
-            queue.lock();
-
-            for (var inst : queue.getQueue()) {
-                ITriggerModule val = reg.getValue(inst.id);
-                if (val == null) continue;
-
-                val.getAttackContext(event, inst.stacks, queue);
-            }
+            dispatch(context, ModTriggerTypes.GET_ATTACK_CONTEXT);
         });
     }
 
     @SubscribeEvent
     public static void beforePerformAttack(BeforePerformAttackEvent event) {
         LivingEntity entity = event.getEntity();
-        IForgeRegistry<ITriggerModule> reg =
-                RegistryManager.ACTIVE.getRegistry(ModTriggerModule.TRIGGER_MODULE_KEY);
+        AbilityEffectContext context = new AbilityEffectContext(entity);
+        context.set(ContextKeys.EVENT, event);
+        context.set(ContextKeys.TARGET_POSITION, entity.position());
 
         entity.getCapability(EffectModulesProvider.EFFECT_MODULES).ifPresent(triggerModule -> {
-
             var queue = triggerModule.getTriggerModules().copy();
+            context.set(ContextKeys.TRIGGER_MODULE_QUEUE, queue);
 
-            BeforeTriggerModuleActiveEvent e = new BeforeTriggerModuleActiveEvent(event, queue);
-            MinecraftForge.EVENT_BUS.post(e);
-
-            queue.lock();
-
-            for (var inst : queue.getQueue()) {
-                ITriggerModule val = reg.getValue(inst.id);
-                if (val == null) continue;
-
-                val.beforePerformAttack(event, inst.stacks, queue);
-            }
+            dispatch(context, ModTriggerTypes.BEFORE_PERFORM_ATTACK);
         });
     }
 
@@ -81,239 +98,191 @@ public class TriggerModuleEvents {
         if (!PlayerHelper.isHitAllowedType(event.getSource())) return;
         if (!(event.getSource().getEntity() instanceof LivingEntity entity)) return;
 
-        IForgeRegistry<ITriggerModule> reg  =
-                RegistryManager.ACTIVE.getRegistry(ModTriggerModule.TRIGGER_MODULE_KEY);
+        AbilityEffectContext context = new AbilityEffectContext(entity);
+        context.set(ContextKeys.EVENT, event);
+        context.set(ContextKeys.TARGET_POSITION, entity.position());
+        context.set(ContextKeys.DOUBLE, List.of((double) event.getAmount()));
+
+        List<Entity> secondary_entities = new ArrayList<>();
+        secondary_entities.add(event.getEntity());
+        if (event.getSource().getDirectEntity() != null){
+            secondary_entities.add(event.getSource().getDirectEntity());
+        }
+        context.set(ContextKeys.SECONDARY_ENTITIES, secondary_entities); // 受伤的生物
 
         entity.getCapability(EffectModulesProvider.EFFECT_MODULES).ifPresent(triggerModule -> {
             var queue = triggerModule.getTriggerModules().copy();
+            context.set(ContextKeys.TRIGGER_MODULE_QUEUE, queue);
 
-            BeforeTriggerModuleActiveEvent e = new BeforeTriggerModuleActiveEvent(event, queue);
-            MinecraftForge.EVENT_BUS.post(e);
-
-            queue.lock();
-
-            for (var inst : queue.getQueue()){
-                ITriggerModule val = reg.getValue(inst.id);
-                if (val == null) continue;
-
-                val.onHitEntity(event, inst.stacks, queue);
-            }
+            dispatch(context, ModTriggerTypes.HIT_ENTITY);
         });
     }
 
     @SubscribeEvent
     public static void beforeBulletHitEntity(IsaacAttackBeforeHitEntityEvent event) {
-        IForgeRegistry<ITriggerModule> reg  =
-                RegistryManager.ACTIVE.getRegistry(ModTriggerModule.TRIGGER_MODULE_KEY);
-
         IBulletObject bulletObject = event.getBulletObject();
-        var queue = bulletObject.getTriggerModules().copy();
 
-        BeforeTriggerModuleActiveEvent e = new BeforeTriggerModuleActiveEvent(event, queue);
-        MinecraftForge.EVENT_BUS.post(e);
+        AbilityEffectContext context = new AbilityEffectContext(bulletObject.getOwner());
+        context.set(ContextKeys.EVENT, event);
+        context.set(ContextKeys.BULLET, bulletObject);
+        context.set(ContextKeys.TARGET_POSITION, bulletObject.getPosition());
+        context.set(ContextKeys.SECONDARY_ENTITIES, List.of(event.getHit().getEntity()));
+        context.set(ContextKeys.DOUBLE, List.of(event.getDamage()));
 
-        queue.lock();
-
-        for (var inst : queue.getQueue()){
-            ITriggerModule val = reg.getValue(inst.id);
-            if (val == null) continue;
-
-            val.beforeBulletHitEntity(event, inst.stacks, queue);
-        }
+        bulletDispatch(context, ModTriggerTypes.BULLET_HIT_ENTITY_BEFORE);
     }
 
     @SubscribeEvent
     public static void afterBulletHitEntity(IsaacAttackAfterHitEvent event) {
-        IForgeRegistry<ITriggerModule> reg  =
-                RegistryManager.ACTIVE.getRegistry(ModTriggerModule.TRIGGER_MODULE_KEY);
-
         IBulletObject bulletObject = event.getBulletObject();
-        var queue = bulletObject.getTriggerModules().copy();
 
-        BeforeTriggerModuleActiveEvent e = new BeforeTriggerModuleActiveEvent(event, queue);
-        MinecraftForge.EVENT_BUS.post(e);
+        AbilityEffectContext context = new AbilityEffectContext(bulletObject.getOwner());
+        context.set(ContextKeys.EVENT, event);
+        context.set(ContextKeys.BULLET, bulletObject);
+        context.set(ContextKeys.TARGET_POSITION, bulletObject.getPosition());
+        context.set(ContextKeys.SECONDARY_ENTITIES, List.of(event.getHitResult().getEntity()));
+        context.set(ContextKeys.DOUBLE, List.of(event.getDamage()));
 
-        queue.lock();
-
-        for (var inst : queue.getQueue()){
-            ITriggerModule val = reg.getValue(inst.id);
-            if (val == null) continue;
-
-            val.afterBulletHitEntity(event, inst.stacks, queue);
-        }
+        bulletDispatch(context, ModTriggerTypes.BULLET_HIT_ENTITY_AFTER);
     }
 
     @SubscribeEvent
     public static void onBulletHitBlock(IsaacAttackHitBlockEvent event) {
-        IForgeRegistry<ITriggerModule> reg  =
-                RegistryManager.ACTIVE.getRegistry(ModTriggerModule.TRIGGER_MODULE_KEY);
-
         IBulletObject bulletObject = event.getBulletObject();
-        var queue = bulletObject.getTriggerModules().copy();
 
-        BeforeTriggerModuleActiveEvent e = new BeforeTriggerModuleActiveEvent(event, queue);
-        MinecraftForge.EVENT_BUS.post(e);
+        AbilityEffectContext context = new AbilityEffectContext(bulletObject.getOwner());
+        context.set(ContextKeys.EVENT, event);
+        context.set(ContextKeys.BULLET, bulletObject);
+        context.set(ContextKeys.TARGET_POSITION, event.getHitResult().getBlockPos().getCenter());
+        context.set(ContextKeys.DOUBLE, List.of((double) bulletObject.getDamage()));
 
-        queue.lock();
-
-        for (var inst : queue.getQueue()){
-            ITriggerModule val = reg.getValue(inst.id);
-            if (val == null) continue;
-
-            val.onBulletHitBlock(event, inst.stacks, queue);
-        }
+        bulletDispatch(context, ModTriggerTypes.BULLET_HIT_BLOCK);
     }
 
     @SubscribeEvent
     public static void onLivingHurt(LivingHurtEvent event) {
-        if (!(event.getEntity() instanceof Player player)) return;
+        LivingEntity entity = event.getEntity();
+        AbilityEffectContext context = new AbilityEffectContext(entity);
+        context.set(ContextKeys.EVENT, event);
+        context.set(ContextKeys.TARGET_POSITION, entity.position());
 
-        IForgeRegistry<ITriggerModule> reg  =
-                RegistryManager.ACTIVE.getRegistry(ModTriggerModule.TRIGGER_MODULE_KEY);
+        List<Entity> secondary_entities = new ArrayList<>();
+        if (event.getSource().getEntity() != null) secondary_entities.add(event.getSource().getEntity());
+        if (event.getSource().getDirectEntity() != null) secondary_entities.add(event.getSource().getDirectEntity());
+        context.set(ContextKeys.SECONDARY_ENTITIES, secondary_entities);
+        context.set(ContextKeys.DOUBLE, List.of((double) event.getAmount()));
 
-        player.getCapability(EffectModulesProvider.EFFECT_MODULES).ifPresent(triggerModule -> {
+        entity.getCapability(EffectModulesProvider.EFFECT_MODULES).ifPresent(triggerModule -> {
             var queue = triggerModule.getTriggerModules().copy();
+            context.set(ContextKeys.TRIGGER_MODULE_QUEUE, queue);
 
-            BeforeTriggerModuleActiveEvent e = new BeforeTriggerModuleActiveEvent(event, queue);
-            MinecraftForge.EVENT_BUS.post(e);
-
-            queue.lock();
-
-            for (var inst : queue.getQueue()){
-                ITriggerModule val = reg.getValue(inst.id);
-                if (val == null) continue;
-
-                val.onHurt(event, inst.stacks, queue);
-                // 暂时将generic_kill作为判断依据
-                if (PlayerHelper.isSelfDamage(event.getSource())){
-                    val.onHurtPositive(event, inst.stacks, queue);
-
-                }
-                if (!PlayerHelper.isSelfDamage(event.getSource())){
-                    val.onHurtNegative(event, inst.stacks, queue);
-                }
+            dispatch(context, ModTriggerTypes.ON_HURT);
+            if (PlayerHelper.isSelfDamage(event.getSource())){
+                dispatch(context, ModTriggerTypes.ON_HURT_NEGATIVE);
+            }else {
+                dispatch(context, ModTriggerTypes.ON_HURT_POSITIVE);
             }
         });
     }
 
+    /**
+     * 死亡事件和击杀事件本质是同一事件，但是触发主体不同
+     * */
     @SubscribeEvent
     public static void onKilledEntity(LivingDeathEvent event) {
-        if (!(event.getSource().getEntity() instanceof Player player)) return;
+        Entity attacker = event.getSource().getEntity();
+        LivingEntity victim = event.getEntity();
+        Entity medium = event.getSource().getDirectEntity();
 
-        IForgeRegistry<ITriggerModule> reg  =
-                RegistryManager.ACTIVE.getRegistry(ModTriggerModule.TRIGGER_MODULE_KEY);
+        AbilityEffectContext death_ctx = new AbilityEffectContext(victim);
+        death_ctx.set(ContextKeys.EVENT, event);
+        death_ctx.set(ContextKeys.TARGET_POSITION, victim.position());
 
-        player.getCapability(EffectModulesProvider.EFFECT_MODULES).ifPresent(triggerModule -> {
+        if (!(attacker instanceof LivingEntity entity)) return;
+
+        List<Entity> secondary_entities = new ArrayList<>();
+        secondary_entities.add(attacker);
+        if (medium != null) secondary_entities.add(medium);
+        death_ctx.set(ContextKeys.SECONDARY_ENTITIES, secondary_entities);
+
+        AbilityEffectContext kill_ctx = new AbilityEffectContext(entity);
+        kill_ctx.set(ContextKeys.EVENT, event);
+        kill_ctx.set(ContextKeys.TARGET_POSITION, victim.position());
+        kill_ctx.set(ContextKeys.SECONDARY_ENTITIES, secondary_entities);
+
+        entity.getCapability(EffectModulesProvider.EFFECT_MODULES).ifPresent(triggerModule -> {
             var queue = triggerModule.getTriggerModules().copy();
+            kill_ctx.set(ContextKeys.TRIGGER_MODULE_QUEUE, queue);
+            death_ctx.set(ContextKeys.TRIGGER_MODULE_QUEUE, queue);
 
-            BeforeTriggerModuleActiveEvent e = new BeforeTriggerModuleActiveEvent(event, queue);
-            MinecraftForge.EVENT_BUS.post(e);
-
-            queue.lock();
-
-            for (var inst : queue.getQueue()){
-                ITriggerModule val = reg.getValue(inst.id);
-                if (val == null) continue;
-
-                val.onKilledEntity(event, inst.stacks, queue);
-            }
+            dispatch(kill_ctx, ModTriggerTypes.KILL_ENTITY);
+            dispatch(death_ctx, ModTriggerTypes.DEATH);
         });
     }
 
     @SubscribeEvent
     public static void onBlockBreak(BlockEvent.BreakEvent event) {
-        IForgeRegistry<ITriggerModule> reg  =
-                RegistryManager.ACTIVE.getRegistry(ModTriggerModule.TRIGGER_MODULE_KEY);
-
         Player player = event.getPlayer();
+        AbilityEffectContext context = new AbilityEffectContext(player);
+        context.set(ContextKeys.EVENT, event);
+        context.set(ContextKeys.TARGET_POSITION, player.position());
 
         player.getCapability(EffectModulesProvider.EFFECT_MODULES).ifPresent(triggerModule -> {
             var queue = triggerModule.getTriggerModules().copy();
+            context.set(ContextKeys.TRIGGER_MODULE_QUEUE, queue);
 
-            BeforeTriggerModuleActiveEvent e = new BeforeTriggerModuleActiveEvent(event, queue);
-            MinecraftForge.EVENT_BUS.post(e);
-
-            queue.lock();
-
-            for (var inst : queue.getQueue()){
-                ITriggerModule val = reg.getValue(inst.id);
-                if (val == null) continue;
-
-                val.onBlockBreak(event, inst.stacks, queue);
-            }
+            dispatch(context, ModTriggerTypes.BREAK_BLOCK);
         });
     }
 
     @SubscribeEvent
     public static void onBulletTick(BulletTickEvent event) {
         IBulletObject bullet = event.getBullet();
-        if (!(bullet.getOwner() instanceof Player player)) return;
+        LivingEntity entity = bullet.getOwner();
 
-        IForgeRegistry<ITriggerModule> reg  =
-                RegistryManager.ACTIVE.getRegistry(ModTriggerModule.TRIGGER_MODULE_KEY);
+        AbilityEffectContext context = new AbilityEffectContext(entity);
+        context.set(ContextKeys.EVENT, event);
+        context.set(ContextKeys.TARGET_POSITION, bullet.getPosition());
+        context.set(ContextKeys.BULLET, bullet);
 
-        player.getCapability(EffectModulesProvider.EFFECT_MODULES).ifPresent(triggerModule -> {
-            var queue = triggerModule.getTriggerModules().copy();
-
-            BeforeTriggerModuleActiveEvent e = new BeforeTriggerModuleActiveEvent(event, queue);
-            MinecraftForge.EVENT_BUS.post(e);
-
-            queue.lock();
-
-            for (var inst : queue.getQueue()){
-                ITriggerModule val = reg.getValue(inst.id);
-                if (val == null) continue;
-
-                val.onBulletTick(event, inst.stacks, queue);
-            }
-        });
+        bulletDispatch(context, ModTriggerTypes.BULLET_TICK);
     }
 
     @SubscribeEvent
-    public static void onRightClickTick(RightClickTickEvent event) {
+    public static void onPickupItem(RightClickTickEvent event) {
         ServerPlayer player = event.getPlayer();
-
-        IForgeRegistry<ITriggerModule> reg  =
-                RegistryManager.ACTIVE.getRegistry(ModTriggerModule.TRIGGER_MODULE_KEY);
+        AbilityEffectContext context = new AbilityEffectContext(player);
+        context.set(ContextKeys.EVENT, event);
+        InteractionHand hand = player.getUsedItemHand();
+        context.set(ContextKeys.HAND, hand);
+        context.set(ContextKeys.ITEM, player.getItemInHand(hand).getItem());
+        context.set(ContextKeys.TARGET_POSITION, player.position());
 
         player.getCapability(EffectModulesProvider.EFFECT_MODULES).ifPresent(triggerModule -> {
             var queue = triggerModule.getTriggerModules().copy();
+            context.set(ContextKeys.TRIGGER_MODULE_QUEUE, queue);
 
-            BeforeTriggerModuleActiveEvent e = new BeforeTriggerModuleActiveEvent(event, queue);
-            MinecraftForge.EVENT_BUS.post(e);
-
-            queue.lock();
-
-            for (var inst : queue.getQueue()){
-                ITriggerModule val = reg.getValue(inst.id);
-                if (val == null) continue;
-
-                val.onRightClickTick(event, inst.stacks, queue);
-            }
+            dispatch(context, ModTriggerTypes.RIGHT_CLICK_TICK);
         });
     }
 
     @SubscribeEvent
-    public static void onRightClickTick(EntityItemPickupEvent event) {
-        if (!(event.getEntity() instanceof ServerPlayer player)) return;
+    public static void onPickupItem(EntityItemPickupEvent event) {
+        LivingEntity entity = event.getEntity();
+        AbilityEffectContext context = new AbilityEffectContext(entity);
+        context.set(ContextKeys.EVENT, event);
+        ItemEntity item = event.getItem();
 
-        IForgeRegistry<ITriggerModule> reg  =
-                RegistryManager.ACTIVE.getRegistry(ModTriggerModule.TRIGGER_MODULE_KEY);
+        context.set(ContextKeys.ITEM, item.getItem().getItem());
+        context.set(ContextKeys.DOUBLE, List.of((double) item.getItem().getCount()));
+        context.set(ContextKeys.TARGET_POSITION, entity.position());
+        context.set(ContextKeys.SECONDARY_ENTITIES, List.of(item));
 
-        player.getCapability(EffectModulesProvider.EFFECT_MODULES).ifPresent(triggerModule -> {
+        entity.getCapability(EffectModulesProvider.EFFECT_MODULES).ifPresent(triggerModule -> {
             var queue = triggerModule.getTriggerModules().copy();
+            context.set(ContextKeys.TRIGGER_MODULE_QUEUE, queue);
 
-            BeforeTriggerModuleActiveEvent e = new BeforeTriggerModuleActiveEvent(event, queue);
-            MinecraftForge.EVENT_BUS.post(e);
-
-            queue.lock();
-
-            for (var inst : queue.getQueue()){
-                ITriggerModule val = reg.getValue(inst.id);
-                if (val == null) continue;
-
-                val.onPickupItem(event, inst.stacks, queue);
-            }
+            dispatch(context, ModTriggerTypes.PICKUP_ITEM);
         });
     }
 }

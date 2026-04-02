@@ -1,26 +1,19 @@
 package net.luojiuoscar.isaac_disaster.registries.trigger_module.impl;
 
-import net.luojiuoscar.isaac_disaster.effect.ModEffects;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.ModAbilityEffects;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.ITriggerModule;
-import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerCategory;
-import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerModuleQueue;
-import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraftforge.event.entity.living.LivingHurtEvent;
+import net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerTypes;
+import net.luojiuoscar.isaac_disaster.registries.trigger_module.SimpleTrigger;
 
-import java.util.Set;
+import java.util.List;
 
 public class Cartridge implements ITriggerModule {
-    @Override
-    public Set<TriggerCategory> getTriggerType() {
-        return Set.of(TriggerCategory.ON_HURT);
-    }
+    private final List<SimpleTrigger> triggers = List.of(
+            new SimpleTrigger(ModTriggerTypes.ON_HURT, ModAbilityEffects.CARTRIDGE)
+    );
 
     @Override
-    public void onHurt(LivingHurtEvent event, int stacks, TriggerModuleQueue queue) {
-        LivingEntity entity = event.getEntity();
-        if (entity.getRandom().nextDouble() < stacks / Math.max(stacks, 20 - getLuck(entity) * 0.5)){
-            entity.addEffect(new MobEffectInstance(ModEffects.INVINCIBLE.get(), 120));
-        }
+    public List<SimpleTrigger> getTriggers() {
+        return triggers;
     }
 }

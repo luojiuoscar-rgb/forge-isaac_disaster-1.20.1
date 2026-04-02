@@ -1,63 +1,37 @@
 package net.luojiuoscar.isaac_disaster.registries.trigger_module.impl;
 
-import net.luojiuoscar.isaac_disaster.entity.custom.FetusBullet;
 import net.luojiuoscar.isaac_disaster.event.custom.attack.GetAttackContextEvent;
-import net.luojiuoscar.isaac_disaster.event.custom.attack.IsaacAttackBeforeHitEntityEvent;
-import net.luojiuoscar.isaac_disaster.event.custom.attack.tear_bullet.BulletTickEvent;
-import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.AbilityEffectContext;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.ContextKeys;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.ModAbilityEffects;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackContext;
-import net.luojiuoscar.isaac_disaster.registries.attack_type.ModAttackType;
-import net.luojiuoscar.isaac_disaster.registries.trigger_module.*;
-import net.minecraft.world.entity.player.Player;
+import net.luojiuoscar.isaac_disaster.registries.trigger_module.ITriggerModule;
+import net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerTypes;
+import net.luojiuoscar.isaac_disaster.registries.trigger_module.SimpleTrigger;
+import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerModulePriority;
 
 import java.util.List;
-import java.util.Set;
 
 public class Laser implements ITriggerModule {
+    private final List<SimpleTrigger> bullet_triggers = List.of(
+            new SimpleTrigger(ModTriggerTypes.BULLET_HIT_ENTITY_BEFORE, ModAbilityEffects.LASER_PLUS_BRIMSTONE),
+            new SimpleTrigger(ModTriggerTypes.BULLET_TICK, ModAbilityEffects.LASER_PLUS_FETUS)
+    );
+
     @Override
-    public Set<TriggerCategory> getTriggerType() {
-        return Set.of(
-                TriggerCategory.GET_ATTACK_CONTEXT,
-                TriggerCategory.BULLET_HIT_ENTITY_BEFORE,
-                TriggerCategory.BULLET_TICK
-        );
+    public List<SimpleTrigger> getTriggers() {
+        return List.of();
     }
 
     @Override
-    public void getAttackContext(GetAttackContextEvent event, int stacks, TriggerModuleQueue queue) {
-        for (AttackContext context : event.getContexts()){
-            context.addTriggerModule(ModTriggerModule.LASER.getId(), stacks);
+    public void attachToBullet(AbilityEffectContext context) {
+        // 添加simpleTrigger到bullet中
+        if (context.get(ContextKeys.EVENT) instanceof GetAttackContextEvent event) {
+            List<AttackContext> attCtxs = event.getContexts();
+            for (var ctx : attCtxs) {
+                ctx.getTriggers().addAll(bullet_triggers);
+            }
         }
-    }
-
-    @Override
-    public void beforeBulletHitEntity(IsaacAttackBeforeHitEntityEvent event, int stacks, TriggerModuleQueue queue) {
-        if (event.getAttackType().equals(ModAttackType.BRIMSTONE.getId())){
-            event.setDamage(event.getDamage() * 1.5);
-        }
-    }
-
-    @Override
-    public void onBulletTick(BulletTickEvent event, int stacks, TriggerModuleQueue queue) {
-        if (!(event.getBullet() instanceof FetusBullet bullet)) return;
-        if (!(bullet.getOwner() instanceof Player player)) return;
-
-        int interval = (int) PlayerHelper.getShotDelay(player) + 2;
-
-        if (bullet.tickCount % interval != 0) return;
-
-        ModAttackType.LASER.get().performAttack(List.of(
-                new AttackContext(
-                        player,
-                        bullet,
-                        bullet.getColorId(),
-                        bullet.getTriggerModules(),
-                        bullet.getTrajectories(),
-                        bullet.getPosition(),
-                        bullet.getXRot(),
-                        bullet.getYRot()
-                )
-        ));
     }
 
     @Override

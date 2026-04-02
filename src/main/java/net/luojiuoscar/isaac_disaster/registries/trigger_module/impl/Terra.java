@@ -1,50 +1,34 @@
 package net.luojiuoscar.isaac_disaster.registries.trigger_module.impl;
 
 import net.luojiuoscar.isaac_disaster.event.custom.attack.GetAttackContextEvent;
-import net.luojiuoscar.isaac_disaster.event.custom.attack.IsaacAttackHitBlockEvent;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.AbilityEffectContext;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.ContextKeys;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.ModAbilityEffects;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackContext;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.ITriggerModule;
-import net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerModule;
-import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerCategory;
-import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerModuleQueue;
-import net.minecraft.core.BlockPos;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.state.BlockState;
+import net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerTypes;
+import net.luojiuoscar.isaac_disaster.registries.trigger_module.SimpleTrigger;
 
-import java.util.Set;
+import java.util.List;
 
 public class Terra implements ITriggerModule {
-    @Override
-    public Set<TriggerCategory> getTriggerType() {
-        return Set.of(
-                TriggerCategory.GET_ATTACK_CONTEXT,
-                TriggerCategory.BULLET_HIT_BLOCK
-        );
-    }
+    private final List<SimpleTrigger> bullet_triggers = List.of(
+            new SimpleTrigger(ModTriggerTypes.BULLET_HIT_BLOCK, ModAbilityEffects.BREAK_BLOCK_AND_DROP)
+    );
 
     @Override
-    public void getAttackContext(GetAttackContextEvent event, int stacks, TriggerModuleQueue queue) {
-            for (AttackContext context : event.getContexts()){
-
-                context.addTriggerModule(ModTriggerModule.TERRA.getId(), stacks);
-        }
-    }
-
-    @Override
-    public void onBulletHitBlock(IsaacAttackHitBlockEvent event, int stacks, TriggerModuleQueue queue) {
-        BlockPos pos = event.getHitResult().getBlockPos();
-        Level level = event.getSource().level();
-        BlockState state = level.getBlockState(pos);
-
-        // 非气体、液体；硬度在范围内
-        if (!state.getCollisionShape(level, pos).isEmpty()){
-
-            var destroySpeed = state.getDestroySpeed(level, pos);
-
-            if (destroySpeed<= stacks * 16 && destroySpeed > 0){
-                level.destroyBlock(pos, true);
-
+    public void attachToBullet(AbilityEffectContext context) {
+        // 添加simpleTrigger到bullet中
+        if (context.get(ContextKeys.EVENT) instanceof GetAttackContextEvent event) {
+            List<AttackContext> attCtxs = event.getContexts();
+            for (var ctx : attCtxs) {
+                ctx.getTriggers().addAll(bullet_triggers);
             }
         }
+    }
+
+    @Override
+    public List<SimpleTrigger> getTriggers() {
+        return List.of();
     }
 }

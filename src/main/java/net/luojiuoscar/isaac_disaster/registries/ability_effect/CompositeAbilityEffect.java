@@ -11,9 +11,10 @@ public class CompositeAbilityEffect implements IAbilityEffect {
     }
 
     @Override
-    public void apply(AbilityEffectContext context) {
+    public boolean applyEffect(AbilityEffectContext context) {
         for (IAbilityEffect effect : effects) {
             effect.apply(context);
         }
+        return true;
     }
 }

@@ -1,53 +1,28 @@
 package net.luojiuoscar.isaac_disaster.registries.trigger_module.impl;
 
-import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.event.custom.attack.BeforePerformAttackEvent;
-import net.luojiuoscar.isaac_disaster.event.custom.attack.GetAttackContextEvent;
-import net.luojiuoscar.isaac_disaster.helper.ScheduledFuncHelper;
-import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackContext;
-import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackType;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.ContextKeys;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.ModAbilityEffects;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.ModAttackType;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.ITriggerModule;
-import net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerModule;
-import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerCategory;
-import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerModuleQueue;
-import net.minecraft.resources.ResourceLocation;
+import net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerTypes;
+import net.luojiuoscar.isaac_disaster.registries.trigger_module.SimpleTrigger;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.LivingEntity;
 
-import java.util.Set;
+import java.util.List;
 
 public class CSection implements ITriggerModule {
-    private static final ResourceLocation SCHEDULE_TYPE =
-            ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "c_section_attack");
+    private final List<SimpleTrigger> triggers = List.of(
+            new SimpleTrigger(ModTriggerTypes.BEFORE_PERFORM_ATTACK, ModAbilityEffects.BRIMSTONE_PLUS_C_SECTION,
+                    context -> {
+                        if (!(context.get(ContextKeys.EVENT) instanceof BeforePerformAttackEvent event)) return false;
+                        if (!(context.getEntity() instanceof ServerPlayer)) return false;
+                        return event.getAttackType() == ModAttackType.BRIMSTONE.get();
+                    })
+    );
 
     @Override
-    public Set<TriggerCategory> getTriggerType() {
-        return Set.of(
-                TriggerCategory.GET_ATTACK_CONTEXT,
-                TriggerCategory.BEFORE_PERFORM_ATTACK
-        );
-    }
-
-    @Override
-    public void getAttackContext(GetAttackContextEvent event, int stacks, TriggerModuleQueue queue) {
-        for (AttackContext context : event.getContexts()){
-            context.addTriggerModule(ModTriggerModule.C_SECTION.getId(), stacks);
-        }
-    }
-
-    @Override
-    public void beforePerformAttack(BeforePerformAttackEvent event, int stacks, TriggerModuleQueue queue) {
-        if (event.getAttackType() == ModAttackType.BRIMSTONE.get()){
-            AttackType attack = ModAttackType.C_SECTION.get();
-            LivingEntity entity = event.getEntity();
-            if (!(entity instanceof ServerPlayer player)) return;
-
-            ScheduledFuncHelper.scheduleForPlayer(player.getUUID(), SCHEDULE_TYPE, 3,3, 4, false, () -> {
-
-                        attack.shoot(attack.getOneAttackContext(player, player));
-                        attack.makeSound(player);
-                    });
-        }
+    public List<SimpleTrigger> getTriggers() {
+        return triggers;
     }
 }
