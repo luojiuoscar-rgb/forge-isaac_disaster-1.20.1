@@ -71,4 +71,9 @@ public class ModTriggerTypes {
     public static final TriggerType RIGHT_CLICK_BLOCK =
             new TriggerType(ResourceLocation.fromNamespaceAndPath(
                     IsaacDisaster.MOD_ID, "right_click_block"));
+
+    // 空触发器是用于占位的
+    public static final TriggerType EMTPY =
+            new TriggerType(ResourceLocation.fromNamespaceAndPath(
+                    IsaacDisaster.MOD_ID, "empty"));
 }

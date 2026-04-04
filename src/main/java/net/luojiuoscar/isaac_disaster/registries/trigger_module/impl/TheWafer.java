@@ -6,7 +6,7 @@ import net.luojiuoscar.isaac_disaster.registries.trigger_module.*;
 import java.util.List;
 
 public class TheWafer implements ITriggerModule {
-    private final List<SimpleTrigger> triggers = List.of(
+    private static final List<SimpleTrigger> triggers = List.of(
             new SimpleTrigger(ModTriggerTypes.ON_HURT, ModAbilityEffects.THE_WAFER)
     );
 

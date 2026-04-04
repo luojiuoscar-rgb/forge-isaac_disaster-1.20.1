@@ -1,46 +1,25 @@
 package net.luojiuoscar.isaac_disaster.registries.recursive_module.impl;
 
-import net.luojiuoscar.isaac_disaster.helper.LevelHelper;
-import net.luojiuoscar.isaac_disaster.manager.StatManager;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.ModAbilityEffects;
 import net.luojiuoscar.isaac_disaster.registries.recursive_module.IRecursiveModule;
 import net.luojiuoscar.isaac_disaster.registries.recursive_module.RecursiveModuleQueue;
-import net.minecraft.world.entity.Entity;
+import net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerTypes;
+import net.luojiuoscar.isaac_disaster.registries.trigger_module.SimpleTrigger;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.item.ItemEntity;
-import net.minecraft.world.phys.Vec3;
 
 import java.util.List;
 
 public class AttractItem implements IRecursiveModule {
+    private static final List<SimpleTrigger> triggers = List.of(
+            new SimpleTrigger(ModTriggerTypes.EMTPY, ModAbilityEffects.ATTRACT_ITEM)
+    );
+
     @Override
-    public int getTickInterval(LivingEntity entity, int stacks, RecursiveModuleQueue queue) {
-        return 5;
+    public List<SimpleTrigger> getTriggers() {
+        return triggers;
     }
 
-    @Override
-    public void recursiveEffect(LivingEntity entity, int stacks, RecursiveModuleQueue queue) {
-        List<Entity> items = LevelHelper.selectBySquare(
-                entity.level(),
-                entity.getX(), entity.getY(), entity.getZ(),
-                StatManager.getNearbyRange() * 0.75,
-                e -> e instanceof ItemEntity
-        );
-
-        for (int i = 0; i < items.size(); i++){
-            ItemEntity item = (ItemEntity) items.get(i);
-
-            Vec3 playerPos = entity.position();
-            Vec3 itemPos = item.position();
-
-            Vec3 direction = playerPos.subtract(itemPos);
-
-            double distance = direction.length();
-            if (distance < 0.2) continue; // 防止抖动
-
-            Vec3 motion = direction.normalize().scale(0.2); // 吸附速度
-
-            item.setDeltaMovement(motion);
-            item.hurtMarked = true; // 强制同步
-        }
+    public int getTickInterval(LivingEntity entity, int stacks, RecursiveModuleQueue queue) {
+        return 5;
     }
 }

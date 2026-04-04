@@ -8,7 +8,7 @@ import net.luojiuoscar.isaac_disaster.registries.trigger_module.SimpleTrigger;
 import java.util.List;
 
 public class CharmOfTheVampire implements ITriggerModule {
-    private final List<SimpleTrigger> triggers = List.of(
+    private static final List<SimpleTrigger> triggers = List.of(
             new SimpleTrigger(ModTriggerTypes.KILL_ENTITY, ModAbilityEffects.CHARM_OF_THE_VAMPIRE)
     );
 

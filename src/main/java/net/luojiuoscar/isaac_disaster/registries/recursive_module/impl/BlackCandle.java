@@ -1,34 +1,26 @@
 package net.luojiuoscar.isaac_disaster.registries.recursive_module.impl;
 
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.ModAbilityEffects;
 import net.luojiuoscar.isaac_disaster.registries.recursive_module.IRecursiveModule;
 import net.luojiuoscar.isaac_disaster.registries.recursive_module.RecursiveModuleQueue;
-import net.minecraft.world.effect.MobEffectCategory;
-import net.minecraft.world.effect.MobEffectInstance;
+import net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerTypes;
+import net.luojiuoscar.isaac_disaster.registries.trigger_module.SimpleTrigger;
 import net.minecraft.world.entity.LivingEntity;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class BlackCandle implements IRecursiveModule {
+    private static final List<SimpleTrigger> triggers = List.of(
+            new SimpleTrigger(ModTriggerTypes.EMTPY, ModAbilityEffects.REMOVE_ALL_HARMFUL_POTION)
+    );
+
     @Override
-    public int getTickInterval(LivingEntity entity, int stacks, RecursiveModuleQueue queue) {
-        return 4;
+    public List<SimpleTrigger> getTriggers() {
+        return triggers;
     }
 
     @Override
-    public void recursiveEffect(LivingEntity entity, int stacks, RecursiveModuleQueue queue) {
-        List<MobEffectInstance> toRemove = new ArrayList<>();
-        // 获取所有需要被移除的效果
-        for (MobEffectInstance effect : entity.getActiveEffects()) {
-            if (effect.getEffect().getCategory() == MobEffectCategory.HARMFUL
-                    && !effect.getEffect().getCurativeItems().isEmpty()) {
-                toRemove.add(effect);
-            }
-        }
-
-        // 移除效果
-        for (MobEffectInstance effect : toRemove) {
-            entity.removeEffect(effect.getEffect());
-        }
+    public int getTickInterval(LivingEntity entity, int stacks, RecursiveModuleQueue queue) {
+        return 4;
     }
 }

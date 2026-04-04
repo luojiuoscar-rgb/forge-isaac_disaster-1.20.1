@@ -12,10 +12,10 @@ import net.luojiuoscar.isaac_disaster.registries.trigger_module.SimpleTrigger;
 import java.util.List;
 
 public class Ipecac implements ITriggerModule {
-    private final List<SimpleTrigger> triggers = List.of(
+    private static final List<SimpleTrigger> triggers = List.of(
             new SimpleTrigger(ModTriggerTypes.HIT_ENTITY, ModAbilityEffects.IPECAC)
     );
-    private final List<SimpleTrigger> bullet_triggers = List.of(
+    private static final List<SimpleTrigger> bullet_triggers = List.of(
             new SimpleTrigger(ModTriggerTypes.BULLET_HIT_ENTITY_BEFORE, ModAbilityEffects.IPECAC),
             new SimpleTrigger(ModTriggerTypes.BULLET_HIT_BLOCK, ModAbilityEffects.IPECAC)
     );

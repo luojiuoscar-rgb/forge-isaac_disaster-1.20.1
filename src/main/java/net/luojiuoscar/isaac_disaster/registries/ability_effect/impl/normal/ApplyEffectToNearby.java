@@ -7,6 +7,7 @@ import net.luojiuoscar.isaac_disaster.registries.ability_effect.AbilityEffectCon
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ContextKeys;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.IAbilityEffect;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ModAbilityEffects;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.Vec3;
 
@@ -22,10 +23,17 @@ public class ApplyEffectToNearby implements IAbilityEffect {
         LivingEntity entity = context.getEntity();
         boolean ignoreFriendly = context.getOrDefault(ContextKeys.BOOLEAN, List.of(true)).get(0);
 
+        // 获取range倍率
+        List<Double> nums = context.getOrDefault(ContextKeys.DOUBLE, List.of(1.));
+        if (nums.isEmpty()) nums.add(1.);
+        double range = nums.get(0);
+        range = Mth.clamp(range, 0.1, 2.0);
+
+        // 施加效果
         Vec3 position = context.getOrDefault(ContextKeys.TARGET_POSITION, entity.position());
 
         List<LivingEntity> entities = LevelHelper.selectBySphere(entity.level(),
-                position.x, position.y, position.z, StatManager.getNearbyRange());
+                position.x, position.y, position.z, StatManager.getNearbyRange() * range);
 
         for (LivingEntity e : entities){
             if (ignoreFriendly && EntityHelper.isFriendly(entity, e)) continue;

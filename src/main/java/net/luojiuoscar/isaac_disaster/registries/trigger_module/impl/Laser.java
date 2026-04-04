@@ -13,7 +13,7 @@ import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerModulePri
 import java.util.List;
 
 public class Laser implements ITriggerModule {
-    private final List<SimpleTrigger> bullet_triggers = List.of(
+    private static final List<SimpleTrigger> bullet_triggers = List.of(
             new SimpleTrigger(ModTriggerTypes.BULLET_HIT_ENTITY_BEFORE, ModAbilityEffects.LASER_PLUS_BRIMSTONE),
             new SimpleTrigger(ModTriggerTypes.BULLET_TICK, ModAbilityEffects.LASER_PLUS_FETUS)
     );

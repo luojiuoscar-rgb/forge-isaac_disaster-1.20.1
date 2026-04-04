@@ -5,7 +5,6 @@ import net.luojiuoscar.isaac_disaster.capability.entity.ExtraDataProvider;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.helper.ScheduledFuncHelper;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
-import net.luojiuoscar.isaac_disaster.manager.id.ItemId;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.AbilityEffectContext;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.IAbilityEffect;
 import net.minecraft.resources.ResourceLocation;
@@ -21,7 +20,6 @@ public class CurseOfTheTower implements IAbilityEffect {
     @Override
     public boolean applyEffect(AbilityEffectContext context) {
         if (!(context.getEntity() instanceof ServerPlayer player)) return false;
-        if (PlayerHelper.hasItem(ItemId.BLACK_CANDLE.getId(), player)) return true;
 
         player.getCapability(ExtraDataProvider.EXTRA_DATA_CAP).ifPresent(
                 extraData -> {

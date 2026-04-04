@@ -99,6 +99,24 @@ public class ModAbilityEffects {
             ABILITY_EFFECT_REGISTRY.register("bullet_bounce_on_block", BulletBounceOnBlock::new);
     public static final RegistryObject<IAbilityEffect> BLIND_RAGE =
             ABILITY_EFFECT_REGISTRY.register("blind_rage", BlindRage::new);
+    public static final RegistryObject<IAbilityEffect> ATTRACT_ITEM =
+            ABILITY_EFFECT_REGISTRY.register("attract_item", AttractItem::new);
+    public static final RegistryObject<IAbilityEffect> REMOVE_ALL_HARMFUL_POTION =
+            ABILITY_EFFECT_REGISTRY.register("remove_all_harmful_potion", RemoveAllHarmfulPotion::new);
+    public static final RegistryObject<IAbilityEffect> GILDED_KEY =
+            ABILITY_EFFECT_REGISTRY.register("gilded_key", GildedKey::new);
+    public static final RegistryObject<IAbilityEffect> MAGNETO =
+            ABILITY_EFFECT_REGISTRY.register("magneto", Magneto::new);
+    public static final RegistryObject<IAbilityEffect> MONEY_IS_POWER =
+            ABILITY_EFFECT_REGISTRY.register("money_is_power", MoneyIsPower::new);
+    public static final RegistryObject<IAbilityEffect> ROCK_BOTTOM =
+            ABILITY_EFFECT_REGISTRY.register("rock_bottom", RockBottom::new);
+    public static final RegistryObject<IAbilityEffect> LOOT_MONEY =
+            ABILITY_EFFECT_REGISTRY.register("loot_money", LootMoney::new);
+    public static final RegistryObject<IAbilityEffect> THE_LEFT_HAND =
+            ABILITY_EFFECT_REGISTRY.register("the_left_hand", TheLeftHand::new);
+    public static final RegistryObject<IAbilityEffect> STACK_HOLY_SHIELD =
+            ABILITY_EFFECT_REGISTRY.register("stack_holy_shield", StackHolyShield::new);
 
 
 

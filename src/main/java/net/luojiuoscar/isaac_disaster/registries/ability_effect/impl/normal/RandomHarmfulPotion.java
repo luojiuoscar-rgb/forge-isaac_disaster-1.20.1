@@ -43,9 +43,7 @@ public class RandomHarmfulPotion implements IAbilityEffect {
                 .filter(effect -> effect.getCategory() == MobEffectCategory.HARMFUL)
                 .toList();
 
-        if (harmfulEffects.isEmpty()) {
-            return;
-        }
+        if (harmfulEffects.isEmpty()) return;
 
         // 随机选择一个有害效果
         MobEffect randomEffect = harmfulEffects.get(

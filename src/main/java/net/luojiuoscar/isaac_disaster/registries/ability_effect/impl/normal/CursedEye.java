@@ -14,7 +14,6 @@ public class CursedEye implements IAbilityEffect {
     @Override
     public boolean applyEffect(AbilityEffectContext context) {
         if (!(context.getEntity() instanceof ServerPlayer player)) return false;
-        if (PlayerHelper.hasItem(ItemId.BLACK_CANDLE.getId(), player)) return true;
 
         player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY).ifPresent(
                 playerAbility -> {

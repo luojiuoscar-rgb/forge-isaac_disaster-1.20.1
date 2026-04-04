@@ -1,14 +1,25 @@
 package net.luojiuoscar.isaac_disaster.registries.recursive_module.impl;
 
-import net.luojiuoscar.isaac_disaster.helper.LootHelper;
-import net.luojiuoscar.isaac_disaster.manager.LootTableManager;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.ModAbilityEffects;
 import net.luojiuoscar.isaac_disaster.registries.recursive_module.IRecursiveModule;
 import net.luojiuoscar.isaac_disaster.registries.recursive_module.RecursiveModuleQueue;
+import net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerTypes;
+import net.luojiuoscar.isaac_disaster.registries.trigger_module.SimpleTrigger;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.player.Player;
+
+import java.util.List;
 
 public class SackOfPennies implements IRecursiveModule {
+    private static final List<SimpleTrigger> triggers = List.of(
+            new SimpleTrigger(ModTriggerTypes.EMTPY, ModAbilityEffects.LOOT_MONEY)
+    );
+
+    @Override
+    public List<SimpleTrigger> getTriggers() {
+        return triggers;
+    }
+
     @Override
     public int getInitialTick() {
         return StatManager.getTimeInterval(6);
@@ -19,10 +30,4 @@ public class SackOfPennies implements IRecursiveModule {
         return StatManager.getTimeInterval(entity.getRandom().nextInt(6,9));
     }
 
-    @Override
-    public void recursiveEffect(LivingEntity entity, int stacks, RecursiveModuleQueue queue) {
-        if (!(entity instanceof Player player)) return;
-
-        LootHelper.spawnLootAtPos(player, player.position(), LootTableManager.RANDOM_COINS, stacks);
-    }
 }

@@ -9,7 +9,7 @@ import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerModulePri
 import java.util.List;
 
 public class BlindRage implements ITriggerModule {
-    private final List<SimpleTrigger> triggers = List.of(
+    private static final List<SimpleTrigger> triggers = List.of(
             new SimpleTrigger(ModTriggerTypes.ON_HURT, ModAbilityEffects.BLIND_RAGE)
     );
 
