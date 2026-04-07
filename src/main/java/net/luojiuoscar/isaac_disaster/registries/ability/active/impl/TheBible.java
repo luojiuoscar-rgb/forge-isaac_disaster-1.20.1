@@ -1,18 +1,16 @@
 package net.luojiuoscar.isaac_disaster.registries.ability.active.impl;
 
 import net.luojiuoscar.isaac_disaster.client.ClientDataManager;
-import net.luojiuoscar.isaac_disaster.effect.ModEffects;
 import net.luojiuoscar.isaac_disaster.manager.ColorManager;
 import net.luojiuoscar.isaac_disaster.manager.EffectManager;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.manager.id.ItemId;
 import net.luojiuoscar.isaac_disaster.registries.ability.active.ActiveAbility;
 import net.luojiuoscar.isaac_disaster.registries.ability.set.ModSetAbility;
-import net.luojiuoscar.isaac_disaster.registries.ability_effect.AbilityEffectContext;
-import net.luojiuoscar.isaac_disaster.registries.ability_effect.ContextKeys;
-import net.luojiuoscar.isaac_disaster.registries.ability_effect.IAbilityEffect;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.CompositeTrigger;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ModAbilityEffects;
-import net.luojiuoscar.isaac_disaster.registries.ability_effect.profile.PotionProfile;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.SimpleTrigger;
+import net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerTypes;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
@@ -25,31 +23,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TheBible extends ActiveAbility {
-    private final IAbilityEffect effect = ModAbilityEffects.POTION.get();
+    private static final CompositeTrigger TRIGGER = new CompositeTrigger(List.of(
+            new SimpleTrigger(ModTriggerTypes.EMTPY, ModAbilityEffects.THE_BIBLE)
+    ));
 
     public TheBible(int id, int level) {
-        super(id, level);
+        super(TRIGGER, id, level);
     }
 
     @Override
     public void onFirstUse(ServerPlayer player, ItemStack stack, @Nullable InteractionHand hand){
         StatManager.modifySetWithId(player, ModSetAbility.BOOK.getId(), 1);
-    }
-
-    @Override
-    protected IAbilityEffect getAbilityEffect() {
-        return effect;
-    }
-
-    @Override
-    protected AbilityEffectContext getCtx(ServerPlayer player, ItemStack stack, @Nullable InteractionHand hand, int amplifier) {
-        var ctx = super.getCtx(player, stack, hand, amplifier);
-        ctx.set(ContextKeys.POTIONS, List.of(
-                new PotionProfile(ModEffects.TRANSCENDENCE.get(),
-                        (int) StatManager.FLY_TIME.getBonus() * 2,
-                        0)
-        ));
-        return ctx;
     }
 
     @Override

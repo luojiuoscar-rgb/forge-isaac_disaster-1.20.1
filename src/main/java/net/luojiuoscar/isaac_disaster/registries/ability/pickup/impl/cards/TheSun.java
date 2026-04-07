@@ -1,94 +1,29 @@
 package net.luojiuoscar.isaac_disaster.registries.ability.pickup.impl.cards;
 
 import net.luojiuoscar.isaac_disaster.client.ClientDataManager;
-import net.luojiuoscar.isaac_disaster.helper.EntityHelper;
-import net.luojiuoscar.isaac_disaster.helper.LevelHelper;
 import net.luojiuoscar.isaac_disaster.manager.ColorManager;
-import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.manager.id.ItemId;
 import net.luojiuoscar.isaac_disaster.registries.ability.pickup.TarotAbility;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.CompositeTrigger;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.ModAbilityEffects;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.SimpleTrigger;
+import net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerTypes;
 import net.luojiuoscar.isaac_disaster.sound.ModSounds;
-import net.minecraft.core.particles.ParticleOptions;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.item.ItemStack;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class TheSun extends TarotAbility {
+    private static final CompositeTrigger TRIGGER = new CompositeTrigger(List.of(
+            new SimpleTrigger(ModTriggerTypes.EMTPY, ModAbilityEffects.THE_SUN)
+    ));
 
-
-    @Override
-    public void onUseEffect(ServerPlayer player, ItemStack stack, InteractionHand hand) {
-        ServerLevel level = (ServerLevel) player.level();
-        level.setDayTime(6000); // 正午
-        player.setHealth(player.getMaxHealth()); // 满血
-        if (player.hasEffect(MobEffects.BLINDNESS)) player.removeEffect(MobEffects.BLINDNESS);
-        if (player.hasEffect(MobEffects.DARKNESS)) player.removeEffect(MobEffects.DARKNESS);
-
-        List<LivingEntity> entities = LevelHelper.selectBySphere(level, player.getX(), player.getY(), player.getZ(), StatManager.getNearbyRange());
-
-        for (LivingEntity entity : entities){
-            // 友好、有火抗生物不造成伤害
-            if (EntityHelper.isFriendly(entity, player) ||
-                    entity.fireImmune()) continue;
-            // 生成火焰、造成火伤
-            EntityHelper.setFireAtEntity(entity);
-            entity.hurt(player.damageSources().inFire(), (float) StatManager.DAMAGE.getBonus() * 64f);
-
-            damageParticle(entity);
-        }
-    }
-
-    @Override
-    public void onUseEffectS(ServerPlayer player, ItemStack stack, InteractionHand hand) {
-        // 仅伤害翻倍
-        ServerLevel level = (ServerLevel) player.level();
-        level.setDayTime(6000); // 正午
-        player.setHealth(player.getMaxHealth()); // 满血
-        if (player.hasEffect(MobEffects.BLINDNESS)) player.removeEffect(MobEffects.BLINDNESS);
-        if (player.hasEffect(MobEffects.DARKNESS)) player.removeEffect(MobEffects.DARKNESS);
-
-        List<LivingEntity> entities = LevelHelper.selectBySphere(level, player.getX(), player.getY(), player.getZ(), StatManager.getNearbyRange());
-
-        for (LivingEntity entity : entities){
-            // 友好、有火抗生物不造成伤害
-            if (EntityHelper.isFriendly(entity, player) ||
-                    entity.fireImmune()) continue;
-            // 生成火焰、造成火伤
-            EntityHelper.setFireAtEntity(entity);
-            entity.hurt(player.damageSources().inFire(), (float) StatManager.DAMAGE.getBonus() * 128f);
-
-            damageParticle(entity);
-        }
-    }
-
-    private void damageParticle(LivingEntity entity){
-        if (entity.level() instanceof ServerLevel serverLevel) {
-            ParticleOptions particleType = ParticleTypes.FLAME;
-
-            double x = entity.getX();
-            double y = entity.getY() + entity.getBbHeight() / 2.0;
-            double z = entity.getZ();
-
-            for (int i = 0; i < 10; i++) {
-                serverLevel.sendParticles(
-                        particleType,
-                        x, y, z,
-                        1,
-                        0, 0.5, 0,
-                        0.1
-                );
-            }
-        }
+    public TheSun() {
+        super(TRIGGER);
     }
 
     @Override

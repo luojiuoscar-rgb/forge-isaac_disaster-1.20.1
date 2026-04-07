@@ -15,7 +15,7 @@ public class DullRazor implements IAbilityEffect {
         // 避免循环触发
         if (context.get(ContextKeys.EVENT) instanceof LivingHurtEvent) return false;
 
-        int amplifier = context.getOrDefault(ContextKeys.AMPLIFIER, 1);
+        int amplifier = context.getOrDefault(ContextKeys.AMPLIFIER, 1.).intValue();
         amplifier = Math.max(amplifier, 2);
 
         for (int i = 0; i < amplifier; i++){

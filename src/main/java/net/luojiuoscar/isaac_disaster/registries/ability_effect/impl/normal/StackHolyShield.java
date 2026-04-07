@@ -8,7 +8,7 @@ import net.luojiuoscar.isaac_disaster.registries.ability_effect.IAbilityEffect;
 public class StackHolyShield implements IAbilityEffect {
     @Override
     public boolean applyEffect(AbilityEffectContext context) {
-        HolyShieldEffect.stack(context.getEntity(), context.getOrDefault(ContextKeys.AMPLIFIER, 1));
+        HolyShieldEffect.stack(context.getEntity(), context.getOrDefault(ContextKeys.AMPLIFIER, 1.).intValue());
         return true;
     }
 }

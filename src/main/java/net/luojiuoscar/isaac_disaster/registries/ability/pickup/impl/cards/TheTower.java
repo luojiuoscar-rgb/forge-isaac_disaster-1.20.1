@@ -1,33 +1,29 @@
 package net.luojiuoscar.isaac_disaster.registries.ability.pickup.impl.cards;
 
 import net.luojiuoscar.isaac_disaster.client.ClientDataManager;
-import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.manager.ColorManager;
-import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.manager.id.ItemId;
 import net.luojiuoscar.isaac_disaster.registries.ability.pickup.TarotAbility;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.CompositeTrigger;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.ModAbilityEffects;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.SimpleTrigger;
+import net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerTypes;
 import net.luojiuoscar.isaac_disaster.sound.ModSounds;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.item.ItemStack;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class TheTower extends TarotAbility {
-    @Override
-    public void onUseEffect(ServerPlayer player, ItemStack stack, InteractionHand hand) {
-        if (player.level().isClientSide) return;
-        PlayerHelper.spawnRandomBombsNearby(player, StatManager.getNearbyRange() * 0.5, 6);
-    }
+    private static final CompositeTrigger TRIGGER = new CompositeTrigger(List.of(
+            new SimpleTrigger(ModTriggerTypes.EMTPY, ModAbilityEffects.ANARCHIST_COOKBOOK)
+    ));
 
-    @Override
-    public void onUseEffectS(ServerPlayer player, ItemStack stack, InteractionHand hand) {
-        if (player.level().isClientSide) return;
-        PlayerHelper.spawnRandomBombsNearby(player, StatManager.getNearbyRange() * 0.8, 12);
+    public TheTower() {
+        super(TRIGGER);
     }
 
     @Override

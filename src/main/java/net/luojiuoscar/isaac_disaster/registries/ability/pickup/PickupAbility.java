@@ -1,5 +1,8 @@
 package net.luojiuoscar.isaac_disaster.registries.ability.pickup;
 
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.AbilityEffectContext;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.CompositeTrigger;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.ContextKeys;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
@@ -10,8 +13,31 @@ import javax.annotation.Nullable;
 import java.util.List;
 
 public abstract class PickupAbility {
+    protected final CompositeTrigger trigger;
+
+    protected PickupAbility(CompositeTrigger trigger){
+        this.trigger = trigger;
+    }
+
+    protected AbilityEffectContext getCtx(ServerPlayer player, @Nullable ItemStack stack, @Nullable InteractionHand hand){
+        AbilityEffectContext ctx = new AbilityEffectContext(player);
+        ctx.set(ContextKeys.TARGET_POSITION, player.position());
+        ctx.set(ContextKeys.AMPLIFIER, 1.);
+
+        if (stack != null){
+            ctx.set(ContextKeys.ITEM, stack.getItem());
+            ctx.set(ContextKeys.DOUBLE, List.of((double) stack.getCount()));
+        }
+        if (hand != null){
+            ctx.set(ContextKeys.HAND, hand);
+        }
+        return ctx;
+    }
+
     public void onUse(ServerPlayer player, @Nullable ItemStack stack, @Nullable InteractionHand hand){
-        onUseEffect(player, stack, hand);
+        AbilityEffectContext ctx = getCtx(player, stack, hand);
+
+        fire(ctx);
 
         if (!player.isCreative() && stack != null){
             shrinkAfterUse(stack);
@@ -22,7 +48,10 @@ public abstract class PickupAbility {
         stack.shrink(1);
     }
 
-    public abstract void onUseEffect(ServerPlayer player, @Nullable ItemStack stack, @Nullable InteractionHand hand);
+    public void fire(AbilityEffectContext context){
+        trigger.fire(context, null);
+    }
+
     public abstract void makeSound(ServerPlayer player);
     public List<Component> getDesc(){
         return List.of();

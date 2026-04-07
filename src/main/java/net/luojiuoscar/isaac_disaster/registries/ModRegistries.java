@@ -6,7 +6,7 @@ import net.luojiuoscar.isaac_disaster.registries.ability.passive.PassiveAbility;
 import net.luojiuoscar.isaac_disaster.registries.ability.pickup.PickupAbility;
 import net.luojiuoscar.isaac_disaster.registries.ability.set.SetAbility;
 import net.luojiuoscar.isaac_disaster.registries.ability.trinket.TrinketAbility;
-import net.luojiuoscar.isaac_disaster.registries.ability_effect.IAbilityEffect;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.IExecutableEffect;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackType;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.combination.AttackCombinationRule;
 import net.luojiuoscar.isaac_disaster.registries.bullet_color.BulletColor;
@@ -23,7 +23,7 @@ import static net.luojiuoscar.isaac_disaster.registries.ability.passive.ModPassi
 import static net.luojiuoscar.isaac_disaster.registries.ability.pickup.ModPickupAbility.PICKUP_ABILITY_REGISTRY;
 import static net.luojiuoscar.isaac_disaster.registries.ability.set.ModSetAbility.SET_ABILITY_REGISTRY;
 import static net.luojiuoscar.isaac_disaster.registries.ability.trinket.ModTrinketAbility.TRINKET_ABILITY_REGISTRY;
-import static net.luojiuoscar.isaac_disaster.registries.ability_effect.ModAbilityEffects.ABILITY_EFFECT_REGISTRY;
+import static net.luojiuoscar.isaac_disaster.registries.ability_effect.ModAbilityEffects.EXECUTABLE_EFFECT_REGISTRY;
 import static net.luojiuoscar.isaac_disaster.registries.attack_type.ModAttackType.ATTACK_TYPE_REGISTER;
 import static net.luojiuoscar.isaac_disaster.registries.attack_type.combination.ModCombinationRules.ATTACK_COMBINATION_RULE_REGISTRY;
 import static net.luojiuoscar.isaac_disaster.registries.bullet_color.ModBulletColor.BULLET_COLOR_REGISTRY;
@@ -85,8 +85,8 @@ public class ModRegistries {
                 .setName(ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "attack_combination_rule"));});
         ATTACK_COMBINATION_RULE_REGISTRY.register(modEventBus);
 
-        ABILITY_EFFECT_REGISTRY.makeRegistry(() -> {return new RegistryBuilder<IAbilityEffect>()
-                .setName(ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "ability_effect"));});
-        ABILITY_EFFECT_REGISTRY.register(modEventBus);
+        EXECUTABLE_EFFECT_REGISTRY.makeRegistry(() -> {return new RegistryBuilder<IExecutableEffect>()
+                .setName(ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "executable_effect"));});
+        EXECUTABLE_EFFECT_REGISTRY.register(modEventBus);
     }
 }

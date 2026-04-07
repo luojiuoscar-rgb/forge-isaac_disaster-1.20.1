@@ -1,34 +1,29 @@
 package net.luojiuoscar.isaac_disaster.registries.ability.pickup.impl.cards;
 
 import net.luojiuoscar.isaac_disaster.client.ClientDataManager;
-import net.luojiuoscar.isaac_disaster.effect.custom.FragileHeartEffect;
 import net.luojiuoscar.isaac_disaster.manager.ColorManager;
 import net.luojiuoscar.isaac_disaster.manager.id.ItemId;
 import net.luojiuoscar.isaac_disaster.registries.ability.pickup.TarotAbility;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.CompositeTrigger;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.ModAbilityEffects;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.SimpleTrigger;
+import net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerTypes;
 import net.luojiuoscar.isaac_disaster.sound.ModSounds;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.item.ItemStack;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class TheEmpressR extends TarotAbility {
-    @Override
-    public void onUseEffect(ServerPlayer player, ItemStack stack, InteractionHand hand) {
-        player.addEffect(new MobEffectInstance(MobEffects.DIG_SPEED, 600, 1));
-        FragileHeartEffect.stack(player, 1);
-    }
+    private static final CompositeTrigger TRIGGER = new CompositeTrigger(List.of(
+            new SimpleTrigger(ModTriggerTypes.EMTPY, ModAbilityEffects.THE_EMPRESS_R)
+    ));
 
-    @Override
-    public void onUseEffectS(ServerPlayer player, ItemStack stack, InteractionHand hand) {
-        player.addEffect(new MobEffectInstance(MobEffects.DIG_SPEED, 1200, 1));
-        FragileHeartEffect.stack(player, 1);
+    public TheEmpressR() {
+        super(TRIGGER);
     }
 
     @Override

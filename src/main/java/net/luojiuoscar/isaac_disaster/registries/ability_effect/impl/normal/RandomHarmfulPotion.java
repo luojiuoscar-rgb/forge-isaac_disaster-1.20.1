@@ -13,6 +13,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class RandomHarmfulPotion implements IAbilityEffect {
@@ -20,7 +21,7 @@ public class RandomHarmfulPotion implements IAbilityEffect {
     public boolean applyEffect(AbilityEffectContext context) {
         if (!(context.get(ContextKeys.EVENT) instanceof LivingAttackEvent event)) return false;
 
-        List<Entity> target = context.getOrDefault(ContextKeys.SECONDARY_ENTITIES, List.of());
+        List<Entity> target = context.getOrDefault(ContextKeys.SECONDARY_ENTITIES, new ArrayList<>());
         if (target.isEmpty()) return false;
 
         // 攻击类型不正确只是不触发，并不是错误情况

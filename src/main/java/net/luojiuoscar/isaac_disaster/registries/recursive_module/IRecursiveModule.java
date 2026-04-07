@@ -1,17 +1,12 @@
 package net.luojiuoscar.isaac_disaster.registries.recursive_module;
 
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.AbilityEffectContext;
-import net.luojiuoscar.isaac_disaster.registries.trigger_module.SimpleTrigger;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.CompositeTrigger;
 import net.minecraft.world.entity.LivingEntity;
-
-import java.util.List;
 
 public interface IRecursiveModule {
 
-    List<SimpleTrigger> getTriggers();
-
-    default void modifyContext(AbilityEffectContext context){
-    }
+    CompositeTrigger getTriggers();
 
     default int getInitialTick() {
         return 0;
@@ -22,11 +17,8 @@ public interface IRecursiveModule {
     /** 最终移除时触发 */
     default void handleRemove(LivingEntity entity){};
 
+    /** 循环型在触发时，不进行类型判断 */
     default void fire(AbilityEffectContext context){
-        modifyContext(context); // 优先额外修改内容
-
-        for (SimpleTrigger effect : getTriggers()){
-            effect.fire(context);
-        }
+        getTriggers().fire(context, null);
     }
 }

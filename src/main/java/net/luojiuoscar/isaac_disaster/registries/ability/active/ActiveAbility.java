@@ -4,8 +4,8 @@ import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.manager.id.ItemId;
 import net.luojiuoscar.isaac_disaster.registries.ability.IsaacItemAbility;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.AbilityEffectContext;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.CompositeTrigger;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ContextKeys;
-import net.luojiuoscar.isaac_disaster.registries.ability_effect.IAbilityEffect;
 import net.luojiuoscar.isaac_disaster.sound.ModSounds;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
@@ -15,40 +15,39 @@ import net.minecraft.world.item.ItemStack;
 import javax.annotation.Nullable;
 
 public abstract class ActiveAbility extends IsaacItemAbility {
-    public ActiveAbility(int id, int level) {
+    protected final CompositeTrigger trigger;
+
+    public ActiveAbility(CompositeTrigger trigger, int id, int level) {
         super(id, level);
+        this.trigger = trigger;
+    }
+
+    public CompositeTrigger getTrigger() {
+        return trigger;
     }
 
     public void onUse(ServerPlayer player, @Nullable InteractionHand hand){
         ItemStack stack = hand != null ? player.getItemInHand(hand) : null;
+        AbilityEffectContext context = getCtx(player, stack, hand,
+                PlayerHelper.hasItem(ItemId.CAR_BATTERY.getId(), player) // 车载电池
+                        ? getStrongerAmplifier() : getNormalAmplifier());
 
-        // 判断车载电池
-        if (PlayerHelper.hasItem(ItemId.CAR_BATTERY.getId(), player)){
-            onTriggerStronger(player, stack, hand);
-        }else {
-            onTrigger(player, stack, hand);
-        }
+        trigger.fire(context, null);
     }
 
     /** 首次使用时触发 */
     public void onFirstUse(ServerPlayer player, @Nullable ItemStack stack, @Nullable InteractionHand hand){}
 
-    protected int getNormalAmplifier(){
+    protected double getNormalAmplifier(){
         return 1;
     }
-    protected int getStrongerAmplifier(){
+    protected double getStrongerAmplifier(){
         return 2;
     }
-    public void onTrigger(ServerPlayer player, @Nullable ItemStack stack, @Nullable InteractionHand hand){
-        getAbilityEffect().apply(getCtx(player, stack, hand, getNormalAmplifier()));
-    }
-    public void onTriggerStronger(ServerPlayer player, @Nullable ItemStack stack, @Nullable InteractionHand hand){
-        getAbilityEffect().apply(getCtx(player, stack, hand, getStrongerAmplifier()));
-    }
 
-    abstract protected IAbilityEffect getAbilityEffect();
-    protected AbilityEffectContext getCtx(ServerPlayer player, ItemStack stack,
-                                          @Nullable InteractionHand hand, int amplifier){
+    /** 如果想要修改ctx，需要将效果注册成AbilityEffectEntry */
+    protected final AbilityEffectContext getCtx(ServerPlayer player, ItemStack stack,
+                                          @Nullable InteractionHand hand, double amplifier){
         AbilityEffectContext ctx = new AbilityEffectContext(player);
         ctx.set(ContextKeys.AMPLIFIER, amplifier);
         ctx.set(ContextKeys.ITEM_STACK, stack);

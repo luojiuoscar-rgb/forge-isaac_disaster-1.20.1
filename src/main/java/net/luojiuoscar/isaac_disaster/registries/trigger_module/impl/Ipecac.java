@@ -1,27 +1,25 @@
 package net.luojiuoscar.isaac_disaster.registries.trigger_module.impl;
 
 import net.luojiuoscar.isaac_disaster.event.custom.attack.GetAttackContextEvent;
-import net.luojiuoscar.isaac_disaster.registries.ability_effect.AbilityEffectContext;
-import net.luojiuoscar.isaac_disaster.registries.ability_effect.ContextKeys;
-import net.luojiuoscar.isaac_disaster.registries.ability_effect.ModAbilityEffects;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.*;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackContext;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.ITriggerModule;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerTypes;
-import net.luojiuoscar.isaac_disaster.registries.trigger_module.SimpleTrigger;
 
 import java.util.List;
 
 public class Ipecac implements ITriggerModule {
-    private static final List<SimpleTrigger> triggers = List.of(
+    private static final CompositeTrigger triggers = new CompositeTrigger(List.of(
             new SimpleTrigger(ModTriggerTypes.HIT_ENTITY, ModAbilityEffects.IPECAC)
-    );
+    ));
+
     private static final List<SimpleTrigger> bullet_triggers = List.of(
             new SimpleTrigger(ModTriggerTypes.BULLET_HIT_ENTITY_BEFORE, ModAbilityEffects.IPECAC),
             new SimpleTrigger(ModTriggerTypes.BULLET_HIT_BLOCK, ModAbilityEffects.IPECAC)
     );
 
     @Override
-    public List<SimpleTrigger> getTriggers() {
+    public CompositeTrigger getTriggers() {
         return triggers;
     }
 

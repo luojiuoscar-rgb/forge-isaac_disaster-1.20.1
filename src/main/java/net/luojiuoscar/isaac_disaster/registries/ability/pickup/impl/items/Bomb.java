@@ -1,35 +1,44 @@
 package net.luojiuoscar.isaac_disaster.registries.ability.pickup.impl.items;
 
-import net.luojiuoscar.isaac_disaster.helper.EntityHelper;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.manager.id.ItemId;
 import net.luojiuoscar.isaac_disaster.registries.ability.pickup.PickupAbility;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.CompositeTrigger;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.ContextKeys;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.ModAbilityEffects;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.SimpleTrigger;
+import net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerTypes;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.item.ItemStack;
+
+import java.util.List;
 
 
 public class Bomb extends PickupAbility {
-    @Override
-    public void onUseEffect(ServerPlayer player, ItemStack stack, InteractionHand hand) {
-        if (player.level().isClientSide()) return;
+    private static final CompositeTrigger TRIGGER = new CompositeTrigger(List.of(
+            new SimpleTrigger(ModTriggerTypes.EMTPY, ModAbilityEffects.THROW_BOMB, context ->
+                    !(context.getEntity() instanceof ServerPlayer player)
+                        || !PlayerHelper.hasItem(ItemId.MR_MEGA.getId(), player)
+            ),
+            new SimpleTrigger(ModTriggerTypes.EMTPY, ModAbilityEffects.THROW_MEGA_BOMB, context ->
+                (context.getEntity() instanceof ServerPlayer player)
+                        && PlayerHelper.hasItem(ItemId.MR_MEGA.getId(), player)
+            ),
+            new SimpleTrigger(ModTriggerTypes.EMTPY, ModAbilityEffects.ADD_COOLDOWN_TO_ITEM, context -> {
+                if (!(context.getEntity() instanceof ServerPlayer player)) return false;
+                if (PlayerHelper.hasItem(ItemId.FAST_BOMB.getId(), player)){
+                    context.set(ContextKeys.DOUBLE, List.of(5.));
+                }else {
+                    context.set(ContextKeys.DOUBLE, List.of(10.));
+                }
+                return true;
+            })
+    ));
 
-        // throw bomb
-        if(PlayerHelper.hasItem(ItemId.MR_MEGA.getId(), player)){
-            EntityHelper.throwBomb(player, 80, 7, 1.4f);
-        }else {
-            EntityHelper.throwBomb(player, 80, 4);
-        }
-
-        // cd
-        if(PlayerHelper.hasItem(ItemId.FAST_BOMB.getId(), player)){
-            player.getCooldowns().addCooldown(player.getItemInHand(hand).getItem(), 5);
-        }else {
-            player.getCooldowns().addCooldown(player.getItemInHand(hand).getItem(), 10);
-        }
+    public Bomb() {
+        super(TRIGGER);
     }
 
     @Override

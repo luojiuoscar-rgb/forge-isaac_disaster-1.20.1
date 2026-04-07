@@ -1,7 +1,6 @@
 package net.luojiuoscar.isaac_disaster.registries.pill_effect.impl;
 
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
-import net.luojiuoscar.isaac_disaster.registries.ability.active.ModActiveAbility;
 import net.luojiuoscar.isaac_disaster.registries.pill_effect.IPillEffect;
 import net.luojiuoscar.isaac_disaster.registries.pill_effect.ModPillEffect;
 import net.luojiuoscar.isaac_disaster.sound.ModSounds;
@@ -17,12 +16,12 @@ public class PowerPill implements IPillEffect {
 
     @Override
     public void onUseEffect(ServerPlayer player) {
-        ModActiveAbility.THE_GAMEKID.get().onTrigger(player, null, null);
+        // ModActiveAbility.THE_GAMEKID.get().onTrigger(player, null, null);
     }
 
     @Override
     public void onUseEffectH(ServerPlayer player) {
-        ModActiveAbility.THE_GAMEKID.get().onTriggerStronger(player, null, null);
+        // ModActiveAbility.THE_GAMEKID.get().onTriggerStronger(player, null, null);
     }
 
     @Override

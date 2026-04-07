@@ -48,7 +48,7 @@ public class TriggerModuleEvents {
         queue.lock();
 
         for (var inst : queue.getQueue()) {
-            context.set(ContextKeys.AMPLIFIER, inst.stacks);
+            context.set(ContextKeys.AMPLIFIER, (double) inst.stacks);
             ITriggerModule module = reg.getValue(inst.id);
             if (module == null) continue;
 
@@ -58,7 +58,7 @@ public class TriggerModuleEvents {
     }
 
     public static void bulletDispatch(AbilityEffectContext context, TriggerType type){
-        context.set(ContextKeys.AMPLIFIER, 1);
+        context.set(ContextKeys.AMPLIFIER, 1.);
         ModTriggerModule.BULLET_TRIGGER_MODULE.get().fire(context, type);
     }
 

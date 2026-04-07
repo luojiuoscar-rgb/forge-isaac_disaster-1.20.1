@@ -9,7 +9,7 @@ import net.minecraft.world.entity.LivingEntity;
 public class BlindRage implements IAbilityEffect {
     @Override
     public boolean applyEffect(AbilityEffectContext context) {
-        int amplifier = Mth.clamp(context.getOrDefault(ContextKeys.AMPLIFIER, 1), 1, 2);
+        int amplifier = Mth.clamp(context.getOrDefault(ContextKeys.AMPLIFIER, 1.).intValue(), 1, 2);
 
 
         LivingEntity entity = context.getEntity();

@@ -12,7 +12,7 @@ public class BreakBlockAndDrop implements IAbilityEffect {
     @Override
     public boolean applyEffect(AbilityEffectContext context) {
         Vec3 position = context.get(ContextKeys.TARGET_POSITION);
-        int amplifier = context.getOrDefault(ContextKeys.AMPLIFIER, 1);
+        int amplifier = context.getOrDefault(ContextKeys.AMPLIFIER, 1.).intValue();
         if (position == null) return false;
 
         Level level = context.getEntity().level();

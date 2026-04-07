@@ -1,28 +1,24 @@
 package net.luojiuoscar.isaac_disaster.registries.ability.pickup.impl.items;
 
-import net.luojiuoscar.isaac_disaster.manager.StatManager;
-import net.luojiuoscar.isaac_disaster.registries.ability.pickup.ModPickupAbility;
 import net.luojiuoscar.isaac_disaster.registries.ability.pickup.PickupAbility;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.CompositeTrigger;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.ModAbilityEffects;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.SimpleTrigger;
+import net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerTypes;
 import net.luojiuoscar.isaac_disaster.sound.ModSounds;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.item.ItemStack;
+
+import java.util.List;
 
 
 public class BlendedHeart extends PickupAbility {
+    private static final CompositeTrigger TRIGGER = new CompositeTrigger(List.of(
+            new SimpleTrigger(ModTriggerTypes.EMTPY, ModAbilityEffects.BLENDED_HEART)
+    ));
 
-    @Override
-    public void onUseEffect(ServerPlayer player, ItemStack stack, InteractionHand hand) {
-        double health = player.getMaxHealth() - player.getHealth();
-        if ( health >= StatManager.MAX_HEALTH.getBonus() * 0.5){
-            ModPickupAbility.RED_HEART.get().onUseEffect(player, stack, hand);
-        } else if (health > 0) {
-            ModPickupAbility.HALF_RED_HEART.get().onUseEffect(player, stack, hand);
-            ModPickupAbility.HALF_SOUL_HEART.get().onUseEffect(player, stack, hand);
-        }else {
-            ModPickupAbility.SOUL_HEART.get().onUseEffect(player, stack, hand);
-        }
+    public BlendedHeart() {
+        super(TRIGGER);
     }
 
     @Override

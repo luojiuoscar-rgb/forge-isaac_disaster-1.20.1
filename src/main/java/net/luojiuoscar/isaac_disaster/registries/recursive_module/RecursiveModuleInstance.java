@@ -28,7 +28,7 @@ public class RecursiveModuleInstance {
         if (recursiveModule == null) return;
 
         AbilityEffectContext ctx = new AbilityEffectContext(entity);
-        ctx.set(ContextKeys.AMPLIFIER, stacks);
+        ctx.set(ContextKeys.AMPLIFIER, (double) stacks);
         ctx.set(ContextKeys.TARGET_POSITION, entity.position());
         ctx.set(ContextKeys.RECURSIVE_MODULE_QUEUE, queue);
 

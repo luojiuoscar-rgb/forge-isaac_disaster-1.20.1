@@ -1,0 +1,81 @@
+package net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.normal;
+
+import net.luojiuoscar.isaac_disaster.block.block_entity.PedestalBlockEntity;
+import net.luojiuoscar.isaac_disaster.helper.LevelHelper;
+import net.luojiuoscar.isaac_disaster.manager.StatManager;
+import net.luojiuoscar.isaac_disaster.manager.data.BlockData;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.AbilityEffectContext;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.IAbilityEffect;
+import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.trading.Merchant;
+import net.minecraft.world.item.trading.MerchantOffer;
+import net.minecraft.world.item.trading.MerchantOffers;
+import net.minecraft.world.phys.Vec3;
+
+import java.util.List;
+import java.util.Set;
+
+public class CreditCard implements IAbilityEffect {
+    @Override
+    public boolean applyEffect(AbilityEffectContext context) {
+        if (!(context.getEntity() instanceof ServerPlayer player)) return true;
+
+        // 免费底座道具
+        if (!(player.level() instanceof ServerLevel serverLevel)) return true;
+
+        Set<BlockPos> posList = BlockData.get(serverLevel).getAllItemBlocks();
+        Vec3 playerPos = player.position();
+
+        double radius = StatManager.getNearbyRange();
+
+        for (BlockPos pos : posList) {
+            // distance
+            Vec3 blockCenter = Vec3.atCenterOf(pos);
+            double distanceSq = playerPos.distanceToSqr(blockCenter);
+            if (distanceSq > radius * radius) continue;
+
+            if (serverLevel.getBlockEntity(pos) instanceof PedestalBlockEntity be) {
+                be.setLifeCost(0);
+                be.setMoneyCost(0);
+                be.setChanged();
+            }
+        }
+
+        // 转化村民
+        List<Entity> villager = LevelHelper.selectBySphere(
+                serverLevel, player.getX(), player.getY(), player.getZ(), radius, e -> e instanceof Merchant);
+
+        for (Entity e : villager){
+            if (!(e instanceof Merchant v)) continue;
+
+            MerchantOffers offers = v.getOffers();
+            if (offers.isEmpty()) continue;
+
+            for (MerchantOffer offer : offers) {
+                ItemStack result = offer.getResult();
+
+                if (result.isEmpty()) continue;
+
+                // 生成掉落物
+                ItemEntity itemEntity = new ItemEntity(
+                        serverLevel,
+                        e.getX(),
+                        e.getY() + 0.5,
+                        e.getZ(),
+                        result.copy()
+                );
+                itemEntity.setPickUpDelay(20);
+                serverLevel.addFreshEntity(itemEntity);
+            }
+
+            e.discard();
+        }
+
+        return true;
+    }
+}

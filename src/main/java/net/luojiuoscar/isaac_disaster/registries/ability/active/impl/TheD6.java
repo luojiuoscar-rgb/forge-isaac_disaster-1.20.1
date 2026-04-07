@@ -4,8 +4,10 @@ import net.luojiuoscar.isaac_disaster.client.ClientDataManager;
 import net.luojiuoscar.isaac_disaster.manager.ColorManager;
 import net.luojiuoscar.isaac_disaster.manager.id.ItemId;
 import net.luojiuoscar.isaac_disaster.registries.ability.active.ActiveAbility;
-import net.luojiuoscar.isaac_disaster.registries.ability_effect.IAbilityEffect;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.CompositeTrigger;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ModAbilityEffects;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.SimpleTrigger;
+import net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerTypes;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
@@ -17,15 +19,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TheD6 extends ActiveAbility {
-    private final IAbilityEffect effect = ModAbilityEffects.D6.get();
+    private static final CompositeTrigger TRIGGER = new CompositeTrigger(List.of(
+            new SimpleTrigger(ModTriggerTypes.EMTPY, ModAbilityEffects.D6)
+    ));
 
     public TheD6(int id, int level) {
-        super(id, level);
-    }
-
-    @Override
-    protected IAbilityEffect getAbilityEffect() {
-        return effect;
+        super(TRIGGER, id, level);
     }
 
     @Override

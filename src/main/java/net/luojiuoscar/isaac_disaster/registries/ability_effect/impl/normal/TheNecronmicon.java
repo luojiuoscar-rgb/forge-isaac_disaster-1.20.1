@@ -25,7 +25,7 @@ public class TheNecronmicon implements IAbilityEffect {
         Vec3 position = context.getOrDefault(ContextKeys.TARGET_POSITION, entity.position());
 
         damageNearby(position, context.getEntity(), StatManager.DAMAGE.getBonus() * 20 *
-                context.getOrDefault(ContextKeys.AMPLIFIER, 1));
+                context.getOrDefault(ContextKeys.AMPLIFIER, 1.));
         return true;
     }
 

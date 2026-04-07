@@ -1,57 +1,29 @@
 package net.luojiuoscar.isaac_disaster.registries.ability.pickup.impl.cards;
 
 import net.luojiuoscar.isaac_disaster.client.ClientDataManager;
-import net.luojiuoscar.isaac_disaster.helper.LevelHelper;
 import net.luojiuoscar.isaac_disaster.manager.ColorManager;
-import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.manager.id.ItemId;
 import net.luojiuoscar.isaac_disaster.registries.ability.pickup.TarotAbility;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.CompositeTrigger;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.ModAbilityEffects;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.SimpleTrigger;
+import net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerTypes;
 import net.luojiuoscar.isaac_disaster.sound.ModSounds;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.item.ItemStack;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class TheHighPriestessR extends TarotAbility {
+    private static final CompositeTrigger TRIGGER = new CompositeTrigger(List.of(
+            new SimpleTrigger(ModTriggerTypes.EMTPY, ModAbilityEffects.THE_HIGH_PRIESTESS_R)
+    ));
 
-    @Override
-    public void onUseEffect(ServerPlayer player, ItemStack stack, InteractionHand hand) {
-        List<LivingEntity> entities = LevelHelper.selectBySphere(player.level(), player.getX(), player.getY(), player.getZ(), StatManager.getNearbyRange() * 0.6);
-        double lowestHealth = player.getHealth();
-        LivingEntity target = player;
-
-        for (LivingEntity entity : entities){
-            double health = entity.getHealth();
-            if (health < lowestHealth) {
-                lowestHealth = health;
-                target = entity;
-            }
-        }
-
-        target.hurt(player.damageSources().generic(), (float) StatManager.DAMAGE.getBonus() * 100f);
-    }
-
-    @Override
-    public void onUseEffectS(ServerPlayer player, ItemStack stack, InteractionHand hand) {
-        List<LivingEntity> entities = LevelHelper.selectBySphere(player.level(), player.getX(), player.getY(), player.getZ(), StatManager.getNearbyRange() * 0.6);
-        double lowestHealth = player.getHealth();
-        LivingEntity target = player;
-
-        for (LivingEntity entity : entities){
-            double health = entity.getHealth();
-            if (health < lowestHealth) {
-                lowestHealth = health;
-                target = entity;
-            }
-        }
-
-        target.hurt(player.damageSources().generic(), (float) StatManager.DAMAGE.getBonus() * 200f);
+    public TheHighPriestessR() {
+        super(TRIGGER);
     }
 
     @Override

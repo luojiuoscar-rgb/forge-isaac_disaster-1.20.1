@@ -1,32 +1,25 @@
 package net.luojiuoscar.isaac_disaster.registries.ability.pickup.impl.items;
 
-import net.luojiuoscar.isaac_disaster.effect.ModEffects;
-import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.registries.ability.pickup.FoodPickupAbility;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.CompositeTrigger;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.ModAbilityEffects;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.SimpleTrigger;
+import net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerTypes;
 import net.luojiuoscar.isaac_disaster.sound.ModSounds;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.item.ItemStack;
+
+import java.util.List;
 
 
 public class DoubleRedHeart extends FoodPickupAbility {
-    @Override
-    public void onUseEffect(ServerPlayer player, ItemStack stack, InteractionHand hand) {
-        // 恢复生命值
-        StatManager.healHealth(player, 2);
-        MobEffectInstance frailty = new MobEffectInstance(
-                ModEffects.FRAILTY.get(),
-                600,
-                0,
-                false,
-                true,
-                true
-        );
+    private static final CompositeTrigger TRIGGER = new CompositeTrigger(List.of(
+            new SimpleTrigger(ModTriggerTypes.EMTPY, ModAbilityEffects.DOUBLE_RED_HEART),
+            new SimpleTrigger(ModTriggerTypes.EMTPY, ModAbilityEffects.GIVE_FRAILTY)
+    ));
 
-        // 将效果施加给玩家
-        player.addEffect(frailty);
+    public DoubleRedHeart() {
+        super(TRIGGER);
     }
 
     @Override

@@ -15,7 +15,7 @@ import net.luojiuoscar.isaac_disaster.registries.bullet_color.ModBulletColor;
 import net.luojiuoscar.isaac_disaster.registries.trajectory.IAttackTrajectory;
 import net.luojiuoscar.isaac_disaster.registries.trajectory.ModAttackTrajectory;
 import net.luojiuoscar.isaac_disaster.registries.trajectory.TrajectoryContext;
-import net.luojiuoscar.isaac_disaster.registries.trigger_module.SimpleTrigger;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.SimpleTrigger;
 import net.luojiuoscar.isaac_disaster.sound.ModSounds;
 import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.core.registries.Registries;

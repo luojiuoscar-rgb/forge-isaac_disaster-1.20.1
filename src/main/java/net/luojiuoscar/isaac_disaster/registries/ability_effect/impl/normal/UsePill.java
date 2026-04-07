@@ -17,7 +17,7 @@ public class UsePill implements IAbilityEffect {
 
             IPillEffect effect = PillEffectManager.getInstance().getEffectFromPill(pill.getPillId()).get();
 
-            boolean isHorse = context.getOrDefault(ContextKeys.AMPLIFIER, 1) > 1 ||
+            boolean isHorse = context.getOrDefault(ContextKeys.AMPLIFIER, 1.) > 1 ||
                     pill.isHorsePill();
 
             effect.redirectAndUse(player, isHorse);

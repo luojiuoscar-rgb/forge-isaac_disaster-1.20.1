@@ -1,4 +1,4 @@
-package net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.normal;
+package net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.general;
 
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.AbilityEffectContext;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ContextKeys;
@@ -12,7 +12,7 @@ public class Potions implements IAbilityEffect {
         var potions = context.get(ContextKeys.POTIONS);
         if (potions.isEmpty()) return false;
 
-        int multiplier = context.getOrDefault(ContextKeys.AMPLIFIER, 1);
+        int multiplier = context.getOrDefault(ContextKeys.AMPLIFIER, 1.).intValue();
         LivingEntity entity = context.getEntity();
 
         for (var potion : potions){

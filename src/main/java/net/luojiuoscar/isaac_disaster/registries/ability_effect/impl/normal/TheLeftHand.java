@@ -20,7 +20,7 @@ public class TheLeftHand implements IAbilityEffect {
         if (!(context.getEntity() instanceof Player player)) return false;
         // 镀金钥匙大于自身时不触发
         RecursiveModuleQueue queue = context.get(ContextKeys.RECURSIVE_MODULE_QUEUE);
-        int amplifier = context.getOrDefault(ContextKeys.AMPLIFIER, 1);
+        int amplifier = context.getOrDefault(ContextKeys.AMPLIFIER, 1.).intValue();
 
         if (queue != null && queue.get(ModRecursiveModule.GILDED_KEY.getId()).stacks > amplifier) return true;
 

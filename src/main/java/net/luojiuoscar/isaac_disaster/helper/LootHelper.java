@@ -2,8 +2,9 @@ package net.luojiuoscar.isaac_disaster.helper;
 
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.attributes.AttributeInstance;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -52,8 +53,8 @@ public class LootHelper {
             level.addFreshEntity(new ItemEntity(level, pos.x, pos.y, pos.z, stack));
         }
     }
-    public static void spawnItemViaLoot(ServerPlayer player, Vec3 pos, Item item, int count) {
-        if (player == null || !(player.level() instanceof ServerLevel level)) return;
+    public static void spawnItemViaLoot(LivingEntity source, Vec3 pos, Item item, int count) {
+        if (source == null || !(source.level() instanceof ServerLevel level)) return;
 
         // 创建一个自定义 LootTable
         LootPool.Builder poolBuilder = LootPool.lootPool()
@@ -67,8 +68,8 @@ public class LootHelper {
         // 构建 LootContext
         LootParams.Builder paramsBuilder = new LootParams.Builder(level)
                 .withParameter(LootContextParams.ORIGIN, pos)
-                .withParameter(LootContextParams.THIS_ENTITY, player)
-                .withLuck(player.getLuck());
+                .withParameter(LootContextParams.THIS_ENTITY, source)
+                .withLuck(getLuck(source));
         LootParams params = paramsBuilder.create(LootContextParamSets.EMPTY);
 
         List<ItemStack> generatedLoot = lootTable.getRandomItems(params);
@@ -97,5 +98,10 @@ public class LootHelper {
     public static List<ItemStack> generateLoot(ServerLevel level, ResourceLocation tableId, LootParams.Builder builder, LootContextParamSet paramSet) {
         LootParams params = builder.create(paramSet);
         return getLoot(level, tableId, params);
+    }
+
+    private static float getLuck(LivingEntity entity){
+        AttributeInstance instance = entity.getAttribute(Attributes.LUCK);
+        return instance == null ? 0.0f : (float) instance.getValue();
     }
 }

@@ -11,7 +11,7 @@ public class LootMoney implements IAbilityEffect {
     @Override
     public boolean applyEffect(AbilityEffectContext context) {
         if (context.getEntity() instanceof Player player){
-            int amplifier = context.getOrDefault(ContextKeys.AMPLIFIER, 1);
+            int amplifier = context.getOrDefault(ContextKeys.AMPLIFIER, 1.).intValue();
             LootHelper.spawnLootAtPos(player, player.position(), LootTableManager.RANDOM_COINS, amplifier);
             return true;
         }

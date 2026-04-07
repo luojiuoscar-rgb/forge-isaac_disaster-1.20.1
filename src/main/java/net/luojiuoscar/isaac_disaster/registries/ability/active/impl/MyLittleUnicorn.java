@@ -1,20 +1,15 @@
 package net.luojiuoscar.isaac_disaster.registries.ability.active.impl;
 
 import net.luojiuoscar.isaac_disaster.client.ClientDataManager;
-import net.luojiuoscar.isaac_disaster.effect.ModEffects;
 import net.luojiuoscar.isaac_disaster.manager.ColorManager;
 import net.luojiuoscar.isaac_disaster.manager.EffectManager;
 import net.luojiuoscar.isaac_disaster.manager.id.ItemId;
 import net.luojiuoscar.isaac_disaster.registries.ability.active.ActiveAbility;
-import net.luojiuoscar.isaac_disaster.registries.ability_effect.AbilityEffectContext;
-import net.luojiuoscar.isaac_disaster.registries.ability_effect.ContextKeys;
-import net.luojiuoscar.isaac_disaster.registries.ability_effect.IAbilityEffect;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.CompositeTrigger;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ModAbilityEffects;
-import net.luojiuoscar.isaac_disaster.registries.ability_effect.profile.PotionProfile;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.SimpleTrigger;
+import net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerTypes;
 import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
@@ -22,28 +17,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MyLittleUnicorn extends ActiveAbility {
-    private final IAbilityEffect effect = ModAbilityEffects.POTION.get();
+    private static final CompositeTrigger TRIGGER = new CompositeTrigger(List.of(
+            new SimpleTrigger(ModTriggerTypes.EMTPY, ModAbilityEffects.MY_LITTLE_UNICORN)
+    ));
 
     public MyLittleUnicorn(int id, int level) {
-        super(id, level);
-    }
-
-    @Override
-    protected IAbilityEffect getAbilityEffect() {
-        return effect;
-    }
-
-    @Override
-    protected AbilityEffectContext getCtx(ServerPlayer player, ItemStack stack, @Nullable InteractionHand hand, int amplifier) {
-        AbilityEffectContext ctx = super.getCtx(player, stack, hand, amplifier);
-        int duration = 120;
-        ctx.set(ContextKeys.POTIONS, List.of(
-                new PotionProfile(MobEffects.MOVEMENT_SPEED, duration, 0),
-                new PotionProfile(ModEffects.INVINCIBLE.get(), duration, 0),
-                new PotionProfile(ModEffects.LACRIMAL_HYPOSECRETION.get(), duration, 0),
-                new PotionProfile(ModEffects.RAMPAGE.get(), duration, 3)
-        ));
-        return ctx;
+        super(TRIGGER, id, level);
     }
 
     @Override

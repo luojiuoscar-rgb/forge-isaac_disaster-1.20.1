@@ -25,7 +25,7 @@ public class TammysHead implements IAbilityEffect {
         if (!(context.getEntity() instanceof Player player)) return false;
 
         ScheduledFuncHelper.scheduleForPlayer(player.getUUID(), SCHEDULE_TYPE,
-                5,5, context.getOrDefault(ContextKeys.AMPLIFIER, 1), true,
+                5,5, context.getOrDefault(ContextKeys.AMPLIFIER, 1.).intValue(), true,
                 () -> shoot(player));
         return true;
     }

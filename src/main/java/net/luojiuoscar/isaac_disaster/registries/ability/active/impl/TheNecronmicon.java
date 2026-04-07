@@ -6,8 +6,10 @@ import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.manager.id.ItemId;
 import net.luojiuoscar.isaac_disaster.registries.ability.active.ActiveAbility;
 import net.luojiuoscar.isaac_disaster.registries.ability.set.ModSetAbility;
-import net.luojiuoscar.isaac_disaster.registries.ability_effect.IAbilityEffect;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.CompositeTrigger;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ModAbilityEffects;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.SimpleTrigger;
+import net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerTypes;
 import net.luojiuoscar.isaac_disaster.sound.ModSounds;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
@@ -20,20 +22,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TheNecronmicon extends ActiveAbility {
-    private final IAbilityEffect effect = ModAbilityEffects.THE_NECRONMICON.get();
+    private static final CompositeTrigger TRIGGER = new CompositeTrigger(List.of(
+            new SimpleTrigger(ModTriggerTypes.EMTPY, ModAbilityEffects.THE_NECRONMICON)
+    ));
 
     public TheNecronmicon(int id, int level) {
-        super(id, level);
+        super(TRIGGER, id, level);
     }
 
     @Override
     public void onFirstUse(ServerPlayer player, ItemStack stack, @Nullable InteractionHand hand){
         StatManager.modifySetWithId(player, ModSetAbility.BOOK.getId(), 1);
-    }
-
-    @Override
-    protected IAbilityEffect getAbilityEffect() {
-        return effect;
     }
 
     @Override

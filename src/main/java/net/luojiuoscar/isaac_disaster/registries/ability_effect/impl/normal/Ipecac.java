@@ -10,6 +10,7 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.Vec3;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Ipecac implements IAbilityEffect {
@@ -19,6 +20,7 @@ public class Ipecac implements IAbilityEffect {
         if (entity.invulnerableTime > 0) return true;
 
         List<Double> nums = context.getOrDefault(ContextKeys.DOUBLE, List.of());
+        nums = new ArrayList<>(nums);
         float damage = nums.get(0) < 0 ? 0f : nums.get(0).floatValue();
 
         explode(entity, context.get(ContextKeys.TARGET_POSITION), damage);

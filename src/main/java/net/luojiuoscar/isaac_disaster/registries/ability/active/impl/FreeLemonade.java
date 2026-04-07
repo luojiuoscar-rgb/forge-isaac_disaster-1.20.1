@@ -4,15 +4,14 @@ import net.luojiuoscar.isaac_disaster.client.ClientDataManager;
 import net.luojiuoscar.isaac_disaster.manager.ColorManager;
 import net.luojiuoscar.isaac_disaster.manager.id.ItemId;
 import net.luojiuoscar.isaac_disaster.registries.ability.active.ActiveAbility;
-import net.luojiuoscar.isaac_disaster.registries.ability_effect.AbilityEffectContext;
-import net.luojiuoscar.isaac_disaster.registries.ability_effect.ContextKeys;
-import net.luojiuoscar.isaac_disaster.registries.ability_effect.IAbilityEffect;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.CompositeTrigger;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ModAbilityEffects;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.SimpleTrigger;
+import net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerTypes;
 import net.luojiuoscar.isaac_disaster.sound.ModSounds;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
@@ -20,22 +19,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class FreeLemonade extends ActiveAbility {
-    private final IAbilityEffect effect = ModAbilityEffects.LEMON.get();
+    private static final CompositeTrigger TRIGGER = new CompositeTrigger(List.of(
+            new SimpleTrigger(ModTriggerTypes.EMTPY, ModAbilityEffects.FREE_LEMONADE)
+    ));
 
     public FreeLemonade(int id, int level) {
-        super(id, level);
-    }
-
-    @Override
-    protected AbilityEffectContext getCtx(ServerPlayer player, ItemStack stack, @Nullable InteractionHand hand, int amplifier) {
-        var ctx = super.getCtx(player, stack, hand, amplifier);
-        ctx.set(ContextKeys.DOUBLE, List.of(0.8, 100., 0., 10., 4.));
-        return ctx;
-    }
-
-    @Override
-    protected IAbilityEffect getAbilityEffect() {
-        return effect;
+        super(TRIGGER, id, level);
     }
 
     @Override

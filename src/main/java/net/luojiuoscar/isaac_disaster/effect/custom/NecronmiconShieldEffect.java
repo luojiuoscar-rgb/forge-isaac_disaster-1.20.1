@@ -2,7 +2,6 @@ package net.luojiuoscar.isaac_disaster.effect.custom;
 
 import net.luojiuoscar.isaac_disaster.effect.ModEffects;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
-import net.luojiuoscar.isaac_disaster.registries.ability.active.ModActiveAbility;
 import net.luojiuoscar.isaac_disaster.sound.ModSounds;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
@@ -37,7 +36,7 @@ public class NecronmiconShieldEffect extends MobEffect {
                 attackerplayer.hasEffect(ModEffects.NECRONMICON_SHIELD.get())) return;
 
         // effect
-        ModActiveAbility.THE_NECRONMICON.get().onTrigger(player, null, null);
+       // ModActiveAbility.THE_NECRONMICON.get().onTrigger(player, null, null);
         // remove 1 amplifier
         NecronmiconShieldEffect.stack(player, -1);
         // sounds

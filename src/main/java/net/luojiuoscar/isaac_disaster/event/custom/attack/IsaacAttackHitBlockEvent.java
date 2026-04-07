@@ -1,7 +1,7 @@
 package net.luojiuoscar.isaac_disaster.event.custom.attack;
 
 import net.luojiuoscar.isaac_disaster.registries.attack_type.IBulletObject;
-import net.luojiuoscar.isaac_disaster.registries.trigger_module.SimpleTrigger;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.SimpleTrigger;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.BlockHitResult;

@@ -534,21 +534,46 @@ public class PlayerHelper {
     }
 
 
-    public static void chargeItem(ItemStack stack, int amount, boolean canOverCharge){
-        boolean OverCharged = ActiveItem.getOverCharged(stack);
-        // 检查物品是否耐久不满 或可以过载
-        if ((stack.getDamageValue() > 0)
-                || (canOverCharge || !OverCharged)) {
-            // 计算新的耐久值
-            int newDamage = Math.max(stack.getDamageValue() - amount, 0);
+    public static void chargeItem(ItemStack stack, int amount, boolean canOverCharge) {
+        // 原始最大耐久
+        int baseMax = stack.getMaxDamage();
+        boolean overCharged = ActiveItem.getOverCharged(stack);
 
-            // 未过载且有蓄电池时过载
-            if (newDamage == 0 && !OverCharged && canOverCharge){
-                newDamage = stack.getMaxDamage() - 1;
-                ActiveItem.setOverCharged(stack, true);
+        // 当前耐久
+        int currentDamage = stack.getDamageValue();
+        // 当前容量 = 原始最大值 × (是否过载 ? 2 : 1)
+        int maxCapacity = baseMax * (overCharged ? 2 : 1);
+
+        // 检查是否需要充电
+        if (currentDamage > 0 || (canOverCharge && !overCharged)) {
+            currentDamage -= amount; // 减去余量
+
+            // 当耐久超过容量时触发过载
+            if (currentDamage < 0) {
+                if (!overCharged && canOverCharge) {
+                    // 设置过载状态
+                    overCharged = true;
+                    ActiveItem.setOverCharged(stack, true);
+
+                    // 计算溢出量
+                    int overflow = -currentDamage;
+
+                    // 重新计算耐久，相当于容量翻倍
+                    maxCapacity = baseMax * 2;
+                    currentDamage = maxCapacity - overflow;
+
+                    // 如果溢出仍超过新的容量，限制到最大容量
+                    if (currentDamage < 0) {
+                        currentDamage = 0;
+                    }
+                } else {
+                    // 已满但不能过载
+                    currentDamage = 0;
+                }
             }
 
-            stack.setDamageValue(newDamage);
+            // 设置耐久
+            stack.setDamageValue(currentDamage);
         }
     }
 

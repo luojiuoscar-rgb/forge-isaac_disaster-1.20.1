@@ -1,28 +1,25 @@
 package net.luojiuoscar.isaac_disaster.registries.ability.pickup.impl.cards;
 
-import net.luojiuoscar.isaac_disaster.helper.LootHelper;
-import net.luojiuoscar.isaac_disaster.manager.LootTableManager;
 import net.luojiuoscar.isaac_disaster.registries.ability.pickup.PickupAbility;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.CompositeTrigger;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.ModAbilityEffects;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.SimpleTrigger;
+import net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerTypes;
 import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.storage.loot.LootParams;
-import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class PokersBack extends PickupAbility {
-    @Override
-    public void onUseEffect(ServerPlayer player, ItemStack stack, InteractionHand hand) {
-        if (!(player.level() instanceof ServerLevel level)) return;
-        LootParams params = new LootParams.Builder(level).create(LootContextParamSets.EMPTY);
-        // 无源掉落
-        LootHelper.spawnLootAtPos(level, player.position(), LootTableManager.RANDOM_POKERS, params);
+    private static final CompositeTrigger TRIGGER = new CompositeTrigger(List.of(
+            new SimpleTrigger(ModTriggerTypes.EMTPY, ModAbilityEffects.POKERS_BACK)
+    ));
+
+    public PokersBack() {
+        super(TRIGGER);
     }
 
     @Override

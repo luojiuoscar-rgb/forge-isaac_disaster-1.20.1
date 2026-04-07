@@ -11,7 +11,7 @@ public class Cartridge implements IAbilityEffect {
     @Override
     public boolean applyEffect(AbilityEffectContext context) {
         LivingEntity entity = context.getEntity();
-        int amplifier = context.getOrDefault(ContextKeys.AMPLIFIER, 1);
+        int amplifier = context.getOrDefault(ContextKeys.AMPLIFIER, 1.).intValue();
         amplifier = Math.max(amplifier, 1);
 
         if (entity.getRandom().nextDouble() < amplifier / Math.max(amplifier, 20 - getLuck(entity) * 0.5)){

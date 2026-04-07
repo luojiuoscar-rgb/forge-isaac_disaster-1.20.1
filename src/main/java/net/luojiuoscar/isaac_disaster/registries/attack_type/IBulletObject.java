@@ -1,7 +1,7 @@
 package net.luojiuoscar.isaac_disaster.registries.attack_type;
 
 import net.luojiuoscar.isaac_disaster.registries.attack_type.util.DamagedEntities;
-import net.luojiuoscar.isaac_disaster.registries.trigger_module.SimpleTrigger;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.SimpleTrigger;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.Vec3;

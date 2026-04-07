@@ -17,6 +17,10 @@ public class TriggerType {
         return id.equals(type.getId());
     }
 
+    public boolean isPlaceholder(){
+        return id.equals(ModTriggerTypes.EMTPY.id);
+    }
+
     @Override
     public String toString() {
         return id.toString();

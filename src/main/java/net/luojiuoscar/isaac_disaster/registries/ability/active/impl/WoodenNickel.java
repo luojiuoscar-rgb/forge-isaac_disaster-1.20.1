@@ -4,8 +4,10 @@ import net.luojiuoscar.isaac_disaster.client.ClientDataManager;
 import net.luojiuoscar.isaac_disaster.manager.ColorManager;
 import net.luojiuoscar.isaac_disaster.manager.id.ItemId;
 import net.luojiuoscar.isaac_disaster.registries.ability.active.ActiveAbility;
-import net.luojiuoscar.isaac_disaster.registries.ability_effect.IAbilityEffect;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.CompositeTrigger;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ModAbilityEffects;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.SimpleTrigger;
+import net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerTypes;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
@@ -14,15 +16,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class WoodenNickel extends ActiveAbility {
-    private final IAbilityEffect effect = ModAbilityEffects.WOODEN_NICKEL.get();
+    private static final CompositeTrigger TRIGGER = new CompositeTrigger(List.of(
+            new SimpleTrigger(ModTriggerTypes.EMTPY, ModAbilityEffects.WOODEN_NICKEL)
+    ));
 
     public WoodenNickel(int id, int level) {
-        super(id, level);
-    }
-
-    @Override
-    protected IAbilityEffect getAbilityEffect() {
-        return effect;
+        super(TRIGGER, id, level);
     }
 
     @Override

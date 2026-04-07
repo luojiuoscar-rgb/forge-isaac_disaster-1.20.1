@@ -15,11 +15,11 @@ public class AbilityEffectContext {
 
     private final Map<ContextKey<?>, Object> data = new HashMap<>();
 
-    public AbilityEffectContext(LivingEntity entity) {
+    public AbilityEffectContext(@NotNull LivingEntity entity) {
         this.entity = entity;
     }
 
-    public LivingEntity getEntity() { return entity; }
+    public @NotNull LivingEntity getEntity() { return entity; }
 
     public <T> void set(ContextKey<T> key, T value) {
         data.put(key, value);
@@ -30,6 +30,7 @@ public class AbilityEffectContext {
         return (T) data.get(key);
     }
 
+    /** 可能返回不可变列表；需对数据做安全处理 */
     public <T> T getOrDefault(ContextKey<T> key, T defaultValue) {
         T value = get(key);
         return value != null ? value : defaultValue;

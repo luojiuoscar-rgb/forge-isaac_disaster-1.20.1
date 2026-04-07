@@ -1,7 +1,6 @@
-package net.luojiuoscar.isaac_disaster.registries.trigger_module;
+package net.luojiuoscar.isaac_disaster.registries.ability_effect;
 
-import net.luojiuoscar.isaac_disaster.registries.ability_effect.AbilityEffectContext;
-import net.luojiuoscar.isaac_disaster.registries.ability_effect.IAbilityEffect;
+import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerType;
 import net.minecraftforge.registries.RegistryObject;
 
 import java.util.function.Predicate;
@@ -12,18 +11,18 @@ import java.util.function.Predicate;
  */
 public class SimpleTrigger {
     public final TriggerType type;
-    public final RegistryObject<IAbilityEffect> effect;
+    public final RegistryObject<IExecutableEffect> effect;
     private final Predicate<AbilityEffectContext> condition;
 
     public SimpleTrigger(TriggerType type,
-                         RegistryObject<IAbilityEffect> effect,
+                         RegistryObject<IExecutableEffect> effect,
                          Predicate<AbilityEffectContext> condition) {
         this.type = type;
         this.effect = effect;
         this.condition = condition != null ? condition : ctx -> true;
     }
 
-    public SimpleTrigger(TriggerType type, RegistryObject<IAbilityEffect> effect){
+    public SimpleTrigger(TriggerType type, RegistryObject<IExecutableEffect> effect){
         this(type, effect, null);
     }
 

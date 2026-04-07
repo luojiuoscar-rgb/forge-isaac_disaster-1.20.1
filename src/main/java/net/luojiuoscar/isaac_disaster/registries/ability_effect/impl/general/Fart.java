@@ -1,4 +1,4 @@
-package net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.normal;
+package net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.general;
 
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.AbilityEffectContext;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ContextKeys;
@@ -12,6 +12,7 @@ import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.Vec3;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Fart implements IAbilityEffect {
@@ -21,6 +22,7 @@ public class Fart implements IAbilityEffect {
         Vec3 pos = context.getOrDefault(ContextKeys.TARGET_POSITION, entity.position());
 
         List<Double> nums = context.getOrDefault(ContextKeys.DOUBLE, List.of());
+        nums = new ArrayList<>(nums);
         if (nums.size() < 2) nums = List.of(120., 0.);
 
         int duration = nums.get(0).intValue();

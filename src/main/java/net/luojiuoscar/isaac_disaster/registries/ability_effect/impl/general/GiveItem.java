@@ -1,4 +1,4 @@
-package net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.normal;
+package net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.general;
 
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.AbilityEffectContext;
@@ -12,7 +12,7 @@ public class GiveItem implements IAbilityEffect {
     public boolean applyEffect(AbilityEffectContext context) {
         if (context.getEntity() instanceof Player player){
             Item item = context.get(ContextKeys.ITEM);
-            int count = context.get(ContextKeys.AMPLIFIER);
+            int count = context.getOrDefault(ContextKeys.AMPLIFIER, 1.).intValue();
             if (item == null) return false;
             if (count < 1) count = 1;
 

@@ -21,7 +21,7 @@ public class GildedKey implements IAbilityEffect {
         if (!(context.getEntity() instanceof Player player)) return false;
         // 左断手大于等于自身时不触发
         RecursiveModuleQueue queue = context.get(ContextKeys.RECURSIVE_MODULE_QUEUE);
-        int amplifier = context.getOrDefault(ContextKeys.AMPLIFIER, 1);
+        int amplifier = context.getOrDefault(ContextKeys.AMPLIFIER, 1.).intValue();
         if (queue != null && queue.get(ModRecursiveModule.GILDED_KEY.getId()).stacks >= amplifier) return true;
         // 如果queue不存在，则绕过判定直接尝试触发
 

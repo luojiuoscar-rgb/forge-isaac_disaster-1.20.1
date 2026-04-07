@@ -11,7 +11,7 @@ public class Kamikaze implements IAbilityEffect {
     @Override
     public boolean applyEffect(AbilityEffectContext context) {
         LivingEntity entity = context.getEntity();
-        int amplifier = context.getOrDefault(ContextKeys.AMPLIFIER, 1);
+        int amplifier = context.getOrDefault(ContextKeys.AMPLIFIER, 1.).intValue();
 
         if (amplifier > 1){
             explode(entity, 7, 80);

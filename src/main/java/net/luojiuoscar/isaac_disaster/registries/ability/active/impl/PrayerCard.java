@@ -1,17 +1,17 @@
 package net.luojiuoscar.isaac_disaster.registries.ability.active.impl;
 
 import net.luojiuoscar.isaac_disaster.client.ClientDataManager;
-import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
-import net.luojiuoscar.isaac_disaster.item.ModItems;
 import net.luojiuoscar.isaac_disaster.manager.ColorManager;
 import net.luojiuoscar.isaac_disaster.manager.id.ItemId;
 import net.luojiuoscar.isaac_disaster.registries.ability.active.ActiveAbility;
-import net.luojiuoscar.isaac_disaster.registries.ability_effect.*;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.CompositeTrigger;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.ModAbilityEffects;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.SimpleTrigger;
+import net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerTypes;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
@@ -19,27 +19,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PrayerCard extends ActiveAbility {
-    private final IAbilityEffect effect = ModAbilityEffects.GIVE_ITEM.get();
+    private static final CompositeTrigger TRIGGER = new CompositeTrigger(List.of(
+            new SimpleTrigger(ModTriggerTypes.EMTPY, ModAbilityEffects.PRAYER_CARD)
+    ));
 
     public PrayerCard(int id, int level) {
-        super(id, level);
-    }
-
-    @Override
-    public void onTrigger(ServerPlayer player, ItemStack stack, @Nullable InteractionHand hand) {
-        PlayerHelper.giveItem(player, ModItems.ETERNAL_HEART.get(), 1);
-    }
-
-    protected AbilityEffectContext getCtx(ServerPlayer player, ItemStack stack,
-                                          @Nullable InteractionHand hand, int amplifier){
-        var ctx = super.getCtx(player, stack, hand, amplifier);
-        ctx.set(ContextKeys.ITEM, ModItems.ETERNAL_HEART.get());
-        return ctx;
-    }
-
-    @Override
-    protected IAbilityEffect getAbilityEffect() {
-        return effect;
+        super(TRIGGER, id, level);
     }
 
     @Override

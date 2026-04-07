@@ -1,23 +1,30 @@
 package net.luojiuoscar.isaac_disaster.registries.ability.pickup.impl.items;
 
-import net.luojiuoscar.isaac_disaster.helper.EntityHelper;
 import net.luojiuoscar.isaac_disaster.registries.ability.pickup.PickupAbility;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.CompositeTrigger;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.ContextKeys;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.ModAbilityEffects;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.SimpleTrigger;
+import net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerTypes;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.item.ItemStack;
+
+import java.util.List;
 
 public class GigaBomb extends PickupAbility {
-    @Override
-    public void onUseEffect(ServerPlayer player, ItemStack stack, InteractionHand hand) {
-        if (player.level().isClientSide()) return;
+    private static final CompositeTrigger TRIGGER = new CompositeTrigger(List.of(
+            new SimpleTrigger(ModTriggerTypes.EMTPY, ModAbilityEffects.THROW_GIGA_BOMB),
+            new SimpleTrigger(ModTriggerTypes.EMTPY, ModAbilityEffects.ADD_COOLDOWN_TO_ITEM,
+                    context -> {
+                context.set(ContextKeys.DOUBLE, List.of(50.));
+                return true;
+            })
+    ));
 
-        EntityHelper.throwGigaBomb(player, 120);
-
-        // cd
-        player.getCooldowns().addCooldown(player.getItemInHand(hand).getItem(), 50);
+    public GigaBomb() {
+        super(TRIGGER);
     }
 
     @Override

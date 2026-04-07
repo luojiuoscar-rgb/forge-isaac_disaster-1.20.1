@@ -9,6 +9,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.Vec3;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Lemon implements IAbilityEffect {
@@ -16,6 +17,7 @@ public class Lemon implements IAbilityEffect {
     public boolean applyEffect(AbilityEffectContext context) {
         LivingEntity entity = context.getEntity();
         List<Double> nums = context.getOrDefault(ContextKeys.DOUBLE, List.of());
+        nums = new ArrayList<>(nums);
         if (nums.size() < 5) {
             nums = List.of(0.4, 100., 0., 10., 2.5);
         }

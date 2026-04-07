@@ -1,17 +1,19 @@
 package net.luojiuoscar.isaac_disaster.registries.trigger_module.impl;
 
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.CompositeTrigger;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ModAbilityEffects;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.SimpleTrigger;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.*;
 
 import java.util.List;
 
 public class TheWafer implements ITriggerModule {
-    private static final List<SimpleTrigger> triggers = List.of(
+    private static final CompositeTrigger triggers = new CompositeTrigger(List.of(
             new SimpleTrigger(ModTriggerTypes.ON_HURT, ModAbilityEffects.THE_WAFER)
-    );
+    ));
 
     @Override
-    public List<SimpleTrigger> getTriggers() {
+    public CompositeTrigger getTriggers() {
         return triggers;
     }
 
