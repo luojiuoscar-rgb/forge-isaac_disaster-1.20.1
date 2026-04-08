@@ -1,9 +1,10 @@
-package net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.normal;
+package net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.general;
 
 import net.luojiuoscar.isaac_disaster.helper.EntityHelper;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.AbilityEffectContext;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ContextKeys;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.IAbilityEffect;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
 
 import java.util.ArrayList;
@@ -32,11 +33,14 @@ public class StackPotion implements IAbilityEffect {
         boolean stack_amplifier = booleans.get(1);
 
         for (var potion : potions){
+            int finalDuration = Mth.clamp(potion.duration + potion.duration_increment * multiplier, 0, 1000000);
+            int finalAmplifier = Mth.clamp(potion.amplifier + potion.amplifier_increment * multiplier, 0, 255);
+
             EntityHelper.applyOrStackEffect(
                     entity,
                     potion.effect,
-                    potion.duration + potion.duration_increment * multiplier,
-                    potion.duration + potion.amplifier_increment * multiplier,
+                    finalDuration,
+                    finalAmplifier,
                     stack_duration,
                     stack_amplifier);
         }

@@ -151,8 +151,8 @@ public class ModAbilityEffects {
             EXECUTABLE_EFFECT_REGISTRY.register("question_card", QuestionCard::new);
     public static final RegistryObject<IExecutableEffect> TEMPERANCE_R =
             EXECUTABLE_EFFECT_REGISTRY.register("temperance_r", TemperanceR::new);
-    public static final RegistryObject<IExecutableEffect> FRAGILE_HEART =
-            EXECUTABLE_EFFECT_REGISTRY.register("fragile_heart", FragileHeart::new);
+    public static final RegistryObject<IExecutableEffect> STACK_FRAGILE_HEART =
+            EXECUTABLE_EFFECT_REGISTRY.register("stack_fragile_heart", StackFragileHeart::new);
     public static final RegistryObject<IExecutableEffect> TELEPORT_TO_SPAWN =
             EXECUTABLE_EFFECT_REGISTRY.register("teleport_to_spawn", TeleportToSpawn::new);
     public static final RegistryObject<IExecutableEffect> THE_HIGH_PRIESTESS =
@@ -193,6 +193,28 @@ public class ModAbilityEffects {
             EXECUTABLE_EFFECT_REGISTRY.register("charge_all", ChargeAll::new);
     public static final RegistryObject<IExecutableEffect> STACK_GILDING_EFFECT =
             EXECUTABLE_EFFECT_REGISTRY.register("stack_gilding_effect", StackGildingEffect::new);
+    public static final RegistryObject<IExecutableEffect> NECRONMICON_SHIELD_ACTIVE =
+            EXECUTABLE_EFFECT_REGISTRY.register("necronmicon_shield_active", NecronmiconShieldActive::new);
+    public static final RegistryObject<IExecutableEffect> ETERNAL_HEART_PUNISH =
+            EXECUTABLE_EFFECT_REGISTRY.register("eternal_heart_punish", EternalHeartPunish::new);
+    public static final RegistryObject<IExecutableEffect> GILDING_ACTIVE =
+            EXECUTABLE_EFFECT_REGISTRY.register("gilding_active", GildingActive::new);
+    public static final RegistryObject<IExecutableEffect> EXPLOSION_IMMUNE =
+            EXECUTABLE_EFFECT_REGISTRY.register("explosion_immune", ExplosionImmune::new);
+    public static final RegistryObject<IExecutableEffect> EXPLOSION_REGENERATION =
+            EXECUTABLE_EFFECT_REGISTRY.register("explosion_regeneration", ExplosionRegeneration::new);
+    public static final RegistryObject<IExecutableEffect> HOLY_SHIELD_ACTIVE =
+            EXECUTABLE_EFFECT_REGISTRY.register("holy_shield_active", HolyShieldActive::new);
+    public static final RegistryObject<IExecutableEffect> ADULT_SET =
+            EXECUTABLE_EFFECT_REGISTRY.register("adult_set", AdultSet::new);
+    public static final RegistryObject<IExecutableEffect> FRAGILE_HEART_ACTIVE =
+            EXECUTABLE_EFFECT_REGISTRY.register("fragile_heart_active", FragileHeartActive::new);
+    public static final RegistryObject<IExecutableEffect> CURSE_OF_THE_MAZE =
+            EXECUTABLE_EFFECT_REGISTRY.register("curse_of_the_maze", CurseOfTheMaze::new);
+    public static final RegistryObject<IExecutableEffect> DROP_PERFECTION =
+            EXECUTABLE_EFFECT_REGISTRY.register("drop_perfection", DropPerfection::new);
+
+
 
     //</editor-fold>
 
@@ -489,7 +511,7 @@ public class ModAbilityEffects {
                         context.set(ContextKeys.POTIONS, List.of(
                                 new PotionProfile(MobEffects.DIG_SPEED, 600, 1)
                         ));
-                    }), FRAGILE_HEART.get())
+                    }), STACK_FRAGILE_HEART.get())
             ));
     public static final RegistryObject<IExecutableEffect> THE_HANGED_MAN =
             EXECUTABLE_EFFECT_REGISTRY.register("the_hanged_man", () -> new AbilityEffectEntry(

@@ -1,4 +1,4 @@
-package net.luojiuoscar.isaac_disaster.registries.trigger_module.impl;
+package net.luojiuoscar.isaac_disaster.registries.trigger_module.impl.normal;
 
 import net.luojiuoscar.isaac_disaster.event.custom.attack.GetAttackContextEvent;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.*;
@@ -8,20 +8,10 @@ import net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerTypes;
 
 import java.util.List;
 
-public class Ipecac implements ITriggerModule {
-    private static final CompositeTrigger triggers = new CompositeTrigger(List.of(
-            new SimpleTrigger(ModTriggerTypes.HIT_ENTITY, ModAbilityEffects.IPECAC)
-    ));
-
+public class Terra implements ITriggerModule {
     private static final List<SimpleTrigger> bullet_triggers = List.of(
-            new SimpleTrigger(ModTriggerTypes.BULLET_HIT_ENTITY_BEFORE, ModAbilityEffects.IPECAC),
-            new SimpleTrigger(ModTriggerTypes.BULLET_HIT_BLOCK, ModAbilityEffects.IPECAC)
+            new SimpleTrigger(ModTriggerTypes.BULLET_HIT_BLOCK, ModAbilityEffects.BREAK_BLOCK_AND_DROP)
     );
-
-    @Override
-    public CompositeTrigger getTriggers() {
-        return triggers;
-    }
 
     @Override
     public void attachToBullet(AbilityEffectContext context) {
@@ -32,5 +22,10 @@ public class Ipecac implements ITriggerModule {
                 ctx.getTriggers().addAll(bullet_triggers);
             }
         }
+    }
+
+    @Override
+    public CompositeTrigger getTriggers() {
+        return CompositeTrigger.EMPTY;
     }
 }

@@ -6,9 +6,11 @@ import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.AbilityEffectContext;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ContextKeys;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.IAbilityEffect;
+import net.luojiuoscar.isaac_disaster.sound.ModSounds;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.MobType;
@@ -22,10 +24,14 @@ public class TheNecronmicon implements IAbilityEffect {
     @Override
     public boolean applyEffect(AbilityEffectContext context) {
         LivingEntity entity = context.getEntity();
-        Vec3 position = context.getOrDefault(ContextKeys.TARGET_POSITION, entity.position());
+        Vec3 pos = context.getOrDefault(ContextKeys.TARGET_POSITION, entity.position());
 
-        damageNearby(position, context.getEntity(), StatManager.DAMAGE.getBonus() * 20 *
+        damageNearby(pos, context.getEntity(), StatManager.DAMAGE.getBonus() * 20 *
                 context.getOrDefault(ContextKeys.AMPLIFIER, 1.));
+
+        // sound
+        entity.level().playSound(null, pos.x, pos.y, pos.z,
+                ModSounds.BLACK_HEART_ACTIVE.get(), SoundSource.PLAYERS, 1.0f, 1.0f);
         return true;
     }
 
@@ -43,7 +49,8 @@ public class TheNecronmicon implements IAbilityEffect {
         // 遍历并造成伤害
         for (LivingEntity target : entities) {
 
-            EntityHelper.isFriendly(target, entity);
+            // 排除队友
+            if (EntityHelper.isFriendly(target, entity)) continue;
 
             DamageSource source = entity instanceof Player ?
                     level.damageSources().playerAttack((Player) entity) :

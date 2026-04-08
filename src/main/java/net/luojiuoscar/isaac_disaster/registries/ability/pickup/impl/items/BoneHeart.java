@@ -14,7 +14,7 @@ import java.util.List;
 
 public class BoneHeart extends FoodPickupAbility {
     private static final CompositeTrigger TRIGGER = new CompositeTrigger(List.of(
-            new SimpleTrigger(ModTriggerTypes.EMTPY, ModAbilityEffects.FRAGILE_HEART)
+            new SimpleTrigger(ModTriggerTypes.EMTPY, ModAbilityEffects.STACK_FRAGILE_HEART)
     ));
 
     public BoneHeart() {

@@ -1,4 +1,4 @@
-package net.luojiuoscar.isaac_disaster.registries.trigger_module.impl;
+package net.luojiuoscar.isaac_disaster.registries.trigger_module.impl.normal;
 
 import net.luojiuoscar.isaac_disaster.event.custom.attack.GetAttackContextEvent;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.*;
@@ -9,10 +9,9 @@ import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerModulePri
 
 import java.util.List;
 
-public class Laser implements ITriggerModule {
+public class BounceOnBlock implements ITriggerModule {
     private static final List<SimpleTrigger> bullet_triggers = List.of(
-            new SimpleTrigger(ModTriggerTypes.BULLET_HIT_ENTITY_BEFORE, ModAbilityEffects.LASER_PLUS_BRIMSTONE),
-            new SimpleTrigger(ModTriggerTypes.BULLET_TICK, ModAbilityEffects.LASER_PLUS_FETUS)
+            new SimpleTrigger(ModTriggerTypes.BULLET_HIT_BLOCK, ModAbilityEffects.BULLET_BOUNCE_ON_BLOCK)
     );
 
     @Override
@@ -33,6 +32,6 @@ public class Laser implements ITriggerModule {
 
     @Override
     public double getPriority(){
-        return TriggerModulePriority.LOWEST.priority;
+        return TriggerModulePriority.HIGHEST.priority;
     }
 }

@@ -1,8 +1,8 @@
 package net.luojiuoscar.isaac_disaster.registries.trigger_module;
 
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
-import net.luojiuoscar.isaac_disaster.registries.trigger_module.impl.*;
-import net.luojiuoscar.isaac_disaster.registries.trigger_module.impl.special.BulletTriggerModule;
+import net.luojiuoscar.isaac_disaster.registries.trigger_module.impl.normal.*;
+import net.luojiuoscar.isaac_disaster.registries.trigger_module.impl.special.*;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -61,7 +61,13 @@ public class ModTriggerModule {
             TRIGGER_MODULE_REGISTRY.register("cursed_penny", CursedPenny::new);
     public static final RegistryObject<ITriggerModule> BULLET_TRIGGER_MODULE =
             TRIGGER_MODULE_REGISTRY.register("bullet_trigger_module", BulletTriggerModule::new);
-
-
+    public static final RegistryObject<ITriggerModule> PLAYER_PERMANENT_MODULE =
+            TRIGGER_MODULE_REGISTRY.register("player_permanent_module", PlayerPermanentModule::new);
+    public static final RegistryObject<ITriggerModule> HIGH_PRIORITY_PLAYER_PERMANENT_MODULE =
+            TRIGGER_MODULE_REGISTRY.register("high_priority_player_permanent_module", HighPriorityPlayerPermanentModule::new);
+    public static final RegistryObject<ITriggerModule> EXPLOSION_IMMUNE =
+            TRIGGER_MODULE_REGISTRY.register("explosion_immune", ExplosionImmune::new);
+    public static final RegistryObject<ITriggerModule> EXPLOSION_REGENERATION =
+            TRIGGER_MODULE_REGISTRY.register("explosion_regeneration", ExplosionRegeneration::new);
 
 }

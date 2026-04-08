@@ -1,4 +1,4 @@
-package net.luojiuoscar.isaac_disaster.registries.trigger_module.impl;
+package net.luojiuoscar.isaac_disaster.registries.trigger_module.impl.normal;
 
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.CompositeTrigger;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ModAbilityEffects;
@@ -8,9 +8,9 @@ import net.luojiuoscar.isaac_disaster.registries.ability_effect.SimpleTrigger;
 
 import java.util.List;
 
-public class CursedPenny implements ITriggerModule {
+public class CharmOfTheVampire implements ITriggerModule {
     private static final CompositeTrigger triggers = new CompositeTrigger(List.of(
-            new SimpleTrigger(ModTriggerTypes.PICKUP_ITEM, ModAbilityEffects.CURSED_PENNY)
+            new SimpleTrigger(ModTriggerTypes.KILL_ENTITY, ModAbilityEffects.CHARM_OF_THE_VAMPIRE)
     ));
 
     @Override

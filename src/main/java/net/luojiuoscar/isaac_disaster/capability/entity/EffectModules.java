@@ -9,6 +9,9 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
 
+/**
+ * 目前EffectModule只挂在给玩家以确保性能不会被影响
+ * */
 public class EffectModules {
     private final TriggerModuleQueue triggerModuleQueue;
     private final RecursiveModuleQueue recursiveModuleQueue;

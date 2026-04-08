@@ -31,6 +31,13 @@ public class TriggerModuleQueue {
         queue.add(inst);
     }
 
+    /** 仅在当前模块不存在的时候才加 */
+    public void addIfNotExist(ResourceLocation id, int stacks){
+        if (!contains(id) && stacks > 0) {
+            add(id, 1);
+        }
+    }
+
     public void add(TriggerModuleInstance inst){
         if (locked) return;
 

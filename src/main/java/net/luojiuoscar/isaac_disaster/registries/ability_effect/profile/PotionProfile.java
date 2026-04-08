@@ -1,5 +1,6 @@
 package net.luojiuoscar.isaac_disaster.registries.ability_effect.profile;
 
+import net.minecraft.util.Mth;
 import net.minecraft.world.effect.MobEffect;
 
 public class PotionProfile {
@@ -14,7 +15,7 @@ public class PotionProfile {
     public PotionProfile(MobEffect effect, int duration, int amplifier){
         this.effect = effect;
         this.duration = duration;
-        this.amplifier = amplifier;
+        this.amplifier = Mth.clamp(amplifier, 0, 255);
         this.duration_increment = duration;
         this.amplifier_increment = 0;
         this.has_particle = true;
@@ -25,7 +26,7 @@ public class PotionProfile {
                          int amplifier_increment, boolean has_particle){
         this.effect = effect;
         this.duration = duration;
-        this.amplifier = amplifier;
+        this.amplifier = Mth.clamp(amplifier, 0, 255);
         this.duration_increment = duration_increment;
         this.amplifier_increment = amplifier_increment;
         this.has_particle = has_particle;

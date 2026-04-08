@@ -1,4 +1,4 @@
-package net.luojiuoscar.isaac_disaster.registries.trigger_module.impl;
+package net.luojiuoscar.isaac_disaster.registries.trigger_module.impl.normal;
 
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.CompositeTrigger;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ModAbilityEffects;
@@ -8,9 +8,9 @@ import net.luojiuoscar.isaac_disaster.registries.ability_effect.SimpleTrigger;
 
 import java.util.List;
 
-public class Technology2 implements ITriggerModule {
+public class LuckyRock implements ITriggerModule {
     private static final CompositeTrigger triggers = new CompositeTrigger(List.of(
-            new SimpleTrigger(ModTriggerTypes.RIGHT_CLICK_TICK, ModAbilityEffects.SHOOT_LASER)
+            new SimpleTrigger(ModTriggerTypes.BREAK_BLOCK, ModAbilityEffects.LUCKY_ROCK)
     ));
 
     @Override

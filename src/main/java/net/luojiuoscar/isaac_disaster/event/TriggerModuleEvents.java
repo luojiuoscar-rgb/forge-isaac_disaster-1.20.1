@@ -177,7 +177,7 @@ public class TriggerModuleEvents {
             context.set(ContextKeys.TRIGGER_MODULE_QUEUE, queue);
 
             dispatch(context, ModTriggerTypes.ON_HURT);
-            if (PlayerHelper.isSelfDamage(event.getSource())){
+            if (!PlayerHelper.isSelfDamage(event.getSource())){
                 dispatch(context, ModTriggerTypes.ON_HURT_NEGATIVE);
             }else {
                 dispatch(context, ModTriggerTypes.ON_HURT_POSITIVE);

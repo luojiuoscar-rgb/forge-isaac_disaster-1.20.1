@@ -24,6 +24,8 @@ import net.luojiuoscar.isaac_disaster.networking.packet.PillRecordsSyncS2CPacket
 import net.luojiuoscar.isaac_disaster.networking.packet.SetCountSyncS2CPacket;
 import net.luojiuoscar.isaac_disaster.registries.ability.set.ModSetAbility;
 import net.luojiuoscar.isaac_disaster.registries.ability.set.SetAbility;
+import net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerModule;
+import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerModuleQueue;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -74,6 +76,66 @@ public class ForgeEvents {
         }
     }
 
+    /**
+     * 玩家登录时同步数据到客户端
+     */
+    @SubscribeEvent
+    public static void onPlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
+        if (!(event.getEntity() instanceof ServerPlayer player)) return;
+        syncAllDataToClient(player);
+
+        // update cached attack type
+        player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY).ifPresent(PlayerAbility::updateBestAttackType);
+
+        // 添加永久模块
+        player.getCapability(EffectModulesProvider.EFFECT_MODULES).ifPresent(
+                effectModules -> addPermanentModules(effectModules.getTriggerModules()));
+    }
+
+    public static void syncAllDataToClient(ServerPlayer player){
+        syncSetDataToClient(player);
+        syncPillDataToClient(player);
+        syncItemDataToClient(player);
+    }
+
+    /**
+     * 同步数据到客户端
+     */
+    public static void syncSetDataToClient(ServerPlayer player){
+        player.getCapability(PlayerPassiveItemProvider.PLAYER_PASSIVE_ITEM).ifPresent(
+                playerPassiveItem -> {
+                    Map<ResourceLocation, Integer> map = playerPassiveItem.getSetCountMap();
+
+                    IForgeRegistry<SetAbility> registry =
+                            RegistryManager.ACTIVE.getRegistry(ModSetAbility.SET_ABILITY_KEY);
+                    if (registry == null) return;
+
+                    for (Map.Entry<ResourceLocation, Integer> entry : map.entrySet()) {
+                        SetAbility ability = registry.getValue(entry.getKey());
+                        if (ability == null) return;
+
+                        ModMessages.sentToPlayer(new SetCountSyncS2CPacket(ability.getId(), entry.getValue()), player);
+                    }
+                }
+        );
+    }
+    public static void syncPillDataToClient(ServerPlayer player){
+        player.getCapability(PlayerItemUseRecordProvider.PLAYER_ITEM_USE_RECORD).ifPresent(
+                playerItemUseRecord -> {
+                    Map<Integer, ResourceLocation> map = Map.copyOf(playerItemUseRecord.getPillEffectMap());
+                    for (Map.Entry<Integer, ResourceLocation> entry : map.entrySet()) {
+                        ModMessages.sentToPlayer(new PillRecordsSyncS2CPacket(entry.getKey(), entry.getValue()), player);
+                    }
+                }
+        );
+    }
+    public static void syncItemDataToClient(ServerPlayer player) {
+        player.getCapability(PlayerPassiveItemProvider.PLAYER_PASSIVE_ITEM).ifPresent(
+                playerPassiveItem -> {
+                    Map<Integer, Integer> items = playerPassiveItem.getItemCountMapFromAll(player);
+                    ModMessages.sentToPlayer(new PassiveItemMapSyncS2CPacket(items), player);
+                });
+    }
 
     /**
      * 首次给玩家创建Capability相关数据
@@ -113,8 +175,6 @@ public class ForgeEvents {
             }
         }
     }
-
-
 
     @SubscribeEvent
     public static void onPlayerCloned(PlayerEvent.Clone event){
@@ -167,6 +227,9 @@ public class ForgeEvents {
             event.getOriginal().getCapability(EffectModulesProvider.EFFECT_MODULES).ifPresent(oldStore -> {
                 event.getEntity().getCapability(EffectModulesProvider.EFFECT_MODULES).ifPresent(newStore -> {
                     newStore.copyFrom(oldStore);
+
+                    // 给玩家添加默认模块
+                    addPermanentModules(newStore.getTriggerModules());
                 });
             });
             // extra data
@@ -180,6 +243,13 @@ public class ForgeEvents {
             event.getOriginal().invalidateCaps();
         }
     }
+
+    /** 给玩家添加默认模块 */
+    private static void addPermanentModules(TriggerModuleQueue queue){
+        queue.addIfNotExist(ModTriggerModule.HIGH_PRIORITY_PLAYER_PERMANENT_MODULE.getId(), 1);
+        queue.addIfNotExist(ModTriggerModule.PLAYER_PERMANENT_MODULE.getId(), 1);
+    }
+
 
     @SubscribeEvent
     public static void onCommandRegister(RegisterCommandsEvent event){
@@ -254,64 +324,6 @@ public class ForgeEvents {
                 }
             }
         }
-    }
-
-
-    /**
-     * 玩家登录时同步数据到客户端
-     */
-    @SubscribeEvent
-    public static void onPlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
-        if (!(event.getEntity() instanceof ServerPlayer player)) return;
-        syncAllDataToClient(player);
-
-        // update cached attack type
-        player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY).ifPresent(PlayerAbility::updateBestAttackType);
-    }
-
-    public static void syncAllDataToClient(ServerPlayer player){
-        syncSetDataToClient(player);
-        syncPillDataToClient(player);
-        syncItemDataToClient(player);
-    }
-
-    /**
-     * 同步数据到客户端
-     */
-    public static void syncSetDataToClient(ServerPlayer player){
-        player.getCapability(PlayerPassiveItemProvider.PLAYER_PASSIVE_ITEM).ifPresent(
-                playerPassiveItem -> {
-                    Map<ResourceLocation, Integer> map = playerPassiveItem.getSetCountMap();
-
-                    IForgeRegistry<SetAbility> registry =
-                            RegistryManager.ACTIVE.getRegistry(ModSetAbility.SET_ABILITY_KEY);
-                    if (registry == null) return;
-
-                    for (Map.Entry<ResourceLocation, Integer> entry : map.entrySet()) {
-                        SetAbility ability = registry.getValue(entry.getKey());
-                        if (ability == null) return;
-
-                        ModMessages.sentToPlayer(new SetCountSyncS2CPacket(ability.getId(), entry.getValue()), player);
-                    }
-                }
-        );
-    }
-    public static void syncPillDataToClient(ServerPlayer player){
-        player.getCapability(PlayerItemUseRecordProvider.PLAYER_ITEM_USE_RECORD).ifPresent(
-                playerItemUseRecord -> {
-                    Map<Integer, ResourceLocation> map = Map.copyOf(playerItemUseRecord.getPillEffectMap());
-                    for (Map.Entry<Integer, ResourceLocation> entry : map.entrySet()) {
-                        ModMessages.sentToPlayer(new PillRecordsSyncS2CPacket(entry.getKey(), entry.getValue()), player);
-                    }
-                }
-        );
-    }
-    public static void syncItemDataToClient(ServerPlayer player) {
-        player.getCapability(PlayerPassiveItemProvider.PLAYER_PASSIVE_ITEM).ifPresent(
-                playerPassiveItem -> {
-                    Map<Integer, Integer> items = playerPassiveItem.getItemCountMapFromAll(player);
-                    ModMessages.sentToPlayer(new PassiveItemMapSyncS2CPacket(items), player);
-                });
     }
 
     @SubscribeEvent

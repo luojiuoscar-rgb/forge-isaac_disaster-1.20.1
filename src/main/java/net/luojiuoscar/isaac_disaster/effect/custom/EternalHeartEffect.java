@@ -1,6 +1,5 @@
 package net.luojiuoscar.isaac_disaster.effect.custom;
 
-import net.luojiuoscar.isaac_disaster.effect.ModEffects;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.sound.ModSounds;
 import net.minecraft.sounds.SoundSource;
@@ -10,7 +9,6 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.event.entity.living.LivingHurtEvent;
 
 import java.util.List;
 
@@ -50,13 +48,5 @@ public class EternalHeartEffect extends MobEffect {
         return duration % 10 == 0;
     }
 
-    public static boolean onTriggered(LivingHurtEvent event){
-        if (!(event.getEntity() instanceof Player player) || player.getAbsorptionAmount() != 0) return false;
 
-        player.removeEffect(ModEffects.ETERNAL_HEART.get());
-        event.setAmount(0.0f);
-        player.level().playSound(null, player.getX(), player.getY(), player.getZ(),
-                ModSounds.BLACK_HEART_ACTIVE.get(), SoundSource.PLAYERS, 1.0f, 1.0f);
-        return true;
-    }
 }

@@ -1,13 +1,9 @@
 package net.luojiuoscar.isaac_disaster.effect.curse;
 
-import net.luojiuoscar.isaac_disaster.helper.EntityHelper;
 import net.luojiuoscar.isaac_disaster.item.ModPassiveItems;
-import net.luojiuoscar.isaac_disaster.manager.StatManager;
-import net.minecraft.util.RandomSource;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.event.entity.living.LivingHurtEvent;
 
 import java.util.List;
 
@@ -19,14 +15,5 @@ public class CurseOfTheMaze extends MobEffect {
     @Override
     public List<ItemStack> getCurativeItems() {
         return List.of(new ItemStack(ModPassiveItems.BLACK_CANDLE.get()));
-    }
-
-    public static void onTriggered(LivingHurtEvent event){
-        RandomSource random = event.getEntity().getRandom();
-
-        if (random.nextDouble() < 0.2){ // 20%
-            EntityHelper.teleportToRandomLocation(event.getEntity(), 0.5 * StatManager.getNearbyRange());
-        }
-
     }
 }

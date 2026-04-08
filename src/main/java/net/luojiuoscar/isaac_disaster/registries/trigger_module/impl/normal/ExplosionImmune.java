@@ -1,17 +1,17 @@
-package net.luojiuoscar.isaac_disaster.registries.trigger_module.impl;
+package net.luojiuoscar.isaac_disaster.registries.trigger_module.impl.normal;
 
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.CompositeTrigger;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ModAbilityEffects;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.SimpleTrigger;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.ITriggerModule;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerTypes;
-import net.luojiuoscar.isaac_disaster.registries.ability_effect.SimpleTrigger;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerModulePriority;
 
 import java.util.List;
 
-public class BlindRage implements ITriggerModule {
+public class ExplosionImmune implements ITriggerModule {
     private static final CompositeTrigger triggers = new CompositeTrigger(List.of(
-            new SimpleTrigger(ModTriggerTypes.ON_HURT, ModAbilityEffects.BLIND_RAGE)
+            new SimpleTrigger(ModTriggerTypes.ON_HURT, ModAbilityEffects.EXPLOSION_IMMUNE)
     ));
 
     @Override
@@ -20,7 +20,7 @@ public class BlindRage implements ITriggerModule {
     }
 
     @Override
-    public double getPriority(){
-        return TriggerModulePriority.LOWEST.priority;
+    public double getPriority() {
+        return TriggerModulePriority.HIGHEST.priority;
     }
 }
