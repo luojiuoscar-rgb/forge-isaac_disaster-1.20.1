@@ -3,13 +3,13 @@ package net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.normal;
 import net.luojiuoscar.isaac_disaster.helper.LootHelper;
 import net.luojiuoscar.isaac_disaster.manager.LootTableManager;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
-import net.luojiuoscar.isaac_disaster.registries.ability_effect.AbilityEffectContext;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.ExecutableEffectContext;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.IAbilityEffect;
 import net.minecraft.world.entity.player.Player;
 
 public class IvBag implements IAbilityEffect {
     @Override
-    public boolean applyEffect(AbilityEffectContext context) {
+    public boolean applyEffect(ExecutableEffectContext context) {
         if (!(context.getEntity() instanceof Player player)) return false;
 
         if (player.invulnerableTime > 0) return true;

@@ -10,12 +10,12 @@ import java.util.List;
 
 public class Ipecac implements ITriggerModule {
     private static final CompositeTrigger triggers = new CompositeTrigger(List.of(
-            new SimpleTrigger(ModTriggerTypes.HIT_ENTITY, ModAbilityEffects.IPECAC)
+            new SimpleTrigger(ModTriggerTypes.HIT_ENTITY, ModExecutableEffects.IPECAC)
     ));
 
     private static final List<SimpleTrigger> bullet_triggers = List.of(
-            new SimpleTrigger(ModTriggerTypes.BULLET_HIT_ENTITY_BEFORE, ModAbilityEffects.IPECAC),
-            new SimpleTrigger(ModTriggerTypes.BULLET_HIT_BLOCK, ModAbilityEffects.IPECAC)
+            new SimpleTrigger(ModTriggerTypes.BULLET_HIT_ENTITY_BEFORE, ModExecutableEffects.IPECAC),
+            new SimpleTrigger(ModTriggerTypes.BULLET_HIT_BLOCK, ModExecutableEffects.IPECAC)
     );
 
     @Override
@@ -24,7 +24,7 @@ public class Ipecac implements ITriggerModule {
     }
 
     @Override
-    public void attachToBullet(AbilityEffectContext context) {
+    public void attachToBullet(ExecutableEffectContext context) {
         // 添加simpleTrigger到bullet中
         if (context.get(ContextKeys.EVENT) instanceof GetAttackContextEvent event) {
             List<AttackContext> attCtxs = event.getContexts();

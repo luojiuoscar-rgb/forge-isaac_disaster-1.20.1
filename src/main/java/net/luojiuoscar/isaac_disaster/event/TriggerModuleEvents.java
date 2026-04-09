@@ -7,7 +7,7 @@ import net.luojiuoscar.isaac_disaster.event.custom.attack.tear_bullet.BulletTick
 import net.luojiuoscar.isaac_disaster.event.custom.misc.BeforeTriggerModuleActiveEvent;
 import net.luojiuoscar.isaac_disaster.event.custom.misc.RightClickTickEvent;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
-import net.luojiuoscar.isaac_disaster.registries.ability_effect.AbilityEffectContext;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.ExecutableEffectContext;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ContextKeys;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.IBulletObject;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.*;
@@ -34,7 +34,7 @@ import java.util.List;
 @Mod.EventBusSubscriber(modid = IsaacDisaster.MOD_ID)
 public class TriggerModuleEvents {
 
-    public static void dispatch(AbilityEffectContext context, TriggerType type) {
+    public static void dispatch(ExecutableEffectContext context, TriggerType type) {
         TriggerModuleQueue queue = context.get(ContextKeys.TRIGGER_MODULE_QUEUE);
         if (queue == null || queue.isEmpty()) return;
 
@@ -57,7 +57,7 @@ public class TriggerModuleEvents {
         }
     }
 
-    public static void bulletDispatch(AbilityEffectContext context, TriggerType type){
+    public static void bulletDispatch(ExecutableEffectContext context, TriggerType type){
         context.set(ContextKeys.AMPLIFIER, 1.);
         ModTriggerModule.BULLET_TRIGGER_MODULE.get().fire(context, type);
     }
@@ -65,7 +65,7 @@ public class TriggerModuleEvents {
     @SubscribeEvent
     public static void getAttackContext(GetAttackContextEvent event) {
         LivingEntity entity = event.getPlayer();
-        AbilityEffectContext context = new AbilityEffectContext(entity);
+        ExecutableEffectContext context = new ExecutableEffectContext(entity);
         context.set(ContextKeys.EVENT, event);
         context.set(ContextKeys.TARGET_POSITION, entity.position());
 
@@ -80,7 +80,7 @@ public class TriggerModuleEvents {
     @SubscribeEvent
     public static void beforePerformAttack(BeforePerformAttackEvent event) {
         LivingEntity entity = event.getEntity();
-        AbilityEffectContext context = new AbilityEffectContext(entity);
+        ExecutableEffectContext context = new ExecutableEffectContext(entity);
         context.set(ContextKeys.EVENT, event);
         context.set(ContextKeys.TARGET_POSITION, entity.position());
 
@@ -98,7 +98,7 @@ public class TriggerModuleEvents {
         if (!PlayerHelper.isHitAllowedType(event.getSource())) return;
         if (!(event.getSource().getEntity() instanceof LivingEntity entity)) return;
 
-        AbilityEffectContext context = new AbilityEffectContext(entity);
+        ExecutableEffectContext context = new ExecutableEffectContext(entity);
         context.set(ContextKeys.EVENT, event);
         context.set(ContextKeys.TARGET_POSITION, entity.position());
         context.set(ContextKeys.DOUBLE, List.of((double) event.getAmount()));
@@ -122,7 +122,7 @@ public class TriggerModuleEvents {
     public static void beforeBulletHitEntity(IsaacAttackBeforeHitEntityEvent event) {
         IBulletObject bulletObject = event.getBulletObject();
 
-        AbilityEffectContext context = new AbilityEffectContext(bulletObject.getOwner());
+        ExecutableEffectContext context = new ExecutableEffectContext(bulletObject.getOwner());
         context.set(ContextKeys.EVENT, event);
         context.set(ContextKeys.BULLET, bulletObject);
         context.set(ContextKeys.TARGET_POSITION, bulletObject.getPosition());
@@ -136,7 +136,7 @@ public class TriggerModuleEvents {
     public static void afterBulletHitEntity(IsaacAttackAfterHitEvent event) {
         IBulletObject bulletObject = event.getBulletObject();
 
-        AbilityEffectContext context = new AbilityEffectContext(bulletObject.getOwner());
+        ExecutableEffectContext context = new ExecutableEffectContext(bulletObject.getOwner());
         context.set(ContextKeys.EVENT, event);
         context.set(ContextKeys.BULLET, bulletObject);
         context.set(ContextKeys.TARGET_POSITION, bulletObject.getPosition());
@@ -150,7 +150,7 @@ public class TriggerModuleEvents {
     public static void onBulletHitBlock(IsaacAttackHitBlockEvent event) {
         IBulletObject bulletObject = event.getBulletObject();
 
-        AbilityEffectContext context = new AbilityEffectContext(bulletObject.getOwner());
+        ExecutableEffectContext context = new ExecutableEffectContext(bulletObject.getOwner());
         context.set(ContextKeys.EVENT, event);
         context.set(ContextKeys.BULLET, bulletObject);
         context.set(ContextKeys.TARGET_POSITION, event.getHitResult().getBlockPos().getCenter());
@@ -162,7 +162,7 @@ public class TriggerModuleEvents {
     @SubscribeEvent
     public static void onLivingHurt(LivingHurtEvent event) {
         LivingEntity entity = event.getEntity();
-        AbilityEffectContext context = new AbilityEffectContext(entity);
+        ExecutableEffectContext context = new ExecutableEffectContext(entity);
         context.set(ContextKeys.EVENT, event);
         context.set(ContextKeys.TARGET_POSITION, entity.position());
 
@@ -194,7 +194,7 @@ public class TriggerModuleEvents {
         LivingEntity victim = event.getEntity();
         Entity medium = event.getSource().getDirectEntity();
 
-        AbilityEffectContext death_ctx = new AbilityEffectContext(victim);
+        ExecutableEffectContext death_ctx = new ExecutableEffectContext(victim);
         death_ctx.set(ContextKeys.EVENT, event);
         death_ctx.set(ContextKeys.TARGET_POSITION, victim.position());
 
@@ -205,7 +205,7 @@ public class TriggerModuleEvents {
         if (medium != null) secondary_entities.add(medium);
         death_ctx.set(ContextKeys.SECONDARY_ENTITIES, secondary_entities);
 
-        AbilityEffectContext kill_ctx = new AbilityEffectContext(entity);
+        ExecutableEffectContext kill_ctx = new ExecutableEffectContext(entity);
         kill_ctx.set(ContextKeys.EVENT, event);
         kill_ctx.set(ContextKeys.TARGET_POSITION, victim.position());
         kill_ctx.set(ContextKeys.SECONDARY_ENTITIES, secondary_entities);
@@ -223,7 +223,7 @@ public class TriggerModuleEvents {
     @SubscribeEvent
     public static void onBlockBreak(BlockEvent.BreakEvent event) {
         Player player = event.getPlayer();
-        AbilityEffectContext context = new AbilityEffectContext(player);
+        ExecutableEffectContext context = new ExecutableEffectContext(player);
         context.set(ContextKeys.EVENT, event);
         context.set(ContextKeys.TARGET_POSITION, player.position());
 
@@ -240,7 +240,7 @@ public class TriggerModuleEvents {
         IBulletObject bullet = event.getBullet();
         LivingEntity entity = bullet.getOwner();
 
-        AbilityEffectContext context = new AbilityEffectContext(entity);
+        ExecutableEffectContext context = new ExecutableEffectContext(entity);
         context.set(ContextKeys.EVENT, event);
         context.set(ContextKeys.TARGET_POSITION, bullet.getPosition());
         context.set(ContextKeys.BULLET, bullet);
@@ -251,7 +251,7 @@ public class TriggerModuleEvents {
     @SubscribeEvent
     public static void onPickupItem(RightClickTickEvent event) {
         ServerPlayer player = event.getPlayer();
-        AbilityEffectContext context = new AbilityEffectContext(player);
+        ExecutableEffectContext context = new ExecutableEffectContext(player);
         context.set(ContextKeys.EVENT, event);
         InteractionHand hand = player.getUsedItemHand();
         context.set(ContextKeys.HAND, hand);
@@ -269,7 +269,7 @@ public class TriggerModuleEvents {
     @SubscribeEvent
     public static void onPickupItem(EntityItemPickupEvent event) {
         LivingEntity entity = event.getEntity();
-        AbilityEffectContext context = new AbilityEffectContext(entity);
+        ExecutableEffectContext context = new ExecutableEffectContext(entity);
         context.set(ContextKeys.EVENT, event);
         ItemEntity item = event.getItem();
 

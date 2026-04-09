@@ -5,7 +5,7 @@ import net.luojiuoscar.isaac_disaster.helper.CuriosHelper;
 import net.luojiuoscar.isaac_disaster.item.ModTrinkets;
 import net.luojiuoscar.isaac_disaster.item.item.Trinket;
 import net.luojiuoscar.isaac_disaster.manager.id.TrinketId;
-import net.luojiuoscar.isaac_disaster.registries.ability_effect.AbilityEffectContext;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.ExecutableEffectContext;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.IAbilityEffect;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -18,7 +18,7 @@ import java.util.List;
 
 public class DropPerfection implements IAbilityEffect {
     @Override
-    public boolean applyEffect(AbilityEffectContext context) {
+    public boolean applyEffect(ExecutableEffectContext context) {
         if (!(context.getEntity() instanceof ServerPlayer player)) return false;
 
         List<ItemStack> trinkets = CuriosHelper.getEquippedItemsInSlot(player, CuriosHelper.TRINKET);

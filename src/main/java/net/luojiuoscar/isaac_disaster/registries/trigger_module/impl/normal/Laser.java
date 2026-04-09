@@ -11,8 +11,8 @@ import java.util.List;
 
 public class Laser implements ITriggerModule {
     private static final List<SimpleTrigger> bullet_triggers = List.of(
-            new SimpleTrigger(ModTriggerTypes.BULLET_HIT_ENTITY_BEFORE, ModAbilityEffects.LASER_PLUS_BRIMSTONE),
-            new SimpleTrigger(ModTriggerTypes.BULLET_TICK, ModAbilityEffects.LASER_PLUS_FETUS)
+            new SimpleTrigger(ModTriggerTypes.BULLET_HIT_ENTITY_BEFORE, ModExecutableEffects.LASER_PLUS_BRIMSTONE),
+            new SimpleTrigger(ModTriggerTypes.BULLET_TICK, ModExecutableEffects.LASER_PLUS_FETUS)
     );
 
     @Override
@@ -21,7 +21,7 @@ public class Laser implements ITriggerModule {
     }
 
     @Override
-    public void attachToBullet(AbilityEffectContext context) {
+    public void attachToBullet(ExecutableEffectContext context) {
         // 添加simpleTrigger到bullet中
         if (context.get(ContextKeys.EVENT) instanceof GetAttackContextEvent event) {
             List<AttackContext> attCtxs = event.getContexts();

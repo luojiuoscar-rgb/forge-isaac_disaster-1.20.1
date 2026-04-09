@@ -2,7 +2,7 @@ package net.luojiuoscar.isaac_disaster.registries.ability.pickup;
 
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.manager.id.ItemId;
-import net.luojiuoscar.isaac_disaster.registries.ability_effect.AbilityEffectContext;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.ExecutableEffectContext;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.CompositeTrigger;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ContextKeys;
 import net.minecraft.server.level.ServerPlayer;
@@ -18,7 +18,7 @@ public abstract class TarotAbility extends PickupAbility{
     @Override
     public void onUse(ServerPlayer player, ItemStack stack, InteractionHand hand){
 
-        AbilityEffectContext ctx = getCtx(player, stack, hand);
+        ExecutableEffectContext ctx = getCtx(player, stack, hand);
         ctx.set(ContextKeys.AMPLIFIER, PlayerHelper.hasItem(ItemId.TAROT_CLOTH.getId(), player) // tarot cloth
                 ? getStrongerAmplifier() : getNormalAmplifier());
 

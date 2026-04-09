@@ -10,11 +10,11 @@ import java.util.List;
 
 public class Terra implements ITriggerModule {
     private static final List<SimpleTrigger> bullet_triggers = List.of(
-            new SimpleTrigger(ModTriggerTypes.BULLET_HIT_BLOCK, ModAbilityEffects.BREAK_BLOCK_AND_DROP)
+            new SimpleTrigger(ModTriggerTypes.BULLET_HIT_BLOCK, ModExecutableEffects.BREAK_BLOCK_AND_DROP)
     );
 
     @Override
-    public void attachToBullet(AbilityEffectContext context) {
+    public void attachToBullet(ExecutableEffectContext context) {
         // 添加simpleTrigger到bullet中
         if (context.get(ContextKeys.EVENT) instanceof GetAttackContextEvent event) {
             List<AttackContext> attCtxs = event.getContexts();

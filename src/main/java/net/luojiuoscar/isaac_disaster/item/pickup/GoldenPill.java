@@ -26,7 +26,9 @@ public class GoldenPill extends Item implements ICommonPickup {
         ItemStack stack = player.getItemInHand(hand);
 
         // 触发药丸效果
-        PillEffectManager.getInstance().triggerRandomEffect((ServerPlayer) player, isHorsePill);
+        if (player instanceof ServerPlayer serverPlayer){
+            PillEffectManager.getInstance().triggerRandomEffect(serverPlayer, isHorsePill);
+        }
 
         // 物品-1
         if (!(player.isCreative() || player.isSpectator())) {

@@ -1,7 +1,7 @@
 package net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.normal;
 
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
-import net.luojiuoscar.isaac_disaster.registries.ability_effect.AbilityEffectContext;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.ExecutableEffectContext;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.IAbilityEffect;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
@@ -9,7 +9,7 @@ import net.minecraft.sounds.SoundSource;
 
 public class TeleportToSpawn implements IAbilityEffect {
     @Override
-    public boolean applyEffect(AbilityEffectContext context) {
+    public boolean applyEffect(ExecutableEffectContext context) {
         if (context.getEntity() instanceof ServerPlayer player){
             PlayerHelper.teleportPlayerToSpawn(player);
 

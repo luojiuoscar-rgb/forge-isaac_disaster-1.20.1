@@ -2,10 +2,11 @@ package net.luojiuoscar.isaac_disaster.commands;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.BoolArgumentType;
-
-import net.luojiuoscar.isaac_disaster.registries.pill_effect.ModPillEffect;
-import net.luojiuoscar.isaac_disaster.registries.pill_effect.IPillEffect;
-
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.ContextKeys;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.ExecutableEffectContext;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.IExecutableEffect;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.ModExecutableEffects;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.pill_effect.PillEffect;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.SharedSuggestionProvider;
@@ -31,11 +32,19 @@ public class TriggerPillEffectCommand {
                                                                 Commands.argument("id", ResourceLocationArgument.id())
                                                                         // ==== TAB 补全 ====
                                                                         .suggests((ctx, builder) -> {
-                                                                            List<String> ids = ModPillEffect.PILL_EFFECT_REGISTRY
-                                                                                    .getEntries()
+                                                                            List<String> ids = ModExecutableEffects.EXECUTABLE_EFFECT_REGISTRY.getEntries()
                                                                                     .stream()
                                                                                     .map(RegistryObject::getId)
                                                                                     .map(ResourceLocation::toString)
+                                                                                    // 只保留 PillEffect 类型
+                                                                                    .filter(idStr -> {
+                                                                                        RegistryObject<?> ro = ModExecutableEffects.EXECUTABLE_EFFECT_REGISTRY.getEntries()
+                                                                                                .stream()
+                                                                                                .filter(r -> r.getId().toString().equals(idStr))
+                                                                                                .findFirst()
+                                                                                                .orElse(null);
+                                                                                        return ro != null && ro.get() instanceof PillEffect;
+                                                                                    })
                                                                                     .toList();
                                                                             return SharedSuggestionProvider.suggest(ids, builder);
                                                                         })
@@ -68,14 +77,14 @@ public class TriggerPillEffectCommand {
             return 0;
         }
 
-        // === 从 Registry 中查找对应的药丸效果 ===
-        RegistryObject<IPillEffect> obj = ModPillEffect.PILL_EFFECT_REGISTRY.getEntries()
+        // === 从 Registry 中查找对应的 PillEffect ===
+        RegistryObject<IExecutableEffect> obj = ModExecutableEffects.EXECUTABLE_EFFECT_REGISTRY.getEntries()
                 .stream()
                 .filter(e -> e.getId().equals(id))
                 .findFirst()
                 .orElse(null);
 
-        if (obj == null) {
+        if (obj == null || !(obj.get() instanceof PillEffect effect)) {
             source.sendFailure(Component.literal("§c找不到药丸效果: §e" + id));
             return 0;
         }
@@ -84,9 +93,10 @@ public class TriggerPillEffectCommand {
         source.sendSuccess(() -> Component.literal(
                 "§a读取成功: §e" + id + " §7| 大药丸=" + isHorse), false);
 
-        IPillEffect effect = obj.get();
-        effect.redirectAndUse(player, isHorse);
-        effect.redirectAndMakeSound(player, isHorse);
+        // 执行 PillEffect
+        ExecutableEffectContext context = new ExecutableEffectContext(player);
+        context.set(ContextKeys.BOOLEAN, List.of(isHorse));
+        effect.apply(context);
 
         return 1;
     }

@@ -6,11 +6,8 @@ import net.luojiuoscar.isaac_disaster.registries.ability.active.ActiveAbility;
 import net.luojiuoscar.isaac_disaster.registries.ability.active.ModActiveAbility;
 import net.luojiuoscar.isaac_disaster.registries.ability.pickup.ModPickupAbility;
 import net.luojiuoscar.isaac_disaster.registries.ability.pickup.PickupAbility;
-import net.luojiuoscar.isaac_disaster.registries.ability_effect.AbilityEffectContext;
-import net.luojiuoscar.isaac_disaster.registries.ability_effect.ContextKeys;
-import net.luojiuoscar.isaac_disaster.registries.ability_effect.IAbilityEffect;
-import net.luojiuoscar.isaac_disaster.registries.pill_effect.IPillEffect;
-import net.luojiuoscar.isaac_disaster.registries.pill_effect.ModPillEffect;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.*;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.pill_effect.PillEffect;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraftforge.registries.IForgeRegistry;
@@ -18,13 +15,13 @@ import net.minecraftforge.registries.RegistryManager;
 
 public class WildCard implements IAbilityEffect {
     @Override
-    public boolean applyEffect(AbilityEffectContext context) {
+    public boolean applyEffect(ExecutableEffectContext context) {
         InteractionHand hand = context.get(ContextKeys.HAND);
         if (hand == null) return false;
         if (!(context.getEntity() instanceof ServerPlayer player)) return false;
 
-        IForgeRegistry<IPillEffect> pillRegistry =
-                RegistryManager.ACTIVE.getRegistry(ModPillEffect.PILL_EFFECT_KEY);
+        IForgeRegistry<IExecutableEffect> pillRegistry =
+                RegistryManager.ACTIVE.getRegistry(ModExecutableEffects.EXECUTABLE_EFFECT);
         IForgeRegistry<PickupAbility> pickupRegistry =
                 RegistryManager.ACTIVE.getRegistry(ModPickupAbility.PICKUP_ABILITY_KEY);
         IForgeRegistry<ActiveAbility> activeRegistry =
@@ -53,8 +50,8 @@ public class WildCard implements IAbilityEffect {
 
                     if (maxSeq == seqEffect && pillRegistry != null) {
 
-                        IPillEffect pillEffect = pillRegistry.getValue(effect.id());
-                        if (pillEffect != null) pillEffect.redirectAndUse(player, effect.isHorse());
+                        PillEffect pillEffect = (PillEffect) pillRegistry.getValue(effect.id());
+                        if (pillEffect != null) pillEffect.apply(context);
 
                     }
                     else if (maxSeq == seqCard && pickupRegistry != null) {

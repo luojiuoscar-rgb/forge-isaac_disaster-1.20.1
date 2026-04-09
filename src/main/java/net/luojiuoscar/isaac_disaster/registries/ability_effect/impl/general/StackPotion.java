@@ -1,7 +1,7 @@
 package net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.general;
 
 import net.luojiuoscar.isaac_disaster.helper.EntityHelper;
-import net.luojiuoscar.isaac_disaster.registries.ability_effect.AbilityEffectContext;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.ExecutableEffectContext;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ContextKeys;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.IAbilityEffect;
 import net.minecraft.util.Mth;
@@ -16,11 +16,11 @@ import java.util.List;
  */
 public class StackPotion implements IAbilityEffect {
     @Override
-    public boolean applyEffect(AbilityEffectContext context) {
+    public boolean applyEffect(ExecutableEffectContext context) {
         var potions = context.get(ContextKeys.POTIONS);
         if (potions.isEmpty()) return false;
 
-        int multiplier = context.getOrDefault(ContextKeys.AMPLIFIER, 1.).intValue();
+        int multiplier = context.getOrDefault(ContextKeys.AMPLIFIER, 1.).intValue() - 1;
         LivingEntity entity = context.getEntity();
 
         List<Boolean> booleans = context.getOrDefault(ContextKeys.BOOLEAN, List.of());

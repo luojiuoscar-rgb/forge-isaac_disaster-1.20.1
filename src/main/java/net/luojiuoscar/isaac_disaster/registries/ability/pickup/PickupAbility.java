@@ -1,6 +1,6 @@
 package net.luojiuoscar.isaac_disaster.registries.ability.pickup;
 
-import net.luojiuoscar.isaac_disaster.registries.ability_effect.AbilityEffectContext;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.ExecutableEffectContext;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.CompositeTrigger;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ContextKeys;
 import net.minecraft.network.chat.Component;
@@ -19,8 +19,8 @@ public abstract class PickupAbility {
         this.trigger = trigger;
     }
 
-    protected AbilityEffectContext getCtx(ServerPlayer player, @Nullable ItemStack stack, @Nullable InteractionHand hand){
-        AbilityEffectContext ctx = new AbilityEffectContext(player);
+    protected ExecutableEffectContext getCtx(ServerPlayer player, @Nullable ItemStack stack, @Nullable InteractionHand hand){
+        ExecutableEffectContext ctx = new ExecutableEffectContext(player);
         ctx.set(ContextKeys.TARGET_POSITION, player.position());
         ctx.set(ContextKeys.AMPLIFIER, 1.);
 
@@ -35,7 +35,7 @@ public abstract class PickupAbility {
     }
 
     public void onUse(ServerPlayer player, @Nullable ItemStack stack, @Nullable InteractionHand hand){
-        AbilityEffectContext ctx = getCtx(player, stack, hand);
+        ExecutableEffectContext ctx = getCtx(player, stack, hand);
 
         fire(ctx);
 
@@ -48,7 +48,7 @@ public abstract class PickupAbility {
         stack.shrink(1);
     }
 
-    public void fire(AbilityEffectContext context){
+    public void fire(ExecutableEffectContext context){
         trigger.fire(context, null);
     }
 

@@ -11,7 +11,7 @@ import java.util.List;
 
 public class BounceOnEntity implements ITriggerModule {
     private static final List<SimpleTrigger> bullet_triggers = List.of(
-            new SimpleTrigger(ModTriggerTypes.BULLET_HIT_ENTITY_AFTER, ModAbilityEffects.BULLET_BOUNCE_ON_ENTITY)
+            new SimpleTrigger(ModTriggerTypes.BULLET_HIT_ENTITY_AFTER, ModExecutableEffects.BULLET_BOUNCE_ON_ENTITY)
     );
 
     @Override
@@ -20,7 +20,7 @@ public class BounceOnEntity implements ITriggerModule {
     }
 
     @Override
-    public void attachToBullet(AbilityEffectContext context) {
+    public void attachToBullet(ExecutableEffectContext context) {
         // 添加simpleTrigger到bullet中
         if (context.get(ContextKeys.EVENT) instanceof GetAttackContextEvent event) {
             List<AttackContext> attCtxs = event.getContexts();

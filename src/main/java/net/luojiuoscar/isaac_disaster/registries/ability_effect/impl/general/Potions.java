@@ -1,6 +1,6 @@
 package net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.general;
 
-import net.luojiuoscar.isaac_disaster.registries.ability_effect.AbilityEffectContext;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.ExecutableEffectContext;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ContextKeys;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.IAbilityEffect;
 import net.minecraft.util.Mth;
@@ -9,11 +9,11 @@ import net.minecraft.world.entity.LivingEntity;
 
 public class Potions implements IAbilityEffect {
     @Override
-    public boolean applyEffect(AbilityEffectContext context) {
+    public boolean applyEffect(ExecutableEffectContext context) {
         var potions = context.get(ContextKeys.POTIONS);
         if (potions.isEmpty()) return false;
 
-        int multiplier = context.getOrDefault(ContextKeys.AMPLIFIER, 1.).intValue();
+        int multiplier = context.getOrDefault(ContextKeys.AMPLIFIER, 1.).intValue() - 1;
         LivingEntity entity = context.getEntity();
 
         for (var potion : potions){

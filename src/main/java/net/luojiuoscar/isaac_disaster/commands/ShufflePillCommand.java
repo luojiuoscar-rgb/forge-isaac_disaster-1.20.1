@@ -15,11 +15,10 @@ public class ShufflePillCommand {
                 .executes(context -> {
                     // 获取命令执行者（玩家）
                     ServerPlayer player = context.getSource().getPlayerOrException();
-                    ServerLevel level = (ServerLevel) player.level();
+                    if (!(player.level() instanceof ServerLevel level)) return 0;
 
                     PillEffectManager.getInstance().shufflePills(level);
                     player.sendSystemMessage(Component.literal("药丸重置！"));
-
                     return 1;
                 }))));
     }

@@ -6,13 +6,13 @@ import net.minecraftforge.event.entity.living.LivingHurtEvent;
 
 public class ExplosionRegeneration implements IAbilityEffect {
     @Override
-    public boolean applyEffect(AbilityEffectContext context) {
+    public boolean applyEffect(ExecutableEffectContext context) {
         if (context.get(ContextKeys.EVENT) instanceof LivingHurtEvent event){
             DamageSource source = event.getSource();
 
             if (source.getMsgId().contains("explosion")){
                 context.set(ContextKeys.AMPLIFIER, 0.4);
-                ModAbilityEffects.HEAL.get().apply(context);
+                ModExecutableEffects.HEAL.get().apply(context);
             }
             return true;
         }

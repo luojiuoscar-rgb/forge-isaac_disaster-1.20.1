@@ -12,11 +12,11 @@ import java.util.function.Predicate;
 public class SimpleTrigger {
     public final TriggerType type;
     public final RegistryObject<IExecutableEffect> effect;
-    private final Predicate<AbilityEffectContext> condition;
+    private final Predicate<ExecutableEffectContext> condition;
 
     public SimpleTrigger(TriggerType type,
                          RegistryObject<IExecutableEffect> effect,
-                         Predicate<AbilityEffectContext> condition) {
+                         Predicate<ExecutableEffectContext> condition) {
         this.type = type;
         this.effect = effect;
         this.condition = condition != null ? condition : ctx -> true;
@@ -26,11 +26,11 @@ public class SimpleTrigger {
         this(type, effect, null);
     }
 
-    private boolean shouldFire(AbilityEffectContext context) {
+    private boolean shouldFire(ExecutableEffectContext context) {
         return condition.test(context);
     }
 
-    public void fire(AbilityEffectContext context){
+    public void fire(ExecutableEffectContext context){
         if (shouldFire(context)) {
             effect.get().apply(context);
         }

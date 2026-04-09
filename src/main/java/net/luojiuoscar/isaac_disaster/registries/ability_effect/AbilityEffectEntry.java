@@ -6,16 +6,16 @@ import java.util.function.Consumer;
 
 public class AbilityEffectEntry implements IExecutableEffect {
     private final RegistryObject<IExecutableEffect> effect;
-    private final Consumer<AbilityEffectContext> config;
+    private final Consumer<ExecutableEffectContext> config;
 
     public AbilityEffectEntry(RegistryObject<IExecutableEffect> effect,
-                              Consumer<AbilityEffectContext> config) {
+                              Consumer<ExecutableEffectContext> config) {
         this.effect = effect;
         this.config = config;
     }
 
     @Override
-    public void apply(AbilityEffectContext context) {
+    public void apply(ExecutableEffectContext context) {
         config.accept(context);   // 写入参数后调用
         effect.get().apply(context);
     }

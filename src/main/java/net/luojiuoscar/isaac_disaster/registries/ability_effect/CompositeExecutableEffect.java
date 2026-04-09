@@ -11,7 +11,7 @@ public class CompositeExecutableEffect implements IExecutableEffect {
     }
 
     @Override
-    public void apply(AbilityEffectContext context) {
+    public void apply(ExecutableEffectContext context) {
         for (IExecutableEffect effect : effects) {
             effect.apply(context);
         }

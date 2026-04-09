@@ -1,6 +1,6 @@
 package net.luojiuoscar.isaac_disaster.registries.trigger_module;
 
-import net.luojiuoscar.isaac_disaster.registries.ability_effect.AbilityEffectContext;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.ExecutableEffectContext;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.CompositeTrigger;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
@@ -12,10 +12,10 @@ public interface ITriggerModule {
     CompositeTrigger getTriggers();
 
     /** 也不需要频繁new */
-    default void attachToBullet(AbilityEffectContext context){}
+    default void attachToBullet(ExecutableEffectContext context){}
 
     // 执行所有fire
-    default void fire(AbilityEffectContext context, TriggerType type){
+    default void fire(ExecutableEffectContext context, TriggerType type){
         // 如果需要附加给子弹
         if (type.is(ModTriggerTypes.GET_ATTACK_CONTEXT)){
             attachToBullet(context);

@@ -1,6 +1,6 @@
 package net.luojiuoscar.isaac_disaster.registries.trigger_module.impl.special;
 
-import net.luojiuoscar.isaac_disaster.registries.ability_effect.AbilityEffectContext;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.ExecutableEffectContext;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.CompositeTrigger;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ContextKeys;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.IBulletObject;
@@ -17,7 +17,7 @@ public class BulletTriggerModule implements ITriggerModule {
     }
 
     @Override
-    public void fire(AbilityEffectContext context, TriggerType type) {
+    public void fire(ExecutableEffectContext context, TriggerType type) {
         IBulletObject bullet = context.get(ContextKeys.BULLET);
         if (bullet == null) return;
 

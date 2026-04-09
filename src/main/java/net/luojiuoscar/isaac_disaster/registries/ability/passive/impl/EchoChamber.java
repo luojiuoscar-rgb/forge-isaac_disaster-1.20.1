@@ -5,8 +5,11 @@ import net.luojiuoscar.isaac_disaster.capability.player.PlayerItemUseRecordProvi
 import net.luojiuoscar.isaac_disaster.registries.ability.passive.PassiveAbility;
 import net.luojiuoscar.isaac_disaster.registries.ability.pickup.ModPickupAbility;
 import net.luojiuoscar.isaac_disaster.registries.ability.pickup.PickupAbility;
-import net.luojiuoscar.isaac_disaster.registries.pill_effect.IPillEffect;
-import net.luojiuoscar.isaac_disaster.registries.pill_effect.ModPillEffect;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.ExecutableEffectContext;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.ContextKeys;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.IExecutableEffect;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.ModExecutableEffects;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.pill_effect.PillEffect;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
@@ -44,8 +47,8 @@ public class EchoChamber extends PassiveAbility {
 
     public static void onTriggered(ServerPlayer player){
 
-        IForgeRegistry<IPillEffect> pillRegistry =
-                RegistryManager.ACTIVE.getRegistry(ModPillEffect.PILL_EFFECT_KEY);
+        IForgeRegistry<IExecutableEffect> pillRegistry =
+                RegistryManager.ACTIVE.getRegistry(ModExecutableEffects.EXECUTABLE_EFFECT);
         IForgeRegistry<PickupAbility> pickupRegistry =
                 RegistryManager.ACTIVE.getRegistry(ModPickupAbility.PICKUP_ABILITY_KEY);
 
@@ -68,10 +71,12 @@ public class EchoChamber extends PassiveAbility {
                         if (card == null || (pe != null && pe.sequence() >= card.sequence())) {
 
                             if (pillRegistry == null) continue;
-                            IPillEffect effect = pillRegistry.getValue(pe.id());
+                            PillEffect effect = (PillEffect) pillRegistry.getValue(pe.id());
 
                             if (effect == null) continue;
-                            effect.redirectAndUse(player, pe.isHorse());
+                            ExecutableEffectContext context = new ExecutableEffectContext(player);
+                            context.set(ContextKeys.BOOLEAN, List.of(pe.isHorse()));
+                            effect.apply(context);
 
                             pe = pillIter.hasNext() ? pillIter.next() : null;
 

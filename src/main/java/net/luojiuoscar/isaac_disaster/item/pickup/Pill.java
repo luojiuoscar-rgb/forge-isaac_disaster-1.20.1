@@ -5,9 +5,11 @@ import net.luojiuoscar.isaac_disaster.client.ClientDataManager;
 import net.luojiuoscar.isaac_disaster.event.custom.misc.PickupUseEvent;
 import net.luojiuoscar.isaac_disaster.item.item.IIgnoreRecord;
 import net.luojiuoscar.isaac_disaster.item.pickup.interfaces.ICommonPickup;
-import net.luojiuoscar.isaac_disaster.manager.id.ItemId;
 import net.luojiuoscar.isaac_disaster.manager.PillEffectManager;
-import net.luojiuoscar.isaac_disaster.registries.pill_effect.IPillEffect;
+import net.luojiuoscar.isaac_disaster.manager.id.ItemId;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.ContextKeys;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.ExecutableEffectContext;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.pill_effect.PillEffect;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
@@ -19,6 +21,8 @@ import net.minecraft.world.item.Rarity;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.common.MinecraftForge;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.List;
 
 /**
  * 与PICKUP不属于同类
@@ -49,10 +53,11 @@ public class Pill extends Item implements ICommonPickup {
         // 触发药丸效果
         if (!level.isClientSide){
 
-            IPillEffect effect = PillEffectManager.getInstance().getEffectFromPill(pillId).get();
+            PillEffect effect = (PillEffect) PillEffectManager.getInstance().getEffectFromPill(pillId).get();
 
-            effect.redirectAndUse((ServerPlayer) player, isHorsePill);
-            effect.redirectAndMakeSound((ServerPlayer) player, isHorsePill);
+            ExecutableEffectContext context = new ExecutableEffectContext(player);
+            context.set(ContextKeys.BOOLEAN, List.of(isHorsePill));
+            effect.applyEffect(context);
 
             // 如果没有有正确的药丸记录，则更新
             if (!(stack.getItem() instanceof IIgnoreRecord) &&
@@ -83,7 +88,7 @@ public class Pill extends Item implements ICommonPickup {
                 || ClientDataManager.getInstance().getCountFromId(ItemId.PHD.getId()) > 0
                 || ClientDataManager.getInstance().getCountFromId(ItemId.FALSE_PHD.getId()) > 0){
 
-            return PillEffectManager.getInstance().getEffectFromPill(pillId).get()
+            return ((PillEffect) PillEffectManager.getInstance().getEffectFromPill(pillId).get())
                     .getDescriptionId(ClientDataManager.getInstance().getPillQuality());
 
         }else{

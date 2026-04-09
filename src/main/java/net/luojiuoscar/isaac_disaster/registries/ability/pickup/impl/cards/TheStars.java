@@ -6,7 +6,7 @@ import net.luojiuoscar.isaac_disaster.manager.id.ItemId;
 import net.luojiuoscar.isaac_disaster.registries.ability.pickup.TarotAbility;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.CompositeTrigger;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ContextKeys;
-import net.luojiuoscar.isaac_disaster.registries.ability_effect.ModAbilityEffects;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.ModExecutableEffects;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.SimpleTrigger;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerTypes;
 import net.luojiuoscar.isaac_disaster.sound.ModSounds;
@@ -20,8 +20,8 @@ import java.util.List;
 
 public class TheStars extends TarotAbility {
     private static final CompositeTrigger TRIGGER = new CompositeTrigger(List.of(
-            new SimpleTrigger(ModTriggerTypes.EMTPY, ModAbilityEffects.THE_STARS),
-            new SimpleTrigger(ModTriggerTypes.EMTPY, ModAbilityEffects.COPY_NEAREST_PEDESTAL,
+            new SimpleTrigger(ModTriggerTypes.EMTPY, ModExecutableEffects.THE_STARS),
+            new SimpleTrigger(ModTriggerTypes.EMTPY, ModExecutableEffects.COPY_NEAREST_PEDESTAL,
                     context -> context.getOrDefault(ContextKeys.AMPLIFIER, 1.) > 1)
     ));
 

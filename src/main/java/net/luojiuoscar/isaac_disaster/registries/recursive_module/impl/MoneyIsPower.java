@@ -1,7 +1,7 @@
 package net.luojiuoscar.isaac_disaster.registries.recursive_module.impl;
 
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.CompositeTrigger;
-import net.luojiuoscar.isaac_disaster.registries.ability_effect.ModAbilityEffects;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.ModExecutableEffects;
 import net.luojiuoscar.isaac_disaster.registries.recursive_module.IRecursiveModule;
 import net.luojiuoscar.isaac_disaster.registries.recursive_module.RecursiveModuleQueue;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerTypes;
@@ -16,7 +16,7 @@ import static net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.norm
 
 public class MoneyIsPower implements IRecursiveModule {
     private static final CompositeTrigger triggers = new CompositeTrigger(List.of(
-            new SimpleTrigger(ModTriggerTypes.EMTPY, ModAbilityEffects.MONEY_IS_POWER)
+            new SimpleTrigger(ModTriggerTypes.EMTPY, ModExecutableEffects.MONEY_IS_POWER)
     ));
 
     @Override

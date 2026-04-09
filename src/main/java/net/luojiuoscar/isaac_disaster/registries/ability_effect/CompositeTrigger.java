@@ -15,7 +15,7 @@ public class CompositeTrigger {
     }
 
     /* 传入Empty type或null代表不进行检测 **/
-    public void fire(AbilityEffectContext context, @Nullable TriggerType type) {
+    public void fire(ExecutableEffectContext context, @Nullable TriggerType type) {
         for (SimpleTrigger t : trigger) {
             if (type == null || t.type.isPlaceholder() || t.type.is(type)){
                 t.fire(context);

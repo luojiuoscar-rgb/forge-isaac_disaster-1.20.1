@@ -1,6 +1,6 @@
 package net.luojiuoscar.isaac_disaster.registries.recursive_module;
 
-import net.luojiuoscar.isaac_disaster.registries.ability_effect.AbilityEffectContext;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.ExecutableEffectContext;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.CompositeTrigger;
 import net.minecraft.world.entity.LivingEntity;
 
@@ -18,7 +18,7 @@ public interface IRecursiveModule {
     default void handleRemove(LivingEntity entity){};
 
     /** 循环型在触发时，不进行类型判断 */
-    default void fire(AbilityEffectContext context){
+    default void fire(ExecutableEffectContext context){
         getTriggers().fire(context, null);
     }
 }

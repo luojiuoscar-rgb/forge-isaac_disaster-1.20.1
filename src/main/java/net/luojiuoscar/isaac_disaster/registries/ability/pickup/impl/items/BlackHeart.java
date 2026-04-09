@@ -2,7 +2,7 @@ package net.luojiuoscar.isaac_disaster.registries.ability.pickup.impl.items;
 
 import net.luojiuoscar.isaac_disaster.registries.ability.pickup.FoodPickupAbility;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.CompositeTrigger;
-import net.luojiuoscar.isaac_disaster.registries.ability_effect.ModAbilityEffects;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.ModExecutableEffects;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.SimpleTrigger;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerTypes;
 import net.luojiuoscar.isaac_disaster.sound.ModSounds;
@@ -14,9 +14,9 @@ import java.util.List;
 
 public class BlackHeart extends FoodPickupAbility {
     private static final CompositeTrigger TRIGGER = new CompositeTrigger(List.of(
-            new SimpleTrigger(ModTriggerTypes.EMTPY, ModAbilityEffects.ABSORPTION),
-            new SimpleTrigger(ModTriggerTypes.EMTPY, ModAbilityEffects.STRENGTH),
-            new SimpleTrigger(ModTriggerTypes.EMTPY, ModAbilityEffects.STACK_NECRONMICON_SHIELD)
+            new SimpleTrigger(ModTriggerTypes.EMTPY, ModExecutableEffects.ABSORPTION),
+            new SimpleTrigger(ModTriggerTypes.EMTPY, ModExecutableEffects.STRENGTH),
+            new SimpleTrigger(ModTriggerTypes.EMTPY, ModExecutableEffects.STACK_NECRONMICON_SHIELD)
     ));
 
     public BlackHeart() {

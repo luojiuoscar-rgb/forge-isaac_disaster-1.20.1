@@ -13,10 +13,10 @@ import java.util.List;
 
 public class ApplyEffectToNearby implements IAbilityEffect {
     @Override
-    public boolean applyEffect(AbilityEffectContext context) {
+    public boolean applyEffect(ExecutableEffectContext context) {
         IExecutableEffect effect = context.get(ContextKeys.EXECUTABLE_EFFECT);
         // 防止循环叠加
-        if (effect == null || effect == ModAbilityEffects.APPLY_EFFECT_TO_NEARBY.get()) return false;
+        if (effect == null || effect == ModExecutableEffects.APPLY_EFFECT_TO_NEARBY.get()) return false;
 
         LivingEntity entity = context.getEntity();
         boolean ignoreFriendly = context.getOrDefault(ContextKeys.BOOLEAN, List.of(true)).get(0);

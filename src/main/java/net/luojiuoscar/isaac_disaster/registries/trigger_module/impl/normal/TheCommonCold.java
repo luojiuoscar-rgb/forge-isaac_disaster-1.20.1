@@ -12,14 +12,14 @@ import java.util.List;
 
 public class TheCommonCold implements ITriggerModule {
     private static final CompositeTrigger triggers = new CompositeTrigger( List.of(
-            new SimpleTrigger(ModTriggerTypes.HIT_ENTITY, ModAbilityEffects.THE_COMMON_COLD, context -> {
+            new SimpleTrigger(ModTriggerTypes.HIT_ENTITY, ModExecutableEffects.THE_COMMON_COLD, context -> {
                 LivingEntity entity = context.getEntity();
                 return !(entity.getRandom().nextDouble() < TheCommonCold.getTriggerChance(entity));
             })
     ));
 
     private static final List<SimpleTrigger> bullet_triggers = List.of(
-            new SimpleTrigger(ModTriggerTypes.BULLET_HIT_ENTITY_BEFORE, ModAbilityEffects.THE_COMMON_COLD)
+            new SimpleTrigger(ModTriggerTypes.BULLET_HIT_ENTITY_BEFORE, ModExecutableEffects.THE_COMMON_COLD)
     );
 
 
@@ -34,7 +34,7 @@ public class TheCommonCold implements ITriggerModule {
 
 
     @Override
-    public void attachToBullet(AbilityEffectContext context) {
+    public void attachToBullet(ExecutableEffectContext context) {
         LivingEntity entity = context.getEntity();
         // 添加simpleTrigger到bullet中
         if (context.get(ContextKeys.EVENT) instanceof GetAttackContextEvent event) {
