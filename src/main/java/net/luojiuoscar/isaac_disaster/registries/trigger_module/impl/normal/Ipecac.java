@@ -3,13 +3,13 @@ package net.luojiuoscar.isaac_disaster.registries.trigger_module.impl.normal;
 import net.luojiuoscar.isaac_disaster.event.custom.attack.GetAttackContextEvent;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.*;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackContext;
-import net.luojiuoscar.isaac_disaster.registries.trigger_module.ITriggerModule;
+import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerModule;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerTypes;
 
 import java.util.List;
 
-public class Ipecac implements ITriggerModule {
-    private static final CompositeTrigger triggers = new CompositeTrigger(List.of(
+public class Ipecac extends TriggerModule {
+    private static final CompositeTrigger TRIGGER = new CompositeTrigger(List.of(
             new SimpleTrigger(ModTriggerTypes.HIT_ENTITY, ModExecutableEffects.IPECAC)
     ));
 
@@ -18,9 +18,8 @@ public class Ipecac implements ITriggerModule {
             new SimpleTrigger(ModTriggerTypes.BULLET_HIT_BLOCK, ModExecutableEffects.IPECAC)
     );
 
-    @Override
-    public CompositeTrigger getTriggers() {
-        return triggers;
+    public Ipecac() {
+        super(TRIGGER);
     }
 
     @Override

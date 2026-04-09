@@ -47,7 +47,7 @@ public class ChestLootModifier extends LootModifier {
         ObjectArrayList<ItemStack> newList = new ObjectArrayList<>(objectArrayList);
 
         // lucky toe
-        if (rand.nextDouble() < PlayerHelper.getValueFromTrinket( 0.33, 0.66, TrinketId.LUCKY_TOE.getId(), player)){
+        if (rand.nextDouble() < PlayerHelper.getValueFromTrinket(0.33, 0.66, TrinketId.LUCKY_TOE.getId(), player)){
             newList.addAll(LootHelper.getLoot(level, LootTableManager.RANDOM_COINS,
                     new LootParams.Builder(level)
                             .withParameter(LootContextParams.THIS_ENTITY, player)
@@ -55,7 +55,7 @@ public class ChestLootModifier extends LootModifier {
         }
 
         // match stick
-        if (rand.nextDouble() < PlayerHelper.getValueFromTrinket( 0.33, 0.66, TrinketId.MATCH_STICK.getId(), player)){
+        if (rand.nextDouble() < PlayerHelper.getValueFromTrinket(0.33, 0.66, TrinketId.MATCH_STICK.getId(), player)){
             newList.addAll(LootHelper.getLoot(level, LootTableManager.RANDOM_BOMBS,
                     new LootParams.Builder(level)
                             .withParameter(LootContextParams.THIS_ENTITY, player)
@@ -63,21 +63,21 @@ public class ChestLootModifier extends LootModifier {
         }
 
         // childs heart
-        if (rand.nextDouble() < PlayerHelper.getValueFromTrinket( 0.33, 0.66, TrinketId.CHILDS_HEART.getId(), player)){
+        if (rand.nextDouble() < PlayerHelper.getValueFromTrinket(0.33, 0.66, TrinketId.CHILDS_HEART.getId(), player)){
             newList.addAll(LootHelper.getLoot(level, LootTableManager.RANDOM_HEARTS,
                     new LootParams.Builder(level)
                             .withParameter(LootContextParams.THIS_ENTITY, player)
                             .create(LootContextParamSets.EMPTY)));        }
 
         // rusted key
-        if (rand.nextDouble() < PlayerHelper.getValueFromTrinket( 0.33, 0.66, TrinketId.RUSTED_KEY.getId(), player)){
+        if (rand.nextDouble() < PlayerHelper.getValueFromTrinket(0.33, 0.66, TrinketId.RUSTED_KEY.getId(), player)){
             newList.addAll(LootHelper.getLoot(level, LootTableManager.RANDOM_KEYS,
                     new LootParams.Builder(level)
                             .withParameter(LootContextParams.THIS_ENTITY, player)
                             .create(LootContextParamSets.EMPTY)));        }
 
         // ace of spades
-        if (rand.nextDouble() < PlayerHelper.getValueFromTrinket( 0.33, 0.66, TrinketId.ACE_OF_SPADES_TRINKET.getId(), player)){
+        if (rand.nextDouble() < PlayerHelper.getValueFromTrinket(0.33, 0.66, TrinketId.ACE_OF_SPADES_TRINKET.getId(), player)){
             newList.addAll(LootHelper.getLoot(level, LootTableManager.RANDOM_CARDS,
                     new LootParams.Builder(level)
                             .withParameter(LootContextParams.THIS_ENTITY, player)
@@ -85,7 +85,7 @@ public class ChestLootModifier extends LootModifier {
         }
 
         // safety pin
-        if (rand.nextDouble() < PlayerHelper.getValueFromTrinket( 0.33, 0.66, TrinketId.SAFETY_CAP.getId(), player)){
+        if (rand.nextDouble() < PlayerHelper.getValueFromTrinket(0.33, 0.66, TrinketId.SAFETY_CAP.getId(), player)){
             newList.addAll(LootHelper.getLoot(level, LootTableManager.RANDOM_PILLS,
                     new LootParams.Builder(level)
                             .withParameter(LootContextParams.THIS_ENTITY, player)

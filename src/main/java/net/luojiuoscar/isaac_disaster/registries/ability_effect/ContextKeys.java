@@ -35,7 +35,6 @@ public final class ContextKeys {
     public static final ContextKey<IBulletObject> BULLET = new ContextKey<>();
     public static final ContextKey<ResourceLocation> BULLET_COLOR_ID = new ContextKey<>();
 
-
     /** 刻意淆数据 */
     public static final ContextKey<Vec3> TARGET_POSITION = new ContextKey<>();
 

@@ -4,14 +4,14 @@ import net.luojiuoscar.isaac_disaster.event.custom.attack.GetAttackContextEvent;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.*;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackContext;
 import net.luojiuoscar.isaac_disaster.registries.bullet_color.ModBulletColor;
-import net.luojiuoscar.isaac_disaster.registries.trigger_module.ITriggerModule;
+import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerModule;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerTypes;
 import net.minecraft.world.entity.LivingEntity;
 
 import java.util.List;
 
-public class TheCommonCold implements ITriggerModule {
-    private static final CompositeTrigger triggers = new CompositeTrigger( List.of(
+public class TheCommonCold extends TriggerModule {
+    private static final CompositeTrigger TRIGGER = new CompositeTrigger( List.of(
             new SimpleTrigger(ModTriggerTypes.HIT_ENTITY, ModExecutableEffects.THE_COMMON_COLD, context -> {
                 LivingEntity entity = context.getEntity();
                 return !(entity.getRandom().nextDouble() < TheCommonCold.getTriggerChance(entity));
@@ -22,14 +22,12 @@ public class TheCommonCold implements ITriggerModule {
             new SimpleTrigger(ModTriggerTypes.BULLET_HIT_ENTITY_BEFORE, ModExecutableEffects.THE_COMMON_COLD)
     );
 
-
-    @Override
-    public CompositeTrigger getTriggers() {
-        return triggers;
+    public TheCommonCold() {
+        super(TRIGGER);
     }
 
     public static double getTriggerChance(LivingEntity entity){
-        return 1 / Math.max(1, 4 - (ITriggerModule.getLuck(entity) / 4));
+        return 1 / Math.max(1, 4 - (TriggerModule.getLuck(entity) / 4));
     }
 
 

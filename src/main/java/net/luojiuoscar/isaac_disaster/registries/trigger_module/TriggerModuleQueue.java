@@ -47,11 +47,11 @@ public class TriggerModuleQueue {
     public void add(ResourceLocation id, int stacks) {
         if (locked) return;
         // 获取注册表
-        IForgeRegistry<ITriggerModule> registry =
+        IForgeRegistry<TriggerModule> registry =
                 RegistryManager.ACTIVE.getRegistry(ModTriggerModule.TRIGGER_MODULE_KEY);
         if (registry == null) return;
 
-        ITriggerModule module = registry.getValue(id);
+        TriggerModule module = registry.getValue(id);
         if (module == null) return; // 无效 id
 
         double priority = module.getPriority();

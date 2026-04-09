@@ -11,14 +11,14 @@ public class RecursiveModuleInstance {
     public ResourceLocation id;
     public int stacks;
     public int coolDown;
-    private final IRecursiveModule recursiveModule;
+    private final RecursiveModule recursiveModule;
 
     public RecursiveModuleInstance(ResourceLocation id, int stacks, int coolDown){
         this.id = id;
         this.stacks = stacks;
         this.coolDown = coolDown;
 
-        IForgeRegistry<IRecursiveModule> registry =
+        IForgeRegistry<RecursiveModule> registry =
                 RegistryManager.ACTIVE.getRegistry(ModRecursiveModule.RECURSIVE_MODULE_KEY);
         this.recursiveModule = registry == null ? null : registry.getValue(id);
     }

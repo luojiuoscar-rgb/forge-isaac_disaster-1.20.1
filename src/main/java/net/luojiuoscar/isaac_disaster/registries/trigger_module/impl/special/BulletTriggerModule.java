@@ -4,16 +4,15 @@ import net.luojiuoscar.isaac_disaster.registries.ability_effect.ExecutableEffect
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.CompositeTrigger;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ContextKeys;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.IBulletObject;
-import net.luojiuoscar.isaac_disaster.registries.trigger_module.ITriggerModule;
+import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerModule;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.SimpleTrigger;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerType;
 
 import java.util.List;
 
-public class BulletTriggerModule implements ITriggerModule {
-    @Override
-    public CompositeTrigger getTriggers() {
-        return CompositeTrigger.EMPTY;
+public class BulletTriggerModule extends TriggerModule {
+    public BulletTriggerModule() {
+        super(CompositeTrigger.EMPTY);
     }
 
     @Override

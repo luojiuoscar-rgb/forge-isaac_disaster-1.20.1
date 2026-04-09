@@ -7,14 +7,14 @@ import net.luojiuoscar.isaac_disaster.registries.ability.set.ModSetAbility;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.CompositeTrigger;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ModExecutableEffects;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.SimpleTrigger;
-import net.luojiuoscar.isaac_disaster.registries.trigger_module.ITriggerModule;
+import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerModule;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerTypes;
 import net.minecraft.server.level.ServerPlayer;
 
 import java.util.List;
 
-public class PlayerPermanentModule implements ITriggerModule {
-    private static final CompositeTrigger TRIGGERS = new CompositeTrigger(List.of(
+public class PlayerPermanentModule extends TriggerModule {
+    private static final CompositeTrigger TRIGGER = new CompositeTrigger(List.of(
             new SimpleTrigger(ModTriggerTypes.ON_HURT_NEGATIVE, ModExecutableEffects.NECRONMICON_SHIELD_ACTIVE,
                     context -> context.getEntity().hasEffect(ModEffects.NECRONMICON_SHIELD.get())),
 
@@ -36,8 +36,7 @@ public class PlayerPermanentModule implements ITriggerModule {
                                       && PlayerHelper.hasTrinket(TrinketId.PERFECTION.getId(), player))
             ));
 
-    @Override
-    public CompositeTrigger getTriggers() {
-        return TRIGGERS;
+    public PlayerPermanentModule() {
+        super(TRIGGER);
     }
 }

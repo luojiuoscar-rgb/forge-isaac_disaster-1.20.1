@@ -10,9 +10,9 @@ import net.luojiuoscar.isaac_disaster.registries.ability_effect.IExecutableEffec
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackType;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.combination.AttackCombinationRule;
 import net.luojiuoscar.isaac_disaster.registries.bullet_color.BulletColor;
-import net.luojiuoscar.isaac_disaster.registries.recursive_module.IRecursiveModule;
+import net.luojiuoscar.isaac_disaster.registries.recursive_module.RecursiveModule;
 import net.luojiuoscar.isaac_disaster.registries.trajectory.IAttackTrajectory;
-import net.luojiuoscar.isaac_disaster.registries.trigger_module.ITriggerModule;
+import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerModule;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.registries.RegistryBuilder;
@@ -43,11 +43,11 @@ public class ModRegistries {
                 .setName(ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "bullet_color"));});
         BULLET_COLOR_REGISTRY.register(modEventBus);
 
-        TRIGGER_MODULE_REGISTRY.makeRegistry(() -> {return new RegistryBuilder<ITriggerModule>()
+        TRIGGER_MODULE_REGISTRY.makeRegistry(() -> {return new RegistryBuilder<TriggerModule>()
                 .setName(ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "trigger_module"));});
         TRIGGER_MODULE_REGISTRY.register(modEventBus);
 
-        RECURSIVE_MODULE_REGISTRY.makeRegistry(() -> {return new RegistryBuilder<IRecursiveModule>()
+        RECURSIVE_MODULE_REGISTRY.makeRegistry(() -> {return new RegistryBuilder<RecursiveModule>()
                 .setName(ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "recursive_module"));});
         RECURSIVE_MODULE_REGISTRY.register(modEventBus);
 

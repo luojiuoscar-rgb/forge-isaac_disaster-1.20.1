@@ -64,13 +64,9 @@ public class ModTriggerTypes {
             new TriggerType(ResourceLocation.fromNamespaceAndPath(
                     IsaacDisaster.MOD_ID, "pickup_item"));
 
-    public static final TriggerType LEFT_CLICK_BLOCK =
+    public static final TriggerType LOOT =
             new TriggerType(ResourceLocation.fromNamespaceAndPath(
-                    IsaacDisaster.MOD_ID, "left_click_block"));
-
-    public static final TriggerType RIGHT_CLICK_BLOCK =
-            new TriggerType(ResourceLocation.fromNamespaceAndPath(
-                    IsaacDisaster.MOD_ID, "right_click_block"));
+                    IsaacDisaster.MOD_ID, "loot"));
 
     // 空触发器是用于占位的
     public static final TriggerType EMTPY =

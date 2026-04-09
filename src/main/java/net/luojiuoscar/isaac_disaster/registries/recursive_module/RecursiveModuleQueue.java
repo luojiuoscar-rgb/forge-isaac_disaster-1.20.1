@@ -43,11 +43,11 @@ public class RecursiveModuleQueue {
         }
 
         // 获取循环模块
-        IForgeRegistry<IRecursiveModule> registry =
+        IForgeRegistry<RecursiveModule> registry =
                 RegistryManager.ACTIVE.getRegistry(ModRecursiveModule.RECURSIVE_MODULE_KEY);
         if (registry == null) return;
 
-        IRecursiveModule module = registry.getValue(id);
+        RecursiveModule module = registry.getValue(id);
         if (module == null) return;
 
         // 如果首次添加则从initial tick开始倒计时

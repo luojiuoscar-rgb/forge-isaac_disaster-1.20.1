@@ -5,6 +5,7 @@ import net.luojiuoscar.isaac_disaster.capability.entity.EffectModulesProvider;
 import net.luojiuoscar.isaac_disaster.event.custom.attack.*;
 import net.luojiuoscar.isaac_disaster.event.custom.attack.tear_bullet.BulletTickEvent;
 import net.luojiuoscar.isaac_disaster.event.custom.misc.BeforeTriggerModuleActiveEvent;
+import net.luojiuoscar.isaac_disaster.event.custom.misc.GeneralLootModifyEvent;
 import net.luojiuoscar.isaac_disaster.event.custom.misc.RightClickTickEvent;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ExecutableEffectContext;
@@ -38,7 +39,7 @@ public class TriggerModuleEvents {
         TriggerModuleQueue queue = context.get(ContextKeys.TRIGGER_MODULE_QUEUE);
         if (queue == null || queue.isEmpty()) return;
 
-        IForgeRegistry<ITriggerModule> reg =
+        IForgeRegistry<TriggerModule> reg =
                 RegistryManager.ACTIVE.getRegistry(ModTriggerModule.TRIGGER_MODULE_KEY);
 
         // 触发前事件
@@ -49,7 +50,7 @@ public class TriggerModuleEvents {
 
         for (var inst : queue.getQueue()) {
             context.set(ContextKeys.AMPLIFIER, (double) inst.stacks);
-            ITriggerModule module = reg.getValue(inst.id);
+            TriggerModule module = reg.getValue(inst.id);
             if (module == null) continue;
 
             // 调用模块的 fire 方法，触发对应 TriggerType 的 SimpleTrigger
@@ -283,6 +284,21 @@ public class TriggerModuleEvents {
             context.set(ContextKeys.TRIGGER_MODULE_QUEUE, queue);
 
             dispatch(context, ModTriggerTypes.PICKUP_ITEM);
+        });
+    }
+
+    @SubscribeEvent
+    public static void onLoot(GeneralLootModifyEvent event) {
+        LivingEntity entity = event.getEntity();
+        ExecutableEffectContext context = new ExecutableEffectContext(entity);
+        context.set(ContextKeys.EVENT, event);
+        context.set(ContextKeys.TARGET_POSITION, entity.position());
+
+        entity.getCapability(EffectModulesProvider.EFFECT_MODULES).ifPresent(triggerModule -> {
+            var queue = triggerModule.getTriggerModules().copy();
+            context.set(ContextKeys.TRIGGER_MODULE_QUEUE, queue);
+
+            dispatch(context, ModTriggerTypes.LOOT);
         });
     }
 }

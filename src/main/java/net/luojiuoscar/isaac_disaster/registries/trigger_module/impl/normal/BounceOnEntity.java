@@ -3,20 +3,19 @@ package net.luojiuoscar.isaac_disaster.registries.trigger_module.impl.normal;
 import net.luojiuoscar.isaac_disaster.event.custom.attack.GetAttackContextEvent;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.*;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackContext;
-import net.luojiuoscar.isaac_disaster.registries.trigger_module.ITriggerModule;
+import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerModule;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerTypes;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerModulePriority;
 
 import java.util.List;
 
-public class BounceOnEntity implements ITriggerModule {
+public class BounceOnEntity extends TriggerModule {
     private static final List<SimpleTrigger> bullet_triggers = List.of(
             new SimpleTrigger(ModTriggerTypes.BULLET_HIT_ENTITY_AFTER, ModExecutableEffects.BULLET_BOUNCE_ON_ENTITY)
     );
 
-    @Override
-    public CompositeTrigger getTriggers() {
-        return CompositeTrigger.EMPTY;
+    public BounceOnEntity() {
+        super(CompositeTrigger.EMPTY);
     }
 
     @Override

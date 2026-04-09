@@ -3,21 +3,21 @@ package net.luojiuoscar.isaac_disaster.registries.trigger_module.impl.normal;
 import net.luojiuoscar.isaac_disaster.event.custom.attack.GetAttackContextEvent;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.*;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackContext;
-import net.luojiuoscar.isaac_disaster.registries.trigger_module.ITriggerModule;
+import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerModule;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerTypes;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerModulePriority;
 
 import java.util.List;
 
-public class BounceOnBlock implements ITriggerModule {
+public class BounceOnBlock extends TriggerModule {
     private static final List<SimpleTrigger> bullet_triggers = List.of(
             new SimpleTrigger(ModTriggerTypes.BULLET_HIT_BLOCK, ModExecutableEffects.BULLET_BOUNCE_ON_BLOCK)
     );
 
-    @Override
-    public CompositeTrigger getTriggers() {
-        return CompositeTrigger.EMPTY;
+    public BounceOnBlock() {
+        super(CompositeTrigger.EMPTY);
     }
+
 
     @Override
     public void attachToBullet(ExecutableEffectContext context) {

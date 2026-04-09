@@ -5,7 +5,7 @@ import net.luojiuoscar.isaac_disaster.capability.entity.ExtraDataProvider;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.CompositeTrigger;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ModExecutableEffects;
-import net.luojiuoscar.isaac_disaster.registries.recursive_module.IRecursiveModule;
+import net.luojiuoscar.isaac_disaster.registries.recursive_module.RecursiveModule;
 import net.luojiuoscar.isaac_disaster.registries.recursive_module.ModRecursiveModule;
 import net.luojiuoscar.isaac_disaster.registries.recursive_module.RecursiveModuleQueue;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerTypes;
@@ -19,14 +19,13 @@ import java.util.List;
 
 import static net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.normal.RockBottom.*;
 
-public class RockBottom implements IRecursiveModule {
-    private static final CompositeTrigger triggers = new CompositeTrigger(List.of(
+public class RockBottom extends RecursiveModule {
+    private static final CompositeTrigger TRIGGER = new CompositeTrigger(List.of(
             new SimpleTrigger(ModTriggerTypes.EMTPY, ModExecutableEffects.ROCK_BOTTOM)
     ));
 
-    @Override
-    public CompositeTrigger getTriggers() {
-        return triggers;
+    public RockBottom() {
+        super(TRIGGER);
     }
 
     @Override

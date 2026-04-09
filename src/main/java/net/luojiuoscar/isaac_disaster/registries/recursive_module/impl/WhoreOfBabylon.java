@@ -3,7 +3,7 @@ package net.luojiuoscar.isaac_disaster.registries.recursive_module.impl;
 import net.luojiuoscar.isaac_disaster.effect.ModEffects;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.CompositeTrigger;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ModExecutableEffects;
-import net.luojiuoscar.isaac_disaster.registries.recursive_module.IRecursiveModule;
+import net.luojiuoscar.isaac_disaster.registries.recursive_module.RecursiveModule;
 import net.luojiuoscar.isaac_disaster.registries.recursive_module.RecursiveModuleQueue;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerTypes;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.SimpleTrigger;
@@ -12,8 +12,8 @@ import net.minecraft.world.entity.LivingEntity;
 
 import java.util.List;
 
-public class WhoreOfBabylon implements IRecursiveModule {
-    private static final CompositeTrigger triggers = new CompositeTrigger(List.of(
+public class WhoreOfBabylon extends RecursiveModule {
+    private static final CompositeTrigger TRIGGER = new CompositeTrigger(List.of(
             new SimpleTrigger(ModTriggerTypes.EMTPY, ModExecutableEffects.POTIONS, context -> {
                 LivingEntity entity = context.getEntity();
                 if (entity.getHealth() > entity.getMaxHealth() * 0.1) return false;
@@ -26,9 +26,8 @@ public class WhoreOfBabylon implements IRecursiveModule {
             })
     ));
 
-    @Override
-    public CompositeTrigger getTriggers() {
-        return triggers;
+    public WhoreOfBabylon() {
+        super(TRIGGER);
     }
 
     @Override

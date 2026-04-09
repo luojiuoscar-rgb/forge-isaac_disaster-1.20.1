@@ -8,7 +8,7 @@ import net.luojiuoscar.isaac_disaster.capability.player.PlayerAbilityProvider;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerPassiveItemProvider;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerStatModifierProvider;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
-import net.luojiuoscar.isaac_disaster.registries.trigger_module.ITriggerModule;
+import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerModule;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerModule;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerModuleQueue;
 import net.minecraft.ChatFormatting;
@@ -377,14 +377,14 @@ public enum StatManager {
     }
 
     public static void addTriggerModule(LivingEntity entity, ResourceLocation rl, int count){
-        IForgeRegistry<ITriggerModule> reg =
+        IForgeRegistry<TriggerModule> reg =
                 RegistryManager.ACTIVE.getRegistry(ModTriggerModule.TRIGGER_MODULE_KEY);
 
         entity.getCapability(EffectModulesProvider.EFFECT_MODULES).ifPresent(
                 effectModules -> {
                     effectModules.getTriggerModules().add(rl, count);
 
-                    ITriggerModule module = reg.getValue(rl);
+                    TriggerModule module = reg.getValue(rl);
                     if (module == null) return;
 
                     TriggerModuleQueue queue = effectModules.getTriggerModules().copy();
