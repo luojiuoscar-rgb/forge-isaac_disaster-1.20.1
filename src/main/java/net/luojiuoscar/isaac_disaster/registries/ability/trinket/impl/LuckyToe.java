@@ -5,6 +5,7 @@ import net.luojiuoscar.isaac_disaster.manager.ColorManager;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.registries.ability.trinket.TrinketAbility;
 import net.luojiuoscar.isaac_disaster.registries.ability.trinket.TrinketAbilityContext;
+import net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerModule;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.world.entity.LivingEntity;
@@ -41,6 +42,7 @@ public class LuckyToe extends TrinketAbility {
     @Override
     public void onEquipped(LivingEntity entity, TrinketAbilityContext ctx){
         if (!(entity instanceof Player player)) return;
+        StatManager.addTriggerModule(entity, ModTriggerModule.CHEST_LOOT_TRINKET.getId(), 1);
         if (ctx.isEnchanted) {
             StatManager.LUCK.apply(player, 2);
         } else {
@@ -51,6 +53,7 @@ public class LuckyToe extends TrinketAbility {
     @Override
     public void onUnequipped(LivingEntity entity, TrinketAbilityContext ctx){
         if (!(entity instanceof Player player)) return;
+        StatManager.addTriggerModule(entity, ModTriggerModule.CHEST_LOOT_TRINKET.getId(), -1);
         if (ctx.isEnchanted) {
             StatManager.LUCK.apply(player, -2);
         } else {

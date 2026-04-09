@@ -21,6 +21,7 @@ public interface IAbilityEffect extends IExecutableEffect {
         // default behaviour
         if (!success){
             //TODO: 用一个新的ContextKeys来传递次级效果。错误技的Trigger默认携带对应的次级效果。
+            // 也可以直接返回boolean值。由外部拿到boolean值的实例来决定如何处置。
         }
 
     }

@@ -33,14 +33,6 @@ public class ModLootModifiers {
             LOOT_MODIFIER_SERIALIZERS.register("trinket_enchantment", () -> TrinketEnchantmentLootModifier.CODEC);
 
     // pickup
-    public static final RegistryObject<Codec<? extends IGlobalLootModifier>> CHEST_LOOT =
-            LOOT_MODIFIER_SERIALIZERS.register("chest_loot", () -> ChestLootModifier.CODEC);
-    public static final RegistryObject<Codec<? extends IGlobalLootModifier>> SACK_HEAD =
-            LOOT_MODIFIER_SERIALIZERS.register("sack_head", () -> SackheadLootModifier.CODEC);
-    public static final RegistryObject<Codec<? extends IGlobalLootModifier>> MITRE =
-            LOOT_MODIFIER_SERIALIZERS.register("mitre", () -> MitreLootModifier.CODEC);
-    public static final RegistryObject<Codec<? extends IGlobalLootModifier>> DAEMONS_TAIL =
-            LOOT_MODIFIER_SERIALIZERS.register("daemons_tail", () -> DaemonsTailLootModifier.CODEC);
-    public static final RegistryObject<Codec<? extends IGlobalLootModifier>> PENNY_TRINKET =
-            LOOT_MODIFIER_SERIALIZERS.register("penny_trinket", () -> PennyTrinketLootModifier.CODEC);
+    public static final RegistryObject<Codec<? extends IGlobalLootModifier>> GENERAL_LOOT =
+            LOOT_MODIFIER_SERIALIZERS.register("general_loot", () -> GeneralLootModifier.CODEC);
 }

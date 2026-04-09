@@ -1,43 +1,31 @@
-package net.luojiuoscar.isaac_disaster.loot.modifier.item;
+package net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.general;
 
-import com.mojang.serialization.Codec;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.luojiuoscar.isaac_disaster.Config;
+import net.luojiuoscar.isaac_disaster.event.custom.misc.GeneralLootModifyEvent;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.item.ModItems;
 import net.luojiuoscar.isaac_disaster.manager.id.TrinketId;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.ContextKeys;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.ExecutableEffectContext;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.IAbilityEffect;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
-import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
-import net.minecraftforge.common.loot.IGlobalLootModifier;
-import net.minecraftforge.common.loot.LootModifier;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-public class PennyTrinketLootModifier extends LootModifier {
-
-    public static final Codec<PennyTrinketLootModifier> CODEC = RecordCodecBuilder.create(inst -> codecStart(inst)
-            .apply(inst, PennyTrinketLootModifier::new));
-
-    public PennyTrinketLootModifier(LootItemCondition[] conditionsIn) {
-        super(conditionsIn);
-    }
-
+public class PennyTrinket implements IAbilityEffect {
     @Override
-    public Codec<? extends IGlobalLootModifier> codec() {
-        return CODEC;
-    }
+    public boolean applyEffect(ExecutableEffectContext context) {
+        if (!(context.get(ContextKeys.EVENT) instanceof GeneralLootModifyEvent event)) return false;
+        var objectArrayList = event.getObjectArrayList();
+        var lootContext = event.getLootContext();
 
-    @Override
-    protected @NotNull ObjectArrayList<ItemStack> doApply(ObjectArrayList<ItemStack> objectArrayList, LootContext lootContext) {
-        if (objectArrayList.isEmpty()) return objectArrayList;
+        if (objectArrayList.isEmpty()) return false;
 
         ServerPlayer player = null;
         if (lootContext.getParamOrNull(LootContextParams.THIS_ENTITY) instanceof ServerPlayer thisPlayer) {
@@ -45,7 +33,7 @@ public class PennyTrinketLootModifier extends LootModifier {
         } else if (lootContext.getParamOrNull(LootContextParams.KILLER_ENTITY) instanceof ServerPlayer killerPlayer) {
             player = killerPlayer;
         }
-        if (player == null) return objectArrayList;
+        if (player == null) return false;
 
         ObjectArrayList<ItemStack> newList = new ObjectArrayList<>();
         newList.addAll(objectArrayList);
@@ -64,7 +52,8 @@ public class PennyTrinketLootModifier extends LootModifier {
                 counterfeitPenny(player, value, max)
         ));
 
-        return newList;
+        event.setObjectArrayList(newList);
+        return true;
     }
 
 
@@ -227,6 +216,4 @@ public class PennyTrinketLootModifier extends LootModifier {
 
         return stack;
     }
-
-
 }

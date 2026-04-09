@@ -2,8 +2,10 @@ package net.luojiuoscar.isaac_disaster.registries.ability.trinket.impl;
 
 import net.luojiuoscar.isaac_disaster.item.item.Trinket;
 import net.luojiuoscar.isaac_disaster.manager.ColorManager;
+import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.registries.ability.trinket.TrinketAbility;
 import net.luojiuoscar.isaac_disaster.registries.ability.trinket.TrinketAbilityContext;
+import net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerModule;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
@@ -24,12 +26,12 @@ public class SafetyCap extends TrinketAbility {
 
     @Override
     public void onEquipped(LivingEntity entity, TrinketAbilityContext ctx) {
-
+        StatManager.addTriggerModule(entity, ModTriggerModule.CHEST_LOOT_TRINKET.getId(), 1);
     }
 
     @Override
     public void onUnequipped(LivingEntity entity, TrinketAbilityContext ctx) {
-
+        StatManager.addTriggerModule(entity, ModTriggerModule.CHEST_LOOT_TRINKET.getId(), -1);
     }
 
     @Override

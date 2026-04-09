@@ -24,4 +24,9 @@ public class GeneralLootModifyEvent extends LivingEvent {
     public ObjectArrayList<ItemStack> getObjectArrayList() {
         return objectArrayList;
     }
+
+    public void setObjectArrayList(ObjectArrayList<ItemStack> items){
+        objectArrayList.clear();
+        objectArrayList.addAll(items);
+    }
 }

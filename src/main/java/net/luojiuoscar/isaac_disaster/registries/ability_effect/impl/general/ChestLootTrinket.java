@@ -1,47 +1,40 @@
-package net.luojiuoscar.isaac_disaster.loot.modifier;
+package net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.general;
 
-import com.mojang.serialization.Codec;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import net.luojiuoscar.isaac_disaster.event.custom.misc.GeneralLootModifyEvent;
 import net.luojiuoscar.isaac_disaster.helper.LootHelper;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.manager.LootTableManager;
 import net.luojiuoscar.isaac_disaster.manager.id.TrinketId;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.ContextKeys;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.ExecutableEffectContext;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.IAbilityEffect;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.RandomizableContainerBlockEntity;
-import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
-import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.common.loot.IGlobalLootModifier;
-import net.minecraftforge.common.loot.LootModifier;
-import org.jetbrains.annotations.NotNull;
 
-public class ChestLootModifier extends LootModifier {
-
-    public static final Codec<ChestLootModifier> CODEC = RecordCodecBuilder.create(inst -> codecStart(inst)
-            .apply(inst, ChestLootModifier::new));
-
-    public ChestLootModifier(LootItemCondition[] conditionsIn) {
-        super(conditionsIn);
-    }
-
+public class ChestLootTrinket implements IAbilityEffect {
     @Override
-    protected @NotNull ObjectArrayList<ItemStack> doApply(ObjectArrayList<ItemStack> objectArrayList, LootContext lootContext) {
-        if (objectArrayList.isEmpty()) return objectArrayList;
+    public boolean applyEffect(ExecutableEffectContext context) {
+        if (!(context.get(ContextKeys.EVENT) instanceof GeneralLootModifyEvent event)) return false;
+        var objectArrayList = event.getObjectArrayList();
+        var lootContext = event.getLootContext();
+
+        if (objectArrayList.isEmpty()) return true;
 
         Vec3 pos = lootContext.getParamOrNull(LootContextParams.ORIGIN);
-        if (pos == null) return objectArrayList;
+        if (pos == null) return true;
 
         ServerLevel level = lootContext.getLevel();
-        if (!(level.getBlockEntity(BlockPos.containing(pos)) instanceof RandomizableContainerBlockEntity)) return objectArrayList;
-        if (!(lootContext.getParamOrNull(LootContextParams.THIS_ENTITY) instanceof ServerPlayer player)) return objectArrayList;
+        if (!(level.getBlockEntity(BlockPos.containing(pos)) instanceof RandomizableContainerBlockEntity)) return true;
+        if (!(lootContext.getParamOrNull(LootContextParams.THIS_ENTITY) instanceof ServerPlayer player)) return true;
 
         RandomSource rand = player.getRandom();
         ObjectArrayList<ItemStack> newList = new ObjectArrayList<>(objectArrayList);
@@ -101,12 +94,8 @@ public class ChestLootModifier extends LootModifier {
             }
         }
 
-        return newList;
-    }
+        event.setObjectArrayList(newList);
 
-
-    @Override
-    public Codec<? extends IGlobalLootModifier> codec() {
-        return CODEC;
+        return true;
     }
 }

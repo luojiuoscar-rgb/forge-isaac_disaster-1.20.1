@@ -301,7 +301,17 @@ public class ModExecutableEffects {
     public static final RegistryObject<IExecutableEffect> TELEPILLS =
             EXECUTABLE_EFFECT_REGISTRY.register("telepills", Telepills::new);
     public static final RegistryObject<IExecutableEffect> VURP =
-            EXECUTABLE_EFFECT_REGISTRY.register("vurv", Vurp::new);
+            EXECUTABLE_EFFECT_REGISTRY.register("vurp", Vurp::new);
+    public static final RegistryObject<IExecutableEffect> MITRE =
+            EXECUTABLE_EFFECT_REGISTRY.register("mitre", Mitre::new);
+    public static final RegistryObject<IExecutableEffect> SACK_HEAD =
+            EXECUTABLE_EFFECT_REGISTRY.register("sack_head", SackHead::new);
+    public static final RegistryObject<IExecutableEffect> DAEMONS_TAIL =
+            EXECUTABLE_EFFECT_REGISTRY.register("daemons_tail", DaemonsTail::new);
+    public static final RegistryObject<IExecutableEffect> PENNY_TRINKET =
+            EXECUTABLE_EFFECT_REGISTRY.register("penny_trinket", PennyTrinket::new);
+    public static final RegistryObject<IExecutableEffect> CHEST_LOOT_TRINKET =
+            EXECUTABLE_EFFECT_REGISTRY.register("chest_loot_trinket", ChestLootTrinket::new);
 
 
     //</editor-fold>

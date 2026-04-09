@@ -1,34 +1,27 @@
-package net.luojiuoscar.isaac_disaster.loot.modifier.item;
+package net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.normal;
 
-import com.mojang.serialization.Codec;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import net.luojiuoscar.isaac_disaster.event.custom.misc.GeneralLootModifyEvent;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.item.ModItems;
 import net.luojiuoscar.isaac_disaster.item.pickup.Heart;
 import net.luojiuoscar.isaac_disaster.manager.id.TrinketId;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.ContextKeys;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.ExecutableEffectContext;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.IAbilityEffect;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
-import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
-import net.minecraftforge.common.loot.IGlobalLootModifier;
-import net.minecraftforge.common.loot.LootModifier;
-import org.jetbrains.annotations.NotNull;
 
-public class DaemonsTailLootModifier extends LootModifier {
-
-    public static final Codec<DaemonsTailLootModifier> CODEC = RecordCodecBuilder.create(inst -> codecStart(inst)
-            .apply(inst, DaemonsTailLootModifier::new));
-
-    public DaemonsTailLootModifier(LootItemCondition[] conditionsIn) {
-        super(conditionsIn);
-    }
-
+public class DaemonsTail implements IAbilityEffect {
     @Override
-    protected @NotNull ObjectArrayList<ItemStack> doApply(ObjectArrayList<ItemStack> objectArrayList, LootContext lootContext) {
-        if (objectArrayList.isEmpty()) return objectArrayList;
+    public boolean applyEffect(ExecutableEffectContext context) {
+        if (!(context.get(ContextKeys.EVENT) instanceof GeneralLootModifyEvent event)) return false;
+        var objectArrayList = event.getObjectArrayList();
+        var lootContext = event.getLootContext();
+
+        if (objectArrayList.isEmpty()) return false;
 
         ServerPlayer player;
         if (lootContext.getParamOrNull(LootContextParams.THIS_ENTITY) instanceof ServerPlayer thisPlayer) {
@@ -38,7 +31,7 @@ public class DaemonsTailLootModifier extends LootModifier {
         } else {
             player = null;
         }
-        if (player == null || !PlayerHelper.hasTrinket(TrinketId.DAEMONS_TAIL.getId(), player)) return objectArrayList;
+        if (player == null || !PlayerHelper.hasTrinket(TrinketId.DAEMONS_TAIL.getId(), player)) return false;
 
         // based on type
         double threshold = PlayerHelper.getValueFromTrinket(0.7, 0.35, TrinketId.DAEMONS_TAIL.getId(), player);
@@ -70,14 +63,8 @@ public class DaemonsTailLootModifier extends LootModifier {
 
         }
 
+        event.setObjectArrayList(newList);
 
-
-        return newList;
-    }
-
-
-    @Override
-    public Codec<? extends IGlobalLootModifier> codec() {
-        return CODEC;
+        return true;
     }
 }

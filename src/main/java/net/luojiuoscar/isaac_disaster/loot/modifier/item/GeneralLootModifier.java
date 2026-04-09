@@ -1,4 +1,4 @@
-package net.luojiuoscar.isaac_disaster.loot.modifier;
+package net.luojiuoscar.isaac_disaster.loot.modifier.item;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -17,8 +17,8 @@ import org.jetbrains.annotations.NotNull;
 
 public class GeneralLootModifier extends LootModifier {
 
-    public static final Codec<ChestLootModifier> CODEC = RecordCodecBuilder.create(inst -> codecStart(inst)
-            .apply(inst, ChestLootModifier::new));
+    public static final Codec<GeneralLootModifier> CODEC = RecordCodecBuilder.create(inst -> codecStart(inst)
+            .apply(inst, GeneralLootModifier::new));
 
     public GeneralLootModifier(LootItemCondition[] conditionsIn) {
         super(conditionsIn);

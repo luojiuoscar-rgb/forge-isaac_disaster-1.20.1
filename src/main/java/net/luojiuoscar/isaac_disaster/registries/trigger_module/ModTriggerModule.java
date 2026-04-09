@@ -69,5 +69,15 @@ public class ModTriggerModule {
             TRIGGER_MODULE_REGISTRY.register("explosion_immune", ExplosionImmune::new);
     public static final RegistryObject<TriggerModule> EXPLOSION_REGENERATION =
             TRIGGER_MODULE_REGISTRY.register("explosion_regeneration", ExplosionRegeneration::new);
+    public static final RegistryObject<TriggerModule> MITRE =
+            TRIGGER_MODULE_REGISTRY.register("mitre", Mitre::new);
+    public static final RegistryObject<TriggerModule> SACK_HEAD =
+            TRIGGER_MODULE_REGISTRY.register("sack_head", SackHead::new);
+    public static final RegistryObject<TriggerModule> DAEMONS_TAIL =
+            TRIGGER_MODULE_REGISTRY.register("daemons_tail", DaemonsTail::new);
+    public static final RegistryObject<TriggerModule> PENNY_TRINKET =
+            TRIGGER_MODULE_REGISTRY.register("penny_trinket", PennyTrinket::new);
+    public static final RegistryObject<TriggerModule> CHEST_LOOT_TRINKET =
+            TRIGGER_MODULE_REGISTRY.register("chest_loot_trinket", ChestLootTrinket::new);
 
 }
