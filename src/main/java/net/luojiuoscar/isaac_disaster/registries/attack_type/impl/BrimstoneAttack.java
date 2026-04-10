@@ -55,8 +55,8 @@ public class BrimstoneAttack extends LaserAttack implements IChargeableAttack {
     }
 
     @Override
-    protected double getWidth(LivingEntity living) {
-        return getBulletScale(living);
+    protected double getWidth(LivingEntity living, double damage) {
+        return getBulletScale(living, damage);
     }
 
     @Override

@@ -40,7 +40,7 @@ public class TheCommonCold extends TriggerModule {
             for (var ctx : attCtxs) {
                 if (entity.getRandom().nextDouble() < getTriggerChance(entity)){
                     ctx.colorRl = ModBulletColor.POISON.getId();
-                    ctx.getTriggers().addAll(bullet_triggers);
+                    ctx.getTrigger().addAll(bullet_triggers);
                 }
             }
         }

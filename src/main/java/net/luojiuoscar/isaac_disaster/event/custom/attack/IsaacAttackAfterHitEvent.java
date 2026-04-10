@@ -1,13 +1,11 @@
 package net.luojiuoscar.isaac_disaster.event.custom.attack;
 
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.CompositeTrigger;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.IBulletObject;
-import net.luojiuoscar.isaac_disaster.registries.ability_effect.SimpleTrigger;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraftforge.eventbus.api.Cancelable;
-
-import java.util.List;
 
 @Cancelable
 public class IsaacAttackAfterHitEvent extends IsaacAttackEvent {
@@ -16,7 +14,7 @@ public class IsaacAttackAfterHitEvent extends IsaacAttackEvent {
     private final double targetHealth;
 
     public IsaacAttackAfterHitEvent(IBulletObject bulletObject, Entity source, ResourceLocation attackTypeId,
-                                    List<SimpleTrigger> triggers,
+                                    CompositeTrigger triggers,
                                     EntityHitResult hit, double damage, double targetHealth) {
         super(bulletObject, source, attackTypeId, triggers);
         this.hit = hit;

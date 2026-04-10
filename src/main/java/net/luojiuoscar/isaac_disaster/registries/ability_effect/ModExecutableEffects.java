@@ -312,6 +312,8 @@ public class ModExecutableEffects {
             EXECUTABLE_EFFECT_REGISTRY.register("penny_trinket", PennyTrinket::new);
     public static final RegistryObject<IExecutableEffect> CHEST_LOOT_TRINKET =
             EXECUTABLE_EFFECT_REGISTRY.register("chest_loot_trinket", ChestLootTrinket::new);
+    public static final RegistryObject<IExecutableEffect> SHOOP_DA_WHOOP =
+            EXECUTABLE_EFFECT_REGISTRY.register("shoop_da_whoop", ShoopDaWhoop::new);
 
 
     //</editor-fold>
@@ -778,6 +780,31 @@ public class ModExecutableEffects {
                         ctx.set(ContextKeys.AMPLIFIER, amplifier);
                     }
             ));
+    public static final RegistryObject<IExecutableEffect> POOP =
+            EXECUTABLE_EFFECT_REGISTRY.register("poop", () -> new AbilityEffectEntry(
+                    GENERATE_LOOT, ctx -> ctx.set(ContextKeys.RESOURCE_LOCATIONS, List.of(LootTableManager.POOP))
+            ));
+    public static final RegistryObject<IExecutableEffect> THE_POOP =
+            EXECUTABLE_EFFECT_REGISTRY.register("the_poop", () -> new AbilityEffectEntry(
+                    GIVE_ITEM_VIA_LOOT, ctx -> {
+                        ctx.set(ContextKeys.ITEM, ModItems.POOP.get());
+                        double amplifier = ctx.getOrDefault(ContextKeys.AMPLIFIER, 1.);
+                        ctx.set(ContextKeys.DOUBLE, List.of(amplifier, amplifier + 1));
+                    })
+            );
+    public static final RegistryObject<IExecutableEffect> STEAM_SALE =
+            EXECUTABLE_EFFECT_REGISTRY.register("steam_sale", () -> new AbilityEffectEntry(
+                    POTIONS, ctx -> ctx.set(ContextKeys.POTIONS, List.of(
+                            new PotionProfile(
+                                    MobEffects.HERO_OF_THE_VILLAGE,
+                                    300,
+                                    1,
+                                    0,
+                                    0,
+                                    false
+                            )
+                    )))
+            );
 
 
     //</editor-fold>

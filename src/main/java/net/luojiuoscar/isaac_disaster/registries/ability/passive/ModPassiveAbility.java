@@ -475,4 +475,19 @@ public class ModPassiveAbility {
     public static final RegistryObject<PassiveAbility> SPIRIT_OF_THE_NIGHT =
             PASSIVE_ABILITY_REGISTRY.register("spirit_of_the_night",
                     () -> new SpiritOfTheNight(ItemId.SPIRIT_OF_THE_NIGHT.getId(), ItemId.SPIRIT_OF_THE_NIGHT.getLevel()));
+
+    public static final RegistryObject<PassiveAbility> STEAM_SALE =
+            PASSIVE_ABILITY_REGISTRY.register("steam_sale",
+                    () -> new SteamSale(ItemId.STEAM_SALE.getId(), ItemId.STEAM_SALE.getLevel()));
+
+
+
+
+
+
+
+
+
+
+
 }

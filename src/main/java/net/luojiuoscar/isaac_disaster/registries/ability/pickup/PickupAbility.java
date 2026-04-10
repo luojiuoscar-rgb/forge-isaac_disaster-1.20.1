@@ -15,7 +15,7 @@ import java.util.List;
 public abstract class PickupAbility {
     protected final CompositeTrigger trigger;
 
-    protected PickupAbility(CompositeTrigger trigger){
+    public PickupAbility(CompositeTrigger trigger){
         this.trigger = trigger;
     }
 

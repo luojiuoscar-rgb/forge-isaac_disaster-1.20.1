@@ -34,8 +34,10 @@ public class ModAttackType {
             ATTACK_TYPE_REGISTER.register("neptunus", () -> new NeptunusAttack(AttackPrio.NEPTUNUS.getPriority()));
 
     public static final RegistryObject<AttackType> TECHNOLOGY2 =
-            ATTACK_TYPE_REGISTER.register("technology2", () -> new Technology2Attack(AttackPrio.TECHNOLOGY2.getPriority()));
+            ATTACK_TYPE_REGISTER.register("technology2", () -> new Technology2Attack(-1));
 
+    public static final RegistryObject<AttackType> SHOOP_DA_WHOOP =
+            ATTACK_TYPE_REGISTER.register("shoop_da_whoop", () -> new ShoopDaWhoop(-1));
 
 
 }

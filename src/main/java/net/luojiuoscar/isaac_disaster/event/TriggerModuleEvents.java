@@ -36,26 +36,33 @@ import java.util.List;
 public class TriggerModuleEvents {
 
     public static void dispatch(ExecutableEffectContext context, TriggerType type) {
-        TriggerModuleQueue queue = context.get(ContextKeys.TRIGGER_MODULE_QUEUE);
-        if (queue == null || queue.isEmpty()) return;
+        LivingEntity entity = context.getEntity();
 
-        IForgeRegistry<TriggerModule> reg =
-                RegistryManager.ACTIVE.getRegistry(ModTriggerModule.TRIGGER_MODULE_KEY);
+        // 获取queue并且触发所有模块
+        entity.getCapability(EffectModulesProvider.EFFECT_MODULES).ifPresent(triggerModule -> {
+            var queue = triggerModule.getTriggerModules().copy();
+            context.set(ContextKeys.TRIGGER_MODULE_QUEUE, queue);
 
-        // 触发前事件
-        BeforeTriggerModuleActiveEvent preEvent = new BeforeTriggerModuleActiveEvent(context);
-        MinecraftForge.EVENT_BUS.post(preEvent);
+            if (queue == null || queue.isEmpty()) return;
 
-        queue.lock();
+            IForgeRegistry<TriggerModule> reg =
+                    RegistryManager.ACTIVE.getRegistry(ModTriggerModule.TRIGGER_MODULE_KEY);
 
-        for (var inst : queue.getQueue()) {
-            context.set(ContextKeys.AMPLIFIER, (double) inst.stacks);
-            TriggerModule module = reg.getValue(inst.id);
-            if (module == null) continue;
+            // 触发前事件
+            BeforeTriggerModuleActiveEvent preEvent = new BeforeTriggerModuleActiveEvent(context);
+            MinecraftForge.EVENT_BUS.post(preEvent);
 
-            // 调用模块的 fire 方法，触发对应 TriggerType 的 SimpleTrigger
-            module.fire(context, type);
-        }
+            queue.lock();
+
+            for (var inst : queue.getQueue()) {
+                context.set(ContextKeys.AMPLIFIER, (double) inst.stacks);
+                TriggerModule module = reg.getValue(inst.id);
+                if (module == null) continue;
+
+                // 调用模块的 fire 方法，触发对应 TriggerType 的 SimpleTrigger
+                module.fire(context, type);
+            }
+        });
     }
 
     public static void bulletDispatch(ExecutableEffectContext context, TriggerType type){
@@ -70,12 +77,7 @@ public class TriggerModuleEvents {
         context.set(ContextKeys.EVENT, event);
         context.set(ContextKeys.TARGET_POSITION, entity.position());
 
-        entity.getCapability(EffectModulesProvider.EFFECT_MODULES).ifPresent(triggerModule -> {
-            var queue = triggerModule.getTriggerModules().copy();
-            context.set(ContextKeys.TRIGGER_MODULE_QUEUE, queue);
-
-            dispatch(context, ModTriggerTypes.GET_ATTACK_CONTEXT);
-        });
+        dispatch(context, ModTriggerTypes.GET_ATTACK_CONTEXT);
     }
 
     @SubscribeEvent
@@ -85,12 +87,7 @@ public class TriggerModuleEvents {
         context.set(ContextKeys.EVENT, event);
         context.set(ContextKeys.TARGET_POSITION, entity.position());
 
-        entity.getCapability(EffectModulesProvider.EFFECT_MODULES).ifPresent(triggerModule -> {
-            var queue = triggerModule.getTriggerModules().copy();
-            context.set(ContextKeys.TRIGGER_MODULE_QUEUE, queue);
-
-            dispatch(context, ModTriggerTypes.BEFORE_PERFORM_ATTACK);
-        });
+        dispatch(context, ModTriggerTypes.BEFORE_PERFORM_ATTACK);
     }
 
     @SubscribeEvent
@@ -101,22 +98,18 @@ public class TriggerModuleEvents {
 
         ExecutableEffectContext context = new ExecutableEffectContext(entity);
         context.set(ContextKeys.EVENT, event);
-        context.set(ContextKeys.TARGET_POSITION, entity.position());
         context.set(ContextKeys.DOUBLE, List.of((double) event.getAmount()));
 
         List<Entity> secondary_entities = new ArrayList<>();
-        secondary_entities.add(event.getEntity());
+        LivingEntity victim = event.getEntity();
+        secondary_entities.add(victim);
         if (event.getSource().getDirectEntity() != null){
             secondary_entities.add(event.getSource().getDirectEntity());
         }
         context.set(ContextKeys.SECONDARY_ENTITIES, secondary_entities); // 受伤的生物
+        context.set(ContextKeys.TARGET_POSITION, victim.position());
 
-        entity.getCapability(EffectModulesProvider.EFFECT_MODULES).ifPresent(triggerModule -> {
-            var queue = triggerModule.getTriggerModules().copy();
-            context.set(ContextKeys.TRIGGER_MODULE_QUEUE, queue);
-
-            dispatch(context, ModTriggerTypes.HIT_ENTITY);
-        });
+        dispatch(context, ModTriggerTypes.HIT_ENTITY);
     }
 
     @SubscribeEvent
@@ -173,17 +166,12 @@ public class TriggerModuleEvents {
         context.set(ContextKeys.SECONDARY_ENTITIES, secondary_entities);
         context.set(ContextKeys.DOUBLE, List.of((double) event.getAmount()));
 
-        entity.getCapability(EffectModulesProvider.EFFECT_MODULES).ifPresent(triggerModule -> {
-            var queue = triggerModule.getTriggerModules().copy();
-            context.set(ContextKeys.TRIGGER_MODULE_QUEUE, queue);
-
-            dispatch(context, ModTriggerTypes.ON_HURT);
-            if (!PlayerHelper.isSelfDamage(event.getSource())){
-                dispatch(context, ModTriggerTypes.ON_HURT_NEGATIVE);
-            }else {
-                dispatch(context, ModTriggerTypes.ON_HURT_POSITIVE);
-            }
-        });
+        dispatch(context, ModTriggerTypes.ON_HURT);
+        if (!PlayerHelper.isSelfDamage(event.getSource())){
+            dispatch(context, ModTriggerTypes.ON_HURT_NEGATIVE);
+        }else {
+            dispatch(context, ModTriggerTypes.ON_HURT_POSITIVE);
+        }
     }
 
     /**
@@ -211,14 +199,8 @@ public class TriggerModuleEvents {
         kill_ctx.set(ContextKeys.TARGET_POSITION, victim.position());
         kill_ctx.set(ContextKeys.SECONDARY_ENTITIES, secondary_entities);
 
-        entity.getCapability(EffectModulesProvider.EFFECT_MODULES).ifPresent(triggerModule -> {
-            var queue = triggerModule.getTriggerModules().copy();
-            kill_ctx.set(ContextKeys.TRIGGER_MODULE_QUEUE, queue);
-            death_ctx.set(ContextKeys.TRIGGER_MODULE_QUEUE, queue);
-
-            dispatch(kill_ctx, ModTriggerTypes.KILL_ENTITY);
-            dispatch(death_ctx, ModTriggerTypes.DEATH);
-        });
+        dispatch(kill_ctx, ModTriggerTypes.KILL_ENTITY);
+        dispatch(death_ctx, ModTriggerTypes.DEATH);
     }
 
     @SubscribeEvent
@@ -228,12 +210,7 @@ public class TriggerModuleEvents {
         context.set(ContextKeys.EVENT, event);
         context.set(ContextKeys.TARGET_POSITION, player.position());
 
-        player.getCapability(EffectModulesProvider.EFFECT_MODULES).ifPresent(triggerModule -> {
-            var queue = triggerModule.getTriggerModules().copy();
-            context.set(ContextKeys.TRIGGER_MODULE_QUEUE, queue);
-
-            dispatch(context, ModTriggerTypes.BREAK_BLOCK);
-        });
+        dispatch(context, ModTriggerTypes.BREAK_BLOCK);
     }
 
     @SubscribeEvent
@@ -259,12 +236,7 @@ public class TriggerModuleEvents {
         context.set(ContextKeys.ITEM, player.getItemInHand(hand).getItem());
         context.set(ContextKeys.TARGET_POSITION, player.position());
 
-        player.getCapability(EffectModulesProvider.EFFECT_MODULES).ifPresent(triggerModule -> {
-            var queue = triggerModule.getTriggerModules().copy();
-            context.set(ContextKeys.TRIGGER_MODULE_QUEUE, queue);
-
-            dispatch(context, ModTriggerTypes.RIGHT_CLICK_TICK);
-        });
+        dispatch(context, ModTriggerTypes.RIGHT_CLICK_TICK);
     }
 
     @SubscribeEvent
@@ -279,12 +251,7 @@ public class TriggerModuleEvents {
         context.set(ContextKeys.TARGET_POSITION, entity.position());
         context.set(ContextKeys.SECONDARY_ENTITIES, List.of(item));
 
-        entity.getCapability(EffectModulesProvider.EFFECT_MODULES).ifPresent(triggerModule -> {
-            var queue = triggerModule.getTriggerModules().copy();
-            context.set(ContextKeys.TRIGGER_MODULE_QUEUE, queue);
-
-            dispatch(context, ModTriggerTypes.PICKUP_ITEM);
-        });
+        dispatch(context, ModTriggerTypes.PICKUP_ITEM);
     }
 
     @SubscribeEvent
@@ -294,12 +261,7 @@ public class TriggerModuleEvents {
         context.set(ContextKeys.EVENT, event);
         context.set(ContextKeys.TARGET_POSITION, entity.position());
 
-        entity.getCapability(EffectModulesProvider.EFFECT_MODULES).ifPresent(triggerModule -> {
-            var queue = triggerModule.getTriggerModules().copy();
-            context.set(ContextKeys.TRIGGER_MODULE_QUEUE, queue);
-
-            dispatch(context, ModTriggerTypes.LOOT);
-        });
+        dispatch(context, ModTriggerTypes.LOOT);
     }
 }
 

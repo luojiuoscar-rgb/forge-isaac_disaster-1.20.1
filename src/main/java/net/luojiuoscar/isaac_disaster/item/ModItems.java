@@ -293,15 +293,22 @@ public class ModItems {
     public static final RegistryObject<Item> TAROTS_BACK = ITEMS.register("tarots_back",
             () -> new Card(new Item.Properties(), ModPickupAbility.TAROTS_BACK));
     static { PICKUP_LIST.add(TAROTS_BACK); }
+
     public static final RegistryObject<Item> REVERSE_TAROTS_BACK = ITEMS.register("reverse_tarots_back",
             () -> new Card(new Item.Properties(), ModPickupAbility.REVERSE_TAROTS_BACK));
     static { PICKUP_LIST.add(REVERSE_TAROTS_BACK); }
+
     public static final RegistryObject<Item> POKERS_BACK = ITEMS.register("pokers_back",
             () -> new Card(new Item.Properties(), ModPickupAbility.POKERS_BACK));
     static { PICKUP_LIST.add(POKERS_BACK); }
+
     public static final RegistryObject<Item> SPECIALS_BACK = ITEMS.register("specials_back",
             () -> new Card(new Item.Properties(), ModPickupAbility.SPECIALS_BACK));
     static { PICKUP_LIST.add(SPECIALS_BACK); }
+
+    public static final RegistryObject<Item> POOP = ITEMS.register("poop",
+            () -> new Sack(new Item.Properties(), ModPickupAbility.POOP));
+    static { PICKUP_LIST.add(POOP); }
 
     // pickup end
     // misc

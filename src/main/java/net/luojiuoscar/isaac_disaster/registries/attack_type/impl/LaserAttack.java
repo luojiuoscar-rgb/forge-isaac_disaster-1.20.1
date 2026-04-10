@@ -5,6 +5,7 @@ import net.luojiuoscar.isaac_disaster.event.custom.attack.IsaacAttackBeforeHitEn
 import net.luojiuoscar.isaac_disaster.event.custom.attack.IsaacAttackHitBlockEvent;
 import net.luojiuoscar.isaac_disaster.helper.EntityHelper;
 import net.luojiuoscar.isaac_disaster.manager.ModDamageType;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.CompositeTrigger;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackContext;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackType;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.IBulletObject;
@@ -15,7 +16,6 @@ import net.luojiuoscar.isaac_disaster.registries.bullet_color.ModBulletColor;
 import net.luojiuoscar.isaac_disaster.registries.trajectory.IAttackTrajectory;
 import net.luojiuoscar.isaac_disaster.registries.trajectory.ModAttackTrajectory;
 import net.luojiuoscar.isaac_disaster.registries.trajectory.TrajectoryContext;
-import net.luojiuoscar.isaac_disaster.registries.ability_effect.SimpleTrigger;
 import net.luojiuoscar.isaac_disaster.sound.ModSounds;
 import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.core.registries.Registries;
@@ -37,7 +37,9 @@ import net.minecraftforge.registries.RegistryManager;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 public class LaserAttack extends AttackType {
 
@@ -196,8 +198,8 @@ public class LaserAttack extends AttackType {
         }
 
         @Override
-        public List<SimpleTrigger> getTriggers() {
-            return attackContext.getTriggers();
+        public CompositeTrigger getTriggers() {
+            return attackContext.getTrigger();
         }
 
         @Override
@@ -243,15 +245,19 @@ public class LaserAttack extends AttackType {
         if (!(entity.level() instanceof ServerLevel level)) return;
 
         Vec3 direction = getDirectionFromRotation(ctx.getXRot(), ctx.getYRot()).normalize();
+        float damage = getDamage(entity);
+        if (ctx.getDamage() != null) damage = ctx.getDamage().floatValue();
+
+        double width = getWidth(entity, damage);
 
         LaserProjectile laser = new LaserProjectile(
                 ctx.getOwner(),
                 ctx.getShooter(),
                 ctx.getPos(),
                 direction,
-                Math.max(0.5, getWidth(entity) * 2),
-                getWidth(entity),
-                getDamage(entity),
+                Math.max(0.5, width * 2),
+                width,
+                damage,
                 isHoming(entity),
                 isSpectral(entity),
                 entity.getYRot() - ctx.getYRot(),
@@ -332,13 +338,13 @@ public class LaserAttack extends AttackType {
 
         // --------- Block Collision ---------
         AABB box = createCollisionBox(nextPos, laser.width);
-        if (handleBlockCollision(laser, level, context.getTriggers()) && !laser.spectral) {
+        if (handleBlockCollision(laser, level, context.getTrigger()) && !laser.spectral) {
             laser.traveled = getRange(laser.owner);
             return;
         }
 
         // --------- Entity Collision ---------
-        handleEntityCollision(laser, level, box, context.getTriggers());
+        handleEntityCollision(laser, level, box, context.getTrigger());
 
         // -------- 重新计算nextPos以防pos被修改后行为出错 --------
         nextPos = laser.position.add(laser.direction.scale(laser.step)).add(totalPositionOffset);
@@ -350,7 +356,7 @@ public class LaserAttack extends AttackType {
     }
 
     // ================== Collision & Damage ==================
-    protected boolean handleBlockCollision(LaserProjectile laser, ServerLevel level, List<SimpleTrigger> triggers) {
+    protected boolean handleBlockCollision(LaserProjectile laser, ServerLevel level, CompositeTrigger triggers) {
         BlockHitResult blockHit = level.clip(new ClipContext(
                 laser.position,
                 laser.position.add(laser.direction.scale(laser.step)),
@@ -370,7 +376,7 @@ public class LaserAttack extends AttackType {
     }
 
     protected void handleEntityCollision(LaserProjectile laser, ServerLevel level, AABB box,
-                                         List<SimpleTrigger> triggers) {
+                                         CompositeTrigger triggers) {
         List<LivingEntity> entities = level.getEntitiesOfClass(LivingEntity.class, box,
                 e -> e != laser.owner && e.isAlive() && !laser.damagedEntities.contains(e.getUUID())
         );
@@ -450,7 +456,7 @@ public class LaserAttack extends AttackType {
         );
     }
 
-    protected double getWidth(LivingEntity living) {
-        return getBulletScale(living) * 0.25;
+    protected double getWidth(LivingEntity living, double damage) {
+        return getBulletScale(living, damage) * 0.25;
     }
 }

@@ -32,7 +32,6 @@ public class RecursiveModuleInstance {
         ctx.set(ContextKeys.TARGET_POSITION, entity.position());
         ctx.set(ContextKeys.RECURSIVE_MODULE_QUEUE, queue);
 
-
         recursiveModule.fire(ctx);
 
         // 完成任务后重置coolDown

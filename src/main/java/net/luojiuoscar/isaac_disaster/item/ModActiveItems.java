@@ -123,4 +123,11 @@ public class ModActiveItems {
             () -> new ActiveItem(new Item.Properties(), 24, 24, ModActiveAbility.PRAYER_CARD));
     static {ItemListManager.ACTIVE_ITEM_LIST.add(PRAYER_CARD);}
 
+    public static final RegistryObject<Item> SHOOP_DA_WHOOP = ITEMS.register("shoop_da_whoop",
+            () -> new ActiveItem(new Item.Properties(), 8, 8, ModActiveAbility.SHOOP_DA_WHOOP));
+    static {ItemListManager.ACTIVE_ITEM_LIST.add(SHOOP_DA_WHOOP);}
+
+    public static final RegistryObject<Item> THE_POOP = ITEMS.register("the_poop",
+            () -> new ActiveItem(new Item.Properties(), 4, 4, ModActiveAbility.THE_POOP));
+    static {ItemListManager.ACTIVE_ITEM_LIST.add(THE_POOP);}
 }

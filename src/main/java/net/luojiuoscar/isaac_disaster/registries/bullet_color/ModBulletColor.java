@@ -15,7 +15,7 @@ public class ModBulletColor {
     public static final DeferredRegister<BulletColor> BULLET_COLOR_REGISTRY =
             DeferredRegister.create(BULLET_COLOR_KEY, IsaacDisaster.MOD_ID);
 
-
+    /** 不一定是白色。如果颜色为Base，对应攻击方式会选择自己的默认颜色。 */
     public static final RegistryObject<BulletColor> BASE =
             BULLET_COLOR_REGISTRY.register("base", () -> new BulletColor(0xFFFFFF, 1.0f, 0));
 
@@ -31,5 +31,7 @@ public class ModBulletColor {
     public static final RegistryObject<BulletColor> IPECAC =
             BULLET_COLOR_REGISTRY.register("ipecac", () -> new BulletColor(0x5CA45C, 1.0f, 100));
 
+    public static final RegistryObject<BulletColor> SHOOP_DA_WHOOP =
+            BULLET_COLOR_REGISTRY.register("white", () -> new BulletColor(0xFFFFFF, 1.0f, 100));
 
 }

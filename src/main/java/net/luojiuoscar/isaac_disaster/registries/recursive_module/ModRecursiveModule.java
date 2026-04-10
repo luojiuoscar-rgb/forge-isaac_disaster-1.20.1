@@ -48,4 +48,6 @@ public class ModRecursiveModule {
             RECURSIVE_MODULE_REGISTRY.register("attract_item", AttractItem::new);
     public static final RegistryObject<RecursiveModule> MAGNETO =
             RECURSIVE_MODULE_REGISTRY.register("magneto", Magneto::new);
+    public static final RegistryObject<RecursiveModule> STEAM_SALE =
+            RECURSIVE_MODULE_REGISTRY.register("steam_sale", SteamSale::new);
 }

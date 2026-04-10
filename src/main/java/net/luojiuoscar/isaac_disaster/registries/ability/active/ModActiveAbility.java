@@ -119,6 +119,14 @@ public class ModActiveAbility {
     public static final RegistryObject<ActiveAbility> PRAYER_CARD =
             ACTIVE_ABILITY_REGISTRY.register("prayer_card",
                     () -> new PrayerCard(ItemId.PRAYER_CARD.getId(), ItemId.PRAYER_CARD.getLevel()));
+
+    public static final RegistryObject<ActiveAbility> SHOOP_DA_WHOOP =
+            ACTIVE_ABILITY_REGISTRY.register("whoop_da_whoop",
+                    () -> new ShoopDaWhoop(ItemId.SHOOP_DA_WHOOP.getId(), ItemId.SHOOP_DA_WHOOP.getLevel()));
+
+    public static final RegistryObject<ActiveAbility> THE_POOP =
+            ACTIVE_ABILITY_REGISTRY.register("the_poop",
+                    () -> new ThePoop(ItemId.THE_POOP.getId(), ItemId.THE_POOP.getLevel()));
 }
 
 

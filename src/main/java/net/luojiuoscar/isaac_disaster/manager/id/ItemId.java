@@ -147,7 +147,10 @@ public enum ItemId {
     STIGMATA(1),
     PAGEANT_BOY(0),
     PRAYER_CARD(3),
-    SPIRIT_OF_THE_NIGHT(3);
+    SPIRIT_OF_THE_NIGHT(3),
+    SHOOP_DA_WHOOP(2),
+    THE_POOP(0),
+    STEAM_SALE(2);
 
 
 

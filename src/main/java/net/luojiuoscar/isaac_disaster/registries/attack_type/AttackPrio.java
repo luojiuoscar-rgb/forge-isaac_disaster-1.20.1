@@ -1,7 +1,6 @@
 package net.luojiuoscar.isaac_disaster.registries.attack_type;
 
 public enum AttackPrio {
-    TECHNOLOGY2(-1),
     BULLET(0),
     NEPTUNUS(10),
     LASER(100),

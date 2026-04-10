@@ -25,7 +25,7 @@ public class BounceOnBlock extends TriggerModule {
         if (context.get(ContextKeys.EVENT) instanceof GetAttackContextEvent event) {
             List<AttackContext> attCtxs = event.getContexts();
             for (var ctx : attCtxs) {
-                ctx.getTriggers().addAll(bullet_triggers);
+                ctx.getTrigger().addAll(bullet_triggers);
             }
         }
     }

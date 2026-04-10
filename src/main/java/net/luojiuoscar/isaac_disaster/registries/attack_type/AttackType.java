@@ -7,6 +7,7 @@ import net.luojiuoscar.isaac_disaster.event.custom.attack.GetAttackContextEvent;
 import net.luojiuoscar.isaac_disaster.event.custom.misc.GetShotDelayEvent;
 import net.luojiuoscar.isaac_disaster.event.custom.misc.IsaacGetBulletCountEvent;
 import net.luojiuoscar.isaac_disaster.manager.id.ItemId;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.CompositeTrigger;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -67,7 +68,7 @@ public abstract class AttackType {
                             player,
                             shooter,
                             colorRl,
-                            List.of(),
+                            new CompositeTrigger(),
                             trajectories,
                             eyePos,
                             player.getXRot(),
@@ -156,8 +157,7 @@ public abstract class AttackType {
         return attr != null ? Math.max(Math.min(attr.getValue(), 64), 1) : 18.0;
     }
 
-    protected float getBulletScale(LivingEntity entity) {
-        double damage = entity.getAttribute(Attributes.ATTACK_DAMAGE) != null ? entity.getAttribute(Attributes.ATTACK_DAMAGE).getValue() : 1.0;
+    protected float getBulletScale(LivingEntity entity, double damage) {
         AttributeInstance extraAttr = entity.getAttribute(ModAttributes.BULLET_SCALE.get());
         float extra = extraAttr != null ? (float) extraAttr.getValue() : 0f;
 

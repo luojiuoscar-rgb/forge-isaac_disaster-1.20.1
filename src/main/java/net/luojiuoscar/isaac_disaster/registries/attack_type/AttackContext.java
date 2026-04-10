@@ -1,20 +1,20 @@
 package net.luojiuoscar.isaac_disaster.registries.attack_type;
 
-import net.luojiuoscar.isaac_disaster.registries.bullet_color.ModBulletColor;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.CompositeTrigger;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.SimpleTrigger;
+import net.luojiuoscar.isaac_disaster.registries.bullet_color.ModBulletColor;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.Vec3;
+import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class AttackContext {
     public ResourceLocation colorRl;
-    private final List<SimpleTrigger> triggers;
+    private final CompositeTrigger trigger;
     public final Map<ResourceLocation, Integer> trajectories;
 
     private Vec3 pos;
@@ -22,6 +22,7 @@ public class AttackContext {
     private float yRot;
     private float xRotOffset = 0.0f;
     private float yRotOffset = 0.0f;
+    private Double damage = null;
 
     private final Entity shooter;
     private final LivingEntity owner;
@@ -29,7 +30,7 @@ public class AttackContext {
     public AttackContext(){
         this.colorRl = ModBulletColor.BASE.getId();
         this.trajectories = new HashMap<>();
-        this.triggers = new ArrayList<>();
+        this.trigger = new CompositeTrigger();
         this.pos = Vec3.ZERO;
         this.xRot = 0.0f;
         this.yRot = 0.0f;
@@ -39,23 +40,39 @@ public class AttackContext {
 
     public AttackContext(LivingEntity owner, Entity shooter,
                          ResourceLocation colorRl,
-                         List<SimpleTrigger> triggers,
+                         CompositeTrigger trigger,
                          Map<ResourceLocation, Integer> trajectories,
                          Vec3 pos, float xRot, float yRot) {
         this.owner = owner;
         this.shooter = shooter;
         this.colorRl = colorRl;
         // 避免外部修改影响 AttackContext 内部
-        this.triggers = new ArrayList<>(triggers);
+        this.trigger = trigger;
         this.trajectories = new HashMap<>(trajectories);
         this.pos = pos;
         this.xRot = xRot;
         this.yRot = yRot;
-
     }
 
-    public List<SimpleTrigger> getTriggers() {
-        return triggers;
+    public AttackContext(LivingEntity owner, Entity shooter,
+                         ResourceLocation colorRl,
+                         CompositeTrigger trigger,
+                         Map<ResourceLocation, Integer> trajectories,
+                         Vec3 pos, float xRot, float yRot, double damage) {
+        this.owner = owner;
+        this.shooter = shooter;
+        this.colorRl = colorRl;
+        // 避免外部修改影响 AttackContext 内部
+        this.trigger = trigger;
+        this.trajectories = new HashMap<>(trajectories);
+        this.pos = pos;
+        this.xRot = xRot;
+        this.yRot = yRot;
+        this.damage = damage;
+    }
+
+    public CompositeTrigger getTrigger() {
+        return trigger;
     }
 
     public AttackContext copy(){
@@ -63,16 +80,17 @@ public class AttackContext {
                 this.owner,
                 this.shooter,
                 this.colorRl,
-                this.triggers,
+                this.trigger,
                 new HashMap<>(this.trajectories),
                 this.pos,
                 this.xRot,
-                this.yRot
+                this.yRot,
+                this.damage
         );
     }
 
     public void addSimpleTrigger(SimpleTrigger trigger) {
-        this.triggers.add(trigger);
+        this.trigger.add(trigger);
     }
 
     public Vec3 getPos() {
@@ -113,5 +131,10 @@ public class AttackContext {
 
     public void setYRotOffset(float yRotOffset) {
         this.yRotOffset = yRotOffset;
+    }
+
+    @Nullable
+    public Double getDamage() {
+        return damage;
     }
 }

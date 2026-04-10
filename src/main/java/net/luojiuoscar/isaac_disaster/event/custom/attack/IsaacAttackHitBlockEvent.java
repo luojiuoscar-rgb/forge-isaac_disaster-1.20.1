@@ -1,5 +1,6 @@
 package net.luojiuoscar.isaac_disaster.event.custom.attack;
 
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.CompositeTrigger;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.IBulletObject;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.SimpleTrigger;
 import net.minecraft.resources.ResourceLocation;
@@ -14,7 +15,7 @@ public class IsaacAttackHitBlockEvent extends IsaacAttackEvent {
     private final BlockHitResult hit;
 
     public IsaacAttackHitBlockEvent(IBulletObject bulletObject, Entity source, ResourceLocation attackType,
-                                    List<SimpleTrigger> triggers,
+                                    CompositeTrigger triggers,
                                     BlockHitResult hit) {
         super(bulletObject, source, attackType, triggers);
         this.hit = hit;

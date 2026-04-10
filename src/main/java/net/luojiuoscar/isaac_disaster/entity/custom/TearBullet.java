@@ -8,6 +8,7 @@ import net.luojiuoscar.isaac_disaster.event.custom.attack.tear_bullet.BulletTick
 import net.luojiuoscar.isaac_disaster.event.custom.attack.tear_bullet.TearBulletDiscardEvent;
 import net.luojiuoscar.isaac_disaster.helper.EntityHelper;
 import net.luojiuoscar.isaac_disaster.manager.ModDamageType;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.CompositeTrigger;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackType;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.IBulletObject;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.ModAttackType;
@@ -17,7 +18,6 @@ import net.luojiuoscar.isaac_disaster.registries.bullet_color.ModBulletColor;
 import net.luojiuoscar.isaac_disaster.registries.trajectory.IAttackTrajectory;
 import net.luojiuoscar.isaac_disaster.registries.trajectory.ModAttackTrajectory;
 import net.luojiuoscar.isaac_disaster.registries.trajectory.TrajectoryContext;
-import net.luojiuoscar.isaac_disaster.registries.ability_effect.SimpleTrigger;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
@@ -47,7 +47,9 @@ import net.minecraftforge.registries.RegistryManager;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 public class TearBullet extends Entity implements IBulletObject {
 
@@ -82,7 +84,7 @@ public class TearBullet extends Entity implements IBulletObject {
     // ======== 状态 ========
     protected final DamagedEntities damagedEntities = new DamagedEntities();
     protected ResourceLocation colorRl = ModBulletColor.BASE.getId();
-    protected final List<SimpleTrigger> simpleTriggers = new ArrayList<>();
+    protected final CompositeTrigger trigger = new CompositeTrigger();
     protected Vec3 extraPositionOffset = Vec3.ZERO;
 
     // ======== 客户端同步属性 ========
@@ -251,7 +253,7 @@ public class TearBullet extends Entity implements IBulletObject {
         if (shape.isEmpty() || shape.bounds().getSize() < 0.01) return false;
 
         IsaacAttackHitBlockEvent event =
-                new IsaacAttackHitBlockEvent(this, getOwner(), ModAttackType.BULLET.getId(), simpleTriggers, blockHit);
+                new IsaacAttackHitBlockEvent(this, getOwner(), ModAttackType.BULLET.getId(), trigger, blockHit);
         if (!MinecraftForge.EVENT_BUS.post(event)) {
             if (!MinecraftForge.EVENT_BUS.post(new TearBulletDiscardEvent(this))) {
                 discard();
@@ -293,7 +295,7 @@ public class TearBullet extends Entity implements IBulletObject {
             return;
 
         IsaacAttackBeforeHitEntityEvent beforeEvent = new IsaacAttackBeforeHitEntityEvent(
-                this, getOwner(), ModAttackType.BULLET.getId(), simpleTriggers, entityHit, damage);
+                this, getOwner(), ModAttackType.BULLET.getId(), trigger, entityHit, damage);
         if (MinecraftForge.EVENT_BUS.post(beforeEvent)) return;
 
         double damageValue = beforeEvent.getDamage();
@@ -304,7 +306,7 @@ public class TearBullet extends Entity implements IBulletObject {
         }
 
         IsaacAttackAfterHitEvent afterEvent = new IsaacAttackAfterHitEvent(
-                this, getOwner(), ModAttackType.BULLET.getId(), simpleTriggers, entityHit, damageValue, living.getHealth());
+                this, getOwner(), ModAttackType.BULLET.getId(), trigger, entityHit, damageValue, living.getHealth());
         if (MinecraftForge.EVENT_BUS.post(afterEvent)) return;
 
 
@@ -583,8 +585,8 @@ public class TearBullet extends Entity implements IBulletObject {
     }
 
     @Override
-    public List<SimpleTrigger> getTriggers() {
-        return simpleTriggers;
+    public CompositeTrigger getTriggers() {
+        return trigger;
     }
 
     @Override

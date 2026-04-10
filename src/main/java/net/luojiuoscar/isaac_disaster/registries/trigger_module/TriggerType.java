@@ -14,7 +14,7 @@ public class TriggerType {
     }
 
     public boolean is(TriggerType type){
-        return id.equals(type.getId());
+        return id.equals(type.getId()) || isPlaceholder();
     }
 
     public boolean isPlaceholder(){

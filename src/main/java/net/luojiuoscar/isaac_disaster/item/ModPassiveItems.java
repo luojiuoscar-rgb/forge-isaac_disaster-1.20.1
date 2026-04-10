@@ -481,4 +481,10 @@ public class ModPassiveItems {
             () -> new PassiveItem(new Item.Properties(), ModPassiveAbility.SPIRIT_OF_THE_NIGHT));
     static {ItemListManager.PASSIVE_ITEM_LIST.add(SPIRIT_OF_THE_NIGHT);}
 
+    public static final RegistryObject<Item> STEAM_SALE = ITEMS.register("steam_sale",
+            () -> new PassiveItem(new Item.Properties(), ModPassiveAbility.STEAM_SALE));
+    static {ItemListManager.PASSIVE_ITEM_LIST.add(STEAM_SALE);}
+
+
+
 }

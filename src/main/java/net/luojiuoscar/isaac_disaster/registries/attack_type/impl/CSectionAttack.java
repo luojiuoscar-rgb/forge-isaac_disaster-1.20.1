@@ -5,6 +5,7 @@ import net.luojiuoscar.isaac_disaster.capability.player.PlayerAbilityProvider;
 import net.luojiuoscar.isaac_disaster.entity.custom.FetusBullet;
 import net.luojiuoscar.isaac_disaster.entity.custom.TearBullet;
 import net.luojiuoscar.isaac_disaster.event.custom.attack.BeforePerformAttackEvent;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.CompositeTrigger;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackContext;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.IChargeableAttack;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.ModAttackType;
@@ -22,7 +23,6 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.MinecraftForge;
 import org.joml.Vector3f;
 
-import java.util.List;
 import java.util.Map;
 
 public class CSectionAttack extends BulletAttack implements IChargeableAttack {
@@ -53,14 +53,17 @@ public class CSectionAttack extends BulletAttack implements IChargeableAttack {
     public TearBullet getBulletObject(AttackContext c){
         LivingEntity owner = c.getOwner();
 
+        float damage = getDamage(owner);
+        if (c.getDamage() == null) damage = c.getDamage().floatValue();
+
         return new FetusBullet(
                 owner.level(),
                 c.getOwner(),
                 c.getShooter(),
                 getBulletLiftTime(owner),
                 getBulletSpeed(owner),
-                getBulletScale(owner),
-                getDamage(owner),
+                getBulletScale(owner, damage),
+                damage,
                 c.getXRot(),
                 c.getYRot(),
                 c.getPos()
@@ -122,7 +125,7 @@ public class CSectionAttack extends BulletAttack implements IChargeableAttack {
                             player,
                             shooter,
                             colorRl,
-                            List.of(),
+                            new CompositeTrigger(),
                             trajectories,
                             eyePos,
                             player.getXRot(),

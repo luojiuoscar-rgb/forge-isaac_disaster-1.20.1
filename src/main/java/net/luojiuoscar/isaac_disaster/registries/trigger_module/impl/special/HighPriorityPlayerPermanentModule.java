@@ -17,7 +17,7 @@ public class HighPriorityPlayerPermanentModule extends TriggerModule {
 
             new SimpleTrigger(ModTriggerTypes.ON_HURT_NEGATIVE, ModExecutableEffects.HOLY_SHIELD_ACTIVE,
                               context -> context.getEntity().hasEffect(ModEffects.HOLY_SHIELD.get()))
-    ));
+            ));
 
     public HighPriorityPlayerPermanentModule() {
         super(TRIGGER);

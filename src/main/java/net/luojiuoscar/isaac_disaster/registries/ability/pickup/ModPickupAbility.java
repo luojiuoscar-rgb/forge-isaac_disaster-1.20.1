@@ -201,4 +201,7 @@ public class ModPickupAbility {
 
     public static final RegistryObject<PickupAbility> CREDIT_CARD =
             PICKUP_ABILITY_REGISTRY.register("credit_card", CreditCard::new);
+
+    public static final RegistryObject<PickupAbility> POOP =
+            PICKUP_ABILITY_REGISTRY.register("poop", Poop::new);
 }

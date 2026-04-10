@@ -25,11 +25,16 @@ public class LootTableManager {
             ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "pickups/random/sacks");
     public static final ResourceLocation RANDOM_TRINKETS =
             ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "pickups/random/trinkets");
+
     // sacks
     public static final ResourceLocation GRAB_BAG =
             ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "pickups/grab_bag");
     public static final ResourceLocation BLACK_SACK =
             ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "pickups/black_sack");
+
+    // poops
+    public static final ResourceLocation POOP =
+            ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "pickups/poop");
 
 
     // item pools
