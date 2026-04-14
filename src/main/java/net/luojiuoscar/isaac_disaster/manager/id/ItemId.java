@@ -150,7 +150,9 @@ public enum ItemId {
     SPIRIT_OF_THE_NIGHT(3),
     SHOOP_DA_WHOOP(2),
     THE_POOP(0),
-    STEAM_SALE(2);
+    STEAM_SALE(2),
+    IRON_BAR(2),
+    MIDAS_TOUCH(2);
 
 
 

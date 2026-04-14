@@ -120,8 +120,7 @@ public class BulletAttack extends AttackType {
     public TearBullet getBulletObject(AttackContext c){
         LivingEntity owner = c.getOwner();
 
-        float damage = getDamage(owner);
-        if (c.getDamage() == null) damage = c.getDamage().floatValue();
+        float damage = c.getDamage();
 
         return new TearBullet(
                 owner.level(),

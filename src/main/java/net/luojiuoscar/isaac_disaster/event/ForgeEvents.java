@@ -8,12 +8,14 @@ import net.luojiuoscar.isaac_disaster.capability.entity.ExtraDataProvider;
 import net.luojiuoscar.isaac_disaster.capability.player.*;
 import net.luojiuoscar.isaac_disaster.commands.*;
 import net.luojiuoscar.isaac_disaster.effect.ModEffects;
+import net.luojiuoscar.isaac_disaster.helper.LootHelper;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.item.item.ActiveItem;
 import net.luojiuoscar.isaac_disaster.item.item.IIsaacCuriosItem;
 import net.luojiuoscar.isaac_disaster.item.item.custom.FoodPassiveItem;
 import net.luojiuoscar.isaac_disaster.item.pickup.special.IsaacHead;
 import net.luojiuoscar.isaac_disaster.manager.EffectManager;
+import net.luojiuoscar.isaac_disaster.manager.LootTableManager;
 import net.luojiuoscar.isaac_disaster.manager.ModDamageType;
 import net.luojiuoscar.isaac_disaster.manager.PillEffectManager;
 import net.luojiuoscar.isaac_disaster.manager.data.PillShuffleData;
@@ -42,10 +44,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.entity.EntityEvent;
-import net.minecraftforge.event.entity.living.LivingAttackEvent;
-import net.minecraftforge.event.entity.living.LivingHurtEvent;
-import net.minecraftforge.event.entity.living.LivingKnockBackEvent;
-import net.minecraftforge.event.entity.living.MobEffectEvent;
+import net.minecraftforge.event.entity.living.*;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.level.LevelEvent;
@@ -336,8 +335,21 @@ public class ForgeEvents {
             float newDamage = event.getAmount() * (1 + 0.3f * level);
             event.setAmount(newDamage);
         }
+        // 金化
+        if (victim.hasEffect(ModEffects.GOLDEN.get())){
+            float newDamage = event.getAmount() * 2;
+            event.setAmount(newDamage);
+        }
     }
 
+    @SubscribeEvent
+    public static void onLivingDeath(LivingDeathEvent event){
+        LivingEntity entity = event.getEntity();
+        if (entity.hasEffect(ModEffects.GOLDEN.get())){
+            LootHelper.spawnLootAtPos(entity, entity.position(), LootTableManager.RANDOM_COINS,
+                    entity.getRandom().nextInt(0,3));
+        }
+    }
 
 
     @SubscribeEvent
@@ -437,7 +449,6 @@ public class ForgeEvents {
 
         event.setNewSpeed(finalSpeed);
     }
-
 
 
     @SubscribeEvent

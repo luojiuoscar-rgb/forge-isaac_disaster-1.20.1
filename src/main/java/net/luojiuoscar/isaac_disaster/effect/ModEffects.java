@@ -55,7 +55,7 @@ public class ModEffects {
             () -> new CharmEffect(MobEffectCategory.NEUTRAL, 0x9C27B0));
 
     public static final RegistryObject<MobEffect> VULNERABLE = MOB_EFFECTS.register(EffectManager.VULNERABLE.getName(),
-            () -> new VulnerableEffect(MobEffectCategory.BENEFICIAL, 0x808080));
+            () -> new VulnerableEffect(MobEffectCategory.HARMFUL, 0x808080));
 
     public static final RegistryObject<MobEffect> PANIC = MOB_EFFECTS.register(EffectManager.PANIC.getName(),
             () -> new PanicEffect(MobEffectCategory.NEUTRAL, 0xFF0000));
@@ -89,6 +89,9 @@ public class ModEffects {
 
     public static final RegistryObject<MobEffect> THE_WIZ = MOB_EFFECTS.register(EffectManager.THE_WIZ.getName(),
             () -> new TheWizEffect(MobEffectCategory.NEUTRAL, 0xFFFFFF));
+
+    public static final RegistryObject<MobEffect> GOLDEN = MOB_EFFECTS.register(EffectManager.GOLDEN.getName(),
+            () -> new GoldenEffect(MobEffectCategory.HARMFUL, 0xefe300));
 
     // curses
     public static final RegistryObject<MobEffect> CURSE_OF_THE_BLIND = MOB_EFFECTS.register(EffectManager.CURSE_OF_THE_BLIND.getName(),

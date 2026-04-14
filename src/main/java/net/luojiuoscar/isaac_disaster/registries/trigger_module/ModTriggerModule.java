@@ -79,5 +79,9 @@ public class ModTriggerModule {
             TRIGGER_MODULE_REGISTRY.register("penny_trinket", PennyTrinket::new);
     public static final RegistryObject<TriggerModule> CHEST_LOOT_TRINKET =
             TRIGGER_MODULE_REGISTRY.register("chest_loot_trinket", ChestLootTrinket::new);
+    public static final RegistryObject<TriggerModule> IRON_BAR =
+            TRIGGER_MODULE_REGISTRY.register("iron_bar", IronBar::new);
+    public static final RegistryObject<TriggerModule> MIDAS_TOUCH =
+            TRIGGER_MODULE_REGISTRY.register("midas_touch", MidasTouch::new);
 
 }

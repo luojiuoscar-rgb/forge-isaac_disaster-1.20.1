@@ -8,10 +8,13 @@ import net.luojiuoscar.isaac_disaster.event.custom.misc.BeforeTriggerModuleActiv
 import net.luojiuoscar.isaac_disaster.event.custom.misc.GeneralLootModifyEvent;
 import net.luojiuoscar.isaac_disaster.event.custom.misc.RightClickTickEvent;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
-import net.luojiuoscar.isaac_disaster.registries.ability_effect.ExecutableEffectContext;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ContextKeys;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.ExecutableEffectContext;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.IBulletObject;
-import net.luojiuoscar.isaac_disaster.registries.trigger_module.*;
+import net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerModule;
+import net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerTypes;
+import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerModule;
+import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerType;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
@@ -73,6 +76,7 @@ public class TriggerModuleEvents {
     @SubscribeEvent
     public static void getAttackContext(GetAttackContextEvent event) {
         LivingEntity entity = event.getPlayer();
+
         ExecutableEffectContext context = new ExecutableEffectContext(entity);
         context.set(ContextKeys.EVENT, event);
         context.set(ContextKeys.TARGET_POSITION, entity.position());
@@ -83,6 +87,7 @@ public class TriggerModuleEvents {
     @SubscribeEvent
     public static void beforePerformAttack(BeforePerformAttackEvent event) {
         LivingEntity entity = event.getEntity();
+
         ExecutableEffectContext context = new ExecutableEffectContext(entity);
         context.set(ContextKeys.EVENT, event);
         context.set(ContextKeys.TARGET_POSITION, entity.position());
@@ -95,7 +100,6 @@ public class TriggerModuleEvents {
         // restricted damage types
         if (!PlayerHelper.isHitAllowedType(event.getSource())) return;
         if (!(event.getSource().getEntity() instanceof LivingEntity entity)) return;
-
         ExecutableEffectContext context = new ExecutableEffectContext(entity);
         context.set(ContextKeys.EVENT, event);
         context.set(ContextKeys.DOUBLE, List.of((double) event.getAmount()));
@@ -103,9 +107,6 @@ public class TriggerModuleEvents {
         List<Entity> secondary_entities = new ArrayList<>();
         LivingEntity victim = event.getEntity();
         secondary_entities.add(victim);
-        if (event.getSource().getDirectEntity() != null){
-            secondary_entities.add(event.getSource().getDirectEntity());
-        }
         context.set(ContextKeys.SECONDARY_ENTITIES, secondary_entities); // 受伤的生物
         context.set(ContextKeys.TARGET_POSITION, victim.position());
 
@@ -113,9 +114,30 @@ public class TriggerModuleEvents {
     }
 
     @SubscribeEvent
+    public static void onLivingHurt(LivingHurtEvent event) {
+        LivingEntity entity = event.getEntity();
+        ExecutableEffectContext context = new ExecutableEffectContext(entity);
+        context.set(ContextKeys.EVENT, event);
+        context.set(ContextKeys.TARGET_POSITION, entity.position());
+
+        List<Entity> secondary_entities = new ArrayList<>();
+        if (event.getSource().getEntity() != null) secondary_entities.add(event.getSource().getEntity());
+        context.set(ContextKeys.SECONDARY_ENTITIES, secondary_entities);
+        context.set(ContextKeys.DOUBLE, List.of((double) event.getAmount()));
+
+        dispatch(context, ModTriggerTypes.ON_HURT);
+        if (!PlayerHelper.isSelfDamage(event.getSource())){
+            dispatch(context, ModTriggerTypes.ON_HURT_NEGATIVE);
+        }else {
+            dispatch(context, ModTriggerTypes.ON_HURT_POSITIVE);
+        }
+    }
+
+    @SubscribeEvent
     public static void beforeBulletHitEntity(IsaacAttackBeforeHitEntityEvent event) {
         IBulletObject bulletObject = event.getBulletObject();
 
+        if (bulletObject.getOwner() == null) return;
         ExecutableEffectContext context = new ExecutableEffectContext(bulletObject.getOwner());
         context.set(ContextKeys.EVENT, event);
         context.set(ContextKeys.BULLET, bulletObject);
@@ -130,6 +152,7 @@ public class TriggerModuleEvents {
     public static void afterBulletHitEntity(IsaacAttackAfterHitEvent event) {
         IBulletObject bulletObject = event.getBulletObject();
 
+        if (bulletObject.getOwner() == null) return;
         ExecutableEffectContext context = new ExecutableEffectContext(bulletObject.getOwner());
         context.set(ContextKeys.EVENT, event);
         context.set(ContextKeys.BULLET, bulletObject);
@@ -151,27 +174,6 @@ public class TriggerModuleEvents {
         context.set(ContextKeys.DOUBLE, List.of((double) bulletObject.getDamage()));
 
         bulletDispatch(context, ModTriggerTypes.BULLET_HIT_BLOCK);
-    }
-
-    @SubscribeEvent
-    public static void onLivingHurt(LivingHurtEvent event) {
-        LivingEntity entity = event.getEntity();
-        ExecutableEffectContext context = new ExecutableEffectContext(entity);
-        context.set(ContextKeys.EVENT, event);
-        context.set(ContextKeys.TARGET_POSITION, entity.position());
-
-        List<Entity> secondary_entities = new ArrayList<>();
-        if (event.getSource().getEntity() != null) secondary_entities.add(event.getSource().getEntity());
-        if (event.getSource().getDirectEntity() != null) secondary_entities.add(event.getSource().getDirectEntity());
-        context.set(ContextKeys.SECONDARY_ENTITIES, secondary_entities);
-        context.set(ContextKeys.DOUBLE, List.of((double) event.getAmount()));
-
-        dispatch(context, ModTriggerTypes.ON_HURT);
-        if (!PlayerHelper.isSelfDamage(event.getSource())){
-            dispatch(context, ModTriggerTypes.ON_HURT_NEGATIVE);
-        }else {
-            dispatch(context, ModTriggerTypes.ON_HURT_POSITIVE);
-        }
     }
 
     /**

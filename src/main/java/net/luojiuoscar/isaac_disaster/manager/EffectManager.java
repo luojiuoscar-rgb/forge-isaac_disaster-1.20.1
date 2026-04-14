@@ -26,6 +26,7 @@ public enum EffectManager {
     ETERNAL_HEART("eternal_heart"),
     GILDING("gilding"),
     THE_WIZ("the_wiz"),
+    GOLDEN("golden"),
 
     // Curses
     CURSE_OF_THE_BLIND("curse_of_the_blind"),
@@ -49,6 +50,7 @@ public enum EffectManager {
 
     public Component getExplainDesc(){
         return Component.translatable("effect.isaac_disaster." + name)
+                .append(": ")
                 .append(Component.translatable("effect.isaac_disaster." + name + ".description"));
     }
 }

@@ -18,7 +18,7 @@ public class StackPotion implements IAbilityEffect {
     @Override
     public boolean applyEffect(ExecutableEffectContext context) {
         var potions = context.get(ContextKeys.POTIONS);
-        if (potions.isEmpty()) return false;
+        if (potions == null || potions.isEmpty()) return false;
 
         int multiplier = context.getOrDefault(ContextKeys.AMPLIFIER, 1.).intValue() - 1;
         LivingEntity entity = context.getEntity();

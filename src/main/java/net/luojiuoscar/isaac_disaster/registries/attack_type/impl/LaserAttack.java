@@ -245,8 +245,7 @@ public class LaserAttack extends AttackType {
         if (!(entity.level() instanceof ServerLevel level)) return;
 
         Vec3 direction = getDirectionFromRotation(ctx.getXRot(), ctx.getYRot()).normalize();
-        float damage = getDamage(entity);
-        if (ctx.getDamage() != null) damage = ctx.getDamage().floatValue();
+        float damage = ctx.getDamage();
 
         double width = getWidth(entity, damage);
 

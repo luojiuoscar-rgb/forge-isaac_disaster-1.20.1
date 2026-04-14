@@ -4,6 +4,7 @@ import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
 
 public class TagManager {
@@ -19,5 +20,7 @@ public class TagManager {
     public static final TagKey<Item> ITEM_CANNOT_BE_DUPLICATED =
             TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "item_cannot_be_duplicated"));
 
-
+    // entity tag
+    public static final TagKey<EntityType<?>> BOSSES = TagKey.create(Registries.ENTITY_TYPE,
+            ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "bosses"));
 }

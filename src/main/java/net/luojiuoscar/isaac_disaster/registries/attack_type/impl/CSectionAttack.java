@@ -53,8 +53,7 @@ public class CSectionAttack extends BulletAttack implements IChargeableAttack {
     public TearBullet getBulletObject(AttackContext c){
         LivingEntity owner = c.getOwner();
 
-        float damage = getDamage(owner);
-        if (c.getDamage() == null) damage = c.getDamage().floatValue();
+        float damage = c.getDamage();
 
         return new FetusBullet(
                 owner.level(),

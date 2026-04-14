@@ -485,6 +485,11 @@ public class ModPassiveItems {
             () -> new PassiveItem(new Item.Properties(), ModPassiveAbility.STEAM_SALE));
     static {ItemListManager.PASSIVE_ITEM_LIST.add(STEAM_SALE);}
 
+    public static final RegistryObject<Item> IRON_BAR = ITEMS.register("iron_bar",
+            () -> new PassiveItem(new Item.Properties(), ModPassiveAbility.IRON_BAR));
+    static {ItemListManager.PASSIVE_ITEM_LIST.add(IRON_BAR);}
 
-
+    public static final RegistryObject<Item> MIDAS_TOUCH = ITEMS.register("midas_touch",
+            () -> new PassiveItem(new Item.Properties(), ModPassiveAbility.MIDAS_TOUCH));
+    static {ItemListManager.PASSIVE_ITEM_LIST.add(MIDAS_TOUCH);}
 }

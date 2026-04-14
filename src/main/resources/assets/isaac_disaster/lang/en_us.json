@@ -110,6 +110,8 @@
   "effect.isaac_disaster.curse_of_the_maze.description": "受伤时会随机传送",
   "effect.isaac_disaster.the_wiz": "\"智慧\"",
   "effect.isaac_disaster.the_wiz.description": "子弹向左前方、右前方发射",
+  "effect.isaac_disaster.golden": "金化",
+  "effect.isaac_disaster.golden.description": "使生物无法移动，受到2倍伤害，并且死亡时掉落0-2钱币",
 
   "attribute.isaac_disaster.max_health": "生命上限",
   "attribute.isaac_disaster.movement_speed": "移动速度",
@@ -468,7 +470,10 @@
   "item.isaac_disaster.the_poop.lore.1": "给予一坨大便",
   "item.isaac_disaster.steam_sale": "steam大促",
   "item.isaac_disaster.steam_sale.lore.1": "村民对你打折",
-
+  "item.isaac_disaster.iron_bar": "铁块",
+  "item.isaac_disaster.iron_bar.lore.1": "攻击有概率造成眩晕",
+  "item.isaac_disaster.midas_touch": "弥达斯之触",
+  "item.isaac_disaster.midas_touch.lore.1": "被攻击时施加金化",
 
 
   "item end": "",

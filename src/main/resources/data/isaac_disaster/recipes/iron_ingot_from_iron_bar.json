@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "isaac_disaster:iron_bar"
+    }
+  ],
+  "result":{
+    "item": "minecraft:iron_ingot",
+    "count": 1
+  }
+}

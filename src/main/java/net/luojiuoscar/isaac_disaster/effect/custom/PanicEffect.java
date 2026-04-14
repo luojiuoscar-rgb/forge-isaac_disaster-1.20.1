@@ -1,6 +1,7 @@
 package net.luojiuoscar.isaac_disaster.effect.custom;
 
 import net.luojiuoscar.isaac_disaster.effect.ModEffects;
+import net.luojiuoscar.isaac_disaster.manager.TagManager;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.entity.LivingEntity;
@@ -22,7 +23,7 @@ public class PanicEffect extends MobEffect {
 
     @Override
     public void addAttributeModifiers(LivingEntity entity, AttributeMap attributes, int amplifier) {
-        if (!(entity instanceof PathfinderMob mob)) {
+        if (!(entity instanceof PathfinderMob mob) || entity.getType().is(TagManager.BOSSES)) {
             entity.removeEffect(this);
             return;
         }

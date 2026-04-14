@@ -314,6 +314,8 @@ public class ModExecutableEffects {
             EXECUTABLE_EFFECT_REGISTRY.register("chest_loot_trinket", ChestLootTrinket::new);
     public static final RegistryObject<IExecutableEffect> SHOOP_DA_WHOOP =
             EXECUTABLE_EFFECT_REGISTRY.register("shoop_da_whoop", ShoopDaWhoop::new);
+    public static final RegistryObject<IExecutableEffect> APPLY_EFFECT_TO_SECONDARY_ENTITY =
+            EXECUTABLE_EFFECT_REGISTRY.register("apply_effect_to_secondary_entity", ApplyEffectToSecondaryEntity::new);
 
 
     //</editor-fold>
@@ -443,10 +445,11 @@ public class ModExecutableEffects {
             }));
     public static final RegistryObject<IExecutableEffect> THE_COMMON_COLD =
             EXECUTABLE_EFFECT_REGISTRY.register("the_common_cold", () -> new AbilityEffectEntry(
-                    POTIONS, ctx -> {
+                    APPLY_EFFECT_TO_SECONDARY_ENTITY, ctx -> {
                 ctx.set(ContextKeys.POTIONS, List.of(
                         new PotionProfile(ModEffects.POISON.get(), 70, 0)
                 ));
+                ctx.set(ContextKeys.EXECUTABLE_EFFECT, POTIONS.get());
             }));
     public static final RegistryObject<IExecutableEffect> BOMB_BAG =
             EXECUTABLE_EFFECT_REGISTRY.register("bomb_bag", () -> new AbilityEffectEntry(
@@ -805,7 +808,36 @@ public class ModExecutableEffects {
                             )
                     )))
             );
-
+    public static final RegistryObject<IExecutableEffect> IRON_BAR =
+            EXECUTABLE_EFFECT_REGISTRY.register("iron_bar", () -> new AbilityEffectEntry(
+                    APPLY_EFFECT_TO_SECONDARY_ENTITY, ctx -> {
+                        ctx.set(ContextKeys.POTIONS, List.of(
+                        new PotionProfile(
+                                ModEffects.DIZZINESS.get(),
+                                50,
+                                255,
+                                0,
+                                0,
+                                true
+                        )));
+                        ctx.set(ContextKeys.EXECUTABLE_EFFECT, POTIONS.get());
+                    }
+            ));
+    public static final RegistryObject<IExecutableEffect> MIDAS_TOUCH =
+            EXECUTABLE_EFFECT_REGISTRY.register("midas_touch", () -> new AbilityEffectEntry(
+                    APPLY_EFFECT_TO_SECONDARY_ENTITY, ctx -> {
+                ctx.set(ContextKeys.POTIONS, List.of(
+                        new PotionProfile(
+                                ModEffects.GOLDEN.get(),
+                                100,
+                                0,
+                                0,
+                                0,
+                                true
+                        )));
+                ctx.set(ContextKeys.EXECUTABLE_EFFECT, POTIONS.get());
+            }
+            ));
 
     //</editor-fold>
 

@@ -6,8 +6,8 @@ import net.luojiuoscar.isaac_disaster.registries.bullet_color.ModBulletColor;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.phys.Vec3;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -58,7 +58,7 @@ public class AttackContext {
                          ResourceLocation colorRl,
                          CompositeTrigger trigger,
                          Map<ResourceLocation, Integer> trajectories,
-                         Vec3 pos, float xRot, float yRot, double damage) {
+                         Vec3 pos, float xRot, float yRot, Double damage) {
         this.owner = owner;
         this.shooter = shooter;
         this.colorRl = colorRl;
@@ -133,8 +133,15 @@ public class AttackContext {
         this.yRotOffset = yRotOffset;
     }
 
-    @Nullable
-    public Double getDamage() {
-        return damage;
+    public float getDamage() {
+        if (this.damage == null){
+            if (this.owner == null){
+                this.damage = 1.0;
+            }else {
+                this.damage = this.owner.getAttributeValue(Attributes.ATTACK_DAMAGE);
+            }
+        }
+
+        return damage.floatValue();
     }
 }

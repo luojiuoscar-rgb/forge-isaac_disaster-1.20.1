@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "isaac_disaster:midas_touch"
+    }
+  ],
+  "result":{
+    "item": "minecraft:gold_ingot",
+    "count": 1
+  }
+}

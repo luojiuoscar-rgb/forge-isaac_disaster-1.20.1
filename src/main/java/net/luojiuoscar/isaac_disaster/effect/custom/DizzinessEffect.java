@@ -1,6 +1,7 @@
 package net.luojiuoscar.isaac_disaster.effect.custom;
 
 
+import net.luojiuoscar.isaac_disaster.manager.TagManager;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.entity.LivingEntity;
@@ -27,6 +28,11 @@ public class DizzinessEffect extends MobEffect {
 
     @Override
     public void applyEffectTick(@NotNull LivingEntity pLivingEntity, int pAmplifier){
+        if (pLivingEntity.getType().is(TagManager.BOSSES)) {
+            pLivingEntity.removeEffect(this);
+            return;
+        }
+
         //禁止飞行
         if(pLivingEntity instanceof Player player){
             player.getAbilities().flying = false;

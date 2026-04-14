@@ -480,8 +480,13 @@ public class ModPassiveAbility {
             PASSIVE_ABILITY_REGISTRY.register("steam_sale",
                     () -> new SteamSale(ItemId.STEAM_SALE.getId(), ItemId.STEAM_SALE.getLevel()));
 
+    public static final RegistryObject<PassiveAbility> IRON_BAR =
+            PASSIVE_ABILITY_REGISTRY.register("iron_bar",
+                    () -> new IronBar(ItemId.IRON_BAR.getId(), ItemId.IRON_BAR.getLevel()));
 
-
+    public static final RegistryObject<PassiveAbility> MIDAS_TOUCH =
+            PASSIVE_ABILITY_REGISTRY.register("midas_touch",
+                    () -> new MidasTouch(ItemId.MIDAS_TOUCH.getId(), ItemId.MIDAS_TOUCH.getLevel()));
 
 
 

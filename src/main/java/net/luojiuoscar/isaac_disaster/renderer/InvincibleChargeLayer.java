@@ -3,7 +3,6 @@ package net.luojiuoscar.isaac_disaster.renderer;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.effect.ModEffects;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.RenderLayerParent;
@@ -25,7 +24,7 @@ public class InvincibleChargeLayer<T extends Player, M extends net.minecraft.cli
                        float limbSwing, float limbSwingAmount, float partialTicks,
                        float ageInTicks, float netHeadYaw, float headPitch) {
 
-        if (!shouldRenderPower(player)) return;
+        if (!shouldRender(player)) return;
 
         var vertexConsumer = buffer.getBuffer(RenderType.energySwirl(
                 POWER_TEXTURE,
@@ -38,7 +37,7 @@ public class InvincibleChargeLayer<T extends Player, M extends net.minecraft.cli
                 1.0F, 1.0F, 1.0F, 1.0F);
     }
 
-    private boolean shouldRenderPower(Player player) {
+    private boolean shouldRender(Player player) {
         if (player == null || player.isInvisible()) return false;
 
         return player.getEffect(ModEffects.INVINCIBLE.get()) != null;
