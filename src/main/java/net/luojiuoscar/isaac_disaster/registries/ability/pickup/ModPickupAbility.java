@@ -204,4 +204,7 @@ public class ModPickupAbility {
 
     public static final RegistryObject<PickupAbility> POOP =
             PICKUP_ABILITY_REGISTRY.register("poop", Poop::new);
+
+    public static final RegistryObject<PickupAbility> GOLDEN_POOP =
+            PICKUP_ABILITY_REGISTRY.register("golden_poop", GoldenPoop::new);
 }

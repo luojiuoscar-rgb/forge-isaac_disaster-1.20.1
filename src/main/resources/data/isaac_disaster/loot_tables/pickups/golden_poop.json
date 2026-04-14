@@ -1,0 +1,12 @@
+{
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {"type": "minecraft:loot_table", "name": "isaac_disaster:ref/coins_5t9", "weight": 19},
+        {"type": "minecraft:item", "name": "isaac_disaster:counterfeit_penny", "weight": 1}
+      ]
+    }
+  ]
+}
+

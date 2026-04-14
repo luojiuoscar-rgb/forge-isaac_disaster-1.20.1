@@ -310,6 +310,10 @@ public class ModItems {
             () -> new Sack(new Item.Properties(), ModPickupAbility.POOP));
     static { PICKUP_LIST.add(POOP); }
 
+    public static final RegistryObject<Item> GOLDEN_POOP = ITEMS.register("golden_poop",
+            () -> new Sack(new Item.Properties(), ModPickupAbility.GOLDEN_POOP));
+    static { PICKUP_LIST.add(GOLDEN_POOP); }
+
     // pickup end
     // misc
     public static final RegistryObject<Item> DEBUG_STICK = ITEMS.register("debug_stick",

@@ -35,7 +35,8 @@ public class LootTableManager {
     // poops
     public static final ResourceLocation POOP =
             ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "pickups/poop");
-
+    public static final ResourceLocation GOLDEN_POOP =
+            ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "pickups/golden_poop");
 
     // item pools
     public static final ResourceLocation DEFAULT_ITEM_POOL =

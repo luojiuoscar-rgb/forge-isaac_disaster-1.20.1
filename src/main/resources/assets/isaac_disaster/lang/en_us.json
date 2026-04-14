@@ -468,6 +468,7 @@
   "item.isaac_disaster.shoop_da_whoop.lore.1": "发射白色硫磺火柱",
   "item.isaac_disaster.the_poop": "大便",
   "item.isaac_disaster.the_poop.lore.1": "给予一坨大便",
+  "item.isaac_disaster.the_poop.synergy.midas_touch": "效果变为给予一坨金大便",
   "item.isaac_disaster.steam_sale": "steam大促",
   "item.isaac_disaster.steam_sale.lore.1": "村民对你打折",
   "item.isaac_disaster.iron_bar": "铁块",
@@ -794,6 +795,7 @@
   "item.isaac_disaster.mega_battery": "巨型电池",
   "item.isaac_disaster.golden_battery": "金电池",
   "item.isaac_disaster.poop": "大便",
+  "item.isaac_disaster.golden_poop": "金大便",
 
 
 

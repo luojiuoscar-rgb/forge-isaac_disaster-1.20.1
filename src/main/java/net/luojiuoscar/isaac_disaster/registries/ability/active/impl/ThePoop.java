@@ -8,7 +8,10 @@ import net.luojiuoscar.isaac_disaster.registries.ability_effect.CompositeTrigger
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ModExecutableEffects;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.SimpleTrigger;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerTypes;
+import net.luojiuoscar.isaac_disaster.sound.ModSounds;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
@@ -40,6 +43,17 @@ public class ThePoop extends ActiveAbility {
                     .append(Component.translatable("item.isaac_disaster.synergy.description.double"))
                     .withStyle(style -> style.withColor(ColorManager.SYNERGY)));
         }
+
+        if (ClientDataManager.getInstance().getCountFromId(ItemId.MIDAS_TOUCH.getId()) > 0){
+            description.add(Component.translatable("item.isaac_disaster.midas_touch").append(": ")
+                    .append(Component.translatable("item.isaac_disaster.the_poop.synergy.midas_touch"))
+                    .withStyle(style -> style.withColor(ColorManager.SYNERGY)));
+        }
         return description;
+    }
+
+    @Override
+    public void triggerSFX(ServerPlayer player) {
+        player.playNotifySound(ModSounds.FART_NORMAL.get(), SoundSource.PLAYERS, 1.0f, 1.0f);
     }
 }

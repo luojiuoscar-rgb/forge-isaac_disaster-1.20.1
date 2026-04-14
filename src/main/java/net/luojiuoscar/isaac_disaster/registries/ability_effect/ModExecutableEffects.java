@@ -3,9 +3,11 @@ package net.luojiuoscar.isaac_disaster.registries.ability_effect;
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.block.ModBlockEntities;
 import net.luojiuoscar.isaac_disaster.effect.ModEffects;
+import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.item.ModItems;
 import net.luojiuoscar.isaac_disaster.manager.LootTableManager;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
+import net.luojiuoscar.isaac_disaster.manager.id.ItemId;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.general.*;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.normal.*;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.pill_effect.impl.*;
@@ -13,6 +15,7 @@ import net.luojiuoscar.isaac_disaster.registries.ability_effect.profile.PotionPr
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.effect.MobEffects;
@@ -787,10 +790,21 @@ public class ModExecutableEffects {
             EXECUTABLE_EFFECT_REGISTRY.register("poop", () -> new AbilityEffectEntry(
                     GENERATE_LOOT, ctx -> ctx.set(ContextKeys.RESOURCE_LOCATIONS, List.of(LootTableManager.POOP))
             ));
+    public static final RegistryObject<IExecutableEffect> GOLDEN_POOP =
+            EXECUTABLE_EFFECT_REGISTRY.register("golden_poop", () -> new AbilityEffectEntry(
+                    GENERATE_LOOT, ctx -> ctx.set(ContextKeys.RESOURCE_LOCATIONS, List.of(LootTableManager.GOLDEN_POOP))
+            ));
     public static final RegistryObject<IExecutableEffect> THE_POOP =
             EXECUTABLE_EFFECT_REGISTRY.register("the_poop", () -> new AbilityEffectEntry(
                     GIVE_ITEM_VIA_LOOT, ctx -> {
+                        if (!(ctx.getEntity() instanceof ServerPlayer player)) return;
+
                         ctx.set(ContextKeys.ITEM, ModItems.POOP.get());
+                        // midas touch synergy
+                        if (PlayerHelper.hasItem(ItemId.MIDAS_TOUCH.getId(), player)){
+                            ctx.set(ContextKeys.ITEM, ModItems.GOLDEN_POOP.get());
+                        }
+
                         double amplifier = ctx.getOrDefault(ContextKeys.AMPLIFIER, 1.);
                         ctx.set(ContextKeys.DOUBLE, List.of(amplifier, amplifier + 1));
                     })
@@ -836,8 +850,8 @@ public class ModExecutableEffects {
                                 true
                         )));
                 ctx.set(ContextKeys.EXECUTABLE_EFFECT, POTIONS.get());
-            }
-            ));
+            }));
+
 
     //</editor-fold>
 
