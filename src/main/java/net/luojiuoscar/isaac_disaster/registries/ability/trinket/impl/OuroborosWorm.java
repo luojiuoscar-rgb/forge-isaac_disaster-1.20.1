@@ -13,6 +13,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
 import java.util.List;
 
 public class OuroborosWorm extends TrinketAbility {
@@ -56,20 +57,24 @@ public class OuroborosWorm extends TrinketAbility {
 
     @Override
     public List<Component> getDesc(@Nullable ItemStack stack) {
-        return (stack != null && Trinket.isEnchanted(stack))
-                ? List.of(
+        List<Component> desc = new ArrayList<>(List.of(
                 Component.translatable("item.isaac_disaster.ouroboros_worm.lore.1"),
-                StatManager.TEARS.description(0.5),
-                StatManager.TEARS.description(0.5),
-                Component.translatable("item.isaac_disaster.attribute.spectral_bullet"))
-                : List.of();
+                Component.translatable("item.isaac_disaster.attribute.spectral_bullet")));
+
+        if (stack != null && Trinket.isEnchanted(stack)) {
+            desc.addAll(List.of(
+                    StatManager.TEARS.description(0.5),
+                    StatManager.TEARS.description(0.5)));
+        }
+
+        return desc;
     }
 
     @Override
     public List<Component> getSynergyDesc(@Nullable ItemStack stack) {
         return List.of(
-                StatManager.TEARS.description(0.5, Style.EMPTY.withColor(ColorManager.SYNERGY)),
-                StatManager.RANGE.description(0.5, Style.EMPTY.withColor(ColorManager.SYNERGY))
+                StatManager.TEARS.description(1, Style.EMPTY.withColor(ColorManager.SYNERGY)),
+                StatManager.RANGE.description(1, Style.EMPTY.withColor(ColorManager.SYNERGY))
                 );
     }
 }
