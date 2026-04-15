@@ -2,7 +2,9 @@ package net.luojiuoscar.isaac_disaster.registries.trigger_module;
 
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.impl.normal.*;
-import net.luojiuoscar.isaac_disaster.registries.trigger_module.impl.special.*;
+import net.luojiuoscar.isaac_disaster.registries.trigger_module.impl.special.BulletTriggerModule;
+import net.luojiuoscar.isaac_disaster.registries.trigger_module.impl.special.HighPriorityPlayerPermanentModule;
+import net.luojiuoscar.isaac_disaster.registries.trigger_module.impl.special.PlayerPermanentModule;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -83,5 +85,11 @@ public class ModTriggerModule {
             TRIGGER_MODULE_REGISTRY.register("iron_bar", IronBar::new);
     public static final RegistryObject<TriggerModule> MIDAS_TOUCH =
             TRIGGER_MODULE_REGISTRY.register("midas_touch", MidasTouch::new);
+    public static final RegistryObject<TriggerModule> PETRIFIED_POOP =
+            TRIGGER_MODULE_REGISTRY.register("petrified_poop", PetrifiedPoop::new);
+    public static final RegistryObject<TriggerModule> CALLUS =
+            TRIGGER_MODULE_REGISTRY.register("callus", Callus::new);
+    public static final RegistryObject<TriggerModule> BLACK_LIPSTICK =
+            TRIGGER_MODULE_REGISTRY.register("black_lipstick", BlackLipstick::new);
 
 }

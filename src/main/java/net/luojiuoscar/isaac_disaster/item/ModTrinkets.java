@@ -158,4 +158,15 @@ public class ModTrinkets {
             () -> new Trinket(new Item.Properties(), ModTrinketAbility.CURSED_PENNY));
     static {ItemListManager.TRINKET_LIST.add(CURSED_PENNY);}
 
+    public static final RegistryObject<Item> PETRIFIED_POOP = ITEMS.register("petrified_poop",
+            () -> new Trinket(new Item.Properties(), ModTrinketAbility.PETRIFIED_POOP));
+    static {ItemListManager.TRINKET_LIST.add(PETRIFIED_POOP);}
+
+    public static final RegistryObject<Item> CALLUS = ITEMS.register("callus",
+            () -> new Trinket(new Item.Properties(), ModTrinketAbility.CALLUS));
+    static {ItemListManager.TRINKET_LIST.add(CALLUS);}
+
+    public static final RegistryObject<Item> BLACK_LIPSTICK = ITEMS.register("black_lipstick",
+            () -> new Trinket(new Item.Properties(), ModTrinketAbility.BLACK_LIPSTICK));
+    static {ItemListManager.TRINKET_LIST.add(BLACK_LIPSTICK);}
 }

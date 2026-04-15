@@ -1,14 +1,12 @@
 {
   "pools": [
     {
-      "rolls": {
-        "min": 2,
-        "max": 3
-      },
+      "rolls": 1,
       "entries": [
         {"type": "minecraft:loot_table", "name": "isaac_disaster:pickups/random/coins", "weight": 75},
         {"type": "minecraft:loot_table", "name": "isaac_disaster:pickups/random/hearts", "weight": 25},
-        {"type": "minecraft:item", "name": "minecraft:air", "weight": 900}
+        {"type": "minecraft:item", "name": "minecraft:air", "weight": 895},
+        {"type": "minecraft:item", "name": "isaac_disaster:petrified_poop", "weight": 5}
       ]
     }
   ]

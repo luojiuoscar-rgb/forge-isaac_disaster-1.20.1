@@ -5,7 +5,6 @@ import net.luojiuoscar.isaac_disaster.registries.ability_effect.ContextKeys;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ExecutableEffectContext;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.IAbilityEffect;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -24,11 +23,7 @@ public class GenerateLoot implements IAbilityEffect {
         if (rls.isEmpty()) return false;
         ResourceLocation loot = rls.get(0);
 
-        int count = 1;
-        if (context.has(ContextKeys.DOUBLE)) count = context.get(ContextKeys.DOUBLE).get(0).intValue();
-        count = Mth.clamp(count, 1, 128);
-
-        LootHelper.spawnLootAtPos(entity, pos, loot, count);
+        LootHelper.spawnLootAtPos(entity, pos, loot);
 
         // 对生成掉落的源施加一个小冷却
         if (entity instanceof Player player && hand != null){

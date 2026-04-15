@@ -10,7 +10,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
 
 
-public class FullHealth extends PillEffect {
+public class FullHealthPill extends PillEffect {
 
     @Override
     public PillEffect redirect(ServerPlayer player) {

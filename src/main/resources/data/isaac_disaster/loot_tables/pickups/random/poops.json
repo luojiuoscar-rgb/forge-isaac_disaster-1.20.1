@@ -1,0 +1,11 @@
+{
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {"type": "minecraft:item", "name": "isaac_disaster:poop", "weight": 49},
+        {"type": "minecraft:item", "name": "isaac_disaster:golden_poop", "weight": 1}
+      ]
+    }
+  ]
+}

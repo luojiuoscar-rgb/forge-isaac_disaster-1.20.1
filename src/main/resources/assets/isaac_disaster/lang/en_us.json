@@ -561,6 +561,13 @@
   "item.isaac_disaster.butt_penny.lore.1": "捡起硬币时，概率放屁，并施加中毒",
   "item.isaac_disaster.cursed_penny": "诅咒硬币",
   "item.isaac_disaster.cursed_penny.lore.1": "捡起硬币时，小概率随机传送",
+  "item.isaac_disaster.petrified_poop": "石化大便",
+  "item.isaac_disaster.petrified_poop.lore.1": "大便中的战利品更好",
+  "item.isaac_disaster.callus": "老茧",
+  "item.isaac_disaster.callus.lore.1": "受到的伤害减少1",
+  "item.isaac_disaster.black_lipstick": "黑色口红",
+  "item.isaac_disaster.black_lipstick.lore.1": "生成魂心时，有几率将其转化为黑心",
+
 
 
   "trinket end": "",
@@ -796,6 +803,7 @@
   "item.isaac_disaster.golden_battery": "金电池",
   "item.isaac_disaster.poop": "大便",
   "item.isaac_disaster.golden_poop": "金大便",
+  "item.isaac_disaster.rainbow_poop": "彩虹大便",
 
 
 

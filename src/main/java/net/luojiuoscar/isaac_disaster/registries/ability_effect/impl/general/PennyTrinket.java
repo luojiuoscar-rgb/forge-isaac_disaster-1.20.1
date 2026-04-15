@@ -25,7 +25,7 @@ public class PennyTrinket implements IAbilityEffect {
         var objectArrayList = event.getObjectArrayList();
         var lootContext = event.getLootContext();
 
-        if (objectArrayList.isEmpty()) return false;
+        if (objectArrayList.isEmpty()) return true;
 
         ServerPlayer player = null;
         if (lootContext.getParamOrNull(LootContextParams.THIS_ENTITY) instanceof ServerPlayer thisPlayer) {

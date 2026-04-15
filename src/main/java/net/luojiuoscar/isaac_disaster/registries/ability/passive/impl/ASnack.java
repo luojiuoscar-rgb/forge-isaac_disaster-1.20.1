@@ -27,7 +27,7 @@ public class ASnack extends PassiveAbility {
     @Override
     public void handleFirstObtain(ServerPlayer player, @Nullable ItemStack stack) {
         StatManager.healHealth(player, 1.0f);
-        if (PlayerHelper.hasItem(ItemId.BINGE_EATER.getId(), (ServerPlayer) player) && stack != null){
+        if (PlayerHelper.hasItem(ItemId.BINGE_EATER.getId(), player) && stack != null){
             player.addEffect(new MobEffectInstance(MobEffects.DAMAGE_BOOST, 600, 1));
         }
     }

@@ -243,8 +243,8 @@ public class ModExecutableEffects {
             EXECUTABLE_EFFECT_REGISTRY.register("i_found_pills", IFoundPills::new);
     public static final RegistryObject<IExecutableEffect> FRIENDS_TILL_THE_END =
             EXECUTABLE_EFFECT_REGISTRY.register("friends_till_the_end", FriendsTillTheEnd::new);
-    public static final RegistryObject<IExecutableEffect> FULL_HEALTH =
-            EXECUTABLE_EFFECT_REGISTRY.register("full_health", FullHealth::new);
+    public static final RegistryObject<IExecutableEffect> FULL_HEALTH_PILL =
+            EXECUTABLE_EFFECT_REGISTRY.register("full_health_pill", FullHealth::new);
     public static final RegistryObject<IExecutableEffect> GULP =
             EXECUTABLE_EFFECT_REGISTRY.register("gulp", Gulp::new);
     public static final RegistryObject<IExecutableEffect> HEALTH_DOWN =
@@ -319,8 +319,16 @@ public class ModExecutableEffects {
             EXECUTABLE_EFFECT_REGISTRY.register("shoop_da_whoop", ShoopDaWhoop::new);
     public static final RegistryObject<IExecutableEffect> APPLY_EFFECT_TO_SECONDARY_ENTITY =
             EXECUTABLE_EFFECT_REGISTRY.register("apply_effect_to_secondary_entity", ApplyEffectToSecondaryEntity::new);
-
-
+    public static final RegistryObject<IExecutableEffect> FULL_HEALTH =
+            EXECUTABLE_EFFECT_REGISTRY.register("full_health", FullHealth::new);
+    public static final RegistryObject<IExecutableEffect> PETRIFIED_POOP =
+            EXECUTABLE_EFFECT_REGISTRY.register("petrified_poop", PetrifiedPoop::new);
+    public static final RegistryObject<IExecutableEffect> GIVE_MONEY =
+            EXECUTABLE_EFFECT_REGISTRY.register("give_money", GiveMoney::new);
+    public static final RegistryObject<IExecutableEffect> CALLUS =
+            EXECUTABLE_EFFECT_REGISTRY.register("callus", Callus::new);
+    public static final RegistryObject<IExecutableEffect> BLACK_LIPSTICK =
+            EXECUTABLE_EFFECT_REGISTRY.register("black_lipstick", BlackLipstick::new);
     //</editor-fold>
 
 

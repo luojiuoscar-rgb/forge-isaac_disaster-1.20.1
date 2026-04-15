@@ -26,7 +26,7 @@ public abstract class PickupAbility {
 
         if (stack != null){
             ctx.set(ContextKeys.ITEM, stack.getItem());
-            ctx.set(ContextKeys.DOUBLE, List.of((double) stack.getCount()));
+            ctx.set(ContextKeys.ITEM_STACK, stack);
         }
         if (hand != null){
             ctx.set(ContextKeys.HAND, hand);

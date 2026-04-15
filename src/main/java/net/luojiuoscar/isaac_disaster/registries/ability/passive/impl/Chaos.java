@@ -17,7 +17,7 @@ public class Chaos extends PassiveAbility {
 
     @Override
     public void handleFirstObtain(ServerPlayer player, @Nullable ItemStack stack) {
-        LootHelper.spawnLootAtPos(player, player.position(), LootTableManager.RANDOM_PICKUPS,
+        LootHelper.spawnLootAtPos(player, player.position(), LootTableManager.CHAOS,
                 player.getRandom().nextInt(1, 7));
     }
 

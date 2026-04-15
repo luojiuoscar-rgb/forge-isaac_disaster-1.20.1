@@ -41,7 +41,10 @@ public enum TrinketId {
     CHARGED_PENNY(2),
     COUNTERFEIT_PENNY(2),
     BUTT_PENNY(0),
-    CURSED_PENNY(0);
+    CURSED_PENNY(0),
+    PETRIFIED_POOP(1),
+    CALLUS(1),
+    BLACK_LIPSTICK(1);
 
 
     private final int id;

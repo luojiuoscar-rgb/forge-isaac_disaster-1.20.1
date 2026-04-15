@@ -156,4 +156,15 @@ public class ModTrinketAbility {
             TRINKET_ABILITY_REGISTRY.register("cursed_penny",
                     () -> new CursedPenny(TrinketId.CURSED_PENNY.getId(), TrinketId.CURSED_PENNY.getLevel()));
 
+    public static final RegistryObject<TrinketAbility> PETRIFIED_POOP =
+            TRINKET_ABILITY_REGISTRY.register("petrified_poop",
+                    () -> new PetrifiedPoop(TrinketId.PETRIFIED_POOP.getId(), TrinketId.PETRIFIED_POOP.getLevel()));
+
+    public static final RegistryObject<TrinketAbility> CALLUS =
+            TRINKET_ABILITY_REGISTRY.register("callus",
+                    () -> new Callus(TrinketId.CALLUS.getId(), TrinketId.CALLUS.getLevel()));
+
+    public static final RegistryObject<TrinketAbility> BLACK_LIPSTICK =
+            TRINKET_ABILITY_REGISTRY.register("black_lipstick",
+                    () -> new BlackLipstick(TrinketId.BLACK_LIPSTICK.getId(), TrinketId.BLACK_LIPSTICK.getLevel()));
 }

@@ -1,0 +1,13 @@
+{
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {"type": "minecraft:loot_table", "name": "isaac_disaster:pickups/random/coins", "weight": 30},
+        {"type": "minecraft:loot_table", "name": "isaac_disaster:pickups/random/hearts", "weight": 15},
+        {"type": "minecraft:item", "name": "minecraft:air", "weight": 55}
+      ]
+    }
+  ]
+}
+

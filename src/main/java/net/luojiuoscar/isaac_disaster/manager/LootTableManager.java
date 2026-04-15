@@ -4,8 +4,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 
 public class LootTableManager {
-    public static final ResourceLocation RANDOM_PICKUPS =
-            ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "pickups/random/coins");
     // random drops
     public static final ResourceLocation RANDOM_COINS =
             ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "pickups/random/coins");
@@ -25,6 +23,9 @@ public class LootTableManager {
             ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "pickups/random/sacks");
     public static final ResourceLocation RANDOM_TRINKETS =
             ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "pickups/random/trinkets");
+    public static final ResourceLocation RANDOM_POOPS =
+            ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "pickups/random/random_poops");
+
 
     // sacks
     public static final ResourceLocation GRAB_BAG =
@@ -37,6 +38,8 @@ public class LootTableManager {
             ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "pickups/poop");
     public static final ResourceLocation GOLDEN_POOP =
             ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "pickups/golden_poop");
+    public static final ResourceLocation PETRIFIED_POOP =
+            ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "pickups/petrified_poop");
 
     // item pools
     public static final ResourceLocation DEFAULT_ITEM_POOL =

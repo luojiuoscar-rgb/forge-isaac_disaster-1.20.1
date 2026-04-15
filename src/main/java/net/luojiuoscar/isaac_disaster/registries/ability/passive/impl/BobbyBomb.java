@@ -19,6 +19,7 @@ public class BobbyBomb extends PassiveAbility {
     @Override
     public void handleFirstObtain(ServerPlayer player, @Nullable ItemStack stack) {
         PlayerHelper.giveItem(player, ModItems.BOMB.get(), 5);
+
     }
 
     @Override

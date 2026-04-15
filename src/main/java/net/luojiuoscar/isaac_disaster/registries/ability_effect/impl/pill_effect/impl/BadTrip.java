@@ -19,7 +19,7 @@ public class BadTrip extends PillEffect implements GiveBlackHeartIfLowQuality {
             return (PillEffect) ModExecutableEffects.BALLS_OF_STEEL.get();
         }else if(player.getHealth() <= StatManager.MAX_HEALTH.getBonus() * 2){
             return PlayerHelper.getPillQuality(player) < 0 ?
-                    (PillEffect) ModExecutableEffects.I_FOUND_PILLS.get() : (PillEffect) ModExecutableEffects.FULL_HEALTH.get();
+                    (PillEffect) ModExecutableEffects.I_FOUND_PILLS.get() : (PillEffect) ModExecutableEffects.FULL_HEALTH_PILL.get();
         }
         return this;
     }
