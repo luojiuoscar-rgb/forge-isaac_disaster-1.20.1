@@ -44,7 +44,7 @@ public class TheNecronmicon implements IAbilityEffect {
         double radius = StatManager.getNearbyRange();
 
         List<LivingEntity> entities = LevelHelper.selectBySphere(
-                level, pos.x, pos.y, pos.z, radius);
+                level, pos, radius);
 
         // 遍历并造成伤害
         for (LivingEntity target : entities) {

@@ -35,7 +35,7 @@ public abstract class IdentifierBlockEntity extends BlockEntity {
         double range = 3.0;
         Player player = LevelHelper.findNearestOfType(
                 level,
-                pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5,
+                pos.getCenter(),
                 range,
                 Player.class,
                 e -> e instanceof Player p && !p.isCreative() && !p.isSpectator()

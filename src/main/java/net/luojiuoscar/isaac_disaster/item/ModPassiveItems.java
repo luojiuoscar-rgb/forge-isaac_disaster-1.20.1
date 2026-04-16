@@ -492,4 +492,70 @@ public class ModPassiveItems {
     public static final RegistryObject<Item> MIDAS_TOUCH = ITEMS.register("midas_touch",
             () -> new PassiveItem(new Item.Properties(), ModPassiveAbility.MIDAS_TOUCH));
     static {ItemListManager.PASSIVE_ITEM_LIST.add(MIDAS_TOUCH);}
+
+    public static final RegistryObject<Item> BOGO_BOMBS = ITEMS.register("bogo_bombs",
+            () -> new PassiveItem(new Item.Properties(), ModPassiveAbility.BOGO_BOMBS));
+    static {ItemListManager.PASSIVE_ITEM_LIST.add(BOGO_BOMBS);}
+
+    public static final RegistryObject<Item> LOKIS_HORNS = ITEMS.register("lokis_horns",
+            () -> new PassiveItem(new Item.Properties(), ModPassiveAbility.LOKIS_HORNS));
+    static {ItemListManager.PASSIVE_ITEM_LIST.add(LOKIS_HORNS);}
+
+    public static final RegistryObject<Item> SACRED_HEART = ITEMS.register("sacred_heart",
+            () -> new PassiveItem(new Item.Properties(), ModPassiveAbility.SACRED_HEART));
+    static {ItemListManager.PASSIVE_ITEM_LIST.add(SACRED_HEART);}
+
+    public static final RegistryObject<Item> CAT_O_NINE_TAILS = ITEMS.register("cat_o_nine_tails",
+            () -> new PassiveItem(new Item.Properties(), ModPassiveAbility.CAT_O_NINE_TAILS));
+    static {ItemListManager.PASSIVE_ITEM_LIST.add(CAT_O_NINE_TAILS);}
+
+    public static final RegistryObject<Item> STEM_CELLS = ITEMS.register("stem_cells",
+            () -> new PassiveItem(new Item.Properties(), ModPassiveAbility.STEM_CELLS));
+    static {ItemListManager.PASSIVE_ITEM_LIST.add(STEM_CELLS);}
+
+    public static final RegistryObject<Item> FATE = ITEMS.register("fate",
+            () -> new PassiveItem(new Item.Properties(), ModPassiveAbility.FATE));
+    static {ItemListManager.PASSIVE_ITEM_LIST.add(FATE);}
+
+    public static final RegistryObject<Item> HOLY_GRAIL = ITEMS.register("holy_grail",
+            () -> new PassiveItem(new Item.Properties(), ModPassiveAbility.HOLY_GRAIL));
+    static {ItemListManager.PASSIVE_ITEM_LIST.add(HOLY_GRAIL);}
+
+    public static final RegistryObject<Item> SMB_SUPER_FAN = ITEMS.register("smb_super_fan",
+            () -> new PassiveItem(new Item.Properties(), ModPassiveAbility.SMB_SUPER_FAN));
+    static {ItemListManager.PASSIVE_ITEM_LIST.add(SMB_SUPER_FAN);}
+
+    public static final RegistryObject<Item> MEAT = ITEMS.register("meat",
+            () -> new PassiveItem(new Item.Properties(), ModPassiveAbility.MEAT));
+    static {ItemListManager.PASSIVE_ITEM_LIST.add(MEAT);}
+
+    public static final RegistryObject<Item> MAGIC_8_BALL = ITEMS.register("magic_8_ball",
+            () -> new PassiveItem(new Item.Properties(), ModPassiveAbility.MAGIC_8_BALL));
+    static {ItemListManager.PASSIVE_ITEM_LIST.add(MAGIC_8_BALL);}
+
+    public static final RegistryObject<Item> MOMS_COIN_PURSE = ITEMS.register("moms_coin_purse",
+            () -> new PassiveItem(new Item.Properties(), ModPassiveAbility.MOMS_COIN_PURSE));
+    static {ItemListManager.PASSIVE_ITEM_LIST.add(MOMS_COIN_PURSE);}
+
+    public static final RegistryObject<Item> SQUEEZY = ITEMS.register("squeezy",
+            () -> new PassiveItem(new Item.Properties(), ModPassiveAbility.SQUEEZY));
+    static {ItemListManager.PASSIVE_ITEM_LIST.add(SQUEEZY);}
+
+    public static final RegistryObject<Item> JESUS_JUICE = ITEMS.register("jesus_juice",
+            () -> new PassiveItem(new Item.Properties(), ModPassiveAbility.JESUS_JUICE));
+    static {ItemListManager.PASSIVE_ITEM_LIST.add(JESUS_JUICE);}
+
+    public static final RegistryObject<Item> MOMS_KEY = ITEMS.register("moms_key",
+            () -> new PassiveItem(new Item.Properties(), ModPassiveAbility.MOMS_KEY));
+    static {ItemListManager.PASSIVE_ITEM_LIST.add(MOMS_KEY);}
+
+    public static final RegistryObject<Item> MOMS_EYESHADOW = ITEMS.register("moms_eyeshadow",
+            () -> new PassiveItem(new Item.Properties(), ModPassiveAbility.MOMS_EYESHADOW));
+    static {ItemListManager.PASSIVE_ITEM_LIST.add(MOMS_EYESHADOW);}
+
+    public static final RegistryObject<Item> FANNY_PACK = ITEMS.register("fanny_pack",
+            () -> new PassiveItem(new Item.Properties(), ModPassiveAbility.FANNY_PACK));
+    static {ItemListManager.PASSIVE_ITEM_LIST.add(FANNY_PACK);}
+
+
 }

@@ -21,7 +21,7 @@ public class RandomHarmfulPotion implements IAbilityEffect {
     public boolean applyEffect(ExecutableEffectContext context) {
         if (!(context.get(ContextKeys.EVENT) instanceof LivingAttackEvent event)) return false;
 
-        List<Entity> target = context.getOrDefault(ContextKeys.SECONDARY_ENTITIES, new ArrayList<>());
+        List<LivingEntity> target = context.getOrDefault(ContextKeys.SECONDARY_LIVING_ENTITIES, new ArrayList<>());
         if (target.isEmpty()) return false;
 
         // 攻击类型不正确只是不触发，并不是错误情况

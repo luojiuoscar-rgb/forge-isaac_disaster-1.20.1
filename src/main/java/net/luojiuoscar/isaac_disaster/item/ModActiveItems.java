@@ -130,4 +130,16 @@ public class ModActiveItems {
     public static final RegistryObject<Item> THE_POOP = ITEMS.register("the_poop",
             () -> new ActiveItem(new Item.Properties(), 4, 4, ModActiveAbility.THE_POOP));
     static {ItemListManager.ACTIVE_ITEM_LIST.add(THE_POOP);}
+
+    public static final RegistryObject<Item> THE_BEAN = ITEMS.register("the_bean",
+            () -> new ActiveItem(new Item.Properties(), 2, 2, ModActiveAbility.THE_BEAN));
+    static {ItemListManager.ACTIVE_ITEM_LIST.add(THE_BEAN);}
+
+    public static final RegistryObject<Item> BLOOD_RIGHTS = ITEMS.register("blood_rights",
+            () -> new ActiveItem(new Item.Properties(), 0, 0, ModActiveAbility.BLOOD_RIGHTS));
+    static {ItemListManager.ACTIVE_ITEM_LIST.add(BLOOD_RIGHTS);}
+
+    public static final RegistryObject<Item> BOX = ITEMS.register("box",
+            () -> new DisposableActiveItem(new Item.Properties(), 0, 0, ModActiveAbility.BOX));
+    static {ItemListManager.ACTIVE_ITEM_LIST.add(BOX);}
 }

@@ -12,7 +12,12 @@
         {"type": "minecraft:item", "name": "isaac_disaster:the_soul"},
         {"type": "minecraft:item", "name": "isaac_disaster:sacred_orb"},
         {"type": "minecraft:item", "name": "isaac_disaster:mitre"},
-        {"type": "minecraft:item", "name": "isaac_disaster:the_bible"}
+        {"type": "minecraft:item", "name": "isaac_disaster:the_bible"},
+        {"type": "minecraft:item", "name": "isaac_disaster:prayer_card"},
+        {"type": "minecraft:item", "name": "isaac_disaster:the_relic"},
+        {"type": "minecraft:item", "name": "isaac_disaster:the_halo"},
+        {"type": "minecraft:item", "name": "isaac_disaster:stigmata"},
+        {"type": "minecraft:item", "name": "isaac_disaster:sacred_heart"}
       ]
     }
   ]

@@ -21,7 +21,6 @@ public class Pentagram extends PassiveAbility {
     @Override
     public void handleObtain(ServerPlayer player, @Nullable ItemStack stack) {
         StatManager.DAMAGE.apply(player, 1);
-
     }
 
     @Override

@@ -7,6 +7,7 @@ import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerModuleQue
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
@@ -44,7 +45,8 @@ public final class ContextKeys {
 
     public static final ContextKey<List<Boolean>> BOOLEAN = new ContextKey<>();
     public static final ContextKey<List<Double>> DOUBLE = new ContextKey<>();
-    public static final ContextKey<List<Entity>> SECONDARY_ENTITIES = new ContextKey<>();
+    public static final ContextKey<List<LivingEntity>> SECONDARY_LIVING_ENTITIES = new ContextKey<>();
+    public static final ContextKey<List<Entity>> ENTITY = new ContextKey<>();
     public static final ContextKey<List<ResourceLocation>> RESOURCE_LOCATIONS = new ContextKey<>();
 
 }

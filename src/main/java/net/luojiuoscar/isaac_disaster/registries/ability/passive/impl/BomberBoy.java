@@ -2,7 +2,9 @@ package net.luojiuoscar.isaac_disaster.registries.ability.passive.impl;
 
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.item.ModItems;
+import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.registries.ability.passive.PassiveAbility;
+import net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerModule;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
@@ -23,10 +25,12 @@ public class BomberBoy extends PassiveAbility {
 
     @Override
     public void handleObtain(ServerPlayer player, @Nullable ItemStack stack) {
+        StatManager.addTriggerModule(player, ModTriggerModule.BOMBER_BOY.getId(), 1);
     }
 
     @Override
     public void handleRemove(ServerPlayer player, @Nullable ItemStack stack) {
+        StatManager.addTriggerModule(player, ModTriggerModule.BOMBER_BOY.getId(), -1);
     }
 
     @Override
@@ -34,7 +38,7 @@ public class BomberBoy extends PassiveAbility {
         return List.of(
                 Component.translatable("item.isaac_disaster.action.give_bomb", 5),
                 Component.translatable("item.isaac_disaster.action.give_giga_bomb", 1),
-                Component.translatable("item.isaac_disaster.mr_mega.lore.1")
+                Component.translatable("item.isaac_disaster.bomber_boy.lore.1")
         );
     }
 }

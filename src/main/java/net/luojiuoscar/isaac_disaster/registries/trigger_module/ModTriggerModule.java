@@ -91,5 +91,23 @@ public class ModTriggerModule {
             TRIGGER_MODULE_REGISTRY.register("callus", Callus::new);
     public static final RegistryObject<TriggerModule> BLACK_LIPSTICK =
             TRIGGER_MODULE_REGISTRY.register("black_lipstick", BlackLipstick::new);
+    public static final RegistryObject<TriggerModule> BIBLE_TRACT =
+            TRIGGER_MODULE_REGISTRY.register("bible_tract", BibleTract::new);
+    public static final RegistryObject<TriggerModule> BOMBER_BOY =
+            TRIGGER_MODULE_REGISTRY.register("bomber_boy", BomberBoy::new);
+    public static final RegistryObject<TriggerModule> SCATTER_BOMB =
+            TRIGGER_MODULE_REGISTRY.register("scatter_bomb", ScatterBomb::new);
+    public static final RegistryObject<TriggerModule> HOT_BOMB =
+            TRIGGER_MODULE_REGISTRY.register("hot_bomb", HotBomb::new);
+    public static final RegistryObject<TriggerModule> BOGO_BOMBS =
+            TRIGGER_MODULE_REGISTRY.register("bogo_bombs", BogoBombs::new);
+    public static final RegistryObject<TriggerModule> LOKIS_HORNS =
+            TRIGGER_MODULE_REGISTRY.register("lokis_horns", LokisHorns::new);
+    public static final RegistryObject<TriggerModule> MOMS_KEY =
+            TRIGGER_MODULE_REGISTRY.register("moms_key", MomsKey::new);
+    public static final RegistryObject<TriggerModule> MOMS_EYESHADOW =
+            TRIGGER_MODULE_REGISTRY.register("moms_eyeshadow", MomsEyeshadow::new);
+    public static final RegistryObject<TriggerModule> FANNY_PACK =
+            TRIGGER_MODULE_REGISTRY.register("fanny_pack", FannyPack::new);
 
 }

@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TriggerModuleQueue {
+    public static final TriggerModuleQueue EMPTY = new TriggerModuleQueue();
+
     private final List<TriggerModuleInstance> queue;
     private boolean locked = false;
 

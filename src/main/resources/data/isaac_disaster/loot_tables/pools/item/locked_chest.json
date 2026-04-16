@@ -8,7 +8,9 @@
         {"type": "minecraft:item", "name": "isaac_disaster:wire_coat_hanger"},
         {"type": "minecraft:item", "name": "isaac_disaster:a_quarter"},
         {"type": "minecraft:item", "name": "isaac_disaster:torn_photo"},
-        {"type": "minecraft:item", "name": "isaac_disaster:screw"}
+        {"type": "minecraft:item", "name": "isaac_disaster:screw"},
+        {"type": "minecraft:item", "name": "isaac_disaster:the_belt"},
+        {"type": "minecraft:item", "name": "isaac_disaster:fate"}
       ]
     }
   ]

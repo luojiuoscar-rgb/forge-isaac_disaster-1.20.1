@@ -32,7 +32,7 @@ public class ApplyEffectToNearby implements IAbilityEffect {
         Vec3 position = context.getOrDefault(ContextKeys.TARGET_POSITION, entity.position());
 
         List<LivingEntity> entities = LevelHelper.selectBySphere(entity.level(),
-                position.x, position.y, position.z, StatManager.getNearbyRange() * range);
+                position, StatManager.getNearbyRange() * range);
 
         for (LivingEntity e : entities){
             if (ignoreFriendly && EntityHelper.isFriendly(entity, e)) continue;

@@ -68,6 +68,10 @@ public class ModTriggerTypes {
             new TriggerType(ResourceLocation.fromNamespaceAndPath(
                     IsaacDisaster.MOD_ID, "loot"));
 
+    public static final TriggerType EXPLOSION_FINISH =
+            new TriggerType(ResourceLocation.fromNamespaceAndPath(
+                    IsaacDisaster.MOD_ID, "explosion_finish"));
+
     // 空触发器是用于占位的
     public static final TriggerType EMTPY =
             new TriggerType(ResourceLocation.fromNamespaceAndPath(

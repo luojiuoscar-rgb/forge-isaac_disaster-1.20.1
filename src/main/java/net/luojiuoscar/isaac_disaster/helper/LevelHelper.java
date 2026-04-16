@@ -39,79 +39,113 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.Predicate;
 
 public class LevelHelper {
-    public static List<LivingEntity> selectBySphere(Level level, double x, double y, double z, double radius) {
-        List<Entity> entities = selectBySphere(level, x, y, z, radius, e -> e instanceof LivingEntity);
+    public static List<LivingEntity> selectBySphere(Level level, Vec3 pos, double radius) {
+        List<Entity> entities = selectBySphere(level, pos, radius, e -> e instanceof LivingEntity);
         return entities.stream().map(e -> (LivingEntity) e).toList();
     }
-    public static List<LivingEntity> selectBySquare(Level level, double x, double y, double z, double radius) {
-        List<Entity> entities = selectBySquare(level, x, y, z, radius, e -> e instanceof LivingEntity);
+
+    public static List<LivingEntity> selectBySquare(Level level, Vec3 pos, double radius) {
+        List<Entity> entities = selectBySquare(level, pos, radius, e -> e instanceof LivingEntity);
         return entities.stream().map(e -> (LivingEntity) e).toList();
     }
-    public static List<Entity> selectBySphere(Level level, double x, double y, double z, double radius,
+
+    public static List<Entity> selectBySphere(Level level, Vec3 pos, double radius,
                                               @Nullable Predicate<Entity> filter) {
+
         List<Entity> targetEntities = new ArrayList<>();
 
         AABB area = new AABB(
-                x - radius, y - radius, z - radius,
-                x + radius, y + radius, z + radius
+                pos.x - radius, pos.y - radius, pos.z - radius,
+                pos.x + radius, pos.y + radius, pos.z + radius
         );
 
         List<Entity> entities = level.getEntitiesOfClass(Entity.class, area);
 
-        for (Entity target : entities) {
-            double dx = target.getX() - x;
-            double dy = target.getY() - y;
-            double dz = target.getZ() - z;
-            double distanceSq = dx * dx + dy * dy + dz * dz;
+        double r2 = radius * radius;
 
-            if (distanceSq > radius * radius) continue;
+        for (Entity target : entities) {
+            Vec3 tpos = target.position();
+
+            double dx = tpos.x - pos.x;
+            double dy = tpos.y - pos.y;
+            double dz = tpos.z - pos.z;
+
+            if (dx * dx + dy * dy + dz * dz > r2) continue;
             if (filter != null && !filter.test(target)) continue;
+
             targetEntities.add(target);
         }
 
         return targetEntities;
     }
-    public static List<Entity> selectBySquare(Level level, double x, double y, double z, double radius,
+
+    public static List<Entity> selectBySquare(Level level, Vec3 pos, double radius,
                                               @Nullable Predicate<Entity> filter) {
+
         AABB area = new AABB(
-                x - radius, y - radius, z - radius,
-                x + radius, y + radius, z + radius
+                pos.x - radius, pos.y - radius, pos.z - radius,
+                pos.x + radius, pos.y + radius, pos.z + radius
         );
 
         List<Entity> entities = level.getEntitiesOfClass(Entity.class, area);
+
         if (filter == null) return entities;
         return entities.stream().filter(filter).toList();
     }
 
-    public static LivingEntity findNearestLivingEntity(Level level, double x, double y, double z, double radius, Predicate<LivingEntity> filter) {
-        List<LivingEntity> entities = level.getEntitiesOfClass(LivingEntity.class,
-                new AABB(x - radius, y - radius, z - radius, x + radius, y + radius, z + radius),
-                filter);
+    public static LivingEntity findNearestLivingEntity(Level level, Vec3 pos, double radius,
+                                                       Predicate<LivingEntity> filter) {
+
+        List<LivingEntity> entities = level.getEntitiesOfClass(
+                LivingEntity.class,
+                new AABB(
+                        pos.x - radius, pos.y - radius, pos.z - radius,
+                        pos.x + radius, pos.y + radius, pos.z + radius
+                ),
+                filter
+        );
 
         LivingEntity nearest = null;
         double nearestDistSq = Double.MAX_VALUE;
 
         for (LivingEntity entity : entities) {
-            double dx = entity.getX() - x;
-            double dy = entity.getY() - y;
-            double dz = entity.getZ() - z;
+
+            if (entity.isRemoved() || !entity.isAlive()) continue;
+
+            Vec3 epos = entity.position();
+
+            double dx = epos.x - pos.x;
+            double dy = epos.y - pos.y;
+            double dz = epos.z - pos.z;
+
             double distSq = dx * dx + dy * dy + dz * dz;
+
             if (distSq < nearestDistSq) {
                 nearestDistSq = distSq;
                 nearest = entity;
             }
         }
+
         return nearest;
     }
 
-
-    public static <T extends Entity> T findNearestOfType(Level level, double x, double y, double z, double radius, Class<T> type){
-        return findNearestOfType(level, x, y, z, radius, type, null);
+    public static <T extends Entity> T findNearestOfType(Level level, Vec3 pos, double radius, Class<T> type) {
+        return findNearestOfType(level, pos, radius, type, null);
     }
-    public static <T extends Entity> T findNearestOfType(Level level, double x, double y, double z, double radius, Class<T> type, @Nullable Predicate<Entity> filter) {
-        List<T> entities = level.getEntitiesOfClass(type,
-                new AABB(x - radius, y - radius, z - radius, x + radius, y + radius, z + radius));
-        if (filter != null){
+
+    public static <T extends Entity> T findNearestOfType(Level level, Vec3 pos, double radius,
+                                                         Class<T> type,
+                                                         @Nullable Predicate<Entity> filter) {
+
+        List<T> entities = level.getEntitiesOfClass(
+                type,
+                new AABB(
+                        pos.x - radius, pos.y - radius, pos.z - radius,
+                        pos.x + radius, pos.y + radius, pos.z + radius
+                )
+        );
+
+        if (filter != null) {
             entities = entities.stream().filter(filter).toList();
         }
 
@@ -119,16 +153,23 @@ public class LevelHelper {
         double nearestDistSq = Double.MAX_VALUE;
 
         for (T entity : entities) {
+
             if (entity.isRemoved() || !entity.isAlive()) continue;
-            double dx = entity.getX() - x;
-            double dy = entity.getY() - y;
-            double dz = entity.getZ() - z;
+
+            Vec3 epos = entity.position();
+
+            double dx = epos.x - pos.x;
+            double dy = epos.y - pos.y;
+            double dz = epos.z - pos.z;
+
             double distSq = dx * dx + dy * dy + dz * dz;
+
             if (distSq < nearestDistSq) {
                 nearestDistSq = distSq;
                 nearest = entity;
             }
         }
+
         return nearest;
     }
 
@@ -136,7 +177,7 @@ public class LevelHelper {
 
     public static void pushEntities(Level world, Vec3 centerPos, double radius, double pushStrength, double yStrength) {
         // 获取范围内的所有生物
-        List<LivingEntity> targetEntities = selectBySphere(world, centerPos.x, centerPos.y, centerPos.z, radius);
+        List<LivingEntity> targetEntities = selectBySphere(world, centerPos, radius);
 
         // 推开它们
         for (LivingEntity entity : targetEntities) {
@@ -381,8 +422,7 @@ public class LevelHelper {
 
 
 
-        List<LivingEntity> livingEntities = LevelHelper.selectBySquare(source.level(), pos.x, pos.y, pos.z,
-                power + 2);
+        List<LivingEntity> livingEntities = LevelHelper.selectBySquare(source.level(), pos, power + 2);
 
         for (LivingEntity entity : livingEntities){
             if (ignoreFriendly && EntityHelper.isFriendly(entity, source)) continue;

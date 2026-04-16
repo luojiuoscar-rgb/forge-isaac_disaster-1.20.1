@@ -1,6 +1,7 @@
 package net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.normal;
 
 import net.luojiuoscar.isaac_disaster.helper.LootHelper;
+import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.manager.LootTableManager;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ExecutableEffectContext;
@@ -21,11 +22,11 @@ public class IvBag implements IAbilityEffect {
         if (health > damage){
             player.setHealth(health - damage);
             // 虚假伤害效果
-            player.hurt(player.damageSources().genericKill(), 0.01f);
+            player.hurt(PlayerHelper.getSelfDamageSource(player), 0.01f);
         }
-        // 不足时，直接伤害
+        // 不足时，直接伤害（扣除黄心或直接致死）
         else{
-            player.hurt(player.damageSources().genericKill(), damage);
+            player.hurt(PlayerHelper.getSelfDamageSource(player), damage);
         }
 
         // 缩短受伤冷却时间

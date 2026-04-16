@@ -10,7 +10,8 @@
         {"type": "minecraft:item", "name": "isaac_disaster:bobby_bomb"},
         {"type": "minecraft:item", "name": "isaac_disaster:hot_bomb"},
         {"type": "minecraft:item", "name": "isaac_disaster:pyromaniac"},
-        {"type": "minecraft:item", "name": "isaac_disaster:pyro"}
+        {"type": "minecraft:item", "name": "isaac_disaster:pyro"},
+        {"type": "minecraft:item", "name": "isaac_disaster:mr_boom"}
       ]
     }
   ]

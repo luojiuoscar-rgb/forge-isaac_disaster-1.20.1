@@ -1,5 +1,6 @@
 package net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.normal;
 
+import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ExecutableEffectContext;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ContextKeys;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.IAbilityEffect;
@@ -19,7 +20,7 @@ public class DullRazor implements IAbilityEffect {
         amplifier = Math.max(amplifier, 2);
 
         for (int i = 0; i < amplifier; i++){
-            LivingHurtEvent event = new LivingHurtEvent(player, player.damageSources().genericKill(), 0);
+            LivingHurtEvent event = new LivingHurtEvent(player, PlayerHelper.getSelfDamageSource(player), 0);
             MinecraftForge.EVENT_BUS.post(event);
         }
         return true;

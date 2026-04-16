@@ -22,7 +22,7 @@ public class IsaacAttackAfterHitEvent extends IsaacAttackEvent {
         this.targetHealth = targetHealth;
     }
 
-    public EntityHitResult getHitResult() { return hit; }
+    public EntityHitResult getHit() { return hit; }
 
     public double getDamage() { return damage; }
     public double getTargetHealth() { return targetHealth; }

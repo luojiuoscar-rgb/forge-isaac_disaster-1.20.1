@@ -29,8 +29,7 @@ public class TheSun implements IAbilityEffect {
         if (player.hasEffect(MobEffects.BLINDNESS)) player.removeEffect(MobEffects.BLINDNESS);
         if (player.hasEffect(MobEffects.DARKNESS)) player.removeEffect(MobEffects.DARKNESS);
 
-        List<LivingEntity> entities = LevelHelper.selectBySphere(level, pos.x, pos.y, pos.z,
-                StatManager.getNearbyRange());
+        List<LivingEntity> entities = LevelHelper.selectBySphere(level, pos, StatManager.getNearbyRange());
 
         for (LivingEntity entity : entities){
             // 友好、有火抗生物不造成伤害

@@ -27,7 +27,7 @@ public class Pheromones extends PillEffect {
     @Override
     protected boolean pillActive(ServerPlayer player, boolean isHorse, ExecutableEffectContext context) {
         List<LivingEntity> entities = LevelHelper.selectBySphere(
-                player.level(), player.getX(), player.getY(), player.getZ(), StatManager.getNearbyRange());
+                player.level(), player.position(), StatManager.getNearbyRange());
 
         int duration = isHorse ? 1500 : 600;
 

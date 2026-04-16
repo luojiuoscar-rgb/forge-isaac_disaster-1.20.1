@@ -25,12 +25,22 @@ public class PetrifiedPoop extends TrinketAbility {
 
     @Override
     public void onEquipped(LivingEntity entity, TrinketAbilityContext ctx) {
-        StatManager.addTriggerModule(entity, ModTriggerModule.PETRIFIED_POOP.getId(), 1);
+        if (ctx.isEnchanted) {
+            StatManager.addTriggerModule(entity, ModTriggerModule.PETRIFIED_POOP.getId(), 2);
+        }
+        else {
+            StatManager.addTriggerModule(entity, ModTriggerModule.PETRIFIED_POOP.getId(), 1);
+        }
     }
 
     @Override
     public void onUnequipped(LivingEntity entity, TrinketAbilityContext ctx) {
-        StatManager.addTriggerModule(entity, ModTriggerModule.PETRIFIED_POOP.getId(), -1);
+        if (ctx.isEnchanted) {
+            StatManager.addTriggerModule(entity, ModTriggerModule.PETRIFIED_POOP.getId(), -2);
+        }
+        else {
+            StatManager.addTriggerModule(entity, ModTriggerModule.PETRIFIED_POOP.getId(), -1);
+        }
     }
 
     @Override

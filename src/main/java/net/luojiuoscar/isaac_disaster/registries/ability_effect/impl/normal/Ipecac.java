@@ -36,8 +36,7 @@ public class Ipecac implements IAbilityEffect {
 
         LevelHelper.explodeCustom(attacker, pos, power, damage, false, false);
 
-        List<LivingEntity> livingEntities = LevelHelper.selectBySquare(attacker.level(), pos.x, pos.y, pos.z,
-                power + 2);
+        List<LivingEntity> livingEntities = LevelHelper.selectBySquare(attacker.level(), pos, power + 2);
 
         for (LivingEntity entity : livingEntities){
 

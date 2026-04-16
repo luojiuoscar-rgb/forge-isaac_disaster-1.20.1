@@ -33,7 +33,7 @@ public class XRayVision extends MobEffect {
         }
 
         List<LivingEntity> entities = LevelHelper.selectBySphere(
-                player.level(), player.getX(), player.getY(), player.getZ(), StatManager.getNearbyRange() * Math.min((2 + amplifier * 0.5f), 10));
+                player.level(), player.position(), StatManager.getNearbyRange() * Math.min((2 + amplifier * 0.5f), 10));
 
         for (LivingEntity target : entities){
             if (target instanceof Player) continue;

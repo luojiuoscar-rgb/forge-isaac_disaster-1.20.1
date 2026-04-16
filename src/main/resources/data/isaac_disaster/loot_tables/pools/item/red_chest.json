@@ -4,7 +4,8 @@
       "rolls": 1,
       "entries": [
         {"type": "minecraft:item", "name": "isaac_disaster:false_phd"},
-        {"type": "minecraft:item", "name": "isaac_disaster:curse_of_the_tower"}
+        {"type": "minecraft:item", "name": "isaac_disaster:curse_of_the_tower"},
+        {"type": "minecraft:item", "name": "isaac_disaster:cursed_eye"}
       ]
     }
   ]

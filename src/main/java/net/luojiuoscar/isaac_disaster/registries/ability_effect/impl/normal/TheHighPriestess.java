@@ -18,7 +18,7 @@ public class TheHighPriestess implements IAbilityEffect {
         int amplifier = context.getOrDefault(ContextKeys.AMPLIFIER, 1.).intValue();
 
         List<LivingEntity> entities = LevelHelper.selectBySphere(entity.level(),
-                pos.x, pos.y, pos.z, StatManager.getNearbyRange() * 0.6); // 固定radius
+                pos, StatManager.getNearbyRange() * 0.6); // 固定radius
 
         double highestHealth = entity.getHealth();
         LivingEntity target = entity;

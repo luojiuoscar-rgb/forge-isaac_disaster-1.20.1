@@ -1,7 +1,7 @@
 package net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.general;
 
-import net.luojiuoscar.isaac_disaster.registries.ability_effect.ExecutableEffectContext;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ContextKeys;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.ExecutableEffectContext;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.IAbilityEffect;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ModExecutableEffects;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.profile.PotionProfile;
@@ -45,8 +45,13 @@ public class Fart implements IAbilityEffect {
         // 施加中毒效果
         ModExecutableEffects.APPLY_EFFECT_TO_NEARBY.get().apply(context);
 
-        entity.level().playSound(null, pos.x, pos.y, pos.z,
-                ModSounds.FART_NORMAL.get(), SoundSource.NEUTRAL, 1.0f, 1.0f);
+        if (amplifier > 1){
+            entity.level().playSound(null, pos.x, pos.y, pos.z,
+                    ModSounds.FART_NORMAL.get(), SoundSource.NEUTRAL, 1.0f, 1.0f);
+        }else {
+            entity.level().playSound(null, pos.x, pos.y, pos.z,
+                    ModSounds.FART_HUGE.get(), SoundSource.NEUTRAL, 1.0f, 1.0f);
+        }
         return true;
     }
 }

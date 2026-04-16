@@ -28,4 +28,7 @@ public class ModSetAbility {
     public static final RegistryObject<SetAbility> SPUN =
             SET_ABILITY_REGISTRY.register("spun", () -> new Spun(SetId.SPUN.getId()));
 
+    public static final RegistryObject<SetAbility> MOM =
+            SET_ABILITY_REGISTRY.register("mom", () -> new Mom(SetId.MOM.getId()));
+
 }

@@ -27,7 +27,16 @@
         {"type": "minecraft:item", "name": "isaac_disaster:blue_cap"},
         {"type": "minecraft:item", "name": "isaac_disaster:magic_scab"},
         {"type": "minecraft:item", "name": "isaac_disaster:screw"},
-        {"type": "minecraft:item", "name": "isaac_disaster:experimental_treatment"}
+        {"type": "minecraft:item", "name": "isaac_disaster:experimental_treatment"},
+        {"type": "minecraft:item", "name": "isaac_disaster:tooth_picks"},
+        {"type": "minecraft:item", "name": "isaac_disaster:the_belt"},
+        {"type": "minecraft:item", "name": "isaac_disaster:super_bandage"},
+        {"type": "minecraft:item", "name": "isaac_disaster:the_halo"},
+        {"type": "minecraft:item", "name": "isaac_disaster:thin_odd_mushroom"},
+        {"type": "minecraft:item", "name": "isaac_disaster:large_odd_mushroom"},
+        {"type": "minecraft:item", "name": "isaac_disaster:pentagram"},
+        {"type": "minecraft:item", "name": "isaac_disaster:cat_o_nine_tails"},
+        {"type": "minecraft:item", "name": "isaac_disaster:stem_cells"}
       ]
     }
   ]

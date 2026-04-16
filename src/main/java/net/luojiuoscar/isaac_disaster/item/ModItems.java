@@ -92,6 +92,10 @@ public class ModItems {
             () -> new Bomb(new Item.Properties(), ModPickupAbility.BOMB));
     static { PICKUP_LIST.add(BOMB); }
 
+    public static final RegistryObject<Item> DOUBLE_BOMB = ITEMS.register("double_bomb",
+            () -> new Sack(new Item.Properties(), ModPickupAbility.DOUBLE_BOMB));
+    static { PICKUP_LIST.add(DOUBLE_BOMB); }
+
     public static final RegistryObject<Item> GIGA_BOMB = ITEMS.register("giga_bomb",
             () -> new Bomb(new Item.Properties().stacksTo(16).rarity(Rarity.RARE), ModPickupAbility.GIGA_BOMB));
     static { PICKUP_LIST.add(GIGA_BOMB); }
@@ -104,6 +108,10 @@ public class ModItems {
     public static final RegistryObject<Item> KEY = ITEMS.register("key",
             () -> new Item(new Item.Properties()));
     static { PICKUP_LIST.add(KEY); }
+
+    public static final RegistryObject<Item> KEY_RING = ITEMS.register("key_ring",
+            () -> new Sack(new Item.Properties(), ModPickupAbility.KEY_RING));
+    static { PICKUP_LIST.add(KEY_RING); }
 
     public static final RegistryObject<Item> GOLDEN_KEY = ITEMS.register("golden_key",
             () -> new Item(new Item.Properties().rarity(Rarity.EPIC).stacksTo(1)));

@@ -19,7 +19,10 @@
         {"type": "minecraft:item", "name": "isaac_disaster:diplopia"},
         {"type": "minecraft:item", "name": "isaac_disaster:crooked_penny"},
         {"type": "minecraft:item", "name": "isaac_disaster:dull_razor"},
-        {"type": "minecraft:item", "name": "isaac_disaster:smelter"}
+        {"type": "minecraft:item", "name": "isaac_disaster:smelter"},
+        {"type": "minecraft:item", "name": "isaac_disaster:lucky_foot"},
+        {"type": "minecraft:item", "name": "isaac_disaster:steam_sale"},
+        {"type": "minecraft:item", "name": "isaac_disaster:bogo_bombs"}
       ]
     }
   ]

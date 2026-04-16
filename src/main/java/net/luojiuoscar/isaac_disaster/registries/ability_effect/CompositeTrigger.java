@@ -99,7 +99,6 @@ public class CompositeTrigger {
         return false;
     }
 
-
     @Override
     public String toString() {
         return "CompositeTrigger: " + triggers;

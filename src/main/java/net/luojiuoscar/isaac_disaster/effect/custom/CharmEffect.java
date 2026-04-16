@@ -33,7 +33,7 @@ public class CharmEffect extends MobEffect {
                 return;
 
             LivingEntity target = LevelHelper.findNearestLivingEntity(
-                    mob.level(), mob.getX(), mob.getY(), mob.getZ(), StatManager.getNearbyRange(),
+                    mob.level(), mob.position(), StatManager.getNearbyRange(),
                     e -> e != mob && e.isAlive());
 
             if (target != null && target != mob) {

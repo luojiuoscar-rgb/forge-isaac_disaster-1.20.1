@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "isaac_disaster:key_ring"
+    }
+  ],
+  "result":{
+    "item": "isaac_disaster:key",
+    "count": 2
+  }
+}

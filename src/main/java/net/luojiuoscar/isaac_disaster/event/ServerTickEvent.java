@@ -190,7 +190,7 @@ public class ServerTickEvent {
         double radius = player.getBbWidth() + 1; // 略大于玩家碰撞盒范围
 
         List<LivingEntity> entities =
-                LevelHelper.selectBySquare(player.level(), player.getX(), player.getY(), player.getZ(), radius);
+                LevelHelper.selectBySquare(player.level(), player.position(), radius);
 
         for (LivingEntity living : entities){
             if (EntityHelper.isFriendly(living, player)) return; // 跳过友方

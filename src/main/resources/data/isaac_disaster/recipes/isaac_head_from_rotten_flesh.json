@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "III",
+    "ITI",
+    "III"
+  ],
+  "key": {
+    "I": {
+      "item": "minecraft:iron_nugget"
+    },
+    "T": {
+      "item": "minecraft:rotten_flesh"
+    }
+  },
+  "result": {
+    "item": "isaac_disaster:isaac_head",
+    "count": 1
+  }
+}

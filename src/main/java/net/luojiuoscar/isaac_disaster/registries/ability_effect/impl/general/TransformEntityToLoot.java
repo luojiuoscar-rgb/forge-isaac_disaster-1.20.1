@@ -7,6 +7,7 @@ import net.luojiuoscar.isaac_disaster.registries.ability_effect.ContextKeys;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.IAbilityEffect;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 
@@ -19,8 +20,8 @@ public class TransformEntityToLoot implements IAbilityEffect {
         List<ResourceLocation> rls = context.getOrDefault(ContextKeys.RESOURCE_LOCATIONS, List.of());
         ResourceLocation loot = rls.isEmpty() ? LootTableManager.RANDOM_COINS : rls.get(0);
 
-        List<Entity> entities = context.get(ContextKeys.SECONDARY_ENTITIES);
-        if (entities == null) return false;
+        List<LivingEntity> entities = context.get(ContextKeys.SECONDARY_LIVING_ENTITIES);
+        if (entities == null || entities.isEmpty()) return false;
 
         for (Entity e : entities){
             Vec3 pos = e.position();

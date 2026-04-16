@@ -167,4 +167,19 @@ public class ModTrinketAbility {
     public static final RegistryObject<TrinketAbility> BLACK_LIPSTICK =
             TRINKET_ABILITY_REGISTRY.register("black_lipstick",
                     () -> new BlackLipstick(TrinketId.BLACK_LIPSTICK.getId(), TrinketId.BLACK_LIPSTICK.getLevel()));
+
+    public static final RegistryObject<TrinketAbility> BIBLE_TRACT =
+            TRINKET_ABILITY_REGISTRY.register("bible_tract",
+                    () -> new BibleTract(TrinketId.BIBLE_TRACT.getId(), TrinketId.BIBLE_TRACT.getLevel()));
+
+    public static final RegistryObject<TrinketAbility> SAFETY_SCISSORS =
+            TRINKET_ABILITY_REGISTRY.register("safety_scissors",
+                    () -> new SafetyScissors(TrinketId.SAFETY_SCISSORS.getId(), TrinketId.SAFETY_SCISSORS.getLevel()));
+
+
+
+
+
+
+
 }

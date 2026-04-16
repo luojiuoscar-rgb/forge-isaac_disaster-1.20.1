@@ -28,6 +28,7 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Inventory;
@@ -637,6 +638,11 @@ public class PlayerHelper {
     public static boolean isSelfDamage(DamageSource source){
         return source.is(DamageTypes.GENERIC_KILL);
     }
+
+    public static DamageSource getSelfDamageSource(LivingEntity entity){
+        return entity.damageSources().genericKill();
+    }
+
 
     public static boolean isHitAllowedType(DamageSource source){
         return source.is(DamageTypes.PLAYER_ATTACK)

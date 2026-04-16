@@ -4,7 +4,8 @@ public enum SetId {
     SPUN,
     ADULT,
     FUN_GUY,
-    BOOK;
+    BOOK,
+    MOM;
 
 
     private final int id;

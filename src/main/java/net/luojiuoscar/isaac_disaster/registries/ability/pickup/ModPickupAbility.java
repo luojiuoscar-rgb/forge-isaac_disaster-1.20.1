@@ -31,6 +31,12 @@ public class ModPickupAbility {
     public static final RegistryObject<PickupAbility> BOMB =
             PICKUP_ABILITY_REGISTRY.register("bomb", Bomb::new);
 
+    public static final RegistryObject<PickupAbility> DOUBLE_BOMB =
+            PICKUP_ABILITY_REGISTRY.register("double_bomb", DoubleBomb::new);
+
+    public static final RegistryObject<PickupAbility> KEY_RING =
+            PICKUP_ABILITY_REGISTRY.register("key_ring", KeyRing::new);
+
     public static final RegistryObject<PickupAbility> BONE_HEART =
             PICKUP_ABILITY_REGISTRY.register("bone_heart", BoneHeart::new);
 

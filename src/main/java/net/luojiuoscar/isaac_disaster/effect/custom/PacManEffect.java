@@ -38,7 +38,7 @@ public class PacManEffect extends MobEffect {
         }
 
         List<LivingEntity> entities = LevelHelper.selectBySphere(
-                player.level(), player.getX(), player.getY(), player.getZ(), StatManager.getNearbyRange() * 0.8f);
+                player.level(), player.position(), StatManager.getNearbyRange() * 0.8f);
 
         for (LivingEntity target : entities){
             if (target instanceof Player) continue;
@@ -56,8 +56,8 @@ public class PacManEffect extends MobEffect {
         }
 
         // 造成伤害&吃
-        LivingEntity target = LevelHelper.findNearestLivingEntity(player.level(), player.getX(), player.getY(), player.getZ(),
-                1, e -> e != player);
+        LivingEntity target = LevelHelper.findNearestLivingEntity(
+                player.level(), player.position(), 1, e -> e != player);
         damageOrEat(player, amplifier, target);
     }
 

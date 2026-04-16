@@ -42,7 +42,7 @@ public class ChestPlaceholderBlockEntity extends ItemChestBlockEntity {
 
         Player player = LevelHelper.findNearestOfType(
                 level,
-                pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5,
+                pos.getCenter(),
                 range,
                 Player.class,
                 e -> e instanceof Player p && !p.isCreative() && !p.isSpectator()

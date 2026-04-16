@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "minecraft:smooth_stone_slab"
+    }
+  ],
+  "result":{
+    "item": "isaac_disaster:pedestal",
+    "count": 1
+  }
+}

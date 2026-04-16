@@ -127,6 +127,21 @@ public class ModActiveAbility {
     public static final RegistryObject<ActiveAbility> THE_POOP =
             ACTIVE_ABILITY_REGISTRY.register("the_poop",
                     () -> new ThePoop(ItemId.THE_POOP.getId(), ItemId.THE_POOP.getLevel()));
+
+    public static final RegistryObject<ActiveAbility> THE_BEAN =
+            ACTIVE_ABILITY_REGISTRY.register("the_bean",
+                    () -> new TheBean(ItemId.THE_BEAN.getId(), ItemId.THE_BEAN.getLevel()));
+
+    public static final RegistryObject<ActiveAbility> BLOOD_RIGHTS =
+            ACTIVE_ABILITY_REGISTRY.register("blood_rights",
+                    () -> new BloodRights(ItemId.BLOOD_RIGHTS.getId(), ItemId.BLOOD_RIGHTS.getLevel()));
+
+    public static final RegistryObject<ActiveAbility> BOX =
+            ACTIVE_ABILITY_REGISTRY.register("box",
+                    () -> new Box(ItemId.BOX.getId(), ItemId.BOX.getLevel()));
+
+
+
 }
 
 

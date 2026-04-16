@@ -28,6 +28,9 @@ public class ModBulletColor {
     public static final RegistryObject<BulletColor> POISON =
             BULLET_COLOR_REGISTRY.register("poison", () -> new BulletColor(0x5CA45C, 1.0f, 20));
 
+    public static final RegistryObject<BulletColor> CHARM =
+            BULLET_COLOR_REGISTRY.register("charm", () -> new BulletColor(0xFF33FF, 1.0f, 20));
+
     public static final RegistryObject<BulletColor> IPECAC =
             BULLET_COLOR_REGISTRY.register("ipecac", () -> new BulletColor(0x5CA45C, 1.0f, 100));
 

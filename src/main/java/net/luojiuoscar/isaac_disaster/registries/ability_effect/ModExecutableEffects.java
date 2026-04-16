@@ -317,8 +317,8 @@ public class ModExecutableEffects {
             EXECUTABLE_EFFECT_REGISTRY.register("chest_loot_trinket", ChestLootTrinket::new);
     public static final RegistryObject<IExecutableEffect> SHOOP_DA_WHOOP =
             EXECUTABLE_EFFECT_REGISTRY.register("shoop_da_whoop", ShoopDaWhoop::new);
-    public static final RegistryObject<IExecutableEffect> APPLY_EFFECT_TO_SECONDARY_ENTITY =
-            EXECUTABLE_EFFECT_REGISTRY.register("apply_effect_to_secondary_entity", ApplyEffectToSecondaryEntity::new);
+    public static final RegistryObject<IExecutableEffect> APPLY_EFFECT_TO_SECONDARY_LIVING_ENTITY =
+            EXECUTABLE_EFFECT_REGISTRY.register("apply_effect_to_secondary_living_entity", ApplyEffectToSecondaryLivingEntity::new);
     public static final RegistryObject<IExecutableEffect> FULL_HEALTH =
             EXECUTABLE_EFFECT_REGISTRY.register("full_health", FullHealth::new);
     public static final RegistryObject<IExecutableEffect> PETRIFIED_POOP =
@@ -329,6 +329,31 @@ public class ModExecutableEffects {
             EXECUTABLE_EFFECT_REGISTRY.register("callus", Callus::new);
     public static final RegistryObject<IExecutableEffect> BLACK_LIPSTICK =
             EXECUTABLE_EFFECT_REGISTRY.register("black_lipstick", BlackLipstick::new);
+    public static final RegistryObject<IExecutableEffect> BIBLE_TRACT =
+            EXECUTABLE_EFFECT_REGISTRY.register("bible_tract", BibleTract::new);
+    public static final RegistryObject<IExecutableEffect> BOMBER_BOY =
+            EXECUTABLE_EFFECT_REGISTRY.register("bomber_boy", BomberBoy::new);
+    public static final RegistryObject<IExecutableEffect> HOT_BOMB =
+            EXECUTABLE_EFFECT_REGISTRY.register("hot_bomb", HotBomb::new);
+    public static final RegistryObject<IExecutableEffect> SCATTER_BOMB =
+            EXECUTABLE_EFFECT_REGISTRY.register("scatter_bomb", ScatterBomb::new);;
+    public static final RegistryObject<IExecutableEffect> EXTINGUISH_TNT =
+            EXECUTABLE_EFFECT_REGISTRY.register("extinguish_tnt", ExtinguishTnt::new);
+    public static final RegistryObject<IExecutableEffect> EXTINGUISH_CREEPER =
+            EXECUTABLE_EFFECT_REGISTRY.register("extinguish_creeper", ExtinguishCreeper::new);
+    public static final RegistryObject<IExecutableEffect> BOGO_BOMBS =
+            EXECUTABLE_EFFECT_REGISTRY.register("bogo_bombs", BogoBombs::new);
+    public static final RegistryObject<IExecutableEffect> LOKIS_HORNS =
+            EXECUTABLE_EFFECT_REGISTRY.register("lokis_horns", LokisHorns::new);
+    public static final RegistryObject<IExecutableEffect> BLOOD_RIGHTS =
+            EXECUTABLE_EFFECT_REGISTRY.register("blood_rights", BloodRights::new);
+    public static final RegistryObject<IExecutableEffect> BOX =
+            EXECUTABLE_EFFECT_REGISTRY.register("box", Box::new);
+    public static final RegistryObject<IExecutableEffect> MOMS_KEY =
+            EXECUTABLE_EFFECT_REGISTRY.register("moms_key", MomsKey::new);
+    public static final RegistryObject<IExecutableEffect> FANNY_PACK =
+            EXECUTABLE_EFFECT_REGISTRY.register("fanny_pack", FannyPack::new);
+
     //</editor-fold>
 
 
@@ -341,7 +366,7 @@ public class ModExecutableEffects {
 
 
 
-
+    // entry start
     //<editor-fold desc="ability effect entries">
     public static final RegistryObject<IExecutableEffect> FREE_LEMONADE =
             EXECUTABLE_EFFECT_REGISTRY.register("free_lemonade", () -> new AbilityEffectEntry(
@@ -456,7 +481,7 @@ public class ModExecutableEffects {
             }));
     public static final RegistryObject<IExecutableEffect> THE_COMMON_COLD =
             EXECUTABLE_EFFECT_REGISTRY.register("the_common_cold", () -> new AbilityEffectEntry(
-                    APPLY_EFFECT_TO_SECONDARY_ENTITY, ctx -> {
+                    APPLY_EFFECT_TO_SECONDARY_LIVING_ENTITY, ctx -> {
                 ctx.set(ContextKeys.POTIONS, List.of(
                         new PotionProfile(ModEffects.POISON.get(), 70, 0)
                 ));
@@ -832,7 +857,7 @@ public class ModExecutableEffects {
             );
     public static final RegistryObject<IExecutableEffect> IRON_BAR =
             EXECUTABLE_EFFECT_REGISTRY.register("iron_bar", () -> new AbilityEffectEntry(
-                    APPLY_EFFECT_TO_SECONDARY_ENTITY, ctx -> {
+                    APPLY_EFFECT_TO_SECONDARY_LIVING_ENTITY, ctx -> {
                         ctx.set(ContextKeys.POTIONS, List.of(
                         new PotionProfile(
                                 ModEffects.DIZZINESS.get(),
@@ -847,7 +872,7 @@ public class ModExecutableEffects {
             ));
     public static final RegistryObject<IExecutableEffect> MIDAS_TOUCH =
             EXECUTABLE_EFFECT_REGISTRY.register("midas_touch", () -> new AbilityEffectEntry(
-                    APPLY_EFFECT_TO_SECONDARY_ENTITY, ctx -> {
+                    APPLY_EFFECT_TO_SECONDARY_LIVING_ENTITY, ctx -> {
                 ctx.set(ContextKeys.POTIONS, List.of(
                         new PotionProfile(
                                 ModEffects.GOLDEN.get(),
@@ -856,6 +881,17 @@ public class ModExecutableEffects {
                                 0,
                                 0,
                                 true
+                        )));
+                ctx.set(ContextKeys.EXECUTABLE_EFFECT, POTIONS.get());
+            }));
+    public static final RegistryObject<IExecutableEffect> MOMS_EYESHADOW =
+            EXECUTABLE_EFFECT_REGISTRY.register("moms_eyeshadow", () -> new AbilityEffectEntry(
+                    APPLY_EFFECT_TO_SECONDARY_LIVING_ENTITY, ctx -> {
+                ctx.set(ContextKeys.POTIONS, List.of(
+                        new PotionProfile(
+                                ModEffects.CHARM.get(),
+                                160,
+                                0
                         )));
                 ctx.set(ContextKeys.EXECUTABLE_EFFECT, POTIONS.get());
             }));

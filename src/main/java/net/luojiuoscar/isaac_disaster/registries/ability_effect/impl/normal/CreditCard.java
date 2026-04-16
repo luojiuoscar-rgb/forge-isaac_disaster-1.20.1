@@ -48,7 +48,7 @@ public class CreditCard implements IAbilityEffect {
 
         // 转化村民
         List<Entity> villager = LevelHelper.selectBySphere(
-                serverLevel, player.getX(), player.getY(), player.getZ(), radius, e -> e instanceof Merchant);
+                serverLevel, player.position(), radius, e -> e instanceof Merchant);
 
         for (Entity e : villager){
             if (!(e instanceof Merchant v)) continue;

@@ -169,4 +169,12 @@ public class ModTrinkets {
     public static final RegistryObject<Item> BLACK_LIPSTICK = ITEMS.register("black_lipstick",
             () -> new Trinket(new Item.Properties(), ModTrinketAbility.BLACK_LIPSTICK));
     static {ItemListManager.TRINKET_LIST.add(BLACK_LIPSTICK);}
+
+    public static final RegistryObject<Item> BIBLE_TRACT = ITEMS.register("bible_tract",
+            () -> new Trinket(new Item.Properties(), ModTrinketAbility.BIBLE_TRACT));
+    static {ItemListManager.TRINKET_LIST.add(BIBLE_TRACT);}
+
+    public static final RegistryObject<Item> SAFETY_SCISSORS = ITEMS.register("safety_scissors",
+            () -> new Trinket(new Item.Properties(), ModTrinketAbility.SAFETY_SCISSORS));
+    static {ItemListManager.TRINKET_LIST.add(SAFETY_SCISSORS);}
 }

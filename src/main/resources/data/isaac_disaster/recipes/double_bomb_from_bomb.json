@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "isaac_disaster:bomb"
+    },
+    {
+      "item": "isaac_disaster:bomb"
+    }
+  ],
+  "result":{
+    "item": "isaac_disaster:double_bomb",
+    "count": 1
+  }
+}

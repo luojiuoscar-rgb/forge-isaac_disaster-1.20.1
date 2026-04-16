@@ -18,7 +18,7 @@ public class AttractItem implements IAbilityEffect {
 
         List<Entity> items = LevelHelper.selectBySquare(
                 entity.level(),
-                entity.getX(), entity.getY(), entity.getZ(),
+                entity.position(),
                 StatManager.getNearbyRange() * 0.75,
                 e -> e instanceof ItemEntity
         );

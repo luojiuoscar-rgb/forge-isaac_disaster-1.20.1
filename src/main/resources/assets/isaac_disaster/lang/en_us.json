@@ -185,11 +185,12 @@
   "item.isaac_disaster.action.give_giga_bomb": "巨型炸弹+%d",
   "item.isaac_disaster.action.give_black_heart": "获得%d个黑心",
   "item.isaac_disaster.action.give_red_heart": "获得%d红心",
-  "item.isaac_disaster.action.give_pill": "获得%d个胶囊",
+  "item.isaac_disaster.action.give_pill": "生成%d个胶囊",
   "item.isaac_disaster.action.give_money": "给予%d价值的钱币",
   "item.isaac_disaster.action.give_key": "给予%d把钥匙",
   "item.isaac_disaster.action.give_soul_heart": "获得%d个魂心",
   "item.isaac_disaster.action.give_bone_heart": "获得%d个骨心",
+  "item.isaac_disaster.action.give_card": "生成%d张随机卡牌",
   "item.isaac_disaster.action.consumed": "[已使用]",
   "item.isaac_disaster.action.cannot_unequip": "无法卸下",
 
@@ -475,7 +476,37 @@
   "item.isaac_disaster.iron_bar.lore.1": "攻击有概率造成眩晕",
   "item.isaac_disaster.midas_touch": "弥达斯之触",
   "item.isaac_disaster.midas_touch.lore.1": "被攻击时施加金化",
-
+  "item.isaac_disaster.bogo_bombs": "炸弹买一送一",
+  "item.isaac_disaster.bogo_bombs.lore.1": "将掉落的炸弹替换成双炸弹",
+  "item.isaac_disaster.the_bean": "豆子",
+  "item.isaac_disaster.the_bean.lore.1": "放屁",
+  "item.isaac_disaster.lokis_horns": "洛基的角",
+  "item.isaac_disaster.lokis_horns.lore.1": "概率向四个方向发射子弹",
+  "item.isaac_disaster.sacred_heart": "圣心",
+  "item.isaac_disaster.cat_o_nine_tails": "九尾鞭",
+  "item.isaac_disaster.stem_cells": "干细胞",
+  "item.isaac_disaster.fate": "宿命",
+  "item.isaac_disaster.fate.lore.1": "获取1层永恒之心",
+  "item.isaac_disaster.holy_grail": "圣杯",
+  "item.isaac_disaster.blood_rights": "血之权利",
+  "item.isaac_disaster.blood_rights.lore.1": "对自己造成伤害",
+  "item.isaac_disaster.blood_rights.lore.2": "并且对周围所有生物造成伤害",
+  "item.isaac_disaster.blood_rights.lore.3": "此效果不分敌友",
+  "item.isaac_disaster.smb_super_fan": "超级食肉男孩死忠粉",
+  "item.isaac_disaster.meat": "生肉！",
+  "item.isaac_disaster.magic_8_ball": "魔力8号球",
+  "item.isaac_disaster.moms_coin_purse": "妈妈的零钱包",
+  "item.isaac_disaster.squeezy": "挤压玩具",
+  "item.isaac_disaster.jesus_juice": "耶稣果汁",
+  "item.isaac_disaster.box": "盒子",
+  "item.isaac_disaster.box.lore.1": "生成随机心，硬币，炸弹，钥匙",
+  "item.isaac_disaster.box.lore.2": "卡牌，胶囊，饰品各一个",
+  "item.isaac_disaster.moms_key": "妈妈的钥匙",
+  "item.isaac_disaster.moms_key.lore.1": "箱子内的物品更好",
+  "item.isaac_disaster.moms_eyeshadow": "妈妈的眼影",
+  "item.isaac_disaster.moms_eyeshadow.lore.1": "概率发射魅惑子弹",
+  "item.isaac_disaster.fanny_pack": "挎包",
+  "item.isaac_disaster.fanny_pack.lore.1": "受到2点以上伤害时概率生成随机掉落物",
 
   "item end": "",
 
@@ -567,8 +598,10 @@
   "item.isaac_disaster.callus.lore.1": "受到的伤害减少1",
   "item.isaac_disaster.black_lipstick": "黑色口红",
   "item.isaac_disaster.black_lipstick.lore.1": "生成魂心时，有几率将其转化为黑心",
-
-
+  "item.isaac_disaster.bible_tract": "圣经小册",
+  "item.isaac_disaster.bible_tract.lore.1": "生成心时，有几率将其转化为永恒心",
+  "item.isaac_disaster.safety_scissors": "安全剪刀",
+  "item.isaac_disaster.safety_scissors.lore.1": "熄灭周围的TNT",
 
   "trinket end": "",
 
@@ -777,7 +810,8 @@
 
 
   "item.isaac_disaster.bomb": "炸弹",
-  "item.isaac_disaster.giga_bomb": "炸弹",
+  "item.isaac_disaster.double_bomb": "双炸弹",
+  "item.isaac_disaster.giga_bomb": "巨型炸弹",
   "item.isaac_disaster.golden_bomb": "黄金炸弹",
   "item.isaac_disaster.half_red_heart": "半红心",
   "item.isaac_disaster.red_heart": "红心",
@@ -792,6 +826,7 @@
   "item.isaac_disaster.isaac_head": "以撒的头",
   "item.isaac_disaster.bone_heart": "骨心",
   "item.isaac_disaster.key": "钥匙",
+  "item.isaac_disaster.key_ring": "钥匙环",
   "item.isaac_disaster.golden_key": "金钥匙",
   "item.isaac_disaster.grab_bag": "福袋",
   "item.isaac_disaster.black_sack": "黑福袋",
@@ -815,5 +850,7 @@
   "set.isaac_disaster.adult.lore.1": "声音变粗",
   "set.isaac_disaster.fun_guy": "蘑菇头！",
   "set.isaac_disaster.book": "书虫",
-  "set.isaac_disaster.book.lore.1": "有概率多发射一颗泪弹"
+  "set.isaac_disaster.book.lore.1": "有概率多发射一颗泪弹",
+  "set.isaac_disaster.mom": "母亲",
+  "set.isaac_disaster.mom.lore.1": "目前没有任何效果"
 }

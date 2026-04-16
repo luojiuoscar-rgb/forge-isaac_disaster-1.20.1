@@ -2,6 +2,7 @@ package net.luojiuoscar.isaac_disaster.event;
 
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.capability.entity.EffectModulesProvider;
+import net.luojiuoscar.isaac_disaster.capability.misc.ExplosionDataProvider;
 import net.luojiuoscar.isaac_disaster.event.custom.attack.*;
 import net.luojiuoscar.isaac_disaster.event.custom.attack.tear_bullet.BulletTickEvent;
 import net.luojiuoscar.isaac_disaster.event.custom.misc.BeforeTriggerModuleActiveEvent;
@@ -11,22 +12,22 @@ import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ContextKeys;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ExecutableEffectContext;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.IBulletObject;
-import net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerModule;
-import net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerTypes;
-import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerModule;
-import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerType;
+import net.luojiuoscar.isaac_disaster.registries.trigger_module.*;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.item.PrimedTnt;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
 import net.minecraftforge.event.level.BlockEvent;
+import net.minecraftforge.event.level.ExplosionEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.registries.IForgeRegistry;
@@ -50,6 +51,7 @@ public class TriggerModuleEvents {
 
             IForgeRegistry<TriggerModule> reg =
                     RegistryManager.ACTIVE.getRegistry(ModTriggerModule.TRIGGER_MODULE_KEY);
+            if (reg == null) return;
 
             // 触发前事件
             BeforeTriggerModuleActiveEvent preEvent = new BeforeTriggerModuleActiveEvent(context);
@@ -68,7 +70,7 @@ public class TriggerModuleEvents {
         });
     }
 
-    public static void bulletDispatch(ExecutableEffectContext context, TriggerType type){
+    public static void dispatchBullet(ExecutableEffectContext context, TriggerType type){
         context.set(ContextKeys.AMPLIFIER, 1.);
         ModTriggerModule.BULLET_TRIGGER_MODULE.get().fire(context, type);
     }
@@ -104,11 +106,14 @@ public class TriggerModuleEvents {
         context.set(ContextKeys.EVENT, event);
         context.set(ContextKeys.DOUBLE, List.of((double) event.getAmount()));
 
-        List<Entity> secondary_entities = new ArrayList<>();
+        List<LivingEntity> secondary_entities = new ArrayList<>();
         LivingEntity victim = event.getEntity();
         secondary_entities.add(victim);
-        context.set(ContextKeys.SECONDARY_ENTITIES, secondary_entities); // 受伤的生物
+        context.set(ContextKeys.SECONDARY_LIVING_ENTITIES, secondary_entities); // 受伤的生物
         context.set(ContextKeys.TARGET_POSITION, victim.position());
+        if (event.getSource().getDirectEntity() != null){
+            context.set(ContextKeys.ENTITY, List.of(event.getSource().getDirectEntity()));
+        }
 
         dispatch(context, ModTriggerTypes.HIT_ENTITY);
     }
@@ -120,10 +125,12 @@ public class TriggerModuleEvents {
         context.set(ContextKeys.EVENT, event);
         context.set(ContextKeys.TARGET_POSITION, entity.position());
 
-        List<Entity> secondary_entities = new ArrayList<>();
-        if (event.getSource().getEntity() != null) secondary_entities.add(event.getSource().getEntity());
-        context.set(ContextKeys.SECONDARY_ENTITIES, secondary_entities);
+        List<LivingEntity> secondary_entities = new ArrayList<>();
+        context.set(ContextKeys.SECONDARY_LIVING_ENTITIES, secondary_entities);
         context.set(ContextKeys.DOUBLE, List.of((double) event.getAmount()));
+        if (event.getSource().getDirectEntity() != null){
+            context.set(ContextKeys.ENTITY, List.of(event.getSource().getDirectEntity()));
+        }
 
         dispatch(context, ModTriggerTypes.ON_HURT);
         if (!PlayerHelper.isSelfDamage(event.getSource())){
@@ -142,10 +149,12 @@ public class TriggerModuleEvents {
         context.set(ContextKeys.EVENT, event);
         context.set(ContextKeys.BULLET, bulletObject);
         context.set(ContextKeys.TARGET_POSITION, bulletObject.getPosition());
-        context.set(ContextKeys.SECONDARY_ENTITIES, List.of(event.getHit().getEntity()));
+        if (event.getHit().getEntity() instanceof LivingEntity entity){
+            context.set(ContextKeys.SECONDARY_LIVING_ENTITIES, List.of(entity));
+        }
         context.set(ContextKeys.DOUBLE, List.of(event.getDamage()));
 
-        bulletDispatch(context, ModTriggerTypes.BULLET_HIT_ENTITY_BEFORE);
+        dispatchBullet(context, ModTriggerTypes.BULLET_HIT_ENTITY_BEFORE);
     }
 
     @SubscribeEvent
@@ -157,15 +166,18 @@ public class TriggerModuleEvents {
         context.set(ContextKeys.EVENT, event);
         context.set(ContextKeys.BULLET, bulletObject);
         context.set(ContextKeys.TARGET_POSITION, bulletObject.getPosition());
-        context.set(ContextKeys.SECONDARY_ENTITIES, List.of(event.getHitResult().getEntity()));
+        if (event.getHit().getEntity() instanceof LivingEntity entity){
+            context.set(ContextKeys.SECONDARY_LIVING_ENTITIES, List.of(entity));
+        }
         context.set(ContextKeys.DOUBLE, List.of(event.getDamage()));
 
-        bulletDispatch(context, ModTriggerTypes.BULLET_HIT_ENTITY_AFTER);
+        dispatchBullet(context, ModTriggerTypes.BULLET_HIT_ENTITY_AFTER);
     }
 
     @SubscribeEvent
     public static void onBulletHitBlock(IsaacAttackHitBlockEvent event) {
         IBulletObject bulletObject = event.getBulletObject();
+        if (bulletObject.getOwner() == null) return;
 
         ExecutableEffectContext context = new ExecutableEffectContext(bulletObject.getOwner());
         context.set(ContextKeys.EVENT, event);
@@ -173,7 +185,7 @@ public class TriggerModuleEvents {
         context.set(ContextKeys.TARGET_POSITION, event.getHitResult().getBlockPos().getCenter());
         context.set(ContextKeys.DOUBLE, List.of((double) bulletObject.getDamage()));
 
-        bulletDispatch(context, ModTriggerTypes.BULLET_HIT_BLOCK);
+        dispatchBullet(context, ModTriggerTypes.BULLET_HIT_BLOCK);
     }
 
     /**
@@ -183,7 +195,7 @@ public class TriggerModuleEvents {
     public static void onKilledEntity(LivingDeathEvent event) {
         Entity attacker = event.getSource().getEntity();
         LivingEntity victim = event.getEntity();
-        Entity medium = event.getSource().getDirectEntity();
+
 
         ExecutableEffectContext death_ctx = new ExecutableEffectContext(victim);
         death_ctx.set(ContextKeys.EVENT, event);
@@ -191,15 +203,14 @@ public class TriggerModuleEvents {
 
         if (!(attacker instanceof LivingEntity entity)) return;
 
-        List<Entity> secondary_entities = new ArrayList<>();
-        secondary_entities.add(attacker);
-        if (medium != null) secondary_entities.add(medium);
-        death_ctx.set(ContextKeys.SECONDARY_ENTITIES, secondary_entities);
+        List<LivingEntity> secondary_entities = new ArrayList<>();
+        secondary_entities.add(entity);
+        death_ctx.set(ContextKeys.SECONDARY_LIVING_ENTITIES, secondary_entities);
 
         ExecutableEffectContext kill_ctx = new ExecutableEffectContext(entity);
         kill_ctx.set(ContextKeys.EVENT, event);
         kill_ctx.set(ContextKeys.TARGET_POSITION, victim.position());
-        kill_ctx.set(ContextKeys.SECONDARY_ENTITIES, secondary_entities);
+        kill_ctx.set(ContextKeys.SECONDARY_LIVING_ENTITIES, secondary_entities);
 
         dispatch(kill_ctx, ModTriggerTypes.KILL_ENTITY);
         dispatch(death_ctx, ModTriggerTypes.DEATH);
@@ -225,11 +236,11 @@ public class TriggerModuleEvents {
         context.set(ContextKeys.TARGET_POSITION, bullet.getPosition());
         context.set(ContextKeys.BULLET, bullet);
 
-        bulletDispatch(context, ModTriggerTypes.BULLET_TICK);
+        dispatchBullet(context, ModTriggerTypes.BULLET_TICK);
     }
 
     @SubscribeEvent
-    public static void onPickupItem(RightClickTickEvent event) {
+    public static void rightClickTick(RightClickTickEvent event) {
         ServerPlayer player = event.getPlayer();
         ExecutableEffectContext context = new ExecutableEffectContext(player);
         context.set(ContextKeys.EVENT, event);
@@ -242,16 +253,16 @@ public class TriggerModuleEvents {
     }
 
     @SubscribeEvent
-    public static void onPickupItem(EntityItemPickupEvent event) {
+    public static void rightClickTick(EntityItemPickupEvent event) {
         LivingEntity entity = event.getEntity();
         ExecutableEffectContext context = new ExecutableEffectContext(entity);
         context.set(ContextKeys.EVENT, event);
-        ItemEntity item = event.getItem();
+        ItemEntity itemEntity = event.getItem();
 
-        context.set(ContextKeys.ITEM, item.getItem().getItem());
-        context.set(ContextKeys.DOUBLE, List.of((double) item.getItem().getCount()));
+        context.set(ContextKeys.ITEM, itemEntity.getItem().getItem());
+        context.set(ContextKeys.DOUBLE, List.of((double) itemEntity.getItem().getCount()));
         context.set(ContextKeys.TARGET_POSITION, entity.position());
-        context.set(ContextKeys.SECONDARY_ENTITIES, List.of(item));
+        context.set(ContextKeys.ENTITY, List.of(itemEntity));
 
         dispatch(context, ModTriggerTypes.PICKUP_ITEM);
     }
@@ -265,5 +276,65 @@ public class TriggerModuleEvents {
 
         dispatch(context, ModTriggerTypes.LOOT);
     }
+
+    /**
+     * TNT 生成进入世界时：初始化（可选）
+     * 用于确保 capability 已存在
+     */
+    @SubscribeEvent
+    public static void onTntSpawn(EntityJoinLevelEvent event) {
+        if (!(event.getEntity() instanceof PrimedTnt tnt)) return;
+
+        tnt.getCapability(ExplosionDataProvider.EXPLOSION_DATA).ifPresent(data -> {
+            data.setOwner(null);
+            data.setTriggerModuleQueue(null);
+        });
+
+        IsaacDisaster.LOGGER.info("TNT spawned: {}", System.identityHashCode(tnt));
+    }
+
+    /** 在产生爆炸的时候，根据炸弹自身的TriggerModule来触发对应效果 */
+    @SubscribeEvent
+    public static void onExplosionEnd(ExplosionEvent.Detonate event) {
+
+        Entity source = event.getExplosion().getDirectSourceEntity();
+        if (!(source instanceof PrimedTnt tnt)) return;
+
+        IForgeRegistry<TriggerModule> reg =
+                RegistryManager.ACTIVE.getRegistry(ModTriggerModule.TRIGGER_MODULE_KEY);
+
+        if (reg == null) return;
+        IsaacDisaster.LOGGER.info("TNT exploded: " + System.identityHashCode(tnt) + " has cap? " +
+                tnt.getCapability(ExplosionDataProvider.EXPLOSION_DATA).isPresent());
+        tnt.getCapability(ExplosionDataProvider.EXPLOSION_DATA).ifPresent(data -> {
+
+            ServerPlayer owner = data.getOwner();
+            TriggerModuleQueue queue = data.getTriggerModuleQueue();
+
+            if (owner == null || queue == null) return;
+
+            ExecutableEffectContext context =
+                    new ExecutableEffectContext(owner);
+
+            context.set(ContextKeys.TARGET_POSITION, event.getExplosion().getPosition());
+            context.set(ContextKeys.ENTITY, List.of(tnt));
+
+            queue.lock();
+
+            IsaacDisaster.LOGGER.info("explosion end queue: {}", queue);
+
+            for (var inst : queue.getQueue()) {
+
+                context.set(ContextKeys.AMPLIFIER, (double) inst.stacks);
+
+                TriggerModule module = reg.getValue(inst.id);
+                if (module == null) continue;
+
+                module.fire(context, ModTriggerTypes.EXPLOSION_FINISH);
+            }
+        });
+    }
+
+
 }
 

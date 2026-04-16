@@ -44,7 +44,9 @@ public enum TrinketId {
     CURSED_PENNY(0),
     PETRIFIED_POOP(1),
     CALLUS(1),
-    BLACK_LIPSTICK(1);
+    BLACK_LIPSTICK(0),
+    BIBLE_TRACT(0),
+    SAFETY_SCISSORS(3);
 
 
     private final int id;

@@ -221,7 +221,7 @@ public class PedestalBlockEntity extends BlockEntity implements ItemDisplayConta
         if (blockEntity.isGenerated() || level.getGameRules().getBoolean(ModGameRules.DISABLE_PLACEHOLDER)) return;
 
         int range = 5;
-        Player player = LevelHelper.findNearestOfType(level, pos.getX()+0.5, pos.getY()+0.5, pos.getZ()+0.5, range, Player.class,
+        Player player = LevelHelper.findNearestOfType(level, pos.getCenter(), range, Player.class,
                 e -> e instanceof Player p && !p.isCreative() && !p.isSpectator()); // 排除创造玩家和观察者
 
         if (player == null) return;

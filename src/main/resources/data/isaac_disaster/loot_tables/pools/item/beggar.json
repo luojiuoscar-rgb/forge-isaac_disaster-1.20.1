@@ -10,7 +10,9 @@
         {"type": "minecraft:item", "name": "isaac_disaster:rotten_meat"},
         {"type": "minecraft:item", "name": "isaac_disaster:midnight_snack"},
         {"type": "minecraft:item", "name": "isaac_disaster:supper"},
-        {"type": "minecraft:item", "name": "isaac_disaster:crooked_penny"}
+        {"type": "minecraft:item", "name": "isaac_disaster:crooked_penny"},
+        {"type": "minecraft:item", "name": "isaac_disaster:the_bean"},
+        {"type": "minecraft:item", "name": "isaac_disaster:lucky_foot"}
       ]
     }
   ]

@@ -488,11 +488,68 @@ public class ModPassiveAbility {
             PASSIVE_ABILITY_REGISTRY.register("midas_touch",
                     () -> new MidasTouch(ItemId.MIDAS_TOUCH.getId(), ItemId.MIDAS_TOUCH.getLevel()));
 
+    public static final RegistryObject<PassiveAbility> BOGO_BOMBS =
+            PASSIVE_ABILITY_REGISTRY.register("bogo_bombs",
+                    () -> new BogoBombs(ItemId.BOGO_BOMBS.getId(), ItemId.BOGO_BOMBS.getLevel()));
 
+    public static final RegistryObject<PassiveAbility> LOKIS_HORNS =
+            PASSIVE_ABILITY_REGISTRY.register("lokis_horns",
+                    () -> new LokisHorns(ItemId.LOKIS_HORNS.getId(), ItemId.LOKIS_HORNS.getLevel()));
 
+    public static final RegistryObject<PassiveAbility> SACRED_HEART =
+            PASSIVE_ABILITY_REGISTRY.register("sacred_heart",
+                    () -> new SacredHeart(ItemId.SACRED_HEART.getId(), ItemId.SACRED_HEART.getLevel()));
 
+    public static final RegistryObject<PassiveAbility> CAT_O_NINE_TAILS =
+            PASSIVE_ABILITY_REGISTRY.register("cat_o_nine_tails",
+                    () -> new CatONineTails(ItemId.CAT_O_NINE_TAILS.getId(), ItemId.CAT_O_NINE_TAILS.getLevel()));
 
+    public static final RegistryObject<PassiveAbility> STEM_CELLS =
+            PASSIVE_ABILITY_REGISTRY.register("stem_cells",
+                    () -> new StemCells(ItemId.STEM_CELLS.getId(), ItemId.STEM_CELLS.getLevel()));
 
+    public static final RegistryObject<PassiveAbility> FATE =
+            PASSIVE_ABILITY_REGISTRY.register("fate",
+                    () -> new Fate(ItemId.FATE.getId(), ItemId.FATE.getLevel()));
 
+    public static final RegistryObject<PassiveAbility> HOLY_GRAIL =
+            PASSIVE_ABILITY_REGISTRY.register("holy_grail",
+                    () -> new HolyGrail(ItemId.HOLY_GRAIL.getId(), ItemId.HOLY_GRAIL.getLevel()));
+
+    public static final RegistryObject<PassiveAbility> SMB_SUPER_FAN =
+            PASSIVE_ABILITY_REGISTRY.register("smb_super_fan",
+                    () -> new SMBSuperFan(ItemId.SMB_SUPER_FAN.getId(), ItemId.SMB_SUPER_FAN.getLevel()));
+
+    public static final RegistryObject<PassiveAbility> MEAT =
+            PASSIVE_ABILITY_REGISTRY.register("meat",
+                    () -> new Meat(ItemId.MEAT.getId(), ItemId.MEAT.getLevel()));
+
+    public static final RegistryObject<PassiveAbility> MAGIC_8_BALL =
+            PASSIVE_ABILITY_REGISTRY.register("magic_8_ball",
+                    () -> new Magic8Ball(ItemId.MAGIC_8_BALL.getId(), ItemId.MAGIC_8_BALL.getLevel()));
+
+    public static final RegistryObject<PassiveAbility> MOMS_COIN_PURSE =
+            PASSIVE_ABILITY_REGISTRY.register("moms_coin_purse",
+                    () -> new MomsCoinPurse(ItemId.MOMS_COIN_PURSE.getId(), ItemId.MOMS_COIN_PURSE.getLevel()));
+
+    public static final RegistryObject<PassiveAbility> SQUEEZY =
+            PASSIVE_ABILITY_REGISTRY.register("squeezy",
+                    () -> new Squeezy(ItemId.SQUEEZY.getId(), ItemId.SQUEEZY.getLevel()));
+
+    public static final RegistryObject<PassiveAbility> JESUS_JUICE =
+            PASSIVE_ABILITY_REGISTRY.register("jesus_juice",
+                    () -> new JesusJuice(ItemId.JESUS_JUICE.getId(), ItemId.JESUS_JUICE.getLevel()));
+
+    public static final RegistryObject<PassiveAbility> MOMS_KEY =
+            PASSIVE_ABILITY_REGISTRY.register("moms_key",
+                    () -> new MomsKey(ItemId.MOMS_KEY.getId(), ItemId.MOMS_KEY.getLevel()));
+
+    public static final RegistryObject<PassiveAbility> MOMS_EYESHADOW =
+            PASSIVE_ABILITY_REGISTRY.register("moms_eyeshadow",
+                    () -> new MomsEyeshadow(ItemId.MOMS_EYESHADOW.getId(), ItemId.MOMS_EYESHADOW.getLevel()));
+
+    public static final RegistryObject<PassiveAbility> FANNY_PACK =
+            PASSIVE_ABILITY_REGISTRY.register("fanny_pack",
+                    () -> new FannyPack(ItemId.FANNY_PACK.getId(), ItemId.FANNY_PACK.getLevel()));
 
 }

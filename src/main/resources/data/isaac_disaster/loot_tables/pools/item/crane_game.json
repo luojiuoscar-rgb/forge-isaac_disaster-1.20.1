@@ -17,7 +17,17 @@
         {"type": "minecraft:item", "name": "isaac_disaster:tarot_cloth"},
         {"type": "minecraft:item", "name": "isaac_disaster:teleport"},
         {"type": "minecraft:item", "name": "isaac_disaster:the_gamekid"},
-        {"type": "minecraft:item", "name": "isaac_disaster:my_little_unicorn"}
+        {"type": "minecraft:item", "name": "isaac_disaster:my_little_unicorn"},
+        {"type": "minecraft:item", "name": "isaac_disaster:the_d6"},
+        {"type": "minecraft:item", "name": "isaac_disaster:tammys_head"},
+        {"type": "minecraft:item", "name": "isaac_disaster:the_hourglass"},
+        {"type": "minecraft:item", "name": "isaac_disaster:shoop_da_whoop"},
+        {"type": "minecraft:item", "name": "isaac_disaster:technology"},
+        {"type": "minecraft:item", "name": "isaac_disaster:my_reflection"},
+        {"type": "minecraft:item", "name": "isaac_disaster:technology2"},
+        {"type": "minecraft:item", "name": "isaac_disaster:lucky_foot"},
+        {"type": "minecraft:item", "name": "isaac_disaster:the_small_rock"},
+        {"type": "minecraft:item", "name": "isaac_disaster:pentagram"}
       ]
     }
   ]

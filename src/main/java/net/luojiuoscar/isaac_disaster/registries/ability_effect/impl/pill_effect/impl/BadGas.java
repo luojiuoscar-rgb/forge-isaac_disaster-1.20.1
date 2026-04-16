@@ -35,7 +35,7 @@ public class BadGas extends PillEffect {
             effect = new MobEffectInstance(MobEffects.POISON, 600, 2);
         }
 
-        List<LivingEntity> entities = LevelHelper.selectBySphere(level, pos.x, pos.y, pos.z, StatManager.getNearbyRange());
+        List<LivingEntity> entities = LevelHelper.selectBySphere(level, pos, StatManager.getNearbyRange());
         for (LivingEntity entity : entities){
             if (entity == player) continue; // 排除自己
 

@@ -152,7 +152,26 @@ public enum ItemId {
     THE_POOP(0),
     STEAM_SALE(2),
     IRON_BAR(2),
-    MIDAS_TOUCH(2);
+    MIDAS_TOUCH(2),
+    BOGO_BOMBS(1),
+    THE_BEAN(0),
+    LOKIS_HORNS(1),
+    SACRED_HEART(4),
+    CAT_O_NINE_TAILS(3),
+    STEM_CELLS(1),
+    FATE(3),
+    HOLY_GRAIL(3),
+    BLOOD_RIGHTS(0),
+    SMB_SUPER_FAN(3),
+    MEAT(1),
+    MAGIC_8_BALL(1),
+    MOMS_COIN_PURSE(0),
+    SQUEEZY(2),
+    JESUS_JUICE(1),
+    BOX(0),
+    MOMS_KEY(2),
+    MOMS_EYESHADOW(1),
+    FANNY_PACK(2);
 
 
 
