@@ -171,7 +171,8 @@ public enum ItemId {
     BOX(0),
     MOMS_KEY(2),
     MOMS_EYESHADOW(1),
-    FANNY_PACK(2);
+    FANNY_PACK(2),
+    SAD_BOMB(2);
 
 
 

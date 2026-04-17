@@ -255,7 +255,7 @@ public class TriggerModuleEvents {
     }
 
     @SubscribeEvent
-    public static void rightClickTick(EntityItemPickupEvent event) {
+    public static void onPickupItem(EntityItemPickupEvent event) {
         LivingEntity entity = event.getEntity();
         ExecutableEffectContext context = new ExecutableEffectContext(entity);
         context.set(ContextKeys.EVENT, event);

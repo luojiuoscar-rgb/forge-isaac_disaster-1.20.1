@@ -2,6 +2,7 @@ package net.luojiuoscar.isaac_disaster.client.hud;
 
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.client.ClientDataManager;
+import net.luojiuoscar.isaac_disaster.item.pickup.special.IsaacHead;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.client.gui.overlay.IGuiOverlay;
 
@@ -22,8 +23,17 @@ public class ChargeBarHudOverlay {
     public static final IGuiOverlay HUD_CHARGE_BAR =
             (forgeGui, guiGraphics, partialTick, screenWidth, screenHeight) -> {
 
+                // 仅在手持IsaacHead的时候显示hud
+                var player = net.minecraft.client.Minecraft.getInstance().player;
+                if (player == null) return;
+                if (!(player.getMainHandItem().getItem() instanceof IsaacHead)
+                        && !(player.getOffhandItem().getItem() instanceof IsaacHead)) {
+                    return;
+                }
+
                 float progress = ClientDataManager.getInstance().getChargeProgress();
                 if (progress <= 0f) return;
+
                 progress = Math.min(progress, 1.0f);
 
                 int centerX = screenWidth / 2;

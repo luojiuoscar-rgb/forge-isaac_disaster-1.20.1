@@ -18,6 +18,7 @@ import net.luojiuoscar.isaac_disaster.item.pickup.special.IsaacHead;
 import net.luojiuoscar.isaac_disaster.manager.id.ItemId;
 import net.luojiuoscar.isaac_disaster.networking.ModMessages;
 import net.luojiuoscar.isaac_disaster.networking.packet.ChargeBarUpdateS2CPacket;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.data.AbilityEffectTokenBucket;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackType;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.IChargeableAttack;
 import net.minecraft.client.Minecraft;
@@ -92,6 +93,8 @@ public class ServerTickEvent {
 
         // 更新所有scheduled function
         ScheduledFuncHelper.tick(server);
+        AbilityEffectTokenBucket.getInstance().tick();
+
     }
 
 

@@ -507,6 +507,8 @@
   "item.isaac_disaster.moms_eyeshadow.lore.1": "概率发射魅惑子弹",
   "item.isaac_disaster.fanny_pack": "挎包",
   "item.isaac_disaster.fanny_pack.lore.1": "受到2点以上伤害时概率生成随机掉落物",
+  "item.isaac_disaster.sad_bomb": "悲伤炸弹",
+  "item.isaac_disaster.sad_bomb.lore.1": "炸弹爆炸时向周围散射子弹",
 
   "item end": "",
 

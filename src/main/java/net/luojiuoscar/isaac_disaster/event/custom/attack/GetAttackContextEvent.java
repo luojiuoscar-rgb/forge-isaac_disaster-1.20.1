@@ -11,11 +11,14 @@ public class GetAttackContextEvent extends Event {
     private final ServerPlayer player;
     private List<AttackContext> contexts;
     private final AttackType attackType;
+    private final boolean directlyShotByPlayer;
 
-    public GetAttackContextEvent(ServerPlayer player, List<AttackContext> contexts, AttackType attackType) {
+    public GetAttackContextEvent(ServerPlayer player, List<AttackContext> contexts, AttackType attackType,
+                                 boolean directlyShotByPlayer) {
         this.player = player;
         this.contexts = contexts;
         this.attackType = attackType;
+        this.directlyShotByPlayer = directlyShotByPlayer;
     }
 
     public ServerPlayer getPlayer() {
@@ -32,5 +35,9 @@ public class GetAttackContextEvent extends Event {
 
     public AttackType getAttackType() {
         return attackType;
+    }
+
+    public boolean isDirectlyShotByPlayer(){
+        return directlyShotByPlayer;
     }
 }

@@ -552,4 +552,7 @@ public class ModPassiveAbility {
             PASSIVE_ABILITY_REGISTRY.register("fanny_pack",
                     () -> new FannyPack(ItemId.FANNY_PACK.getId(), ItemId.FANNY_PACK.getLevel()));
 
+    public static final RegistryObject<PassiveAbility> SAD_BOMB =
+            PASSIVE_ABILITY_REGISTRY.register("sad_bomb",
+                    () -> new SadBomb(ItemId.SAD_BOMB.getId(), ItemId.SAD_BOMB.getLevel()));
 }

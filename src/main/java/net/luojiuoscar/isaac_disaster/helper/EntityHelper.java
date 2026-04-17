@@ -2,6 +2,7 @@ package net.luojiuoscar.isaac_disaster.helper;
 
 import net.luojiuoscar.isaac_disaster.entity.ModEntities;
 import net.luojiuoscar.isaac_disaster.entity.fireball.TimedFireball;
+import net.luojiuoscar.isaac_disaster.entity.tnt.BombData;
 import net.luojiuoscar.isaac_disaster.entity.tnt.GigaBomb;
 import net.luojiuoscar.isaac_disaster.entity.tnt.IsaacBomb;
 import net.minecraft.core.BlockPos;
@@ -32,20 +33,13 @@ public class EntityHelper {
      * type 1: medium bomb
      * type 2: large bomb
      */
-    public static IsaacBomb spawnBomb(Vec3 position, LivingEntity owner, Level level, Vec3 velocity, int type) {
-        return switch (type) {
-            case 1 -> spawnBomb(position, owner, level, velocity, 80, 4, 0.98f);
-            case 2 -> spawnBomb(position, owner, level, velocity, 80, 7, 1.4f);
-            default -> spawnBomb(position, owner, level, velocity, 80, 1, 0.4f);
-        };
+    public static IsaacBomb spawnBomb(Vec3 position, LivingEntity owner,
+                                      Level level, Vec3 velocity, BombData data, int fuse) {
+        return spawnBomb(position, owner, level, velocity, fuse, data.power(), data.size(), true);
     }
 
-
-    public static IsaacBomb spawnBomb(Vec3 position, LivingEntity owner, Level level, Vec3 velocity, int fuse, int power, float scale) {
-        return spawnBomb(position, owner, level, velocity, fuse, power, scale, true);
-    }
-
-    public static IsaacBomb spawnBomb(Vec3 position, LivingEntity owner, Level level, Vec3 velocity,
+    public static IsaacBomb spawnBomb(Vec3 position, LivingEntity owner,
+                                      Level level, Vec3 velocity,
                                       int fuse, int power, float scale, boolean isOriginal) {
         if (level.isClientSide()) return null;
 
@@ -105,11 +99,11 @@ public class EntityHelper {
     }
 
     public static void throwBomb(LivingEntity entity, int fuse, int power) {
-        float scale = 1.4f;
-        if (power < 4){
-            scale = 0.4f;
-        }else if (power < 7){
-            scale = 0.98f;
+        float scale = BombData.MEGA.size();
+        if (power < BombData.SMALL.power()){
+            scale = BombData.SMALL.size();
+        }else if (power < BombData.MEGA.power()){
+            scale = BombData.NORMAL.size();
         }
 
         throwBomb(entity, fuse, power, scale);
@@ -138,7 +132,7 @@ public class EntityHelper {
         }
 
 
-        spawnBomb(spawnPos, entity, entity.level(), velocity, fuse, power, scale);
+        spawnBomb(spawnPos, entity, entity.level(), velocity, fuse, power, scale, true);
     }
 
 
@@ -167,7 +161,7 @@ public class EntityHelper {
         if (!isValidOrigin(source)) return;
 
         int power = source.getPower() - 3;
-        float scale = (power == 1) ? 0.4f : 0.98f;
+        float scale = (power == BombData.SMALL.power()) ? BombData.SMALL.size() : BombData.NORMAL.size();
 
         for (int i = 0; i < 4; i++) {
             Vec3 randomVel = new Vec3(
@@ -175,7 +169,8 @@ public class EntityHelper {
                     Math.random() * 0.4,
                     Math.random() * 0.6 - 0.3
             );
-            spawnBomb(center, entity, level, randomVel, 30, power, scale, power != 1);
+            spawnBomb(center, entity, level, randomVel, 30, power, scale,
+                    power != BombData.SMALL.power());
         }
     }
 

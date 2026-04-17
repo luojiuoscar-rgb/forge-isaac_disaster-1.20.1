@@ -557,5 +557,7 @@ public class ModPassiveItems {
             () -> new PassiveItem(new Item.Properties(), ModPassiveAbility.FANNY_PACK));
     static {ItemListManager.PASSIVE_ITEM_LIST.add(FANNY_PACK);}
 
-
+    public static final RegistryObject<Item> SAD_BOMB = ITEMS.register("sad_bomb",
+            () -> new PassiveItem(new Item.Properties(), ModPassiveAbility.SAD_BOMB));
+    static {ItemListManager.PASSIVE_ITEM_LIST.add(SAD_BOMB);}
 }

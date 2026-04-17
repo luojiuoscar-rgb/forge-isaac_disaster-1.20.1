@@ -1,6 +1,5 @@
 package net.luojiuoscar.isaac_disaster.registries.trigger_module.impl.normal;
 
-import net.luojiuoscar.isaac_disaster.event.custom.attack.GetAttackContextEvent;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.*;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackContext;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerModule;
@@ -20,13 +19,9 @@ public class Laser extends TriggerModule {
     }
 
     @Override
-    public void attachToBullet(ExecutableEffectContext context) {
-        // 添加simpleTrigger到bullet中
-        if (context.get(ContextKeys.EVENT) instanceof GetAttackContextEvent event) {
-            List<AttackContext> attCtxs = event.getContexts();
-            for (var ctx : attCtxs) {
-                ctx.getTrigger().addAll(bullet_triggers);
-            }
+    public void attachToBullet(ExecutableEffectContext context, List<AttackContext> attCtxs) {
+        for (var ctx : attCtxs) {
+            ctx.getTrigger().addAll(bullet_triggers);
         }
     }
 

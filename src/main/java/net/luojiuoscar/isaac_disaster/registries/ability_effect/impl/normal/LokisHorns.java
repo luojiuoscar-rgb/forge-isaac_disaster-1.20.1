@@ -60,12 +60,13 @@ public class LokisHorns implements IAbilityEffect {
                         attackContexts.add(c);
                     }
 
-                    // 加入原发射序列，或直接发射
-                    if (context.get(ContextKeys.EVENT) instanceof GetAttackContextEvent event) {
-                        event.getContexts().addAll(attackContexts);
-                    }else {
+                    // 触发事件错误时：直接发射；触发事件正确时，如果是直接发射则加入发射序列，否则阻止
+                    if (!(context.get(ContextKeys.EVENT) instanceof GetAttackContextEvent event)){
                         attack.performAttack(attackContexts);
+                    }else if (event.isDirectlyShotByPlayer()) {
+                        event.getContexts().addAll(attackContexts);
                     }
+                    // do nothing
                 }
         );
     }}

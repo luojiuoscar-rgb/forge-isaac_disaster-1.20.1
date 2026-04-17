@@ -52,7 +52,7 @@ public class IsaacBomb extends PrimedTnt {
     @Override
     protected void defineSynchedData() {
         super.defineSynchedData();
-        this.entityData.define(SCALE, 1.0f);
+        this.entityData.define(SCALE, BombData.NORMAL.size());
         this.entityData.define(IS_ORIGINAL, true);
     }
 
@@ -107,7 +107,8 @@ public class IsaacBomb extends PrimedTnt {
             );
 
             if (target != null) {
-                steerTowards(target, 0.1); // 0.3 = 转向速度
+                // steerTowards(target, 0.1);
+                applyAttraction(target);
             }
         }
 
@@ -145,6 +146,26 @@ public class IsaacBomb extends PrimedTnt {
         Vec3 newVel = currentVel.normalize().lerp(directionToTarget, steerStrength).normalize().scale(currentVel.length());
 
         this.setDeltaMovement(newVel);
+    }
+
+    private void applyAttraction(LivingEntity target) {
+        Vec3 pos = this.position();
+        Vec3 targetPos = target.position().add(0, target.getBbHeight() * 0.5, 0);
+
+        Vec3 toTarget = targetPos.subtract(pos);
+        double dist = toTarget.length();
+        if (dist < 0.001) return;
+
+        Vec3 dir = toTarget.normalize();
+
+        double strength = 0.25;
+        double influence = Math.min(1.0, 5.0 / dist); // 近距离更强
+
+        Vec3 velocity = this.getDeltaMovement();
+
+        Vec3 corrected = velocity.lerp(dir.scale(velocity.length()), strength * influence);
+
+        this.setDeltaMovement(corrected);
     }
 
     /**

@@ -5,10 +5,12 @@ import net.luojiuoscar.isaac_disaster.attribute.ModAttributes;
 import net.luojiuoscar.isaac_disaster.block.ModBlocks;
 import net.luojiuoscar.isaac_disaster.block.block_entity.PedestalBlockEntity;
 import net.luojiuoscar.isaac_disaster.capability.player.*;
+import net.luojiuoscar.isaac_disaster.entity.tnt.BombData;
 import net.luojiuoscar.isaac_disaster.entity.tnt.IsaacBomb;
 import net.luojiuoscar.isaac_disaster.event.custom.misc.GetShotDelayEvent;
 import net.luojiuoscar.isaac_disaster.item.ModItems;
 import net.luojiuoscar.isaac_disaster.item.item.ActiveItem;
+import net.luojiuoscar.isaac_disaster.item.pickup.special.IsaacHead;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.manager.data.BlockData;
 import net.luojiuoscar.isaac_disaster.manager.id.ItemId;
@@ -449,9 +451,11 @@ public class PlayerHelper {
 
     public static IsaacBomb spawnBombFromPlayer(ServerPlayer player, Vec3 tntVelocity){
         if (PlayerHelper.hasItem(ItemId.MR_MEGA.getId(), player)){
-            return EntityHelper.spawnBomb(player.blockPosition().getCenter(), player, player.level(), tntVelocity, 2);
+            return EntityHelper.spawnBomb(
+                    player.blockPosition().getCenter(), player, player.level(), tntVelocity, BombData.MEGA, 80);
         }else {
-            return EntityHelper.spawnBomb(player.blockPosition().getCenter(), player, player.level(), tntVelocity, 1);
+            return EntityHelper.spawnBomb(
+                    player.blockPosition().getCenter(), player, player.level(), tntVelocity, BombData.NORMAL, 80);
         }
     }
     private static boolean isInsideSolidBlock(Level level, double x, double y, double z) {
@@ -654,6 +658,13 @@ public class PlayerHelper {
                 || source.is(DamageTypes.INDIRECT_MAGIC)
                 || source.is(DamageTypes.MOB_ATTACK)
                 || source.is(DamageTypes.MOB_ATTACK_NO_AGGRO);
+    }
+
+    public static boolean isHoldingIsaacHead(ServerPlayer player){
+        ItemStack stack = player.getMainHandItem();
+        if (stack.getItem() instanceof IsaacHead) return true;
+        stack = player.getOffhandItem();
+        return stack.getItem() instanceof IsaacHead;
     }
 }
 

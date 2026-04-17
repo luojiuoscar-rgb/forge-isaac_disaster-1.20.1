@@ -1,9 +1,8 @@
 package net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.normal;
 
 import net.luojiuoscar.isaac_disaster.entity.custom.FetusBullet;
-import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
-import net.luojiuoscar.isaac_disaster.registries.ability_effect.ExecutableEffectContext;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ContextKeys;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.ExecutableEffectContext;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.IAbilityEffect;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackContext;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.ModAttackType;
@@ -17,7 +16,7 @@ public class LaserPlusFetus implements IAbilityEffect {
         if (!(context.get(ContextKeys.BULLET) instanceof FetusBullet bullet)) return true;
         if (!(bullet.getOwner() instanceof Player player)) return true;
 
-        int interval = (int) PlayerHelper.getShotDelay(player) + 2;
+        int interval = 4; // fixed interval
 
         if (bullet.tickCount % interval != 0) return true;
 

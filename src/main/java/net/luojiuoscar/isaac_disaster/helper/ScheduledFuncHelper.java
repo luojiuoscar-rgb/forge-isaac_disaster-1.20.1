@@ -121,11 +121,7 @@ public class ScheduledFuncHelper {
         }
 
         // 避免漏掉 pendingAdd 中的任务
-        for (ScheduledTask task : PENDING_ADD) {
-            if (task.typeId.equals(typeId) && Objects.equals(task.owner, owner)) {
-                PENDING_ADD.remove(task);
-            }
-        }
+        PENDING_ADD.removeIf(task -> task.typeId.equals(typeId) && Objects.equals(task.owner, owner));
     }
 
     public static void clearPlayerTasks(UUID playerUUID) {

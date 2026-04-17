@@ -24,6 +24,7 @@ public class TheWizEffect extends MobEffect {
     }
 
     public static void onTriggered(GetAttackContextEvent event){
+        if (!event.isDirectlyShotByPlayer()) return;
         ServerPlayer player = event.getPlayer();
 
         if (!player.hasEffect(ModEffects.THE_WIZ.get())) return;

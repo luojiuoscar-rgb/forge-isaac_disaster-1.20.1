@@ -2,6 +2,7 @@ package net.luojiuoscar.isaac_disaster.block.block_entity.chest;
 
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.block.ModBlockEntities;
+import net.luojiuoscar.isaac_disaster.entity.tnt.BombData;
 import net.luojiuoscar.isaac_disaster.helper.EntityHelper;
 import net.luojiuoscar.isaac_disaster.helper.EventHelper;
 import net.luojiuoscar.isaac_disaster.manager.LootTableManager;
@@ -80,11 +81,11 @@ public class RedChestBlockEntity extends ItemChestBlockEntity {
         RandomSource rand = serverLevel.getRandom();
         EventHelper.triggerWeightedEvent(serverLevel, player, rand,
                 new EventHelper.EventWeight(() ->{
-                    EntityHelper.spawnBomb(pos.getCenter().add(0, 1, 0), null, level, Vec3.ZERO, 2);
+                    EntityHelper.spawnBomb(pos.getCenter().add(0, 1, 0), null, level, Vec3.ZERO, BombData.MEGA, 80);
                 }, 2),
                 new EventHelper.EventWeight(() -> {
-                    EntityHelper.spawnBomb(pos.getCenter().add(0, 1, 0), null, level, Vec3.ZERO, 1);
-                    EntityHelper.spawnBomb(pos.getCenter().add(0, 1, 0), null, level, Vec3.ZERO, 1);
+                    EntityHelper.spawnBomb(pos.getCenter().add(0, 1, 0), null, level, Vec3.ZERO, BombData.NORMAL, 80);
+                    EntityHelper.spawnBomb(pos.getCenter().add(0, 1, 0), null, level, Vec3.ZERO, BombData.NORMAL, 80);
                 }, 3),
                 new EventHelper.EventWeight(() ->{
                     CaveSpider s = new CaveSpider(EntityType.CAVE_SPIDER, serverLevel);

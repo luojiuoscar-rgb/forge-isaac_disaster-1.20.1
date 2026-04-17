@@ -4,6 +4,7 @@ import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.attribute.ModAttributes;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerAbilityProvider;
 import net.luojiuoscar.isaac_disaster.event.custom.attack.BeforePerformAttackEvent;
+import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.helper.ScheduledFuncHelper;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackContext;
@@ -93,8 +94,8 @@ public class BrimstoneAttack extends LaserAttack implements IChargeableAttack {
     public void onTick(ServerPlayer player) {
         player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY).ifPresent(
                 playerAbility -> {
-                    if (playerAbility.isHoldingRightClick() &&
-                            playerAbility.getChargeAmount() < getTotalCharge(player)){
+                    if (playerAbility.isHoldingRightClick()
+                            && playerAbility.getChargeAmount() < getTotalCharge(player)){
                         playerAbility.setChargeAmount(playerAbility.getChargeAmount() + 1);
                     }
                 }
@@ -111,7 +112,8 @@ public class BrimstoneAttack extends LaserAttack implements IChargeableAttack {
         public void onReleased(ServerPlayer player) {
             player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY).ifPresent(
                 playerAbility -> {
-                    if (playerAbility.getChargeAmount() >= getTotalCharge(player)){
+                    if (playerAbility.getChargeAmount() >= getTotalCharge(player)
+                            && PlayerHelper.isHoldingIsaacHead(player)){
 
                         BeforePerformAttackEvent event = new BeforePerformAttackEvent(player, this);
                         MinecraftForge.EVENT_BUS.post(event);

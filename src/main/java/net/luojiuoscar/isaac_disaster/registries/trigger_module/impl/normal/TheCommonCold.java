@@ -1,6 +1,5 @@
 package net.luojiuoscar.isaac_disaster.registries.trigger_module.impl.normal;
 
-import net.luojiuoscar.isaac_disaster.event.custom.attack.GetAttackContextEvent;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.*;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackContext;
 import net.luojiuoscar.isaac_disaster.registries.bullet_color.ModBulletColor;
@@ -30,16 +29,12 @@ public class TheCommonCold extends TriggerModule {
     }
 
     @Override
-    public void attachToBullet(ExecutableEffectContext context) {
+    public void attachToBullet(ExecutableEffectContext context, List<AttackContext> attCtxs) {
         LivingEntity entity = context.getEntity();
-        // 添加simpleTrigger到bullet中
-        if (context.get(ContextKeys.EVENT) instanceof GetAttackContextEvent event) {
-            List<AttackContext> attCtxs = event.getContexts();
-            for (var ctx : attCtxs) {
-                if (entity.getRandom().nextDouble() < getTriggerChance(entity)){
-                    ctx.colorRl = ModBulletColor.POISON.getId();
-                    ctx.getTrigger().addAll(bullet_triggers);
-                }
+        for (var ctx : attCtxs) {
+            if (entity.getRandom().nextDouble() < getTriggerChance(entity)){
+                ctx.colorRl = ModBulletColor.POISON.getId();
+                ctx.getTrigger().addAll(bullet_triggers);
             }
         }
     }

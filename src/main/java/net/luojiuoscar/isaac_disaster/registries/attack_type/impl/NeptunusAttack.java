@@ -1,6 +1,5 @@
 package net.luojiuoscar.isaac_disaster.registries.attack_type.impl;
 
-import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerAbilityProvider;
 import net.luojiuoscar.isaac_disaster.event.custom.attack.BeforePerformAttackEvent;
 import net.luojiuoscar.isaac_disaster.item.ModItems;
@@ -18,6 +17,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public class NeptunusAttack extends AttackType implements IChargeableAttack {
+
     public NeptunusAttack(double priority) {
         super(priority);
     }
@@ -33,89 +33,122 @@ public class NeptunusAttack extends AttackType implements IChargeableAttack {
     }
 
     @Override
-    public void performAttack(List<AttackContext> ctxList) {
-
-    }
+    public void performAttack(List<AttackContext> ctxList) {}
 
     @Override
-    public void makeSound(LivingEntity entity) {
-
-    }
+    public void makeSound(LivingEntity entity) {}
 
     @Override
-    public void shoot(AttackContext ctx) {
-
-    }
+    public void shoot(AttackContext ctx) {}
 
     private static final double[] COEFFS =
             {1.0,0.9,0.8,0.7,0.6,0.55,0.5,0.45,0.4,0.35,0.3,0.25,0.25,0.25,0.25};
 
+
     @Override
-    public void onTick(ServerPlayer player){
-        player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY).ifPresent(
-                playerAbility -> {
-                    int totalCharge = getTotalCharge(player);
-                    int chargeAmount = playerAbility.getChargeAmount();
-                    IsaacDisaster.LOGGER.info("Neptunus: {}, {}, {}",
-                            chargeAmount, totalCharge, playerAbility.isHoldingRightClick());
+    public void onTick(ServerPlayer player) {
 
-                    // 按下右键，有充能，不在冷却->发射子弹
-                    if (playerAbility.isHoldingRightClick()
-                            && chargeAmount > 2
-                            && !player.getCooldowns().isOnCooldown(ModItems.ISAAC_HEAD.get())){
+        player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY).ifPresent(playerAbility -> {
 
-                        AttackType attack = pickLowerAttackType(playerAbility.getAttackTypes(), 0);
+            double shotDelay = Math.max(1, getShotDelay(player));
+            int chargeAmount = playerAbility.getChargeAmount();
 
-                        BeforePerformAttackEvent event = new BeforePerformAttackEvent(player, this);
-                        MinecraftForge.EVENT_BUS.post(event);
-                        if (event.isCanceled()) return;
+            boolean streamMode = shotDelay <= 1;
 
-                        // attack
-                        attack.performAttack(attack.getAttackContextsWithEvent(player, attack.getBulletCount(player)));
-                        attack.makeSound(player);
+            // 低射速的时候直接持续发射
+            if (streamMode) {
 
-                        int coolDownTick = getCoolDownTicks(getShotDelay(player), chargeAmount);
-                        player.getCooldowns().addCooldown(ModItems.ISAAC_HEAD.get(), coolDownTick);
-                        playerAbility.setChargeAmount(chargeAmount - coolDownTick);
-                    }
-                    // 没有按下右键，充能未满->充能
-                    else if (chargeAmount < totalCharge
-                            && !playerAbility.isHoldingRightClick()){
-                        playerAbility.setChargeAmount(chargeAmount + 1);
+                if (playerAbility.isHoldingRightClick()
+                        && !player.getCooldowns().isOnCooldown(ModItems.ISAAC_HEAD.get())) {
 
-                    }
-                    else if (chargeAmount > totalCharge){
-                        playerAbility.setChargeAmount(totalCharge);
-                    }
+                    AttackType attack =
+                            pickLowerAttackType(playerAbility.getAttackTypes(), 0);
+
+                    BeforePerformAttackEvent event =
+                            new BeforePerformAttackEvent(player, this);
+
+                    MinecraftForge.EVENT_BUS.post(event);
+                    if (event.isCanceled()) return;
+
+                    attack.performAttack(
+                            attack.getAttackContextsWithEvent(player, attack.getBulletCount(player))
+                    );
+                    attack.makeSound(player);
                 }
-        );
+
+                return;
+            }
+
+            // 默认发射系统
+            int totalCharge = getTotalCharge(player);
+
+            if (playerAbility.isHoldingRightClick()
+                    && chargeAmount > 2
+                    && !player.getCooldowns().isOnCooldown(ModItems.ISAAC_HEAD.get())) {
+
+                AttackType attack =
+                        pickLowerAttackType(playerAbility.getAttackTypes(), 0);
+
+                BeforePerformAttackEvent event =
+                        new BeforePerformAttackEvent(player, this);
+
+                MinecraftForge.EVENT_BUS.post(event);
+                if (event.isCanceled()) return;
+
+                attack.performAttack(
+                        attack.getAttackContextsWithEvent(player, attack.getBulletCount(player))
+                );
+
+                attack.makeSound(player);
+
+                int coolDownTick = getCoolDownTicks(shotDelay, chargeAmount);
+
+                player.getCooldowns().addCooldown(ModItems.ISAAC_HEAD.get(), coolDownTick);
+                playerAbility.setChargeAmount(chargeAmount - coolDownTick);
+            }
+
+            // 充能逻辑
+            else if (chargeAmount < totalCharge
+                    && !playerAbility.isHoldingRightClick()) {
+
+                playerAbility.setChargeAmount(chargeAmount + 1);
+            }
+
+            else if (chargeAmount > totalCharge) {
+                playerAbility.setChargeAmount(totalCharge);
+            }
+        });
     }
 
-    private int getCoolDownTicks(double shotDelay, int chargeAmount){
+    private int getCoolDownTicks(double shotDelay, int chargeAmount) {
+
+        shotDelay = Math.max(1, shotDelay);
+
         double accumulated = 0;
+
         for (int i = 0; i < COEFFS.length; i++) {
+
             accumulated += shotDelay * COEFFS[i];
+
             if (chargeAmount <= accumulated) {
-                return (int)(shotDelay * COEFFS[i]);
+                return Math.max(1, (int)(shotDelay * COEFFS[i]));
             }
         }
-        // charge 超过总量，返回最后一个子弹的 shotDelay
-        return (int)(shotDelay * COEFFS[COEFFS.length - 1]);
-    }
 
-    @Override
-    public void onPressed(ServerPlayer player) {
-
-    }
-
-    @Override
-    public void onReleased(ServerPlayer player) {
-
+        return Math.max(1, (int)(shotDelay * COEFFS[COEFFS.length - 1]));
     }
 
     @Override
     public int getTotalCharge(Player player) {
-        return (int) (getShotDelay(player) * Arrays.stream(COEFFS).sum());
+        double shotDelay = Math.max(1, getShotDelay(player));
+        return (int) (shotDelay * Arrays.stream(COEFFS).sum());
     }
 
+    @Override
+    public void onPressed(ServerPlayer player) {
+    }
+
+    @Override
+    public void onReleased(ServerPlayer player) {
+    }
 }

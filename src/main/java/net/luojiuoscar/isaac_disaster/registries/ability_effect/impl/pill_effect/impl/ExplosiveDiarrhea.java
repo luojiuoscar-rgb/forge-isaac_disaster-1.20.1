@@ -1,6 +1,7 @@
 package net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.pill_effect.impl;
 
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
+import net.luojiuoscar.isaac_disaster.entity.tnt.BombData;
 import net.luojiuoscar.isaac_disaster.helper.EntityHelper;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.helper.ScheduledFuncHelper;
@@ -29,7 +30,8 @@ public class ExplosiveDiarrhea extends PillEffect {
         ScheduledFuncHelper.scheduleForPlayer(player.getUUID(), SCHEDULE_TYPE, 15,15,
                 isHorse ? 8 : 5, false,
                 () -> {
-                    EntityHelper.spawnBomb(player.position(), player, player.level(), Vec3.ZERO, isHorse ? 2 : 1);
+                    EntityHelper.spawnBomb(player.position(), player, player.level(),
+                            Vec3.ZERO, isHorse ? BombData.MEGA : BombData.NORMAL, 80);
                     player.playNotifySound(ModSounds.FART_NORMAL.get(), SoundSource.PLAYERS, 1.0f, 1.0f);
                 });
         return true;

@@ -44,7 +44,8 @@ public abstract class AttackType {
     public List<AttackContext> getAttackContextsWithEvent(ServerPlayer player, int bulletCount){
         List<AttackContext> contexts = getAttackContexts(player, bulletCount);
 
-        GetAttackContextEvent event = new GetAttackContextEvent(player, contexts, this);
+        GetAttackContextEvent event =
+                new GetAttackContextEvent(player, contexts, this, true);
         MinecraftForge.EVENT_BUS.post(event);
 
         return event.getContexts();

@@ -5,6 +5,7 @@ import net.luojiuoscar.isaac_disaster.capability.player.PlayerAbilityProvider;
 import net.luojiuoscar.isaac_disaster.entity.custom.FetusBullet;
 import net.luojiuoscar.isaac_disaster.entity.custom.TearBullet;
 import net.luojiuoscar.isaac_disaster.event.custom.attack.BeforePerformAttackEvent;
+import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.CompositeTrigger;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackContext;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.IChargeableAttack;
@@ -139,7 +140,8 @@ public class CSectionAttack extends BulletAttack implements IChargeableAttack {
                 playerAbility -> {
                     int charge = playerAbility.getChargeAmount();
 
-                    if (playerAbility.isHoldingRightClick() && charge < getTotalCharge(player)){
+                    if (playerAbility.isHoldingRightClick() && charge < getTotalCharge(player)
+                            && PlayerHelper.isHoldingIsaacHead(player)){
 
                         if (charge + 1 >= getTotalCharge(player)){
                             playerAbility.setChargeAmount(0);

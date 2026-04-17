@@ -109,5 +109,7 @@ public class ModTriggerModule {
             TRIGGER_MODULE_REGISTRY.register("moms_eyeshadow", MomsEyeshadow::new);
     public static final RegistryObject<TriggerModule> FANNY_PACK =
             TRIGGER_MODULE_REGISTRY.register("fanny_pack", FannyPack::new);
+    public static final RegistryObject<TriggerModule> SAD_BOMB =
+            TRIGGER_MODULE_REGISTRY.register("sad_bomb", SadBomb::new);
 
 }

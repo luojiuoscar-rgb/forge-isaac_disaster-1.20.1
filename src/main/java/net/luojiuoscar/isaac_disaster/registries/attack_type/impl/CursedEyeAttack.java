@@ -3,6 +3,7 @@ package net.luojiuoscar.isaac_disaster.registries.attack_type.impl;
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerAbilityProvider;
 import net.luojiuoscar.isaac_disaster.event.custom.attack.BeforePerformAttackEvent;
+import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.helper.ScheduledFuncHelper;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackContext;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackType;
@@ -72,7 +73,8 @@ public class CursedEyeAttack extends AttackType implements IChargeableAttack {
     public void onReleased(ServerPlayer player) {
         player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY).ifPresent(
                 playerAbility -> {
-                    if (playerAbility.getChargeAmount() >= getShotDelay(player)){
+                    if (playerAbility.getChargeAmount() >= getShotDelay(player)
+                            && PlayerHelper.isHoldingIsaacHead(player)){
 
                         AttackType attack = pickLowerAttackType(playerAbility.getAttackTypes(), 0);
 
@@ -80,7 +82,14 @@ public class CursedEyeAttack extends AttackType implements IChargeableAttack {
                         MinecraftForge.EVENT_BUS.post(event);
                         if (event.isCanceled()) return;
 
-                        int count = (int) (playerAbility.getChargeAmount() / getShotDelay(player));
+                        double shotDelay = getShotDelay(player);
+
+                        int count;
+                        if (shotDelay < 1){
+                            count = 6;
+                        }else {
+                            count = (int) (playerAbility.getChargeAmount() / getShotDelay(player));
+                        }
 
                         // attack
                         ScheduledFuncHelper.scheduleForPlayer(player.getUUID(), SCHEDULE_TYPE,

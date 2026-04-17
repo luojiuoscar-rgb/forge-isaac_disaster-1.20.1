@@ -355,6 +355,8 @@ public class ModExecutableEffects {
             EXECUTABLE_EFFECT_REGISTRY.register("fanny_pack", FannyPack::new);
     public static final RegistryObject<IExecutableEffect> ATTACH_EFFECT_TO_TNT =
             EXECUTABLE_EFFECT_REGISTRY.register("attach_effect_to_tnt", AttachEffectToTnt::new);
+    public static final RegistryObject<IExecutableEffect> SAD_BOMB =
+            EXECUTABLE_EFFECT_REGISTRY.register("sad_bomb", SadBomb::new);
 
     //</editor-fold>
 
@@ -912,6 +914,11 @@ public class ModExecutableEffects {
                     ATTACH_EFFECT_TO_TNT, ctx ->
                     ctx.set(ContextKeys.EXECUTABLE_EFFECT, ModExecutableEffects.HOT_BOMB.get())
             ));
+    public static final RegistryObject<IExecutableEffect> ATTACH_SAD_BOMB =
+            EXECUTABLE_EFFECT_REGISTRY.register("attach_sad_bomb", () -> new AbilityEffectEntry(
+                    ATTACH_EFFECT_TO_TNT, ctx ->
+                    ctx.set(ContextKeys.EXECUTABLE_EFFECT, ModExecutableEffects.SAD_BOMB.get())
+            ));
     //</editor-fold>
-
+    // entry end
 }
