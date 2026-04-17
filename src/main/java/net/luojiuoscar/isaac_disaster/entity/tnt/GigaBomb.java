@@ -2,6 +2,7 @@ package net.luojiuoscar.isaac_disaster.entity.tnt;
 
 import com.google.common.collect.Sets;
 import net.luojiuoscar.isaac_disaster.helper.EntityHelper;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.CompositeExecutableEffect;
 import net.luojiuoscar.isaac_disaster.sound.ModSounds;
 import net.minecraft.core.BlockPos;
 import net.minecraft.sounds.SoundSource;
@@ -145,5 +146,11 @@ public class GigaBomb extends IsaacBomb {
             Vec3 pushDir = entity.position().subtract(center).normalize();
             entity.push(pushDir.x * 2.5, pushDir.y, pushDir.z * 2.5);
         }
+    }
+
+    // GigaBomb不参与爆炸特效
+    @Override
+    public CompositeExecutableEffect getCachedEffect() {
+        return CompositeExecutableEffect.EMPTY;
     }
 }

@@ -1,12 +1,10 @@
 package net.luojiuoscar.isaac_disaster.event;
 
 import net.luojiuoscar.isaac_disaster.Config;
-import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.attribute.ModAttributes;
 import net.luojiuoscar.isaac_disaster.capability.entity.EffectModulesProvider;
 import net.luojiuoscar.isaac_disaster.capability.entity.EntityEffectProvider;
 import net.luojiuoscar.isaac_disaster.capability.entity.ExtraDataProvider;
-import net.luojiuoscar.isaac_disaster.capability.misc.ExplosionDataProvider;
 import net.luojiuoscar.isaac_disaster.capability.player.*;
 import net.luojiuoscar.isaac_disaster.commands.*;
 import net.luojiuoscar.isaac_disaster.effect.ModEffects;
@@ -41,7 +39,6 @@ import net.minecraft.world.entity.EntityDimensions;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.entity.item.PrimedTnt;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
@@ -63,7 +60,7 @@ import java.util.Map;
 import static net.luojiuoscar.isaac_disaster.IsaacDisaster.MOD_ID;
 
 
-@Mod.EventBusSubscriber(modid = MOD_ID)
+@Mod.EventBusSubscriber(modid = MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class ForgeEvents {
     // 世界加载事件
     @SubscribeEvent
@@ -175,15 +172,6 @@ public class ForgeEvents {
             if(!event.getObject().getCapability(ExtraDataProvider.EXTRA_DATA_CAP).isPresent()){
                 event.addCapability(ResourceLocation.fromNamespaceAndPath(MOD_ID, "extra_data_cap"), new ExtraDataProvider());
             }
-        }
-
-        // tnt 创建时
-        if (event.getObject() instanceof PrimedTnt) {
-            event.addCapability(ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "explosion_data")
-                    , new ExplosionDataProvider()
-            );
-            IsaacDisaster.LOGGER.info("Attached capability to: " + System.identityHashCode(event.getObject())
-                    + "has cap?" + event.getObject().getCapability(ExplosionDataProvider.EXPLOSION_DATA).isPresent());
         }
     }
 

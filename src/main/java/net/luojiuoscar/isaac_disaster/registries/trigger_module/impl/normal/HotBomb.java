@@ -10,7 +10,7 @@ import java.util.List;
 
 public class HotBomb extends TriggerModule {
     private static final CompositeTrigger TRIGGER = new CompositeTrigger(List.of(
-            new SimpleTrigger(ModTriggerTypes.EXPLOSION_FINISH, ModExecutableEffects.HOT_BOMB)
+            new SimpleTrigger(ModTriggerTypes.TNT_SPAWNED, ModExecutableEffects.ATTACH_HOT_BOMB)
     ));
 
     public HotBomb() {

@@ -2,7 +2,7 @@ package net.luojiuoscar.isaac_disaster.event;
 
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.capability.entity.EffectModulesProvider;
-import net.luojiuoscar.isaac_disaster.capability.misc.ExplosionDataProvider;
+import net.luojiuoscar.isaac_disaster.entity.tnt.IsaacBomb;
 import net.luojiuoscar.isaac_disaster.event.custom.attack.*;
 import net.luojiuoscar.isaac_disaster.event.custom.attack.tear_bullet.BulletTickEvent;
 import net.luojiuoscar.isaac_disaster.event.custom.misc.BeforeTriggerModuleActiveEvent;
@@ -12,13 +12,15 @@ import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ContextKeys;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ExecutableEffectContext;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.IBulletObject;
-import net.luojiuoscar.isaac_disaster.registries.trigger_module.*;
+import net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerModule;
+import net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerTypes;
+import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerModule;
+import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerType;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
-import net.minecraft.world.entity.item.PrimedTnt;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
@@ -278,61 +280,39 @@ public class TriggerModuleEvents {
     }
 
     /**
-     * TNT 生成进入世界时：初始化（可选）
-     * 用于确保 capability 已存在
+     * TNT 相关内容
      */
     @SubscribeEvent
     public static void onTntSpawn(EntityJoinLevelEvent event) {
-        if (!(event.getEntity() instanceof PrimedTnt tnt)) return;
+        if (!(event.getEntity() instanceof IsaacBomb bomb)) return;
+        if (bomb.getOwner() == null) return;
 
-        tnt.getCapability(ExplosionDataProvider.EXPLOSION_DATA).ifPresent(data -> {
-            data.setOwner(null);
-            data.setTriggerModuleQueue(null);
-        });
+        ExecutableEffectContext context = new ExecutableEffectContext(bomb.getOwner());
+        context.set(ContextKeys.EVENT, event);
+        context.set(ContextKeys.ENTITY, List.of(bomb));
+        context.set(ContextKeys.TARGET_POSITION, bomb.position());
 
-        IsaacDisaster.LOGGER.info("TNT spawned: {}", System.identityHashCode(tnt));
+        dispatch(context, ModTriggerTypes.TNT_SPAWNED);
     }
 
     /** 在产生爆炸的时候，根据炸弹自身的TriggerModule来触发对应效果 */
     @SubscribeEvent
-    public static void onExplosionEnd(ExplosionEvent.Detonate event) {
+    public static void onExplosion(ExplosionEvent.Detonate event) {
+        if (!(event.getExplosion().getDirectSourceEntity() instanceof IsaacBomb bomb)) return;
+        if (bomb.getOwner() == null) return;
 
-        Entity source = event.getExplosion().getDirectSourceEntity();
-        if (!(source instanceof PrimedTnt tnt)) return;
+        ExecutableEffectContext context = new ExecutableEffectContext(bomb.getOwner());
+        context.set(ContextKeys.TARGET_POSITION, bomb.position());
+        context.set(ContextKeys.ENTITY, List.of(bomb));
+        context.set(ContextKeys.SECONDARY_LIVING_ENTITIES,
+                event.getAffectedEntities().stream()
+                        .filter(LivingEntity.class::isInstance)
+                        .map(LivingEntity.class::cast)
+                        .toList()
+        );
 
-        IForgeRegistry<TriggerModule> reg =
-                RegistryManager.ACTIVE.getRegistry(ModTriggerModule.TRIGGER_MODULE_KEY);
-
-        if (reg == null) return;
-        IsaacDisaster.LOGGER.info("TNT exploded: " + System.identityHashCode(tnt) + " has cap? " +
-                tnt.getCapability(ExplosionDataProvider.EXPLOSION_DATA).isPresent());
-        tnt.getCapability(ExplosionDataProvider.EXPLOSION_DATA).ifPresent(data -> {
-
-            ServerPlayer owner = data.getOwner();
-            TriggerModuleQueue queue = data.getTriggerModuleQueue();
-
-            if (owner == null || queue == null) return;
-
-            ExecutableEffectContext context =
-                    new ExecutableEffectContext(owner);
-
-            context.set(ContextKeys.TARGET_POSITION, event.getExplosion().getPosition());
-            context.set(ContextKeys.ENTITY, List.of(tnt));
-
-            queue.lock();
-
-            IsaacDisaster.LOGGER.info("explosion end queue: {}", queue);
-
-            for (var inst : queue.getQueue()) {
-
-                context.set(ContextKeys.AMPLIFIER, (double) inst.stacks);
-
-                TriggerModule module = reg.getValue(inst.id);
-                if (module == null) continue;
-
-                module.fire(context, ModTriggerTypes.EXPLOSION_FINISH);
-            }
-        });
+        // 触发对应爆炸效果
+        bomb.getCachedEffect().apply(context);
     }
 
 

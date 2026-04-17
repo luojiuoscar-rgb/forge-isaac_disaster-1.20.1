@@ -10,7 +10,7 @@ import java.util.List;
 
 public class ScatterBomb extends TriggerModule {
     private static final CompositeTrigger TRIGGER = new CompositeTrigger(List.of(
-            new SimpleTrigger(ModTriggerTypes.EXPLOSION_FINISH, ModExecutableEffects.SCATTER_BOMB)
+            new SimpleTrigger(ModTriggerTypes.TNT_SPAWNED, ModExecutableEffects.ATTACH_SCATTER_BOMB)
     ));
 
     public ScatterBomb() {

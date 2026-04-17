@@ -4,6 +4,7 @@ import net.luojiuoscar.isaac_disaster.effect.ModEffects;
 import net.luojiuoscar.isaac_disaster.helper.EntityHelper;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.manager.id.ItemId;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.CompositeExecutableEffect;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -18,7 +19,6 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 
-
 import java.util.List;
 
 public class IsaacBomb extends PrimedTnt {
@@ -29,6 +29,8 @@ public class IsaacBomb extends PrimedTnt {
             SynchedEntityData.defineId(IsaacBomb.class, EntityDataSerializers.BOOLEAN);
 
     private int power;
+    private final CompositeExecutableEffect cachedEffect = new CompositeExecutableEffect();
+
     public IsaacBomb(Level pLevel, double pX, double pY, double pZ, @Nullable LivingEntity pOwner, int power, float scale) {
         this(pLevel, pX, pY, pZ, pOwner, power, scale, true);
     }
@@ -154,5 +156,15 @@ public class IsaacBomb extends PrimedTnt {
             this.setDeltaMovement(Vec3.ZERO);
             entity.addEffect(new MobEffectInstance(ModEffects.DIZZINESS.get(), 20, 255));
         }
+    }
+
+    public CompositeExecutableEffect getCachedEffect() {
+        return cachedEffect;
+    }
+
+    // 不保存到世界
+    @Override
+    public boolean shouldBeSaved() {
+        return false;
     }
 }

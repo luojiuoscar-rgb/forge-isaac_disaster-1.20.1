@@ -353,6 +353,8 @@ public class ModExecutableEffects {
             EXECUTABLE_EFFECT_REGISTRY.register("moms_key", MomsKey::new);
     public static final RegistryObject<IExecutableEffect> FANNY_PACK =
             EXECUTABLE_EFFECT_REGISTRY.register("fanny_pack", FannyPack::new);
+    public static final RegistryObject<IExecutableEffect> ATTACH_EFFECT_TO_TNT =
+            EXECUTABLE_EFFECT_REGISTRY.register("attach_effect_to_tnt", AttachEffectToTnt::new);
 
     //</editor-fold>
 
@@ -895,8 +897,21 @@ public class ModExecutableEffects {
                         )));
                 ctx.set(ContextKeys.EXECUTABLE_EFFECT, POTIONS.get());
             }));
-
-
+    public static final RegistryObject<IExecutableEffect> ATTACH_BOMBER_BOY =
+            EXECUTABLE_EFFECT_REGISTRY.register("attach_bomber_boy", () -> new AbilityEffectEntry(
+                    ATTACH_EFFECT_TO_TNT, ctx ->
+                    ctx.set(ContextKeys.EXECUTABLE_EFFECT, ModExecutableEffects.BOMBER_BOY.get())
+            ));
+    public static final RegistryObject<IExecutableEffect> ATTACH_SCATTER_BOMB =
+            EXECUTABLE_EFFECT_REGISTRY.register("attach_scatter_bomb", () -> new AbilityEffectEntry(
+                    ATTACH_EFFECT_TO_TNT, ctx ->
+                    ctx.set(ContextKeys.EXECUTABLE_EFFECT, ModExecutableEffects.SCATTER_BOMB.get())
+            ));
+    public static final RegistryObject<IExecutableEffect> ATTACH_HOT_BOMB =
+            EXECUTABLE_EFFECT_REGISTRY.register("attach_hot_bomb", () -> new AbilityEffectEntry(
+                    ATTACH_EFFECT_TO_TNT, ctx ->
+                    ctx.set(ContextKeys.EXECUTABLE_EFFECT, ModExecutableEffects.HOT_BOMB.get())
+            ));
     //</editor-fold>
 
 }

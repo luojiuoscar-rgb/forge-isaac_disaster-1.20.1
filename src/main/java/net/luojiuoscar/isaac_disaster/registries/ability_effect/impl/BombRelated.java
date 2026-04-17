@@ -18,7 +18,6 @@ public abstract class BombRelated implements IAbilityEffect {
         Level level = player.level();
         Vec3 pos = context.getOrDefault(ContextKeys.TARGET_POSITION, player.position());
 
-
         return customEffect(context, player, level, pos, bomb);
     }
 
