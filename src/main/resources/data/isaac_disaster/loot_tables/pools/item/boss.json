@@ -31,7 +31,13 @@
         {"type": "minecraft:item", "name": "isaac_disaster:pentagram"},
         {"type": "minecraft:item", "name": "isaac_disaster:pageant_boy"},
         {"type": "minecraft:item", "name": "isaac_disaster:cat_o_nine_tails"},
-        {"type": "minecraft:item", "name": "isaac_disaster:stem_cells"}
+        {"type": "minecraft:item", "name": "isaac_disaster:stem_cells"},
+        {"type": "minecraft:item", "name": "isaac_disaster:meat"},
+        {"type": "minecraft:item", "name": "isaac_disaster:magic_8_ball"},
+        {"type": "minecraft:item", "name": "isaac_disaster:moms_coin_purse"},
+        {"type": "minecraft:item", "name": "isaac_disaster:squeezy"},
+        {"type": "minecraft:item", "name": "isaac_disaster:jesus_juice"},
+        {"type": "minecraft:item", "name": "isaac_disaster:box"}
       ]
     }
   ]

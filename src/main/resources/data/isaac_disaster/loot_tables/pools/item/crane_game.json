@@ -27,7 +27,10 @@
         {"type": "minecraft:item", "name": "isaac_disaster:technology2"},
         {"type": "minecraft:item", "name": "isaac_disaster:lucky_foot"},
         {"type": "minecraft:item", "name": "isaac_disaster:the_small_rock"},
-        {"type": "minecraft:item", "name": "isaac_disaster:pentagram"}
+        {"type": "minecraft:item", "name": "isaac_disaster:pentagram"},
+        {"type": "minecraft:item", "name": "isaac_disaster:smb_super_fan"},
+        {"type": "minecraft:item", "name": "isaac_disaster:magic_8_ball"},
+        {"type": "minecraft:item", "name": "isaac_disaster:squeezy"}
       ]
     }
   ]

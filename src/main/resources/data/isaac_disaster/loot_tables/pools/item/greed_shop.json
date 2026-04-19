@@ -20,7 +20,9 @@
         {"type": "minecraft:item", "name": "isaac_disaster:the_d6"},
         {"type": "minecraft:item", "name": "isaac_disaster:kamikaze"},
         {"type": "minecraft:item", "name": "isaac_disaster:glitched_crown"},
-        {"type": "minecraft:item", "name": "isaac_disaster:echo_chamber"}
+        {"type": "minecraft:item", "name": "isaac_disaster:echo_chamber"},
+        {"type": "minecraft:item", "name": "isaac_disaster:moms_key"},
+        {"type": "minecraft:item", "name": "isaac_disaster:fanny_pack"}
       ]
     }
   ]

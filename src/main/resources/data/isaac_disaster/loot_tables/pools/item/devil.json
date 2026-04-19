@@ -16,7 +16,8 @@
         {"type": "minecraft:item", "name": "isaac_disaster:the_mark"},
         {"type": "minecraft:item", "name": "isaac_disaster:the_pact"},
         {"type": "minecraft:item", "name": "isaac_disaster:lord_of_the_pit"},
-        {"type": "minecraft:item", "name": "isaac_disaster:spirit_of_the_night"}
+        {"type": "minecraft:item", "name": "isaac_disaster:spirit_of_the_night"},
+        {"type": "minecraft:item", "name": "isaac_disaster:blood_rights"}
       ]
     }
   ]

@@ -3,7 +3,6 @@
     {
       "rolls": 1,
       "entries": [
-        {"type": "minecraft:item", "name": "isaac_disaster:torn_photo"},
         {"type": "minecraft:item", "name": "isaac_disaster:moms_coin_purse"},
         {"type": "minecraft:item", "name": "isaac_disaster:moms_key"},
         {"type": "minecraft:item", "name": "isaac_disaster:moms_eyeshadow"}

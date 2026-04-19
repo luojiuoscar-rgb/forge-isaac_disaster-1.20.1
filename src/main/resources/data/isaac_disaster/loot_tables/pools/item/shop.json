@@ -22,7 +22,10 @@
         {"type": "minecraft:item", "name": "isaac_disaster:smelter"},
         {"type": "minecraft:item", "name": "isaac_disaster:lucky_foot"},
         {"type": "minecraft:item", "name": "isaac_disaster:steam_sale"},
-        {"type": "minecraft:item", "name": "isaac_disaster:bogo_bombs"}
+        {"type": "minecraft:item", "name": "isaac_disaster:bogo_bombs"},
+        {"type": "minecraft:item", "name": "isaac_disaster:moms_coin_purse"},
+        {"type": "minecraft:item", "name": "isaac_disaster:moms_key"},
+        {"type": "minecraft:item", "name": "isaac_disaster:fanny_pack"}
       ]
     }
   ]

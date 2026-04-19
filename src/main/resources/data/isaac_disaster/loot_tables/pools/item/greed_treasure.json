@@ -73,7 +73,11 @@
         {"type": "minecraft:item", "name": "isaac_disaster:steam_sale"},
         {"type": "minecraft:item", "name": "isaac_disaster:iron_bar"},
         {"type": "minecraft:item", "name": "isaac_disaster:bogo_bombs"},
-        {"type": "minecraft:item", "name": "isaac_disaster:lokis_horns"}
+        {"type": "minecraft:item", "name": "isaac_disaster:lokis_horns"},
+        {"type": "minecraft:item", "name": "isaac_disaster:smb_super_fan"},
+        {"type": "minecraft:item", "name": "isaac_disaster:moms_eyeshadow"},
+        {"type": "minecraft:item", "name": "isaac_disaster:sad_bomb"},
+        {"type": "minecraft:item", "name": "isaac_disaster:blood_rights"}
       ]
     }
   ]
