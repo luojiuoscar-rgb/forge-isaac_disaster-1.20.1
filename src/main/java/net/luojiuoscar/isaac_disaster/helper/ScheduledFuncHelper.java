@@ -68,6 +68,14 @@ public class ScheduledFuncHelper {
     }
 
     /** ---------------- 玩家任务 API ---------------- */
+    /**
+     * 为玩家创建一个重复执行的任务
+     * @param ticks 循环时间
+     * @param initialTick 首次启动时，处在的时间轴位置。用于决定第一次循环何时触发
+     * @param repeats 总共执行次数。为0不触发
+     * @param override 是否替代掉具有同id的人物。玩家之间互相独立
+     * @param runnable 任务
+     */
     public static int scheduleForPlayer(UUID playerUUID,
                                         ResourceLocation typeId,
                                         int ticks,

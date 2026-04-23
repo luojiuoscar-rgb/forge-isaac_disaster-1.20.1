@@ -6,7 +6,7 @@ import net.luojiuoscar.isaac_disaster.helper.LevelHelper;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.item.ModItems;
 import net.luojiuoscar.isaac_disaster.item.pickup.interfaces.ICommonPickup;
-import net.luojiuoscar.isaac_disaster.manager.LootTableManager;
+import net.luojiuoscar.isaac_disaster.manager.ModLootTables;
 import net.luojiuoscar.isaac_disaster.manager.id.ItemId;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ContextKeys;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ExecutableEffectContext;
@@ -37,7 +37,7 @@ public class SackHead implements IAbilityEffect {
 
         ResourceLocation tableId = lootContext.getQueriedLootTableId();
 
-        if (tableId.equals(LootTableManager.BLACK_SACK) || tableId.equals(LootTableManager.GRAB_BAG)){
+        if (tableId.equals(ModLootTables.BLACK_SACK) || tableId.equals(ModLootTables.GRAB_BAG)){
             return true;
         }
 

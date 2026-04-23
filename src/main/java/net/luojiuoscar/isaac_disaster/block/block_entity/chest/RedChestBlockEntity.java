@@ -5,7 +5,7 @@ import net.luojiuoscar.isaac_disaster.block.ModBlockEntities;
 import net.luojiuoscar.isaac_disaster.entity.tnt.BombData;
 import net.luojiuoscar.isaac_disaster.helper.EntityHelper;
 import net.luojiuoscar.isaac_disaster.helper.EventHelper;
-import net.luojiuoscar.isaac_disaster.manager.LootTableManager;
+import net.luojiuoscar.isaac_disaster.manager.ModLootTables;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -29,13 +29,13 @@ public class RedChestBlockEntity extends ItemChestBlockEntity {
     public void init(){
         this.setLocked(false);
         this.setItemLootChance(0.1);
-        this.setItemLootTable(LootTableManager.RED_CHEST.toString());
+        this.setItemLootTable(ModLootTables.RED_CHEST.toString());
     }
 
 
     @Override
     public ResourceLocation getPresetLootTable(){
-        return LootTableManager.RED_CHEST;
+        return ModLootTables.RED_CHEST;
     }
 
     @Override

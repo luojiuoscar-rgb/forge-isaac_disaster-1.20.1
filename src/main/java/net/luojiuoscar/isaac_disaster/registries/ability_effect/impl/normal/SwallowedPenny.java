@@ -1,7 +1,7 @@
 package net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.normal;
 
 import net.luojiuoscar.isaac_disaster.helper.LootHelper;
-import net.luojiuoscar.isaac_disaster.manager.LootTableManager;
+import net.luojiuoscar.isaac_disaster.manager.ModLootTables;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ExecutableEffectContext;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ContextKeys;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.IAbilityEffect;
@@ -14,7 +14,7 @@ public class SwallowedPenny implements IAbilityEffect {
         int amplifier = context.getOrDefault(ContextKeys.AMPLIFIER, 1.).intValue();
         if (entity.getRandom().nextDouble() < Math.min(0.7, 0.35 * amplifier)){
             LootHelper.spawnLootAtPos(entity, context.getOrDefault(ContextKeys.TARGET_POSITION, entity.position()),
-                    LootTableManager.RANDOM_COINS);
+                    ModLootTables.RANDOM_COINS);
         }
 
         return true;

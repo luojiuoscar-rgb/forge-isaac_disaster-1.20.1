@@ -1,7 +1,7 @@
 package net.luojiuoscar.isaac_disaster.registries.ability.passive.impl;
 
 import net.luojiuoscar.isaac_disaster.helper.LootHelper;
-import net.luojiuoscar.isaac_disaster.manager.LootTableManager;
+import net.luojiuoscar.isaac_disaster.manager.ModLootTables;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.registries.ability.passive.PassiveAbility;
 import net.minecraft.network.chat.Component;
@@ -18,7 +18,7 @@ public class Magic8Ball extends PassiveAbility {
 
     @Override
     public void handleFirstObtain(ServerPlayer player, @Nullable ItemStack stack) {
-        LootHelper.spawnLootAtPos(player, player.position(), LootTableManager.RANDOM_CARDS);
+        LootHelper.spawnLootAtPos(player, player.position(), ModLootTables.RANDOM_CARDS);
     }
 
     @Override

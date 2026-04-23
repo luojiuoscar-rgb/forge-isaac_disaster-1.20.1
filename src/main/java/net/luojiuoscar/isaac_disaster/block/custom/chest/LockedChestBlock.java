@@ -4,7 +4,7 @@ import net.luojiuoscar.isaac_disaster.block.ModBlockEntities;
 import net.luojiuoscar.isaac_disaster.block.block_entity.chest.ItemChestBlockEntity;
 import net.luojiuoscar.isaac_disaster.block.block_entity.chest.LockedChestBlockEntity;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
-import net.luojiuoscar.isaac_disaster.manager.LootTableManager;
+import net.luojiuoscar.isaac_disaster.manager.ModLootTables;
 import net.luojiuoscar.isaac_disaster.manager.id.TrinketId;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
@@ -46,7 +46,7 @@ public class LockedChestBlock extends ItemChestBlock {
 
         if (level.getBlockEntity(pos) instanceof LockedChestBlockEntity lockedChest &&
                 PlayerHelper.hasTrinket(TrinketId.GILDED_KEY.getId(), (ServerPlayer) player)){
-            lockedChest.setLootTable(LootTableManager.GILDED_LOCKED_CHEST, 0);
+            lockedChest.setLootTable(ModLootTables.GILDED_LOCKED_CHEST, 0);
         }
 
         return super.use(state, level, pos, player, hand, hit);

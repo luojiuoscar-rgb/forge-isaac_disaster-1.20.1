@@ -3,7 +3,7 @@ package net.luojiuoscar.isaac_disaster.loot;
 import com.mojang.serialization.Codec;
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.loot.modifier.*;
-import net.luojiuoscar.isaac_disaster.loot.modifier.item.*;
+import net.luojiuoscar.isaac_disaster.loot.modifier.from_entity.*;
 import net.minecraftforge.common.loot.IGlobalLootModifier;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.registries.DeferredRegister;
@@ -35,4 +35,10 @@ public class ModLootModifiers {
     // pickup
     public static final RegistryObject<Codec<? extends IGlobalLootModifier>> GENERAL_LOOT =
             LOOT_MODIFIER_SERIALIZERS.register("general_loot", () -> GeneralLootModifier.CODEC);
+
+    // loot from entities
+    public static final RegistryObject<Codec<? extends IGlobalLootModifier>> PILL_FROM_WITCH =
+            LOOT_MODIFIER_SERIALIZERS.register("pill_from_witch", () -> PillFromWitchModifier.CODEC);
+    public static final RegistryObject<Codec<? extends IGlobalLootModifier>> PICKUP_FROM_ALL =
+            LOOT_MODIFIER_SERIALIZERS.register("pickup_from_all", () -> PickupFromAllModifier.CODEC);
 }

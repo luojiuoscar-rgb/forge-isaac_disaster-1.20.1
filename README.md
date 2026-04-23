@@ -20,7 +20,6 @@ Ensures in the future item could be generated from pool without removing it from
 #### ITEM POOLS & LOOT TABLES
  - Generating more than 1 item from item pool may cause unpredictable error. Item display will always choose the first item in the container.
  - Only pools under  *data/isaac_disaster/loot_tables/pools/item/* folder will be affected by other items.
- - If you wants to use mixed loot tables, use loot table references.
  - Items generated from pedestal & chests will be marked as removal.
 
  - Chest Loots are located under *resource/data/isaac_disaster/loot_tables/chests/isaac/* folder.

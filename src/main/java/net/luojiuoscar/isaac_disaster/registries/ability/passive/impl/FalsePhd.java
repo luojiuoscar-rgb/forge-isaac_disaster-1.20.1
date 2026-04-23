@@ -4,7 +4,7 @@ import net.luojiuoscar.isaac_disaster.helper.LootHelper;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.item.ModItems;
 import net.luojiuoscar.isaac_disaster.registries.ability.passive.PassiveAbility;
-import net.luojiuoscar.isaac_disaster.manager.LootTableManager;
+import net.luojiuoscar.isaac_disaster.manager.ModLootTables;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
@@ -21,7 +21,7 @@ public class FalsePhd extends PassiveAbility {
     @Override
     public void handleFirstObtain(ServerPlayer player, @Nullable ItemStack stack) {
         PlayerHelper.giveItem(player, ModItems.BLACK_HEART.get(), 1);
-        LootHelper.spawnLootAtPos(player, player.blockPosition().getCenter(), LootTableManager.RANDOM_PILLS);
+        LootHelper.spawnLootAtPos(player, player.blockPosition().getCenter(), ModLootTables.RANDOM_PILLS);
     }
 
     @Override

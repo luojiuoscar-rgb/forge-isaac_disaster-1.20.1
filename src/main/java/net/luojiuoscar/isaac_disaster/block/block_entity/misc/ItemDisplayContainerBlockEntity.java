@@ -6,7 +6,7 @@ import net.luojiuoscar.isaac_disaster.helper.LootHelper;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.helper.PoolHelper;
 import net.luojiuoscar.isaac_disaster.item.item.IsaacItem;
-import net.luojiuoscar.isaac_disaster.manager.LootTableManager;
+import net.luojiuoscar.isaac_disaster.manager.ModLootTables;
 import net.luojiuoscar.isaac_disaster.manager.data.BlockData;
 import net.luojiuoscar.isaac_disaster.manager.id.ItemId;
 import net.minecraft.core.BlockPos;
@@ -36,7 +36,7 @@ public interface ItemDisplayContainerBlockEntity {
     default boolean lootItem(ServerLevel serverLevel, Player player, BlockPos pos, ResourceLocation tableId,
                              Runnable beforeGenerateAction){
         if (PlayerHelper.hasItem(ItemId.CHAOS.getId(), (ServerPlayer) player)) {
-            tableId = LootTableManager.DEFAULT_ITEM_POOL;
+            tableId = ModLootTables.DEFAULT_ITEM_POOL;
         }
 
         List<ItemStack> items = LootHelper.generateLoot(serverLevel, tableId, new LootParams.Builder(serverLevel)

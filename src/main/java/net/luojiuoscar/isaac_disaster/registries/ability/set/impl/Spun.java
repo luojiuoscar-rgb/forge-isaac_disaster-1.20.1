@@ -1,7 +1,7 @@
 package net.luojiuoscar.isaac_disaster.registries.ability.set.impl;
 
 import net.luojiuoscar.isaac_disaster.helper.LootHelper;
-import net.luojiuoscar.isaac_disaster.manager.LootTableManager;
+import net.luojiuoscar.isaac_disaster.manager.ModLootTables;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.registries.ability.set.SetAbility;
 import net.minecraft.network.chat.Component;
@@ -16,7 +16,7 @@ public class Spun extends SetAbility {
 
     @Override
     public void onFirstObtain(Player player){
-        LootHelper.spawnLootAtPos(player, player.blockPosition().getCenter(), LootTableManager.RANDOM_PILLS);
+        LootHelper.spawnLootAtPos(player, player.blockPosition().getCenter(), ModLootTables.RANDOM_PILLS);
     }
 
     @Override

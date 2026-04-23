@@ -5,7 +5,7 @@ import net.luojiuoscar.isaac_disaster.block.ModBlockEntities;
 import net.luojiuoscar.isaac_disaster.effect.ModEffects;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.item.ModItems;
-import net.luojiuoscar.isaac_disaster.manager.LootTableManager;
+import net.luojiuoscar.isaac_disaster.manager.ModLootTables;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.manager.id.ItemId;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.general.*;
@@ -550,33 +550,33 @@ public class ModExecutableEffects {
                     APPLY_EFFECT_TO_NEARBY, ctx -> {
                 ctx.set(ContextKeys.EXECUTABLE_EFFECT, ModExecutableEffects.TRANSFORM_ENTITY_TO_LOOT.get());
                 ctx.set(ContextKeys.BOOLEAN, List.of(true)); // exclude friends
-                ctx.set(ContextKeys.RESOURCE_LOCATIONS, List.of(LootTableManager.RANDOM_BOMBS));
+                ctx.set(ContextKeys.RESOURCE_LOCATIONS, List.of(ModLootTables.RANDOM_BOMBS));
             }));
     public static final RegistryObject<IExecutableEffect> ACE_OF_DIAMONDS =
             EXECUTABLE_EFFECT_REGISTRY.register("ace_of_diamonds", () -> new AbilityEffectEntry(
                     APPLY_EFFECT_TO_NEARBY, ctx -> {
                 ctx.set(ContextKeys.EXECUTABLE_EFFECT, ModExecutableEffects.TRANSFORM_ENTITY_TO_LOOT.get());
                 ctx.set(ContextKeys.BOOLEAN, List.of(true));
-                ctx.set(ContextKeys.RESOURCE_LOCATIONS, List.of(LootTableManager.RANDOM_COINS));
+                ctx.set(ContextKeys.RESOURCE_LOCATIONS, List.of(ModLootTables.RANDOM_COINS));
             }));
     public static final RegistryObject<IExecutableEffect> ACE_OF_HEARTS =
             EXECUTABLE_EFFECT_REGISTRY.register("ace_of_hearts", () -> new AbilityEffectEntry(
                     APPLY_EFFECT_TO_NEARBY, ctx -> {
                 ctx.set(ContextKeys.EXECUTABLE_EFFECT, ModExecutableEffects.TRANSFORM_ENTITY_TO_LOOT.get());
                 ctx.set(ContextKeys.BOOLEAN, List.of(true));
-                ctx.set(ContextKeys.RESOURCE_LOCATIONS, List.of(LootTableManager.RANDOM_HEARTS));
+                ctx.set(ContextKeys.RESOURCE_LOCATIONS, List.of(ModLootTables.RANDOM_HEARTS));
             }));
     public static final RegistryObject<IExecutableEffect> ACE_OF_SPADES =
             EXECUTABLE_EFFECT_REGISTRY.register("ace_of_spades", () -> new AbilityEffectEntry(
                     APPLY_EFFECT_TO_NEARBY, ctx -> {
                 ctx.set(ContextKeys.EXECUTABLE_EFFECT, ModExecutableEffects.TRANSFORM_ENTITY_TO_LOOT.get());
                 ctx.set(ContextKeys.BOOLEAN, List.of(true));
-                ctx.set(ContextKeys.RESOURCE_LOCATIONS, List.of(LootTableManager.RANDOM_KEYS));
+                ctx.set(ContextKeys.RESOURCE_LOCATIONS, List.of(ModLootTables.RANDOM_KEYS));
             }));
     public static final RegistryObject<IExecutableEffect> POKERS_BACK =
             EXECUTABLE_EFFECT_REGISTRY.register("pokers_back", () -> new AbilityEffectEntry(
                     LOOT_AT_POS, ctx -> {
-                ctx.set(ContextKeys.RESOURCE_LOCATIONS, List.of(LootTableManager.RANDOM_POKERS));
+                ctx.set(ContextKeys.RESOURCE_LOCATIONS, List.of(ModLootTables.RANDOM_POKERS));
             }));
     public static final RegistryObject<IExecutableEffect> QUEEN_OF_HEART =
             EXECUTABLE_EFFECT_REGISTRY.register("queen_of_heart", () -> new AbilityEffectEntry(
@@ -587,17 +587,17 @@ public class ModExecutableEffects {
     public static final RegistryObject<IExecutableEffect> REVERSE_TAROTS_BACK =
             EXECUTABLE_EFFECT_REGISTRY.register("reverse_tarots_back", () -> new AbilityEffectEntry(
                     LOOT_AT_POS, ctx -> {
-                ctx.set(ContextKeys.RESOURCE_LOCATIONS, List.of(LootTableManager.RANDOM_TAROTS_R));
+                ctx.set(ContextKeys.RESOURCE_LOCATIONS, List.of(ModLootTables.RANDOM_TAROTS_R));
             }));
     public static final RegistryObject<IExecutableEffect> TAROTS_BACK =
             EXECUTABLE_EFFECT_REGISTRY.register("tarots_back", () -> new AbilityEffectEntry(
                     LOOT_AT_POS, ctx -> {
-                ctx.set(ContextKeys.RESOURCE_LOCATIONS, List.of(LootTableManager.RANDOM_TAROTS));
+                ctx.set(ContextKeys.RESOURCE_LOCATIONS, List.of(ModLootTables.RANDOM_TAROTS));
             }));
     public static final RegistryObject<IExecutableEffect> SPECIALS_BACK =
             EXECUTABLE_EFFECT_REGISTRY.register("specials_back", () -> new AbilityEffectEntry(
                     LOOT_AT_POS, ctx -> {
-                ctx.set(ContextKeys.RESOURCE_LOCATIONS, List.of(LootTableManager.RANDOM_SPECIALS));
+                ctx.set(ContextKeys.RESOURCE_LOCATIONS, List.of(ModLootTables.RANDOM_SPECIALS));
             }));
     public static final RegistryObject<IExecutableEffect> STRENGTH_R =
             EXECUTABLE_EFFECT_REGISTRY.register("strength_r", () -> new AbilityEffectEntry(
@@ -766,12 +766,12 @@ public class ModExecutableEffects {
     public static final RegistryObject<IExecutableEffect> BLACK_SACK =
             EXECUTABLE_EFFECT_REGISTRY.register("black_sack", () -> new AbilityEffectEntry(
                     GENERATE_LOOT, ctx -> ctx.set(ContextKeys.RESOURCE_LOCATIONS,
-                    List.of(LootTableManager.BLACK_SACK))
+                    List.of(ModLootTables.BLACK_SACK))
             ));
     public static final RegistryObject<IExecutableEffect> GRAB_BAG =
             EXECUTABLE_EFFECT_REGISTRY.register("grab_bag", () -> new AbilityEffectEntry(
                     GENERATE_LOOT, ctx -> ctx.set(ContextKeys.RESOURCE_LOCATIONS,
-                    List.of(LootTableManager.GRAB_BAG))
+                    List.of(ModLootTables.GRAB_BAG))
             ));
     public static final RegistryObject<IExecutableEffect> DOUBLE_RED_HEART =
             EXECUTABLE_EFFECT_REGISTRY.register("double_red_heart", () -> new AbilityEffectEntry(
@@ -825,11 +825,11 @@ public class ModExecutableEffects {
             ));
     public static final RegistryObject<IExecutableEffect> POOP =
             EXECUTABLE_EFFECT_REGISTRY.register("poop", () -> new AbilityEffectEntry(
-                    GENERATE_LOOT, ctx -> ctx.set(ContextKeys.RESOURCE_LOCATIONS, List.of(LootTableManager.POOP))
+                    GENERATE_LOOT, ctx -> ctx.set(ContextKeys.RESOURCE_LOCATIONS, List.of(ModLootTables.POOP))
             ));
     public static final RegistryObject<IExecutableEffect> GOLDEN_POOP =
             EXECUTABLE_EFFECT_REGISTRY.register("golden_poop", () -> new AbilityEffectEntry(
-                    GENERATE_LOOT, ctx -> ctx.set(ContextKeys.RESOURCE_LOCATIONS, List.of(LootTableManager.GOLDEN_POOP))
+                    GENERATE_LOOT, ctx -> ctx.set(ContextKeys.RESOURCE_LOCATIONS, List.of(ModLootTables.GOLDEN_POOP))
             ));
     public static final RegistryObject<IExecutableEffect> THE_POOP =
             EXECUTABLE_EFFECT_REGISTRY.register("the_poop", () -> new AbilityEffectEntry(

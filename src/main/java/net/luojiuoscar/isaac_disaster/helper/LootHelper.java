@@ -32,16 +32,16 @@ public class LootHelper {
     public static void spawnLootAtPos(LivingEntity source, Vec3 pos, ResourceLocation tableId, LootContextParamSet paramSet) {
         if (!(source.level() instanceof ServerLevel level)) return;
         LootParams params = new LootParams.Builder(level)
-                .withParameter(net.minecraft.world.level.storage.loot.parameters.LootContextParams.ORIGIN, pos)
-                .withParameter(net.minecraft.world.level.storage.loot.parameters.LootContextParams.THIS_ENTITY, source)
+                .withParameter(LootContextParams.ORIGIN, pos)
+                .withParameter(LootContextParams.THIS_ENTITY, source)
                 .create(paramSet);
         spawnLootAtPos(level, pos, tableId, params);
     }
     public static void spawnLootAtPos(LivingEntity source, Vec3 pos, ResourceLocation tableId, int count) {
         if (!(source.level() instanceof ServerLevel level)) return;
         LootParams params = new LootParams.Builder(level)
-                .withParameter(net.minecraft.world.level.storage.loot.parameters.LootContextParams.ORIGIN, pos)
-                .withParameter(net.minecraft.world.level.storage.loot.parameters.LootContextParams.THIS_ENTITY, source)
+                .withParameter(LootContextParams.ORIGIN, pos)
+                .withParameter(LootContextParams.THIS_ENTITY, source)
                 .create(LootContextParamSets.EMPTY);
         for (int i = 0; i < count; i++) {
             spawnLootAtPos(level, pos, tableId, params);

@@ -2,7 +2,7 @@ package net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.normal;
 
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.luojiuoscar.isaac_disaster.event.custom.misc.GeneralLootModifyEvent;
-import net.luojiuoscar.isaac_disaster.manager.LootTableManager;
+import net.luojiuoscar.isaac_disaster.manager.ModLootTables;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ContextKeys;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ExecutableEffectContext;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.IAbilityEffect;
@@ -31,7 +31,7 @@ public class PetrifiedPoop implements IAbilityEffect {
         }
         if (player == null) return false;
 
-        if (!lootContext.getQueriedLootTableId().equals(LootTableManager.POOP)) return true;
+        if (!lootContext.getQueriedLootTableId().equals(ModLootTables.POOP)) return true;
 
         ServerLevel serverLevel = (ServerLevel) player.level();
         Vec3 pos = context.getOrDefault(ContextKeys.TARGET_POSITION, player.position());
@@ -39,7 +39,7 @@ public class PetrifiedPoop implements IAbilityEffect {
         // get lootManager
         var server = player.server;
         var lootManager = server.getLootData();
-        var lootTable = lootManager.getLootTable(LootTableManager.PETRIFIED_POOP);
+        var lootTable = lootManager.getLootTable(ModLootTables.PETRIFIED_POOP);
 
         LootParams.Builder paramsBuilder = new LootParams.Builder(serverLevel)
                 .withParameter(LootContextParams.ORIGIN, pos)

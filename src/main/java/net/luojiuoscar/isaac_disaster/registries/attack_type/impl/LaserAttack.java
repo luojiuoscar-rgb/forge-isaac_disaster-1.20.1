@@ -288,7 +288,7 @@ public class LaserAttack extends AttackType {
             // 高频平滑转向
             if (laser.homingTarget != null && laser.homingTarget.isAlive()) {
                 Vec3 toTarget = laser.homingTarget.getEyePosition().subtract(laser.position).normalize();
-                laser.direction = smoothTurn(laser.direction, toTarget, 0.15);
+                laser.direction = turnTowards(laser.direction, toTarget, 0.25);
                 laser.isCurrentlyHoming = true;
             }
         }
@@ -390,6 +390,7 @@ public class LaserAttack extends AttackType {
             if (!MinecraftForge.EVENT_BUS.post(beforeHit)) {
                 double actualDamage = beforeHit.getDamage();
                 laser.damagedEntities.add(makeDamage(laser.owner, target,(float) actualDamage).getUUID());
+                laser.homingTarget = null; // 清空当前追踪目标，开始追踪下一个目标
 
                 IsaacAttackAfterHitEvent afterHit = new IsaacAttackAfterHitEvent(
                         laser, laser.owner, ModAttackType.LASER.getId(), triggers, hitResult, actualDamage, target.getHealth()
@@ -422,9 +423,25 @@ public class LaserAttack extends AttackType {
         return new Vec3((f1 * f2), f3, (f * f2)).normalize();
     }
 
-    private Vec3 smoothTurn(Vec3 currentDir, Vec3 targetDir, double factor) {
-        Vec3 newDir = currentDir.add(targetDir.subtract(currentDir).scale(factor));
-        return newDir.normalize();
+    private Vec3 turnTowards(Vec3 current, Vec3 target, double maxAngleRad) {
+        double dot = current.dot(target);
+        dot = Math.max(-1.0, Math.min(1.0, dot));
+
+        double angle = Math.acos(dot);
+        if (angle < 1e-5) return target;
+
+        double rotateAngle = Math.min(maxAngleRad, angle);
+
+        // 旋转轴 = current × target
+        Vec3 axis = current.cross(target);
+
+        if (axis.lengthSqr() < 1e-6) {
+            return target; // 共线情况
+        }
+
+        axis = axis.normalize();
+
+        return AttackType.rotateAroundAxis(current, axis, rotateAngle).normalize();
     }
 
     private void spawnInterpolatedParticles(ServerLevel level, Vec3 from, Vec3 to, double width, ResourceLocation colorRl) {

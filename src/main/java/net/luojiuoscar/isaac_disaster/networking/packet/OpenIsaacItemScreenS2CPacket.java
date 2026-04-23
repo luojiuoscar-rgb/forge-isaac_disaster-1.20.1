@@ -56,6 +56,7 @@ public class OpenIsaacItemScreenS2CPacket {
 
         context.enqueueWork(() -> {
             Minecraft mc = Minecraft.getInstance();
+
             if (mc.player != null) {
 
                 IsaacDisaster.LOGGER.info("items: {}, trinkets: {}", passiveItems.size(), trinketItems.size());

@@ -1,4 +1,4 @@
-package net.luojiuoscar.isaac_disaster.commands;
+package net.luojiuoscar.isaac_disaster.commands.pill;
 
 import com.mojang.brigadier.CommandDispatcher;
 import net.luojiuoscar.isaac_disaster.manager.PillEffectManager;
@@ -9,8 +9,8 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 
 
-public class ShufflePillCommand {
-    public ShufflePillCommand(CommandDispatcher<CommandSourceStack> dispatcher) {
+public class PillShuffleCmd {
+    public PillShuffleCmd(CommandDispatcher<CommandSourceStack> dispatcher) {
         dispatcher.register(Commands.literal("isd").then(Commands.literal("pill").then(Commands.literal("shuffle")
                 .executes(context -> {
                     // 获取命令执行者（玩家）

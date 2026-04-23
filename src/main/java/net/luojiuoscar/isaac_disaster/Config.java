@@ -67,7 +67,7 @@ public class Config
     public static ForgeConfigSpec.DoubleValue BASIC_TIME_INTERVAL;
     public static ForgeConfigSpec.DoubleValue HOLY_SHIELD_STRENGTH;
     public static ForgeConfigSpec.DoubleValue MONEY_IS_POWER_STRENGTH;
-    public static ForgeConfigSpec.BooleanValue USABLE_PASSIVE_ITEM;
+    public static ForgeConfigSpec.BooleanValue EXTRA_PASSIVE_ITEM_BACKPACK;
     public static ForgeConfigSpec.BooleanValue ALLOW_CURIO_UNEQUIP;
     public static ForgeConfigSpec.BooleanValue AUTO_ADAPT_CURIO_SLOT;
     public static ForgeConfigSpec.IntValue ACTIVE_ITEM_DURABILITY_RESTORE_RATE;
@@ -78,6 +78,8 @@ public class Config
     public static ForgeConfigSpec.BooleanValue PLAYERS_SHARE_ITEM_POOLS;
     public static ForgeConfigSpec.BooleanValue AUTO_USE_PASSIVE_ITEM;
 
+    // 临时
+    public static ForgeConfigSpec.BooleanValue ENABLE_WANDERING_TRADER_SHOP;
 
     // 钱币
     public static ForgeConfigSpec.ConfigValue<String> COIN_TIER_1_ID;
@@ -227,30 +229,26 @@ public class Config
         BUILDER.push("Misc");
         // 可携带的道具总数  默认999
         PASSIVE_ITEM_LIMIT = BUILDER
-                .comment("How many passive items a player can carry. (NOT CURIOS)")
+                .comment("How many passive items a player can carry in the extra backpack.")
                 .defineInRange("passive_item_limit", 999, 1, 99999);
 
-        USABLE_PASSIVE_ITEM = BUILDER
-                .comment("If the item can be added to player's backpack with a rightClick. " +
-                        "If you want to enable passive item's curios slot ONLY, then you should disable this option.")
-                .define("usable_passive_item", true);
+        EXTRA_PASSIVE_ITEM_BACKPACK = BUILDER
+                .comment("Enable a extra passive item backpack for each player." +
+                        "Player can store their items into this backpack through a right-click")
+                .define("extra_passive_item_backpack", false);
 
         ALLOW_CURIO_UNEQUIP = BUILDER
-                .comment("If the item can be unequipped")
+                .comment("If the item can be unequipped from curio slot")
                 .define("allow_curio_unequip", true);
 
-        AUTO_ADAPT_CURIO_SLOT = BUILDER
-                .comment("Equip curio passive item will also add 1 passive item slot. (NEED to enable at least one slot)" +
-                        "In current version, this option would cause errors when taken off the item.")
-                .define("auto_adapt_curio_slot", false);
-
         ITEM_REMOVAL_FROM_POOL = BUILDER
-                .comment("Item will be removed from the exact pool when spawns.")
+                .comment("Item will be removed from the exact pool when it spawns.")
                 .define("item_removal_from_pool", false);
 
         ITEM_REMOVAL_FROM_ALL_POOL = BUILDER
-                .comment("Item will be removed from the ALL pools when spawns. (this will disable item_removal_from_pool)")
-                .define("item_removal_from_all_pool", true);
+                .comment("Item will be removed from the ALL pools when it spawns." +
+                        "This option will overrides \"item_removal_from_pool\" when activate.")
+                .define("item_removal_from_all_pool", false);
 
         PLAYERS_SHARE_ITEM_POOLS = BUILDER
                 .comment("All player shares the same item pool.")
@@ -267,15 +265,15 @@ public class Config
 
         // 钱币物品 ID
         COIN_TIER_1_ID = BUILDER
-                .comment("Item ID for Tier 1 Coin (e.g., minecraft:iron_nugget)")
+                .comment("Item ID for Tier 1 Coin (e.g., isaac_disaster:penny)")
                 .define("coin_tier_1_id", "isaac_disaster:penny");
 
         COIN_TIER_2_ID = BUILDER
-                .comment("Item ID for Tier 2 Coin (e.g., minecraft:gold_nugget)")
+                .comment("Item ID for Tier 2 Coin (e.g., isaac_disaster:nickel)")
                 .define("coin_tier_2_id", "isaac_disaster:nickel");
 
         COIN_TIER_3_ID = BUILDER
-                .comment("Item ID for Tier 3 Coin (e.g., minecraft:diamond)")
+                .comment("Item ID for Tier 3 Coin (e.g., isaac_disaster:dime)")
                 .define("coin_tier_3_id", "isaac_disaster:dime");
 
         // 权重定义（用于战利品表动态概率）
@@ -310,11 +308,6 @@ public class Config
 
 
     static final ForgeConfigSpec SPEC = BUILDER.build();
-
-
-
-
-
 
     public static boolean logDirtBlock;
     public static int magicNumber;

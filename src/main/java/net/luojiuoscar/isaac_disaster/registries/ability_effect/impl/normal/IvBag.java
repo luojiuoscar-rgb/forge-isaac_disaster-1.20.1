@@ -2,7 +2,7 @@ package net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.normal;
 
 import net.luojiuoscar.isaac_disaster.helper.LootHelper;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
-import net.luojiuoscar.isaac_disaster.manager.LootTableManager;
+import net.luojiuoscar.isaac_disaster.manager.ModLootTables;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ExecutableEffectContext;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.IAbilityEffect;
@@ -31,7 +31,7 @@ public class IvBag implements IAbilityEffect {
 
         // 缩短受伤冷却时间
         player.invulnerableTime = 10;
-        LootHelper.spawnLootAtPos(player, player.position(), LootTableManager.RANDOM_COINS);
+        LootHelper.spawnLootAtPos(player, player.position(), ModLootTables.RANDOM_COINS);
         return true;
     }
 }

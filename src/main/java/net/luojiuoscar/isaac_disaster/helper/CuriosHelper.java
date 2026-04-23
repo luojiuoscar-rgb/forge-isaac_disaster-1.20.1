@@ -30,7 +30,8 @@ public class CuriosHelper {
 
     /**
      * 获取玩家在指定 Curios 槽位中装备的所有物品
-     * @param player 玩家
+     *
+     * @param player   玩家
      * @param slotType 槽位类型（如 "ring"、"charm"、"isaac_trinket" 等）
      * @return 非空 ItemStack 列表
      */
@@ -57,10 +58,11 @@ public class CuriosHelper {
 
     /**
      * 动态添加临时槽位修饰符（重登后消失）
+     *
      * @param entity 玩家或生物
      * @param slotId 槽位类型
-     * @param uuid 唯一标识符
-     * @param name 修饰符名称，仅用于识别
+     * @param uuid   唯一标识符
+     * @param name   修饰符名称，仅用于识别
      * @param amount 增加的槽位数量
      */
     public static void addTransientSlotModifier(LivingEntity entity, String slotId, UUID uuid, String name, double amount) {
@@ -71,10 +73,11 @@ public class CuriosHelper {
 
     /**
      * 动态添加永久槽位修饰符（会写入玩家存档）
+     *
      * @param entity 玩家或生物
      * @param slotId 槽位类型
-     * @param uuid 唯一标识符，用于后续移除
-     * @param name 修饰符名称，仅用于识别
+     * @param uuid   唯一标识符，用于后续移除
+     * @param name   修饰符名称，仅用于识别
      * @param amount 增加的槽位数量
      */
     public static void setPermanentSlotModifier(LivingEntity entity, String slotId, UUID uuid, String name, double amount) {
@@ -87,6 +90,7 @@ public class CuriosHelper {
                 playerAbility -> playerAbility.setExtraTrinketSlotCounts((int) amount)
         );
     }
+
     public static void addPermanentSlotModifier(LivingEntity entity, String slotId, UUID uuid, String name, double amount) {
         if (!(entity instanceof Player player)) return;
 
@@ -106,7 +110,7 @@ public class CuriosHelper {
                         int totalSlots = handler.getSlots();
 
                         ItemStack stack = handler.getStacks().getStackInSlot(totalSlots - 1);
-                        if (stack.getItem() instanceof IIsaacCuriosItem){
+                        if (stack.getItem() instanceof IIsaacCuriosItem) {
                             IIsaacCuriosItem.setOnCurios(stack, false);
                         }
                     }
@@ -121,9 +125,10 @@ public class CuriosHelper {
 
     /**
      * 移除指定槽位的修饰符
+     *
      * @param entity 玩家或生物
      * @param slotId 槽位类型
-     * @param uuid UUID
+     * @param uuid   UUID
      */
     public static void removeSlotModifier(LivingEntity entity, String slotId, UUID uuid) {
         CuriosApi.getCuriosInventory(entity).ifPresent(inv -> {
@@ -134,6 +139,4 @@ public class CuriosHelper {
                 playerAbility -> playerAbility.setExtraTrinketSlotCounts(0)
         );
     }
-
-
 }

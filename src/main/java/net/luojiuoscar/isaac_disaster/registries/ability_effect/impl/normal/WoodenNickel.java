@@ -1,7 +1,7 @@
 package net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.normal;
 
 import net.luojiuoscar.isaac_disaster.helper.LootHelper;
-import net.luojiuoscar.isaac_disaster.manager.LootTableManager;
+import net.luojiuoscar.isaac_disaster.manager.ModLootTables;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ExecutableEffectContext;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ContextKeys;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.IAbilityEffect;
@@ -17,7 +17,7 @@ public class WoodenNickel implements IAbilityEffect {
                 LootHelper.spawnLootAtPos(
                         entity,
                         entity.blockPosition().getCenter(),
-                        LootTableManager.RANDOM_COINS);
+                        ModLootTables.RANDOM_COINS);
             }
         }
         return true;

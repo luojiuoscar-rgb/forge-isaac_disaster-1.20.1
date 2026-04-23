@@ -51,7 +51,7 @@ public class PassiveItem extends IsaacItem implements IIsaacCuriosItem {
     @Override
     public @NotNull InteractionResultHolder<ItemStack> use(@NotNull Level level, Player player, @NotNull InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
-        if (!Config.USABLE_PASSIVE_ITEM.get() || player.level().isClientSide) return InteractionResultHolder.fail(stack);
+        if (!Config.EXTRA_PASSIVE_ITEM_BACKPACK.get() || player.level().isClientSide) return InteractionResultHolder.fail(stack);
 
         PassiveAbility ability = (PassiveAbility) this.getAbility();
 

@@ -1,7 +1,7 @@
 package net.luojiuoscar.isaac_disaster.datagen;
 
 import net.luojiuoscar.isaac_disaster.loot.modifier.*;
-import net.luojiuoscar.isaac_disaster.loot.modifier.item.*;
+import net.luojiuoscar.isaac_disaster.loot.modifier.from_entity.*;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 import net.minecraftforge.common.loot.LootModifier;
 
@@ -32,5 +32,9 @@ public class LootModifierManager {
 
         // pickups
         register("general_loot", new GeneralLootModifier(new LootItemCondition[0]));
+
+        // loot from entities
+        register("pill_from_witch", new PillFromWitchModifier(new LootItemCondition[0]));
+        register("pickup_from_all", new PickupFromAllModifier(new LootItemCondition[0]));
     }
 }

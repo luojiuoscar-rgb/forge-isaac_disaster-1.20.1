@@ -1,7 +1,7 @@
 package net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.general;
 
 import net.luojiuoscar.isaac_disaster.helper.LootHelper;
-import net.luojiuoscar.isaac_disaster.manager.LootTableManager;
+import net.luojiuoscar.isaac_disaster.manager.ModLootTables;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ExecutableEffectContext;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ContextKeys;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.IAbilityEffect;
@@ -22,7 +22,7 @@ public class LootAtPosition implements IAbilityEffect {
         if (!(entity.level() instanceof ServerLevel level)) return true;
 
         var rls = context.getOrDefault(ContextKeys.RESOURCE_LOCATIONS, List.of());
-        ResourceLocation loot = rls.isEmpty() ? LootTableManager.RANDOM_COINS : rls.get(0);
+        ResourceLocation loot = rls.isEmpty() ? ModLootTables.RANDOM_COINS : rls.get(0);
 
         // 空参数 无源掉落
         LootParams params = new LootParams.Builder(level).create(LootContextParamSets.EMPTY);

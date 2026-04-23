@@ -2,7 +2,7 @@ package net.luojiuoscar.isaac_disaster.registries.ability.passive.impl;
 
 import net.luojiuoscar.isaac_disaster.helper.LootHelper;
 import net.luojiuoscar.isaac_disaster.registries.ability.passive.PassiveAbility;
-import net.luojiuoscar.isaac_disaster.manager.LootTableManager;
+import net.luojiuoscar.isaac_disaster.manager.ModLootTables;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
@@ -17,7 +17,7 @@ public class Chaos extends PassiveAbility {
 
     @Override
     public void handleFirstObtain(ServerPlayer player, @Nullable ItemStack stack) {
-        LootHelper.spawnLootAtPos(player, player.position(), LootTableManager.CHAOS,
+        LootHelper.spawnLootAtPos(player, player.position(), ModLootTables.CHAOS,
                 player.getRandom().nextInt(1, 7));
     }
 

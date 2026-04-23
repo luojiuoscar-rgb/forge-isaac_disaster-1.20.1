@@ -6,17 +6,27 @@ import net.luojiuoscar.isaac_disaster.capability.entity.EffectModulesProvider;
 import net.luojiuoscar.isaac_disaster.capability.entity.EntityEffectProvider;
 import net.luojiuoscar.isaac_disaster.capability.entity.ExtraDataProvider;
 import net.luojiuoscar.isaac_disaster.capability.player.*;
-import net.luojiuoscar.isaac_disaster.commands.*;
+import net.luojiuoscar.isaac_disaster.commands.item.ItemClearCmd;
+import net.luojiuoscar.isaac_disaster.commands.item.ItemGetCmd;
+import net.luojiuoscar.isaac_disaster.commands.item.ItemSpawnCmd;
+import net.luojiuoscar.isaac_disaster.commands.pill.PillShuffleCmd;
+import net.luojiuoscar.isaac_disaster.commands.pill.PillTriggerByEffectCmd;
+import net.luojiuoscar.isaac_disaster.commands.player.PlayerRefreshPoolCmd;
+import net.luojiuoscar.isaac_disaster.commands.player.PlayerResetDataCmd;
+import net.luojiuoscar.isaac_disaster.commands.trinket.TrinketClearSwallowedCmd;
+import net.luojiuoscar.isaac_disaster.commands.trinket.TrinketSetEnchanted;
 import net.luojiuoscar.isaac_disaster.effect.ModEffects;
 import net.luojiuoscar.isaac_disaster.helper.LootHelper;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
+import net.luojiuoscar.isaac_disaster.item.ModItems;
 import net.luojiuoscar.isaac_disaster.item.item.ActiveItem;
 import net.luojiuoscar.isaac_disaster.item.item.IIsaacCuriosItem;
+import net.luojiuoscar.isaac_disaster.item.item.IsaacItem;
 import net.luojiuoscar.isaac_disaster.item.item.custom.FoodPassiveItem;
 import net.luojiuoscar.isaac_disaster.item.pickup.special.IsaacHead;
 import net.luojiuoscar.isaac_disaster.manager.EffectManager;
-import net.luojiuoscar.isaac_disaster.manager.LootTableManager;
 import net.luojiuoscar.isaac_disaster.manager.ModDamageType;
+import net.luojiuoscar.isaac_disaster.manager.ModLootTables;
 import net.luojiuoscar.isaac_disaster.manager.PillEffectManager;
 import net.luojiuoscar.isaac_disaster.manager.data.PillShuffleData;
 import net.luojiuoscar.isaac_disaster.manager.id.ItemId;
@@ -39,22 +49,30 @@ import net.minecraft.world.entity.EntityDimensions;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.npc.WanderingTrader;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.trading.MerchantOffer;
+import net.minecraft.world.item.trading.MerchantOffers;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.entity.EntityEvent;
+import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.event.entity.living.*;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.level.LevelEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.IForgeRegistry;
 import net.minecraftforge.registries.RegistryManager;
 import net.minecraftforge.server.command.ConfigCommand;
 import top.theillusivec4.curios.api.event.CurioUnequipEvent;
 
+import java.util.List;
 import java.util.Map;
 
 import static net.luojiuoscar.isaac_disaster.IsaacDisaster.MOD_ID;
@@ -252,18 +270,22 @@ public class ForgeEvents {
 
     @SubscribeEvent
     public static void onCommandRegister(RegisterCommandsEvent event){
-        new ClearPassiveItemsCommand(event.getDispatcher());
-        new HasItemCommand(event.getDispatcher());
-        new GetItemCountCommand(event.getDispatcher());
-        new GetFlyCommand(event.getDispatcher());
-        new ShufflePillCommand(event.getDispatcher());
-        new TriggerPillEffectCommand(event.getDispatcher());
-        new ResetPlayerCommand(event.getDispatcher());
-        new ClearSwallowedTrinkets(event.getDispatcher());
-        new SetTrinketEnchanted(event.getDispatcher());
-        new AddTrinketSlotsCommand(event.getDispatcher());
-        new GetTrinketsCommand(event.getDispatcher());
-        new RefreshItemPoolCommand(event.getDispatcher());
+        // pill
+        new PillShuffleCmd(event.getDispatcher());
+        new PillTriggerByEffectCmd(event.getDispatcher());
+
+        // item
+        new ItemClearCmd(event.getDispatcher());
+        new ItemGetCmd(event.getDispatcher());
+        new ItemSpawnCmd(event.getDispatcher());
+
+        // player
+        new PlayerResetDataCmd(event.getDispatcher());
+        new PlayerRefreshPoolCmd(event.getDispatcher());
+
+        // trinket
+        new TrinketClearSwallowedCmd(event.getDispatcher());
+        new TrinketSetEnchanted(event.getDispatcher());
 
 
         ConfigCommand.register(event.getDispatcher());
@@ -346,7 +368,7 @@ public class ForgeEvents {
     public static void onLivingDeath(LivingDeathEvent event){
         LivingEntity entity = event.getEntity();
         if (entity.hasEffect(ModEffects.GOLDEN.get())){
-            LootHelper.spawnLootAtPos(entity, entity.position(), LootTableManager.RANDOM_COINS,
+            LootHelper.spawnLootAtPos(entity, entity.position(), ModLootTables.RANDOM_COINS,
                     entity.getRandom().nextInt(0,3));
         }
     }
@@ -466,5 +488,66 @@ public class ForgeEvents {
             }
         }
 
+    }
+
+
+    // 临时流浪商人交易系统
+    @SubscribeEvent
+    public static void onEntityJoin(EntityJoinLevelEvent event) {
+        if (event.getEntity() instanceof WanderingTrader trader) {
+            // if modified skip
+            if (trader.getPersistentData().getBoolean("IsaacDisasterWanderingTraderModified")) return;
+            MerchantOffers offers = trader.getOffers();
+
+            // 添加额外交易
+            addMandatoryTrades(offers, trader);
+
+            trader.getPersistentData().putBoolean("IsaacDisasterWanderingTraderModified", true);
+        }
+    }
+
+    private static void addMandatoryTrades(MerchantOffers offers, WanderingTrader trader) {
+        // 获取货币物品
+        String moneyId = Config.COIN_TIER_1_ID.get();
+        Item money = ForgeRegistries.ITEMS.getValue(ResourceLocation.parse(moneyId));
+        if (money == null) return;
+
+        var random = trader.getRandom();
+
+        // 普通交易（固定出现）
+        offers.add(createOffer(Items.EMERALD, 1, money, 1, 999, 0.05f));
+        offers.add(createOffer(money, 8, ModItems.BOMB.get(), 1, 2, 0.05f));
+        offers.add(createOffer(money, 8, ModItems.KEY.get(), 1, 2, 0.05f));
+        offers.add(createOffer(money, 8, ModItems.GRAB_BAG.get(), 1, 2, 0.05f));
+        offers.add(createOffer(money, 5, ModItems.RED_HEART.get(), 1, 2, 0.05f));
+        offers.add(createOffer(money, 5, ModItems.SOUL_HEART.get(), 1, 2, 0.05f));
+
+        // 稀有交易（随机选取两个 IsaacItem）
+        List<Item> items = ForgeRegistries.ITEMS.getValues().stream()
+                .filter(item -> item instanceof IsaacItem)
+                .toList();
+
+        offers.add(createOffer(money, 30, items.get(random.nextInt(items.size())), 1, 1, 0.05f));
+        offers.add(createOffer(money, 30, items.get(random.nextInt(items.size())), 1, 1, 0.05f));
+    }
+
+    /**
+     * 创建一个 MerchantOffer 对象
+     * @param money          货币物品
+     * @param costAmount     货币数量
+     * @param resultItem     出售的物品
+     * @param resultCount    出售物品的数量
+     * @param maxUses        交易可用次数
+     * @param priceMultiplier 价格乘数（影响二次购买时的涨价幅度）
+     */
+    private static MerchantOffer createOffer(Item money, int costAmount, Item resultItem,
+                                             int resultCount, int maxUses, float priceMultiplier) {
+        return new MerchantOffer(
+                new ItemStack(money, costAmount),
+                new ItemStack(resultItem, resultCount),
+                maxUses,
+                5,   // 经验奖励
+                priceMultiplier
+        );
     }
 }

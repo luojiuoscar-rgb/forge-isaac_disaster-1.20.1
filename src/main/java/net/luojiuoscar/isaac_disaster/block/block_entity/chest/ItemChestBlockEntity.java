@@ -3,7 +3,7 @@ package net.luojiuoscar.isaac_disaster.block.block_entity.chest;
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.block.block_entity.misc.ItemDisplayContainerBlockEntity;
 import net.luojiuoscar.isaac_disaster.capability.misc.DisplayItemListCap;
-import net.luojiuoscar.isaac_disaster.manager.LootTableManager;
+import net.luojiuoscar.isaac_disaster.manager.ModLootTables;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.Packet;
@@ -22,7 +22,7 @@ import javax.annotation.Nullable;
 
 
 public abstract class ItemChestBlockEntity extends IsaacChestBlockEntity implements ItemDisplayContainerBlockEntity {
-    public static final String DEFAULT_ITEM_LOOT_TABLE = LootTableManager.DEFAULT_ITEM_POOL.toString();
+    public static final String DEFAULT_ITEM_LOOT_TABLE = ModLootTables.DEFAULT_ITEM_POOL.toString();
 
     public ItemChestBlockEntity(BlockEntityType<?> blockEntityType, BlockPos pos, BlockState state) {
         super(blockEntityType, pos, state);

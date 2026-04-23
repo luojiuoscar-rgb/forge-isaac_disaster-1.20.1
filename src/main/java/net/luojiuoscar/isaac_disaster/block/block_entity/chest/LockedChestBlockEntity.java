@@ -2,7 +2,7 @@ package net.luojiuoscar.isaac_disaster.block.block_entity.chest;
 
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.block.ModBlockEntities;
-import net.luojiuoscar.isaac_disaster.manager.LootTableManager;
+import net.luojiuoscar.isaac_disaster.manager.ModLootTables;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -19,12 +19,12 @@ public class LockedChestBlockEntity extends ItemChestBlockEntity {
     public void init(){
         this.setLocked(true);
         this.setItemLootChance(0.2);
-        this.setItemLootTable(LootTableManager.POOL_LOCKED_CHEST.toString());
+        this.setItemLootTable(ModLootTables.POOL_LOCKED_CHEST.toString());
     }
 
     @Override
     public ResourceLocation getPresetLootTable(){
-        return LootTableManager.LOCKED_CHEST;
+        return ModLootTables.LOCKED_CHEST;
     }
 
     @Override

@@ -2,7 +2,7 @@ package net.luojiuoscar.isaac_disaster.block.block_entity.chest;
 
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.block.ModBlockEntities;
-import net.luojiuoscar.isaac_disaster.manager.LootTableManager;
+import net.luojiuoscar.isaac_disaster.manager.ModLootTables;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -17,7 +17,7 @@ public class NormalChestBlockEntity extends IsaacChestBlockEntity {
 
     @Override
     public ResourceLocation getPresetLootTable(){
-        return LootTableManager.CHEST;
+        return ModLootTables.CHEST;
     }
 
     @Override

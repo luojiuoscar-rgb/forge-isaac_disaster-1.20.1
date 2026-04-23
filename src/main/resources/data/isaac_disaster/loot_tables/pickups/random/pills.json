@@ -3,7 +3,7 @@
     {
       "rolls": 1,
       "entries": [
-        {"type": "minecraft:loot_table", "name": "isaac_disaster:pickups/random/normal_pills", "weight": 19},
+        {"type": "minecraft:loot_table", "name": "isaac_disaster:pickups/random/normal_pills", "weight": 49},
         {"type": "minecraft:loot_table", "name": "isaac_disaster:pickups/random/horse_pills", "weight": 1}
       ]
     }

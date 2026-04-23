@@ -1,7 +1,7 @@
 package net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.normal;
 
 import net.luojiuoscar.isaac_disaster.helper.LootHelper;
-import net.luojiuoscar.isaac_disaster.manager.LootTableManager;
+import net.luojiuoscar.isaac_disaster.manager.ModLootTables;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ExecutableEffectContext;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ContextKeys;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.IAbilityEffect;
@@ -15,10 +15,10 @@ public class Justice implements IAbilityEffect {
         LivingEntity entity = context.getEntity();
         Vec3 pos = context.getOrDefault(ContextKeys.TARGET_POSITION, entity.position());
 
-        LootHelper.spawnLootAtPos(entity, pos, LootTableManager.RANDOM_COINS, amplifier);
-        LootHelper.spawnLootAtPos(entity, pos, LootTableManager.RANDOM_HEARTS, amplifier);
-        LootHelper.spawnLootAtPos(entity, pos, LootTableManager.RANDOM_BOMBS, amplifier);
-        LootHelper.spawnLootAtPos(entity, pos, LootTableManager.RANDOM_KEYS, amplifier);
+        LootHelper.spawnLootAtPos(entity, pos, ModLootTables.RANDOM_COINS, amplifier);
+        LootHelper.spawnLootAtPos(entity, pos, ModLootTables.RANDOM_HEARTS, amplifier);
+        LootHelper.spawnLootAtPos(entity, pos, ModLootTables.RANDOM_BOMBS, amplifier);
+        LootHelper.spawnLootAtPos(entity, pos, ModLootTables.RANDOM_KEYS, amplifier);
         return false;
     }
 }

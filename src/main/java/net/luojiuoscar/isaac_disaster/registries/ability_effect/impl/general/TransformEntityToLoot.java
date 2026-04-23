@@ -1,7 +1,7 @@
 package net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.general;
 
 import net.luojiuoscar.isaac_disaster.helper.LootHelper;
-import net.luojiuoscar.isaac_disaster.manager.LootTableManager;
+import net.luojiuoscar.isaac_disaster.manager.ModLootTables;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ExecutableEffectContext;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ContextKeys;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.IAbilityEffect;
@@ -18,7 +18,7 @@ public class TransformEntityToLoot implements IAbilityEffect {
     public boolean applyEffect(ExecutableEffectContext context) {
 
         List<ResourceLocation> rls = context.getOrDefault(ContextKeys.RESOURCE_LOCATIONS, List.of());
-        ResourceLocation loot = rls.isEmpty() ? LootTableManager.RANDOM_COINS : rls.get(0);
+        ResourceLocation loot = rls.isEmpty() ? ModLootTables.RANDOM_COINS : rls.get(0);
 
         List<LivingEntity> entities = context.get(ContextKeys.SECONDARY_LIVING_ENTITIES);
         if (entities == null || entities.isEmpty()) return false;

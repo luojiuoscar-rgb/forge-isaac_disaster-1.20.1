@@ -4,7 +4,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.luojiuoscar.isaac_disaster.event.custom.misc.GeneralLootModifyEvent;
 import net.luojiuoscar.isaac_disaster.helper.LootHelper;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
-import net.luojiuoscar.isaac_disaster.manager.LootTableManager;
+import net.luojiuoscar.isaac_disaster.manager.ModLootTables;
 import net.luojiuoscar.isaac_disaster.manager.id.TrinketId;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ContextKeys;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ExecutableEffectContext;
@@ -41,7 +41,7 @@ public class ChestLootTrinket implements IAbilityEffect {
 
         // lucky toe
         if (rand.nextDouble() < PlayerHelper.getValueFromTrinket(0.33, 0.66, TrinketId.LUCKY_TOE.getId(), player)){
-            newList.addAll(LootHelper.getLoot(level, LootTableManager.RANDOM_COINS,
+            newList.addAll(LootHelper.getLoot(level, ModLootTables.RANDOM_COINS,
                     new LootParams.Builder(level)
                             .withParameter(LootContextParams.THIS_ENTITY, player)
                             .create(LootContextParamSets.EMPTY)));
@@ -49,7 +49,7 @@ public class ChestLootTrinket implements IAbilityEffect {
 
         // match stick
         if (rand.nextDouble() < PlayerHelper.getValueFromTrinket(0.33, 0.66, TrinketId.MATCH_STICK.getId(), player)){
-            newList.addAll(LootHelper.getLoot(level, LootTableManager.RANDOM_BOMBS,
+            newList.addAll(LootHelper.getLoot(level, ModLootTables.RANDOM_BOMBS,
                     new LootParams.Builder(level)
                             .withParameter(LootContextParams.THIS_ENTITY, player)
                             .create(LootContextParamSets.EMPTY)));
@@ -57,21 +57,21 @@ public class ChestLootTrinket implements IAbilityEffect {
 
         // childs heart
         if (rand.nextDouble() < PlayerHelper.getValueFromTrinket(0.33, 0.66, TrinketId.CHILDS_HEART.getId(), player)){
-            newList.addAll(LootHelper.getLoot(level, LootTableManager.RANDOM_HEARTS,
+            newList.addAll(LootHelper.getLoot(level, ModLootTables.RANDOM_HEARTS,
                     new LootParams.Builder(level)
                             .withParameter(LootContextParams.THIS_ENTITY, player)
                             .create(LootContextParamSets.EMPTY)));        }
 
         // rusted key
         if (rand.nextDouble() < PlayerHelper.getValueFromTrinket(0.33, 0.66, TrinketId.RUSTED_KEY.getId(), player)){
-            newList.addAll(LootHelper.getLoot(level, LootTableManager.RANDOM_KEYS,
+            newList.addAll(LootHelper.getLoot(level, ModLootTables.RANDOM_KEYS,
                     new LootParams.Builder(level)
                             .withParameter(LootContextParams.THIS_ENTITY, player)
                             .create(LootContextParamSets.EMPTY)));        }
 
         // ace of spades
         if (rand.nextDouble() < PlayerHelper.getValueFromTrinket(0.33, 0.66, TrinketId.ACE_OF_SPADES_TRINKET.getId(), player)){
-            newList.addAll(LootHelper.getLoot(level, LootTableManager.RANDOM_CARDS,
+            newList.addAll(LootHelper.getLoot(level, ModLootTables.RANDOM_CARDS,
                     new LootParams.Builder(level)
                             .withParameter(LootContextParams.THIS_ENTITY, player)
                             .create(LootContextParamSets.EMPTY)));
@@ -79,7 +79,7 @@ public class ChestLootTrinket implements IAbilityEffect {
 
         // safety pin
         if (rand.nextDouble() < PlayerHelper.getValueFromTrinket(0.33, 0.66, TrinketId.SAFETY_CAP.getId(), player)){
-            newList.addAll(LootHelper.getLoot(level, LootTableManager.RANDOM_PILLS,
+            newList.addAll(LootHelper.getLoot(level, ModLootTables.RANDOM_PILLS,
                     new LootParams.Builder(level)
                             .withParameter(LootContextParams.THIS_ENTITY, player)
                             .create(LootContextParamSets.EMPTY)));

@@ -3,7 +3,11 @@ package net.luojiuoscar.isaac_disaster.manager;
 import net.minecraft.resources.ResourceLocation;
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 
-public class LootTableManager {
+public class ModLootTables {
+    // random pickups
+    public static final ResourceLocation RANDOM_PICKUPS =
+            ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "pickups/random/pickups");
+
     // random drops
     public static final ResourceLocation RANDOM_COINS =
             ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "pickups/random/coins");
@@ -24,7 +28,7 @@ public class LootTableManager {
     public static final ResourceLocation RANDOM_TRINKETS =
             ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "pickups/random/trinkets");
     public static final ResourceLocation RANDOM_POOPS =
-            ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "pickups/random/random_poops");
+            ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "pickups/random/poops");
 
 
     // sacks

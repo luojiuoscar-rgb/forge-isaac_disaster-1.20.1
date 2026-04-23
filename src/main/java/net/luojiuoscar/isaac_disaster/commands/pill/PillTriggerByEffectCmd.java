@@ -1,4 +1,4 @@
-package net.luojiuoscar.isaac_disaster.commands;
+package net.luojiuoscar.isaac_disaster.commands.pill;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.BoolArgumentType;
@@ -18,9 +18,9 @@ import net.minecraftforge.registries.RegistryObject;
 
 import java.util.List;
 
-public class TriggerPillEffectCommand {
+public class PillTriggerByEffectCmd {
 
-    public TriggerPillEffectCommand(CommandDispatcher<CommandSourceStack> dispatcher) {
+    public PillTriggerByEffectCmd(CommandDispatcher<CommandSourceStack> dispatcher) {
 
         dispatcher.register(
                 Commands.literal("isd")
@@ -30,7 +30,6 @@ public class TriggerPillEffectCommand {
                                                 Commands.literal("use")
                                                         .then(
                                                                 Commands.argument("id", ResourceLocationArgument.id())
-                                                                        // ==== TAB 补全 ====
                                                                         .suggests((ctx, builder) -> {
                                                                             List<String> ids = ModExecutableEffects.EXECUTABLE_EFFECT_REGISTRY.getEntries()
                                                                                     .stream()
@@ -77,7 +76,7 @@ public class TriggerPillEffectCommand {
             return 0;
         }
 
-        // === 从 Registry 中查找对应的 PillEffect ===
+        // 从 Registry 中查找对应的 PillEffect
         RegistryObject<IExecutableEffect> obj = ModExecutableEffects.EXECUTABLE_EFFECT_REGISTRY.getEntries()
                 .stream()
                 .filter(e -> e.getId().equals(id))
