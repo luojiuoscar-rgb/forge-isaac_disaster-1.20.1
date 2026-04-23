@@ -62,6 +62,7 @@ public class RedChestBlockEntity extends ItemChestBlockEntity {
             if (rand.nextDouble() >= getItemLootChance()){
                 if (rand.nextDouble() >= 0.5){
                     openEvent(serverLevel, player, pos);
+                    this.clearContent();
                 }
                 return false;
             }

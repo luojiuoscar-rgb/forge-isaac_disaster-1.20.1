@@ -84,6 +84,7 @@ public class ActiveItem extends IsaacItem {
 
         return Math.max(this.damage_per_use - count[0] * 40, 0);
     }
+
     public int getOriginalDamagePerUse(){
         return this.damage_per_use;
     }
@@ -158,7 +159,9 @@ public class ActiveItem extends IsaacItem {
             }
 
             // 如果不是创造模式则消耗耐久
-            if (!player.isCreative()) stack.setDamageValue(damage);
+            if (!player.isCreative()) {
+                stack.setDamageValue(damage);
+            }
 
             // 设置0.25秒的冷却
             player.getCooldowns().addCooldown(item, 5);
@@ -178,6 +181,4 @@ public class ActiveItem extends IsaacItem {
 
         return InteractionResultHolder.success(stack);
     }
-
-
 }

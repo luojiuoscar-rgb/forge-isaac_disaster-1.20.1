@@ -5,6 +5,7 @@ import net.luojiuoscar.isaac_disaster.capability.entity.EffectModulesProvider;
 import net.luojiuoscar.isaac_disaster.entity.tnt.IsaacBomb;
 import net.luojiuoscar.isaac_disaster.event.custom.attack.*;
 import net.luojiuoscar.isaac_disaster.event.custom.attack.tear_bullet.BulletTickEvent;
+import net.luojiuoscar.isaac_disaster.event.custom.attack.tear_bullet.TearBulletEndOfLifeEvent;
 import net.luojiuoscar.isaac_disaster.event.custom.misc.BeforeTriggerModuleActiveEvent;
 import net.luojiuoscar.isaac_disaster.event.custom.misc.GeneralLootModifyEvent;
 import net.luojiuoscar.isaac_disaster.event.custom.misc.RightClickTickEvent;
@@ -103,6 +104,7 @@ public class TriggerModuleEvents {
     public static void onHitEntity(LivingAttackEvent event) {
         // restricted damage types
         if (!PlayerHelper.isHitAllowedType(event.getSource())) return;
+
         if (!(event.getSource().getEntity() instanceof LivingEntity entity)) return;
         ExecutableEffectContext context = new ExecutableEffectContext(entity);
         context.set(ContextKeys.EVENT, event);
@@ -117,7 +119,7 @@ public class TriggerModuleEvents {
             context.set(ContextKeys.ENTITY, List.of(event.getSource().getDirectEntity()));
         }
 
-        dispatch(context, ModTriggerTypes.HIT_ENTITY);
+        dispatch(context, ModTriggerTypes.HIT_ENTITY_RESTRICTED);
     }
 
     @SubscribeEvent
@@ -188,6 +190,19 @@ public class TriggerModuleEvents {
         context.set(ContextKeys.DOUBLE, List.of((double) bulletObject.getDamage()));
 
         dispatchBullet(context, ModTriggerTypes.BULLET_HIT_BLOCK);
+    }
+
+    @SubscribeEvent
+    public static void onBulletEndOfLife(TearBulletEndOfLifeEvent event) {
+        IBulletObject bullet = event.getBullet();
+
+        if (bullet.getOwner() == null) return;
+        ExecutableEffectContext context = new ExecutableEffectContext(bullet.getOwner());
+        context.set(ContextKeys.EVENT, event);
+        context.set(ContextKeys.BULLET, bullet);
+        context.set(ContextKeys.TARGET_POSITION, bullet.getPosition());
+
+        dispatchBullet(context, ModTriggerTypes.BULLET_END_OF_LIFE);
     }
 
     /**

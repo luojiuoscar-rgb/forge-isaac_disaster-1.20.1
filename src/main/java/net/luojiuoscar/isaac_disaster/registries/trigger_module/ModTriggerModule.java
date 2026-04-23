@@ -111,5 +111,7 @@ public class ModTriggerModule {
             TRIGGER_MODULE_REGISTRY.register("fanny_pack", FannyPack::new);
     public static final RegistryObject<TriggerModule> SAD_BOMB =
             TRIGGER_MODULE_REGISTRY.register("sad_bomb", SadBomb::new);
+    public static final RegistryObject<TriggerModule> VOLT45 =
+            TRIGGER_MODULE_REGISTRY.register("volt45", Volt45::new);
 
 }

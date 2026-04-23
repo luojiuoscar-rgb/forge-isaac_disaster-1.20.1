@@ -11,7 +11,7 @@ import java.util.List;
 
 public class MomsEyeshadow extends TriggerModule {
     private static final CompositeTrigger TRIGGER = new CompositeTrigger(List.of(
-            new SimpleTrigger(ModTriggerTypes.HIT_ENTITY, ModExecutableEffects.MOMS_EYESHADOW, context ->
+            new SimpleTrigger(ModTriggerTypes.HIT_ENTITY_RESTRICTED, ModExecutableEffects.MOMS_EYESHADOW, context ->
                     context.getEntity().getRandom().nextDouble() < getTriggerChance(context.getEntity()))
     ));
 

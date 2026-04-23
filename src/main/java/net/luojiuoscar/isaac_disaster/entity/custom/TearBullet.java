@@ -5,7 +5,7 @@ import net.luojiuoscar.isaac_disaster.event.custom.attack.IsaacAttackAfterHitEve
 import net.luojiuoscar.isaac_disaster.event.custom.attack.IsaacAttackBeforeHitEntityEvent;
 import net.luojiuoscar.isaac_disaster.event.custom.attack.IsaacAttackHitBlockEvent;
 import net.luojiuoscar.isaac_disaster.event.custom.attack.tear_bullet.BulletTickEvent;
-import net.luojiuoscar.isaac_disaster.event.custom.attack.tear_bullet.TearBulletDiscardEvent;
+import net.luojiuoscar.isaac_disaster.event.custom.attack.tear_bullet.TearBulletEndOfLifeEvent;
 import net.luojiuoscar.isaac_disaster.helper.EntityHelper;
 import net.luojiuoscar.isaac_disaster.manager.ModDamageType;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.CompositeTrigger;
@@ -205,7 +205,7 @@ public class TearBullet extends Entity implements IBulletObject {
 
             // ================== 碰撞检测 ==================
             if (--lifeTick <= 0) {
-                if (!MinecraftForge.EVENT_BUS.post(new TearBulletDiscardEvent(this))) discard();
+                if (!MinecraftForge.EVENT_BUS.post(new TearBulletEndOfLifeEvent(this))) discard();
                 return;
             }
 
@@ -255,9 +255,7 @@ public class TearBullet extends Entity implements IBulletObject {
         IsaacAttackHitBlockEvent event =
                 new IsaacAttackHitBlockEvent(this, getOwner(), ModAttackType.BULLET.getId(), trigger, blockHit);
         if (!MinecraftForge.EVENT_BUS.post(event)) {
-            if (!MinecraftForge.EVENT_BUS.post(new TearBulletDiscardEvent(this))) {
-                discard();
-            }
+            discard();
         }
 
         return true;
@@ -311,7 +309,7 @@ public class TearBullet extends Entity implements IBulletObject {
 
 
         if (!isPiercing) {
-            if (!MinecraftForge.EVENT_BUS.post(new TearBulletDiscardEvent(this))) discard();
+            discard();
         }
     }
 

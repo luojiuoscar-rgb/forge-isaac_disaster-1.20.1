@@ -20,9 +20,14 @@ public class ModTriggerTypes {
             new TriggerType(ResourceLocation.fromNamespaceAndPath(
                     IsaacDisaster.MOD_ID, "bullet_hit_entity_after"));
 
-    public static final TriggerType HIT_ENTITY =
+    public static final TriggerType BULLET_END_OF_LIFE =
             new TriggerType(ResourceLocation.fromNamespaceAndPath(
-                    IsaacDisaster.MOD_ID, "hit_entity"));
+                    IsaacDisaster.MOD_ID, "bullet_end_of_life"));
+
+    /** 只会被“允许的伤害类别” 触发 */
+    public static final TriggerType HIT_ENTITY_RESTRICTED =
+            new TriggerType(ResourceLocation.fromNamespaceAndPath(
+                    IsaacDisaster.MOD_ID, "hit_entity_restricted"));
 
     public static final TriggerType KILL_ENTITY =
             new TriggerType(ResourceLocation.fromNamespaceAndPath(

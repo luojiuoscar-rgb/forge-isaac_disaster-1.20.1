@@ -21,7 +21,7 @@ public class Ipecac implements IAbilityEffect {
 
         List<Double> nums = context.getOrDefault(ContextKeys.DOUBLE, List.of());
         nums = new ArrayList<>(nums);
-        float damage = nums.get(0) < 0 ? 0f : nums.get(0).floatValue();
+        float damage = nums.isEmpty() ? 2.f : nums.get(0).floatValue();
 
         explode(entity, context.get(ContextKeys.TARGET_POSITION), damage);
         return true;

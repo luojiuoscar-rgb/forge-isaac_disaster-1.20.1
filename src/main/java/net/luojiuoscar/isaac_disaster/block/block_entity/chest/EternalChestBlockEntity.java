@@ -14,8 +14,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nullable;
-
 public class EternalChestBlockEntity extends ItemChestBlockEntity {
     public EternalChestBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.ETERNAL_CHEST_BLOCK_ENTITY.get(), pos, state);
@@ -56,16 +54,21 @@ public class EternalChestBlockEntity extends ItemChestBlockEntity {
                 dropContent();
             }
 
+            // 生成普通战利品
             if (serverLevel.getRandom().nextDouble() >= getItemLootChance() || tryLootCount == 1){
+                // 确保普通战利品表存在
+                if (this.lootTable == null){
+                    this.setLootTable(getPresetLootTable(), 0);
+                }
+
                 unpackLootTable(player);
                 setLocked(true);
                 return false;
             }
+
             setOpened(true);
             if (serverLevel.getRandom().nextDouble() < 0.33) return false;
 
-            // 因为掉落物品会清空箱子，所以先弹出箱子内物品
-            dropContent();
             this.lootTable = null;
             boolean s = super.lootItem(serverLevel, player, pos, ResourceLocation.parse(getItemLootTable()), this::clearContent);
             if (s){
@@ -90,13 +93,6 @@ public class EternalChestBlockEntity extends ItemChestBlockEntity {
 
         Containers.dropContents(this.level, this.worldPosition, inv);
         this.clearContent();
-    }
-
-    @Override
-    public void unpackLootTable(@Nullable Player pPlayer) {
-        ResourceLocation lt = this.lootTable;
-        super.unpackLootTable(pPlayer);
-        this.lootTable = lt; // 重设lootTable
     }
 
     @Override

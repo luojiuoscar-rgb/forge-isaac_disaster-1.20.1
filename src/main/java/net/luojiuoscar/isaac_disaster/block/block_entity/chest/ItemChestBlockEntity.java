@@ -84,6 +84,9 @@ public abstract class ItemChestBlockEntity extends IsaacChestBlockEntity impleme
         this.itemLootChance = c;
     }
 
+    /**
+     * @return successfully generated an item
+     */
     @Override
     public boolean tryLootItem(ServerLevel serverLevel, Player player, BlockPos pos){
         try {

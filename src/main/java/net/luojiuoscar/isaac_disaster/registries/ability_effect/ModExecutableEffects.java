@@ -357,6 +357,8 @@ public class ModExecutableEffects {
             EXECUTABLE_EFFECT_REGISTRY.register("attach_effect_to_tnt", AttachEffectToTnt::new);
     public static final RegistryObject<IExecutableEffect> SAD_BOMB =
             EXECUTABLE_EFFECT_REGISTRY.register("sad_bomb", SadBomb::new);
+    public static final RegistryObject<IExecutableEffect> VOLT45 =
+            EXECUTABLE_EFFECT_REGISTRY.register("volt45", Volt45::new);
 
     //</editor-fold>
 
@@ -549,7 +551,7 @@ public class ModExecutableEffects {
             EXECUTABLE_EFFECT_REGISTRY.register("ace_of_clubs", () -> new AbilityEffectEntry(
                     APPLY_EFFECT_TO_NEARBY, ctx -> {
                 ctx.set(ContextKeys.EXECUTABLE_EFFECT, ModExecutableEffects.TRANSFORM_ENTITY_TO_LOOT.get());
-                ctx.set(ContextKeys.BOOLEAN, List.of(true)); // exclude friends
+                ctx.set(ContextKeys.BOOLEAN, List.of(true));
                 ctx.set(ContextKeys.RESOURCE_LOCATIONS, List.of(ModLootTables.RANDOM_BOMBS));
             }));
     public static final RegistryObject<IExecutableEffect> ACE_OF_DIAMONDS =

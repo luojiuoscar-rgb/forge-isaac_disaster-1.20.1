@@ -144,4 +144,9 @@ public class AttackContext {
 
         return damage.floatValue();
     }
+
+    @Override
+    public String toString() {
+        return "atkctxdmg: "+damage;
+    }
 }

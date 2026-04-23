@@ -2,6 +2,7 @@ package net.luojiuoscar.isaac_disaster.registries.ability.passive.impl;
 
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.registries.ability.passive.PassiveAbility;
+import net.luojiuoscar.isaac_disaster.registries.bullet_color.ModBulletColor;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
@@ -31,6 +32,8 @@ public class SacredHeart extends PassiveAbility {
         StatManager.BLOCK_BREAKING.apply(player, 1);
         StatManager.ENTITY_REACH.apply(player, 1);
         StatManager.BLOCK_REACH.apply(player, 1);
+
+        StatManager.addBulletColor(player, ModBulletColor.SACRED_HEART.getId(), 1);
     }
 
     @Override
@@ -45,6 +48,8 @@ public class SacredHeart extends PassiveAbility {
         StatManager.BLOCK_BREAKING.apply(player, -1);
         StatManager.ENTITY_REACH.apply(player, -1);
         StatManager.BLOCK_REACH.apply(player, -1);
+
+        StatManager.addBulletColor(player, ModBulletColor.SACRED_HEART.getId(), -1);
     }
 
     @Override

@@ -73,6 +73,8 @@ public class TammysHead implements IAbilityEffect {
                     MinecraftForge.EVENT_BUS.post(event);
                     contexts = event.getContexts();
 
+                    IsaacDisaster.LOGGER.info("List of bullets: "+contexts);
+
                     attack.performAttack(contexts);
                     attack.makeSound(player);
                 }

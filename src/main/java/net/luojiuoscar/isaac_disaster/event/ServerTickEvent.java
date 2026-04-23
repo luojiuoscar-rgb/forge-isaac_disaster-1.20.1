@@ -111,7 +111,6 @@ public class ServerTickEvent {
         // 有4.5伏特时不执行充能
         if (PlayerHelper.hasItem(ItemId.VOLT_4P5.getId(), player)) return;
 
-
         // 恢复耐久
         Inventory inv = player.getInventory();
         List<ItemStack> items = new ArrayList<>();
@@ -127,8 +126,7 @@ public class ServerTickEvent {
         for (ItemStack stack : items) {
 
             if (!stack.isEmpty() && stack.getItem() instanceof ActiveItem) {
-                PlayerHelper.chargeItem(stack, Config.ACTIVE_ITEM_DURABILITY_RESTORE_RATE.get(),
-                        PlayerHelper.hasItem(ItemId.THE_BATTERY.getId(), player));
+                PlayerHelper.chargeItem(stack, Config.ACTIVE_ITEM_DURABILITY_RESTORE_RATE.get(), PlayerHelper.hasItem(ItemId.THE_BATTERY.getId(), player));
             }
         }
     }

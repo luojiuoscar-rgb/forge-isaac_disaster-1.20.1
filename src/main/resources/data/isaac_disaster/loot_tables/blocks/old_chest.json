@@ -6,7 +6,7 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "isaac_disaster:eternal_chest",
+          "name": "isaac_disaster:old_chest",
           "functions": [
             {
               "function": "minecraft:set_nbt",

@@ -11,7 +11,7 @@ import java.util.List;
 
 public class TheCommonCold extends TriggerModule {
     private static final CompositeTrigger TRIGGER = new CompositeTrigger( List.of(
-            new SimpleTrigger(ModTriggerTypes.HIT_ENTITY, ModExecutableEffects.THE_COMMON_COLD, context ->
+            new SimpleTrigger(ModTriggerTypes.HIT_ENTITY_RESTRICTED, ModExecutableEffects.THE_COMMON_COLD, context ->
                  context.getEntity().getRandom().nextDouble()
                          < getTriggerChance(context.getEntity()))
     ));

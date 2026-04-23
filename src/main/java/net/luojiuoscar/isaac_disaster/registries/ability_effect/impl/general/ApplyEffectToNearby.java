@@ -34,10 +34,10 @@ public class ApplyEffectToNearby implements IAbilityEffect {
         List<LivingEntity> entities = LevelHelper.selectBySphere(entity.level(),
                 position, StatManager.getNearbyRange() * range);
 
-        for (LivingEntity e : entities){
+        for (LivingEntity e : entities){            effect.apply(context.copy(e)); // 施加效果到对应实体上
+
             if (ignoreFriendly && EntityHelper.isFriendly(entity, e)) continue;
 
-            effect.apply(context.copy(e)); // 施加效果到对应实体上
         }
         return true;
     }

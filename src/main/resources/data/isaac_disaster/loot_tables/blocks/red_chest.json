@@ -6,7 +6,7 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "isaac_disaster:locked_chest",
+          "name": "isaac_disaster:red_chest",
           "functions": [
             {
               "function": "minecraft:set_nbt",

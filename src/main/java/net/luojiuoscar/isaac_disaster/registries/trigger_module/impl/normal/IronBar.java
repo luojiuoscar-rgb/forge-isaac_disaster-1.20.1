@@ -10,7 +10,7 @@ import java.util.List;
 
 public class IronBar extends TriggerModule {
     private static final CompositeTrigger TRIGGER = new CompositeTrigger(List.of(
-            new SimpleTrigger(ModTriggerTypes.HIT_ENTITY, ModExecutableEffects.IRON_BAR, context ->
+            new SimpleTrigger(ModTriggerTypes.HIT_ENTITY_RESTRICTED, ModExecutableEffects.IRON_BAR, context ->
                             context.getEntity().getRandom().nextDouble()
                                     < getTriggerChance(context.getEntity()))
     ));

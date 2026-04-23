@@ -1,6 +1,5 @@
 package net.luojiuoscar.isaac_disaster.registries.ability_effect;
 
-import net.luojiuoscar.isaac_disaster.registries.ability_effect.data.AbilityEffectTokenBucket;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -12,14 +11,18 @@ public interface IAbilityEffect extends IExecutableEffect {
         if (context.getEntity().level().isClientSide) return;
 
         // 使用try确保不会崩溃；通过token bucket限制单tick触发量
-        boolean success = AbilityEffectTokenBucket.getInstance().tryConsume(1);
-        if (success){
-            try {
-                success = applyEffect(context);
-            }catch (SilentException ignored){
-                success = false;
-            }
-        }
+
+        boolean success = applyEffect(context);
+
+
+//      boolean success = AbilityEffectTokenBucket.getInstance().tryConsume(1);
+//        if (success){
+//            try {
+//                success = applyEffect(context);
+//            }catch (Exception ignored){
+//                success = false;
+//            }
+//        }
 
         // default behaviour
         if (!success){

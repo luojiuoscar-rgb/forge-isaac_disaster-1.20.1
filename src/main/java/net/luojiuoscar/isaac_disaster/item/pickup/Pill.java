@@ -57,7 +57,7 @@ public class Pill extends Item implements ICommonPickup {
 
             ExecutableEffectContext context = new ExecutableEffectContext(player);
             context.set(ContextKeys.BOOLEAN, List.of(isHorsePill));
-            effect.applyEffect(context);
+            effect.apply(context);
 
             // 如果没有有正确的药丸记录，则更新
             if (!(stack.getItem() instanceof IIgnoreRecord) &&

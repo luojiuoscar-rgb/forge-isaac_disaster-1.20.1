@@ -5,10 +5,10 @@ import net.minecraftforge.eventbus.api.Cancelable;
 import net.minecraftforge.eventbus.api.Event;
 
 @Cancelable
-public class TearBulletDiscardEvent extends Event {
+public class TearBulletEndOfLifeEvent extends Event {
     private final TearBullet bullet;
 
-    public TearBulletDiscardEvent(TearBullet bullet) {
+    public TearBulletEndOfLifeEvent(TearBullet bullet) {
         this.bullet = bullet;
     }
 

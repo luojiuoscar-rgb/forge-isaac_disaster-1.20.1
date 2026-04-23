@@ -17,9 +17,7 @@ import net.luojiuoscar.isaac_disaster.commands.trinket.TrinketClearSwallowedCmd;
 import net.luojiuoscar.isaac_disaster.commands.trinket.TrinketSetEnchanted;
 import net.luojiuoscar.isaac_disaster.effect.ModEffects;
 import net.luojiuoscar.isaac_disaster.helper.LootHelper;
-import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.item.ModItems;
-import net.luojiuoscar.isaac_disaster.item.item.ActiveItem;
 import net.luojiuoscar.isaac_disaster.item.item.IIsaacCuriosItem;
 import net.luojiuoscar.isaac_disaster.item.item.IsaacItem;
 import net.luojiuoscar.isaac_disaster.item.item.custom.FoodPassiveItem;
@@ -29,7 +27,6 @@ import net.luojiuoscar.isaac_disaster.manager.ModDamageType;
 import net.luojiuoscar.isaac_disaster.manager.ModLootTables;
 import net.luojiuoscar.isaac_disaster.manager.PillEffectManager;
 import net.luojiuoscar.isaac_disaster.manager.data.PillShuffleData;
-import net.luojiuoscar.isaac_disaster.manager.id.ItemId;
 import net.luojiuoscar.isaac_disaster.networking.ModMessages;
 import net.luojiuoscar.isaac_disaster.networking.packet.PassiveItemMapSyncS2CPacket;
 import net.luojiuoscar.isaac_disaster.networking.packet.PillRecordsSyncS2CPacket;
@@ -43,7 +40,6 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityDimensions;
 import net.minecraft.world.entity.LivingEntity;
@@ -60,7 +56,10 @@ import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.entity.EntityEvent;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
-import net.minecraftforge.event.entity.living.*;
+import net.minecraftforge.event.entity.living.LivingDeathEvent;
+import net.minecraftforge.event.entity.living.LivingHurtEvent;
+import net.minecraftforge.event.entity.living.LivingKnockBackEvent;
+import net.minecraftforge.event.entity.living.MobEffectEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.level.LevelEvent;
@@ -289,36 +288,6 @@ public class ForgeEvents {
 
 
         ConfigCommand.register(event.getDispatcher());
-    }
-
-    @SubscribeEvent
-    public static void onPlayerAttack(LivingAttackEvent event){
-        // 检查攻击者是否为玩家
-        if (!(event.getSource().getEntity() instanceof Player player)) return;
-        if (!(player instanceof ServerPlayer)) return;
-
-
-        // 有4.5伏特时，将伤害转化为充能
-        if (PlayerHelper.hasItem(ItemId.VOLT_9.getId(), (ServerPlayer) player)) return;
-
-
-        // 遍历玩家所有物品槽位
-        for (int i = 0; i < player.getInventory().getContainerSize(); i++) {
-            ItemStack stack = player.getInventory().getItem(i);
-
-            // 检查物品是否为NormalActiveItem类型且不为空
-            if (!stack.isEmpty() && stack.getItem() instanceof ActiveItem) {
-                int rate = Config.ACTIVE_ITEM_DURABILITY_RESTORE_RATE.get() / 2;
-                // 近战伤害获取额外充能数值
-                if (event.getSource().is(DamageTypes.PLAYER_ATTACK)){
-                    rate *= 4;
-                }
-                // 充电（传入蓄电池参数）
-                PlayerHelper.chargeItem(stack,
-                        Math.max((int) event.getAmount() * rate, 1),
-                        PlayerHelper.hasItem(ItemId.THE_BATTERY.getId(), (ServerPlayer) player));
-            }
-        }
     }
 
     @SubscribeEvent

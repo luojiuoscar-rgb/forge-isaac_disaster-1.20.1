@@ -3,8 +3,8 @@ package net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.normal;
 import net.luojiuoscar.isaac_disaster.helper.EntityHelper;
 import net.luojiuoscar.isaac_disaster.helper.LevelHelper;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
-import net.luojiuoscar.isaac_disaster.registries.ability_effect.ExecutableEffectContext;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ContextKeys;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.ExecutableEffectContext;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.IAbilityEffect;
 import net.luojiuoscar.isaac_disaster.sound.ModSounds;
 import net.minecraft.core.particles.ParticleOptions;
@@ -14,7 +14,6 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.MobType;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 
@@ -52,9 +51,7 @@ public class TheNecronmicon implements IAbilityEffect {
             // 排除队友
             if (EntityHelper.isFriendly(target, entity)) continue;
 
-            DamageSource source = entity instanceof Player ?
-                    level.damageSources().playerAttack((Player) entity) :
-                    level.damageSources().mobAttack(entity);
+            DamageSource source = level.damageSources().generic();
 
             // 造成伤害
             if (target.getMobType() == MobType.UNDEAD){

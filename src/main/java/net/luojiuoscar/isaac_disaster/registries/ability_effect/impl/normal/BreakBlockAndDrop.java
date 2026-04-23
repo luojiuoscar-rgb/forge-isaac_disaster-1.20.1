@@ -24,9 +24,8 @@ public class BreakBlockAndDrop implements IAbilityEffect {
 
             var destroySpeed = state.getDestroySpeed(level, pos);
 
-            if (destroySpeed <= amplifier * 16 && destroySpeed > 0){
+            if (destroySpeed <= amplifier * amplifier * 24 && destroySpeed > 0){
                 level.destroyBlock(pos, true);
-
             }
         }
         return true;
