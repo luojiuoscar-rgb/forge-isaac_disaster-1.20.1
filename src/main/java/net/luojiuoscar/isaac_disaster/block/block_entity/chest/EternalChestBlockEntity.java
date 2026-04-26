@@ -42,6 +42,7 @@ public class EternalChestBlockEntity extends ItemChestBlockEntity {
     }
 
     private int tryLootCount = 0;
+    private ResourceLocation originalLootTable = getPresetLootTable();
 
     @Override
     public boolean tryLootItem(ServerLevel serverLevel, Player player, BlockPos pos){
@@ -56,11 +57,9 @@ public class EternalChestBlockEntity extends ItemChestBlockEntity {
 
             // 生成普通战利品
             if (serverLevel.getRandom().nextDouble() >= getItemLootChance() || tryLootCount == 1){
-                // 确保普通战利品表存在
                 if (this.lootTable == null){
-                    this.setLootTable(getPresetLootTable(), 0);
+                    this.setLootTable(originalLootTable, serverLevel.getRandom().nextLong());
                 }
-
                 unpackLootTable(player);
                 setLocked(true);
                 return false;
@@ -69,6 +68,7 @@ public class EternalChestBlockEntity extends ItemChestBlockEntity {
             setOpened(true);
             if (serverLevel.getRandom().nextDouble() < 0.33) return false;
 
+            // clear lootTable
             this.lootTable = null;
             boolean s = super.lootItem(serverLevel, player, pos, ResourceLocation.parse(getItemLootTable()), this::clearContent);
             if (s){
@@ -88,7 +88,7 @@ public class EternalChestBlockEntity extends ItemChestBlockEntity {
         SimpleContainer inv = new SimpleContainer(this.getContainerSize());
 
         for(int i=0; i<this.getContainerSize(); i++){
-            inv.setItem(i, this.getItem(i));
+            inv.setItem(i, this.getItems().get(i));
         }
 
         Containers.dropContents(this.level, this.worldPosition, inv);
@@ -105,5 +105,6 @@ public class EternalChestBlockEntity extends ItemChestBlockEntity {
     public void load(CompoundTag tag) {
         super.load(tag);
         if (tag.contains("TryLootCount")) this.tryLootCount = tag.getInt("TryLootCount");
+        if (tag.contains("LootTable")) this.originalLootTable = ResourceLocation.parse(tag.getString("LootTable"));
     }
 }

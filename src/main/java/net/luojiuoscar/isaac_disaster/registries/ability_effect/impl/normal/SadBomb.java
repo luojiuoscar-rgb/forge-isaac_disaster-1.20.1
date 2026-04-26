@@ -69,11 +69,11 @@ public class SadBomb extends BombRelated {
 
     private int getBulletCount(int power){
         if (power == BombData.MEGA.power()){
-            return 10;
+            return 13;
         }else if (power == BombData.NORMAL.power()){
-            return 6;
+            return 8;
         }else {
-            return 1;
+            return 0;
         }
     }
 }
