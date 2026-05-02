@@ -13,7 +13,7 @@ public class StackGildingEffect implements IAbilityEffect {
         LivingEntity entity = context.getEntity();
 
         int amplifier = context.getOrDefault(ContextKeys.AMPLIFIER, 1.).intValue();
-        ((IStackableEffect) ModEffects.FRAGILE_HEART.get()).stack(entity, amplifier);
+        ((IStackableEffect) ModEffects.GILDING.get()).stack(entity, amplifier);
         return true;
     }
 }

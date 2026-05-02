@@ -2,7 +2,6 @@ package net.luojiuoscar.isaac_disaster.registries.ability.pickup.impl.cards;
 
 import net.luojiuoscar.isaac_disaster.client.ClientDataManager;
 import net.luojiuoscar.isaac_disaster.manager.ColorManager;
-import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.manager.id.ItemId;
 import net.luojiuoscar.isaac_disaster.registries.ability.pickup.TarotAbility;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.CompositeTrigger;
@@ -37,7 +36,7 @@ public class TheHangedMan extends TarotAbility {
     public List<Component> getDesc() {
         List<Component> description = new ArrayList<>();
 
-        description.add(StatManager.FLY_TIME.description(1));
+        description.add(Component.translatable("item.isaac_disaster.the_bible.lore.1"));
 
         if (ClientDataManager.getInstance().getCountFromId(ItemId.TAROT_CLOTH.getId()) > 0){
             description.add(Component.translatable("item.isaac_disaster.tarot_cloth").append(": ")

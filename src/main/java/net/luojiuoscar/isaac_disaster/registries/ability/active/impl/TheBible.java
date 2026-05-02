@@ -44,7 +44,7 @@ public class TheBible extends ActiveAbility {
     @Override
     public List<Component> getDesc(@Nullable ItemStack stack) {
         return List.of(
-                Component.translatable("attribute.isaac_disaster.fly_time")
+                Component.translatable("item.isaac_disaster.the_bible.lore.1")
         );
     }
 
