@@ -9,9 +9,9 @@
 - 40个饰品
 - 25张卡牌
 - 45+的药丸效果
-  还有更多！
+- 还有更多！
 
-模组的开发正在缓慢进行中，欢迎大家关注我的b站账号！
+模组的开发正在缓慢进行中，欢迎大家关注我的b站账号[洛玖Oscar](https://space.bilibili.com/250685960)！
 
 ---
 
@@ -23,7 +23,7 @@ Current content includes:
 - 40 trinkets
 - 25 cards
 - 45+ pill effects
-  And more!
+- And more!
 
 Development of the mod is progressing slowly. Welcome to follow my Bilibili account[洛玖Oscar](https://space.bilibili.com/250685960)!
 
