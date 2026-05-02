@@ -1,7 +1,38 @@
 # ISAAC DISASTER
 *made by LuojiuOscar*
 
+## INTRODUCTION
+此模组目标在于还原以撒中的各类道具。
+
+目前内容包括：
+- 165个道具，包括主动和被动道具
+- 40个饰品
+- 25张卡牌
+- 45+的药丸效果
+  还有更多！
+
+模组的开发正在缓慢进行中，欢迎大家关注我的b站账号！
+
+---
+
+## INTRODUCTION
+The goal of this mod is to recreate various items from The Binding of Isaac.
+
+Current content includes:
+- 165 items, including active and passive items
+- 40 trinkets
+- 25 cards
+- 45+ pill effects
+  And more!
+
+Development of the mod is progressing slowly. Welcome to follow my Bilibili account[洛玖Oscar](https://space.bilibili.com/250685960)!
+
+---
+
 ## NOTES
+<details>
+<summary>click to expand</summary>
+
  - data/forge/loot_modifiers/global_loot_modifiers.json is overwritten by custom provider: ForgeGlobalLootModifiersProvider. 
 This will ensure that all loot modifiers are in the correct order.
  - Removal of an **ITEM** from corresponding item pool is processed manually. 
@@ -21,18 +52,9 @@ Ensures in the future item could be generated from pool without removing it from
  - Generating more than 1 item from item pool may cause unpredictable error. Item display will always choose the first item in the container.
  - Only pools under  *data/isaac_disaster/loot_tables/pools/item/* folder will be affected by other items.
  - Items generated from pedestal & chests will be marked as removal.
-
  - Chest Loots are located under *resource/data/isaac_disaster/loot_tables/chests/isaac/* folder.
 
-## MIXIN
- - LivingEntity getDimensions()
-
-## ACCESS TRANSFORMER
- - PrimedTnt.owner
- - LivingEntity.getEyeHeight()
- - Creeper.explodeCreeper()
- - LootTable.pools
- - LootPool.entries
+</details>
 
 # CREDITS
 I would like to thank the following contributors for their invaluable help and support:
