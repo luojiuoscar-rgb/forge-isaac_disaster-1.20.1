@@ -1,7 +1,7 @@
 package net.luojiuoscar.isaac_disaster.registries.ability.active.impl;
 
 import net.luojiuoscar.isaac_disaster.client.ClientDataManager;
-import net.luojiuoscar.isaac_disaster.manager.ColorManager;
+import net.luojiuoscar.isaac_disaster.helper.DescriptionHelper;
 import net.luojiuoscar.isaac_disaster.manager.id.ItemId;
 import net.luojiuoscar.isaac_disaster.registries.ability.active.ActiveAbility;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.CompositeTrigger;
@@ -39,15 +39,17 @@ public class ThePoop extends ActiveAbility {
         List<Component> description = new ArrayList<>();
 
         if (ClientDataManager.getInstance().getCountFromId(ItemId.CAR_BATTERY.getId()) > 0){
-            description.add(Component.translatable("item.isaac_disaster.car_battery").append(": ")
-                    .append(Component.translatable("item.isaac_disaster.synergy.description.double"))
-                    .withStyle(style -> style.withColor(ColorManager.SYNERGY)));
+            description.add(DescriptionHelper.getSynergyDesc(
+                    Component.translatable("item.isaac_disaster.car_battery"),
+                    Component.translatable("item.isaac_disaster.synergy.description.double")
+            ));
         }
 
         if (ClientDataManager.getInstance().getCountFromId(ItemId.MIDAS_TOUCH.getId()) > 0){
-            description.add(Component.translatable("item.isaac_disaster.midas_touch").append(": ")
-                    .append(Component.translatable("item.isaac_disaster.the_poop.synergy.midas_touch"))
-                    .withStyle(style -> style.withColor(ColorManager.SYNERGY)));
+            description.add(DescriptionHelper.getSynergyDesc(
+                    Component.translatable("item.isaac_disaster.midas_touch"),
+                    Component.translatable("item.isaac_disaster.the_poop.synergy.midas_touch")
+            ));
         }
         return description;
     }

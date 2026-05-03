@@ -1,7 +1,7 @@
 package net.luojiuoscar.isaac_disaster.registries.ability.pickup.impl.cards;
 
 import net.luojiuoscar.isaac_disaster.client.ClientDataManager;
-import net.luojiuoscar.isaac_disaster.manager.ColorManager;
+import net.luojiuoscar.isaac_disaster.helper.DescriptionHelper;
 import net.luojiuoscar.isaac_disaster.manager.id.ItemId;
 import net.luojiuoscar.isaac_disaster.registries.ability.pickup.TarotAbility;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.CompositeTrigger;
@@ -39,9 +39,10 @@ public class TemperanceR extends TarotAbility {
         description.add(Component.translatable("item.isaac_disaster.temperance_r.lore.1"));
 
         if (ClientDataManager.getInstance().getCountFromId(ItemId.TAROT_CLOTH.getId()) > 0){
-            description.add(Component.translatable("item.isaac_disaster.tarot_cloth").append(": ")
-                    .append(Component.translatable("item.isaac_disaster.temperance_r.tarot_cloth.lore.1"))
-                    .withStyle(style -> style.withColor(ColorManager.SYNERGY)));
+            description.add(DescriptionHelper.getSynergyDesc(
+                    Component.translatable("item.isaac_disaster.tarot_cloth"),
+                    Component.translatable("item.isaac_disaster.temperance_r.tarot_cloth.lore.1")
+            ));
         }
 
         return description;

@@ -1,7 +1,7 @@
 package net.luojiuoscar.isaac_disaster.registries.ability.pickup.impl.cards;
 
 import net.luojiuoscar.isaac_disaster.client.ClientDataManager;
-import net.luojiuoscar.isaac_disaster.manager.ColorManager;
+import net.luojiuoscar.isaac_disaster.helper.DescriptionHelper;
 import net.luojiuoscar.isaac_disaster.manager.id.ItemId;
 import net.luojiuoscar.isaac_disaster.registries.ability.pickup.TarotAbility;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.CompositeTrigger;
@@ -40,9 +40,10 @@ public class StrengthR extends TarotAbility {
 
         // 塔罗牌桌布
         if (ClientDataManager.getInstance().getCountFromId(ItemId.TAROT_CLOTH.getId()) > 0){
-            description.add(Component.translatable("item.isaac_disaster.tarot_cloth").append(": ")
-                    .append(Component.translatable("item.isaac_disaster.synergy.description.increase_duration"))
-                    .withStyle(style -> style.withColor(ColorManager.SYNERGY)));
+            description.add(DescriptionHelper.getSynergyDesc(
+                    Component.translatable("item.isaac_disaster.tarot_cloth"),
+                    Component.translatable("item.isaac_disaster.synergy.description.increase_duration")
+            ));
         }
 
         return description;

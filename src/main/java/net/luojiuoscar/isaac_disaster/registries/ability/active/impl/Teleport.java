@@ -1,7 +1,7 @@
 package net.luojiuoscar.isaac_disaster.registries.ability.active.impl;
 
 import net.luojiuoscar.isaac_disaster.client.ClientDataManager;
-import net.luojiuoscar.isaac_disaster.manager.ColorManager;
+import net.luojiuoscar.isaac_disaster.helper.DescriptionHelper;
 import net.luojiuoscar.isaac_disaster.manager.id.ItemId;
 import net.luojiuoscar.isaac_disaster.registries.ability.active.ActiveAbility;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.CompositeTrigger;
@@ -44,9 +44,10 @@ public class Teleport extends ActiveAbility {
         List<Component> description = new ArrayList<>();
 
         if (ClientDataManager.getInstance().getCountFromId(ItemId.CAR_BATTERY.getId()) > 0){
-            description.add(Component.translatable("item.isaac_disaster.car_battery").append(": ")
-                    .append(Component.translatable("item.isaac_disaster.synergy.description.no_effect"))
-                    .withStyle(style -> style.withColor(ColorManager.SYNERGY)));
+            description.add(DescriptionHelper.getSynergyDesc(
+                    Component.translatable("item.isaac_disaster.car_battery"),
+                    Component.translatable("item.isaac_disaster.synergy.description.no_effect")
+            ));
         }
 
         return description;

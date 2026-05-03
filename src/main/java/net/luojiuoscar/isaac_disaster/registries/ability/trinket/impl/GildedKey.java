@@ -1,9 +1,9 @@
 package net.luojiuoscar.isaac_disaster.registries.ability.trinket.impl;
 
+import net.luojiuoscar.isaac_disaster.helper.DescriptionHelper;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.item.ModItems;
 import net.luojiuoscar.isaac_disaster.item.item.Trinket;
-import net.luojiuoscar.isaac_disaster.manager.ColorManager;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.registries.ability.trinket.TrinketAbility;
 import net.luojiuoscar.isaac_disaster.registries.ability.trinket.TrinketAbilityContext;
@@ -14,6 +14,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
 import java.util.List;
 
 public class GildedKey extends TrinketAbility {
@@ -47,9 +48,15 @@ public class GildedKey extends TrinketAbility {
 
     @Override
     public List<Component> getSynergyDesc(@Nullable ItemStack stack) {
-        return (stack != null && Trinket.isEnchanted(stack))
-                ? List.of(Component.translatable("item.isaac_disaster.gilded_key.enchanted.lore.1")
-                .withStyle(style -> style.withColor(ColorManager.SYNERGY)))
-                : List.of();
+        List<Component> desc = new ArrayList<>();
+
+        if (stack != null && Trinket.isEnchanted(stack)){
+            desc.add(DescriptionHelper.getSynergyDesc(
+                    Component.translatable("item.isaac_disaster.trinket.enchanted"),
+                    Component.translatable("item.isaac_disaster.gilded_key.enchanted.lore.1")
+            ));
+        }
+
+        return desc;
     }
 }

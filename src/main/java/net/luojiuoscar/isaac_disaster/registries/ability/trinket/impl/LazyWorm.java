@@ -1,17 +1,17 @@
 package net.luojiuoscar.isaac_disaster.registries.ability.trinket.impl;
 
+import net.luojiuoscar.isaac_disaster.helper.DescriptionHelper;
 import net.luojiuoscar.isaac_disaster.item.item.Trinket;
-import net.luojiuoscar.isaac_disaster.manager.ColorManager;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.registries.ability.trinket.TrinketAbility;
 import net.luojiuoscar.isaac_disaster.registries.ability.trinket.TrinketAbilityContext;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.Style;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
 import java.util.List;
 
 public class LazyWorm extends TrinketAbility {
@@ -55,8 +55,15 @@ public class LazyWorm extends TrinketAbility {
 
     @Override
     public List<Component> getSynergyDesc(@Nullable ItemStack stack) {
-        return (stack != null && Trinket.isEnchanted(stack))
-                ? List.of(StatManager.BULLET_SPEED.description(2, Style.EMPTY.withColor(ColorManager.SYNERGY)))
-                : List.of();
+        List<Component> desc = new ArrayList<>();
+
+        if (stack != null && Trinket.isEnchanted(stack)){
+            desc.add(DescriptionHelper.getSynergyDesc(
+                    Component.translatable("item.isaac_disaster.trinket.enchanted"),
+                    StatManager.BULLET_SPEED.description(2)
+            ));
+        }
+
+        return desc;
     }
 }

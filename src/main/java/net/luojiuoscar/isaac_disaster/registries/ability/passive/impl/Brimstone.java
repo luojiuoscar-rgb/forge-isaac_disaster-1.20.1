@@ -1,6 +1,7 @@
 package net.luojiuoscar.isaac_disaster.registries.ability.passive.impl;
 
 import net.luojiuoscar.isaac_disaster.client.ClientDataManager;
+import net.luojiuoscar.isaac_disaster.helper.DescriptionHelper;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.manager.id.ItemId;
 import net.luojiuoscar.isaac_disaster.registries.ability.passive.PassiveAbility;
@@ -47,11 +48,17 @@ public class Brimstone extends PassiveAbility {
         List<Component> desc = new ArrayList<>();
 
         if (ClientDataManager.getInstance().getCountFromId(ItemId.TECHNOLOGY.getId()) > 0){
-            desc.add(Component.translatable("item.isaac_disaster.brimstone.synergy.technology.1"));
+            desc.add(DescriptionHelper.getSynergyDesc(
+                    Component.translatable("item.isaac_disaster.technology"),
+                    Component.translatable("item.isaac_disaster.brimstone.synergy.technology.1")
+            ));
         }
 
         if (ClientDataManager.getInstance().getCountFromId(ItemId.C_SECTION.getId()) > 0){
-            desc.add(Component.translatable("item.isaac_disaster.brimstone.synergy.c_section.1"));
+            desc.add(DescriptionHelper.getSynergyDesc(
+                    Component.translatable("item.isaac_disaster.c_section"),
+                    Component.translatable("item.isaac_disaster.brimstone.synergy.c_section.1")
+            ));
         }
 
         return desc;

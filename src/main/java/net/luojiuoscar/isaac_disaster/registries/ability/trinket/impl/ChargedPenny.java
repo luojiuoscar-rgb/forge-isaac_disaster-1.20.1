@@ -1,5 +1,6 @@
 package net.luojiuoscar.isaac_disaster.registries.ability.trinket.impl;
 
+import net.luojiuoscar.isaac_disaster.helper.DescriptionHelper;
 import net.luojiuoscar.isaac_disaster.item.item.Trinket;
 import net.luojiuoscar.isaac_disaster.manager.ColorManager;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
@@ -47,8 +48,10 @@ public class ChargedPenny extends TrinketAbility {
         List<Component> desc = new ArrayList<>();
 
         if (stack != null && Trinket.isEnchanted(stack)){
-            desc.add(Component.translatable("item.isaac_disaster.synergy.description.no_effect")
-                    .withStyle(style -> style.withColor(ColorManager.SYNERGY)));
+            desc.add(DescriptionHelper.getSynergyDesc(
+                    Component.translatable("item.isaac_disaster.trinket.enchanted"),
+                    Component.translatable("item.isaac_disaster.synergy.description.no_effect")
+            ));
         }
 
         return desc;

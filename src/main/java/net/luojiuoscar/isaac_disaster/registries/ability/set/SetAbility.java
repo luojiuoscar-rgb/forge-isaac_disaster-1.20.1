@@ -2,7 +2,7 @@ package net.luojiuoscar.isaac_disaster.registries.ability.set;
 
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerPassiveItemProvider;
 import net.luojiuoscar.isaac_disaster.client.ClientDataManager;
-import net.luojiuoscar.isaac_disaster.manager.ColorManager;
+import net.luojiuoscar.isaac_disaster.helper.DescriptionHelper;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 
@@ -67,13 +67,13 @@ public abstract class SetAbility {
 
     public List<Component> getSynergyDesc(){
         return List.of(
-                Component.translatable("set.isaac_disaster.special.header").append(getName())
-                        .append(Component.literal("("+
+                DescriptionHelper.getSynergyDesc(
+                        Component.translatable("set.isaac_disaster.special.header"),
+                        Component.empty().append(getName()).append(Component.literal("("+
                                 Math.min(getRequirementCount(),
                                         ClientDataManager.getInstance().getSetCountFromId(getId())) + "/" +
-                                getRequirementCount()+")"
-                        )).withStyle(
-                                style -> style.withColor(ColorManager.SYNERGY)
-                        ));
+                                getRequirementCount()+")"))
+                )
+        );
     }
 }

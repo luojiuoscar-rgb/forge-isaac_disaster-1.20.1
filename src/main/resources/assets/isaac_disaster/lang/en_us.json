@@ -610,6 +610,7 @@
 
 
   "cards": "",
+  "item.isaac_disaster.trinket.enchanted": "附魔",
   "item.isaac_disaster.the_fool": "0-愚者",
   "item.isaac_disaster.the_fool.lore.1": "传送回出生点",
   "item.isaac_disaster.the_magician": "I-魔术师",
@@ -844,7 +845,7 @@
 
 
 
-  "set.isaac_disaster.special.header": "[套装]",
+  "set.isaac_disaster.special.header": "套装",
   "set.isaac_disaster.action.obtain": "§a[套装]你获得了>",
   "set.isaac_disaster.action.remove": "§e[套装]你失去了>",
   "set.isaac_disaster.spun": "嗑药",

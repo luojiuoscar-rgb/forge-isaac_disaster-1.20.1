@@ -1,14 +1,13 @@
 package net.luojiuoscar.isaac_disaster.registries.ability.passive.impl;
 
 import net.luojiuoscar.isaac_disaster.client.ClientDataManager;
+import net.luojiuoscar.isaac_disaster.helper.DescriptionHelper;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.item.item.custom.FoodPassiveItem;
-import net.luojiuoscar.isaac_disaster.registries.ability.passive.PassiveAbility;
-import net.luojiuoscar.isaac_disaster.manager.ColorManager;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.manager.id.ItemId;
+import net.luojiuoscar.isaac_disaster.registries.ability.passive.PassiveAbility;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.Style;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
@@ -65,11 +64,14 @@ public class Lunch extends PassiveAbility {
         List<Component> description = new ArrayList<>();
 
         if (ClientDataManager.getInstance().getCountFromId(ItemId.BINGE_EATER.getId()) > 0){
-            description.add(Component.translatable("item.isaac_disaster.binge_eater").append(": ").withStyle(style -> style.withColor(ColorManager.SYNERGY))
-                    .append(StatManager.RANGE.description(1, Style.EMPTY.withColor(ColorManager.SYNERGY))));
-            description.add(StatManager.TEARS.description(0.7, Style.EMPTY.withColor(ColorManager.SYNERGY)));
-            description.add(StatManager.MOVEMENT_SPEED.description(-0.15, Style.EMPTY.withColor(ColorManager.SYNERGY)));
-
+            description.addAll(DescriptionHelper.getSynergyDesc(
+                    Component.translatable("item.isaac_disaster.binge_eater"),
+                    List.of(
+                            StatManager.RANGE.description(1),
+                            StatManager.TEARS.description(0.7),
+                            StatManager.MOVEMENT_SPEED.description(-0.15)
+                    )
+            ));
         }
 
         return description;

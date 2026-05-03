@@ -1,5 +1,6 @@
 package net.luojiuoscar.isaac_disaster.registries.ability.trinket.impl;
 
+import net.luojiuoscar.isaac_disaster.helper.DescriptionHelper;
 import net.luojiuoscar.isaac_disaster.item.item.Trinket;
 import net.luojiuoscar.isaac_disaster.manager.ColorManager;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
@@ -11,6 +12,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
 import java.util.List;
 
 public class BrainWorm extends TrinketAbility {
@@ -46,9 +48,15 @@ public class BrainWorm extends TrinketAbility {
 
     @Override
     public List<Component> getSynergyDesc(@Nullable ItemStack stack) {
-        return (stack != null && Trinket.isEnchanted(stack))
-                ? List.of(Component.translatable("item.isaac_disaster.synergy.description.no_effect")
-                    .withStyle(style -> style.withColor(ColorManager.SYNERGY)))
-                : List.of();
+        List<Component> desc = new ArrayList<>();
+
+        if (stack != null && Trinket.isEnchanted(stack)){
+            desc.add(DescriptionHelper.getSynergyDesc(
+                    Component.translatable("item.isaac_disaster.trinket.enchanted"),
+                    Component.translatable("item.isaac_disaster.synergy.description.no_effect")
+            ));
+        }
+
+        return desc;
     }
 }
