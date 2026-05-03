@@ -123,7 +123,7 @@ disablePlaceholder: bool
 isDecoration [bool]
 ```
 
-是否为装饰性底座（无实际功能效果）
+是否为装饰性底座（装饰性底座无实际功能效果）
 
 ```
 itemLootTable [String]
