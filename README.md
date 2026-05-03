@@ -2,7 +2,7 @@
 *made by LuojiuOscar*
 
 ## INTRODUCTION
-此模组目标在于还原以撒中的各类道具。（可以在docs/下找到模组的帮助文档！）
+此模组目标在于还原以撒中的各类道具。[帮助文档](docs/documentation.md)
 
 目前内容包括：
 - 165个道具，包括主动和被动道具
