@@ -26,12 +26,12 @@ public class Callus extends TrinketAbility {
 
     @Override
     public void onEquipped(LivingEntity entity, TrinketAbilityContext ctx) {
-        StatManager.addTriggerModule(entity, ModTriggerModule.CALLUS.getId(), 1);
+        StatManager.addTriggerModule(entity, ModTriggerModule.CALLUS.getId(), ctx.isEnchanted ? 2 : 1);
     }
 
     @Override
     public void onUnequipped(LivingEntity entity, TrinketAbilityContext ctx) {
-        StatManager.addTriggerModule(entity, ModTriggerModule.CALLUS.getId(), -1);
+        StatManager.addTriggerModule(entity, ModTriggerModule.CALLUS.getId(), ctx.isEnchanted ? -2 : -1);
     }
 
     @Override
