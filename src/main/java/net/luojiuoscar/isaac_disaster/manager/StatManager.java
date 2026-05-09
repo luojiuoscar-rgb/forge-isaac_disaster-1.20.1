@@ -80,7 +80,7 @@ public enum StatManager {
     LUCK("luck", Attributes.LUCK, 0, true,
             () -> Config.LUCK_BONUS.get(), null, null),
     SCALE("scale", ModAttributes.SCALE.get(), 0, false,
-            () -> Config.SCALE_BONUS.get(), 0.25, 10.0){
+            () -> Config.SCALE_BONUS.get(), -0.75, 10.0){
         @Override
         public void apply(Player player, double ratio){
             super.apply(player, ratio);
