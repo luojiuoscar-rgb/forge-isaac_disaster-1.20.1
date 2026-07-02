@@ -26,7 +26,6 @@ import net.luojiuoscar.isaac_disaster.manager.EffectManager;
 import net.luojiuoscar.isaac_disaster.manager.ModDamageType;
 import net.luojiuoscar.isaac_disaster.manager.ModLootTables;
 import net.luojiuoscar.isaac_disaster.manager.PillEffectManager;
-import net.luojiuoscar.isaac_disaster.manager.data.PillShuffleData;
 import net.luojiuoscar.isaac_disaster.networking.ModMessages;
 import net.luojiuoscar.isaac_disaster.networking.packet.PassiveItemMapSyncS2CPacket;
 import net.luojiuoscar.isaac_disaster.networking.packet.PillRecordsSyncS2CPacket;
@@ -52,6 +51,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.trading.MerchantOffer;
 import net.minecraft.world.item.trading.MerchantOffers;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.entity.EntityEvent;
@@ -83,12 +83,8 @@ public class ForgeEvents {
     @SubscribeEvent
     public static void onWorldLoad(LevelEvent.Load event) {
         if (event.getLevel() instanceof ServerLevel level) {
-            PillShuffleData data = PillShuffleData.get(level);
-
-            // 首次世界无数据时进行一次shuffle
-            if (data.getPillEffectMap().isEmpty()) {
-                PillEffectManager.getInstance().shufflePills(level);
-            }
+            if (level.dimension() != Level.OVERWORLD) return;
+            PillEffectManager.getInstance().loadOrShuffle(level);
         }
     }
 

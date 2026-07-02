@@ -26,7 +26,7 @@ public class RandomHarmfulPotion implements IAbilityEffect {
 
         // 攻击类型不正确只是不触发，并不是错误情况
         if (!event.getSource().is(DamageTypes.PLAYER_ATTACK)
-                || !event.getSource().is(DamageTypes.MOB_ATTACK)) return true;
+                && !event.getSource().is(DamageTypes.MOB_ATTACK)) return true;
 
         LivingEntity attacker = context.getEntity();
         for (Entity e : target){

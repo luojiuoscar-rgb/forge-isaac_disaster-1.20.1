@@ -70,8 +70,22 @@ public class PillEffectManager {
 
     // ---------------- load world ----------------
 
+    private ServerLevel getPillDataLevel(ServerLevel level) {
+        return level.getServer().overworld();
+    }
+
+    public void loadOrShuffle(ServerLevel level) {
+        PillShuffleData data = PillShuffleData.get(getPillDataLevel(level));
+
+        if (data.getPillEffectMap().isEmpty()) {
+            shufflePills(level);
+        } else {
+            loadFromWorld(level);
+        }
+    }
+
     public void loadFromWorld(ServerLevel level) {
-        PillShuffleData data = PillShuffleData.get(level);
+        PillShuffleData data = PillShuffleData.get(getPillDataLevel(level));
         pillEffectMap.clear();
 
         data.getPillEffectMap().forEach((pillId, rl) -> {
@@ -102,7 +116,8 @@ public class PillEffectManager {
             pillEffectMap.put(pills.get(i), effects.get(i));
         }
 
-        PillShuffleData data = PillShuffleData.get(level);
+        ServerLevel dataLevel = getPillDataLevel(level);
+        PillShuffleData data = PillShuffleData.get(dataLevel);
         data.clear();
 
         pillEffectMap.forEach((pillId, effectRO) ->
@@ -110,7 +125,7 @@ public class PillEffectManager {
         );
 
         try {
-            level.getDataStorage().save();
+            dataLevel.getDataStorage().save();
         } catch (Exception e) {
             IsaacDisaster.LOGGER.error("Exception when shuffling pills: " + e);
         }
