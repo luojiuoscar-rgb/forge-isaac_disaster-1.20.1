@@ -29,6 +29,7 @@ import net.luojiuoscar.isaac_disaster.manager.PillEffectManager;
 import net.luojiuoscar.isaac_disaster.networking.ModMessages;
 import net.luojiuoscar.isaac_disaster.networking.packet.PassiveItemMapSyncS2CPacket;
 import net.luojiuoscar.isaac_disaster.networking.packet.PillRecordsSyncS2CPacket;
+import net.luojiuoscar.isaac_disaster.networking.packet.RefreshScaleS2CPacket;
 import net.luojiuoscar.isaac_disaster.networking.packet.SetCountSyncS2CPacket;
 import net.luojiuoscar.isaac_disaster.registries.ability.set.ModSetAbility;
 import net.luojiuoscar.isaac_disaster.registries.ability.set.SetAbility;
@@ -40,7 +41,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityDimensions;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -54,7 +54,6 @@ import net.minecraft.world.item.trading.MerchantOffers;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.RegisterCommandsEvent;
-import net.minecraftforge.event.entity.EntityEvent;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
@@ -95,6 +94,8 @@ public class ForgeEvents {
     public static void onPlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
         if (!(event.getEntity() instanceof ServerPlayer player)) return;
         syncAllDataToClient(player);
+        player.refreshDimensions();
+        ModMessages.sentToPlayer(new RefreshScaleS2CPacket(), player);
 
         // update cached attack type
         player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY).ifPresent(PlayerAbility::updateBestAttackType);
@@ -359,37 +360,6 @@ public class ForgeEvents {
         }
     }
 
-
-    /**
-     * 在未来版本被移除的事件
-     * 用于控制实际碰撞箱大小
-     */
-    @SuppressWarnings("deprecation")
-    @SubscribeEvent
-    public static void onEntitySize(EntityEvent.Size event) {
-        if (!(event.getEntity() instanceof LivingEntity entity)) return;
-        if (entity.getAttributes() == null) return;
-
-        var attr = entity.getAttribute(ModAttributes.SCALE.get());
-        if (attr == null) return;
-
-        double scale = attr.getValue();
-
-        // 基于实体类型的原始尺寸
-        EntityDimensions base = entity.getType().getDimensions();
-
-        // 计算新的绝对尺寸
-        EntityDimensions newSize = EntityDimensions.scalable(
-                (float) (base.width * scale),
-                (float) (base.height * scale)
-        );
-        float baseEyeHeight = entity.getEyeHeight(event.getPose(), base);
-        float scaledEyeHeight = (float) (baseEyeHeight * scale);
-
-        // 应用
-        event.setNewSize(newSize, true);
-        event.setNewEyeHeight(scaledEyeHeight);
-    }
 
     @SubscribeEvent
     public static void onRightClickBlock(PlayerInteractEvent.RightClickBlock event) {

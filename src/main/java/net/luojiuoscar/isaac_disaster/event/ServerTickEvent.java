@@ -18,9 +18,11 @@ import net.luojiuoscar.isaac_disaster.item.pickup.special.IsaacHead;
 import net.luojiuoscar.isaac_disaster.manager.id.ItemId;
 import net.luojiuoscar.isaac_disaster.networking.ModMessages;
 import net.luojiuoscar.isaac_disaster.networking.packet.ChargeBarUpdateS2CPacket;
+import net.luojiuoscar.isaac_disaster.networking.packet.RefreshScaleS2CPacket;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.data.AbilityEffectTokenBucket;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackType;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.IChargeableAttack;
+import net.luojiuoscar.isaac_disaster.system.ScaleUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
@@ -34,11 +36,16 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 @Mod.EventBusSubscriber(modid = IsaacDisaster.MOD_ID)
 public class ServerTickEvent {
     private static final int TICK_FREQUENCY = 4;
+    private static final float SCALE_REFRESH_EPSILON = 0.0001F;
+    private static final Map<UUID, Float> PLAYER_SCALE_CACHE = new HashMap<>();
 
     private static int tickCounter;
 
@@ -85,6 +92,7 @@ public class ServerTickEvent {
 
             IsaacHeadAttack(player);
             recursiveModuleTick(player);
+            refreshScaleIfChanged(player);
 
             if (tickCounter % 3 == 0){
                 updateClientCharge(player);
@@ -95,6 +103,15 @@ public class ServerTickEvent {
         ScheduledFuncHelper.tick(server);
         AbilityEffectTokenBucket.getInstance().tick();
 
+    }
+
+    private static void refreshScaleIfChanged(ServerPlayer player) {
+        float scale = ScaleUtils.getScale(player);
+        Float oldScale = PLAYER_SCALE_CACHE.put(player.getUUID(), scale);
+        if (oldScale == null || Math.abs(scale - oldScale) > SCALE_REFRESH_EPSILON) {
+            player.refreshDimensions();
+            ModMessages.sentToPlayer(new RefreshScaleS2CPacket(), player);
+        }
     }
 
 

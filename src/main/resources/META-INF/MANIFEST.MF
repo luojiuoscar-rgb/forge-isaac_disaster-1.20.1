@@ -1,0 +1,2 @@
+Manifest-Version: 1.0
+MixinConfigs: isaac_disaster.mixin.json

@@ -8,9 +8,12 @@ import net.luojiuoscar.isaac_disaster.capability.player.PlayerAbilityProvider;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerPassiveItemProvider;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerStatModifierProvider;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
+import net.luojiuoscar.isaac_disaster.networking.ModMessages;
+import net.luojiuoscar.isaac_disaster.networking.packet.RefreshScaleS2CPacket;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerModule;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerModule;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerModuleQueue;
+import net.luojiuoscar.isaac_disaster.system.ScaleUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
@@ -84,7 +87,10 @@ public enum StatManager {
         @Override
         public void apply(Player player, double ratio){
             super.apply(player, ratio);
-            player.refreshDimensions();
+            if (player instanceof ServerPlayer serverPlayer) {
+                ScaleUtils.refreshScale(serverPlayer);
+                ModMessages.sentToPlayer(new RefreshScaleS2CPacket(), serverPlayer);
+            }
         }
     },
     RANGE("bullet_range", ModAttributes.BULLET_RANGE.get(), 0, true,

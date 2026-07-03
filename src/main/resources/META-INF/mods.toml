@@ -45,7 +45,7 @@ authors="${mod_authors}" #optional
 description='''${mod_description}'''
 # A dependency - use the . to indicate dependency for a specific modid. Dependencies are optional.
 [[mixins]]
-config = "isaac_disaster.mixins.json"
+config = "isaac_disaster.mixin.json"
 
 
 [[dependencies.${mod_id}]] #optional

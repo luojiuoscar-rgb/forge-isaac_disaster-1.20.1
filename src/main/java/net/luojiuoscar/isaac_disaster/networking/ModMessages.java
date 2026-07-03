@@ -81,6 +81,12 @@ public class ModMessages {
                 .encoder(ChargeBarUpdateS2CPacket::toBytes)
                 .consumerNetworkThread(ChargeBarUpdateS2CPacket::handle)
                 .add();
+
+        net.messageBuilder(RefreshScaleS2CPacket.class, id(), NetworkDirection.PLAY_TO_CLIENT)
+                .decoder(RefreshScaleS2CPacket::new)
+                .encoder(RefreshScaleS2CPacket::toBytes)
+                .consumerNetworkThread(RefreshScaleS2CPacket::handle)
+                .add();
     }
 
     public static <MSG> void sendToServer(MSG message){

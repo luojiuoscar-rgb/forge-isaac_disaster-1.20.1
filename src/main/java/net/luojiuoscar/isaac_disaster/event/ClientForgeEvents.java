@@ -7,15 +7,19 @@ import net.luojiuoscar.isaac_disaster.networking.packet.OpenIsaacItemScreenC2SPa
 import net.luojiuoscar.isaac_disaster.networking.packet.SetRightClickC2SPacket;
 import net.luojiuoscar.isaac_disaster.system.ScaleUtils;
 import net.minecraft.client.Minecraft;
+import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.client.event.RenderLivingEvent;
+import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
 @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
 public class ClientForgeEvents {
+    private static float lastLocalPlayerScale = 1.0F;
+
     /**
      * 玩家登出时清除客户端数据
      */
@@ -35,6 +39,23 @@ public class ClientForgeEvents {
         float scale = ScaleUtils.getScale(event.getEntity());
         if (scale != 1.0F) {
             event.getPoseStack().scale(scale, scale, scale);
+        }
+    }
+
+    @SubscribeEvent
+    public static void onClientTick(TickEvent.ClientTickEvent event) {
+        if (event.phase != TickEvent.Phase.END) return;
+
+        Player player = Minecraft.getInstance().player;
+        if (player == null) {
+            lastLocalPlayerScale = 1.0F;
+            return;
+        }
+
+        float scale = ScaleUtils.getScale(player);
+        if (Math.abs(scale - lastLocalPlayerScale) > 0.0001F) {
+            lastLocalPlayerScale = scale;
+            player.refreshDimensions();
         }
     }
 
