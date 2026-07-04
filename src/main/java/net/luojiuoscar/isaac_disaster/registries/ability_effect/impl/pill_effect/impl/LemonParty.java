@@ -20,7 +20,7 @@ public class LemonParty extends PillEffect {
 
     @Override
     protected boolean pillActive(ServerPlayer player, boolean isHorse, ExecutableEffectContext context) {
-        LemonEffectCloud cloud = new LemonEffectCloud(player.level(), player.getX(), player.getY(), player.getZ(),
+        LemonEffectCloud cloud = LemonEffectCloud.create(player.level(), player.getX(), player.getY(), player.getZ(),
                 player, (float) StatManager.getNearbyRange() * (isHorse ? 0.8f : 0.4f),
                 isHorse ? 400 : 200, 0, 10,
                 (float) StatManager.DAMAGE.getBonus() * (isHorse ? 4f : 2.5f));

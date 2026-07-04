@@ -1,11 +1,10 @@
 package net.luojiuoscar.isaac_disaster.effect.custom;
 
-import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
+import net.luojiuoscar.isaac_disaster.helper.FlightHelper;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
 import java.util.List;
@@ -24,14 +23,10 @@ public class TranscendenceEffect extends MobEffect {
      */
     @Override
     public void applyEffectTick(LivingEntity entity, int amplifier) {
-        if (!(entity instanceof Player player)) return;
-        if (player.level().isClientSide()) return;
+        if (!(entity instanceof ServerPlayer player)) return;
 
         // 如果玩家还没被允许飞行，启用飞行能力
-        if (!player.getAbilities().mayfly) {
-            player.getAbilities().mayfly = true;
-            player.onUpdateAbilities();
-        }
+        FlightHelper.grantIsaacFlight(player);
     }
 
     /**
@@ -42,14 +37,8 @@ public class TranscendenceEffect extends MobEffect {
         super.removeAttributeModifiers(entity, attributeMap, amplifier);
 
         if (!(entity instanceof ServerPlayer player)) return;
-        if (player.level().isClientSide()) return;
-
         // 只有不能飞时才禁用效果
-        if (!player.isCreative() && !player.isSpectator() && !PlayerHelper.canFly(player)) {
-            player.getAbilities().flying = false;
-            player.getAbilities().mayfly = false;
-            player.onUpdateAbilities();
-        }
+        FlightHelper.refreshIsaacFlight(player, false);
     }
 
     /**

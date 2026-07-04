@@ -32,7 +32,7 @@ public class Lemon implements IAbilityEffect {
 
 
         // 创建药水云
-        LemonEffectCloud cloud = new LemonEffectCloud(entity.level(), pos.x, pos.y, pos.z,
+        LemonEffectCloud cloud = LemonEffectCloud.create(entity.level(), pos.x, pos.y, pos.z,
                 entity, (float) StatManager.getNearbyRange() * range,
                 duration, radius_per_tick, waitTime,
                 (float) StatManager.DAMAGE.getBonus() * damage);

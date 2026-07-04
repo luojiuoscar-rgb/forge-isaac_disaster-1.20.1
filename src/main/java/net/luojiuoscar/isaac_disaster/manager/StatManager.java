@@ -7,7 +7,7 @@ import net.luojiuoscar.isaac_disaster.capability.entity.EffectModulesProvider;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerAbilityProvider;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerIsaacItemsProvider;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerStatModifierProvider;
-import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
+import net.luojiuoscar.isaac_disaster.helper.FlightHelper;
 import net.luojiuoscar.isaac_disaster.networking.ModMessages;
 import net.luojiuoscar.isaac_disaster.networking.packet.RefreshScaleS2CPacket;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerModule;
@@ -123,9 +123,8 @@ public enum StatManager {
         public void apply(Player player, double ratio){
             super.apply(player, ratio);
 
-            if (!PlayerHelper.canFly(player)){
-                player.getAbilities().mayfly = false;
-                player.getAbilities().flying = false;
+            if (player instanceof ServerPlayer serverPlayer){
+                FlightHelper.refreshIsaacFlight(serverPlayer);
             }
         }
     };

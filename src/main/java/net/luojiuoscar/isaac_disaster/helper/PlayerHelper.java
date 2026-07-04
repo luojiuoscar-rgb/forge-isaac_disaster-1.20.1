@@ -428,6 +428,8 @@ public class PlayerHelper {
     }
 
     public static void resetAllAttributes(ServerPlayer player){
+        FlightHelper.revokeIsaacFlight(player, true);
+
         // 清除被动道具和吞下饰品，先走卸下流程以移除它们注册的效果
         player.getCapability(PlayerIsaacItemsProvider.PLAYER_ISAAC_ITEMS).ifPresent(
                 playerIsaacItems -> {

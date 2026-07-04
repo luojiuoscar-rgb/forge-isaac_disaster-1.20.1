@@ -11,6 +11,7 @@ import net.luojiuoscar.isaac_disaster.event.custom.attack.BeforePerformAttackEve
 import net.luojiuoscar.isaac_disaster.event.custom.misc.RightClickTickEvent;
 import net.luojiuoscar.isaac_disaster.helper.CuriosHelper;
 import net.luojiuoscar.isaac_disaster.helper.EntityHelper;
+import net.luojiuoscar.isaac_disaster.helper.FlightHelper;
 import net.luojiuoscar.isaac_disaster.helper.LevelHelper;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.helper.ScheduledFuncHelper;
@@ -155,14 +156,10 @@ public class ServerTickEvent {
         }
     }
     private static void updateFly(ServerPlayer player){
+        FlightHelper.refreshIsaacFlight(player);
         if (player.isCreative() || player.isSpectator() || !PlayerHelper.canFly(player)) return;
 
-        // 飞行故障修复（防止玩家可以飞但飞不起来）
-        if (!player.getAbilities().mayfly){
-            player.getAbilities().mayfly = true;
-            player.onUpdateAbilities();
-        }
-
+        // 飞行权限由 FlightHelper 统一维护，这里只处理 Isaac 飞行时间消耗。
         // 正在飞
         if (player.getAbilities().flying && player.getEffect(ModEffects.TRANSCENDENCE.get()) == null){
             player.getCapability(PlayerStatModifierProvider.PLAYER_STAT_MODIFIER).ifPresent(

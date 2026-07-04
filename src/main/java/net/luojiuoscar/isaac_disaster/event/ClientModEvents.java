@@ -14,6 +14,7 @@ import net.luojiuoscar.isaac_disaster.entity.tnt.CustomTntRenderer;
 import net.luojiuoscar.isaac_disaster.renderer.FetusBulletRenderer;
 import net.luojiuoscar.isaac_disaster.renderer.InvincibleChargeLayer;
 import net.luojiuoscar.isaac_disaster.renderer.IsaacBulletRenderer;
+import net.minecraft.client.renderer.entity.NoopRenderer;
 import net.minecraft.client.renderer.entity.player.PlayerRenderer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
@@ -36,6 +37,7 @@ public class ClientModEvents {
         event.registerEntityRenderer(ModEntities.GIGA_BOMB.get(), CustomTntRenderer::new);
         event.registerEntityRenderer(ModEntities.TEAR_BULLET.get(), IsaacBulletRenderer::new);
         event.registerEntityRenderer(ModEntities.FETUS_BULLET.get(), FetusBulletRenderer::new);
+        event.registerEntityRenderer(ModEntities.SELECTIVE_EFFECT_CLOUD.get(), NoopRenderer::new);
 
         event.registerBlockEntityRenderer(ModBlockEntities.PEDESTAL_BLOCK_ENTITY.get(), PedestalRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.NORMAL_CHEST_BLOCK_ENTITY.get(), IsaacChestRenderer::new);

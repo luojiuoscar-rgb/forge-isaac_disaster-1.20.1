@@ -1,7 +1,9 @@
 package net.luojiuoscar.isaac_disaster.effect.custom;
 
 
+import net.luojiuoscar.isaac_disaster.helper.FlightHelper;
 import net.luojiuoscar.isaac_disaster.manager.TagManager;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.entity.LivingEntity;
@@ -9,7 +11,6 @@ import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeMap;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
@@ -34,9 +35,8 @@ public class DizzinessEffect extends MobEffect {
         }
 
         //禁止飞行
-        if(pLivingEntity instanceof Player player){
-            player.getAbilities().flying = false;
-            player.onUpdateAbilities();
+        if(pLivingEntity instanceof ServerPlayer player){
+            FlightHelper.stopIsaacFlying(player);
         }
     }
 
