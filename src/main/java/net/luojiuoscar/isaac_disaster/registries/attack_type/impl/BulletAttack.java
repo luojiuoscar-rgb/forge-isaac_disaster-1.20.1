@@ -108,7 +108,9 @@ public class BulletAttack extends AttackType {
         bullet.setBulletColor(context.colorRl);
 
         bullet.moveTo(adjustedPos.x, adjustedPos.y, adjustedPos.z, context.getYRot(), context.getXRot());
-        bullet.setDeltaMovement(look.scale(getBulletSpeed(owner)));
+        bullet.setPreflightStart(context.getPos());
+        bullet.setVelocity(look.scale(getBulletSpeed(owner)));
+        bullet.setDeltaMovement(bullet.getVelocity());
 
         if (!owner.level().isClientSide)
             MinecraftForge.EVENT_BUS.post(

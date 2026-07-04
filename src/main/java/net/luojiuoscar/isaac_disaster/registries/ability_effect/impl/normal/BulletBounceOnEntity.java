@@ -34,6 +34,7 @@ public class BulletBounceOnEntity implements IAbilityEffect {
             if (target != null) {
                 Vec3 dir = target.getEyePosition().subtract(bullet.position()).normalize();
                 bullet.setVelocity(dir.scale(speed));
+                bullet.setDeltaMovement(bullet.getVelocity());
                 event.setCanceled(true);
                 return true;
             }
@@ -50,9 +51,10 @@ public class BulletBounceOnEntity implements IAbilityEffect {
         // 清空除了当前生物以外的所有生物
         UUID lastHit = bullet.getDamagedEntities().last();
         bullet.getDamagedEntities().clear();
-        bullet.getDamagedEntities().add(lastHit);
+        if (lastHit != null) bullet.getDamagedEntities().add(lastHit);
 
         bullet.setVelocity(randomDir.scale(speed));
+        bullet.setDeltaMovement(bullet.getVelocity());
         event.setCanceled(true);
 
         return true;

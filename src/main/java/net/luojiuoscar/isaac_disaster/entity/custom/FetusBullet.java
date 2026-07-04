@@ -103,6 +103,11 @@ public class FetusBullet extends TearBullet{
     }
 
     @Override
+    protected double getEntityCollisionInflation() {
+        return Math.max(0.05, getScale());
+    }
+
+    @Override
     public boolean noGravity(){
         return true;
     }

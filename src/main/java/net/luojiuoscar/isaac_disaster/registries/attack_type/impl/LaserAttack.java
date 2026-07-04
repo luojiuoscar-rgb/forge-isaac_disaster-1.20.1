@@ -109,7 +109,7 @@ public class LaserAttack extends AttackType {
             this.attackContext = attackContext;
 
             if (shooter != null){
-                prevShooterPos = shooter.position();
+                prevShooterPos = getShooterWaistPosition();
             }
         }
 
@@ -146,10 +146,19 @@ public class LaserAttack extends AttackType {
         @Override
         public Vec3 getPrevShooterPos() {
             if (shooter != null){
-                prevShooterPos = shooter.position();
+                prevShooterPos = getShooterWaistPosition();
             }
 
             return prevShooterPos;
+        }
+
+        private Vec3 getShooterWaistPosition() {
+            AABB box = shooter.getBoundingBox();
+            return new Vec3(
+                    (box.minX + box.maxX) * 0.5,
+                    box.minY + box.getYsize() * 0.6,
+                    (box.minZ + box.maxZ) * 0.5
+            );
         }
 
         @Override

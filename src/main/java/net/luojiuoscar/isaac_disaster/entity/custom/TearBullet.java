@@ -67,6 +67,8 @@ public class TearBullet extends Entity implements IBulletObject {
     private Vec3 velocity = Vec3.ZERO;
     private boolean isCurrentlySteering = false;
     private Vec3 prevShooterPos = null;
+    private Vec3 preflightStart = null;
+    private boolean preflightChecked = false;
 
     // ======== 特性 ========
     public boolean isSpectral = false;
@@ -86,6 +88,12 @@ public class TearBullet extends Entity implements IBulletObject {
     protected ResourceLocation colorRl = ModBulletColor.BASE.getId();
     protected final CompositeTrigger trigger = new CompositeTrigger();
     protected Vec3 extraPositionOffset = Vec3.ZERO;
+
+    protected enum CollisionResult {
+        NONE,
+        CONTINUE,
+        STOP
+    }
 
     // ======== 客户端同步属性 ========
     protected static final EntityDataAccessor<Float> SCALE =
@@ -152,6 +160,10 @@ public class TearBullet extends Entity implements IBulletObject {
     @Override
     public void tick() {
         super.tick();
+
+        if (!level().isClientSide && handlePreflightCollision()) {
+            return;
+        }
 
         move(MoverType.SELF, getDeltaMovement());
 
@@ -222,6 +234,29 @@ public class TearBullet extends Entity implements IBulletObject {
         }
     }
 
+    protected boolean handlePreflightCollision() {
+        if (preflightChecked) return false;
+        preflightChecked = true;
+
+        if (preflightStart != null) {
+            Vec3 start = preflightStart;
+            Vec3 end = position();
+            preflightStart = null;
+
+            if (start.distanceToSqr(end) > 1.0e-8
+                    && handleEntityCollision(start, end, end.subtract(start)) == CollisionResult.STOP) {
+                return true;
+            }
+        }
+
+        Vec3 motion = getDeltaMovement();
+        if (motion.lengthSqr() <= 1.0e-8) return false;
+
+        Vec3 start = position();
+        Vec3 end = start.add(motion);
+        return handleEntityCollision(start, end, motion) == CollisionResult.STOP;
+    }
+
     protected void updateDirection(){
         Vec3 vel = getVelocity();
         if (vel.lengthSqr() > 1.0e-6) {
@@ -279,38 +314,86 @@ public class TearBullet extends Entity implements IBulletObject {
         return false;
     }
 
-    protected void handleEntityCollision(Vec3 start, Vec3 end, Vec3 motion) {
-        AABB box = getAABB(motion);
-        EntityHitResult entityHit = ProjectileUtil.getEntityHitResult(level(), this, start, end, box,
-                e -> e.isAlive() && e != this && e != getOwner());
+    protected CollisionResult handleEntityCollision(Vec3 start, Vec3 end, Vec3 motion) {
+        EntityHitResult entityHit = findEntityCollision(start, end, motion);
 
-        if (entityHit == null) return;
+        if (entityHit == null) return CollisionResult.NONE;
 
         Entity target = entityHit.getEntity();
-        if (!(target instanceof LivingEntity living)) return;
+        if (!(target instanceof LivingEntity living)) return CollisionResult.NONE;
 
         if (EntityHelper.isFriendly(living, getOwner()) || living == getOwner() || damagedEntities.contains(target.getUUID()))
-            return;
+            return CollisionResult.NONE;
 
         IsaacAttackBeforeHitEntityEvent beforeEvent = new IsaacAttackBeforeHitEntityEvent(
                 this, getOwner(), ModAttackType.BULLET.getId(), trigger, entityHit, damage);
-        if (MinecraftForge.EVENT_BUS.post(beforeEvent)) return;
+        if (MinecraftForge.EVENT_BUS.post(beforeEvent)) return CollisionResult.CONTINUE;
 
         double damageValue = beforeEvent.getDamage();
 
         boolean success = makeDamage(living, (float) damageValue);
         if (!success){
-            return;
+            return CollisionResult.CONTINUE;
         }
 
         IsaacAttackAfterHitEvent afterEvent = new IsaacAttackAfterHitEvent(
                 this, getOwner(), ModAttackType.BULLET.getId(), trigger, entityHit, damageValue, living.getHealth());
-        if (MinecraftForge.EVENT_BUS.post(afterEvent)) return;
+        if (MinecraftForge.EVENT_BUS.post(afterEvent)) return CollisionResult.STOP;
 
 
         if (!isPiercing) {
             discard();
+            return CollisionResult.STOP;
         }
+
+        return CollisionResult.CONTINUE;
+    }
+
+    protected EntityHitResult findEntityCollision(Vec3 start, Vec3 end, Vec3 motion) {
+        AABB box = getEntityCollisionSearchBox(start, end);
+        EntityHitResult hit = ProjectileUtil.getEntityHitResult(level(), this, start, end, box,
+                this::canHitEntity);
+        if (hit != null) return hit;
+
+        Entity nearestEntity = null;
+        Vec3 nearestHit = null;
+        double nearestDistance = Double.MAX_VALUE;
+
+        for (Entity entity : level().getEntities(this, box, this::canHitEntity)) {
+            AABB targetBox = entity.getBoundingBox().inflate(getEntityCollisionInflation());
+            Vec3 hitPos = null;
+
+            if (targetBox.contains(start)) {
+                hitPos = start;
+            } else {
+                var clipped = targetBox.clip(start, end);
+                if (clipped.isPresent()) hitPos = clipped.get();
+            }
+
+            if (hitPos == null) continue;
+
+            double distance = start.distanceToSqr(hitPos);
+            if (distance < nearestDistance) {
+                nearestEntity = entity;
+                nearestHit = hitPos;
+                nearestDistance = distance;
+            }
+        }
+
+        return nearestEntity == null ? null : new EntityHitResult(nearestEntity, nearestHit);
+    }
+
+    protected boolean canHitEntity(Entity entity) {
+        return entity.isAlive() && entity != this && entity != getOwner();
+    }
+
+    protected double getEntityCollisionInflation() {
+        return Math.max(0.05, getScale() * 0.5);
+    }
+
+    protected AABB getEntityCollisionSearchBox(Vec3 start, Vec3 end) {
+        double inflate = getScale() * 0.25 + getEntityCollisionInflation();
+        return new AABB(start, end).inflate(inflate);
     }
 
     protected AABB getAABB(Vec3 motion){
@@ -552,6 +635,11 @@ public class TearBullet extends Entity implements IBulletObject {
 
     public void setPrevShooterPos(Vec3 pos) {
         this.prevShooterPos = pos;
+    }
+
+    public void setPreflightStart(Vec3 pos) {
+        this.preflightStart = pos;
+        this.preflightChecked = false;
     }
 
     public void setTrajectories(Map<ResourceLocation, Integer> map) {

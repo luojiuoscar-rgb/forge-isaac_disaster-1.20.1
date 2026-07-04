@@ -28,7 +28,7 @@ public class BulletBounceOnBlock implements IAbilityEffect {
 
             Vec3 reflected = motion.subtract(normal.scale(2 * motion.dot(normal)));
             bullet.setVelocity(reflected);
-            bullet.setDeltaMovement(reflected.scale(1));
+            bullet.setDeltaMovement(reflected);
 
             // 清空被伤害过的实体
             bullet.getDamagedEntities().clear();
