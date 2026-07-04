@@ -1,7 +1,7 @@
 package net.luojiuoscar.isaac_disaster.event;
 
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
-import net.luojiuoscar.isaac_disaster.capability.player.PlayerPassiveItemProvider;
+import net.luojiuoscar.isaac_disaster.capability.player.PlayerIsaacItemsProvider;
 import net.luojiuoscar.isaac_disaster.effect.custom.SoulStateEffect;
 import net.luojiuoscar.isaac_disaster.effect.custom.TheWorldEffect;
 import net.luojiuoscar.isaac_disaster.event.custom.misc.GetShotDelayEvent;
@@ -33,7 +33,7 @@ public class ItemEvents {
         Player player = event.getPlayer();
         double originalDelay = event.getOriginalDelay();
 
-        player.getCapability(PlayerPassiveItemProvider.PLAYER_PASSIVE_ITEM).ifPresent(
+        player.getCapability(PlayerIsaacItemsProvider.PLAYER_ISAAC_ITEMS).ifPresent(
                 playerPassiveItem -> {
                     Set<Integer> keys = playerPassiveItem.getItemCountMapFromAll(player).keySet();
 

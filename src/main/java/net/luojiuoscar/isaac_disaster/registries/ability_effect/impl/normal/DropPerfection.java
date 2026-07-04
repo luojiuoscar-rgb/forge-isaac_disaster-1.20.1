@@ -1,6 +1,6 @@
 package net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.normal;
 
-import net.luojiuoscar.isaac_disaster.capability.player.PlayerSwallowedTrinketsProvider;
+import net.luojiuoscar.isaac_disaster.capability.player.PlayerIsaacItemsProvider;
 import net.luojiuoscar.isaac_disaster.helper.CuriosHelper;
 import net.luojiuoscar.isaac_disaster.item.ModTrinkets;
 import net.luojiuoscar.isaac_disaster.item.item.Trinket;
@@ -30,8 +30,8 @@ public class DropPerfection implements IAbilityEffect {
             return item.getTrinketId() == TrinketId.PERFECTION.getId();})){}
         else{
             // 从cap中删除
-            player.getCapability(PlayerSwallowedTrinketsProvider.PLAYER_SWALLOWED_TRINKETS).ifPresent(
-                    playerSwallowedTrinkets -> playerSwallowedTrinkets.removeFromId(player, TrinketId.PERFECTION.getId())
+            player.getCapability(PlayerIsaacItemsProvider.PLAYER_ISAAC_ITEMS).ifPresent(
+                    playerPassiveItem -> playerPassiveItem.removeFromId(player, TrinketId.PERFECTION.getId())
             );
         }
         spawnFakePaper(player.level(), player);

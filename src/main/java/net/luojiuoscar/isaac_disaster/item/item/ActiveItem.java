@@ -2,7 +2,7 @@ package net.luojiuoscar.isaac_disaster.item.item;
 
 import net.luojiuoscar.isaac_disaster.Config;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerItemUseRecordProvider;
-import net.luojiuoscar.isaac_disaster.capability.player.PlayerSwallowedTrinketsProvider;
+import net.luojiuoscar.isaac_disaster.capability.player.PlayerIsaacItemsProvider;
 import net.luojiuoscar.isaac_disaster.event.custom.misc.ActiveItemUseEvent;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.manager.ColorManager;
@@ -71,10 +71,10 @@ public class ActiveItem extends IsaacItem {
      */
     public int getDamagePerUse(Player player){
         int[] count = {0};
-        player.getCapability(PlayerSwallowedTrinketsProvider.PLAYER_SWALLOWED_TRINKETS).ifPresent(
-                playerSwallowedTrinkets -> {
+        player.getCapability(PlayerIsaacItemsProvider.PLAYER_ISAAC_ITEMS).ifPresent(
+                playerPassiveItem -> {
                     List<ItemStack> stackList =
-                            playerSwallowedTrinkets.getAllTrinketListFromId(player, TrinketId.AAA_BATTERY.getId());
+                            playerPassiveItem.getAllTrinketListFromId(player, TrinketId.AAA_BATTERY.getId());
                     for (ItemStack stack : stackList){
                         if (Trinket.isEnchanted(stack)){
                             count[0] += 2;

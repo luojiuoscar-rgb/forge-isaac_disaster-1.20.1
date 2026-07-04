@@ -2,7 +2,7 @@ package net.luojiuoscar.isaac_disaster.registries.attack_type;
 
 import net.luojiuoscar.isaac_disaster.attribute.ModAttributes;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerAbilityProvider;
-import net.luojiuoscar.isaac_disaster.capability.player.PlayerPassiveItemProvider;
+import net.luojiuoscar.isaac_disaster.capability.player.PlayerIsaacItemsProvider;
 import net.luojiuoscar.isaac_disaster.event.custom.attack.GetAttackContextEvent;
 import net.luojiuoscar.isaac_disaster.event.custom.misc.GetShotDelayEvent;
 import net.luojiuoscar.isaac_disaster.event.custom.misc.IsaacGetBulletCountEvent;
@@ -119,7 +119,7 @@ public abstract class AttackType {
         AttributeInstance bulletCount = player.getAttribute(ModAttributes.BULLET_COUNT.get());
         int[] count = {bulletCount == null ? 1 : (int) bulletCount.getValue()};
 
-        player.getCapability(PlayerPassiveItemProvider.PLAYER_PASSIVE_ITEM).ifPresent(passive -> {
+        player.getCapability(PlayerIsaacItemsProvider.PLAYER_ISAAC_ITEMS).ifPresent(passive -> {
             int innerEye = passive.getItemCountFromAll(player, ItemId.THE_INNER_EYE.getId());
             int mutantSpider = passive.getItemCountFromAll(player, ItemId.MUTANT_SPIDER.getId());
             int perfectVision = passive.getItemCountFromAll(player, ItemId.PERFECT_VISION.getId());

@@ -1,7 +1,7 @@
 package net.luojiuoscar.isaac_disaster.commands.trinket;
 
 import com.mojang.brigadier.CommandDispatcher;
-import net.luojiuoscar.isaac_disaster.capability.player.PlayerSwallowedTrinketsProvider;
+import net.luojiuoscar.isaac_disaster.capability.player.PlayerIsaacItemsProvider;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
@@ -18,10 +18,8 @@ public class TrinketClearSwallowedCmd {
 
                                             ServerPlayer player = context.getSource().getPlayerOrException();
 
-                                            player.getCapability(PlayerSwallowedTrinketsProvider.PLAYER_SWALLOWED_TRINKETS)
-                                                    .ifPresent(playerSwallowedTrinkets -> {
-                                                        playerSwallowedTrinkets.clear(player);
-                                                    });
+                                            player.getCapability(PlayerIsaacItemsProvider.PLAYER_ISAAC_ITEMS)
+                                                    .ifPresent(playerPassiveItem -> playerPassiveItem.clear(player));
 
                                             player.sendSystemMessage(
                                                     Component.literal("被吞的 Trinket 已全部清除")

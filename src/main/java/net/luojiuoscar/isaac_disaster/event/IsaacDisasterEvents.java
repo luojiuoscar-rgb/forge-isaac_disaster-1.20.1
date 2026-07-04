@@ -3,7 +3,7 @@ package net.luojiuoscar.isaac_disaster.event;
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerAbility;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerAbilityProvider;
-import net.luojiuoscar.isaac_disaster.capability.player.PlayerSwallowedTrinketsProvider;
+import net.luojiuoscar.isaac_disaster.capability.player.PlayerIsaacItemsProvider;
 import net.luojiuoscar.isaac_disaster.effect.ModEffects;
 import net.luojiuoscar.isaac_disaster.effect.custom.TheWizEffect;
 import net.luojiuoscar.isaac_disaster.event.custom.attack.GetAttackContextEvent;
@@ -62,14 +62,14 @@ public class IsaacDisasterEvents {
     public static void onActiveItemUse(ActiveItemUseEvent event){
         Player player = event.getPlayer();
 
-        player.getCapability(PlayerSwallowedTrinketsProvider.PLAYER_SWALLOWED_TRINKETS).ifPresent(
-                playerSwallowedTrinkets -> {
-                    List<ItemStack> stackList = playerSwallowedTrinkets.getAllTrinkets(player);
+        player.getCapability(PlayerIsaacItemsProvider.PLAYER_ISAAC_ITEMS).ifPresent(
+                playerPassiveItem -> {
+                    List<ItemStack> stackList = playerPassiveItem.getAllTrinkets(player);
 
                     // 损坏的遥控器
                     if (stackList.stream().anyMatch(stack -> stack.getItem() instanceof Trinket trinket &&
                             trinket.getTrinketId() == TrinketId.BROKEN_REMOTE.getId())){
-                        List<ItemStack> s = playerSwallowedTrinkets.getAllTrinketListFromId(player, TrinketId.BROKEN_REMOTE.getId());
+                        List<ItemStack> s = playerPassiveItem.getAllTrinketListFromId(player, TrinketId.BROKEN_REMOTE.getId());
                         if (s.stream().anyMatch(Trinket::isEnchanted)){
                             EntityHelper.teleportToRandomLocation(player, StatManager.getNearbyRange() * 6);
                         }else{

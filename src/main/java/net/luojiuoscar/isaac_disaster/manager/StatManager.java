@@ -5,7 +5,7 @@ import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.attribute.ModAttributes;
 import net.luojiuoscar.isaac_disaster.capability.entity.EffectModulesProvider;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerAbilityProvider;
-import net.luojiuoscar.isaac_disaster.capability.player.PlayerPassiveItemProvider;
+import net.luojiuoscar.isaac_disaster.capability.player.PlayerIsaacItemsProvider;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerStatModifierProvider;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.networking.ModMessages;
@@ -414,7 +414,7 @@ public enum StatManager {
 
     public static void modifySetWithId(Player player, ResourceLocation rl, int amount){
         if(player instanceof ServerPlayer serverPlayer){
-            player.getCapability(PlayerPassiveItemProvider.PLAYER_PASSIVE_ITEM).ifPresent(
+            player.getCapability(PlayerIsaacItemsProvider.PLAYER_ISAAC_ITEMS).ifPresent(
                     playerPassiveItem -> playerPassiveItem.modifySetCount(serverPlayer, rl, amount)
             );
         }

@@ -1,7 +1,7 @@
 package net.luojiuoscar.isaac_disaster.item.item;
 
 import net.luojiuoscar.isaac_disaster.Config;
-import net.luojiuoscar.isaac_disaster.capability.player.PlayerPassiveItemProvider;
+import net.luojiuoscar.isaac_disaster.capability.player.PlayerIsaacItemsProvider;
 import net.luojiuoscar.isaac_disaster.registries.ability.passive.PassiveAbility;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
@@ -62,7 +62,7 @@ public class PassiveItem extends IsaacItem implements IIsaacCuriosItem {
             PassiveItem.setHasBeenUsed(stack, true);
 
             // 记录
-            player.getCapability(PlayerPassiveItemProvider.PLAYER_PASSIVE_ITEM).ifPresent(
+            player.getCapability(PlayerIsaacItemsProvider.PLAYER_ISAAC_ITEMS).ifPresent(
                     playerPassiveItem -> playerPassiveItem.addItem(serverPlayer, stack));
         }
 

@@ -1,6 +1,6 @@
 package net.luojiuoscar.isaac_disaster.networking.packet;
 
-import net.luojiuoscar.isaac_disaster.capability.player.PlayerPassiveItemProvider;
+import net.luojiuoscar.isaac_disaster.capability.player.PlayerIsaacItemsProvider;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.network.NetworkEvent;
@@ -28,7 +28,7 @@ public class ClearPassiveItemC2SPacket {
             // On the server
             ServerPlayer player = context.getSender();
 
-            player.getCapability(PlayerPassiveItemProvider.PLAYER_PASSIVE_ITEM).ifPresent(
+            player.getCapability(PlayerIsaacItemsProvider.PLAYER_ISAAC_ITEMS).ifPresent(
                     playerPassiveItem -> {playerPassiveItem.clearPlayerPassiveItems(player);
                     });
 

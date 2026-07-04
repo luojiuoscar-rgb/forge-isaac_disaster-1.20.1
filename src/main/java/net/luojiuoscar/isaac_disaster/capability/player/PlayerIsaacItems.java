@@ -2,10 +2,12 @@ package net.luojiuoscar.isaac_disaster.capability.player;
 
 import net.luojiuoscar.isaac_disaster.helper.CuriosHelper;
 import net.luojiuoscar.isaac_disaster.item.item.PassiveItem;
+import net.luojiuoscar.isaac_disaster.item.item.Trinket;
 import net.luojiuoscar.isaac_disaster.registries.ability.passive.ModPassiveAbility;
 import net.luojiuoscar.isaac_disaster.registries.ability.passive.PassiveAbility;
 import net.luojiuoscar.isaac_disaster.registries.ability.set.ModSetAbility;
 import net.luojiuoscar.isaac_disaster.registries.ability.set.SetAbility;
+import net.luojiuoscar.isaac_disaster.registries.ability.trinket.TrinketAbilityContext;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.IntTag;
 import net.minecraft.nbt.ListTag;
@@ -25,9 +27,10 @@ import java.util.*;
 import static net.luojiuoscar.isaac_disaster.Config.PASSIVE_ITEM_LIMIT;
 
 @AutoRegisterCapability
-public class PlayerPassiveItem {
+public class PlayerIsaacItems {
     // 用编号代表道具。需要查询道具的时候再使用道具管理器
     private final List<ItemStack> playerPassiveItems;
+    private final List<ItemStack> swallowedTrinkets;
 
     private final Map<ResourceLocation, Integer> setCountMap; // 当前套装计数
     private final Set<Integer> obtainedSets; // 已经获得过的套装
@@ -35,8 +38,9 @@ public class PlayerPassiveItem {
 
 
     // constructor
-    public PlayerPassiveItem(){
+    public PlayerIsaacItems(){
         this.playerPassiveItems = new ArrayList<>();
+        this.swallowedTrinkets = new ArrayList<>();
 
         this.setCountMap = new HashMap<>();
         this.obtainedSets = new HashSet<>();
@@ -46,6 +50,7 @@ public class PlayerPassiveItem {
 
     public void init(){
         this.playerPassiveItems.clear();
+        this.swallowedTrinkets.clear();
 
         this.setCountMap.clear();
         this.obtainedSets.clear();
@@ -224,6 +229,133 @@ public class PlayerPassiveItem {
         setCountMap.put(id, newCount);
     }
 
+    /**
+     * 将一个 Curios 饰品转移到吞下饰品列表，并消耗原槽位中的 ItemStack。
+     *
+     * <p>保存进 capability 的是原饰品的副本；原 ItemStack 会被标记为 swallowing，
+     * 用于让 Curios 卸下流程识别这是吞下导致的移除，而不是普通卸装。</p>
+     */
+    public void swallow(ItemStack stack) {
+        if (!(stack.getItem() instanceof Trinket)) return;
+
+        addToList(stack.copy());
+        Trinket.setSwallowing(stack, true);
+        stack.setCount(0);
+    }
+
+    /**
+     * 直接把饰品副本加入吞下列表，不改动来源 ItemStack。
+     *
+     * <p>主要用于 NBT 读取和特殊数据迁移；普通吞下流程应调用 {@link #swallow(ItemStack)}。</p>
+     */
+    public void addToList(ItemStack stack){
+        if (!(stack.getItem() instanceof Trinket)) return;
+
+        swallowedTrinkets.add(stack.copy());
+    }
+
+    /**
+     * 获取玩家已经吞下的饰品列表。
+     *
+     * @return 返回 ItemStack 副本列表，调用方可以安全调整列表顺序或读取 NBT。
+     */
+    public List<ItemStack> getSwallowedTrinkets() {
+        List<ItemStack> trinkets = new ArrayList<>();
+        for (ItemStack stack : swallowedTrinkets) {
+            trinkets.add(stack.copy());
+        }
+        return trinkets;
+    }
+
+    /**
+     * 获取吞下饰品与当前 Curios 饰品槽中的全部饰品。
+     *
+     * @param player 查询的玩家
+     * @return 吞下饰品副本加上 Curios 当前装备饰品的列表
+     */
+    public List<ItemStack> getAllTrinkets(Player player) {
+        List<ItemStack> stackList = getSwallowedTrinkets();
+        stackList.addAll(CuriosHelper.getEquippedItemsInSlot(player, CuriosHelper.TRINKET));
+        return new ArrayList<>(stackList);
+    }
+
+    /**
+     * 删除指定索引的吞下饰品，并触发对应饰品的卸下效果。
+     *
+     * @param player 触发卸下效果的玩家
+     * @param index  吞下饰品列表中的索引
+     */
+    public void removeAt(Player player, int index){
+        if (index < 0 || index >= swallowedTrinkets.size()) return;
+
+        ItemStack stack = swallowedTrinkets.remove(index);
+        if (stack.getItem() instanceof Trinket item){
+            item.getAbility().onUnequipped(player, new TrinketAbilityContext(stack));
+        }
+    }
+
+    /**
+     * 删除第一个匹配 id 的吞下饰品，并触发对应饰品的卸下效果。
+     *
+     * @param player 触发卸下效果的玩家
+     * @param id     饰品数字 id
+     */
+    public void removeFromId(Player player, int id){
+        for (Iterator<ItemStack> iterator = swallowedTrinkets.iterator(); iterator.hasNext(); ) {
+            ItemStack stack = iterator.next();
+            if (stack.getItem() instanceof Trinket item &&
+                    item.getTrinketId() == id) {
+                iterator.remove();
+                item.getAbility().onUnequipped(player, new TrinketAbilityContext(stack));
+                break;
+            }
+        }
+    }
+
+    /**
+     * 清空全部吞下饰品，并逐个触发饰品卸下效果。
+     *
+     * @param player 触发卸下效果的玩家
+     */
+    public void clear(Player player) {
+        while (!swallowedTrinkets.isEmpty()){
+            removeAt(player, 0);
+        }
+    }
+
+    /**
+     * 只从 capability 的吞下饰品列表中按饰品 id 查询。
+     *
+     * @param id 饰品数字 id
+     * @return 匹配饰品的 ItemStack 副本列表
+     */
+    public List<ItemStack> getCapTrinketListFromId(int id){
+        List<ItemStack> trinkets = new ArrayList<>();
+        for (ItemStack stack : swallowedTrinkets){
+            if (!(stack.getItem() instanceof Trinket trinket)) continue;
+            if (trinket.getTrinketId() != id) continue;
+            trinkets.add(stack.copy());
+        }
+        return trinkets;
+    }
+
+    /**
+     * 从吞下饰品和 Curios 当前装备饰品中按 id 查询全部匹配项。
+     *
+     * @param player 查询的玩家
+     * @param id     饰品数字 id
+     * @return 匹配饰品的 ItemStack 副本列表
+     */
+    public List<ItemStack> getAllTrinketListFromId(Player player, int id){
+        List<ItemStack> trinkets = getCapTrinketListFromId(id);
+        for (ItemStack stack : CuriosHelper.getEquippedItemsInSlot(player, CuriosHelper.TRINKET)){
+            if (stack.getItem() instanceof Trinket item && item.getTrinketId() == id){
+                trinkets.add(stack.copy());
+            }
+        }
+        return trinkets;
+    }
+
     public Optional<ItemStack> getActiveCurioStack(CurioSlotKey key) {
         ItemStack stack = activeCurioSlots.get(key);
         if (stack == null || stack.isEmpty()) return Optional.empty();
@@ -260,9 +392,16 @@ public class PlayerPassiveItem {
 
 
     // 从目标处复制
-    public void copyFrom(PlayerPassiveItem source) {
+    public void copyFrom(PlayerIsaacItems source) {
         this.playerPassiveItems.clear();
-        this.playerPassiveItems.addAll(source.playerPassiveItems);
+        for (ItemStack stack : source.playerPassiveItems) {
+            this.playerPassiveItems.add(stack.copy());
+        }
+
+        this.swallowedTrinkets.clear();
+        for (ItemStack stack : source.swallowedTrinkets) {
+            this.swallowedTrinkets.add(stack.copy());
+        }
 
         this.setCountMap.clear();
         this.setCountMap.putAll(source.setCountMap);
@@ -319,6 +458,17 @@ public class PlayerPassiveItem {
             curioSlotList.add(curioSlotTag);
         }
         nbt.put("ActiveCurioSlots", curioSlotList);
+
+        // 保存已吞下的饰品
+        ListTag swallowedList = new ListTag();
+        for (ItemStack stack : swallowedTrinkets) {
+            if (stack.isEmpty()) continue;
+
+            CompoundTag stackTag = new CompoundTag();
+            stack.save(stackTag);
+            swallowedList.add(stackTag);
+        }
+        nbt.put("SwallowedTrinkets", swallowedList);
     }
 
 
@@ -368,6 +518,20 @@ public class PlayerPassiveItem {
                     ItemStack stack = ItemStack.of(curioSlotTag.getCompound("Stack"));
                     if (!stack.isEmpty()) {
                         activeCurioSlots.put(key, stack);
+                    }
+                }
+            }
+        }
+
+        // 读取已吞下的饰品
+        swallowedTrinkets.clear();
+        if (nbt.contains("SwallowedTrinkets", Tag.TAG_LIST)) {
+            ListTag swallowedList = nbt.getList("SwallowedTrinkets", Tag.TAG_COMPOUND);
+            for (Tag tag : swallowedList) {
+                if (tag instanceof CompoundTag stackTag) {
+                    ItemStack stack = ItemStack.of(stackTag);
+                    if (!stack.isEmpty()) {
+                        addToList(stack);
                     }
                 }
             }

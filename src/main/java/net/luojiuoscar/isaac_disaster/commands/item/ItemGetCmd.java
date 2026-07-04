@@ -2,7 +2,7 @@ package net.luojiuoscar.isaac_disaster.commands.item;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
-import net.luojiuoscar.isaac_disaster.capability.player.PlayerPassiveItemProvider;
+import net.luojiuoscar.isaac_disaster.capability.player.PlayerIsaacItemsProvider;
 import net.luojiuoscar.isaac_disaster.item.item.PassiveItem;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -43,7 +43,7 @@ public class ItemGetCmd {
                                                 return 0;
                                             }
 
-                                            player.getCapability(PlayerPassiveItemProvider.PLAYER_PASSIVE_ITEM).ifPresent(playerPassiveItem -> {
+                                            player.getCapability(PlayerIsaacItemsProvider.PLAYER_ISAAC_ITEMS).ifPresent(playerPassiveItem -> {
                                                 int count = playerPassiveItem.getItemCountFromAll(player, pItem.getId());
                                                 player.sendSystemMessage(
                                                         Component.literal("You have " + count + " of this item.")

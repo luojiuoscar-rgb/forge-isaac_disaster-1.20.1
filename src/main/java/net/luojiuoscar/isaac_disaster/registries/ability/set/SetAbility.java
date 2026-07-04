@@ -1,6 +1,6 @@
 package net.luojiuoscar.isaac_disaster.registries.ability.set;
 
-import net.luojiuoscar.isaac_disaster.capability.player.PlayerPassiveItemProvider;
+import net.luojiuoscar.isaac_disaster.capability.player.PlayerIsaacItemsProvider;
 import net.luojiuoscar.isaac_disaster.client.ClientDataManager;
 import net.luojiuoscar.isaac_disaster.helper.DescriptionHelper;
 import net.minecraft.network.chat.Component;
@@ -33,7 +33,7 @@ public abstract class SetAbility {
 
     public void onObtain(Player player){
         onObtainEffect(player);
-        player.getCapability(PlayerPassiveItemProvider.PLAYER_PASSIVE_ITEM).ifPresent(
+        player.getCapability(PlayerIsaacItemsProvider.PLAYER_ISAAC_ITEMS).ifPresent(
                 playerPassiveItem -> {
                     if(!playerPassiveItem.isObtainedSet(getId())){
                         onFirstObtain(player);

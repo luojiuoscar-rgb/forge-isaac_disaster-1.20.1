@@ -1,7 +1,7 @@
 package net.luojiuoscar.isaac_disaster.registries.ability.passive.impl;
 
 
-import net.luojiuoscar.isaac_disaster.capability.player.PlayerPassiveItemProvider;
+import net.luojiuoscar.isaac_disaster.capability.player.PlayerIsaacItemsProvider;
 import net.luojiuoscar.isaac_disaster.registries.ability.passive.PassiveAbility;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.manager.id.ItemId;
@@ -40,7 +40,7 @@ public class PerfectVision extends PassiveAbility {
     @Override
     public void handleRemove(ServerPlayer player, @Nullable ItemStack stack) {
         // 伤害修正
-        player.getCapability(PlayerPassiveItemProvider.PLAYER_PASSIVE_ITEM).ifPresent(
+        player.getCapability(PlayerIsaacItemsProvider.PLAYER_ISAAC_ITEMS).ifPresent(
                 playerPassiveItem -> {
                     int count = playerPassiveItem.getItemCountFromAll(player, ItemId.PERFECT_VISION.getId());
                     // 当最后一个已经被移除时；移除对应的modifier

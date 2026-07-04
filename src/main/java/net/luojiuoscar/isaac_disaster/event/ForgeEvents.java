@@ -114,7 +114,7 @@ public class ForgeEvents {
      * 同步数据到客户端
      */
     public static void syncSetDataToClient(ServerPlayer player){
-        player.getCapability(PlayerPassiveItemProvider.PLAYER_PASSIVE_ITEM).ifPresent(
+        player.getCapability(PlayerIsaacItemsProvider.PLAYER_ISAAC_ITEMS).ifPresent(
                 playerPassiveItem -> {
                     Map<ResourceLocation, Integer> map = playerPassiveItem.getSetCountMap();
 
@@ -142,7 +142,7 @@ public class ForgeEvents {
         );
     }
     public static void syncItemDataToClient(ServerPlayer player) {
-        player.getCapability(PlayerPassiveItemProvider.PLAYER_PASSIVE_ITEM).ifPresent(
+        player.getCapability(PlayerIsaacItemsProvider.PLAYER_ISAAC_ITEMS).ifPresent(
                 playerPassiveItem -> {
                     Map<Integer, Integer> items = playerPassiveItem.getItemCountMapFromAll(player);
                     ModMessages.sentToPlayer(new PassiveItemMapSyncS2CPacket(items), player);
@@ -156,17 +156,14 @@ public class ForgeEvents {
     public static void onAttachCapability(AttachCapabilitiesEvent<Entity> event){
         if(event.getObject() instanceof Player){
             //passive item
-            if(!event.getObject().getCapability(PlayerPassiveItemProvider.PLAYER_PASSIVE_ITEM).isPresent()){
-                event.addCapability(ResourceLocation.fromNamespaceAndPath(MOD_ID, "player_passive_item_cap"), new PlayerPassiveItemProvider());
+            if(!event.getObject().getCapability(PlayerIsaacItemsProvider.PLAYER_ISAAC_ITEMS).isPresent()){
+                event.addCapability(ResourceLocation.fromNamespaceAndPath(MOD_ID, "player_passive_item_cap"), new PlayerIsaacItemsProvider());
             }//stat manager
             if(!event.getObject().getCapability(PlayerStatModifierProvider.PLAYER_STAT_MODIFIER).isPresent()){
                 event.addCapability(ResourceLocation.fromNamespaceAndPath(MOD_ID, "player_stat_manager_cap"), new PlayerStatModifierProvider());
             }//ability
             if(!event.getObject().getCapability(PlayerAbilityProvider.PLAYER_ABILITY).isPresent()){
                 event.addCapability(ResourceLocation.fromNamespaceAndPath(MOD_ID, "player_ability_cap"), new PlayerAbilityProvider());
-            }//swallowedTrinkets
-            if(!event.getObject().getCapability(PlayerSwallowedTrinketsProvider.PLAYER_SWALLOWED_TRINKETS).isPresent()){
-                event.addCapability(ResourceLocation.fromNamespaceAndPath(MOD_ID, "player_swallowed_trinkets_cap"), new PlayerSwallowedTrinketsProvider());
             }//itemPools
             if(!event.getObject().getCapability(PlayerItemPoolsProvider.PLAYER_ITEM_POOL).isPresent()){
                 event.addCapability(ResourceLocation.fromNamespaceAndPath(MOD_ID, "player_item_pools_cap"), new PlayerItemPoolsProvider());
@@ -194,8 +191,8 @@ public class ForgeEvents {
             // 玩家的cap信息会在死亡后删除。需要用到reviveCaps恢复。复制完后再删除
             event.getOriginal().reviveCaps();
             // passive item
-            event.getOriginal().getCapability(PlayerPassiveItemProvider.PLAYER_PASSIVE_ITEM).ifPresent(oldStore -> {
-                event.getEntity().getCapability(PlayerPassiveItemProvider.PLAYER_PASSIVE_ITEM).ifPresent(newStore -> {
+            event.getOriginal().getCapability(PlayerIsaacItemsProvider.PLAYER_ISAAC_ITEMS).ifPresent(oldStore -> {
+                event.getEntity().getCapability(PlayerIsaacItemsProvider.PLAYER_ISAAC_ITEMS).ifPresent(newStore -> {
                     newStore.copyFrom(oldStore);
                 });
             });
@@ -208,12 +205,6 @@ public class ForgeEvents {
             // ability
             event.getOriginal().getCapability(PlayerAbilityProvider.PLAYER_ABILITY).ifPresent(oldStore -> {
                 event.getEntity().getCapability(PlayerAbilityProvider.PLAYER_ABILITY).ifPresent(newStore -> {
-                    newStore.copyFrom(oldStore);
-                });
-            });
-            // swallowed trinkets
-            event.getOriginal().getCapability(PlayerSwallowedTrinketsProvider.PLAYER_SWALLOWED_TRINKETS).ifPresent(oldStore -> {
-                event.getEntity().getCapability(PlayerSwallowedTrinketsProvider.PLAYER_SWALLOWED_TRINKETS).ifPresent(newStore -> {
                     newStore.copyFrom(oldStore);
                 });
             });

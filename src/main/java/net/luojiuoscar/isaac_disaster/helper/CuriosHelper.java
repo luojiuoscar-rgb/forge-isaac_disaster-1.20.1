@@ -4,8 +4,8 @@ import net.luojiuoscar.isaac_disaster.Config;
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerAbilityProvider;
 import net.luojiuoscar.isaac_disaster.capability.player.CurioSlotKey;
-import net.luojiuoscar.isaac_disaster.capability.player.PlayerPassiveItem;
-import net.luojiuoscar.isaac_disaster.capability.player.PlayerPassiveItemProvider;
+import net.luojiuoscar.isaac_disaster.capability.player.PlayerIsaacItems;
+import net.luojiuoscar.isaac_disaster.capability.player.PlayerIsaacItemsProvider;
 import net.luojiuoscar.isaac_disaster.item.item.IIsaacCuriosItem;
 import net.luojiuoscar.isaac_disaster.item.item.Trinket;
 import net.minecraft.server.level.ServerPlayer;
@@ -86,8 +86,8 @@ public class CuriosHelper {
         if (stack.isEmpty() || !(stack.getItem() instanceof IIsaacCuriosItem item)) return;
 
         CurioSlotKey key = CurioSlotKey.from(slotContext);
-        player.getCapability(PlayerPassiveItemProvider.PLAYER_PASSIVE_ITEM).ifPresent(
-                playerPassiveItem -> equipSlot(playerPassiveItem, key, slotContext, prevStack, stack, item)
+        player.getCapability(PlayerIsaacItemsProvider.PLAYER_ISAAC_ITEMS).ifPresent(
+                playerIsaacItems -> equipSlot(playerIsaacItems, key, slotContext, prevStack, stack, item)
         );
     }
 
@@ -95,17 +95,17 @@ public class CuriosHelper {
         if (!(slotContext.entity() instanceof ServerPlayer player)) return;
 
         CurioSlotKey key = CurioSlotKey.from(slotContext);
-        player.getCapability(PlayerPassiveItemProvider.PLAYER_PASSIVE_ITEM).ifPresent(playerPassiveItem -> {
-            Optional<ItemStack> record = playerPassiveItem.getActiveCurioStack(key);
+        player.getCapability(PlayerIsaacItemsProvider.PLAYER_ISAAC_ITEMS).ifPresent(playerIsaacItems -> {
+            Optional<ItemStack> record = playerIsaacItems.getActiveCurioStack(key);
             if (record.isEmpty()) return;
 
             if (!newStack.isEmpty() && isSameCurioItem(record.get(), newStack)) {
                 clearLegacyOnCurios(newStack);
-                playerPassiveItem.setActiveCurioStack(key, newStack);
+                playerIsaacItems.setActiveCurioStack(key, newStack);
                 return;
             }
 
-            ItemStack recordedStack = playerPassiveItem.removeActiveCurioStack(key).orElse(record.get());
+            ItemStack recordedStack = playerIsaacItems.removeActiveCurioStack(key).orElse(record.get());
             ItemStack stackForUnequip = prepareUnequipStack(recordedStack, stack);
             if (stackForUnequip.getItem() instanceof IIsaacCuriosItem item) {
                 item.tryUnequip(slotContext, newStack, stackForUnequip);
@@ -114,19 +114,19 @@ public class CuriosHelper {
     }
 
     public static void forgetIsaacCurioSlot(ServerPlayer player, CurioSlotKey key) {
-        player.getCapability(PlayerPassiveItemProvider.PLAYER_PASSIVE_ITEM).ifPresent(
-                playerPassiveItem -> playerPassiveItem.removeActiveCurioStack(key)
+        player.getCapability(PlayerIsaacItemsProvider.PLAYER_ISAAC_ITEMS).ifPresent(
+                playerIsaacItems -> playerIsaacItems.removeActiveCurioStack(key)
         );
     }
 
     public static void syncIsaacCurioSlot(ServerPlayer player, CurioSlotKey key) {
-        player.getCapability(PlayerPassiveItemProvider.PLAYER_PASSIVE_ITEM).ifPresent(playerPassiveItem -> {
+        player.getCapability(PlayerIsaacItemsProvider.PLAYER_ISAAC_ITEMS).ifPresent(playerIsaacItems -> {
             ItemStack currentStack = getStackInSlot(player, key);
-            Optional<ItemStack> record = playerPassiveItem.getActiveCurioStack(key);
+            Optional<ItemStack> record = playerIsaacItems.getActiveCurioStack(key);
 
             if (currentStack.isEmpty()) {
                 record.ifPresent(stack -> {
-                    playerPassiveItem.removeActiveCurioStack(key);
+                    playerIsaacItems.removeActiveCurioStack(key);
                     if (stack.getItem() instanceof IIsaacCuriosItem item) {
                         item.tryUnequip(createSlotContext(player, key), ItemStack.EMPTY, stack);
                     }
@@ -136,7 +136,7 @@ public class CuriosHelper {
 
             if (!(currentStack.getItem() instanceof IIsaacCuriosItem currentItem)) {
                 record.ifPresent(stack -> {
-                    playerPassiveItem.removeActiveCurioStack(key);
+                    playerIsaacItems.removeActiveCurioStack(key);
                     if (stack.getItem() instanceof IIsaacCuriosItem item) {
                         item.tryUnequip(createSlotContext(player, key), currentStack, stack);
                     }
@@ -146,29 +146,29 @@ public class CuriosHelper {
 
             SlotContext slotContext = createSlotContext(player, key);
             if (record.isEmpty()) {
-                if (migrateLegacyCurioRecord(playerPassiveItem, key, currentStack)) {
+                if (migrateLegacyCurioRecord(playerIsaacItems, key, currentStack)) {
                     return;
                 }
 
                 currentItem.tryEquip(slotContext, ItemStack.EMPTY, currentStack);
-                playerPassiveItem.setActiveCurioStack(key, currentStack);
+                playerIsaacItems.setActiveCurioStack(key, currentStack);
                 return;
             }
 
             ItemStack recordedStack = record.get();
             if (isSameCurioItem(recordedStack, currentStack)) {
                 clearLegacyOnCurios(currentStack);
-                playerPassiveItem.setActiveCurioStack(key, currentStack);
+                playerIsaacItems.setActiveCurioStack(key, currentStack);
                 return;
             }
 
-            playerPassiveItem.removeActiveCurioStack(key);
+            playerIsaacItems.removeActiveCurioStack(key);
             if (recordedStack.getItem() instanceof IIsaacCuriosItem oldItem) {
                 oldItem.tryUnequip(slotContext, currentStack, recordedStack);
             }
 
             currentItem.tryEquip(slotContext, recordedStack, currentStack);
-            playerPassiveItem.setActiveCurioStack(key, currentStack);
+            playerIsaacItems.setActiveCurioStack(key, currentStack);
         });
     }
 
@@ -186,13 +186,13 @@ public class CuriosHelper {
             }
         }
 
-        player.getCapability(PlayerPassiveItemProvider.PLAYER_PASSIVE_ITEM).ifPresent(playerPassiveItem -> {
-            for (Map.Entry<CurioSlotKey, ItemStack> entry : playerPassiveItem.getActiveCurioSlots().entrySet()) {
+        player.getCapability(PlayerIsaacItemsProvider.PLAYER_ISAAC_ITEMS).ifPresent(playerIsaacItems -> {
+            for (Map.Entry<CurioSlotKey, ItemStack> entry : playerIsaacItems.getActiveCurioSlots().entrySet()) {
                 CurioSlotKey key = entry.getKey();
                 if ((TRINKET.equals(key.slotType()) || PASSIVE_ITEM.equals(key.slotType()))
                         && hasSlot(player, key)) continue;
 
-                playerPassiveItem.removeActiveCurioStack(key).ifPresent(stack -> {
+                playerIsaacItems.removeActiveCurioStack(key).ifPresent(stack -> {
                     if (stack.getItem() instanceof IIsaacCuriosItem item) {
                         item.tryUnequip(createSlotContext(player, key), ItemStack.EMPTY, stack);
                     }
@@ -201,34 +201,34 @@ public class CuriosHelper {
         });
     }
 
-    private static void equipSlot(PlayerPassiveItem playerPassiveItem, CurioSlotKey key, SlotContext slotContext,
+    private static void equipSlot(PlayerIsaacItems playerIsaacItems, CurioSlotKey key, SlotContext slotContext,
                                   ItemStack prevStack, ItemStack stack, IIsaacCuriosItem item) {
-        Optional<ItemStack> record = playerPassiveItem.getActiveCurioStack(key);
+        Optional<ItemStack> record = playerIsaacItems.getActiveCurioStack(key);
 
         if (record.isEmpty()) {
-            if (migrateLegacyCurioRecord(playerPassiveItem, key, stack)) {
+            if (migrateLegacyCurioRecord(playerIsaacItems, key, stack)) {
                 return;
             }
 
             item.tryEquip(slotContext, prevStack, stack);
-            playerPassiveItem.setActiveCurioStack(key, stack);
+            playerIsaacItems.setActiveCurioStack(key, stack);
             return;
         }
 
         ItemStack recordedStack = record.get();
         if (isSameCurioItem(recordedStack, stack)) {
             clearLegacyOnCurios(stack);
-            playerPassiveItem.setActiveCurioStack(key, stack);
+            playerIsaacItems.setActiveCurioStack(key, stack);
             return;
         }
 
-        playerPassiveItem.removeActiveCurioStack(key);
+        playerIsaacItems.removeActiveCurioStack(key);
         if (recordedStack.getItem() instanceof IIsaacCuriosItem oldItem) {
             oldItem.tryUnequip(slotContext, stack, recordedStack);
         }
 
         item.tryEquip(slotContext, recordedStack, stack);
-        playerPassiveItem.setActiveCurioStack(key, stack);
+        playerIsaacItems.setActiveCurioStack(key, stack);
     }
 
     private static ItemStack prepareUnequipStack(ItemStack recordedStack, ItemStack eventStack) {
@@ -248,11 +248,11 @@ public class CuriosHelper {
         return stack;
     }
 
-    private static boolean migrateLegacyCurioRecord(PlayerPassiveItem playerPassiveItem, CurioSlotKey key, ItemStack stack) {
+    private static boolean migrateLegacyCurioRecord(PlayerIsaacItems playerIsaacItems, CurioSlotKey key, ItemStack stack) {
         if (!hasLegacyOnCurios(stack)) return false;
 
         clearLegacyOnCurios(stack);
-        playerPassiveItem.setActiveCurioStack(key, stack);
+        playerIsaacItems.setActiveCurioStack(key, stack);
         return true;
     }
 

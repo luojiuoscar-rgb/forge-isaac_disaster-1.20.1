@@ -95,12 +95,12 @@ public class PlayerHelper {
         level.addFreshEntity(itemEntity);
     }
     public static boolean hasItem(int itemId, ServerPlayer player){
-        return player.getCapability(PlayerPassiveItemProvider.PLAYER_PASSIVE_ITEM)
+        return player.getCapability(PlayerIsaacItemsProvider.PLAYER_ISAAC_ITEMS)
                 .map(p -> p.getItemCountFromAll(player, itemId) > 0)
                 .orElse(false);
     }
     public static int getItemCount(int itemId, ServerPlayer player){
-        return player.getCapability(PlayerPassiveItemProvider.PLAYER_PASSIVE_ITEM)
+        return player.getCapability(PlayerIsaacItemsProvider.PLAYER_ISAAC_ITEMS)
                 .map(p -> p.getItemCountFromAll(player, itemId))
                 .orElse(0);
     }
@@ -108,9 +108,9 @@ public class PlayerHelper {
         return hasTrinket(itemId, player, false);
     }
     public static boolean hasTrinket(int itemId, ServerPlayer player, boolean onlyEnchanted){
-        return player.getCapability(PlayerSwallowedTrinketsProvider.PLAYER_SWALLOWED_TRINKETS)
-                .map(playerSwallowedTrinkets -> {
-                    List<ItemStack> stackList = playerSwallowedTrinkets.getAllTrinketListFromId(player, itemId);
+        return player.getCapability(PlayerIsaacItemsProvider.PLAYER_ISAAC_ITEMS)
+                .map(playerIsaacItems -> {
+                    List<ItemStack> stackList = playerIsaacItems.getAllTrinketListFromId(player, itemId);
                     if (onlyEnchanted) {
                         return stackList.stream().anyMatch(ItemStack::isEnchanted);
                     } else {
@@ -120,7 +120,7 @@ public class PlayerHelper {
                 .orElse(false);
     }
     public static int getTrinketCount(int itemId, ServerPlayer player){
-        return player.getCapability(PlayerSwallowedTrinketsProvider.PLAYER_SWALLOWED_TRINKETS)
+        return player.getCapability(PlayerIsaacItemsProvider.PLAYER_ISAAC_ITEMS)
                 .map(p -> p.getAllTrinketListFromId(player, itemId).size())
                 .orElse(0);
 
@@ -132,13 +132,13 @@ public class PlayerHelper {
 
 
     public static void removeItemFromId(ResourceLocation itemId, ServerPlayer player){
-        player.getCapability(PlayerPassiveItemProvider.PLAYER_PASSIVE_ITEM).ifPresent(
-                playerPassiveItem -> playerPassiveItem.removeFromId(player, itemId)
+        player.getCapability(PlayerIsaacItemsProvider.PLAYER_ISAAC_ITEMS).ifPresent(
+                playerIsaacItems -> playerIsaacItems.removeFromId(player, itemId)
         );
     }
     public static void removeItemFromIndex(int index, ServerPlayer player){
-        player.getCapability(PlayerPassiveItemProvider.PLAYER_PASSIVE_ITEM).ifPresent(
-                playerPassiveItem -> playerPassiveItem.removeFromIndex(player, index)
+        player.getCapability(PlayerIsaacItemsProvider.PLAYER_ISAAC_ITEMS).ifPresent(
+                playerIsaacItems -> playerIsaacItems.removeFromIndex(player, index)
         );
     }
     /**若amount为null则代表直接充满*/
@@ -325,7 +325,7 @@ public class PlayerHelper {
 
 
     public static boolean hasSet(ResourceLocation id, ServerPlayer player){
-        return player.getCapability(PlayerPassiveItemProvider.PLAYER_PASSIVE_ITEM)
+        return player.getCapability(PlayerIsaacItemsProvider.PLAYER_ISAAC_ITEMS)
                 .map(p -> p.getSetCountFromId(id) > 3)
                 .orElse(false);
     }
@@ -428,9 +428,12 @@ public class PlayerHelper {
     }
 
     public static void resetAllAttributes(ServerPlayer player){
-        // 清除被动道具
-        player.getCapability(PlayerPassiveItemProvider.PLAYER_PASSIVE_ITEM).ifPresent(
-                playerPassiveItem -> playerPassiveItem.clearPlayerPassiveItems(player)
+        // 清除被动道具和吞下饰品，先走卸下流程以移除它们注册的效果
+        player.getCapability(PlayerIsaacItemsProvider.PLAYER_ISAAC_ITEMS).ifPresent(
+                playerIsaacItems -> {
+                    playerIsaacItems.clearPlayerPassiveItems(player);
+                    playerIsaacItems.clear(player);
+                }
         );
 
         // 清除Attribute modifiers
@@ -442,7 +445,7 @@ public class PlayerHelper {
         }
 
         // 重置cap
-        player.getCapability(PlayerPassiveItemProvider.PLAYER_PASSIVE_ITEM).ifPresent(PlayerPassiveItem::init);
+        player.getCapability(PlayerIsaacItemsProvider.PLAYER_ISAAC_ITEMS).ifPresent(PlayerIsaacItems::init);
         player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY).ifPresent(PlayerAbility::init);
         player.getCapability(PlayerStatModifierProvider.PLAYER_STAT_MODIFIER).ifPresent(PlayerStatModifier::init);
 
@@ -501,11 +504,11 @@ public class PlayerHelper {
 
         int[] count = {0};
         Map<CurioSlotKey, ItemStack> stackMap = CuriosHelper.getEquippedItemsBySlot(player, CuriosHelper.TRINKET);
-        player.getCapability(PlayerSwallowedTrinketsProvider.PLAYER_SWALLOWED_TRINKETS).ifPresent(
-                playerSwallowedTrinkets -> {
+        player.getCapability(PlayerIsaacItemsProvider.PLAYER_ISAAC_ITEMS).ifPresent(
+                playerIsaacItems -> {
                     for (Map.Entry<CurioSlotKey, ItemStack> entry : stackMap.entrySet()){
                         ItemStack stack = entry.getValue();
-                        playerSwallowedTrinkets.swallow(stack);
+                        playerIsaacItems.swallow(stack);
                         CuriosHelper.forgetIsaacCurioSlot(serverPlayer, entry.getKey());
                         count[0]++;
                     }

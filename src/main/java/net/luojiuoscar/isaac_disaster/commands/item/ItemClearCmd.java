@@ -1,7 +1,7 @@
 package net.luojiuoscar.isaac_disaster.commands.item;
 
 import com.mojang.brigadier.CommandDispatcher;
-import net.luojiuoscar.isaac_disaster.capability.player.PlayerPassiveItemProvider;
+import net.luojiuoscar.isaac_disaster.capability.player.PlayerIsaacItemsProvider;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.server.level.ServerPlayer;
@@ -15,7 +15,7 @@ public class ItemClearCmd {
 
                                     ServerPlayer player = context.getSource().getPlayerOrException();
 
-                                    player.getCapability(PlayerPassiveItemProvider.PLAYER_PASSIVE_ITEM).ifPresent(
+                                    player.getCapability(PlayerIsaacItemsProvider.PLAYER_ISAAC_ITEMS).ifPresent(
                                             playerPassiveItem -> {
                                                 playerPassiveItem.clearPlayerPassiveItems(player);
                                             });

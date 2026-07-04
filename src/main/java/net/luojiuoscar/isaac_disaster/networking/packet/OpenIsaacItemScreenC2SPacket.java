@@ -1,7 +1,6 @@
 package net.luojiuoscar.isaac_disaster.networking.packet;
 
-import net.luojiuoscar.isaac_disaster.capability.player.PlayerPassiveItemProvider;
-import net.luojiuoscar.isaac_disaster.capability.player.PlayerSwallowedTrinketsProvider;
+import net.luojiuoscar.isaac_disaster.capability.player.PlayerIsaacItemsProvider;
 import net.luojiuoscar.isaac_disaster.networking.ModMessages;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
@@ -35,17 +34,15 @@ public class OpenIsaacItemScreenC2SPacket {
 
             if (player == null) return;
             // 从Capability获取被动物品列表
-            player.getCapability(PlayerPassiveItemProvider.PLAYER_PASSIVE_ITEM).ifPresent(passiveItems -> {
-                player.getCapability(PlayerSwallowedTrinketsProvider.PLAYER_SWALLOWED_TRINKETS).ifPresent(playerSwallowedTrinkets -> {
-                    List<ItemStack> passiveList = passiveItems.getPassiveItems();
-                    List<ItemStack> trinkets = playerSwallowedTrinkets.getSwallowedTrinkets();
+            player.getCapability(PlayerIsaacItemsProvider.PLAYER_ISAAC_ITEMS).ifPresent(passiveItems -> {
+                List<ItemStack> passiveList = passiveItems.getPassiveItems();
+                List<ItemStack> trinkets = passiveItems.getSwallowedTrinkets();
 
-                    Collections.reverse(passiveList); // 反转列表；确保最先获取的道具在最前
-                    Collections.reverse(trinkets);
+                Collections.reverse(passiveList); // 反转列表；确保最先获取的道具在最前
+                Collections.reverse(trinkets);
 
-                    // 发回
-                    ModMessages.sentToPlayer(new OpenIsaacItemScreenS2CPacket(passiveList, trinkets), player);
-                });
+                // 发回
+                ModMessages.sentToPlayer(new OpenIsaacItemScreenS2CPacket(passiveList, trinkets), player);
             });
 
         });

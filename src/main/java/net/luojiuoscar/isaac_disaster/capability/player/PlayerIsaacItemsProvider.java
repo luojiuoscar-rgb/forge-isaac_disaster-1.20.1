@@ -12,25 +12,27 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 
-public class PlayerSwallowedTrinketsProvider implements ICapabilityProvider, INBTSerializable<CompoundTag> {
-    //stat modifiers
-    public static Capability<PlayerSwallowedTrinkets> PLAYER_SWALLOWED_TRINKETS = CapabilityManager.get(new CapabilityToken<PlayerSwallowedTrinkets>() {});
+public class PlayerIsaacItemsProvider implements ICapabilityProvider, INBTSerializable<CompoundTag> {
+    public static Capability<PlayerIsaacItems> PLAYER_ISAAC_ITEMS = CapabilityManager.get(new CapabilityToken<PlayerIsaacItems>() {});
 
+    private PlayerIsaacItems isaacItems = null;
+    private final LazyOptional<PlayerIsaacItems> optional = LazyOptional.of(this::clreatePlayerIsaacItems);
 
-    private PlayerSwallowedTrinkets swallowedTrinkets = null;
-    private final LazyOptional<PlayerSwallowedTrinkets> optional = LazyOptional.of(this::createPlayerSwallowedTrinkets);
-
-    private PlayerSwallowedTrinkets createPlayerSwallowedTrinkets(){
-        if(this.swallowedTrinkets == null){
-            this.swallowedTrinkets = new PlayerSwallowedTrinkets();
+    /**
+     * 创建
+     */
+    private PlayerIsaacItems clreatePlayerIsaacItems() {
+        if(this.isaacItems == null){
+            this.isaacItems = new PlayerIsaacItems();
         }
 
-        return this.swallowedTrinkets;
+        return this.isaacItems;
     }
+
 
     @Override
     public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
-        if(cap == PLAYER_SWALLOWED_TRINKETS){
+        if(cap == PLAYER_ISAAC_ITEMS){
             return optional.cast();
         }
 
@@ -40,12 +42,12 @@ public class PlayerSwallowedTrinketsProvider implements ICapabilityProvider, INB
     @Override
     public CompoundTag serializeNBT() {
         CompoundTag nbt = new CompoundTag();
-        createPlayerSwallowedTrinkets().saveNBTData(nbt);
+        clreatePlayerIsaacItems().saveNBTData(nbt);
         return nbt;
     }
 
     @Override
     public void deserializeNBT(CompoundTag nbt) {
-        createPlayerSwallowedTrinkets().loadNBTData(nbt);
+        clreatePlayerIsaacItems().loadNBTData(nbt);
     }
 }
