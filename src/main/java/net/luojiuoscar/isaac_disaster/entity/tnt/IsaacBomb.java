@@ -28,17 +28,42 @@ public class IsaacBomb extends PrimedTnt {
     private static final EntityDataAccessor<Boolean> IS_ORIGINAL =
             SynchedEntityData.defineId(IsaacBomb.class, EntityDataSerializers.BOOLEAN);
 
+    private BombData profile = BombData.DEFAULT;
     private int power;
+    private float centerDamage = BombData.DEFAULT.centerDamage();
+    private float damageRadius = BombData.DEFAULT.damageRadius();
+    private float blockPower = BombData.DEFAULT.blockPower();
+    private float blockResistanceMultiplier = BombData.DEFAULT.blockResistanceMultiplier();
     private final CompositeExecutableEffect cachedEffect = new CompositeExecutableEffect();
 
+    /**
+     * Creates an Isaac bomb with explicit legacy power and render scale values.
+     *
+     * <p>New call sites should prefer the profile constructor or {@link #applyProfile(BombData)};
+     * this constructor is kept for older effects that still think in raw power and scale.</p>
+     */
     public IsaacBomb(Level pLevel, double pX, double pY, double pZ, @Nullable LivingEntity pOwner, int power, float scale) {
         this(pLevel, pX, pY, pZ, pOwner, power, scale, true);
     }
+
+    /**
+     * Creates an Isaac bomb with explicit legacy power, render scale, and origin marker values.
+     */
     public IsaacBomb(Level pLevel, double pX, double pY, double pZ, @Nullable LivingEntity pOwner, int power, float scale, boolean isOriginal) {
         super(pLevel, pX, pY, pZ, pOwner);
+        applyProfile(BombData.fromPower(power));
         this.power = power;
+        this.blockPower = power;
         this.entityData.set(SCALE, scale);
         this.entityData.set(IS_ORIGINAL, isOriginal);
+    }
+
+    /**
+     * Creates an Isaac bomb from a built-in profile.
+     */
+    public IsaacBomb(Level level, double x, double y, double z, @Nullable LivingEntity owner, BombData profile) {
+        super(level, x, y, z, owner);
+        applyProfile(profile);
     }
 
     public boolean isOriginal(){
@@ -71,17 +96,86 @@ public class IsaacBomb extends PrimedTnt {
 
     public IsaacBomb(EntityType<? extends IsaacBomb> type, Level level) {
         super(type, level);
+        applyProfile(BombData.DEFAULT);
     }
 
 
 
     @Override
     protected void explode() {
-        this.level().explode(this, this.getX(), this.getY(0.0625D), this.getZ(), power, Level.ExplosionInteraction.TNT);
+        IsaacBombExplosion.explode(this);
     }
 
+    /**
+     * Sets the block destruction radius and the default block-breaking power together.
+     *
+     * <p>This preserves the old IsaacBomb meaning of power. Use {@link #setBlockPower(float)} after
+     * this method when an effect should change block radius and block destruction independently.</p>
+     */
     public void setPower(int power) {
         this.power = power;
+        this.blockPower = power;
+    }
+
+    /**
+     * Applies a built-in bomb profile to this entity.
+     *
+     * <p>This updates the block destruction radius, rendering scale, default fuse, center damage,
+     * damage radius, and
+     * block-breaking parameters together. Callers may still tweak individual values afterwards.</p>
+     */
+    public void applyProfile(BombData profile) {
+        this.profile = profile == null ? BombData.DEFAULT : profile;
+        this.power = this.profile.power();
+        this.centerDamage = this.profile.centerDamage();
+        this.damageRadius = this.profile.damageRadius();
+        this.blockPower = this.profile.blockPower();
+        this.blockResistanceMultiplier = this.profile.blockResistanceMultiplier();
+        this.entityData.set(SCALE, this.profile.size());
+        this.setFuse(this.profile.fuseTicks());
+    }
+
+    /**
+     * Returns a snapshot profile for the bomb's current explosion parameters.
+     *
+     * <p>The built-in profile enum still identifies the bomb category, while mutable fields such as
+     * center damage, damage radius, and block power allow item effects to alter one axis without
+     * redefining the whole profile.</p>
+     */
+    public BombData getProfile() {
+        return profile;
+    }
+
+    public float getCenterDamage() {
+        return centerDamage;
+    }
+
+    public void setCenterDamage(float centerDamage) {
+        this.centerDamage = centerDamage;
+    }
+
+    public float getDamageRadius() {
+        return damageRadius;
+    }
+
+    public void setDamageRadius(float damageRadius) {
+        this.damageRadius = damageRadius;
+    }
+
+    public float getBlockPower() {
+        return blockPower;
+    }
+
+    public void setBlockPower(float blockPower) {
+        this.blockPower = blockPower;
+    }
+
+    public float getBlockResistanceMultiplier() {
+        return blockResistanceMultiplier;
+    }
+
+    public void setBlockResistanceMultiplier(float blockResistanceMultiplier) {
+        this.blockResistanceMultiplier = blockResistanceMultiplier;
     }
 
     public void setOwner(LivingEntity entity) {

@@ -25,7 +25,7 @@ public class RecursiveModuleInstance {
 
     public void trigger(LivingEntity entity, RecursiveModuleQueue queue){
         // 需要动态获取；可能存在可变的interval
-        if (recursiveModule == null) return;
+        if (recursiveModule == null || stacks <= 0) return;
 
         ExecutableEffectContext ctx = new ExecutableEffectContext(entity);
         ctx.set(ContextKeys.AMPLIFIER, (double) stacks);

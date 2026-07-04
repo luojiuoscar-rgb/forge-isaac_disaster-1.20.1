@@ -29,32 +29,47 @@ public class EntityHelper {
 
 
     /**
-     * type 0: small bomb
-     * type 1: medium bomb
-     * type 2: large bomb
+     * Spawns an Isaac bomb from one of the built-in bomb profiles.
+     *
+     * <p>The profile sets the default block radius, rendered size, center damage, damage radius,
+     * block destruction behavior, and fuse. The explicit fuse argument is applied last because many
+     * effects need instant or delayed variants of the same bomb profile.</p>
      */
     public static IsaacBomb spawnBomb(Vec3 position, LivingEntity owner,
                                       Level level, Vec3 velocity, BombData data, int fuse) {
-        return spawnBomb(position, owner, level, velocity, fuse, data.power(), data.size(), true);
+        return spawnBomb(position, owner, level, velocity, data, fuse, true);
     }
 
-    public static IsaacBomb spawnBomb(Vec3 position, LivingEntity owner,
-                                      Level level, Vec3 velocity,
-                                      int fuse, int power, float scale, boolean isOriginal) {
+    /**
+     * Spawns an Isaac bomb from a profile and marks whether it is the original bomb for chained
+     * bomb effects such as Bomber Boy or Scatter Bomb.
+     */
+    public static IsaacBomb spawnBomb(Vec3 position, LivingEntity owner, Level level, Vec3 velocity,
+                                      BombData data, int fuse, boolean isOriginal) {
         if (level.isClientSide()) return null;
 
         IsaacBomb bomb = ModEntities.ISAAC_BOMB.get().create(level);
         if (bomb == null) return null;
 
+        bomb.applyProfile(data);
         bomb.moveTo(position.x, position.y, position.z, 0, 0);
         bomb.setOwner(owner);
         bomb.setFuse(fuse);
-        bomb.setPower(power);
-        bomb.setScale(scale);
         bomb.setOriginal(isOriginal);
         bomb.setDeltaMovement(velocity);
 
         level.addFreshEntity(bomb);
+        return bomb;
+    }
+
+    public static IsaacBomb spawnBomb(Vec3 position, LivingEntity owner,
+                                      Level level, Vec3 velocity,
+                                      int fuse, int power, float scale, boolean isOriginal) {
+        IsaacBomb bomb = spawnBomb(position, owner, level, velocity, BombData.fromPower(power), fuse, isOriginal);
+        if (bomb == null) return null;
+
+        bomb.setPower(power);
+        bomb.setScale(scale);
         return bomb;
     }
 
@@ -99,17 +114,28 @@ public class EntityHelper {
     }
 
     public static void throwBomb(LivingEntity entity, int fuse, int power) {
-        float scale = BombData.MEGA.size();
-        if (power < BombData.SMALL.power()){
-            scale = BombData.SMALL.size();
-        }else if (power < BombData.MEGA.power()){
-            scale = BombData.NORMAL.size();
-        }
-
-        throwBomb(entity, fuse, power, scale);
+        throwBomb(entity, fuse, BombData.fromPower(power), power);
     }
 
     public static void throwBomb(LivingEntity entity, int fuse, int power, float scale) {
+        throwBomb(entity, fuse, BombData.fromPower(power), power, scale);
+    }
+
+    /**
+     * Throws a bomb from a built-in profile while preserving the existing Isaac bomb throw velocity.
+     */
+    public static void throwBomb(LivingEntity entity, int fuse, BombData profile) {
+        throwBomb(entity, fuse, profile, profile.power(), profile.size());
+    }
+
+    /**
+     * Throws a profile-based bomb and then overrides its explosion radius.
+     */
+    public static void throwBomb(LivingEntity entity, int fuse, BombData profile, int power) {
+        throwBomb(entity, fuse, profile, power, profile.size());
+    }
+
+    private static void throwBomb(LivingEntity entity, int fuse, BombData profile, int power, float scale) {
         Vec3 look = entity.getLookAngle();
         Vec3 playerVel = entity.getDeltaMovement();
 
@@ -132,7 +158,11 @@ public class EntityHelper {
         }
 
 
-        spawnBomb(spawnPos, entity, entity.level(), velocity, fuse, power, scale, true);
+        IsaacBomb bomb = spawnBomb(spawnPos, entity, entity.level(), velocity, profile, fuse, true);
+        if (bomb == null) return;
+
+        bomb.setPower(power);
+        bomb.setScale(scale);
     }
 
 

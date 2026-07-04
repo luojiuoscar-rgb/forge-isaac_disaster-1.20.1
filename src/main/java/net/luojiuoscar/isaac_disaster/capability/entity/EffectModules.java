@@ -32,7 +32,9 @@ public class EffectModules {
         this.triggerModuleQueue.getQueue().addAll(source.triggerModuleQueue.getQueue());
 
         recursiveModuleQueue.clear();
-        this.recursiveModuleQueue.getQueue().addAll(source.recursiveModuleQueue.getQueue());
+        for (RecursiveModuleInstance inst : source.recursiveModuleQueue.getQueue()) {
+            recursiveModuleQueue.rawAdd(inst);
+        }
     }
 
     public void saveNBTData(CompoundTag nbt) {
@@ -50,6 +52,8 @@ public class EffectModules {
         /* ---------- Recursive Modules ---------- */
         ListTag recursiveList = new ListTag();
         for (RecursiveModuleInstance inst : recursiveModuleQueue.getQueue()) {
+            if (inst.stacks <= 0) continue;
+
             CompoundTag tag = new CompoundTag();
             tag.putString("id", inst.id.toString());
             tag.putInt("stacks", inst.stacks);
@@ -87,6 +91,7 @@ public class EffectModules {
                     ResourceLocation id = ResourceLocation.parse(tag.getString("id"));
                     int stacks = tag.getInt("stacks");
                     int coolDown = tag.getInt("coolDown");
+                    if (stacks <= 0) continue;
 
                     RecursiveModuleInstance inst = new RecursiveModuleInstance(id, stacks, coolDown);
 
