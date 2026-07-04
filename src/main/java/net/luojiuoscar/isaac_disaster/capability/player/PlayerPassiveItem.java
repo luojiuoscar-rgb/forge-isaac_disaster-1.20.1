@@ -31,6 +31,7 @@ public class PlayerPassiveItem {
 
     private final Map<ResourceLocation, Integer> setCountMap; // 当前套装计数
     private final Set<Integer> obtainedSets; // 已经获得过的套装
+    private final Map<CurioSlotKey, ItemStack> activeCurioSlots; // 已经应用过效果的 Curios 槽位
 
 
     // constructor
@@ -39,6 +40,7 @@ public class PlayerPassiveItem {
 
         this.setCountMap = new HashMap<>();
         this.obtainedSets = new HashSet<>();
+        this.activeCurioSlots = new HashMap<>();
         init();
     }
 
@@ -47,6 +49,7 @@ public class PlayerPassiveItem {
 
         this.setCountMap.clear();
         this.obtainedSets.clear();
+        this.activeCurioSlots.clear();
     }
 
     public void clearSetMap(){
@@ -221,6 +224,39 @@ public class PlayerPassiveItem {
         setCountMap.put(id, newCount);
     }
 
+    public Optional<ItemStack> getActiveCurioStack(CurioSlotKey key) {
+        ItemStack stack = activeCurioSlots.get(key);
+        if (stack == null || stack.isEmpty()) return Optional.empty();
+        return Optional.of(stack.copy());
+    }
+
+    public boolean hasActiveCurioSlot(CurioSlotKey key) {
+        return activeCurioSlots.containsKey(key);
+    }
+
+    public void setActiveCurioStack(CurioSlotKey key, ItemStack stack) {
+        if (stack == null || stack.isEmpty()) {
+            activeCurioSlots.remove(key);
+            return;
+        }
+
+        activeCurioSlots.put(key, stack.copy());
+    }
+
+    public Optional<ItemStack> removeActiveCurioStack(CurioSlotKey key) {
+        ItemStack stack = activeCurioSlots.remove(key);
+        if (stack == null || stack.isEmpty()) return Optional.empty();
+        return Optional.of(stack.copy());
+    }
+
+    public Map<CurioSlotKey, ItemStack> getActiveCurioSlots() {
+        Map<CurioSlotKey, ItemStack> result = new HashMap<>();
+        for (Map.Entry<CurioSlotKey, ItemStack> entry : activeCurioSlots.entrySet()) {
+            result.put(entry.getKey(), entry.getValue().copy());
+        }
+        return result;
+    }
+
 
 
     // 从目标处复制
@@ -233,6 +269,11 @@ public class PlayerPassiveItem {
 
         this.obtainedSets.clear();
         this.obtainedSets.addAll(source.obtainedSets);
+
+        this.activeCurioSlots.clear();
+        for (Map.Entry<CurioSlotKey, ItemStack> entry : source.activeCurioSlots.entrySet()) {
+            this.activeCurioSlots.put(entry.getKey(), entry.getValue().copy());
+        }
     }
 
     public void saveNBTData(CompoundTag nbt) {
@@ -261,6 +302,23 @@ public class PlayerPassiveItem {
             obtainedList.add(IntTag.valueOf(setId));
         }
         nbt.put("ObtainedSets", obtainedList);
+
+        // 保存已应用效果的 Curios 槽位
+        ListTag curioSlotList = new ListTag();
+        for (Map.Entry<CurioSlotKey, ItemStack> entry : activeCurioSlots.entrySet()) {
+            ItemStack stack = entry.getValue();
+            if (stack.isEmpty()) continue;
+
+            CompoundTag curioSlotTag = new CompoundTag();
+            curioSlotTag.put("Key", entry.getKey().saveNBT());
+
+            CompoundTag stackTag = new CompoundTag();
+            stack.save(stackTag);
+            curioSlotTag.put("Stack", stackTag);
+
+            curioSlotList.add(curioSlotTag);
+        }
+        nbt.put("ActiveCurioSlots", curioSlotList);
     }
 
 
@@ -296,6 +354,21 @@ public class PlayerPassiveItem {
             for (Tag tag : obtainedList) {
                 if (tag instanceof IntTag intTag) {
                     obtainedSets.add(intTag.getAsInt());
+                }
+            }
+        }
+
+        // 读取已应用效果的 Curios 槽位
+        activeCurioSlots.clear();
+        if (nbt.contains("ActiveCurioSlots", Tag.TAG_LIST)) {
+            ListTag curioSlotList = nbt.getList("ActiveCurioSlots", Tag.TAG_COMPOUND);
+            for (Tag baseTag : curioSlotList) {
+                if (baseTag instanceof CompoundTag curioSlotTag) {
+                    CurioSlotKey key = CurioSlotKey.loadNBT(curioSlotTag.getCompound("Key"));
+                    ItemStack stack = ItemStack.of(curioSlotTag.getCompound("Stack"));
+                    if (!stack.isEmpty()) {
+                        activeCurioSlots.put(key, stack);
+                    }
                 }
             }
         }

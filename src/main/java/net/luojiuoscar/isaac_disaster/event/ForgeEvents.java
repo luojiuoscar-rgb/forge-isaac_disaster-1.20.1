@@ -16,11 +16,10 @@ import net.luojiuoscar.isaac_disaster.commands.player.PlayerResetDataCmd;
 import net.luojiuoscar.isaac_disaster.commands.trinket.TrinketClearSwallowedCmd;
 import net.luojiuoscar.isaac_disaster.commands.trinket.TrinketSetEnchanted;
 import net.luojiuoscar.isaac_disaster.effect.ModEffects;
+import net.luojiuoscar.isaac_disaster.helper.CuriosHelper;
 import net.luojiuoscar.isaac_disaster.helper.LootHelper;
 import net.luojiuoscar.isaac_disaster.item.ModItems;
-import net.luojiuoscar.isaac_disaster.item.item.IIsaacCuriosItem;
 import net.luojiuoscar.isaac_disaster.item.item.IsaacItem;
-import net.luojiuoscar.isaac_disaster.item.item.custom.FoodPassiveItem;
 import net.luojiuoscar.isaac_disaster.item.pickup.special.IsaacHead;
 import net.luojiuoscar.isaac_disaster.manager.EffectManager;
 import net.luojiuoscar.isaac_disaster.manager.ModDamageType;
@@ -68,7 +67,6 @@ import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.IForgeRegistry;
 import net.minecraftforge.registries.RegistryManager;
 import net.minecraftforge.server.command.ConfigCommand;
-import top.theillusivec4.curios.api.event.CurioUnequipEvent;
 
 import java.util.List;
 import java.util.Map;
@@ -99,6 +97,7 @@ public class ForgeEvents {
 
         // update cached attack type
         player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY).ifPresent(PlayerAbility::updateBestAttackType);
+        CuriosHelper.syncAllIsaacCurios(player);
 
         // 添加永久模块
         player.getCapability(EffectModulesProvider.EFFECT_MODULES).ifPresent(
@@ -406,25 +405,6 @@ public class ForgeEvents {
 
         event.setNewSpeed(finalSpeed);
     }
-
-
-    @SubscribeEvent
-    public static void onCurioUnequipEvent(CurioUnequipEvent event){
-        if (!(event.getEntity() instanceof Player player) || player.level().isClientSide) return;
-
-        // item类中的onUnequip方法获取到的不是原stack，故而需要通过事件修改
-        ItemStack stack = event.getStack();
-
-        if (stack.getItem() instanceof IIsaacCuriosItem ii){
-            IIsaacCuriosItem.setOnCurios(stack, false);
-
-            if (ii instanceof FoodPassiveItem){
-                FoodPassiveItem.setBingeEater(stack, false);
-            }
-        }
-
-    }
-
 
     // 临时流浪商人交易系统
     @SubscribeEvent

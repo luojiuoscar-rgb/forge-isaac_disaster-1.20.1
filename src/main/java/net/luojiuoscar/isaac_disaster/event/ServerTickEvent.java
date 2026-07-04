@@ -9,6 +9,7 @@ import net.luojiuoscar.isaac_disaster.capability.player.PlayerStatModifierProvid
 import net.luojiuoscar.isaac_disaster.effect.ModEffects;
 import net.luojiuoscar.isaac_disaster.event.custom.attack.BeforePerformAttackEvent;
 import net.luojiuoscar.isaac_disaster.event.custom.misc.RightClickTickEvent;
+import net.luojiuoscar.isaac_disaster.helper.CuriosHelper;
 import net.luojiuoscar.isaac_disaster.helper.EntityHelper;
 import net.luojiuoscar.isaac_disaster.helper.LevelHelper;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
@@ -84,6 +85,12 @@ public class ServerTickEvent {
 
                 bugsFix(player);
                 ForgeEvents.syncAllDataToClient(player);
+            }
+        }
+
+        if (tickCounter % 200 == 0) {
+            for (ServerPlayer player : server.getPlayerList().getPlayers()) {
+                CuriosHelper.syncAllIsaacCurios(player);
             }
         }
 

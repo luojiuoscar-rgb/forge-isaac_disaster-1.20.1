@@ -497,12 +497,16 @@ public class PlayerHelper {
     }
 
     public static int swallowAllTrinkets(Player player){
+        if (!(player instanceof ServerPlayer serverPlayer)) return 0;
+
         int[] count = {0};
-        List<ItemStack> stackList = CuriosHelper.getEquippedItemsInSlot(player, CuriosHelper.TRINKET);
+        Map<CurioSlotKey, ItemStack> stackMap = CuriosHelper.getEquippedItemsBySlot(player, CuriosHelper.TRINKET);
         player.getCapability(PlayerSwallowedTrinketsProvider.PLAYER_SWALLOWED_TRINKETS).ifPresent(
                 playerSwallowedTrinkets -> {
-                    for (ItemStack stack : stackList){
+                    for (Map.Entry<CurioSlotKey, ItemStack> entry : stackMap.entrySet()){
+                        ItemStack stack = entry.getValue();
                         playerSwallowedTrinkets.swallow(stack);
+                        CuriosHelper.forgetIsaacCurioSlot(serverPlayer, entry.getKey());
                         count[0]++;
                     }
                 });
