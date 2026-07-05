@@ -7,7 +7,6 @@ import net.luojiuoscar.isaac_disaster.capability.entity.EffectModulesProvider;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerAbilityProvider;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerStatModifierProvider;
 import net.luojiuoscar.isaac_disaster.effect.ModEffects;
-import net.luojiuoscar.isaac_disaster.event.custom.attack.BeforePerformAttackEvent;
 import net.luojiuoscar.isaac_disaster.event.custom.misc.RightClickTickEvent;
 import net.luojiuoscar.isaac_disaster.helper.CuriosHelper;
 import net.luojiuoscar.isaac_disaster.helper.EntityHelper;
@@ -23,6 +22,7 @@ import net.luojiuoscar.isaac_disaster.networking.packet.ChargeBarUpdateS2CPacket
 import net.luojiuoscar.isaac_disaster.networking.packet.RefreshScaleS2CPacket;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.data.AbilityEffectTokenBucket;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackType;
+import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackExecutor;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.IChargeableAttack;
 import net.luojiuoscar.isaac_disaster.system.ScaleUtils;
 import net.minecraft.client.Minecraft;
@@ -249,12 +249,7 @@ public class ServerTickEvent {
                     // perform attack
                     if (!(attack instanceof IChargeableAttack)){
 
-                        BeforePerformAttackEvent event = new BeforePerformAttackEvent(player, attack);
-                        MinecraftForge.EVENT_BUS.post(event);
-                        if (event.isCanceled()) return;
-
-                        attack.performAttack(attack.getAttackContextsWithEvent(player, attack.getBulletCount(player)));
-                        attack.makeSound(player);
+                        if (!AttackExecutor.performPrimary(player, attack)) return;
 
                         // 射击延迟
                         player.getCooldowns().addCooldown(stack.getItem(), (int) PlayerHelper.getShotDelay(player));

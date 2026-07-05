@@ -341,7 +341,7 @@ public class EntityHelper {
 
             }
             // 中立生物
-            else if (e instanceof PathfinderMob) {
+            else if (e instanceof Mob) {
                 if (neutral == null || e.distanceToSqr(center.x, center.y, center.z) < neutral.distanceToSqr(center.x, center.y, center.z))
                     neutral = e;
             }

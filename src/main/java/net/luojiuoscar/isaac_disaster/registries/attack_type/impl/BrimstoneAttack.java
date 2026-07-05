@@ -26,6 +26,10 @@ public class BrimstoneAttack extends LaserAttack implements IChargeableAttack {
     private static final ResourceLocation SCHEDULE_TYPE =
             ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "brimstone_attack");
 
+    public BrimstoneAttack(int priorityTier, double priority) {
+        super(priorityTier, priority);
+    }
+
     public BrimstoneAttack(double priority) {
         super(priority);
     }

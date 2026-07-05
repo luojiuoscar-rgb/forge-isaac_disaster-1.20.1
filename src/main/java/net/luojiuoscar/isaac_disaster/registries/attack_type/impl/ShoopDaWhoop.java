@@ -9,9 +9,14 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.Vec3;
 
 public class ShoopDaWhoop extends BrimstoneAttack{
+    public ShoopDaWhoop(int priorityTier, double priority) {
+        super(priorityTier, priority);
+    }
+
     public ShoopDaWhoop(double priority) {
         super(priority);
     }
+
     private static final ResourceLocation SCHEDULE_TYPE =
             ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "shoop_da_whoop");
 

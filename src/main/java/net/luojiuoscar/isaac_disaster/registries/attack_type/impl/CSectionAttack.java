@@ -29,6 +29,10 @@ import java.util.Map;
 public class CSectionAttack extends BulletAttack implements IChargeableAttack {
     private static final float DAMAGE_PERCENTAGE = 0.75f;
 
+    public CSectionAttack(int priorityTier, double priority) {
+        super(priorityTier, priority);
+    }
+
     public CSectionAttack(double priority) {
         super(priority);
     }

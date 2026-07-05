@@ -17,6 +17,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class BulletAttack extends AttackType {
+    public BulletAttack(int priorityTier, double priority) {
+        super(priorityTier, priority);
+    }
+
     public BulletAttack(double priority) {
         super(priority);
     }

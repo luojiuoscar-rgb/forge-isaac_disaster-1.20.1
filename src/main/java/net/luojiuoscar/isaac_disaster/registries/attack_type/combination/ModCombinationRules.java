@@ -22,5 +22,23 @@ public class ModCombinationRules {
             ATTACK_COMBINATION_RULE_REGISTRY.register(
                     "neptunus_cursed_eye", () -> new AttackCombinationRule(
                             Set.of(ModAttackType.CURSED_EYE, ModAttackType.NEPTUNUS),
-                            ModAttackType.NEPTUNUS, AttackPrio.NEPTUNUS.getPriority()));
+                            ModAttackType.NEPTUNUS,
+                            AttackPrio.NEPTUNUS_CURSED_EYE_COMBO.getTier(),
+                            AttackPrio.NEPTUNUS_CURSED_EYE_COMBO.getPriority()));
+
+    public static final RegistryObject<AttackCombinationRule> NEPTUNUS_LASER =
+            ATTACK_COMBINATION_RULE_REGISTRY.register(
+                    "neptunus_laser", () -> new AttackCombinationRule(
+                            Set.of(ModAttackType.NEPTUNUS, ModAttackType.LASER),
+                            ModAttackType.NEPTUNUS,
+                            AttackPrio.NEPTUNUS_LASER_COMBO.getTier(),
+                            AttackPrio.NEPTUNUS_LASER_COMBO.getPriority()));
+
+    public static final RegistryObject<AttackCombinationRule> C_SECTION_LASER =
+            ATTACK_COMBINATION_RULE_REGISTRY.register(
+                    "c_section_laser", () -> new AttackCombinationRule(
+                            Set.of(ModAttackType.C_SECTION, ModAttackType.LASER),
+                            ModAttackType.C_SECTION,
+                            AttackPrio.C_SECTION_LASER_COMBO.getTier(),
+                            AttackPrio.C_SECTION_LASER_COMBO.getPriority()));
 }

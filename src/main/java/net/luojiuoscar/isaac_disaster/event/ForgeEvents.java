@@ -96,7 +96,8 @@ public class ForgeEvents {
         ModMessages.sentToPlayer(new RefreshScaleS2CPacket(), player);
 
         // update cached attack type
-        player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY).ifPresent(PlayerAbility::updateBestAttackType);
+        player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY).ifPresent(
+                playerAbility -> playerAbility.updateBestAttackType(player));
         CuriosHelper.syncAllIsaacCurios(player);
 
         // 添加永久模块

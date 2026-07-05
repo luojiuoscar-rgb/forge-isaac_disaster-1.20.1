@@ -16,6 +16,10 @@ import java.util.Map;
 public class Technology2Attack extends LaserAttack {
     public static final float DAMAGE_PERCENTAGE = 0.1f;
 
+    public Technology2Attack(int priorityTier, double priority) {
+        super(priorityTier, priority);
+    }
+
     public Technology2Attack(double priority) {
         super(priority);
     }

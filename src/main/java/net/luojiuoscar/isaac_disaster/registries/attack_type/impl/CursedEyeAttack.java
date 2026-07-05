@@ -7,6 +7,7 @@ import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.helper.ScheduledFuncHelper;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackContext;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackType;
+import net.luojiuoscar.isaac_disaster.registries.attack_type.DelegatingAttackType;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.IChargeableAttack;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.ModAttackType;
 import net.minecraft.resources.ResourceLocation;
@@ -17,10 +18,13 @@ import net.minecraftforge.common.MinecraftForge;
 
 import java.util.List;
 
-public class CursedEyeAttack extends AttackType implements IChargeableAttack {
+public class CursedEyeAttack extends AttackType implements IChargeableAttack, DelegatingAttackType {
     private static final ResourceLocation SCHEDULE_TYPE =
             ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "cursed_eye_attack");
 
+    public CursedEyeAttack(int priorityTier, double priority) {
+        super(priorityTier, priority);
+    }
 
     public CursedEyeAttack(double priority) {
         super(priority);
@@ -76,7 +80,7 @@ public class CursedEyeAttack extends AttackType implements IChargeableAttack {
                     if (playerAbility.getChargeAmount() >= getShotDelay(player)
                             && PlayerHelper.isHoldingIsaacHead(player)){
 
-                        AttackType attack = pickLowerAttackType(playerAbility.getAttackTypes(), 0);
+                        AttackType attack = pickLowerAttackType(player, playerAbility.getAttackTypes(), 0);
 
                         BeforePerformAttackEvent event = new BeforePerformAttackEvent(player, this);
                         MinecraftForge.EVENT_BUS.post(event);

@@ -365,7 +365,7 @@ public enum StatManager {
     /* ---------------------- 注册项目 ---------------------- */
     public static void addAttackType(ServerPlayer player, ResourceLocation id, int count){
         player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY).ifPresent(
-                playerAbility -> playerAbility.addAttackType(id, count)
+                playerAbility -> playerAbility.addAttackType(id, count, player)
         );
     }
 

@@ -1,18 +1,19 @@
 package net.luojiuoscar.isaac_disaster.capability.player;
 
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackType;
+import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackSelection;
+import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackSelectionContext;
+import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackSelector;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.ModAttackType;
-import net.luojiuoscar.isaac_disaster.registries.attack_type.combination.AttackCombinationRule;
-import net.luojiuoscar.isaac_disaster.registries.attack_type.combination.ModCombinationRules;
 import net.luojiuoscar.isaac_disaster.registries.bullet_color.BulletColor;
 import net.luojiuoscar.isaac_disaster.registries.bullet_color.ModBulletColor;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.registries.IForgeRegistry;
 import net.minecraftforge.registries.RegistryManager;
-import net.minecraftforge.registries.RegistryObject;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -32,6 +33,8 @@ public class PlayerAbility {
     private final Map<ResourceLocation, Integer> attackType;
     private ResourceLocation bestAttackType;
     private AttackType cachedAttackType;
+    private int cachedAttackPriorityTier;
+    private double cachedAttackPriority;
     private final Map<ResourceLocation, Integer> bulletColor; // bullet color id : count
     private ResourceLocation bestBulletColor;
     private final HashMap<ResourceLocation, Integer> trajectories;
@@ -55,6 +58,8 @@ public class PlayerAbility {
         bestBulletColor = ModBulletColor.BASE.getId();
         bestAttackType = ModAttackType.BULLET.getId();
         cachedAttackType = ModAttackType.BULLET.get();
+        cachedAttackPriorityTier = cachedAttackType.getPriorityTier();
+        cachedAttackPriority = cachedAttackType.getPriority();
 
         attackType.clear();
         bulletColor.clear();
@@ -71,6 +76,8 @@ public class PlayerAbility {
         this.bestBulletColor = source.bestBulletColor;
         this.bestAttackType = source.bestAttackType;
         this.cachedAttackType = source.cachedAttackType;
+        this.cachedAttackPriorityTier = source.cachedAttackPriorityTier;
+        this.cachedAttackPriority = source.cachedAttackPriority;
 
         this.attackType.clear();
         this.attackType.putAll(source.attackType);
@@ -164,6 +171,7 @@ public class PlayerAbility {
                 } catch (Exception ignored) {}
             }
         }
+
     }
 
     public boolean isHoldingRightClick() {
@@ -238,82 +246,47 @@ public class PlayerAbility {
         return cachedAttackType;
     }
 
+    /**
+     * Returns the tier of the selected attack candidate currently cached for this player.
+     *
+     * <p>This can differ from {@link AttackType#getPriorityTier()} when a combination rule selected
+     * an existing attack type as its result.</p>
+     */
+    public int getCachedAttackPriorityTier() {
+        return cachedAttackPriorityTier;
+    }
+
+    /**
+     * Returns the priority value of the selected attack candidate currently cached for this player.
+     */
+    public double getCachedAttackPriority() {
+        return cachedAttackPriority;
+    }
+
     public void addAttackType(ResourceLocation id, int count) {
+        addAttackType(id, count, null);
+    }
+
+    public void addAttackType(ResourceLocation id, int count, ServerPlayer player) {
         int r = attackType.getOrDefault(id, 0) + count;
         if (r <= 0) {
             attackType.remove(id);
         }else{
             attackType.put(id, r);
         }
-        updateBestAttackType();
+        updateBestAttackType(player);
     }
 
     public void updateBestAttackType() {
-        IForgeRegistry<AttackType> registry = RegistryManager.ACTIVE.getRegistry(ModAttackType.ATTACK_TYPE_KEY);
-        if (registry == null) return;
+        updateBestAttackType(null);
+    }
 
-        // 找到单体最高优先级
-        ResourceLocation bestSingleId = ModAttackType.BULLET.getId();
-        AttackType bestSingle = registry.getValue(bestSingleId);
-        if (bestSingle == null) return;
-
-        double bestSinglePriority = bestSingle.getPriority();
-
-        for (ResourceLocation id : attackType.keySet()) {
-            AttackType at = registry.getValue(id);
-            if (at == null) continue;
-
-            double priority = at.getPriority();
-            if (priority > bestSinglePriority) {
-                bestSinglePriority = priority;
-                bestSingleId = id;
-                bestSingle = at;
-            }
-        }
-
-        // 尝试匹配组合规则
-        AttackCombinationRule bestCombo = null;
-        double bestComboPriority = -1;
-
-        IForgeRegistry<AttackCombinationRule> comboRegistry =
-                RegistryManager.ACTIVE.getRegistry(ModCombinationRules.ATTACK_COMBINATION_RULE_KEY);
-
-        if (comboRegistry != null){
-            for (AttackCombinationRule combo : comboRegistry.getValues()) {
-
-                // 检查组合 triggerSet 是否都在当前攻击类型中
-                boolean allInAttackType = combo.triggerSet.stream()
-                        .map(RegistryObject::get)
-                        .allMatch(trigger -> attackType.containsKey(trigger.getId()));
-
-                if (!allInAttackType) continue;
-
-                // 检查是否有更高优先级的单体攻击，不属于组合内
-                boolean blocked = attackType.keySet().stream()
-                        .map(registry::getValue)
-                        .filter(at -> at != null)
-                        .anyMatch(at -> at.getPriority() > combo.priority
-                                && combo.triggerSet.stream().map(RegistryObject::get).noneMatch(t -> t == at));
-
-                if (blocked) continue;
-
-                // 找到优先级最大的组合
-                double comboPriority = combo.priority;
-                if (comboPriority > bestComboPriority) {
-                    bestComboPriority = comboPriority;
-                    bestCombo = combo;
-                }
-            }
-        }
-
-        // 最终：组合优先级高于单体优先级时才生效
-        if (bestCombo != null) {
-            this.bestAttackType = bestCombo.result.getId();
-            this.cachedAttackType = bestCombo.result.get();
-        } else {
-            this.bestAttackType = bestSingleId;
-            this.cachedAttackType = bestSingle;
-        }
+    public void updateBestAttackType(ServerPlayer player) {
+        AttackSelection selection = AttackSelector.select(new AttackSelectionContext(attackType, player));
+        this.bestAttackType = selection.attackTypeId();
+        this.cachedAttackType = selection.attackType();
+        this.cachedAttackPriorityTier = selection.priorityTier();
+        this.cachedAttackPriority = selection.priority();
     }
 
 

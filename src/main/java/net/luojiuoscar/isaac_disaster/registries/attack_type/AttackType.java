@@ -19,20 +19,26 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.registries.IForgeRegistry;
-import net.minecraftforge.registries.RegistryManager;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
 public abstract class AttackType {
+    private final int priorityTier;
     private final double priority;
 
-    public AttackType(double priority){
+    public AttackType(int priorityTier, double priority){
+        this.priorityTier = priorityTier;
         this.priority = priority;
+    }
+
+    public AttackType(double priority){
+        this(0, priority);
+    }
+
+    public int getPriorityTier() {
+        return priorityTier;
     }
 
     public double getPriority() {
@@ -56,6 +62,16 @@ public abstract class AttackType {
     public abstract void makeSound(LivingEntity entity);
     public abstract void shoot(AttackContext ctx);
     public void onTick(ServerPlayer player){}
+
+    /**
+     * Returns whether this attack type should participate in current attack selection.
+     *
+     * <p>The default is active. Future disabling effects can override this method without adding
+     * special cases to the selector.</p>
+     */
+    public boolean isActive(AttackSelectionContext context) {
+        return true;
+    }
 
     @Nullable
     public AttackContext getOneAttackContext(ServerPlayer player, Entity shooter) {
@@ -216,33 +232,26 @@ public abstract class AttackType {
 
     /** 获取攻击方式列表中第n个具有更低优先级的攻击方式 */
     protected AttackType pickLowerAttackType(Map<ResourceLocation, Integer> attackType, int index) {
-        IForgeRegistry<AttackType> registry = RegistryManager.ACTIVE.getRegistry(ModAttackType.ATTACK_TYPE_KEY);
+        return AttackSelector.pickLowerAttackType(this, attackType, index);
+    }
 
-        AttackType defaultAttack = ModAttackType.BULLET.get();
-        if (registry == null) return defaultAttack;
-
-        // 收集优先级低于自己的攻击方式
-        List<AttackType> lowerList = new ArrayList<>();
-        double selfPriority = this.getPriority();
-
-        for (ResourceLocation id : attackType.keySet()) {
-            AttackType at = registry.getValue(id);
-            if (at == null) continue;
-
-            if (at.getPriority() < selfPriority) {
-                lowerList.add(at);
-            }
-        }
-
-        // 按优先级降序排列（从高到低）
-        lowerList.sort(Comparator.comparingDouble(AttackType::getPriority).reversed());
-
-        // 返回第 n 个攻击方式，如果越界则返回默认值
-        if (index >= 0 && index < lowerList.size()) {
-            return lowerList.get(index);
-        } else {
-            return defaultAttack;
-        }
+    /**
+     * Picks a lower-priority attack type with player state available for active checks.
+     */
+    protected AttackType pickLowerAttackType(ServerPlayer player, Map<ResourceLocation, Integer> attackType, int index) {
+        AttackSelectionContext context = new AttackSelectionContext(attackType, player);
+        return player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY)
+                .map(playerAbility -> {
+                    if (getId().equals(playerAbility.getBestAttackType())) {
+                        return AttackSelector.pickLowerAttackType(
+                                playerAbility.getCachedAttackPriorityTier(),
+                                playerAbility.getCachedAttackPriority(),
+                                context,
+                                index);
+                    }
+                    return AttackSelector.pickLowerAttackType(this, context, index);
+                })
+                .orElseGet(() -> AttackSelector.pickLowerAttackType(this, context, index));
     }
 
 

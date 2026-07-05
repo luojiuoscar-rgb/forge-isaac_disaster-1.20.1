@@ -43,6 +43,10 @@ import java.util.Map;
 
 public class LaserAttack extends AttackType {
 
+    public LaserAttack(int priorityTier, double priority) {
+        super(priorityTier, priority);
+    }
+
     public LaserAttack(double priority) {
         super(priority);
     }

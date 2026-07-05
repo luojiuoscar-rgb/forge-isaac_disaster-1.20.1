@@ -16,28 +16,36 @@ public class ModAttackType {
             DeferredRegister.create(ATTACK_TYPE_KEY, IsaacDisaster.MOD_ID);
 
     public static final RegistryObject<AttackType> BULLET =
-            ATTACK_TYPE_REGISTER.register("bullet", () -> new BulletAttack(AttackPrio.BULLET.getPriority()));
+            ATTACK_TYPE_REGISTER.register("bullet", () -> new BulletAttack(
+                    AttackPrio.BULLET.getTier(), AttackPrio.BULLET.getPriority()));
 
     public static final RegistryObject<AttackType> LASER =
-            ATTACK_TYPE_REGISTER.register("laser", () -> new LaserAttack(AttackPrio.LASER.getPriority()));
+            ATTACK_TYPE_REGISTER.register("laser", () -> new LaserAttack(
+                    AttackPrio.LASER.getTier(), AttackPrio.LASER.getPriority()));
 
     public static final RegistryObject<AttackType> BRIMSTONE =
-            ATTACK_TYPE_REGISTER.register("brimstone", () -> new BrimstoneAttack(AttackPrio.BRIMSTONE.getPriority()));
+            ATTACK_TYPE_REGISTER.register("brimstone", () -> new BrimstoneAttack(
+                    AttackPrio.BRIMSTONE.getTier(), AttackPrio.BRIMSTONE.getPriority()));
 
     public static final RegistryObject<AttackType> C_SECTION =
-            ATTACK_TYPE_REGISTER.register("c_section", () -> new CSectionAttack(AttackPrio.C_SECTION.getPriority()));
+            ATTACK_TYPE_REGISTER.register("c_section", () -> new CSectionAttack(
+                    AttackPrio.C_SECTION.getTier(), AttackPrio.C_SECTION.getPriority()));
 
     public static final RegistryObject<AttackType> CURSED_EYE =
-            ATTACK_TYPE_REGISTER.register("cursed_eye", () -> new CursedEyeAttack(AttackPrio.CURSED_EYE.getPriority()));
+            ATTACK_TYPE_REGISTER.register("cursed_eye", () -> new CursedEyeAttack(
+                    AttackPrio.CURSED_EYE.getTier(), AttackPrio.CURSED_EYE.getPriority()));
 
     public static final RegistryObject<AttackType> NEPTUNUS =
-            ATTACK_TYPE_REGISTER.register("neptunus", () -> new NeptunusAttack(AttackPrio.NEPTUNUS.getPriority()));
+            ATTACK_TYPE_REGISTER.register("neptunus", () -> new NeptunusAttack(
+                    AttackPrio.NEPTUNUS.getTier(), AttackPrio.NEPTUNUS.getPriority()));
 
     public static final RegistryObject<AttackType> TECHNOLOGY2 =
-            ATTACK_TYPE_REGISTER.register("technology2", () -> new Technology2Attack(-1));
+            ATTACK_TYPE_REGISTER.register("technology2", () -> new Technology2Attack(
+                    AttackPrio.LASER.getTier(), AttackPrio.LASER.getPriority()));
 
     public static final RegistryObject<AttackType> SHOOP_DA_WHOOP =
-            ATTACK_TYPE_REGISTER.register("shoop_da_whoop", () -> new ShoopDaWhoop(-1));
+            ATTACK_TYPE_REGISTER.register("shoop_da_whoop", () -> new ShoopDaWhoop(
+                    AttackPrio.BRIMSTONE.getTier(), AttackPrio.BRIMSTONE.getPriority()));
 
 
 }

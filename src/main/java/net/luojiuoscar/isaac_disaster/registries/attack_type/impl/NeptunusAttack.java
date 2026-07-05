@@ -5,6 +5,7 @@ import net.luojiuoscar.isaac_disaster.event.custom.attack.BeforePerformAttackEve
 import net.luojiuoscar.isaac_disaster.item.ModItems;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackContext;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackType;
+import net.luojiuoscar.isaac_disaster.registries.attack_type.DelegatingAttackType;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.IChargeableAttack;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.ModAttackType;
 import net.minecraft.resources.ResourceLocation;
@@ -16,7 +17,11 @@ import net.minecraftforge.common.MinecraftForge;
 import java.util.Arrays;
 import java.util.List;
 
-public class NeptunusAttack extends AttackType implements IChargeableAttack {
+public class NeptunusAttack extends AttackType implements IChargeableAttack, DelegatingAttackType {
+
+    public NeptunusAttack(int priorityTier, double priority) {
+        super(priorityTier, priority);
+    }
 
     public NeptunusAttack(double priority) {
         super(priority);
@@ -62,7 +67,7 @@ public class NeptunusAttack extends AttackType implements IChargeableAttack {
                         && !player.getCooldowns().isOnCooldown(ModItems.ISAAC_HEAD.get())) {
 
                     AttackType attack =
-                            pickLowerAttackType(playerAbility.getAttackTypes(), 0);
+                            pickLowerAttackType(player, playerAbility.getAttackTypes(), 0);
 
                     BeforePerformAttackEvent event =
                             new BeforePerformAttackEvent(player, this);
@@ -87,7 +92,7 @@ public class NeptunusAttack extends AttackType implements IChargeableAttack {
                     && !player.getCooldowns().isOnCooldown(ModItems.ISAAC_HEAD.get())) {
 
                 AttackType attack =
-                        pickLowerAttackType(playerAbility.getAttackTypes(), 0);
+                        pickLowerAttackType(player, playerAbility.getAttackTypes(), 0);
 
                 BeforePerformAttackEvent event =
                         new BeforePerformAttackEvent(player, this);
