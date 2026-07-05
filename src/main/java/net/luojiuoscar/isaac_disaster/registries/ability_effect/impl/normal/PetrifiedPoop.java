@@ -2,6 +2,8 @@ package net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.normal;
 
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.luojiuoscar.isaac_disaster.event.custom.misc.GeneralLootModifyEvent;
+import net.luojiuoscar.isaac_disaster.loot.LootGenerationContext;
+import net.luojiuoscar.isaac_disaster.loot.LootGenerationMode;
 import net.luojiuoscar.isaac_disaster.manager.ModLootTables;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ContextKeys;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ExecutableEffectContext;
@@ -23,13 +25,7 @@ public class PetrifiedPoop implements IAbilityEffect {
 
         if (objectArrayList.isEmpty()) return true;
 
-        ServerPlayer player = null;
-        if (lootContext.getParamOrNull(LootContextParams.THIS_ENTITY) instanceof ServerPlayer thisPlayer) {
-            player = thisPlayer;
-        } else if (lootContext.getParamOrNull(LootContextParams.KILLER_ENTITY) instanceof ServerPlayer killerPlayer) {
-            player = killerPlayer;
-        }
-        if (player == null) return false;
+        if (!(event.getEntity() instanceof ServerPlayer player)) return false;
 
         if (!lootContext.getQueriedLootTableId().equals(ModLootTables.POOP)) return true;
 
@@ -47,7 +43,9 @@ public class PetrifiedPoop implements IAbilityEffect {
                 .withLuck((float) getLuck(player));
         LootParams params = paramsBuilder.create(LootContextParamSets.EMPTY);
 
-        ObjectArrayList<ItemStack> generatedLoot = lootTable.getRandomItems(params);
+        ObjectArrayList<ItemStack> generatedLoot = LootGenerationContext.supply(
+                LootGenerationMode.REPLACEMENT_ROLL,
+                () -> lootTable.getRandomItems(params));
 
         event.setObjectArrayList(generatedLoot);
         return true;

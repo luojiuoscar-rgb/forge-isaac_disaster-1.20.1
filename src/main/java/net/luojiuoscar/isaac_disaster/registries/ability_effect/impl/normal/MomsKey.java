@@ -2,6 +2,8 @@ package net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.normal;
 
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.luojiuoscar.isaac_disaster.event.custom.misc.GeneralLootModifyEvent;
+import net.luojiuoscar.isaac_disaster.loot.LootGenerationContext;
+import net.luojiuoscar.isaac_disaster.loot.LootGenerationMode;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ContextKeys;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ExecutableEffectContext;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.IAbilityEffect;
@@ -26,6 +28,7 @@ public class MomsKey implements IAbilityEffect {
         var objectArrayList = event.getObjectArrayList();
         var lootContext = event.getLootContext();
 
+        if (LootGenerationContext.currentMode() == LootGenerationMode.DERIVED_DROP) return true;
         if (objectArrayList.isEmpty()) return true;
 
         Vec3 pos = lootContext.getParamOrNull(LootContextParams.ORIGIN);
@@ -34,7 +37,7 @@ public class MomsKey implements IAbilityEffect {
         // 通过构造不同的ParamSet来避免循环
         ServerLevel level = lootContext.getLevel();
         if (!(level.getBlockEntity(BlockPos.containing(pos)) instanceof RandomizableContainerBlockEntity)) return true;
-        if (!(lootContext.getParamOrNull(LootContextParams.THIS_ENTITY) instanceof ServerPlayer player)) return true;
+        if (!(event.getEntity() instanceof ServerPlayer player)) return true;
 
         ResourceLocation lootId = lootContext.getQueriedLootTableId();
         // get lootManager
@@ -43,11 +46,14 @@ public class MomsKey implements IAbilityEffect {
         var lootTable = lootManager.getLootTable(lootId);
 
         LootParams.Builder paramsBuilder = new LootParams.Builder(level)
+                .withParameter(LootContextParams.ORIGIN, pos)
                 .withParameter(LootContextParams.THIS_ENTITY, player)
                 .withLuck((float) getLuck(player));
         LootParams params = paramsBuilder.create(LootContextParamSets.EMPTY);
 
-        ObjectArrayList<ItemStack> newLoot = lootTable.getRandomItems(params);
+        ObjectArrayList<ItemStack> newLoot = LootGenerationContext.supply(
+                LootGenerationMode.REPLACEMENT_ROLL,
+                () -> lootTable.getRandomItems(params));
 
         newLoot.addAll(objectArrayList);
 

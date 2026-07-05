@@ -14,7 +14,6 @@ import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 
 import java.util.List;
 
@@ -27,13 +26,7 @@ public class PennyTrinket implements IAbilityEffect {
 
         if (objectArrayList.isEmpty()) return true;
 
-        ServerPlayer player = null;
-        if (lootContext.getParamOrNull(LootContextParams.THIS_ENTITY) instanceof ServerPlayer thisPlayer) {
-            player = thisPlayer;
-        } else if (lootContext.getParamOrNull(LootContextParams.KILLER_ENTITY) instanceof ServerPlayer killerPlayer) {
-            player = killerPlayer;
-        }
-        if (player == null) return false;
+        if (!(event.getEntity() instanceof ServerPlayer player)) return false;
 
         ObjectArrayList<ItemStack> newList = new ObjectArrayList<>();
         newList.addAll(objectArrayList);

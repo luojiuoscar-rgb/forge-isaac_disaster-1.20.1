@@ -15,7 +15,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 
 public class SackHead implements IAbilityEffect {
     @Override
@@ -26,13 +25,8 @@ public class SackHead implements IAbilityEffect {
 
         if (objectArrayList.isEmpty()) return true;
 
-        ServerPlayer player = null;
-        if (lootContext.getParamOrNull(LootContextParams.THIS_ENTITY) instanceof ServerPlayer thisPlayer) {
-            player = thisPlayer;
-        } else if (lootContext.getParamOrNull(LootContextParams.KILLER_ENTITY) instanceof ServerPlayer killerPlayer) {
-            player = killerPlayer;
-        }
-        if (player == null || PlayerHelper.getItemCount(ItemId.SACK_HEAD.getId(), player) == 0) return true;
+        if (!(event.getEntity() instanceof ServerPlayer player)
+                || PlayerHelper.getItemCount(ItemId.SACK_HEAD.getId(), player) == 0) return true;
 
 
         ResourceLocation tableId = lootContext.getQueriedLootTableId();

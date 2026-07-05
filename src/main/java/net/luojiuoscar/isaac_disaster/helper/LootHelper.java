@@ -1,5 +1,7 @@
 package net.luojiuoscar.isaac_disaster.helper;
 
+import net.luojiuoscar.isaac_disaster.loot.LootGenerationContext;
+import net.luojiuoscar.isaac_disaster.loot.LootGenerationMode;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.LivingEntity;
@@ -48,7 +50,15 @@ public class LootHelper {
         }
     }
     public static void spawnLootAtPos(ServerLevel level, Vec3 pos, ResourceLocation tableId, LootParams params) {
-        List<ItemStack> generated = getLoot(level, tableId, params);
+        spawnLootAtPos(level, pos, tableId, params, LootGenerationMode.SPAWN_DROP);
+    }
+
+    /**
+     * Spawns loot items at a position while marking why this table roll is happening.
+     */
+    public static void spawnLootAtPos(ServerLevel level, Vec3 pos, ResourceLocation tableId,
+                                      LootParams params, LootGenerationMode mode) {
+        List<ItemStack> generated = getLoot(level, tableId, params, mode);
         for (ItemStack stack : generated) {
             level.addFreshEntity(new ItemEntity(level, pos.x, pos.y, pos.z, stack));
         }
@@ -72,7 +82,9 @@ public class LootHelper {
                 .withLuck(getLuck(source));
         LootParams params = paramsBuilder.create(LootContextParamSets.EMPTY);
 
-        List<ItemStack> generatedLoot = lootTable.getRandomItems(params);
+        List<ItemStack> generatedLoot = LootGenerationContext.supply(
+                LootGenerationMode.SPAWN_DROP,
+                () -> lootTable.getRandomItems(params));
 
         // 掉落
         for (ItemStack stack : generatedLoot) {
@@ -88,8 +100,16 @@ public class LootHelper {
      * 从自定义 LootParams 中获取战利品列表
      */
     public static List<ItemStack> getLoot(ServerLevel level, ResourceLocation tableId, LootParams params) {
+        return getLoot(level, tableId, params, LootGenerationMode.SPAWN_DROP);
+    }
+
+    /**
+     * Rolls a loot table while marking the current generation mode.
+     */
+    public static List<ItemStack> getLoot(ServerLevel level, ResourceLocation tableId,
+                                          LootParams params, LootGenerationMode mode) {
         LootTable table = level.getServer().getLootData().getLootTable(tableId);
-        return new ArrayList<>(table.getRandomItems(params));
+        return LootGenerationContext.supply(mode, () -> new ArrayList<>(table.getRandomItems(params)));
     }
 
     /**
@@ -98,6 +118,16 @@ public class LootHelper {
     public static List<ItemStack> generateLoot(ServerLevel level, ResourceLocation tableId, LootParams.Builder builder, LootContextParamSet paramSet) {
         LootParams params = builder.create(paramSet);
         return getLoot(level, tableId, params);
+    }
+
+    /**
+     * Rolls a loot table from a builder while marking the current generation mode.
+     */
+    public static List<ItemStack> generateLoot(ServerLevel level, ResourceLocation tableId,
+                                               LootParams.Builder builder, LootContextParamSet paramSet,
+                                               LootGenerationMode mode) {
+        LootParams params = builder.create(paramSet);
+        return getLoot(level, tableId, params, mode);
     }
 
     private static float getLuck(LivingEntity entity){

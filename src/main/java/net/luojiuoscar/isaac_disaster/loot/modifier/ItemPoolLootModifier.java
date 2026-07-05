@@ -6,6 +6,9 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.luojiuoscar.isaac_disaster.helper.PoolHelper;
 import net.luojiuoscar.isaac_disaster.item.ModPassiveItems;
 import net.luojiuoscar.isaac_disaster.item.item.IsaacItem;
+import net.luojiuoscar.isaac_disaster.loot.LootContextHelper;
+import net.luojiuoscar.isaac_disaster.loot.LootGenerationContext;
+import net.luojiuoscar.isaac_disaster.loot.LootGenerationMode;
 import net.luojiuoscar.isaac_disaster.loot.TempPoolManager;
 import net.luojiuoscar.isaac_disaster.manager.id.ItemId;
 import net.minecraft.core.Holder;
@@ -20,7 +23,6 @@ import net.minecraft.world.level.storage.loot.LootPool;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.entries.LootItem;
 import net.minecraft.world.level.storage.loot.entries.LootPoolEntryContainer;
-import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
 import net.minecraftforge.common.loot.IGlobalLootModifier;
@@ -29,9 +31,13 @@ import net.minecraftforge.registries.RegistryObject;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
 
 public class ItemPoolLootModifier extends LootModifier {
+    private static final EnumSet<LootGenerationMode> SUPPORTED_MODES =
+            EnumSet.of(LootGenerationMode.NATURAL_DROP, LootGenerationMode.SPAWN_DROP);
+
     public static final Codec<ItemPoolLootModifier> CODEC = RecordCodecBuilder.create(inst -> codecStart(inst)
             .apply(inst, ItemPoolLootModifier::new));
 
@@ -41,17 +47,11 @@ public class ItemPoolLootModifier extends LootModifier {
 
     @Override
     protected @NotNull ObjectArrayList<ItemStack> doApply(ObjectArrayList<ItemStack> objectArrayList, LootContext lootContext) {
+        if (!SUPPORTED_MODES.contains(LootGenerationContext.currentMode())) return objectArrayList;
         if (objectArrayList.isEmpty()) return objectArrayList;
 
-        ServerPlayer player;
-        if (lootContext.getParamOrNull(LootContextParams.THIS_ENTITY) instanceof ServerPlayer thisPlayer) {
-            player = thisPlayer;
-        } else if (lootContext.getParamOrNull(LootContextParams.KILLER_ENTITY) instanceof ServerPlayer killerPlayer) {
-            player = killerPlayer;
-        } else {
-            player = null;
-            return objectArrayList;
-        }
+        ServerPlayer player = LootContextHelper.findResponsiblePlayer(lootContext);
+        if (player == null) return objectArrayList;
 
         ResourceLocation tableId = lootContext.getQueriedLootTableId();
         ItemStack stack = objectArrayList.get(0);

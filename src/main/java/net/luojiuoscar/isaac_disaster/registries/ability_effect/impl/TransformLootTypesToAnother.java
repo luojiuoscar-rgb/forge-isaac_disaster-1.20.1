@@ -9,7 +9,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -23,13 +22,7 @@ public abstract class TransformLootTypesToAnother implements IAbilityEffect {
 
         if (objectArrayList.isEmpty()) return true;
 
-        ServerPlayer player = null;
-        if (lootContext.getParamOrNull(LootContextParams.THIS_ENTITY) instanceof ServerPlayer thisPlayer) {
-            player = thisPlayer;
-        } else if (lootContext.getParamOrNull(LootContextParams.KILLER_ENTITY) instanceof ServerPlayer killerPlayer) {
-            player = killerPlayer;
-        }
-        if (player == null) return true;
+        if (!(event.getEntity() instanceof ServerPlayer)) return true;
 
         RandomSource rand = lootContext.getRandom();
         ObjectArrayList<ItemStack> newList = new ObjectArrayList<>();

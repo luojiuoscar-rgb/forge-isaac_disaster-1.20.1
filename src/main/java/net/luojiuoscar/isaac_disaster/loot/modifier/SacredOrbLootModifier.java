@@ -5,6 +5,9 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.item.item.IsaacItem;
+import net.luojiuoscar.isaac_disaster.loot.LootContextHelper;
+import net.luojiuoscar.isaac_disaster.loot.LootGenerationContext;
+import net.luojiuoscar.isaac_disaster.loot.LootGenerationMode;
 import net.luojiuoscar.isaac_disaster.loot.TempPoolManager;
 import net.luojiuoscar.isaac_disaster.manager.id.ItemId;
 import net.minecraft.resources.ResourceLocation;
@@ -13,13 +16,16 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.LootPool;
-import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 import net.minecraftforge.common.loot.IGlobalLootModifier;
 import net.minecraftforge.common.loot.LootModifier;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.EnumSet;
+
 public class SacredOrbLootModifier extends LootModifier {
+    private static final EnumSet<LootGenerationMode> SUPPORTED_MODES =
+            EnumSet.of(LootGenerationMode.NATURAL_DROP, LootGenerationMode.SPAWN_DROP);
 
     public static final Codec<SacredOrbLootModifier> CODEC = RecordCodecBuilder.create(inst -> codecStart(inst)
             .apply(inst, SacredOrbLootModifier::new));
@@ -30,14 +36,11 @@ public class SacredOrbLootModifier extends LootModifier {
 
     @Override
     protected @NotNull ObjectArrayList<ItemStack> doApply(ObjectArrayList<ItemStack> objectArrayList, LootContext lootContext) {
+        if (!SUPPORTED_MODES.contains(LootGenerationContext.currentMode())) return objectArrayList;
         if (objectArrayList.isEmpty()) return objectArrayList;
 
-        ServerPlayer player = null;
-        if (lootContext.getParamOrNull(LootContextParams.THIS_ENTITY) instanceof ServerPlayer thisPlayer) {
-            player = thisPlayer;
-        } else if (lootContext.getParamOrNull(LootContextParams.KILLER_ENTITY) instanceof ServerPlayer killerPlayer) {
-            player = killerPlayer;
-        }
+        ServerPlayer player = LootContextHelper.findResponsiblePlayer(lootContext);
+        if (player == null) return objectArrayList;
 
         ResourceLocation tableId = lootContext.getQueriedLootTableId();
         RandomSource rand = lootContext.getRandom();

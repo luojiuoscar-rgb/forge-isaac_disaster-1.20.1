@@ -4,6 +4,8 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.luojiuoscar.isaac_disaster.event.custom.misc.GeneralLootModifyEvent;
 import net.luojiuoscar.isaac_disaster.helper.LootHelper;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
+import net.luojiuoscar.isaac_disaster.loot.LootGenerationContext;
+import net.luojiuoscar.isaac_disaster.loot.LootGenerationMode;
 import net.luojiuoscar.isaac_disaster.manager.ModLootTables;
 import net.luojiuoscar.isaac_disaster.manager.id.TrinketId;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ContextKeys;
@@ -27,6 +29,7 @@ public class ChestLootTrinket implements IAbilityEffect {
         var objectArrayList = event.getObjectArrayList();
         var lootContext = event.getLootContext();
 
+        if (LootGenerationContext.currentMode() == LootGenerationMode.DERIVED_DROP) return true;
         if (objectArrayList.isEmpty()) return true;
 
         Vec3 pos = lootContext.getParamOrNull(LootContextParams.ORIGIN);
@@ -34,7 +37,7 @@ public class ChestLootTrinket implements IAbilityEffect {
 
         ServerLevel level = lootContext.getLevel();
         if (!(level.getBlockEntity(BlockPos.containing(pos)) instanceof RandomizableContainerBlockEntity)) return true;
-        if (!(lootContext.getParamOrNull(LootContextParams.THIS_ENTITY) instanceof ServerPlayer player)) return true;
+        if (!(event.getEntity() instanceof ServerPlayer player)) return true;
 
         RandomSource rand = player.getRandom();
         ObjectArrayList<ItemStack> newList = new ObjectArrayList<>(objectArrayList);
@@ -44,7 +47,9 @@ public class ChestLootTrinket implements IAbilityEffect {
             newList.addAll(LootHelper.getLoot(level, ModLootTables.RANDOM_COINS,
                     new LootParams.Builder(level)
                             .withParameter(LootContextParams.THIS_ENTITY, player)
-                            .create(LootContextParamSets.EMPTY)));
+                            .withParameter(LootContextParams.ORIGIN, pos)
+                            .create(LootContextParamSets.EMPTY),
+                    LootGenerationMode.DERIVED_DROP));
         }
 
         // match stick
@@ -52,7 +57,9 @@ public class ChestLootTrinket implements IAbilityEffect {
             newList.addAll(LootHelper.getLoot(level, ModLootTables.RANDOM_BOMBS,
                     new LootParams.Builder(level)
                             .withParameter(LootContextParams.THIS_ENTITY, player)
-                            .create(LootContextParamSets.EMPTY)));
+                            .withParameter(LootContextParams.ORIGIN, pos)
+                            .create(LootContextParamSets.EMPTY),
+                    LootGenerationMode.DERIVED_DROP));
         }
 
         // childs heart
@@ -60,21 +67,29 @@ public class ChestLootTrinket implements IAbilityEffect {
             newList.addAll(LootHelper.getLoot(level, ModLootTables.RANDOM_HEARTS,
                     new LootParams.Builder(level)
                             .withParameter(LootContextParams.THIS_ENTITY, player)
-                            .create(LootContextParamSets.EMPTY)));        }
+                            .withParameter(LootContextParams.ORIGIN, pos)
+                            .create(LootContextParamSets.EMPTY),
+                    LootGenerationMode.DERIVED_DROP));
+        }
 
         // rusted key
         if (rand.nextDouble() < PlayerHelper.getValueFromTrinket(0.33, 0.66, TrinketId.RUSTED_KEY.getId(), player)){
             newList.addAll(LootHelper.getLoot(level, ModLootTables.RANDOM_KEYS,
                     new LootParams.Builder(level)
                             .withParameter(LootContextParams.THIS_ENTITY, player)
-                            .create(LootContextParamSets.EMPTY)));        }
+                            .withParameter(LootContextParams.ORIGIN, pos)
+                            .create(LootContextParamSets.EMPTY),
+                    LootGenerationMode.DERIVED_DROP));
+        }
 
         // ace of spades
         if (rand.nextDouble() < PlayerHelper.getValueFromTrinket(0.33, 0.66, TrinketId.ACE_OF_SPADES_TRINKET.getId(), player)){
             newList.addAll(LootHelper.getLoot(level, ModLootTables.RANDOM_CARDS,
                     new LootParams.Builder(level)
                             .withParameter(LootContextParams.THIS_ENTITY, player)
-                            .create(LootContextParamSets.EMPTY)));
+                            .withParameter(LootContextParams.ORIGIN, pos)
+                            .create(LootContextParamSets.EMPTY),
+                    LootGenerationMode.DERIVED_DROP));
         }
 
         // safety pin
@@ -82,7 +97,9 @@ public class ChestLootTrinket implements IAbilityEffect {
             newList.addAll(LootHelper.getLoot(level, ModLootTables.RANDOM_PILLS,
                     new LootParams.Builder(level)
                             .withParameter(LootContextParams.THIS_ENTITY, player)
-                            .create(LootContextParamSets.EMPTY)));
+                            .withParameter(LootContextParams.ORIGIN, pos)
+                            .create(LootContextParamSets.EMPTY),
+                    LootGenerationMode.DERIVED_DROP));
         }
 
         // poker chip
