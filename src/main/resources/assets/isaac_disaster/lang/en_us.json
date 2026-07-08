@@ -855,7 +855,7 @@
   "set.isaac_disaster.book": "书虫",
   "set.isaac_disaster.book.lore.1": "有概率多发射一颗泪弹",
   "set.isaac_disaster.mom": "母亲",
-  "set.isaac_disaster.mom.lore.1": "目前没有任何效果",
+  "set.isaac_disaster.mom.lore.1": "在背后生成一把会攻击非友方生物的菜刀",
 
   "config.isaac_disaster.title": "以撒的灾难配置",
   "config.isaac_disaster.subtitle": "选择一个配置分类",

@@ -235,6 +235,11 @@ public class EntityHelper {
         if (a == null || b == null) return false;
         if (a == b) return true; // 自己和自己
 
+        if (a instanceof Player playerA && b instanceof Player playerB) {
+            if (playerA.level().getServer() != null && !playerA.level().getServer().isPvpAllowed()) return true;
+            if (!playerA.canHarmPlayer(playerB) || !playerB.canHarmPlayer(playerA)) return true;
+        }
+
         // Team 友好
         if (a.isAlliedTo(b)) return true; // 内含玩家玩家、玩家实体、实体实体的 team 检测
 

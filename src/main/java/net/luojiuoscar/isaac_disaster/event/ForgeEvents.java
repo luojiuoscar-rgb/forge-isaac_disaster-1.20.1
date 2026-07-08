@@ -6,6 +6,7 @@ import net.luojiuoscar.isaac_disaster.capability.entity.EffectModulesProvider;
 import net.luojiuoscar.isaac_disaster.capability.entity.EntityEffectProvider;
 import net.luojiuoscar.isaac_disaster.capability.entity.ExtraDataProvider;
 import net.luojiuoscar.isaac_disaster.capability.player.*;
+import net.luojiuoscar.isaac_disaster.commands.familiar.FamiliarCmd;
 import net.luojiuoscar.isaac_disaster.commands.item.ItemClearCmd;
 import net.luojiuoscar.isaac_disaster.commands.item.ItemGetCmd;
 import net.luojiuoscar.isaac_disaster.commands.item.ItemSpawnCmd;
@@ -172,6 +173,9 @@ public class ForgeEvents {
             if(!event.getObject().getCapability(PlayerItemUseRecordProvider.PLAYER_ITEM_USE_RECORD).isPresent()){
                 event.addCapability(ResourceLocation.fromNamespaceAndPath(MOD_ID, "player_item_use_record_cap"), new PlayerItemUseRecordProvider());
             }
+            if(!event.getObject().getCapability(PlayerFamiliarDataProvider.PLAYER_FAMILIAR_DATA).isPresent()){
+                event.addCapability(ResourceLocation.fromNamespaceAndPath(MOD_ID, "player_familiar_data_cap"), new PlayerFamiliarDataProvider());
+            }
         }
         if (event.getObject() instanceof LivingEntity){
             if(!event.getObject().getCapability(EntityEffectProvider.ENTITY_EFFECT_CAP).isPresent()){
@@ -218,6 +222,12 @@ public class ForgeEvents {
             // item records
             event.getOriginal().getCapability(PlayerItemUseRecordProvider.PLAYER_ITEM_USE_RECORD).ifPresent(oldStore -> {
                 event.getEntity().getCapability(PlayerItemUseRecordProvider.PLAYER_ITEM_USE_RECORD).ifPresent(newStore -> {
+                    newStore.copyFrom(oldStore);
+                });
+            });
+            // familiar data
+            event.getOriginal().getCapability(PlayerFamiliarDataProvider.PLAYER_FAMILIAR_DATA).ifPresent(oldStore -> {
+                event.getEntity().getCapability(PlayerFamiliarDataProvider.PLAYER_FAMILIAR_DATA).ifPresent(newStore -> {
                     newStore.copyFrom(oldStore);
                 });
             });
@@ -273,6 +283,9 @@ public class ForgeEvents {
         // trinket
         new TrinketClearSwallowedCmd(event.getDispatcher());
         new TrinketSetEnchanted(event.getDispatcher());
+
+        // familiar
+        new FamiliarCmd(event.getDispatcher());
 
 
         ConfigCommand.register(event.getDispatcher());

@@ -4,6 +4,7 @@ import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.entity.custom.FetusBullet;
 import net.luojiuoscar.isaac_disaster.entity.custom.TearBullet;
 import net.luojiuoscar.isaac_disaster.entity.custom.LemonEffectCloud;
+import net.luojiuoscar.isaac_disaster.entity.familiar.MomKnifeEntity;
 import net.luojiuoscar.isaac_disaster.entity.tnt.GigaBomb;
 import net.luojiuoscar.isaac_disaster.entity.tnt.IsaacBomb;
 import net.minecraft.world.entity.EntityType;
@@ -57,4 +58,12 @@ public class ModEntities {
                             .clientTrackingRange(64) // 客户端追踪距离
                             .updateInterval(2) // 同步tick
                             .build("fetus_bullet"));
+
+    public static final RegistryObject<EntityType<MomKnifeEntity>> MOM_KNIFE =
+            MOD_ENTITIES.register("mom_knife",
+                    () -> EntityType.Builder.<MomKnifeEntity>of(MomKnifeEntity::new, MobCategory.MISC)
+                            .sized(0.5f, 0.5f)
+                            .clientTrackingRange(64)
+                            .updateInterval(1)
+                            .build("mom_knife"));
 }
