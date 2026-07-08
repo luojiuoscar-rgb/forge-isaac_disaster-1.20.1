@@ -4,6 +4,7 @@ import com.mojang.logging.LogUtils;
 import net.luojiuoscar.isaac_disaster.attribute.ModAttributes;
 import net.luojiuoscar.isaac_disaster.block.ModBlockEntities;
 import net.luojiuoscar.isaac_disaster.block.ModBlocks;
+import net.luojiuoscar.isaac_disaster.client.config.IsaacConfigScreenRegistration;
 import net.luojiuoscar.isaac_disaster.commands.gamerule.ModGameRules;
 import net.luojiuoscar.isaac_disaster.effect.ModEffects;
 import net.luojiuoscar.isaac_disaster.entity.ModEntities;
@@ -19,9 +20,9 @@ import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
 import net.minecraftforge.event.server.ServerStartingEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
-import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.slf4j.Logger;
@@ -73,6 +74,7 @@ public class IsaacDisaster
         modEventBus.addListener(this::addCreative);
         // Register our mod's ForgeConfigSpec so that Forge can create and load the config file for us
         context.registerConfig(ModConfig.Type.COMMON, Config.SPEC);
+        DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> IsaacConfigScreenRegistration.register(context));
     }
 
     private void commonSetup(final FMLCommonSetupEvent event) {
@@ -92,12 +94,4 @@ public class IsaacDisaster
     public void onServerStarting(ServerStartingEvent event) {
 
     }
-
-    @Mod.EventBusSubscriber(modid = MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
-    public static class ClientModEvents {
-        @SubscribeEvent
-        public static void onClientSetup(FMLClientSetupEvent event) {
-        }
-    }
-
 }

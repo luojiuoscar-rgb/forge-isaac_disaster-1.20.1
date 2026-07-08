@@ -241,6 +241,10 @@ public class Config
                 .comment("If the item can be unequipped from curio slot")
                 .define("allow_curio_unequip", true);
 
+        AUTO_ADAPT_CURIO_SLOT = BUILDER
+                .comment("Clamp the extra Curios slot count to zero when item effects try to remove more slots than the player has.")
+                .define("auto_adapt_curio_slot", true);
+
         ITEM_REMOVAL_FROM_POOL = BUILDER
                 .comment("Item will be removed from the exact pool when it spawns.")
                 .define("item_removal_from_pool", false);
@@ -317,6 +321,13 @@ public class Config
     private static boolean validateItemName(final Object obj)
     {
         return obj instanceof final String itemName && ForgeRegistries.ITEMS.containsKey(ResourceLocation.parse(itemName));
+    }
+
+    /**
+     * Persists the current common config values to disk.
+     */
+    public static void save() {
+        SPEC.save();
     }
 
     @SubscribeEvent
