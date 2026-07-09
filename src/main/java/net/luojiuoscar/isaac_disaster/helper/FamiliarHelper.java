@@ -32,6 +32,7 @@ public final class FamiliarHelper {
                 cleanupInvalidEntities(player, entry);
                 discardExtraEntities(player, entry);
                 spawnMissingEntities(player, entry);
+                syncFormationIndexes(player, entry);
             }
             data.pruneEmptyEntries();
         });
@@ -95,10 +96,24 @@ public final class FamiliarHelper {
         while (entry.getEntityIds().size() < entry.getCount()) {
             AbstractIsaacFamiliarEntity familiar = createFamiliar(player, entry.getType());
             if (familiar == null) return;
+            familiar.setFormationIndex(entry.getEntityIds().size());
             entry.addEntity(familiar.getUUID());
             if (!player.level().addFreshEntity(familiar)) {
                 entry.removeEntity(familiar.getUUID());
                 return;
+            }
+        }
+    }
+
+    /**
+     * Pushes the capability list order into live entities so clients can predict formations consistently.
+     */
+    public static void syncFormationIndexes(ServerPlayer player, FamiliarEntry entry) {
+        List<UUID> entityIds = entry.getEntityIds();
+        for (int i = 0; i < entityIds.size(); i++) {
+            Entity entity = player.serverLevel().getEntity(entityIds.get(i));
+            if (entity instanceof AbstractIsaacFamiliarEntity familiar) {
+                familiar.setFormationIndex(i);
             }
         }
     }
@@ -110,8 +125,16 @@ public final class FamiliarHelper {
         AbstractIsaacFamiliarEntity familiar = createFamiliar(player, typeId);
         if (familiar == null) return null;
 
+        final boolean[] registered = {false};
         player.getCapability(PlayerFamiliarDataProvider.PLAYER_FAMILIAR_DATA).ifPresent(
-                data -> data.registerEntity(typeId, familiar.getUUID()));
+                data -> {
+                    FamiliarEntry entry = data.getOrCreateEntry(typeId);
+                    entry.addEntity(familiar.getUUID());
+                    familiar.setFormationIndex(entry.getIndex(familiar.getUUID()));
+                    registered[0] = true;
+                });
+        if (!registered[0]) return null;
+
         if (!player.level().addFreshEntity(familiar)) {
             player.getCapability(PlayerFamiliarDataProvider.PLAYER_FAMILIAR_DATA).ifPresent(
                     data -> data.removeEntity(typeId, familiar.getUUID()));

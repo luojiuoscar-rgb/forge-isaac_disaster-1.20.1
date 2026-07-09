@@ -29,7 +29,7 @@ public class MomsCoinPurse extends PassiveAbility {
 
     @Override
     public void handleRemove(ServerPlayer player, @Nullable ItemStack stack) {
-        StatManager.modifySetWithId(player, ModSetAbility.MOM.getId(), 1);
+        StatManager.modifySetWithId(player, ModSetAbility.MOM.getId(), -1);
     }
 
     @Override
