@@ -30,11 +30,10 @@ public abstract class AbstractIsaacFamiliarEntity extends Entity {
     private static final double MAX_VALID_DISTANCE = 64.0;
     private static final EntityDataAccessor<Optional<UUID>> OWNER_UUID =
             SynchedEntityData.defineId(AbstractIsaacFamiliarEntity.class, EntityDataSerializers.OPTIONAL_UUID);
-    private static final EntityDataAccessor<Integer> FORMATION_INDEX =
-            SynchedEntityData.defineId(AbstractIsaacFamiliarEntity.class, EntityDataSerializers.INT);
 
     protected UUID ownerUUID;
     protected LivingEntity cachedOwner;
+    private int formationIndex;
 
     protected AbstractIsaacFamiliarEntity(EntityType<?> type, Level level) {
         super(type, level);
@@ -103,17 +102,17 @@ public abstract class AbstractIsaacFamiliarEntity extends Entity {
     }
 
     /**
-     * Sets the runtime formation slot assigned by the server for client-side positioning.
+     * Sets the runtime formation slot assigned by the server.
      */
     public void setFormationIndex(int formationIndex) {
-        entityData.set(FORMATION_INDEX, Math.max(0, formationIndex));
+        this.formationIndex = Math.max(0, formationIndex);
     }
 
     /**
-     * Returns the synchronized runtime formation slot used by visual formation code.
+     * Returns the runtime formation slot used by server-side familiar behavior.
      */
     public int getFormationIndex() {
-        return entityData.get(FORMATION_INDEX);
+        return formationIndex;
     }
 
     @Nullable
@@ -166,7 +165,6 @@ public abstract class AbstractIsaacFamiliarEntity extends Entity {
     @Override
     protected void defineSynchedData() {
         entityData.define(OWNER_UUID, Optional.empty());
-        entityData.define(FORMATION_INDEX, 0);
     }
 
     @Override

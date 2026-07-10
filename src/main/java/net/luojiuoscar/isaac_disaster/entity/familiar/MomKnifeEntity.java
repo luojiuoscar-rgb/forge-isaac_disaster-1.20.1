@@ -11,7 +11,6 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageTypes;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.MoverType;
@@ -32,8 +31,11 @@ public class MomKnifeEntity extends AbstractIsaacFamiliarEntity
         implements FamiliarStateMachine<MomKnifeEntity.MomKnifeState> {
     private static final double SEARCH_RADIUS = 3.5;
     private static final double BACK_DOT_THRESHOLD = -0.25;
-    private static final double IDLE_DISTANCE = 0.55;
-    private static final double IDLE_SPACING = 0.45;
+    private static final double FORMATION_BASE_PADDING = 0.65;
+    private static final double FORMATION_RING_SPACING = 0.55;
+    private static final int FORMATION_FIRST_RING_CAPACITY = 5;
+    private static final int FORMATION_RING_CAPACITY_STEP = 4;
+    private static final double FORMATION_ARC_DEGREES = 160.0;
     private static final double IDLE_HEIGHT_FACTOR = 0.7;
     private static final double IDLE_LERP = 0.25;
     private static final double APPROACH_SPEED = 0.65;
@@ -47,7 +49,7 @@ public class MomKnifeEntity extends AbstractIsaacFamiliarEntity
     private static final int RAISE_TICKS = 6;
     private static final int SLASH_TICKS = 4;
     private static final int RECOVER_TICKS = 5;
-    private static final int ATTACK_PLAN_SYNC_TICKS = 1;
+    private static final int ATTACK_WINDUP_TICKS = 1;
     private static final int RETURN_VISUAL_RECOVER_TICKS = 8;
 
     /*
@@ -66,9 +68,15 @@ public class MomKnifeEntity extends AbstractIsaacFamiliarEntity
 
     private static final EntityDataAccessor<Integer> KNIFE_STATE =
             SynchedEntityData.defineId(MomKnifeEntity.class, EntityDataSerializers.INT);
-    private static final EntityDataAccessor<Integer> TARGET_ENTITY_ID =
+    private static final EntityDataAccessor<Integer> VISUAL_PLAN_SEQUENCE =
             SynchedEntityData.defineId(MomKnifeEntity.class, EntityDataSerializers.INT);
-    private static final EntityDataAccessor<Float> ATTACK_YAW =
+    private static final EntityDataAccessor<Float> VISUAL_PLAN_X =
+            SynchedEntityData.defineId(MomKnifeEntity.class, EntityDataSerializers.FLOAT);
+    private static final EntityDataAccessor<Float> VISUAL_PLAN_Y =
+            SynchedEntityData.defineId(MomKnifeEntity.class, EntityDataSerializers.FLOAT);
+    private static final EntityDataAccessor<Float> VISUAL_PLAN_Z =
+            SynchedEntityData.defineId(MomKnifeEntity.class, EntityDataSerializers.FLOAT);
+    private static final EntityDataAccessor<Float> VISUAL_PLAN_YAW =
             SynchedEntityData.defineId(MomKnifeEntity.class, EntityDataSerializers.FLOAT);
 
     private MomKnifeState state = MomKnifeState.IDLE;
@@ -78,6 +86,24 @@ public class MomKnifeEntity extends AbstractIsaacFamiliarEntity
     private int cooldown;
     private int contactDamageTimer;
     private int stateTicks;
+    private int formationRing;
+    private float formationAngle;
+    private Vec3 pendingServerMovement = Vec3.ZERO;
+    private float pendingServerYaw;
+    private boolean hasPendingServerPlan;
+    private Vec3 nextServerMovement = Vec3.ZERO;
+    private float nextServerYaw;
+    private int visualPlanSequence;
+    private Vec3 previousVisualPosition = Vec3.ZERO;
+    private Vec3 visualPosition = Vec3.ZERO;
+    private float previousVisualYaw;
+    private float visualYaw;
+    private Vec3 queuedVisualPosition = Vec3.ZERO;
+    private float queuedVisualYaw;
+    private int queuedVisualPlanSequence;
+    private int lastVisualPlanSequence;
+    private boolean hasVisualPlan;
+    private boolean hasQueuedVisualPlan;
 
     public MomKnifeEntity(EntityType<? extends MomKnifeEntity> type, Level level) {
         super(type, level);
@@ -88,11 +114,30 @@ public class MomKnifeEntity extends AbstractIsaacFamiliarEntity
         setOwner(owner);
     }
 
+    /**
+     * Updates the generic formation index and caches the knife-specific local formation slot on the server.
+     */
+    @Override
+    public void setFormationIndex(int formationIndex) {
+        int clampedIndex = Math.max(0, formationIndex);
+        boolean changed = getFormationIndex() != clampedIndex;
+        super.setFormationIndex(clampedIndex);
+        if (!level().isClientSide && changed) {
+            cacheFormationSlot(clampedIndex);
+        }
+    }
+
     @Override
     protected void tickFamiliar() {
         LivingEntity owner = getOwner();
         if (owner == null) return;
 
+        if (level().isClientSide) {
+            tickClientVisualState();
+            return;
+        }
+
+        beginServerPlanningTick();
         if (cooldown > 0) cooldown--;
         if (contactDamageTimer > 0) contactDamageTimer--;
 
@@ -100,6 +145,7 @@ public class MomKnifeEntity extends AbstractIsaacFamiliarEntity
         if (state == MomKnifeState.SLASH) {
             damageTouchingEnemies(owner);
         }
+        publishVisualPlan();
     }
 
     @Override
@@ -123,7 +169,6 @@ public class MomKnifeEntity extends AbstractIsaacFamiliarEntity
     public void tickFamiliarState() {
         LivingEntity owner = getOwner();
         if (owner == null) return;
-        refreshStateFromSyncedData();
         stateTicks++;
 
         switch (state) {
@@ -137,12 +182,133 @@ public class MomKnifeEntity extends AbstractIsaacFamiliarEntity
         }
     }
 
+    /**
+     * Advances the client-only animation state without running movement, target selection, or damage logic.
+     */
+    private void tickClientVisualState() {
+        refreshStateFromSyncedData();
+        stateTicks++;
+        initializeVisualPlanIfNeeded();
+        queueSyncedVisualPlan();
+        previousVisualPosition = visualPosition;
+        previousVisualYaw = visualYaw;
+        consumeQueuedVisualPlan();
+    }
+
+    /**
+     * Applies the previous server-authored movement before computing the next one.
+     */
+    private void beginServerPlanningTick() {
+        if (hasPendingServerPlan) {
+            applyServerPlan(pendingServerMovement, pendingServerYaw);
+        } else {
+            stopMotion();
+        }
+        nextServerMovement = Vec3.ZERO;
+        nextServerYaw = getYRot();
+    }
+
+    /**
+     * Publishes the next visual position before the server executes that same movement next tick.
+     */
+    private void publishVisualPlan() {
+        pendingServerMovement = nextServerMovement;
+        pendingServerYaw = nextServerYaw;
+        hasPendingServerPlan = true;
+        visualPlanSequence = visualPlanSequence == Integer.MAX_VALUE ? 1 : visualPlanSequence + 1;
+
+        Vec3 nextVisualPosition = position().add(pendingServerMovement);
+        entityData.set(VISUAL_PLAN_X, (float) nextVisualPosition.x);
+        entityData.set(VISUAL_PLAN_Y, (float) nextVisualPosition.y);
+        entityData.set(VISUAL_PLAN_Z, (float) nextVisualPosition.z);
+        entityData.set(VISUAL_PLAN_YAW, pendingServerYaw);
+        entityData.set(VISUAL_PLAN_SEQUENCE, visualPlanSequence);
+    }
+
+    /**
+     * Executes a movement/yaw pair on the server's real entity.
+     */
+    private void applyServerPlan(Vec3 movement, float yaw) {
+        setYRot(yaw);
+        if (movement.lengthSqr() < 1e-10) {
+            stopMotion();
+            return;
+        }
+
+        setDeltaMovement(movement);
+        move(MoverType.SELF, movement);
+    }
+
+    /**
+     * Copies the newest synced visual plan into a client-side queue without changing the active render segment.
+     */
+    private void queueSyncedVisualPlan() {
+        int sequence = entityData.get(VISUAL_PLAN_SEQUENCE);
+        if (sequence == 0 || sequence == queuedVisualPlanSequence || sequence == lastVisualPlanSequence) return;
+
+        queuedVisualPlanSequence = sequence;
+        queuedVisualPosition = new Vec3(
+                entityData.get(VISUAL_PLAN_X),
+                entityData.get(VISUAL_PLAN_Y),
+                entityData.get(VISUAL_PLAN_Z)
+        );
+        queuedVisualYaw = entityData.get(VISUAL_PLAN_YAW);
+        hasQueuedVisualPlan = true;
+    }
+
+    /**
+     * Moves the queued server plan into the active interpolation segment at the client tick boundary.
+     */
+    private void consumeQueuedVisualPlan() {
+        if (!hasQueuedVisualPlan || queuedVisualPlanSequence == lastVisualPlanSequence) return;
+
+        lastVisualPlanSequence = queuedVisualPlanSequence;
+        visualPosition = queuedVisualPosition;
+        visualYaw = queuedVisualYaw;
+        hasQueuedVisualPlan = false;
+    }
+
+    /**
+     * Returns the render-only offset from the vanilla synchronized entity position to the planned visual position.
+     */
+    public Vec3 getVisualRenderOffset(float partialTick) {
+        if (!level().isClientSide || !hasVisualPlan) return Vec3.ZERO;
+
+        Vec3 entityRenderPosition = new Vec3(
+                Mth.lerp(partialTick, xOld, getX()),
+                Mth.lerp(partialTick, yOld, getY()),
+                Mth.lerp(partialTick, zOld, getZ())
+        );
+        Vec3 visualRenderPosition = previousVisualPosition.lerp(visualPosition, partialTick);
+        return visualRenderPosition.subtract(entityRenderPosition);
+    }
+
+    /**
+     * Returns the render-only yaw selected by the same server-authored visual plan as the position.
+     */
+    public float getVisualRenderYaw(float partialTick) {
+        if (!level().isClientSide || !hasVisualPlan) {
+            return Mth.lerp(partialTick, yRotO, getYRot());
+        }
+        return Mth.rotLerp(partialTick, previousVisualYaw, visualYaw);
+    }
+
+    /**
+     * Seeds client-side visual interpolation from the vanilla entity state until the first server plan arrives.
+     */
+    private void initializeVisualPlanIfNeeded() {
+        if (hasVisualPlan) return;
+        visualPosition = position();
+        previousVisualPosition = visualPosition;
+        visualYaw = getYRot();
+        previousVisualYaw = visualYaw;
+        hasVisualPlan = true;
+    }
+
     private void tickIdle(LivingEntity owner) {
         Vec3 idlePos = getIdlePosition(owner);
         moveTowards(idlePos, IDLE_LERP);
-        faceOwnerBack(owner);
-
-        if (level().isClientSide) return;
+        faceFormationCenter(owner);
 
         LivingEntity target = cooldown <= 0 ? findBackTarget(owner) : null;
         if (target != null) {
@@ -161,7 +327,7 @@ public class MomKnifeEntity extends AbstractIsaacFamiliarEntity
         flyTowards(approachPos, APPROACH_SPEED);
         faceAttackDirection(owner, target, 18.0f);
 
-        if (!level().isClientSide && (position().distanceToSqr(approachPos) < 0.18 || touches(target))) {
+        if (position().distanceToSqr(approachPos) < 0.18 || touches(target)) {
             changeFamiliarState(MomKnifeState.ALIGN);
         }
     }
@@ -176,7 +342,7 @@ public class MomKnifeEntity extends AbstractIsaacFamiliarEntity
         moveTowards(getApproachPosition(owner, target), 0.55);
         faceAttackDirection(owner, target, 90.0f);
 
-        if (!level().isClientSide && stateTicks >= ALIGN_TICKS) {
+        if (stateTicks >= ALIGN_TICKS) {
             changeFamiliarState(MomKnifeState.RAISE);
         }
     }
@@ -187,7 +353,7 @@ public class MomKnifeEntity extends AbstractIsaacFamiliarEntity
 
         moveTowards(getRaisePosition(owner, target), 0.35);
 
-        if (!level().isClientSide && stateTicks >= RAISE_TICKS) {
+        if (stateTicks >= RAISE_TICKS) {
             changeFamiliarState(MomKnifeState.SLASH);
         }
     }
@@ -200,10 +366,10 @@ public class MomKnifeEntity extends AbstractIsaacFamiliarEntity
             Vec3 end = getSlashPosition(owner, target);
             moveTowards(start.lerp(end, progress), 0.85);
         } else {
-            setDeltaMovement(Vec3.ZERO);
+            stopMotion();
         }
 
-        if (!level().isClientSide && stateTicks >= SLASH_TICKS) {
+        if (stateTicks >= SLASH_TICKS) {
             changeFamiliarState(MomKnifeState.RECOVER);
         }
     }
@@ -214,7 +380,7 @@ public class MomKnifeEntity extends AbstractIsaacFamiliarEntity
             moveTowards(getSlashPosition(owner, target), 0.45);
         }
 
-        if (!level().isClientSide && stateTicks >= RECOVER_TICKS) {
+        if (stateTicks >= RECOVER_TICKS) {
             cooldown = getRandomAttackCooldown();
             beginReturn();
         }
@@ -223,13 +389,11 @@ public class MomKnifeEntity extends AbstractIsaacFamiliarEntity
     private void tickReturn(LivingEntity owner) {
         Vec3 idlePos = getIdlePosition(owner);
         flyTowards(idlePos, RETURN_SPEED);
-        faceOwnerBack(owner);
+        faceFormationCenter(owner);
 
         if (position().distanceToSqr(idlePos) < 0.12) {
-            if (!level().isClientSide) {
-                changeFamiliarState(MomKnifeState.IDLE);
-            }
-            setDeltaMovement(Vec3.ZERO);
+            changeFamiliarState(MomKnifeState.IDLE);
+            stopMotion();
         }
     }
 
@@ -269,11 +433,14 @@ public class MomKnifeEntity extends AbstractIsaacFamiliarEntity
     }
 
     private Vec3 getIdlePosition(LivingEntity owner) {
-        Vec3 forward = Vec3.directionFromRotation(0, owner.getYRot()).normalize();
-        Vec3 back = forward.scale(-IDLE_DISTANCE);
-        Vec3 side = new Vec3(-forward.z, 0, forward.x).normalize().scale(getSideOffset());
+        Vec3 forward = Vec3.directionFromRotation(0, owner.getYRot()).multiply(1, 0, 1).normalize();
+        Vec3 back = forward.scale(-1.0);
+        Vec3 side = new Vec3(-forward.z, 0, forward.x).normalize();
+        double angle = Math.toRadians(formationAngle);
+        double radius = getFormationRadius(owner, formationRing);
+        Vec3 horizontalOffset = back.scale(Math.cos(angle)).add(side.scale(Math.sin(angle))).normalize().scale(radius);
         double height = owner.getBbHeight() * IDLE_HEIGHT_FACTOR;
-        return owner.position().add(back).add(side).add(0, height, 0);
+        return owner.position().add(horizontalOffset).add(0, height, 0);
     }
 
     private Vec3 getApproachPosition(LivingEntity owner, LivingEntity target) {
@@ -304,13 +471,6 @@ public class MomKnifeEntity extends AbstractIsaacFamiliarEntity
     }
 
     private Vec3 getAttackDirection(LivingEntity owner, LivingEntity target) {
-        Vec3 syncedDirection = getSyncedAttackDirection();
-        if (syncedDirection.lengthSqr() > 1e-6) {
-            attackDirection = syncedDirection;
-            return attackDirection;
-        }
-        if (level().isClientSide) return Vec3.ZERO;
-
         if (attackDirection.lengthSqr() > 1e-6) return attackDirection;
 
         Vec3 direction = target.getBoundingBox().getCenter().subtract(position()).multiply(1, 0, 1);
@@ -321,48 +481,97 @@ public class MomKnifeEntity extends AbstractIsaacFamiliarEntity
         return attackDirection;
     }
 
-    private double getSideOffset() {
-        int index = getFormationIndex();
-        if (index <= 0) return 0;
-        int order = (index + 1) / 2;
-        return (index % 2 == 1 ? -1 : 1) * order * IDLE_SPACING;
+    /**
+     * Caches this knife's stable local slot in the owner's rear semicircle formation.
+     */
+    private void cacheFormationSlot(int formationIndex) {
+        int remainingIndex = Math.max(0, formationIndex);
+        int ring = 0;
+        while (true) {
+            int capacity = getFormationCapacity(ring);
+            if (remainingIndex < capacity) {
+                formationRing = ring;
+                formationAngle = getFormationAngle(remainingIndex, capacity);
+                return;
+            }
+            remainingIndex -= capacity;
+            ring++;
+        }
+    }
+
+    /**
+     * Returns the radius of a rear semicircle ring after adapting to the owner's current width.
+     */
+    private double getFormationRadius(LivingEntity owner, int ring) {
+        double baseRadius = Math.max(owner.getBbWidth() * 0.5 + FORMATION_BASE_PADDING, FORMATION_BASE_PADDING);
+        return baseRadius + ring * FORMATION_RING_SPACING;
+    }
+
+    /**
+     * Returns how many knives fit in the requested ring.
+     * The capacity is intentionally independent from owner size so assigned ring slots stay stable.
+     */
+    private int getFormationCapacity(int ring) {
+        return FORMATION_FIRST_RING_CAPACITY + ring * FORMATION_RING_CAPACITY_STEP;
+    }
+
+    /**
+     * Converts a ring-local index into an angle offset from the owner's direct rear direction.
+     */
+    private float getFormationAngle(int localIndex, int capacity) {
+        if (localIndex <= 0 || capacity <= 1) return 0.0f;
+        int order = (localIndex + 1) / 2;
+        int direction = localIndex % 2 == 1 ? -1 : 1;
+        double maxOffset = FORMATION_ARC_DEGREES * 0.5;
+        double angleStep = maxOffset / Math.max(1, (capacity - 1) / 2);
+        return (float) (direction * order * angleStep);
     }
 
     private void moveTowards(Vec3 targetPos, double lerp) {
+        if (level().isClientSide) return;
         Vec3 next = position().lerp(targetPos, lerp);
-        setPos(next);
-        setDeltaMovement(Vec3.ZERO);
+        queueMovement(next.subtract(position()));
     }
 
     private void flyTowards(Vec3 targetPos, double speed) {
+        if (level().isClientSide) return;
         Vec3 toTarget = targetPos.subtract(position());
         if (toTarget.lengthSqr() < 1e-6) {
-            setDeltaMovement(Vec3.ZERO);
+            stopMotion();
             return;
         }
 
         Vec3 movement = toTarget.normalize().scale(Math.min(speed, toTarget.length()));
-        setDeltaMovement(movement);
-        move(MoverType.SELF, movement);
+        queueMovement(movement);
+    }
+
+    /**
+     * Queues the movement that the server will execute next tick and clients will render as the next visual frame.
+     */
+    private void queueMovement(Vec3 movement) {
+        if (level().isClientSide) return;
+        if (movement.lengthSqr() < 1e-10) {
+            stopMotion();
+            return;
+        }
+
+        nextServerMovement = movement;
+    }
+
+    /**
+     * Clears residual velocity and cancels the queued next movement.
+     */
+    private void stopMotion() {
+        setDeltaMovement(Vec3.ZERO);
+        if (!level().isClientSide) {
+            nextServerMovement = Vec3.ZERO;
+        }
     }
 
     @Nullable
     private LivingEntity getTarget() {
-        int targetId = entityData.get(TARGET_ENTITY_ID);
-        if (targetId != -1) {
-            Entity entity = level().getEntity(targetId);
-            if (entity instanceof LivingEntity livingEntity) {
-                targetUUID = livingEntity.getUUID();
-                return livingEntity;
-            }
-        }
-
         if (targetUUID == null || !(level() instanceof ServerLevel serverLevel)) return null;
-        LivingEntity target = serverLevel.getEntity(targetUUID) instanceof LivingEntity livingEntity ? livingEntity : null;
-        if (target != null) {
-            entityData.set(TARGET_ENTITY_ID, target.getId());
-        }
-        return target;
+        return serverLevel.getEntity(targetUUID) instanceof LivingEntity livingEntity ? livingEntity : null;
     }
 
     /**
@@ -399,7 +608,6 @@ public class MomKnifeEntity extends AbstractIsaacFamiliarEntity
 
     private void setTarget(@Nullable LivingEntity target) {
         targetUUID = target == null ? null : target.getUUID();
-        entityData.set(TARGET_ENTITY_ID, target == null ? -1 : target.getId());
     }
 
     private void clearTarget() {
@@ -427,41 +635,31 @@ public class MomKnifeEntity extends AbstractIsaacFamiliarEntity
 
     private void beginReturn() {
         clearAttackDirection();
-        if (!level().isClientSide) {
-            clearTarget();
-        }
+        clearTarget();
         changeFamiliarState(MomKnifeState.RETURN);
     }
 
     /**
-     * Gives synced attack data one tick to reach clients before movement starts.
+     * Keeps a short launch wind-up before movement starts after target and direction are locked.
      */
     private boolean waitForAttackPlan() {
-        if (stateTicks <= ATTACK_PLAN_SYNC_TICKS) {
-            setDeltaMovement(Vec3.ZERO);
-            return true;
-        }
-        if (level().isClientSide && getSyncedAttackDirection().lengthSqr() <= 1e-6) {
-            setDeltaMovement(Vec3.ZERO);
+        if (stateTicks <= ATTACK_WINDUP_TICKS) {
+            stopMotion();
             return true;
         }
         return false;
     }
 
     /**
-     * Lets the server own attack cancellation while clients wait for temporary missing target data.
+     * Cancels the attack and returns to the owner when the locked target is no longer usable.
      */
     private boolean holdClientOrReturn(LivingEntity owner, @Nullable LivingEntity target) {
         if (target == null || !target.isAlive()) {
-            if (!level().isClientSide) {
-                beginReturn();
-            } else {
-                setDeltaMovement(Vec3.ZERO);
-            }
+            beginReturn();
             return true;
         }
 
-        if (!level().isClientSide && !isValidTarget(owner, target)) {
+        if (!isValidTarget(owner, target)) {
             beginReturn();
             return true;
         }
@@ -469,33 +667,18 @@ public class MomKnifeEntity extends AbstractIsaacFamiliarEntity
     }
 
     /**
-     * Stores a stable attack direction and exposes it to clients as one horizontal yaw value.
+     * Stores a stable server-side attack direction for the current swing sequence.
      */
     private void setAttackDirection(Vec3 direction) {
         if (direction.lengthSqr() < 1e-6) return;
         attackDirection = direction.normalize();
-        if (!level().isClientSide) {
-            entityData.set(ATTACK_YAW, yawFromDirection(attackDirection));
-        }
     }
 
     /**
-     * Clears the current attack plan when the knife is no longer performing an attack.
+     * Clears the current locked attack direction when the knife is no longer performing an attack.
      */
     private void clearAttackDirection() {
         attackDirection = Vec3.ZERO;
-        if (!level().isClientSide) {
-            entityData.set(ATTACK_YAW, Float.NaN);
-        }
-    }
-
-    /**
-     * Reads the synchronized attack direction used by client-side movement prediction.
-     */
-    private Vec3 getSyncedAttackDirection() {
-        float yaw = entityData.get(ATTACK_YAW);
-        if (Float.isNaN(yaw)) return Vec3.ZERO;
-        return Vec3.directionFromRotation(0.0f, yaw).multiply(1, 0, 1).normalize();
     }
 
     /**
@@ -538,14 +721,13 @@ public class MomKnifeEntity extends AbstractIsaacFamiliarEntity
         return damageSources().generic();
     }
 
-    private void faceOwnerBack(LivingEntity owner) {
-        updateRenderYaw(owner.getYRot() + 180.0f, 12.0f);
-    }
-
-    private void faceTarget(LivingEntity target, float maxStep) {
-        Vec3 direction = target.position().subtract(position());
-        if (direction.multiply(1, 0, 1).lengthSqr() < 1e-6) return;
-        updateRenderYaw(yawFromDirection(direction), maxStep);
+    private void faceFormationCenter(LivingEntity owner) {
+        Vec3 direction = owner.getBoundingBox().getCenter().subtract(position()).multiply(1, 0, 1);
+        if (direction.lengthSqr() < 1e-6) {
+            updateRenderYaw(owner.getYRot() + 180.0f, 12.0f);
+            return;
+        }
+        updateRenderYaw(yawFromDirection(direction), 12.0f);
     }
 
     private void faceAttackDirection(LivingEntity owner, LivingEntity target, float maxStep) {
@@ -555,9 +737,10 @@ public class MomKnifeEntity extends AbstractIsaacFamiliarEntity
     }
 
     private void updateRenderYaw(float targetYaw, float maxStep) {
-        float currentYaw = getYRot();
+        if (level().isClientSide) return;
+        float currentYaw = nextServerYaw;
         float delta = Mth.wrapDegrees(targetYaw - currentYaw);
-        setYRot(currentYaw + Mth.clamp(delta, -maxStep, maxStep));
+        nextServerYaw = currentYaw + Mth.clamp(delta, -maxStep, maxStep);
     }
 
     private float smoothProgress(float ticks, int duration) {
@@ -604,8 +787,11 @@ public class MomKnifeEntity extends AbstractIsaacFamiliarEntity
     protected void defineSynchedData() {
         super.defineSynchedData();
         entityData.define(KNIFE_STATE, MomKnifeState.IDLE.ordinal());
-        entityData.define(TARGET_ENTITY_ID, -1);
-        entityData.define(ATTACK_YAW, Float.NaN);
+        entityData.define(VISUAL_PLAN_SEQUENCE, 0);
+        entityData.define(VISUAL_PLAN_X, 0.0f);
+        entityData.define(VISUAL_PLAN_Y, 0.0f);
+        entityData.define(VISUAL_PLAN_Z, 0.0f);
+        entityData.define(VISUAL_PLAN_YAW, 0.0f);
     }
 
     public enum MomKnifeState {
@@ -617,4 +803,5 @@ public class MomKnifeEntity extends AbstractIsaacFamiliarEntity
         RECOVER,
         RETURN
     }
+
 }

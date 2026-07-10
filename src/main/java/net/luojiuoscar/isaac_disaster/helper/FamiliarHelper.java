@@ -106,14 +106,16 @@ public final class FamiliarHelper {
     }
 
     /**
-     * Pushes the capability list order into live entities so clients can predict formations consistently.
+     * Pushes the capability list order into live entities so server-side formation behavior stays deterministic.
      */
     public static void syncFormationIndexes(ServerPlayer player, FamiliarEntry entry) {
         List<UUID> entityIds = entry.getEntityIds();
         for (int i = 0; i < entityIds.size(); i++) {
             Entity entity = player.serverLevel().getEntity(entityIds.get(i));
             if (entity instanceof AbstractIsaacFamiliarEntity familiar) {
-                familiar.setFormationIndex(i);
+                if (familiar.getFormationIndex() != i) {
+                    familiar.setFormationIndex(i);
+                }
             }
         }
     }

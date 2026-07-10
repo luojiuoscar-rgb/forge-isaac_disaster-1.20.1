@@ -12,10 +12,10 @@ import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -37,7 +37,10 @@ public class MomKnifeRenderer extends EntityRenderer<MomKnifeEntity> {
     public void render(@NotNull MomKnifeEntity knife, float entityYaw, float partialTick, @NotNull PoseStack poseStack,
                        @NotNull MultiBufferSource buffer, int packedLight) {
         poseStack.pushPose();
-        float yaw = Mth.lerp(partialTick, knife.yRotO, knife.getYRot());
+        Vec3 visualOffset = knife.getVisualRenderOffset(partialTick);
+        poseStack.translate(visualOffset.x, visualOffset.y, visualOffset.z);
+
+        float yaw = knife.getVisualRenderYaw(partialTick);
         poseStack.mulPose(Axis.YP.rotationDegrees(-yaw));
         poseStack.mulPose(Axis.YP.rotationDegrees(knife.getVisualBladeTwist(partialTick)));
         poseStack.mulPose(Axis.ZP.rotationDegrees(knife.getVisualPitch(partialTick) * SWING_DIRECTION));
