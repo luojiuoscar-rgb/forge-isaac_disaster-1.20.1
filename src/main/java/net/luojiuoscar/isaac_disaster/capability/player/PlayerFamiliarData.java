@@ -7,7 +7,8 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.common.capabilities.AutoRegisterCapability;
 
 import java.util.Collection;
-import java.util.HashMap;
+import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -17,7 +18,8 @@ import java.util.UUID;
  */
 @AutoRegisterCapability
 public class PlayerFamiliarData {
-    private final Map<ResourceLocation, FamiliarEntry> familiars = new HashMap<>();
+    private final Map<ResourceLocation, FamiliarEntry> familiars = new LinkedHashMap<>();
+    private int nextSpawnIndex;
 
     /**
      * Sets the required count for a familiar type.
@@ -25,8 +27,9 @@ public class PlayerFamiliarData {
     public void setCount(ResourceLocation type, int count) {
         FamiliarEntry entry = getOrCreateEntry(type);
         entry.setCount(count);
-        if (entry.getCount() == 0 && entry.getEntityIds().isEmpty()) {
+        if (entry.getCount() == 0 && entry.hasNoEntities()) {
             familiars.remove(type);
+            normalizeSpawnIndex();
         }
     }
 
@@ -34,7 +37,8 @@ public class PlayerFamiliarData {
      * Adds a delta to the required count for a familiar type.
      */
     public void addCount(ResourceLocation type, int delta) {
-        setCount(type, getCount(type) + delta);
+        long nextCount = (long) getCount(type) + delta;
+        setCount(type, (int) Math.max(0L, Math.min(Integer.MAX_VALUE, nextCount)));
     }
 
     /**
@@ -51,7 +55,8 @@ public class PlayerFamiliarData {
      */
     public void pruneEmptyEntries() {
         familiars.entrySet().removeIf(entry ->
-                entry.getValue().getCount() == 0 && entry.getValue().getEntityIds().isEmpty());
+                entry.getValue().getCount() == 0 && entry.getValue().hasNoEntities());
+        normalizeSpawnIndex();
     }
 
     public int getCount(ResourceLocation type) {
@@ -81,8 +86,9 @@ public class PlayerFamiliarData {
         if (entry == null) return;
 
         entry.removeEntity(entityId);
-        if (entry.getCount() == 0 && entry.getEntityIds().isEmpty()) {
+        if (entry.getCount() == 0 && entry.hasNoEntities()) {
             familiars.remove(type);
+            normalizeSpawnIndex();
         }
     }
 
@@ -97,7 +103,42 @@ public class PlayerFamiliarData {
     }
 
     public Collection<FamiliarEntry> getEntries() {
-        return familiars.values();
+        return Collections.unmodifiableCollection(familiars.values());
+    }
+
+    /**
+     * Returns the next unmet familiar requirement in stable insertion-order round-robin order.
+     */
+    public Optional<FamiliarEntry> getNextIncompleteEntry() {
+        int size = familiars.size();
+        if (size == 0) {
+            nextSpawnIndex = 0;
+            return Optional.empty();
+        }
+
+        normalizeSpawnIndex();
+        FamiliarEntry wrappedCandidate = null;
+        int wrappedIndex = -1;
+        int index = 0;
+        for (FamiliarEntry entry : familiars.values()) {
+            if (entry.getEntityCount() < entry.getCount()) {
+                if (index >= nextSpawnIndex) {
+                    nextSpawnIndex = (index + 1) % size;
+                    return Optional.of(entry);
+                }
+                if (wrappedCandidate == null) {
+                    wrappedCandidate = entry;
+                    wrappedIndex = index;
+                }
+            }
+            index++;
+        }
+
+        if (wrappedCandidate != null) {
+            nextSpawnIndex = (wrappedIndex + 1) % size;
+            return Optional.of(wrappedCandidate);
+        }
+        return Optional.empty();
     }
 
     /**
@@ -105,6 +146,7 @@ public class PlayerFamiliarData {
      */
     public void copyFrom(PlayerFamiliarData source) {
         familiars.clear();
+        nextSpawnIndex = 0;
         for (FamiliarEntry entry : source.familiars.values()) {
             FamiliarEntry copied = new FamiliarEntry(entry.getType(), entry.getCount(), java.util.List.of());
             familiars.put(copied.getType(), copied);
@@ -127,13 +169,21 @@ public class PlayerFamiliarData {
      */
     public void loadNBTData(CompoundTag nbt) {
         familiars.clear();
+        nextSpawnIndex = 0;
         if (!nbt.contains("Familiars", Tag.TAG_LIST)) return;
 
         ListTag entries = nbt.getList("Familiars", Tag.TAG_COMPOUND);
         for (Tag entryTag : entries) {
             if (!(entryTag instanceof CompoundTag compoundTag)) continue;
-            FamiliarEntry entry = FamiliarEntry.loadNBT(compoundTag);
-            familiars.put(entry.getType(), entry);
+            FamiliarEntry.loadNBT(compoundTag).ifPresent(entry -> familiars.put(entry.getType(), entry));
+        }
+    }
+
+    private void normalizeSpawnIndex() {
+        if (familiars.isEmpty()) {
+            nextSpawnIndex = 0;
+        } else {
+            nextSpawnIndex = Math.floorMod(nextSpawnIndex, familiars.size());
         }
     }
 }

@@ -37,8 +37,8 @@ public class MomKnifeRenderer extends EntityRenderer<MomKnifeEntity> {
     public void render(@NotNull MomKnifeEntity knife, float entityYaw, float partialTick, @NotNull PoseStack poseStack,
                        @NotNull MultiBufferSource buffer, int packedLight) {
         poseStack.pushPose();
-        Vec3 visualOffset = knife.getVisualRenderOffset(partialTick);
-        poseStack.translate(visualOffset.x, visualOffset.y, visualOffset.z);
+        Vec3 renderOffset = knife.getVisualRenderOffset(partialTick);
+        poseStack.translate(renderOffset.x, renderOffset.y, renderOffset.z);
 
         float yaw = knife.getVisualRenderYaw(partialTick);
         poseStack.mulPose(Axis.YP.rotationDegrees(-yaw));

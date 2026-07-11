@@ -9,10 +9,10 @@ import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.network.NetworkHooks;
@@ -24,21 +24,25 @@ import java.util.Optional;
 import java.util.UUID;
 
 /**
- * Base entity for Isaac familiars that are owned by a living entity but do not behave as mobs.
+ * Base entity for non-persistent Isaac familiars owned by a server player.
  */
 public abstract class AbstractIsaacFamiliarEntity extends Entity {
     private static final double MAX_VALID_DISTANCE = 64.0;
+    private static final int MIN_VALIDITY_CHECK_INTERVAL = 20;
+    private static final int MAX_VALIDITY_CHECK_INTERVAL = 40;
     private static final EntityDataAccessor<Optional<UUID>> OWNER_UUID =
             SynchedEntityData.defineId(AbstractIsaacFamiliarEntity.class, EntityDataSerializers.OPTIONAL_UUID);
 
     protected UUID ownerUUID;
-    protected LivingEntity cachedOwner;
+    protected Player cachedOwner;
     private int formationIndex;
+    private int validityCheckDelay;
 
     protected AbstractIsaacFamiliarEntity(EntityType<?> type, Level level) {
         super(type, level);
         this.noPhysics = true;
         this.setNoGravity(true);
+        resetValidityCheckDelay();
     }
 
     @Override
@@ -47,9 +51,12 @@ public abstract class AbstractIsaacFamiliarEntity extends Entity {
         this.noPhysics = true;
         this.setNoGravity(true);
 
-        if (!level().isClientSide && !isValidFamiliar()) {
-            discardAndUnlink();
-            return;
+        if (!level().isClientSide && --validityCheckDelay <= 0) {
+            if (!isValidFamiliar()) {
+                discardAndUnlink();
+                return;
+            }
+            resetValidityCheckDelay();
         }
 
         tickFamiliar();
@@ -64,9 +71,11 @@ public abstract class AbstractIsaacFamiliarEntity extends Entity {
      * Checks whether this familiar is still accepted by its owner capability.
      */
     public boolean isValidFamiliar() {
-        LivingEntity owner = getOwner();
+        Player owner = getOwner();
         ResourceLocation familiarType = getFamiliarType();
-        if (owner == null || !owner.isAlive() || owner.isRemoved() || familiarType == null) return false;
+        if (!(owner instanceof ServerPlayer) || !owner.isAlive() || owner.isRemoved() || familiarType == null) {
+            return false;
+        }
         if (distanceToSqr(owner) > MAX_VALID_DISTANCE * MAX_VALID_DISTANCE) return false;
 
         final boolean[] valid = {false};
@@ -86,16 +95,16 @@ public abstract class AbstractIsaacFamiliarEntity extends Entity {
      * Removes this entity UUID from the owner capability before discarding the entity.
      */
     public void discardAndUnlink() {
-        LivingEntity owner = getOwner();
+        Player owner = getOwner();
         ResourceLocation familiarType = getFamiliarType();
-        if (owner != null && familiarType != null) {
-            owner.getCapability(PlayerFamiliarDataProvider.PLAYER_FAMILIAR_DATA).ifPresent(
+        if (owner instanceof ServerPlayer serverPlayer && familiarType != null) {
+            serverPlayer.getCapability(PlayerFamiliarDataProvider.PLAYER_FAMILIAR_DATA).ifPresent(
                     data -> data.removeEntity(familiarType, getUUID()));
         }
         discardSilently();
     }
 
-    public void setOwner(@Nullable LivingEntity owner) {
+    public void setOwner(@Nullable ServerPlayer owner) {
         this.cachedOwner = owner;
         this.ownerUUID = owner == null ? null : owner.getUUID();
         entityData.set(OWNER_UUID, Optional.ofNullable(ownerUUID));
@@ -116,7 +125,7 @@ public abstract class AbstractIsaacFamiliarEntity extends Entity {
     }
 
     @Nullable
-    public LivingEntity getOwner() {
+    public Player getOwner() {
         if (ownerUUID == null) {
             ownerUUID = entityData.get(OWNER_UUID).orElse(null);
         }
@@ -128,8 +137,8 @@ public abstract class AbstractIsaacFamiliarEntity extends Entity {
 
         if (cachedOwner == null && ownerUUID != null && level() instanceof ServerLevel serverLevel) {
             Entity entity = serverLevel.getEntity(ownerUUID);
-            if (entity instanceof LivingEntity livingEntity) {
-                cachedOwner = livingEntity;
+            if (entity instanceof ServerPlayer serverPlayer) {
+                cachedOwner = serverPlayer;
             }
         }
 
@@ -152,7 +161,7 @@ public abstract class AbstractIsaacFamiliarEntity extends Entity {
      * Returns this familiar's current order in the owner capability for server-side positioning logic.
      */
     public int getFamiliarIndex() {
-        LivingEntity owner = getOwner();
+        Player owner = getOwner();
         ResourceLocation familiarType = getFamiliarType();
         if (owner == null || familiarType == null) return -1;
 
@@ -160,6 +169,11 @@ public abstract class AbstractIsaacFamiliarEntity extends Entity {
         owner.getCapability(PlayerFamiliarDataProvider.PLAYER_FAMILIAR_DATA).ifPresent(
                 data -> index[0] = data.getIndex(familiarType, getUUID()));
         return index[0];
+    }
+
+    private void resetValidityCheckDelay() {
+        validityCheckDelay = MIN_VALIDITY_CHECK_INTERVAL
+                + random.nextInt(MAX_VALIDITY_CHECK_INTERVAL - MIN_VALIDITY_CHECK_INTERVAL + 1);
     }
 
     @Override

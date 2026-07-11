@@ -10,6 +10,7 @@ import net.luojiuoscar.isaac_disaster.registries.ability_effect.IExecutableEffec
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackType;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.combination.AttackCombinationRule;
 import net.luojiuoscar.isaac_disaster.registries.bullet_color.BulletColor;
+import net.luojiuoscar.isaac_disaster.registries.familiar.FamiliarEntityType;
 import net.luojiuoscar.isaac_disaster.registries.recursive_module.RecursiveModule;
 import net.luojiuoscar.isaac_disaster.registries.trajectory.IAttackTrajectory;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerModule;
@@ -26,6 +27,7 @@ import static net.luojiuoscar.isaac_disaster.registries.ability_effect.ModExecut
 import static net.luojiuoscar.isaac_disaster.registries.attack_type.ModAttackType.ATTACK_TYPE_REGISTER;
 import static net.luojiuoscar.isaac_disaster.registries.attack_type.combination.ModCombinationRules.ATTACK_COMBINATION_RULE_REGISTRY;
 import static net.luojiuoscar.isaac_disaster.registries.bullet_color.ModBulletColor.BULLET_COLOR_REGISTRY;
+import static net.luojiuoscar.isaac_disaster.registries.familiar.ModFamiliarEntities.FAMILIAR_ENTITY_REGISTRY;
 import static net.luojiuoscar.isaac_disaster.registries.recursive_module.ModRecursiveModule.RECURSIVE_MODULE_REGISTRY;
 import static net.luojiuoscar.isaac_disaster.registries.trajectory.ModAttackTrajectory.ATTACK_TRAJECTORY_REGISTRY;
 import static net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerModule.TRIGGER_MODULE_REGISTRY;
@@ -78,6 +80,10 @@ public class ModRegistries {
         ATTACK_COMBINATION_RULE_REGISTRY.makeRegistry(() -> {return new RegistryBuilder<AttackCombinationRule>()
                 .setName(ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "attack_combination_rule"));});
         ATTACK_COMBINATION_RULE_REGISTRY.register(modEventBus);
+
+        FAMILIAR_ENTITY_REGISTRY.makeRegistry(() -> new RegistryBuilder<FamiliarEntityType>()
+                .setName(ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "familiar_entity")));
+        FAMILIAR_ENTITY_REGISTRY.register(modEventBus);
 
         EXECUTABLE_EFFECT_REGISTRY.makeRegistry(() -> {return new RegistryBuilder<IExecutableEffect>()
                 .setName(ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "executable_effect"));});

@@ -3,11 +3,13 @@ package net.luojiuoscar.isaac_disaster.entity.familiar;
 import net.luojiuoscar.isaac_disaster.entity.ModEntities;
 import net.luojiuoscar.isaac_disaster.entity.familiar.state.FamiliarStateMachine;
 import net.luojiuoscar.isaac_disaster.helper.EntityHelper;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageTypes;
@@ -19,6 +21,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
+import org.joml.Vector3f;
 
 import java.util.Comparator;
 import java.util.List;
@@ -51,6 +54,8 @@ public class MomKnifeEntity extends AbstractIsaacFamiliarEntity
     private static final int RECOVER_TICKS = 5;
     private static final int ATTACK_WINDUP_TICKS = 1;
     private static final int RETURN_VISUAL_RECOVER_TICKS = 8;
+    private static final double VISUAL_POSITION_EPSILON_SQR = 1e-10;
+    private static final float VISUAL_YAW_EPSILON = 0.001f;
 
     /*
      * Visual animation notes for the vanilla iron sword baked model renderer:
@@ -70,12 +75,10 @@ public class MomKnifeEntity extends AbstractIsaacFamiliarEntity
             SynchedEntityData.defineId(MomKnifeEntity.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Integer> VISUAL_PLAN_SEQUENCE =
             SynchedEntityData.defineId(MomKnifeEntity.class, EntityDataSerializers.INT);
-    private static final EntityDataAccessor<Float> VISUAL_PLAN_X =
-            SynchedEntityData.defineId(MomKnifeEntity.class, EntityDataSerializers.FLOAT);
-    private static final EntityDataAccessor<Float> VISUAL_PLAN_Y =
-            SynchedEntityData.defineId(MomKnifeEntity.class, EntityDataSerializers.FLOAT);
-    private static final EntityDataAccessor<Float> VISUAL_PLAN_Z =
-            SynchedEntityData.defineId(MomKnifeEntity.class, EntityDataSerializers.FLOAT);
+    private static final EntityDataAccessor<BlockPos> VISUAL_PLAN_ORIGIN =
+            SynchedEntityData.defineId(MomKnifeEntity.class, EntityDataSerializers.BLOCK_POS);
+    private static final EntityDataAccessor<Vector3f> VISUAL_PLAN_LOCAL_OFFSET =
+            SynchedEntityData.defineId(MomKnifeEntity.class, EntityDataSerializers.VECTOR3);
     private static final EntityDataAccessor<Float> VISUAL_PLAN_YAW =
             SynchedEntityData.defineId(MomKnifeEntity.class, EntityDataSerializers.FLOAT);
 
@@ -94,22 +97,21 @@ public class MomKnifeEntity extends AbstractIsaacFamiliarEntity
     private Vec3 nextServerMovement = Vec3.ZERO;
     private float nextServerYaw;
     private int visualPlanSequence;
+    private Vec3 lastPublishedVisualPosition = Vec3.ZERO;
+    private float lastPublishedVisualYaw;
+    private boolean hasPublishedVisualPlan;
     private Vec3 previousVisualPosition = Vec3.ZERO;
-    private Vec3 visualPosition = Vec3.ZERO;
+    private Vec3 currentVisualPosition = Vec3.ZERO;
     private float previousVisualYaw;
     private float visualYaw;
-    private Vec3 queuedVisualPosition = Vec3.ZERO;
-    private float queuedVisualYaw;
-    private int queuedVisualPlanSequence;
     private int lastVisualPlanSequence;
     private boolean hasVisualPlan;
-    private boolean hasQueuedVisualPlan;
 
     public MomKnifeEntity(EntityType<? extends MomKnifeEntity> type, Level level) {
         super(type, level);
     }
 
-    public MomKnifeEntity(Level level, LivingEntity owner) {
+    public MomKnifeEntity(Level level, ServerPlayer owner) {
         this(ModEntities.MOM_KNIFE.get(), level);
         setOwner(owner);
     }
@@ -189,10 +191,9 @@ public class MomKnifeEntity extends AbstractIsaacFamiliarEntity
         refreshStateFromSyncedData();
         stateTicks++;
         initializeVisualPlanIfNeeded();
-        queueSyncedVisualPlan();
-        previousVisualPosition = visualPosition;
+        previousVisualPosition = currentVisualPosition;
         previousVisualYaw = visualYaw;
-        consumeQueuedVisualPlan();
+        consumeSyncedVisualPlan();
     }
 
     /**
@@ -209,20 +210,38 @@ public class MomKnifeEntity extends AbstractIsaacFamiliarEntity
     }
 
     /**
-     * Publishes the next visual position before the server executes that same movement next tick.
+     * Publishes the predicted next visual position before the server executes its movement on the next tick.
      */
     private void publishVisualPlan() {
         pendingServerMovement = nextServerMovement;
         pendingServerYaw = nextServerYaw;
         hasPendingServerPlan = true;
+        Vec3 nextVisualPosition = position().add(pendingServerMovement);
+        if (!shouldPublishVisualPlan(nextVisualPosition)) return;
+
+        lastPublishedVisualPosition = nextVisualPosition;
+        lastPublishedVisualYaw = pendingServerYaw;
+        hasPublishedVisualPlan = true;
         visualPlanSequence = visualPlanSequence == Integer.MAX_VALUE ? 1 : visualPlanSequence + 1;
 
-        Vec3 nextVisualPosition = position().add(pendingServerMovement);
-        entityData.set(VISUAL_PLAN_X, (float) nextVisualPosition.x);
-        entityData.set(VISUAL_PLAN_Y, (float) nextVisualPosition.y);
-        entityData.set(VISUAL_PLAN_Z, (float) nextVisualPosition.z);
+        BlockPos origin = BlockPos.containing(nextVisualPosition);
+        Vector3f localOffset = new Vector3f(
+                (float) (nextVisualPosition.x - origin.getX()),
+                (float) (nextVisualPosition.y - origin.getY()),
+                (float) (nextVisualPosition.z - origin.getZ())
+        );
+        entityData.set(VISUAL_PLAN_ORIGIN, origin);
+        entityData.set(VISUAL_PLAN_LOCAL_OFFSET, localOffset);
         entityData.set(VISUAL_PLAN_YAW, pendingServerYaw);
         entityData.set(VISUAL_PLAN_SEQUENCE, visualPlanSequence);
+    }
+
+    private boolean shouldPublishVisualPlan(Vec3 nextVisualPosition) {
+        if (!hasPublishedVisualPlan) return true;
+        if (nextVisualPosition.distanceToSqr(lastPublishedVisualPosition) > VISUAL_POSITION_EPSILON_SQR) {
+            return true;
+        }
+        return Math.abs(Mth.wrapDegrees(pendingServerYaw - lastPublishedVisualYaw)) > VISUAL_YAW_EPSILON;
     }
 
     /**
@@ -240,36 +259,25 @@ public class MomKnifeEntity extends AbstractIsaacFamiliarEntity
     }
 
     /**
-     * Copies the newest synced visual plan into a client-side queue without changing the active render segment.
+     * Reconstructs the latest double-precision visual position from its integer origin and local offset.
      */
-    private void queueSyncedVisualPlan() {
+    private void consumeSyncedVisualPlan() {
         int sequence = entityData.get(VISUAL_PLAN_SEQUENCE);
-        if (sequence == 0 || sequence == queuedVisualPlanSequence || sequence == lastVisualPlanSequence) return;
+        if (sequence == 0 || sequence == lastVisualPlanSequence) return;
 
-        queuedVisualPlanSequence = sequence;
-        queuedVisualPosition = new Vec3(
-                entityData.get(VISUAL_PLAN_X),
-                entityData.get(VISUAL_PLAN_Y),
-                entityData.get(VISUAL_PLAN_Z)
+        lastVisualPlanSequence = sequence;
+        BlockPos origin = entityData.get(VISUAL_PLAN_ORIGIN);
+        Vector3f localOffset = entityData.get(VISUAL_PLAN_LOCAL_OFFSET);
+        currentVisualPosition = new Vec3(
+                origin.getX() + localOffset.x(),
+                origin.getY() + localOffset.y(),
+                origin.getZ() + localOffset.z()
         );
-        queuedVisualYaw = entityData.get(VISUAL_PLAN_YAW);
-        hasQueuedVisualPlan = true;
+        visualYaw = entityData.get(VISUAL_PLAN_YAW);
     }
 
     /**
-     * Moves the queued server plan into the active interpolation segment at the client tick boundary.
-     */
-    private void consumeQueuedVisualPlan() {
-        if (!hasQueuedVisualPlan || queuedVisualPlanSequence == lastVisualPlanSequence) return;
-
-        lastVisualPlanSequence = queuedVisualPlanSequence;
-        visualPosition = queuedVisualPosition;
-        visualYaw = queuedVisualYaw;
-        hasQueuedVisualPlan = false;
-    }
-
-    /**
-     * Returns the render-only offset from the vanilla synchronized entity position to the planned visual position.
+     * Returns the offset from vanilla entity rendering to the interpolated server-authored visual position.
      */
     public Vec3 getVisualRenderOffset(float partialTick) {
         if (!level().isClientSide || !hasVisualPlan) return Vec3.ZERO;
@@ -279,7 +287,7 @@ public class MomKnifeEntity extends AbstractIsaacFamiliarEntity
                 Mth.lerp(partialTick, yOld, getY()),
                 Mth.lerp(partialTick, zOld, getZ())
         );
-        Vec3 visualRenderPosition = previousVisualPosition.lerp(visualPosition, partialTick);
+        Vec3 visualRenderPosition = previousVisualPosition.lerp(currentVisualPosition, partialTick);
         return visualRenderPosition.subtract(entityRenderPosition);
     }
 
@@ -298,8 +306,8 @@ public class MomKnifeEntity extends AbstractIsaacFamiliarEntity
      */
     private void initializeVisualPlanIfNeeded() {
         if (hasVisualPlan) return;
-        visualPosition = position();
-        previousVisualPosition = visualPosition;
+        currentVisualPosition = position();
+        previousVisualPosition = currentVisualPosition;
         visualYaw = getYRot();
         previousVisualYaw = visualYaw;
         hasVisualPlan = true;
@@ -788,9 +796,8 @@ public class MomKnifeEntity extends AbstractIsaacFamiliarEntity
         super.defineSynchedData();
         entityData.define(KNIFE_STATE, MomKnifeState.IDLE.ordinal());
         entityData.define(VISUAL_PLAN_SEQUENCE, 0);
-        entityData.define(VISUAL_PLAN_X, 0.0f);
-        entityData.define(VISUAL_PLAN_Y, 0.0f);
-        entityData.define(VISUAL_PLAN_Z, 0.0f);
+        entityData.define(VISUAL_PLAN_ORIGIN, BlockPos.ZERO);
+        entityData.define(VISUAL_PLAN_LOCAL_OFFSET, new Vector3f());
         entityData.define(VISUAL_PLAN_YAW, 0.0f);
     }
 

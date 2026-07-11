@@ -1,14 +1,19 @@
 package net.luojiuoscar.isaac_disaster.helper;
 
+import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.capability.player.FamiliarEntry;
+import net.luojiuoscar.isaac_disaster.capability.player.PlayerFamiliarData;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerFamiliarDataProvider;
 import net.luojiuoscar.isaac_disaster.entity.familiar.AbstractIsaacFamiliarEntity;
+import net.luojiuoscar.isaac_disaster.registries.familiar.FamiliarEntityType;
+import net.luojiuoscar.isaac_disaster.registries.familiar.ModFamiliarEntities;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.Level;
+import net.minecraftforge.registries.IForgeRegistry;
 import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.registries.RegistryManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,15 +28,15 @@ public final class FamiliarHelper {
     }
 
     /**
-     * Ensures every familiar entry on the player has the requested number of valid entities.
+     * Cleans invalid runtime records, removes excess entities, and refreshes formation indexes.
+     * Missing entities remain queued for the per-tick spawn scheduler.
      */
-    public static void reconcile(ServerPlayer player) {
+    public static void maintainExistingFamiliars(ServerPlayer player) {
         player.getCapability(PlayerFamiliarDataProvider.PLAYER_FAMILIAR_DATA).ifPresent(data -> {
             List<FamiliarEntry> entries = new ArrayList<>(data.getEntries());
             for (FamiliarEntry entry : entries) {
                 cleanupInvalidEntities(player, entry);
                 discardExtraEntities(player, entry);
-                spawnMissingEntities(player, entry);
                 syncFormationIndexes(player, entry);
             }
             data.pruneEmptyEntries();
@@ -39,38 +44,38 @@ public final class FamiliarHelper {
     }
 
     /**
-     * Checks whether a registered EntityType can create an Isaac familiar entity in this level.
+     * Checks whether the addon-facing familiar registry contains a valid descriptor with the same EntityType id.
      */
-    public static boolean canCreateFamiliar(Level level, ResourceLocation typeId) {
-        EntityType<?> entityType = ForgeRegistries.ENTITY_TYPES.getValue(typeId);
-        if (entityType == null) return false;
-        return entityType.create(level) instanceof AbstractIsaacFamiliarEntity;
+    public static boolean isRegisteredFamiliarType(ResourceLocation typeId) {
+        FamiliarEntityType familiarType = getFamiliarRegistryValue(typeId);
+        return familiarType != null && typeId.equals(ForgeRegistries.ENTITY_TYPES.getKey(familiarType.getEntityType()));
     }
 
     /**
-     * Returns registered EntityType ids that can create Isaac familiar entities.
+     * Returns valid familiar descriptor ids without constructing throwaway entities.
      */
-    public static Stream<ResourceLocation> getRegisteredFamiliarTypeIds(Level level) {
-        return ForgeRegistries.ENTITY_TYPES.getKeys().stream()
-                .filter(typeId -> canCreateFamiliar(level, typeId));
+    public static Stream<ResourceLocation> getRegisteredFamiliarTypeIds() {
+        IForgeRegistry<FamiliarEntityType> registry = getFamiliarRegistry();
+        if (registry == null) return Stream.empty();
+        return registry.getKeys().stream().filter(FamiliarHelper::isRegisteredFamiliarType);
     }
 
     /**
      * Removes UUID records that no longer resolve to valid familiar entities.
      */
     public static void cleanupInvalidEntities(ServerPlayer player, FamiliarEntry entry) {
-        List<UUID> entityIds = entry.getEntityIds();
-        for (int i = entityIds.size() - 1; i >= 0; i--) {
-            UUID entityId = entityIds.get(i);
+        for (int i = entry.getEntityCount() - 1; i >= 0; i--) {
+            UUID entityId = entry.getEntityId(i);
             Entity entity = player.serverLevel().getEntity(entityId);
-            if (!(entity instanceof AbstractIsaacFamiliarEntity familiar) ||
-                    !entry.getType().equals(familiar.getFamiliarType()) ||
-                    familiar.getOwner() != player ||
-                    !familiar.isValidFamiliar()) {
-                if (entity instanceof AbstractIsaacFamiliarEntity familiarEntity) {
-                    familiarEntity.discardSilently();
-                }
-                entityIds.remove(i);
+            if (!(entity instanceof AbstractIsaacFamiliarEntity familiar)
+                    || !entry.getType().equals(familiar.getFamiliarType())
+                    || familiar.getOwner() != player) {
+                entry.removeEntityAt(i);
+                continue;
+            }
+            if (!familiar.isValidFamiliar()) {
+                familiar.discardSilently();
+                entry.removeEntityAt(i);
             }
         }
     }
@@ -79,40 +84,53 @@ public final class FamiliarHelper {
      * Removes valid entities above the requested count from the end of the entry list.
      */
     public static void discardExtraEntities(ServerPlayer player, FamiliarEntry entry) {
-        List<UUID> entityIds = entry.getEntityIds();
-        while (entityIds.size() > entry.getCount()) {
-            UUID entityId = entityIds.remove(entityIds.size() - 1);
+        while (entry.getEntityCount() > entry.getCount()) {
+            UUID entityId = entry.removeEntityAt(entry.getEntityCount() - 1);
             Entity entity = player.serverLevel().getEntity(entityId);
-            if (entity instanceof AbstractIsaacFamiliarEntity familiar) {
+            if (entity instanceof AbstractIsaacFamiliarEntity familiar
+                    && familiar.getOwner() == player
+                    && entry.getType().equals(familiar.getFamiliarType())) {
                 familiar.discardSilently();
             }
         }
     }
 
     /**
-     * Spawns missing familiar entities until the entry reaches its requested count.
+     * Spawns at most one familiar for this player using insertion-order round-robin scheduling.
+     *
+     * @return true when one entity was successfully added to the level
      */
-    public static void spawnMissingEntities(ServerPlayer player, FamiliarEntry entry) {
-        while (entry.getEntityIds().size() < entry.getCount()) {
-            AbstractIsaacFamiliarEntity familiar = createFamiliar(player, entry.getType());
-            if (familiar == null) return;
-            familiar.setFormationIndex(entry.getEntityIds().size());
-            entry.addEntity(familiar.getUUID());
-            if (!player.level().addFreshEntity(familiar)) {
-                entry.removeEntity(familiar.getUUID());
-                return;
-            }
+    public static boolean spawnNextMissingFamiliar(ServerPlayer player) {
+        if (!player.isAlive()) return false;
+
+        PlayerFamiliarData data = player.getCapability(PlayerFamiliarDataProvider.PLAYER_FAMILIAR_DATA)
+                .resolve().orElse(null);
+        if (data == null) return false;
+
+        FamiliarEntry entry = data.getNextIncompleteEntry().orElse(null);
+        if (entry == null) return false;
+
+        AbstractIsaacFamiliarEntity familiar = createFamiliar(player, entry.getType());
+        if (familiar == null) return false;
+
+        familiar.setFormationIndex(entry.getEntityCount());
+        entry.addEntity(familiar.getUUID());
+        if (!player.level().addFreshEntity(familiar)) {
+            entry.removeEntity(familiar.getUUID());
+            return false;
         }
+        return true;
     }
 
     /**
      * Pushes the capability list order into live entities so server-side formation behavior stays deterministic.
      */
     public static void syncFormationIndexes(ServerPlayer player, FamiliarEntry entry) {
-        List<UUID> entityIds = entry.getEntityIds();
-        for (int i = 0; i < entityIds.size(); i++) {
-            Entity entity = player.serverLevel().getEntity(entityIds.get(i));
-            if (entity instanceof AbstractIsaacFamiliarEntity familiar) {
+        for (int i = 0; i < entry.getEntityCount(); i++) {
+            Entity entity = player.serverLevel().getEntity(entry.getEntityId(i));
+            if (entity instanceof AbstractIsaacFamiliarEntity familiar
+                    && familiar.getOwner() == player
+                    && entry.getType().equals(familiar.getFamiliarType())) {
                 if (familiar.getFormationIndex() != i) {
                     familiar.setFormationIndex(i);
                 }
@@ -121,43 +139,53 @@ public final class FamiliarHelper {
     }
 
     /**
-     * Creates one familiar entity from an EntityType registry id.
+     * Discards every runtime familiar owned by the player while preserving persistent requirements.
      */
-    public static AbstractIsaacFamiliarEntity spawnFamiliar(ServerPlayer player, ResourceLocation typeId) {
-        AbstractIsaacFamiliarEntity familiar = createFamiliar(player, typeId);
-        if (familiar == null) return null;
-
-        final boolean[] registered = {false};
-        player.getCapability(PlayerFamiliarDataProvider.PLAYER_FAMILIAR_DATA).ifPresent(
-                data -> {
-                    FamiliarEntry entry = data.getOrCreateEntry(typeId);
-                    entry.addEntity(familiar.getUUID());
-                    familiar.setFormationIndex(entry.getIndex(familiar.getUUID()));
-                    registered[0] = true;
-                });
-        if (!registered[0]) return null;
-
-        if (!player.level().addFreshEntity(familiar)) {
-            player.getCapability(PlayerFamiliarDataProvider.PLAYER_FAMILIAR_DATA).ifPresent(
-                    data -> data.removeEntity(typeId, familiar.getUUID()));
-            return null;
-        }
-        return familiar;
+    public static void discardAllRuntimeFamiliars(ServerPlayer player) {
+        player.getCapability(PlayerFamiliarDataProvider.PLAYER_FAMILIAR_DATA).ifPresent(data -> {
+            for (FamiliarEntry entry : data.getEntries()) {
+                for (UUID entityId : entry.getEntityIds()) {
+                    Entity entity = player.serverLevel().getEntity(entityId);
+                    if (entity instanceof AbstractIsaacFamiliarEntity familiar
+                            && familiar.getOwner() == player
+                            && entry.getType().equals(familiar.getFamiliarType())) {
+                        familiar.discardSilently();
+                    }
+                }
+                entry.clearEntityIds();
+            }
+        });
     }
 
     /**
      * Creates one familiar entity without registering it in the owner capability or level.
      */
     private static AbstractIsaacFamiliarEntity createFamiliar(ServerPlayer player, ResourceLocation typeId) {
-        EntityType<?> entityType = ForgeRegistries.ENTITY_TYPES.getValue(typeId);
-        if (entityType == null) return null;
+        FamiliarEntityType familiarType = getFamiliarRegistryValue(typeId);
+        if (familiarType == null) return null;
+
+        ResourceLocation entityTypeId = ForgeRegistries.ENTITY_TYPES.getKey(familiarType.getEntityType());
+        if (!typeId.equals(entityTypeId)) {
+            IsaacDisaster.LOGGER.error(
+                    "Familiar descriptor {} must use the same id as its EntityType, found {}", typeId, entityTypeId);
+            return null;
+        }
 
         Level level = player.level();
-        Entity entity = entityType.create(level);
-        if (!(entity instanceof AbstractIsaacFamiliarEntity familiar)) return null;
+        AbstractIsaacFamiliarEntity familiar = familiarType.create(level);
+        if (familiar == null) return null;
 
         familiar.setOwner(player);
         familiar.setPos(player.position().add(0, player.getBbHeight() * 0.55, 0));
         return familiar;
+    }
+
+    private static FamiliarEntityType getFamiliarRegistryValue(ResourceLocation typeId) {
+        IForgeRegistry<FamiliarEntityType> registry = getFamiliarRegistry();
+        return registry == null ? null : registry.getValue(typeId);
+    }
+
+    private static IForgeRegistry<FamiliarEntityType> getFamiliarRegistry() {
+        return RegistryManager.ACTIVE.getRegistry(ModFamiliarEntities.FAMILIAR_ENTITY_KEY);
     }
 }

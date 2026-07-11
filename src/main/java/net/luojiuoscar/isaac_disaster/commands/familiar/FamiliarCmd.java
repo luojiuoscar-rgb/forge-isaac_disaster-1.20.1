@@ -28,7 +28,7 @@ public class FamiliarCmd {
 
     private static final SuggestionProvider<CommandSourceStack> FAMILIAR_SUGGESTIONS =
             (context, builder) -> SharedSuggestionProvider.suggestResource(
-                    FamiliarHelper.getRegisteredFamiliarTypeIds(context.getSource().getLevel()),
+                    FamiliarHelper.getRegisteredFamiliarTypeIds(),
                     builder
             );
 
@@ -62,20 +62,21 @@ public class FamiliarCmd {
     }
 
     /**
-     * Adds or removes requested familiar count, then immediately reconciles real familiar entities.
+     * Adds or removes requested familiar count, then immediately cleans invalid and excess entities.
+     * Newly requested entities remain subject to the per-tick spawn limit.
      */
     private static int changeCount(CommandContext<CommandSourceStack> context, int delta)
             throws CommandSyntaxException {
         Collection<ServerPlayer> players = EntityArgument.getPlayers(context, "targets");
         ResourceLocation type = ResourceLocationArgument.getId(context, "type");
-        if (!FamiliarHelper.canCreateFamiliar(context.getSource().getLevel(), type)) {
+        if (!FamiliarHelper.isRegisteredFamiliarType(type)) {
             throw INVALID_FAMILIAR.create(type);
         }
 
         for (ServerPlayer player : players) {
             player.getCapability(PlayerFamiliarDataProvider.PLAYER_FAMILIAR_DATA).ifPresent(data -> {
                 data.addCount(type, delta);
-                FamiliarHelper.reconcile(player);
+                FamiliarHelper.maintainExistingFamiliars(player);
             });
         }
 
@@ -98,7 +99,7 @@ public class FamiliarCmd {
         for (ServerPlayer player : players) {
             player.getCapability(PlayerFamiliarDataProvider.PLAYER_FAMILIAR_DATA).ifPresent(data -> {
                 data.clearRequirements();
-                FamiliarHelper.reconcile(player);
+                FamiliarHelper.maintainExistingFamiliars(player);
             });
         }
 

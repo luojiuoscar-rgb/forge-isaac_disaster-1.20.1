@@ -225,12 +225,7 @@ public class ForgeEvents {
                     newStore.copyFrom(oldStore);
                 });
             });
-            // familiar data
-            event.getOriginal().getCapability(PlayerFamiliarDataProvider.PLAYER_FAMILIAR_DATA).ifPresent(oldStore -> {
-                event.getEntity().getCapability(PlayerFamiliarDataProvider.PLAYER_FAMILIAR_DATA).ifPresent(newStore -> {
-                    newStore.copyFrom(oldStore);
-                });
-            });
+            copyFamiliarData(event.getOriginal(), event.getEntity());
             // effect
             event.getOriginal().getCapability(EntityEffectProvider.ENTITY_EFFECT_CAP).ifPresent(oldStore -> {
                 event.getEntity().getCapability(EntityEffectProvider.ENTITY_EFFECT_CAP).ifPresent(newStore -> {
@@ -255,7 +250,18 @@ public class ForgeEvents {
 
 
             event.getOriginal().invalidateCaps();
+        } else {
+            copyFamiliarData(event.getOriginal(), event.getEntity());
         }
+    }
+
+    /**
+     * Copies persistent familiar requirements for both death and non-death player clones.
+     */
+    private static void copyFamiliarData(Player original, Player clone) {
+        original.getCapability(PlayerFamiliarDataProvider.PLAYER_FAMILIAR_DATA).ifPresent(oldStore ->
+                clone.getCapability(PlayerFamiliarDataProvider.PLAYER_FAMILIAR_DATA).ifPresent(
+                        newStore -> newStore.copyFrom(oldStore)));
     }
 
     /** 给玩家添加默认模块 */

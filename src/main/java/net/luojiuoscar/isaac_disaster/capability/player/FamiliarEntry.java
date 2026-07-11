@@ -4,7 +4,9 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 /**
@@ -14,6 +16,7 @@ public class FamiliarEntry {
     private final ResourceLocation type;
     private int count;
     private final List<UUID> entityIds;
+    private final List<UUID> entityIdsView;
 
     public FamiliarEntry(ResourceLocation type) {
         this(type, 0, new ArrayList<>());
@@ -23,6 +26,7 @@ public class FamiliarEntry {
         this.type = type;
         this.count = Math.max(0, count);
         this.entityIds = new ArrayList<>();
+        this.entityIdsView = Collections.unmodifiableList(this.entityIds);
         for (UUID entityId : entityIds) {
             addEntity(entityId);
         }
@@ -40,8 +44,23 @@ public class FamiliarEntry {
         this.count = Math.max(0, count);
     }
 
+    /**
+     * Returns an unmodifiable live view of runtime familiar entity UUIDs in formation order.
+     */
     public List<UUID> getEntityIds() {
-        return entityIds;
+        return entityIdsView;
+    }
+
+    public int getEntityCount() {
+        return entityIds.size();
+    }
+
+    public UUID getEntityId(int index) {
+        return entityIds.get(index);
+    }
+
+    public boolean hasNoEntities() {
+        return entityIds.isEmpty();
     }
 
     public boolean containsEntity(UUID entityId) {
@@ -63,6 +82,20 @@ public class FamiliarEntry {
         return entityIds.remove(entityId);
     }
 
+    /**
+     * Removes and returns the runtime UUID at the requested formation index.
+     */
+    public UUID removeEntityAt(int index) {
+        return entityIds.remove(index);
+    }
+
+    /**
+     * Clears all runtime UUIDs while preserving the persistent requested count.
+     */
+    public void clearEntityIds() {
+        entityIds.clear();
+    }
+
     public int getIndex(UUID entityId) {
         return entityIds.indexOf(entityId);
     }
@@ -80,9 +113,11 @@ public class FamiliarEntry {
     /**
      * Loads persistent familiar requirements from player capability NBT.
      */
-    public static FamiliarEntry loadNBT(CompoundTag tag) {
-        ResourceLocation type = ResourceLocation.parse(tag.getString("Type"));
+    public static Optional<FamiliarEntry> loadNBT(CompoundTag tag) {
+        ResourceLocation type = ResourceLocation.tryParse(tag.getString("Type"));
+        if (type == null) return Optional.empty();
+
         int count = tag.getInt("Count");
-        return new FamiliarEntry(type, count, List.of());
+        return Optional.of(new FamiliarEntry(type, count, List.of()));
     }
 }

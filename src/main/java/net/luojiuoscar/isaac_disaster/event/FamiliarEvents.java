@@ -4,6 +4,7 @@ import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.helper.FamiliarHelper;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
@@ -15,14 +16,27 @@ public class FamiliarEvents {
     private static final int RECONCILE_INTERVAL = 20;
 
     /**
-     * Periodically ensures each player has the familiars recorded in their capability.
+     * Maintains existing familiars periodically and admits at most one queued familiar each player tick.
      */
     @SubscribeEvent
     public static void onPlayerTick(TickEvent.PlayerTickEvent event) {
         if (event.phase != TickEvent.Phase.END || event.side.isClient()) return;
         if (!(event.player instanceof ServerPlayer player)) return;
-        if (player.tickCount % RECONCILE_INTERVAL != 0) return;
+        if (!player.isAlive()) return;
 
-        FamiliarHelper.reconcile(player);
+        if (player.tickCount % RECONCILE_INTERVAL == 0) {
+            FamiliarHelper.maintainExistingFamiliars(player);
+        }
+        FamiliarHelper.spawnNextMissingFamiliar(player);
+    }
+
+    /**
+     * Removes runtime familiar entities immediately when their owner dies while preserving requirements.
+     */
+    @SubscribeEvent
+    public static void onPlayerDeath(LivingDeathEvent event) {
+        if (event.getEntity() instanceof ServerPlayer player) {
+            FamiliarHelper.discardAllRuntimeFamiliars(player);
+        }
     }
 }
