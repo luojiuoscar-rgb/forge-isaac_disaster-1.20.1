@@ -1,10 +1,9 @@
 package net.luojiuoscar.isaac_disaster.registries.ability.set.impl;
 
-import net.luojiuoscar.isaac_disaster.capability.player.PlayerFamiliarDataProvider;
+import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.registries.familiar.ModFamiliarEntities;
 import net.luojiuoscar.isaac_disaster.registries.ability.set.SetAbility;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 
 import java.util.List;
@@ -21,12 +20,12 @@ public class Mom extends SetAbility {
 
     @Override
     public void onObtainEffect(Player player) {
-        changeMomKnifeCount(player, 1);
+        StatManager.addFamiliar(player, ModFamiliarEntities.MOM_KNIFE.getId(), 1);
     }
 
     @Override
     public void onRemoveEffect(Player player) {
-        changeMomKnifeCount(player, -1);
+        StatManager.addFamiliar(player, ModFamiliarEntities.MOM_KNIFE.getId(), -1);
     }
 
     @Override
@@ -37,13 +36,4 @@ public class Mom extends SetAbility {
         );
     }
 
-    /**
-     * Adds or removes the familiar requirement contributed by the Mom set.
-     */
-    private void changeMomKnifeCount(Player player, int delta) {
-        ResourceLocation momKnifeId = ModFamiliarEntities.MOM_KNIFE.getId();
-
-        player.getCapability(PlayerFamiliarDataProvider.PLAYER_FAMILIAR_DATA).ifPresent(
-                data -> data.addCount(momKnifeId, delta));
-    }
 }
