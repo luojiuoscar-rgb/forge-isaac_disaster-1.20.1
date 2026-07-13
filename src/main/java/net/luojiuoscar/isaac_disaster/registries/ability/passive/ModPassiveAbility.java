@@ -555,4 +555,8 @@ public class ModPassiveAbility {
     public static final RegistryObject<PassiveAbility> SAD_BOMB =
             PASSIVE_ABILITY_REGISTRY.register("sad_bomb",
                     () -> new SadBomb(ItemId.SAD_BOMB.getId(), ItemId.SAD_BOMB.getLevel()));
+
+    public static final RegistryObject<PassiveAbility> DEAD_ONION =
+            PASSIVE_ABILITY_REGISTRY.register("dead_onion",
+                    () -> new DeadOnion(ItemId.DEAD_ONION.getId(), ItemId.DEAD_ONION.getLevel()));
 }

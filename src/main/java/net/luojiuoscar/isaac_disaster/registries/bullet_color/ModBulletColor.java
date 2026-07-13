@@ -22,6 +22,9 @@ public class ModBulletColor {
     public static final RegistryObject<BulletColor> SPOON_BENDER =
             BULLET_COLOR_REGISTRY.register("spoon_bender", () -> new BulletColor(0x7A33C0, 1.0f, 1));
 
+    public static final RegistryObject<BulletColor> DEAD_ONION =
+            BULLET_COLOR_REGISTRY.register("dead_onion", () -> new BulletColor(0x79553A, 0.5f, 2));
+
     public static final RegistryObject<BulletColor> BLOOD_TEAR =
             BULLET_COLOR_REGISTRY.register("blood_tear", () -> new BulletColor(0xCC171F, 1.0f, 5));
 

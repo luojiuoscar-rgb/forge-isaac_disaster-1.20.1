@@ -3,7 +3,8 @@
     {
       "rolls": 1,
       "entries": [
-        {"type": "minecraft:item", "name": "isaac_disaster:rotten_meat"}
+        {"type": "minecraft:item", "name": "isaac_disaster:rotten_meat"},
+        {"type": "minecraft:item", "name": "isaac_disaster:dead_onion"}
       ]
     }
   ]

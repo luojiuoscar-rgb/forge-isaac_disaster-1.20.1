@@ -560,4 +560,8 @@ public class ModPassiveItems {
     public static final RegistryObject<Item> SAD_BOMB = ITEMS.register("sad_bomb",
             () -> new PassiveItem(new Item.Properties(), ModPassiveAbility.SAD_BOMB));
     static {ItemListManager.PASSIVE_ITEM_LIST.add(SAD_BOMB);}
+
+    public static final RegistryObject<Item> DEAD_ONION = ITEMS.register("dead_onion",
+            () -> new PassiveItem(new Item.Properties(), ModPassiveAbility.DEAD_ONION));
+    static {ItemListManager.PASSIVE_ITEM_LIST.add(DEAD_ONION);}
 }
