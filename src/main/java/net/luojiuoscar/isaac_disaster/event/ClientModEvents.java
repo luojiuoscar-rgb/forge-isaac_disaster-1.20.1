@@ -116,6 +116,7 @@ public class ClientModEvents {
     @SubscribeEvent
     public static void onRegisterKeyMappings(RegisterKeyMappingsEvent event) {
         event.register(ModKeyMappings.OPEN_ISAAC_ITEM_SCREEN);
+        event.register(ModKeyMappings.TOGGLE_ISAAC_FLIGHT);
     }
 
 

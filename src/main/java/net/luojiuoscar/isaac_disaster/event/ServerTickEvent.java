@@ -5,12 +5,10 @@ import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.attribute.ModAttributes;
 import net.luojiuoscar.isaac_disaster.capability.entity.EffectModulesProvider;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerAbilityProvider;
-import net.luojiuoscar.isaac_disaster.capability.player.PlayerStatModifierProvider;
 import net.luojiuoscar.isaac_disaster.effect.ModEffects;
 import net.luojiuoscar.isaac_disaster.event.custom.misc.RightClickTickEvent;
 import net.luojiuoscar.isaac_disaster.helper.CuriosHelper;
 import net.luojiuoscar.isaac_disaster.helper.EntityHelper;
-import net.luojiuoscar.isaac_disaster.helper.FlightHelper;
 import net.luojiuoscar.isaac_disaster.helper.LevelHelper;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.helper.ScheduledFuncHelper;
@@ -25,7 +23,6 @@ import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackType;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackExecutor;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.IChargeableAttack;
 import net.luojiuoscar.isaac_disaster.system.ScaleUtils;
-import net.minecraft.client.Minecraft;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
@@ -63,11 +60,7 @@ public class ServerTickEvent {
         if (tickCounter >= Integer.MAX_VALUE - 10) {
             tickCounter = 0;
         }
-        MinecraftServer server = Minecraft.getInstance().getSingleplayerServer();
-        // 获取服务器实例
-        if (server == null) {
-            server = event.player.getServer();
-        }
+        MinecraftServer server = event.player.getServer();
         if (server == null) return;
 
         // 每tickCounter执行一次
@@ -76,7 +69,6 @@ public class ServerTickEvent {
 
                 chargeActiveItem(player);
                 onPlayerSprint(player);
-                updateFly(player);
             }
         }
 
@@ -155,23 +147,6 @@ public class ServerTickEvent {
             }
         }
     }
-    private static void updateFly(ServerPlayer player){
-        FlightHelper.refreshIsaacFlight(player);
-        if (player.isCreative() || player.isSpectator() || !PlayerHelper.canFly(player)) return;
-
-        // 飞行权限由 FlightHelper 统一维护，这里只处理 Isaac 飞行时间消耗。
-        // 正在飞
-        if (player.getAbilities().flying && player.getEffect(ModEffects.TRANSCENDENCE.get()) == null){
-            player.getCapability(PlayerStatModifierProvider.PLAYER_STAT_MODIFIER).ifPresent(
-                    playerStatModifier -> playerStatModifier.addCurrentFlyTime(player, TICK_FREQUENCY)
-            );
-        }else{
-            player.getCapability(PlayerStatModifierProvider.PLAYER_STAT_MODIFIER).ifPresent(
-                    playerStatModifier -> playerStatModifier.addCurrentFlyTime(player, -(int)TICK_FREQUENCY/4)
-            );
-        }
-    }
-
     private static void updateClientCharge(ServerPlayer player){
         player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY).ifPresent(
                 playerAbility -> {

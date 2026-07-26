@@ -48,6 +48,8 @@ public class Config
     public static ForgeConfigSpec.DoubleValue DAMAGE_BONUS;
     public static ForgeConfigSpec.DoubleValue LUCK_BONUS;
     public static ForgeConfigSpec.DoubleValue FLY_TIME;
+    public static ForgeConfigSpec.DoubleValue FLIGHT_SPEED_MULTIPLIER;
+    public static ForgeConfigSpec.DoubleValue FLIGHT_ABSOLUTE_SPEED_CAP;
     public static ForgeConfigSpec.DoubleValue SCALE_BONUS;
     public static ForgeConfigSpec.DoubleValue RANGE_BONUS;
     public static ForgeConfigSpec.DoubleValue BLOCK_REACH_BONUS;
@@ -121,6 +123,13 @@ public class Config
         FLY_TIME = BUILDER
                 .comment("Increment of fly time for each fly provided by item (tick)")
                 .defineInRange("fly_time", 100.0, 0, 99999);
+
+        FLIGHT_SPEED_MULTIPLIER = BUILDER
+                .comment("Isaac flight speed as a multiplier of the player's movement speed")
+                .defineInRange("flight_speed_multiplier", 2.0, 0.0, 100.0);
+        FLIGHT_ABSOLUTE_SPEED_CAP = BUILDER
+                .comment("Absolute per-tick speed cap for Isaac flight")
+                .defineInRange("flight_absolute_speed_cap", 1.0, 0.0, 100.0);
 
         // 体型  默认0.1
         SCALE_BONUS = BUILDER

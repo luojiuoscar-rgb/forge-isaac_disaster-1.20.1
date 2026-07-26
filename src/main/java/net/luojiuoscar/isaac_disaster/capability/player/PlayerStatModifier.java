@@ -2,7 +2,6 @@ package net.luojiuoscar.isaac_disaster.capability.player;
 
 import net.luojiuoscar.isaac_disaster.effect.ModEffects;
 import net.luojiuoscar.isaac_disaster.event.custom.misc.UpdateStatusDisplayValueEvent;
-import net.luojiuoscar.isaac_disaster.helper.FlightHelper;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.networking.ModMessages;
@@ -106,8 +105,6 @@ public class PlayerStatModifier {
     private final Map<UUID, StatInstance> playerModifiers;
 
     private double flyTimeCurrent;
-    private boolean isaacFlightGranted;
-    private boolean mayflyBeforeIsaacFlight;
 
     public PlayerStatModifier(){
         playerModifiers = new HashMap<>();
@@ -118,8 +115,6 @@ public class PlayerStatModifier {
         playerModifiers.clear();
 
         flyTimeCurrent = 0;
-        isaacFlightGranted = false;
-        mayflyBeforeIsaacFlight = false;
     }
 
     // -----------------------------
@@ -136,35 +131,6 @@ public class PlayerStatModifier {
 
     public double getFlyTimeCurrent(){
         return flyTimeCurrent;
-    }
-
-    public boolean isIsaacFlightGranted() {
-        return isaacFlightGranted;
-    }
-
-    public boolean wasMayflyBeforeIsaacFlight() {
-        return mayflyBeforeIsaacFlight;
-    }
-
-    // -----------------------------
-    // Setter
-    // -----------------------------
-    /**
-     * Marks that IsaacDisaster enabled vanilla flight for this player.
-     */
-    public void markIsaacFlightGranted(boolean previousMayfly) {
-        if (isaacFlightGranted) return;
-
-        isaacFlightGranted = true;
-        mayflyBeforeIsaacFlight = previousMayfly;
-    }
-
-    /**
-     * Clears IsaacDisaster's vanilla flight ownership marker.
-     */
-    public void clearIsaacFlightGrant() {
-        isaacFlightGranted = false;
-        mayflyBeforeIsaacFlight = false;
     }
 
     /** 存在则修改，不存在则创建，不会覆盖 */
@@ -198,13 +164,14 @@ public class PlayerStatModifier {
     public void addCurrentFlyTime(ServerPlayer player, int amount){
         double flyTime = PlayerHelper.getFly(player);
 
+        if (flyTime <= 0.0D) {
+            flyTimeCurrent = 0.0D;
+            return;
+        }
+
         double pre = flyTimeCurrent % (flyTime / 20);
 
         flyTimeCurrent = Math.max(0, flyTimeCurrent + amount);
-
-        if (flyTimeCurrent >= flyTime && player.getEffect(ModEffects.TRANSCENDENCE.get()) == null){
-            FlightHelper.stopIsaacFlying(player);
-        }
 
         if (flyTimeCurrent < 0 || flyTimeCurrent > flyTime) return;
 
@@ -226,13 +193,10 @@ public class PlayerStatModifier {
     public void copyFrom(PlayerStatModifier source, Player player) {
         this.playerModifiers.clear();
         this.flyTimeCurrent = source.flyTimeCurrent;
-        this.isaacFlightGranted = source.isaacFlightGranted;
-        this.mayflyBeforeIsaacFlight = source.mayflyBeforeIsaacFlight;
 
         if (player instanceof ServerPlayer){
             ServerPlayer serverPlayer = (ServerPlayer) player;
             refreshAllModifiers(serverPlayer, source.playerModifiers);
-            FlightHelper.restoreCopiedFlightState(serverPlayer, this);
         }
     }
 
@@ -257,15 +221,11 @@ public class PlayerStatModifier {
         }
         nbt.put("player_modifiers", listTag);
         nbt.putDouble("fly_time_current", flyTimeCurrent);
-        nbt.putBoolean("isaac_flight_granted", isaacFlightGranted);
-        nbt.putBoolean("mayfly_before_isaac_flight", mayflyBeforeIsaacFlight);
     }
 
     public void loadNBTData(CompoundTag nbt) {
 
         this.flyTimeCurrent = nbt.getDouble("fly_time_current");
-        this.isaacFlightGranted = nbt.getBoolean("isaac_flight_granted");
-        this.mayflyBeforeIsaacFlight = nbt.getBoolean("mayfly_before_isaac_flight");
 
         this.playerModifiers.clear();
         if (nbt.contains("player_modifiers", Tag.TAG_LIST)) {

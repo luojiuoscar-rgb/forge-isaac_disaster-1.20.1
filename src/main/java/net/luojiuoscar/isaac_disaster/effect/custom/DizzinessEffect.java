@@ -1,7 +1,7 @@
 package net.luojiuoscar.isaac_disaster.effect.custom;
 
 
-import net.luojiuoscar.isaac_disaster.helper.FlightHelper;
+import net.luojiuoscar.isaac_disaster.system.flight.IsaacFlightController;
 import net.luojiuoscar.isaac_disaster.manager.TagManager;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffect;
@@ -36,7 +36,7 @@ public class DizzinessEffect extends MobEffect {
 
         //禁止飞行
         if(pLivingEntity instanceof ServerPlayer player){
-            FlightHelper.stopIsaacFlying(player);
+            IsaacFlightController.stopThrust(player);
         }
     }
 

@@ -15,6 +15,7 @@ import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerModule;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerModule;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerModuleQueue;
 import net.luojiuoscar.isaac_disaster.system.ScaleUtils;
+import net.luojiuoscar.isaac_disaster.system.flight.IsaacFlightController;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
@@ -124,8 +125,9 @@ public enum StatManager {
         public void apply(Player player, double ratio){
             super.apply(player, ratio);
 
-            if (player instanceof ServerPlayer serverPlayer){
-                FlightHelper.refreshIsaacFlight(serverPlayer);
+            if (player instanceof ServerPlayer serverPlayer
+                    && !FlightHelper.hasIsaacFlightSource(serverPlayer)) {
+                IsaacFlightController.stopThrust(serverPlayer);
             }
         }
     };

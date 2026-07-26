@@ -2,6 +2,7 @@ package net.luojiuoscar.isaac_disaster.event;
 
 import net.luojiuoscar.isaac_disaster.client.ClientDataManager;
 import net.luojiuoscar.isaac_disaster.client.ModKeyMappings;
+import net.luojiuoscar.isaac_disaster.client.flight.IsaacFlightClientController;
 import net.luojiuoscar.isaac_disaster.networking.ModMessages;
 import net.luojiuoscar.isaac_disaster.networking.packet.OpenIsaacItemScreenC2SPacket;
 import net.luojiuoscar.isaac_disaster.networking.packet.SetRightClickC2SPacket;
@@ -28,6 +29,7 @@ public class ClientForgeEvents {
         // 只处理本地玩家的登出事件
         if (event.getEntity() == Minecraft.getInstance().player) {
             ClientDataManager.getInstance().init();
+            IsaacFlightClientController.resetRuntimeInput();
         }
     }
 
@@ -49,6 +51,7 @@ public class ClientForgeEvents {
         Player player = Minecraft.getInstance().player;
         if (player == null) {
             lastLocalPlayerScale = 1.0F;
+            IsaacFlightClientController.resetRuntimeInput();
             return;
         }
 
@@ -57,6 +60,7 @@ public class ClientForgeEvents {
             lastLocalPlayerScale = scale;
             player.refreshDimensions();
         }
+        IsaacFlightClientController.tick();
     }
 
     @SubscribeEvent
@@ -81,8 +85,11 @@ public class ClientForgeEvents {
 
     @SubscribeEvent
     public static void onKeyInput(InputEvent.Key event) {
-        if (ModKeyMappings.OPEN_ISAAC_ITEM_SCREEN.isDown()) {
+        if (ModKeyMappings.OPEN_ISAAC_ITEM_SCREEN.consumeClick()) {
             ModMessages.sendToServer(new OpenIsaacItemScreenC2SPacket());
+        }
+        if (ModKeyMappings.TOGGLE_ISAAC_FLIGHT.consumeClick()) {
+            IsaacFlightClientController.toggleEnabled();
         }
     }
 

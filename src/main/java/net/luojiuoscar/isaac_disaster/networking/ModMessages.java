@@ -87,6 +87,24 @@ public class ModMessages {
                 .encoder(RefreshScaleS2CPacket::toBytes)
                 .consumerNetworkThread(RefreshScaleS2CPacket::handle)
                 .add();
+
+        net.messageBuilder(IsaacFlightInputC2SPacket.class, id(), NetworkDirection.PLAY_TO_SERVER)
+                .decoder(IsaacFlightInputC2SPacket::new)
+                .encoder(IsaacFlightInputC2SPacket::toBytes)
+                .consumerNetworkThread(IsaacFlightInputC2SPacket::handle)
+                .add();
+
+        net.messageBuilder(SetIsaacFlightEnabledC2SPacket.class, id(), NetworkDirection.PLAY_TO_SERVER)
+                .decoder(SetIsaacFlightEnabledC2SPacket::new)
+                .encoder(SetIsaacFlightEnabledC2SPacket::toBytes)
+                .consumerNetworkThread(SetIsaacFlightEnabledC2SPacket::handle)
+                .add();
+
+        net.messageBuilder(IsaacFlightStateS2CPacket.class, id(), NetworkDirection.PLAY_TO_CLIENT)
+                .decoder(IsaacFlightStateS2CPacket::new)
+                .encoder(IsaacFlightStateS2CPacket::toBytes)
+                .consumerNetworkThread(IsaacFlightStateS2CPacket::handle)
+                .add();
     }
 
     public static <MSG> void sendToServer(MSG message){

@@ -6,6 +6,7 @@ import net.luojiuoscar.isaac_disaster.capability.entity.EffectModulesProvider;
 import net.luojiuoscar.isaac_disaster.capability.entity.EntityEffectProvider;
 import net.luojiuoscar.isaac_disaster.capability.entity.ExtraDataProvider;
 import net.luojiuoscar.isaac_disaster.capability.player.*;
+import net.luojiuoscar.isaac_disaster.capability.player.flight.PlayerIsaacFlightProvider;
 import net.luojiuoscar.isaac_disaster.commands.familiar.FamiliarCmd;
 import net.luojiuoscar.isaac_disaster.commands.item.ItemClearCmd;
 import net.luojiuoscar.isaac_disaster.commands.item.ItemGetCmd;
@@ -100,6 +101,7 @@ public class ForgeEvents {
         player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY).ifPresent(
                 playerAbility -> playerAbility.updateBestAttackType(player));
         CuriosHelper.syncAllIsaacCurios(player);
+        IsaacFlightEvents.sendState(player);
 
         // 添加永久模块
         player.getCapability(EffectModulesProvider.EFFECT_MODULES).ifPresent(
@@ -176,6 +178,9 @@ public class ForgeEvents {
             if(!event.getObject().getCapability(PlayerFamiliarDataProvider.PLAYER_FAMILIAR_DATA).isPresent()){
                 event.addCapability(ResourceLocation.fromNamespaceAndPath(MOD_ID, "player_familiar_data_cap"), new PlayerFamiliarDataProvider());
             }
+            if(!event.getObject().getCapability(PlayerIsaacFlightProvider.PLAYER_ISAAC_FLIGHT).isPresent()){
+                event.addCapability(ResourceLocation.fromNamespaceAndPath(MOD_ID, "player_isaac_flight_cap"), new PlayerIsaacFlightProvider());
+            }
         }
         if (event.getObject() instanceof LivingEntity){
             if(!event.getObject().getCapability(EntityEffectProvider.ENTITY_EFFECT_CAP).isPresent()){
@@ -226,6 +231,7 @@ public class ForgeEvents {
                 });
             });
             copyFamiliarData(event.getOriginal(), event.getEntity());
+            copyIsaacFlightData(event.getOriginal(), event.getEntity());
             // effect
             event.getOriginal().getCapability(EntityEffectProvider.ENTITY_EFFECT_CAP).ifPresent(oldStore -> {
                 event.getEntity().getCapability(EntityEffectProvider.ENTITY_EFFECT_CAP).ifPresent(newStore -> {
@@ -252,6 +258,7 @@ public class ForgeEvents {
             event.getOriginal().invalidateCaps();
         } else {
             copyFamiliarData(event.getOriginal(), event.getEntity());
+            copyIsaacFlightData(event.getOriginal(), event.getEntity());
         }
     }
 
@@ -262,6 +269,12 @@ public class ForgeEvents {
         original.getCapability(PlayerFamiliarDataProvider.PLAYER_FAMILIAR_DATA).ifPresent(oldStore ->
                 clone.getCapability(PlayerFamiliarDataProvider.PLAYER_FAMILIAR_DATA).ifPresent(
                         newStore -> newStore.copyFrom(oldStore)));
+    }
+
+    private static void copyIsaacFlightData(Player original, Player clone) {
+        original.getCapability(PlayerIsaacFlightProvider.PLAYER_ISAAC_FLIGHT).ifPresent(oldState ->
+                clone.getCapability(PlayerIsaacFlightProvider.PLAYER_ISAAC_FLIGHT).ifPresent(
+                        newState -> newState.copyPersistentStateFrom(oldState)));
     }
 
     /** 给玩家添加默认模块 */

@@ -44,6 +44,7 @@
   "curios.identifier.isaac_passive_item": "以撒-被动道具",
   "key.category.isaac_disaster": "以撒的灾难",
   "key.isaac_disaster.open_isaac_item_screen": "查看持有道具",
+  "key.isaac_disaster.toggle_isaac_flight": "启用/禁用以撒飞行",
 
 
   "screen.isaac_disaster.empty": "无物品",
@@ -892,6 +893,10 @@
   "config.isaac_disaster.entry.luck_bonus.desc": "每次幸运提升的基础数值",
   "config.isaac_disaster.entry.fly_time": "飞行时间",
   "config.isaac_disaster.entry.fly_time.desc": "每次飞行效果提供的飞行时间，单位为 tick",
+  "config.isaac_disaster.entry.flight_speed_multiplier": "飞行速度倍率",
+  "config.isaac_disaster.entry.flight_speed_multiplier.desc": "飞行目标速度相对于当前移动速度的倍率",
+  "config.isaac_disaster.entry.flight_absolute_speed_cap": "飞行速度上限",
+  "config.isaac_disaster.entry.flight_absolute_speed_cap.desc": "飞行每 tick 的最高速度，用于限制高移速带来的极端速度",
   "config.isaac_disaster.entry.scale_bonus": "体型增量",
   "config.isaac_disaster.entry.scale_bonus.desc": "每次体型变化的基础数值",
   "config.isaac_disaster.entry.range_bonus": "射程基础值",

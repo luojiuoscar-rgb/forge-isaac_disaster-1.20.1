@@ -16,6 +16,7 @@ import net.luojiuoscar.isaac_disaster.manager.data.BlockData;
 import net.luojiuoscar.isaac_disaster.manager.id.ItemId;
 import net.luojiuoscar.isaac_disaster.manager.id.TrinketId;
 import net.luojiuoscar.isaac_disaster.sound.ModSounds;
+import net.luojiuoscar.isaac_disaster.system.flight.IsaacFlightController;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -428,7 +429,7 @@ public class PlayerHelper {
     }
 
     public static void resetAllAttributes(ServerPlayer player){
-        FlightHelper.revokeIsaacFlight(player, true);
+        IsaacFlightController.stopThrust(player);
 
         // 清除被动道具和吞下饰品，先走卸下流程以移除它们注册的效果
         player.getCapability(PlayerIsaacItemsProvider.PLAYER_ISAAC_ITEMS).ifPresent(
