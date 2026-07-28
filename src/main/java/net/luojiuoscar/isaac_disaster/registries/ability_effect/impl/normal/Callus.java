@@ -11,7 +11,7 @@ public class Callus implements IAbilityEffect {
         if (!(context.get(ContextKeys.EVENT) instanceof LivingHurtEvent event)) return false;
         int amount = context.getOrDefault(ContextKeys.AMPLIFIER, 1.).intValue();
 
-        event.setAmount(event.getAmount() - amount);
+        event.setAmount(Math.max(event.getAmount() - amount, 0));
         return true;
     }
 }

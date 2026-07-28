@@ -86,6 +86,22 @@ public record IsaacConfigEntry<T>(
     }
 
     /**
+     * Returns whether the supplied pending text represents this entry's default value.
+     */
+    public boolean isDefaultText(String text) {
+        try {
+            return switch (type) {
+                case BOOLEAN -> Objects.equals(parseBooleanStrict(text), defaultValue);
+                case INTEGER -> Objects.equals(Integer.parseInt(text.trim()), defaultValue);
+                case DOUBLE -> Double.compare(Double.parseDouble(text.trim()), (Double) defaultValue) == 0;
+                case STRING -> Objects.equals(text, defaultValue);
+            };
+        } catch (RuntimeException ignored) {
+            return false;
+        }
+    }
+
+    /**
      * Restores this entry to its default value.
      */
     public void reset() {

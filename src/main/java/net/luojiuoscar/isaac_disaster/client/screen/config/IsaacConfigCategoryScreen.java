@@ -17,6 +17,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -31,6 +32,10 @@ public class IsaacConfigCategoryScreen extends Screen {
     private final List<RowState> rowStates = new ArrayList<>();
     private final Map<IsaacConfigEntry<?>, String> pendingValues = new LinkedHashMap<>();
 
+    private EditBox searchBox;
+    private String searchQuery = "";
+    private int searchCursorPosition;
+    private boolean searchRefreshPending;
     private int page;
     private Component status = Component.empty();
 
@@ -49,18 +54,26 @@ public class IsaacConfigCategoryScreen extends Screen {
         clearWidgets();
         rowStates.clear();
 
+        List<IsaacConfigEntry<?>> visibleEntries = visibleEntries();
         int maxPage = maxPage();
         if (page > maxPage) page = maxPage;
 
         int left = Math.max(24, this.width / 2 - 180);
         int valueX = this.width / 2 + 30;
-        int rowY = 48;
+        int rowY = 78;
         int rowHeight = 28;
 
+        searchBox = new EditBox(this.font, this.width / 2 - 100, 34, 200, 20,
+                Component.translatable("config.isaac_disaster.search"));
+        searchBox.setHint(Component.translatable("config.isaac_disaster.search"));
+        searchBox.setValue(searchQuery);
+        searchBox.setResponder(this::onSearchChanged);
+        addRenderableWidget(searchBox);
+
         int start = page * ENTRIES_PER_PAGE;
-        int end = Math.min(entries.size(), start + ENTRIES_PER_PAGE);
+        int end = Math.min(visibleEntries.size(), start + ENTRIES_PER_PAGE);
         for (int i = start; i < end; i++) {
-            IsaacConfigEntry<?> entry = entries.get(i);
+            IsaacConfigEntry<?> entry = visibleEntries.get(i);
             int y = rowY + (i - start) * rowHeight;
             addEntryRow(entry, valueX, y);
         }
@@ -89,7 +102,7 @@ public class IsaacConfigCategoryScreen extends Screen {
         addRenderableWidget(Button.builder(Component.translatable("config.isaac_disaster.reset_page"),
                         button -> resetVisibleEntries())
                 .bounds(this.width / 2 - 49, this.height - 28, 98, 20)
-                .build());
+                .build()).active = hasNonDefaultVisibleEntry();
 
         addRenderableWidget(Button.builder(Component.translatable("gui.back"),
                         button -> minecraft.setScreen(parent))
@@ -108,18 +121,24 @@ public class IsaacConfigCategoryScreen extends Screen {
 
         EditBox box = new EditBox(this.font, valueX, y, 132, 20, entry.title());
         box.setValue(pendingValue(entry));
-        box.setResponder(value -> pendingValues.put(entry, value));
         box.setTooltip(Tooltip.create(entry.description()));
         addRenderableWidget(box);
         rowStates.add(new RowState(entry, box));
 
-        addRenderableWidget(Button.builder(Component.translatable("config.isaac_disaster.reset"),
+        Button resetButton = Button.builder(Component.translatable("config.isaac_disaster.reset"),
                         button -> {
                             pendingValues.put(entry, String.valueOf(entry.defaultValue()));
                             box.setValue(pendingValue(entry));
+                            button.active = false;
                         })
                 .bounds(valueX + 138, y, 54, 20)
-                .build());
+                .build();
+        box.setResponder(value -> {
+            pendingValues.put(entry, value);
+            resetButton.active = !entry.isDefaultText(value);
+        });
+        resetButton.active = !entry.isDefaultText(pendingValue(entry));
+        addRenderableWidget(resetButton);
     }
 
     /**
@@ -127,11 +146,21 @@ public class IsaacConfigCategoryScreen extends Screen {
      */
     private void addBooleanRow(IsaacConfigEntry<?> entry, int valueX, int y) {
         boolean initialValue = Boolean.parseBoolean(pendingValue(entry));
+        Button resetButton = Button.builder(Component.translatable("config.isaac_disaster.reset"),
+                        button -> {
+                            pendingValues.put(entry, String.valueOf(entry.defaultValue()));
+                            refreshWidgets();
+                        })
+                .bounds(valueX + 138, y, 54, 20)
+                .build();
+        resetButton.active = !entry.isDefaultText(pendingValue(entry));
+
         Button button = Button.builder(booleanLabel(initialValue),
                         toggleButton -> {
                             boolean newValue = !Boolean.parseBoolean(pendingValue(entry));
                             pendingValues.put(entry, String.valueOf(newValue));
                             toggleButton.setMessage(booleanLabel(newValue));
+                            resetButton.active = !entry.isDefaultText(pendingValue(entry));
                         })
                 .bounds(valueX, y, 132, 20)
                 .build();
@@ -139,13 +168,7 @@ public class IsaacConfigCategoryScreen extends Screen {
         addRenderableWidget(button);
         rowStates.add(new RowState(entry, button));
 
-        addRenderableWidget(Button.builder(Component.translatable("config.isaac_disaster.reset"),
-                        resetButton -> {
-                            pendingValues.put(entry, String.valueOf(entry.defaultValue()));
-                            refreshWidgets();
-                        })
-                .bounds(valueX + 138, y, 54, 20)
-                .build());
+        addRenderableWidget(resetButton);
     }
 
     /**
@@ -159,12 +182,18 @@ public class IsaacConfigCategoryScreen extends Screen {
         refreshWidgets();
     }
 
+    private boolean hasNonDefaultVisibleEntry() {
+        return rowStates.stream()
+                .anyMatch(state -> !state.entry().isDefaultText(pendingValue(state.entry())));
+    }
+
     /**
      * Validates all pending values, writes them to the Forge config spec, and saves the file.
      */
     private void save() {
         for (IsaacConfigEntry<?> entry : entries) {
             if (!entry.isValidText(pendingValue(entry))) {
+                clearSearch();
                 page = entries.indexOf(entry) / ENTRIES_PER_PAGE;
                 status = Component.translatable("config.isaac_disaster.status.invalid", entry.title());
                 refreshWidgets();
@@ -182,6 +211,7 @@ public class IsaacConfigCategoryScreen extends Screen {
                 entry.setFromString(pendingValue(entry));
             } catch (RuntimeException exception) {
                 restorePreviousValues(previousValues);
+                clearSearch();
                 page = entries.indexOf(entry) / ENTRIES_PER_PAGE;
                 status = Component.translatable("config.isaac_disaster.status.invalid_value", entry.title());
                 refreshWidgets();
@@ -194,11 +224,41 @@ public class IsaacConfigCategoryScreen extends Screen {
     }
 
     private int maxPage() {
-        return Math.max(0, (entries.size() - 1) / ENTRIES_PER_PAGE);
+        return Math.max(0, (visibleEntries().size() - 1) / ENTRIES_PER_PAGE);
     }
 
     private void refreshWidgets() {
         init();
+    }
+
+    private void onSearchChanged(String value) {
+        if (searchQuery.equals(value)) return;
+
+        searchQuery = value;
+        searchCursorPosition = searchBox.getCursorPosition();
+        page = 0;
+        searchRefreshPending = true;
+    }
+
+    private void clearSearch() {
+        searchQuery = "";
+        searchCursorPosition = 0;
+        searchRefreshPending = false;
+    }
+
+    private List<IsaacConfigEntry<?>> visibleEntries() {
+        String query = searchQuery.trim().toLowerCase(Locale.ROOT);
+        if (query.isEmpty()) return entries;
+
+        return entries.stream()
+                .filter(entry -> matchesSearch(entry, query))
+                .toList();
+    }
+
+    private boolean matchesSearch(IsaacConfigEntry<?> entry, String query) {
+        return entry.id().toLowerCase(Locale.ROOT).contains(query)
+                || entry.title().getString().toLowerCase(Locale.ROOT).contains(query)
+                || entry.description().getString().toLowerCase(Locale.ROOT).contains(query);
     }
 
     private String pendingValue(IsaacConfigEntry<?> entry) {
@@ -224,20 +284,38 @@ public class IsaacConfigCategoryScreen extends Screen {
         guiGraphics.drawCenteredString(this.font, this.title, this.width / 2, 18, 0xFFFFFF);
         guiGraphics.drawCenteredString(this.font,
                 Component.translatable("config.isaac_disaster.page", page + 1, maxPage() + 1),
-                this.width / 2, 32, 0xA0A0A0);
+                this.width / 2, 60, 0xA0A0A0);
 
+        List<IsaacConfigEntry<?>> visibleEntries = visibleEntries();
         int start = page * ENTRIES_PER_PAGE;
-        int end = Math.min(entries.size(), start + ENTRIES_PER_PAGE);
+        int end = Math.min(visibleEntries.size(), start + ENTRIES_PER_PAGE);
         int left = Math.max(24, this.width / 2 - 180);
-        int rowY = 54;
+        int rowY = 84;
         for (int i = start; i < end; i++) {
-            IsaacConfigEntry<?> entry = entries.get(i);
+            IsaacConfigEntry<?> entry = visibleEntries.get(i);
             int y = rowY + (i - start) * 28;
             guiGraphics.drawString(this.font, entry.title(), left, y, 0xFFFFFF, false);
         }
 
+        if (visibleEntries.isEmpty()) {
+            guiGraphics.drawCenteredString(this.font, Component.translatable("config.isaac_disaster.search.no_results"),
+                    this.width / 2, 92, 0xA0A0A0);
+        }
+
         guiGraphics.drawCenteredString(this.font, status, this.width / 2, this.height - 70, 0xE0E0E0);
         super.render(guiGraphics, mouseX, mouseY, partialTick);
+    }
+
+    @Override
+    public void tick() {
+        super.tick();
+        if (!searchRefreshPending) return;
+
+        searchRefreshPending = false;
+        refreshWidgets();
+        searchBox.setFocused(true);
+        searchBox.setCursorPosition(searchCursorPosition);
+        setFocused(searchBox);
     }
 
     @Override
