@@ -174,7 +174,8 @@ public enum ItemId {
     FANNY_PACK(2),
     SAD_BOMB(2),
     DEAD_ONION(3),
-    PLACENTA(2);
+    PLACENTA(2),
+    CONTRACT_FROM_BELOW(2);
 
 
 

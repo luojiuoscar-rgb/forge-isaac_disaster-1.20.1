@@ -353,6 +353,8 @@ public class ModExecutableEffects {
             EXECUTABLE_EFFECT_REGISTRY.register("moms_key", MomsKey::new);
     public static final RegistryObject<IExecutableEffect> FANNY_PACK =
             EXECUTABLE_EFFECT_REGISTRY.register("fanny_pack", FannyPack::new);
+    public static final RegistryObject<IExecutableEffect> CONTRACT_FROM_BELOW =
+            EXECUTABLE_EFFECT_REGISTRY.register("contract_from_below", ContractFromBelow::new);
     public static final RegistryObject<IExecutableEffect> ATTACH_EFFECT_TO_TNT =
             EXECUTABLE_EFFECT_REGISTRY.register("attach_effect_to_tnt", AttachEffectToTnt::new);
     public static final RegistryObject<IExecutableEffect> SAD_BOMB =

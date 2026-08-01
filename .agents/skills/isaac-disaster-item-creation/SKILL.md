@@ -26,6 +26,7 @@ Implement passive items as an item instance plus a passive ability. Read current
 
 - Confirm every gameplay number, special-character technical name, module name, Minecraft-only field, color priority, set name, missing asset, persistent `ItemStack` data, and Wiki disagreement. Do not choose balance values independently.
 - Use direct `StatManager` changes for persistent stats, trigger modules for events, and recursive modules for repeated behavior. Reuse only complete semantic matches; for each proposed module confirm scope, event/cadence, conditions, targets, values, chance/cooldown/duration, stacking, lifecycle/cleanup, side, and bullet interaction.
+- When a trigger or recursive module represents stacked effect strength through `ContextKey.AMPLIFIER`, prefer `amplifier` in module names and related identifiers instead of `stacks` or `stack`. This distinguishes effect amplification from item `ItemStack` stacking; keep existing project names when extending an established API unless a rename is necessary.
 - If modules cannot express an effect accurately, do not distort it. Use isolated ability logic when sufficient; otherwise propose the focused shared-architecture change and wait for approval.
 - Put recovery and spawned drops in first obtain. Preserve lifecycle order unless a confirmed change is necessary. Missing sets are no-effect sets with three items by default.
 
@@ -35,7 +36,8 @@ Implement passive items as an item instance plus a passive ability. Read current
 | --- | --- |
 | Red-heart health | 1 red heart = 1 health unit |
 | Speed | 0.2 = 1 speed unit |
-| Damage, luck | 1 = 1 unit |
+| Damage | 1.5 = 1 damage unit |
+| Luck | 1 = 1 luck unit |
 | Size | 0.2 = 1 size unit; additive scaling |
 | Range | 1.5 = 1 range unit |
 | Fire rate | 0.7 = 1 fire-rate unit |
@@ -47,6 +49,8 @@ Implement passive items as an item instance plus a passive ability. Read current
 
 - Ask before entity/block reach, attack speed, block breaking, knockback, projectile size, multiplicative size, or any unlisted duration, cooldown, chance, or spawn count.
 - Show explicit numeric descriptions and known probabilities as percentages. Do not invent unknown percentages or hardcode dynamic values in translations.
+- Describe the ordinary item tooltip for one copy of the item only. If the item has both single-copy and stacking effects, show only the single-copy effect; keep stacking values, per-copy wording, multipliers, counts, and duplicate-item totals hidden. This does not remove explicit set requirements or set-synergy descriptions.
+- Check the rendered length of every descriptive sentence before adding localization. If a line is too long for the item tooltip, split it at a natural semantic boundary into two or more ordered description components or translation entries so the display stays compact. Keep a number with its unit, a probability with its affected effect, and a condition with the effect it controls.
 - Use `StatManager.<STAT>.description(...)` and `StatManager.healHealthDescription(ratio)` or current equivalents so displayed values match server behavior. Propose a compatible description path when no interface exists.
 
 ## Implement Approved Items

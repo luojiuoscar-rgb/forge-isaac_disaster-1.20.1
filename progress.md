@@ -133,3 +133,11 @@
 - Replaced the custom `%s` tooltip path with `StatManager.healHealthDescription(0.5f)` and removed the obsolete placenta-specific translation entry.
 - Verification: PNG signature, model reference, resource path, and `git diff --check` passed.
 - Verification limitation: `runData` was blocked because `JAVA_HOME` points to a missing JDK 21 directory and no local Java 17 installation was found.
+
+## 2026-08-01 - Contract from Below
+
+- Added original item ID 241 Contract from Below with quality 2, passive registration, highest-priority loot trigger, and independent per-stack reward processing.
+- Implemented `0.5 * Math.pow(0.666, N)` cancellation, stack-size capping, and the max-stack-size-1 hidden exclusion.
+- Added Chinese localization, English Wiki icon converted to PNG, generated model, and Curse Room, Devil Beggar, and Devil Room pool entries.
+- Verification: focused algorithm tests passed; `runData` and `compileJava` passed; pool JSON and PNG signature checks passed.
+- Existing `en_us.json` contains unrelated malformed legacy entries, so full-language JSON parsing remains unavailable.
