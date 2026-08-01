@@ -110,3 +110,26 @@
 | What's the goal? | Create a durable AI-oriented project memory using the planning-with-files workflow. |
 | What have I learned? | See `findings.md`. |
 | What have I done? | Initialized recovery files, inventoried current source, rebuilt canonical findings, and verified the migration. |
+## 2026-08-01 - Project Workflow Orientation
+
+- Read the requested `planning-with-files`, `minecraft-modding`, and `isaac-disaster-item-creation` skills, plus the required superpowers skill.
+- Read the canonical project memory (`task_plan.md`, `findings.md`, `progress.md`) and relevant legacy documentation and diagnosis notes.
+- Verified `gradle.properties`, `DataGenerators`, `ItemId`, `ModPassiveAbility`, `ModPassiveItems`, `PassiveAbility`, `ItemListManager`, `StatManager`, and item-pool resource paths against current source.
+- Confirmed this task is orientation only; no mod source files were edited.
+- Errors: `python` was unavailable on PATH; session catch-up succeeded with the absolute bundled Python path. An initial guessed `ModDataGen.java` path did not exist; the actual entry point is `datagen/DataGenerators.java`.
+
+## 2026-08-01 - Placenta Implementation
+
+- Implemented `PLACENTA` as the next appended passive item ID with level `2`.
+- Added passive item, passive ability, recursive module, and standalone `PLACENTA_REGENERATION` `AbilityEffectEntry` registrations.
+- Added fixed six-times-base-interval per-player regeneration with a 50% trigger condition and non-stacking recovery amount.
+- Added English Wiki Repentance icon as `textures/item/placenta.png`, localization, Boss pool entry, and matching generated item model.
+- Verification: Boss pool JSON parsed successfully; PNG signature and 32x32 icon were verified; `git diff --check` returned exit 0.
+- Verification limitation: `runData` could not start because the project Wrapper distribution and local Gradle installation are unavailable; Gradle 8.8 download timed out after receiving 15,220,417 of 138,039,528 bytes. The existing `en_us.json` also has a pre-existing malformed string unrelated to this item.
+
+## 2026-08-01 - Placenta Display Fix
+
+- Converted `src/main/resources/assets/isaac_disaster/textures/item/placenta.png` from mislabeled WebP to a real 32x32 PNG; the original client log reported `Image not of any known type, or corrupt`.
+- Replaced the custom `%s` tooltip path with `StatManager.healHealthDescription(0.5f)` and removed the obsolete placenta-specific translation entry.
+- Verification: PNG signature, model reference, resource path, and `git diff --check` passed.
+- Verification limitation: `runData` was blocked because `JAVA_HOME` points to a missing JDK 21 directory and no local Java 17 installation was found.

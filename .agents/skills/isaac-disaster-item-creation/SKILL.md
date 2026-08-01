@@ -5,79 +5,61 @@ description: Use when creating or modifying a passive collectible item for the I
 
 # Isaac Disaster Passive Item Creation
 
-Implement each passive item as an item instance plus a passive ability. Read current project patterns before editing; do not treat this skill as a frozen code map. Write all user-facing specifications, questions, plans, and reports in Chinese; preserve English names, identifiers, paths, and Wiki facts verbatim.
+Implement passive items as an item instance plus a passive ability. Read current project patterns; write user-facing output in Chinese while preserving English names, paths, and Wiki facts.
 
-## Require Plan Mode
+## Plan Mode
 
-- Require the user to enable Plan Mode before creating or modifying any passive item. If asked to implement directly outside Plan Mode, say that this skill requires Plan Mode; do not modify mod code.
-- In Plan Mode, handle a single item and every item in a batch through the same per-item loop. Do not mix their values, modules, assets, or questions.
-- Use the platform's interactive input window for concise unanswered questions when available. Otherwise ask a concise text question. Never stop with an unstructured list of confirmations.
+- Require Plan Mode before changing mod code. Outside it, say so and do not implement.
+- Plan each batch item separately. Use concise interactive questions when available; otherwise ask concise text questions.
 
-## Plan Each Item
+## Per-Item Planning
 
-For the current item only:
+1. Before any Wiki or project search, resolve identity from the user name, Chinese and English Wiki page names, and the Wiki original item ID. Keep these fields separate and label them explicitly: Wiki original item name, Wiki original ID, mod `ItemId`, registry ID, Java name, texture name, and localization key.
+2. If identity is ambiguous or names conflict, ask in Chinese for the intended Wiki page and its Wiki original ID; show at most three candidates with their names, Wiki original IDs, and differences. Do not infer a mapping from a similar English technical name. For example, never automatically map the Chinese name "地狱契约" to `THE_PACT`; ask the user to confirm the Wiki page and Wiki original ID first.
+3. The Wiki original ID is used only to identify and cross-check the Isaac item. It must never be written as, substituted for, or used to generate the mod `ItemId`; new mod IDs still append to `manager/id/ItemId` and use its `ordinal()` value without inserting or reordering constants.
+4. Use the confirmed identity for every later step, then check the confirmed item in `ItemId`, item/ability registries, localization, textures, and pools. For a creation request, report an existing item and skip it; an explicit modification request continues.
+5. Read comparable project patterns and both Wikis for Repentance behavior, values, level, and Repentance+ pools. Use Repentance by default; report and ask about Wiki conflicts, omissions, or Repentance+ behavior changes.
+6. For non-stat behavior only when it may reduce new code, run a bounded `rg` search using a few event/effect/target/cadence keywords. Inspect snippets first, read only relevant ability/module/helper/context files, and keep at most three candidates. If a candidate is useful, ask before using it, stating similarity, reusable structure, and semantics not to copy; otherwise continue without blocking.
+7. Present a Chinese item specification and confirm all unresolved decisions before moving to the next item. Include separate fields for Wiki original name/ID, mod technical name, next mod `ItemId` and its `ordinal()` source, level, effects and ratios, modules, color, lifecycle, set, assets, localization, pools, dynamic descriptions, and approved reference or `none`.
 
-1. Read current comparable implementations: `ItemId`, `ModPassiveItems`, `ModPassiveAbility`, `registries/ability/passive/impl`, `StatManager`, existing modules and set abilities, localization, and target pool JSON files.
-2. Compare the Chinese Wiki (`https://isaac.huijiwiki.com/wiki`) and English Wiki (`https://bindingofisaacrebirth.fandom.com/wiki/Binding_of_Isaac:_Rebirth_Wiki`) for Repentance behavior, values, level, and Repentance+ pool membership. Use Repentance by default. If Repentance+ changes behavior, or the Wikis conflict or omit a needed fact, show the difference and ask before coding.
-3. Prepare a Chinese item specification summary containing: original behavior; registry, texture, Java, and module names; next `ItemId` and level; each numeric value and ratio; ability and module classification; tear behavior and color; lifecycle; set; image and other assets; localization; and pools.
-4. Ask concise follow-up questions only for this item's unresolved or user-controlled fields. Confirm every gameplay-affecting number, every module behavior and technical name, special-character naming, Minecraft-only fields, color priority, `ItemStack` data, set name, missing assets, and Wiki conflicts. Complete this item's confirmation before researching the next batch item.
+## Confirmation And Modules
 
-Classify nontrivial behavior before asking:
+- Confirm every gameplay number, special-character technical name, module name, Minecraft-only field, color priority, set name, missing asset, persistent `ItemStack` data, and Wiki disagreement. Do not choose balance values independently.
+- Use direct `StatManager` changes for persistent stats, trigger modules for events, and recursive modules for repeated behavior. Reuse only complete semantic matches; for each proposed module confirm scope, event/cadence, conditions, targets, values, chance/cooldown/duration, stacking, lifecycle/cleanup, side, and bullet interaction.
+- If modules cannot express an effect accurately, do not distort it. Use isolated ability logic when sufficient; otherwise propose the focused shared-architecture change and wait for approval.
+- Put recovery and spawned drops in first obtain. Preserve lifecycle order unless a confirmed change is necessary. Missing sets are no-effect sets with three items by default.
 
-- Use a direct `StatManager` change for persistent state or stats without an event or repeated execution.
-- Propose a trigger module for a defined gameplay event and a recursive module for continuous or periodic execution.
-- Reuse a module only for a complete semantic match. Otherwise explain whether the proposed module is item-specific or reusable.
-- For every trigger or recursive module, confirm reuse versus creation, reusable scope, event or cadence, conditions and exclusions, target and range, values, chance/cooldown/duration, stacking, lifecycle and cleanup, server/client ownership, and bullet-trigger interaction. Do not infer unknown behavior from a name or partial Wiki description.
-- If existing or reasonably new modules cannot express the effect accurately, do not distort the effect to force module reuse. First determine whether isolated item-specific logic in the passive ability is sufficient. If it needs a shared executor, manager, event hook, persistent data, or other shared architecture, stop and add a focused single-item implementation proposal to its specification: why modules do not fit, ownership, integration points, lifecycle/state, and validation. Wait for user approval before coding.
-
-## Numeric Ratios
-
-Use `StatManager` interfaces and show every value in the item specification as original value, ratio conversion, and proposed Minecraft value. Do not choose balance values independently.
+## Ratios And Description Values
 
 | Effect | Ratio or default |
 | --- | --- |
 | Red-heart health | 1 red heart = 1 health unit |
 | Speed | 0.2 = 1 speed unit |
 | Damage, luck | 1 = 1 unit |
-| Size | 0.2 = 1 size unit; use additive scaling |
+| Size | 0.2 = 1 size unit; additive scaling |
 | Range | 1.5 = 1 range unit |
 | Fire rate | 0.7 = 1 fire-rate unit |
 | Fire-rate modifier | 1 = 1 modifier unit |
 | Shot speed | 0.2 = 1 shot-speed unit |
-| Pill quality | better = +1; worse, such as DHP, = -1 |
-| Flight time | an item described as granting flight = +1 unit |
-| Projectile count | follow the original behavior |
+| Pill quality | better = +1; worse = -1 |
+| Flight time | flight description = +1 unit |
+| Projectile count | follow original behavior |
 
-Ask before entity reach, block reach, attack speed, block-breaking speed, knockback, projectile size, multiplicative size scaling, or any unlisted number such as duration, cooldown, chance, or spawn count. Projectile size is a special-bullet effect and applies only when required.
-
-## Approve The Batch Plan
-
-- After every item has completed its own confirmation loop, present one Chinese implementation plan and wait for explicit user approval before editing mod code.
-- List every item separately with its stat changes and ratios; reused and new ability, trigger module, recursive module, bullet trigger, and `bullet_color`; image and non-image asset status; registrations, localization, set, and pools.
-- If implementation reveals a new unconfirmed fact, return only to that item's confirmation loop and add the new question. Do not reopen approved items unnecessarily.
+- Ask before entity/block reach, attack speed, block breaking, knockback, projectile size, multiplicative size, or any unlisted duration, cooldown, chance, or spawn count.
+- Show explicit numeric descriptions and known probabilities as percentages. Do not invent unknown percentages or hardcode dynamic values in translations.
+- Use `StatManager.<STAT>.description(...)` and `StatManager.healHealthDescription(ratio)` or current equivalents so displayed values match server behavior. Propose a compatible description path when no interface exists.
 
 ## Implement Approved Items
 
-Implement approved items one at a time, in the order of the approved plan:
+- Append `ItemId`; its `ordinal()` is the mod ID, never the Wiki ID. Never insert or reorder constants; use original level.
+- Add the ability under `registries/ability/passive/impl`, register it in `ModPassiveAbility`, bind it in `ModPassiveItems`, and add its static object to the passive-item list for datagen.
+- Use `StatManager` for stats, descriptions, modules, sets, inverse removal, spiritual/homing/piercing/controllable tears, and required `Type`, `IExecutableEffect`, or bullet trigger support.
+- Register `bullet_color` when the item changes projectile color. Default to no `ItemStack` data; use it only after the approved focused plan.
+- Add concise inline comments only for genuinely complex logic and Javadoc only for reusable utility methods.
 
-- Append `ItemId`; its numeric ID derives from `ordinal()`, so never insert or reorder constants. Use the original item level.
-- Put abilities in the correct `registries/ability/passive/impl` location, register them in `ModPassiveAbility`, bind them in `ModPassiveItems`, and add static objects to the existing passive-item list for datagen.
-- Use `StatManager` for stat changes, standardized descriptions, trigger modules, recursive modules, set changes, and inverse removal. Add module `Type`, `IExecutableEffect`, and bullet trigger support when the current pattern requires them.
-- Use `StatManager` interfaces for spiritual, homing, piercing, and controllable tears. Controllable tears are this project's 3D crosshair-style adaptation, not an original Isaac tear type.
-- Determine projectile-color changes and register `bullet_color` using current patterns. Follow documented game color priority; otherwise implement only the user-confirmed priority.
-- Put health recovery and spawned drops in first obtain. Preserve obtain lifecycle order unless a confirmed change is necessary for correctness, safety, or initialization.
-- For a missing set, create a no-effect set with requirement three and the confirmed set name. Default to no `ItemStack` data; persistent per-stack data requires the confirmed focused plan.
-- Do not add comments to ordinary overrides or inherited implementations. Add concise inline comments only for genuinely complex logic; write Javadoc only for reusable utility methods.
+## Resources, Text, Pools, And Validation
 
-## Resources, Text, And Pools
-
-- Obtain images only from the English Wiki. Use the Repentance icon, verify PNG, and save it using the confirmed technical texture name. Do not fall back to another version; report a missing icon. Confirm every technical name when the original name contains punctuation or special characters.
-- Request every non-image asset from the user, including sound, animation, model, particle, or UI assets. Do not download or substitute them.
-- Insert localization immediately before `\"item end\": \"\"`; use `StatManager` text helpers for common wording and add translations only for unique effects.
-- Add each item directly to every applicable Repentance+ pool in `src/main/resources/data/isaac_disaster/loot_tables/pools/item/` using the established JSON format without weights.
-
-## Validate And Report
-
-- Run `runData` after a single approved item. For a batch, finish all approved code and image work, then run it once. Check its exit result and investigate generated-model, tag, or data errors.
-- Do not compile or run `build`.
-- Report in Chinese: changed files, reused and new modules, image source, pools, `runData` result, and non-image assets still required.
+- Obtain only the English-Wiki Repentance icon, verify PNG, and save it under the confirmed texture name. Report missing icons; request all non-image assets from the user.
+- Insert localization before `\"item end\": \"\"`; use `StatManager` text for common wording and add translations only for unique effects. Add every Repentance+ pool in `src/main/resources/data/isaac_disaster/loot_tables/pools/item/` without weights.
+- After every item is confirmed, present one Chinese batch plan and wait for approval. Implement approved items one at a time. Run `runData` once per single item or once after a batch; inspect generated-data errors. Do not compile or run `build`.
+- Report changed files, reused/new modules, images, pools, `runData`, and missing non-image assets in Chinese.

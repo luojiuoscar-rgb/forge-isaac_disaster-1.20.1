@@ -1,5 +1,16 @@
 # Isaac Disaster Project Findings
 
+## 2026-08-01 Workflow Verification
+
+- Current project: Forge `1.20.1`, Forge `47.4.9`, Java 17, Parchment `2023.09.03-1.20.1`, mod ID `isaac_disaster`.
+- Passive item integration is `ItemId` -> `ModPassiveAbility` -> `ModPassiveItems` -> `PassiveAbility`; `ItemId` IDs derive from enum ordinal, so new entries must be appended.
+- `ItemListManager.PASSIVE_ITEM_LIST` is populated beside each passive item registration and drives item models, item tags, creative-tab contents, and related data generation.
+- `PassiveAbility.onObtain` applies repeatable effects before first-obtain effects; `handleFirstObtain` is for one-time effects and `handleRemove` must perform inverse cleanup.
+- `StatManager` is the central interface for persistent stats, bullet abilities, trigger/recursive modules, attack types, bullet colors, trajectories, familiars, and set counts.
+- Data generation is registered in `datagen/DataGenerators.java`; Forge 1.20.1 server resources use plural paths such as `data/isaac_disaster/loot_tables/...`.
+- The custom passive-item skill requires Plan Mode and explicit per-item confirmation before passive item code is modified. No item implementation was requested or changed in this session.
+- The Placenta display fix converts its texture to a real PNG and routes its dynamic health tooltip through `StatManager.healHealthDescription(0.5f)`; `runData` remains unverified because the workspace lacks Java 17 and has an invalid `JAVA_HOME`.
+
 ## Purpose
 This is the canonical durable knowledge base for future Codex sessions working on Isaac Disaster. It stores verified project facts, architecture, extension contracts, workflow constraints, and unresolved risks. It is not a chronological log or a list of instructions copied from old conversations.
 

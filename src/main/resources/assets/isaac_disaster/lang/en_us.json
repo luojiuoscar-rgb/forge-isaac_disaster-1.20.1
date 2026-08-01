@@ -512,6 +512,7 @@
   "item.isaac_disaster.sad_bomb.lore.1": "炸弹爆炸时向周围散射子弹",
   "item.isaac_disaster.dead_onion": "烂洋葱",
 
+  "item.isaac_disaster.placenta": "胎盘",
   "item end": "",
 
 
@@ -946,7 +947,7 @@
   "config.isaac_disaster.entry.allow_curio_unequip": "允许卸下 Curios 道具",
   "config.isaac_disaster.entry.allow_curio_unequip.desc": "是否允许从 Curios 槽位卸下相关道具",
   "config.isaac_disaster.entry.auto_adapt_curio_slot": "自动适配 Curios 槽位",
-  "config.isaac_disaster.entry.auto_adapt_curio_slot.desc": "测试条目：根据道具数量自动增加或减少 Curios 槽位",
+  "config.isaac_disaster.entry.auto_adapt_curio_slot.desc": "测试条目（未实现）：根据道具数量自动增加或减少 Curios 槽位",
   "config.isaac_disaster.entry.item_removal_from_pool": "从当前道具池移除",
   "config.isaac_disaster.entry.item_removal_from_pool.desc": "道具生成后是否从对应道具池移除",
   "config.isaac_disaster.entry.item_removal_from_all_pool": "从全部道具池移除",

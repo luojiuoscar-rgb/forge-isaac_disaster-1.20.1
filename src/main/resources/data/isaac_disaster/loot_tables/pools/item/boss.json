@@ -37,7 +37,8 @@
         {"type": "minecraft:item", "name": "isaac_disaster:moms_coin_purse"},
         {"type": "minecraft:item", "name": "isaac_disaster:squeezy"},
         {"type": "minecraft:item", "name": "isaac_disaster:jesus_juice"},
-        {"type": "minecraft:item", "name": "isaac_disaster:box"}
+        {"type": "minecraft:item", "name": "isaac_disaster:box"},
+        {"type": "minecraft:item", "name": "isaac_disaster:placenta"}
       ]
     }
   ]

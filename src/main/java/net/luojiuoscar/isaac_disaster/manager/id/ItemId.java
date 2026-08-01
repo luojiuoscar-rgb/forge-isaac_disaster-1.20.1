@@ -173,7 +173,8 @@ public enum ItemId {
     MOMS_EYESHADOW(1),
     FANNY_PACK(2),
     SAD_BOMB(2),
-    DEAD_ONION(3);
+    DEAD_ONION(3),
+    PLACENTA(2);
 
 
 

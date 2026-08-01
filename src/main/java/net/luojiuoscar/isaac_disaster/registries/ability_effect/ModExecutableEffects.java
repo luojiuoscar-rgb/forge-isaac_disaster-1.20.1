@@ -789,6 +789,10 @@ public class ModExecutableEffects {
             EXECUTABLE_EFFECT_REGISTRY.register("half_red_heart", () -> new AbilityEffectEntry(
                     HEAL, ctx -> ctx.set(ContextKeys.AMPLIFIER, .5)
             ));
+    public static final RegistryObject<IExecutableEffect> PLACENTA_REGENERATION =
+            EXECUTABLE_EFFECT_REGISTRY.register("placenta_regeneration", () -> new AbilityEffectEntry(
+                    HEAL, ctx -> ctx.set(ContextKeys.AMPLIFIER, .5)
+            ));
     public static final RegistryObject<IExecutableEffect> GIVE_HALF_FRAILTY =
             EXECUTABLE_EFFECT_REGISTRY.register("give_half_frailty", () -> new AbilityEffectEntry(
                     POTIONS, ctx -> ctx.set(ContextKeys.POTIONS, List.of(

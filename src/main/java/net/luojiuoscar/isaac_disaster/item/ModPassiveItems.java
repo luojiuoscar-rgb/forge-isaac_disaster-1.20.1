@@ -564,4 +564,8 @@ public class ModPassiveItems {
     public static final RegistryObject<Item> DEAD_ONION = ITEMS.register("dead_onion",
             () -> new PassiveItem(new Item.Properties(), ModPassiveAbility.DEAD_ONION));
     static {ItemListManager.PASSIVE_ITEM_LIST.add(DEAD_ONION);}
+
+    public static final RegistryObject<Item> PLACENTA = ITEMS.register("placenta",
+            () -> new PassiveItem(new Item.Properties(), ModPassiveAbility.PLACENTA));
+    static {ItemListManager.PASSIVE_ITEM_LIST.add(PLACENTA);}
 }

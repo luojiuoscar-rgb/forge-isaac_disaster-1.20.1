@@ -52,4 +52,6 @@ public class ModRecursiveModule {
             RECURSIVE_MODULE_REGISTRY.register("steam_sale", SteamSale::new);
     public static final RegistryObject<RecursiveModule> SAFETY_SCISSORS =
             RECURSIVE_MODULE_REGISTRY.register("safety_scissors", SafetyScissors::new);
+    public static final RegistryObject<RecursiveModule> PLACENTA =
+            RECURSIVE_MODULE_REGISTRY.register("placenta", Placenta::new);
 }
