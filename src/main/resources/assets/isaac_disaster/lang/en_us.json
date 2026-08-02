@@ -506,6 +506,8 @@
   "item.isaac_disaster.moms_key.lore.1": "箱子内的物品更好",
   "item.isaac_disaster.moms_eyeshadow": "妈妈的眼影",
   "item.isaac_disaster.moms_eyeshadow.lore.1": "概率发射魅惑子弹",
+  "item.isaac_disaster.moms_perfume": "妈妈的香水",
+  "item.isaac_disaster.moms_perfume.lore.1": "泪弹有15%基础概率使敌人恐惧，幸运值会提高概率，最高100%",
   "item.isaac_disaster.fanny_pack": "挎包",
   "item.isaac_disaster.fanny_pack.lore.1": "受到2点以上伤害时概率生成随机掉落物",
   "item.isaac_disaster.sad_bomb": "悲伤炸弹",

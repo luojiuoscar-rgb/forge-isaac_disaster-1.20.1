@@ -115,5 +115,7 @@ public class ModTriggerModule {
             TRIGGER_MODULE_REGISTRY.register("volt45", Volt45::new);
     public static final RegistryObject<TriggerModule> CONTRACT_FROM_BELOW =
             TRIGGER_MODULE_REGISTRY.register("contract_from_below", ContractFromBelow::new);
+    public static final RegistryObject<TriggerModule> MOMS_PERFUME =
+            TRIGGER_MODULE_REGISTRY.register("moms_perfume", MomsPerfume::new);
 
 }

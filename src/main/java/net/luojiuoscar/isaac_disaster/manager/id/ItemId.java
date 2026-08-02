@@ -175,7 +175,8 @@ public enum ItemId {
     SAD_BOMB(2),
     DEAD_ONION(3),
     PLACENTA(2),
-    CONTRACT_FROM_BELOW(2);
+    CONTRACT_FROM_BELOW(2),
+    MOMS_PERFUME(2);
 
 
 

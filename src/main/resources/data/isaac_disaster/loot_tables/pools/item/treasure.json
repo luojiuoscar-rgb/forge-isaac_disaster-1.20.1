@@ -91,6 +91,7 @@
         {"type": "minecraft:item", "name": "isaac_disaster:stem_cells"},
         {"type": "minecraft:item", "name": "isaac_disaster:smb_super_fan"},
         {"type": "minecraft:item", "name": "isaac_disaster:moms_eyeshadow"},
+        {"type": "minecraft:item", "name": "isaac_disaster:moms_perfume"},
         {"type": "minecraft:item", "name": "isaac_disaster:sad_bomb"},
         {"type": "minecraft:item", "name": "isaac_disaster:blood_rights"},
         {"type": "minecraft:item", "name": "isaac_disaster:dead_onion"}

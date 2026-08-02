@@ -907,6 +907,17 @@ public class ModExecutableEffects {
                         )));
                 ctx.set(ContextKeys.EXECUTABLE_EFFECT, POTIONS.get());
             }));
+    public static final RegistryObject<IExecutableEffect> MOMS_PERFUME =
+            EXECUTABLE_EFFECT_REGISTRY.register("moms_perfume", () -> new AbilityEffectEntry(
+                    APPLY_EFFECT_TO_SECONDARY_LIVING_ENTITY, ctx -> {
+                ctx.set(ContextKeys.POTIONS, List.of(
+                        new PotionProfile(
+                                ModEffects.PANIC.get(),
+                                80,
+                                0
+                        )));
+                ctx.set(ContextKeys.EXECUTABLE_EFFECT, POTIONS.get());
+            }));
     public static final RegistryObject<IExecutableEffect> ATTACH_BOMBER_BOY =
             EXECUTABLE_EFFECT_REGISTRY.register("attach_bomber_boy", () -> new AbilityEffectEntry(
                     ATTACH_EFFECT_TO_TNT, ctx ->

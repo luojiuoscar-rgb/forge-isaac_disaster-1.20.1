@@ -567,4 +567,8 @@ public class ModPassiveAbility {
     public static final RegistryObject<PassiveAbility> CONTRACT_FROM_BELOW =
             PASSIVE_ABILITY_REGISTRY.register("contract_from_below",
                     () -> new ContractFromBelow(ItemId.CONTRACT_FROM_BELOW.getId(), ItemId.CONTRACT_FROM_BELOW.getLevel()));
+
+    public static final RegistryObject<PassiveAbility> MOMS_PERFUME =
+            PASSIVE_ABILITY_REGISTRY.register("moms_perfume",
+                    () -> new MomsPerfume(ItemId.MOMS_PERFUME.getId(), ItemId.MOMS_PERFUME.getLevel()));
 }

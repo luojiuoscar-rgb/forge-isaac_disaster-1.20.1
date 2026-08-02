@@ -572,4 +572,8 @@ public class ModPassiveItems {
     public static final RegistryObject<Item> CONTRACT_FROM_BELOW = ITEMS.register("contract_from_below",
             () -> new PassiveItem(new Item.Properties(), ModPassiveAbility.CONTRACT_FROM_BELOW));
     static {ItemListManager.PASSIVE_ITEM_LIST.add(CONTRACT_FROM_BELOW);}
+
+    public static final RegistryObject<Item> MOMS_PERFUME = ITEMS.register("moms_perfume",
+            () -> new PassiveItem(new Item.Properties(), ModPassiveAbility.MOMS_PERFUME));
+    static {ItemListManager.PASSIVE_ITEM_LIST.add(MOMS_PERFUME);}
 }
