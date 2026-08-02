@@ -23,7 +23,7 @@ public class MomsPerfume extends TriggerModule {
         return Math.max(0.0, Math.min(1.0, 15.0 / (100.0 - flooredLuck)));
     }
 
-    private static double getTriggerChance(LivingEntity entity) {
+    public static double getTriggerChance(LivingEntity entity) {
         return getTriggerChance(TriggerModule.getLuck(entity));
     }
 

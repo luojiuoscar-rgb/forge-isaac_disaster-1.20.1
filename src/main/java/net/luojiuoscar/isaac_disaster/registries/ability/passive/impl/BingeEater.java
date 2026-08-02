@@ -45,7 +45,7 @@ public class BingeEater extends PassiveAbility {
     }
 
     @Override
-    public List<Component> getDesc(@Nullable ItemStack stack) {
+    public List<Component> getDesc(@Nullable ItemStack stack, Player player) {
         return List.of(
                 StatManager.MAX_HEALTH.description(1),
                 Component.translatable("item.isaac_disaster.action.full_health"),

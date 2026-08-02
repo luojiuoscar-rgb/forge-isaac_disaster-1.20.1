@@ -8,6 +8,7 @@ import net.luojiuoscar.isaac_disaster.registries.ability.trinket.TrinketAbilityC
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerModule;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
 import javax.annotation.Nullable;
@@ -35,7 +36,7 @@ public class BlessedPenny extends TrinketAbility {
     }
 
     @Override
-    public List<Component> getDesc(@Nullable ItemStack stack) {
+    public List<Component> getDesc(@Nullable ItemStack stack, Player player) {
         return List.of(
                 Component.translatable("item.isaac_disaster.on_spawn_penny"),
                 Component.translatable("item.isaac_disaster.blessed_penny.lore.1")
@@ -43,7 +44,7 @@ public class BlessedPenny extends TrinketAbility {
     }
 
     @Override
-    public List<Component> getSynergyDesc(@Nullable ItemStack stack) {
+    public List<Component> getSynergyDesc(@Nullable ItemStack stack, Player player) {
         List<Component> desc = new ArrayList<>();
 
         if (stack != null && Trinket.isEnchanted(stack)){

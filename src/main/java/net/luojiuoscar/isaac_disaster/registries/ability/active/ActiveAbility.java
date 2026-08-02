@@ -11,6 +11,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
 import javax.annotation.Nullable;
@@ -67,5 +68,5 @@ public abstract class ActiveAbility extends IsaacItemAbility {
     public void triggerSFX(ServerPlayer player){};
 
     @Override
-    abstract public List<Component> getSynergyDesc(@org.jetbrains.annotations.Nullable ItemStack stack);
+    abstract public List<Component> getSynergyDesc(@org.jetbrains.annotations.Nullable ItemStack stack, Player player);
 }

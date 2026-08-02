@@ -5,6 +5,7 @@ import net.luojiuoscar.isaac_disaster.registries.ability.passive.PassiveAbility;
 import net.luojiuoscar.isaac_disaster.registries.ability.set.ModSetAbility;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
@@ -35,7 +36,7 @@ public class SpeedBall extends PassiveAbility {
     }
 
     @Override
-    public List<Component> getDesc(@Nullable ItemStack stack) {
+    public List<Component> getDesc(@Nullable ItemStack stack, Player player) {
         return List.of(
                 StatManager.MOVEMENT_SPEED.description(1.5),
                 StatManager.BULLET_SPEED.description(1)
@@ -43,12 +44,12 @@ public class SpeedBall extends PassiveAbility {
     }
 
     @Override
-    public List<Component> getSynergyDesc(@Nullable ItemStack stack){
+    public List<Component> getSynergyDesc(@Nullable ItemStack stack, Player player){
         return ModSetAbility.SPUN.get().getSynergyDesc();
     }
 
     @Override
-    public List<Component> getExtraDesc(@Nullable ItemStack stack){
+    public List<Component> getExtraDesc(@Nullable ItemStack stack, Player player){
         return ModSetAbility.SPUN.get().getExtraDesc();
     }
 

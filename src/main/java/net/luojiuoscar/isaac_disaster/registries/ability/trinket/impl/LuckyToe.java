@@ -27,13 +27,13 @@ public class LuckyToe extends TrinketAbility {
     }
 
     @Override
-    public List<Component> getDesc(@Nullable ItemStack stack) {
+    public List<Component> getDesc(@Nullable ItemStack stack, Player player) {
         return List.of(StatManager.LUCK.description(1),
                 Component.translatable("item.isaac_disaster.lucky_toe.lore.1"));
     }
 
     @Override
-    public List<Component> getSynergyDesc(@Nullable ItemStack stack) {
+    public List<Component> getSynergyDesc(@Nullable ItemStack stack, Player player) {
         List<Component> desc = new ArrayList<>();
 
         if (stack != null && Trinket.isEnchanted(stack)){

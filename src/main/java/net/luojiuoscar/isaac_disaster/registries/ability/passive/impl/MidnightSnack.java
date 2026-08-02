@@ -53,14 +53,14 @@ public class MidnightSnack extends PassiveAbility {
     }
 
     @Override
-    public List<Component> getDesc(@Nullable ItemStack stack) {
+    public List<Component> getDesc(@Nullable ItemStack stack, Player player) {
         return List.of(
                 StatManager.MAX_HEALTH.description(1)
         );
     }
 
     @Override
-    public List<Component> getSynergyDesc(@Nullable ItemStack stack) {
+    public List<Component> getSynergyDesc(@Nullable ItemStack stack, Player player) {
         List<Component> description = new ArrayList<>();
 
         if (ClientDataManager.getInstance().getCountFromId(ItemId.BINGE_EATER.getId()) > 0){

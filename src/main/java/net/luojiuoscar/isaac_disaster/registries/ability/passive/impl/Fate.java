@@ -6,6 +6,7 @@ import net.luojiuoscar.isaac_disaster.registries.ability.passive.PassiveAbility;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ModExecutableEffects;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
@@ -33,7 +34,7 @@ public class Fate extends PassiveAbility {
     }
 
     @Override
-    public List<Component> getDesc(@Nullable ItemStack stack) {
+    public List<Component> getDesc(@Nullable ItemStack stack, Player player) {
         return List.of(
                 StatManager.FLY_TIME.description(1),
                 Component.translatable("item.isaac_disaster.fate.lore.1")
@@ -41,7 +42,7 @@ public class Fate extends PassiveAbility {
     }
 
     @Override
-    public List<Component> getExtraDesc(@Nullable ItemStack stack) {
+    public List<Component> getExtraDesc(@Nullable ItemStack stack, Player player) {
         List<Component> desc = new ArrayList<>();
         desc.add(EffectManager.ETERNAL_HEART.getExplainDesc());
         return desc;

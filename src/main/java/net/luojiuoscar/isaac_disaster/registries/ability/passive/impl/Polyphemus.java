@@ -35,7 +35,7 @@ public class Polyphemus extends PassiveAbility {
     }
 
     @Override
-    public List<Component> getDesc(@Nullable ItemStack stack) {
+    public List<Component> getDesc(@Nullable ItemStack stack, Player player) {
         return List.of(
                 StatManager.DAMAGE_MULTIPLY_BASE.description(0.8),
                 StatManager.DAMAGE.description(4),

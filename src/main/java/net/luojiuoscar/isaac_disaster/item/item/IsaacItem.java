@@ -3,8 +3,10 @@ package net.luojiuoscar.isaac_disaster.item.item;
 
 import net.luojiuoscar.isaac_disaster.manager.ColorManager;
 import net.luojiuoscar.isaac_disaster.registries.ability.IsaacItemAbility;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
@@ -39,15 +41,18 @@ public abstract class IsaacItem extends Item {
     public void appendHoverText(@NotNull ItemStack stack, @Nullable Level level, @NotNull List<Component> tooltipComponents, @NotNull TooltipFlag isAdvanced) {
         super.appendHoverText(stack, level, tooltipComponents, isAdvanced);
 
-        List<Component> extraDesc = getAbility().getExtraDesc(stack);
+        // 获取客户端玩家
+        Player player = Minecraft.getInstance().player;
+
+        List<Component> extraDesc = getAbility().getExtraDesc(stack, player);
 
         if (!extraDesc.isEmpty() && Screen.hasShiftDown()){
             // 添加解释性文本组件
             tooltipComponents.addAll(extraDesc);
         }else{
             // 添加描述性文本组件
-            tooltipComponents.addAll(getAbility().getDesc(stack));
-            tooltipComponents.addAll(getAbility().getSynergyDesc(stack));
+            tooltipComponents.addAll(getAbility().getDesc(stack, player));
+            tooltipComponents.addAll(getAbility().getSynergyDesc(stack, player));
 
             // 空行
             tooltipComponents.add(Component.literal(""));

@@ -8,6 +8,7 @@ import net.luojiuoscar.isaac_disaster.registries.ability.trinket.TrinketAbilityC
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerModule;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
 import javax.annotation.Nullable;
@@ -45,12 +46,12 @@ public class PetrifiedPoop extends TrinketAbility {
     }
 
     @Override
-    public List<Component> getDesc(@javax.annotation.Nullable ItemStack stack) {
+    public List<Component> getDesc(@Nullable ItemStack stack, Player player) {
         return List.of(Component.translatable("item.isaac_disaster.petrified_poop.lore.1"));
     }
 
     @Override
-    public List<Component> getSynergyDesc(@Nullable ItemStack stack) {
+    public List<Component> getSynergyDesc(@Nullable ItemStack stack, Player player) {
         List<Component> desc = new ArrayList<>();
 
         if (stack != null && Trinket.isEnchanted(stack)){

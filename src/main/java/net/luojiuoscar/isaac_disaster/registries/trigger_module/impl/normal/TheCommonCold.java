@@ -25,7 +25,7 @@ public class TheCommonCold extends TriggerModule {
     }
 
     public static double getTriggerChance(LivingEntity entity){
-        return 1 / Math.max(1, 4 - (TriggerModule.getLuck(entity) / 4));
+        return LuckTriggerChance.commonCold(TriggerModule.getLuck(entity));
     }
 
     @Override

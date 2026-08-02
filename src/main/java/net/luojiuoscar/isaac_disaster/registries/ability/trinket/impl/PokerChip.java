@@ -2,13 +2,13 @@ package net.luojiuoscar.isaac_disaster.registries.ability.trinket.impl;
 
 import net.luojiuoscar.isaac_disaster.helper.DescriptionHelper;
 import net.luojiuoscar.isaac_disaster.item.item.Trinket;
-import net.luojiuoscar.isaac_disaster.manager.ColorManager;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.registries.ability.trinket.TrinketAbility;
 import net.luojiuoscar.isaac_disaster.registries.ability.trinket.TrinketAbilityContext;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerModule;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
 import javax.annotation.Nullable;
@@ -36,12 +36,12 @@ public class PokerChip extends TrinketAbility {
     }
 
     @Override
-    public List<Component> getDesc(@Nullable ItemStack stack) {
+    public List<Component> getDesc(@Nullable ItemStack stack, Player player) {
         return List.of(Component.translatable("item.isaac_disaster.poker_chip.lore.1"));
     }
 
     @Override
-    public List<Component> getSynergyDesc(@Nullable ItemStack stack) {
+    public List<Component> getSynergyDesc(@Nullable ItemStack stack, Player player) {
         List<Component> desc = new ArrayList<>();
 
         if (stack != null && Trinket.isEnchanted(stack)){

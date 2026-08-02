@@ -38,7 +38,7 @@ public class GlitchedCrown extends PassiveAbility {
     }
 
     @Override
-    public List<Component> getDesc(@Nullable ItemStack stack) {
+    public List<Component> getDesc(@Nullable ItemStack stack, Player player) {
         return List.of(
                 Component.translatable("item.isaac_disaster.glitched_crown.lore.1")
         );

@@ -12,6 +12,7 @@ import net.luojiuoscar.isaac_disaster.registries.ability_effect.ModExecutableEff
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.pill_effect.PillEffect;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.registries.IForgeRegistry;
 import net.minecraftforge.registries.RegistryManager;
@@ -38,7 +39,7 @@ public class EchoChamber extends PassiveAbility {
     }
 
     @Override
-    public List<Component> getDesc(@Nullable ItemStack stack) {
+    public List<Component> getDesc(@Nullable ItemStack stack, Player player) {
         return List.of(
                 Component.translatable("item.isaac_disaster.echo_chamber.lore.1"),
                 Component.translatable("item.isaac_disaster.echo_chamber.lore.2")

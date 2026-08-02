@@ -1,6 +1,7 @@
 package net.luojiuoscar.isaac_disaster.registries.ability;
 
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
@@ -23,13 +24,13 @@ public abstract class IsaacItemAbility {
         return level;
     }
 
-    abstract public List<Component> getDesc(@Nullable ItemStack stack);
+    abstract public List<Component> getDesc(@Nullable ItemStack stack, @Nullable Player player);
 
-    public List<Component> getExtraDesc(@Nullable ItemStack stack){
+    public List<Component> getExtraDesc(@Nullable ItemStack stack, @Nullable Player player){
         return List.of();
     }
 
-    public List<Component> getSynergyDesc(@Nullable ItemStack stack){
+    public List<Component> getSynergyDesc(@Nullable ItemStack stack, @Nullable Player player){
         return List.of();
     }
 }

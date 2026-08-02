@@ -24,7 +24,7 @@ public class IronBar extends TriggerModule {
     }
 
     public static double getTriggerChance(LivingEntity entity){
-        return 1 / Math.max(1, 10 - (TriggerModule.getLuck(entity) / 3));
+        return LuckTriggerChance.ironBar(TriggerModule.getLuck(entity));
     }
 
     @Override

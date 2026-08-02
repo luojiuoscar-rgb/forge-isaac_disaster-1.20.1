@@ -15,6 +15,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
@@ -42,14 +43,14 @@ public class AnarchistCookbook extends ActiveAbility {
     }
 
     @Override
-    public List<Component> getDesc(@Nullable ItemStack stack) {
+    public List<Component> getDesc(@Nullable ItemStack stack, Player player) {
         return List.of(
                 Component.translatable("item.isaac_disaster.anarchist_cookbook.lore.1")
         );
     }
 
     @Override
-    public List<Component> getSynergyDesc(@Nullable ItemStack stack) {
+    public List<Component> getSynergyDesc(@Nullable ItemStack stack, Player player) {
         List<Component> description = new ArrayList<>();
 
         description.addAll(ModSetAbility.BOOK.get().getSynergyDesc());
@@ -66,7 +67,7 @@ public class AnarchistCookbook extends ActiveAbility {
     }
 
     @Override
-    public List<Component> getExtraDesc(@Nullable ItemStack stack){
+    public List<Component> getExtraDesc(@Nullable ItemStack stack, Player player){
         return ModSetAbility.BOOK.get().getExtraDesc();
     }
 }

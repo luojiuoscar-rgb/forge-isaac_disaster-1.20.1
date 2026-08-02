@@ -4,8 +4,10 @@ import net.luojiuoscar.isaac_disaster.manager.ColorManager;
 import net.luojiuoscar.isaac_disaster.registries.ability.trinket.TrinketAbility;
 import net.luojiuoscar.isaac_disaster.registries.ability.trinket.TrinketAbilityContext;
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
@@ -95,14 +97,16 @@ public class Trinket extends Item implements IIsaacCuriosItem {
 
         TrinketAbility a = getAbility();
 
-        List<Component> extraDesc = a.getExtraDesc(stack);
+        Player player = Minecraft.getInstance().player;
+
+        List<Component> extraDesc = a.getExtraDesc(stack, player);
 
         if (!extraDesc.isEmpty() && Screen.hasShiftDown()){
             // 添加解释性文本组件
-            tooltipComponents.addAll(a.getExtraDesc(stack));
+            tooltipComponents.addAll(a.getExtraDesc(stack, player));
         }else{
-            tooltipComponents.addAll(a.getDesc(stack));
-            tooltipComponents.addAll(a.getSynergyDesc(stack));
+            tooltipComponents.addAll(a.getDesc(stack, player));
+            tooltipComponents.addAll(a.getSynergyDesc(stack, player));
             if (isConsumed(stack)){
                 // 已消耗
                 tooltipComponents.add(Component.translatable("item.isaac_disaster.action.consumed")

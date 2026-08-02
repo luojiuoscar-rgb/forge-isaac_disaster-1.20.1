@@ -12,6 +12,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;
 import org.jetbrains.annotations.Nullable;
@@ -87,7 +88,7 @@ public class ExperimentalTreatment extends PassiveAbility {
     }
 
     @Override
-    public List<Component> getDesc(@Nullable ItemStack stack) {
+    public List<Component> getDesc(@Nullable ItemStack stack, Player player) {
         if (stack != null){
             Map<UUID, Double> map = ExperimentalTreatmentItem.getModifierMap(stack);
 
@@ -119,12 +120,12 @@ public class ExperimentalTreatment extends PassiveAbility {
     }
 
     @Override
-    public List<Component> getSynergyDesc(@Nullable ItemStack stack){
+    public List<Component> getSynergyDesc(@Nullable ItemStack stack, Player player){
         return ModSetAbility.SPUN.get().getSynergyDesc();
     }
 
     @Override
-    public List<Component> getExtraDesc(@Nullable ItemStack stack){
+    public List<Component> getExtraDesc(@Nullable ItemStack stack, Player player){
         return ModSetAbility.SPUN.get().getExtraDesc();
     }
 }

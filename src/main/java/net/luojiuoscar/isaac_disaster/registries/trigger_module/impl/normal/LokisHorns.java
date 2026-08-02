@@ -19,6 +19,6 @@ public class LokisHorns extends TriggerModule {
         super(TRIGGER);
     }
     public static double getTriggerChance(LivingEntity entity){
-        return Math.min(1, (TriggerModule.getLuck(entity) * 0.05 + 0.25));
+        return LuckTriggerChance.lokisHorns(TriggerModule.getLuck(entity));
     }
 }
