@@ -176,7 +176,8 @@ public enum ItemId {
     DEAD_ONION(3),
     PLACENTA(2),
     CONTRACT_FROM_BELOW(2),
-    MOMS_PERFUME(2);
+    MOMS_PERFUME(2),
+    MAGGYS_BOW(2);
 
 
 

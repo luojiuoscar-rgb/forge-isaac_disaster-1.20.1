@@ -14,7 +14,10 @@ import java.util.List;
 
 public class MomsPerfume extends TriggerModule {
     public MomsPerfume() {
-        super(CompositeTrigger.EMPTY);
+        super(new CompositeTrigger(List.of(
+                new SimpleTrigger(ModTriggerTypes.HIT_ENTITY_RESTRICTED, ModExecutableEffects.MOMS_PERFUME, context ->
+                        context.getEntity().getRandom().nextDouble() < getTriggerChance(context.getEntity()))
+        )));
     }
 
     static double getTriggerChance(double luck) {

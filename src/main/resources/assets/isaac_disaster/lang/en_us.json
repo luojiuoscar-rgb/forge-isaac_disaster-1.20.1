@@ -513,11 +513,13 @@
   "item.isaac_disaster.sad_bomb": "悲伤炸弹",
   "item.isaac_disaster.sad_bomb.lore.1": "炸弹爆炸时向周围散射子弹",
   "item.isaac_disaster.dead_onion": "烂洋葱",
-
   "item.isaac_disaster.placenta": "胎盘",
   "item.isaac_disaster.contract_from_below": "地狱契约",
   "item.isaac_disaster.contract_from_below.lore.1": "66%概率将战利品翻倍",
   "item.isaac_disaster.contract_from_below.lore.2": "但有33%概率使它们消失",
+  "item.isaac_disaster.maggys_bow": "抹大拉的蝴蝶结",
+  "item.isaac_disaster.maggys_bow.lore.1": "红心效果翻倍",
+  "item.isaac_disaster.maggys_bow.lore.2": "移除红心副作用",
   "item end": "",
 
 

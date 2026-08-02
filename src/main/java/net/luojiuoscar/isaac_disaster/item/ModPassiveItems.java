@@ -576,4 +576,8 @@ public class ModPassiveItems {
     public static final RegistryObject<Item> MOMS_PERFUME = ITEMS.register("moms_perfume",
             () -> new PassiveItem(new Item.Properties(), ModPassiveAbility.MOMS_PERFUME));
     static {ItemListManager.PASSIVE_ITEM_LIST.add(MOMS_PERFUME);}
+
+    public static final RegistryObject<Item> MAGGYS_BOW = ITEMS.register("maggys_bow",
+            () -> new PassiveItem(new Item.Properties(), ModPassiveAbility.MAGGYS_BOW));
+    static {ItemListManager.PASSIVE_ITEM_LIST.add(MAGGYS_BOW);}
 }

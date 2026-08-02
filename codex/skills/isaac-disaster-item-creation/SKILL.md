@@ -34,6 +34,11 @@ Implement passive items as an item instance plus a passive ability. Read current
 - If modules cannot express an effect accurately, do not distort it. Use isolated ability logic when sufficient; otherwise propose the focused shared-architecture change and wait for approval.
 - Put recovery and spawned drops in first obtain. Preserve lifecycle order unless a confirmed change is necessary. Missing sets are no-effect sets with three items by default.
 
+## Compatibility Reference List
+
+- Chance-based projectile modifiers: For an item that can probabilistically attach an effect to tears, such as Mom's Eye Shadow, plan an explicit compatibility path so player-generated attack projectiles can also roll the confirmed chance and receive the effect. Reuse the existing bullet-trigger and `StatManager` path; confirm roll timing, eligible projectile sources, one-roll-per-projectile behavior, stacking, color, and interactions before implementation. Do not assume every projectile or attack source is eligible when the Wiki or project semantics say otherwise. Display the chance dynamically: follow `MomsEyeshadow` by using the same chance-calculation method as the trigger, converting it to a percentage, and passing `DescriptionHelper.dynamicNumber(basePercent, currentPercent)` to a `%s%%` lore translation. Never hardcode a probability that can change with player state.
+- Treat this list as a maintained reference of effect categories, typical cases, and implementation cautions. Use entries to guide targeted reuse searches, not as permission to copy an implementation or alter confirmed behavior without approval.
+
 ## Ratios And Description Values
 
 | Effect | Ratio or default |
@@ -53,10 +58,11 @@ Implement passive items as an item instance plus a passive ability. Read current
 
 - Ask before entity/block reach, attack speed, block breaking, knockback, projectile size, multiplicative size, or any unlisted duration, cooldown, chance, or spawn count.
 - Treat fire rate and fire-rate modifier as different attributes. Map fire rate to `TEARS` and fire-rate modifier to `TEARS_CORRECTION`; never equate, merge, or substitute one for the other even when Wiki wording is ambiguous.
+- Use concise lore wording and minimal punctuation. Keep punctuation only when needed for grammar, placeholders, values, or unambiguous meaning; do not add decorative sentence-ending marks or separators.
 - Show explicit numeric descriptions and known probabilities as percentages. Do not invent unknown percentages or hardcode dynamic values in translations.
 - Describe the ordinary item tooltip for one copy of the item only. If the item has both single-copy and stacking effects, show only the single-copy effect; keep stacking values, per-copy wording, multipliers, counts, and duplicate-item totals hidden. This does not remove explicit set requirements or set-synergy descriptions.
 - Apply the mandatory lore layout check before adding localization. If a line is too long for the item tooltip, split it at a natural semantic boundary into two or more ordered description components or translation entries so the display stays compact.
-- Use `StatManager.<STAT>.description(...)` and `StatManager.healHealthDescription(ratio)` or current equivalents so displayed values match server behavior. Propose a compatible description path when no interface exists.
+- Use `StatManager.<STAT>.description(...)` so displayed stat values match server behavior. For every health-recovery description, use the completed `StatManager.healHealthDescription(ratio)` method; do not recreate its calculation or write a separate recovery-value placeholder.
 
 ## Implement Approved Items
 

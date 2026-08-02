@@ -1,5 +1,7 @@
 package net.luojiuoscar.isaac_disaster.registries.ability.pickup.impl.items;
 
+import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
+import net.luojiuoscar.isaac_disaster.manager.id.ItemId;
 import net.luojiuoscar.isaac_disaster.registries.ability.pickup.FoodPickupAbility;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.CompositeTrigger;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ModExecutableEffects;
@@ -15,7 +17,9 @@ import java.util.List;
 public class RedHeart extends FoodPickupAbility {
     private static final CompositeTrigger TRIGGER = new CompositeTrigger(List.of(
             new SimpleTrigger(ModTriggerTypes.EMTPY, ModExecutableEffects.HEAL),
-            new SimpleTrigger(ModTriggerTypes.EMTPY, ModExecutableEffects.GIVE_FRAILTY)
+            new SimpleTrigger(ModTriggerTypes.EMTPY, ModExecutableEffects.GIVE_FRAILTY, context ->
+                    !(context.getEntity() instanceof ServerPlayer player)
+                            || !PlayerHelper.hasItem(ItemId.MAGGYS_BOW.getId(), player))
     ));
 
     public RedHeart() {
