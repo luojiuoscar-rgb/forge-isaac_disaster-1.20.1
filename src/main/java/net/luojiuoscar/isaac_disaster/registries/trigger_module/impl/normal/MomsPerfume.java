@@ -13,11 +13,13 @@ import net.minecraft.world.entity.LivingEntity;
 import java.util.List;
 
 public class MomsPerfume extends TriggerModule {
+    private static final CompositeTrigger TRIGGER = new CompositeTrigger(List.of(
+            new SimpleTrigger(ModTriggerTypes.HIT_ENTITY_RESTRICTED, ModExecutableEffects.MOMS_PERFUME, context ->
+                    context.getEntity().getRandom().nextDouble() < getTriggerChance(context.getEntity()))
+    ));
+
     public MomsPerfume() {
-        super(new CompositeTrigger(List.of(
-                new SimpleTrigger(ModTriggerTypes.HIT_ENTITY_RESTRICTED, ModExecutableEffects.MOMS_PERFUME, context ->
-                        context.getEntity().getRandom().nextDouble() < getTriggerChance(context.getEntity()))
-        )));
+        super(TRIGGER);
     }
 
     static double getTriggerChance(double luck) {

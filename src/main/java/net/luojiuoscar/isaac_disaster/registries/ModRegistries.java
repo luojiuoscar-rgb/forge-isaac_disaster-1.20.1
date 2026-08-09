@@ -14,6 +14,7 @@ import net.luojiuoscar.isaac_disaster.registries.familiar.FamiliarEntityType;
 import net.luojiuoscar.isaac_disaster.registries.recursive_module.RecursiveModule;
 import net.luojiuoscar.isaac_disaster.registries.trajectory.IAttackTrajectory;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerModule;
+import net.luojiuoscar.isaac_disaster.registries.trigger_module.rule.TriggerModuleRule;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.registries.RegistryBuilder;
@@ -31,6 +32,7 @@ import static net.luojiuoscar.isaac_disaster.registries.familiar.ModFamiliarEnti
 import static net.luojiuoscar.isaac_disaster.registries.recursive_module.ModRecursiveModule.RECURSIVE_MODULE_REGISTRY;
 import static net.luojiuoscar.isaac_disaster.registries.trajectory.ModAttackTrajectory.ATTACK_TRAJECTORY_REGISTRY;
 import static net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerModule.TRIGGER_MODULE_REGISTRY;
+import static net.luojiuoscar.isaac_disaster.registries.trigger_module.rule.ModTriggerModuleRules.TRIGGER_MODULE_RULE_REGISTRY;
 
 
 public class ModRegistries {
@@ -48,6 +50,10 @@ public class ModRegistries {
         TRIGGER_MODULE_REGISTRY.makeRegistry(() -> {return new RegistryBuilder<TriggerModule>()
                 .setName(ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "trigger_module"));});
         TRIGGER_MODULE_REGISTRY.register(modEventBus);
+
+        TRIGGER_MODULE_RULE_REGISTRY.makeRegistry(() -> new RegistryBuilder<TriggerModuleRule>()
+                .setName(ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "trigger_module_rule")));
+        TRIGGER_MODULE_RULE_REGISTRY.register(modEventBus);
 
         RECURSIVE_MODULE_REGISTRY.makeRegistry(() -> {return new RegistryBuilder<RecursiveModule>()
                 .setName(ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "recursive_module"));});

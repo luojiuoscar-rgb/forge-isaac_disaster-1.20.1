@@ -9,6 +9,9 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * 目前EffectModule只挂在给玩家以确保性能不会被影响
  * */
@@ -28,8 +31,7 @@ public class EffectModules {
     }
 
     public void copyFrom(EffectModules source) {
-        triggerModuleQueue.clear();
-        this.triggerModuleQueue.getQueue().addAll(source.triggerModuleQueue.getQueue());
+        triggerModuleQueue.copyFrom(source.triggerModuleQueue);
 
         recursiveModuleQueue.clear();
         for (RecursiveModuleInstance inst : source.recursiveModuleQueue.getQueue()) {
@@ -40,11 +42,11 @@ public class EffectModules {
     public void saveNBTData(CompoundTag nbt) {
         /* ---------- Trigger Modules ---------- */
         ListTag triggerList = new ListTag();
-        for (TriggerModuleInstance inst : triggerModuleQueue.getQueue()) {
+        for (TriggerModuleInstance inst : triggerModuleQueue.snapshot().modules()) {
             CompoundTag tag = new CompoundTag();
-            tag.putString("id", inst.id.toString());
-            tag.putInt("stacks", inst.stacks);
-            tag.putDouble("priority", inst.priority);
+            tag.putString("id", inst.id().toString());
+            tag.putInt("stacks", inst.stacks());
+            tag.putDouble("priority", inst.priority());
             triggerList.add(tag);
         }
         nbt.put("trigger_modules", triggerList);
@@ -66,20 +68,20 @@ public class EffectModules {
 
     public void loadNBTData(CompoundTag nbt) {
         /* ---------- Trigger Modules ---------- */
-        triggerModuleQueue.clear();
+        List<TriggerModuleInstance> triggerModules = new ArrayList<>();
         if (nbt.contains("trigger_modules", Tag.TAG_LIST)) {
             ListTag list = nbt.getList("trigger_modules", Tag.TAG_COMPOUND);
             for (Tag t : list) {
                 CompoundTag tag = (CompoundTag) t;
                 try {
-                    TriggerModuleInstance inst = new TriggerModuleInstance();
-                    inst.id = ResourceLocation.parse(tag.getString("id"));
-                    inst.stacks = tag.getInt("stacks");
-                    inst.priority = tag.getDouble("priority");
-                    triggerModuleQueue.rawAdd(inst);
+                    triggerModules.add(new TriggerModuleInstance(
+                            ResourceLocation.parse(tag.getString("id")),
+                            tag.getInt("stacks"),
+                            tag.getDouble("priority")));
                 } catch (Exception ignored) {}
             }
         }
+        triggerModuleQueue.replaceAll(triggerModules);
 
         /* ---------- Recursive Modules ---------- */
         recursiveModuleQueue.clear();

@@ -17,6 +17,9 @@ import net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerModule
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerTypes;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerModule;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerType;
+import net.luojiuoscar.isaac_disaster.registries.trigger_module.rule.TriggerModuleRuleContext;
+import net.luojiuoscar.isaac_disaster.registries.trigger_module.rule.TriggerModuleRuleIndex;
+import net.luojiuoscar.isaac_disaster.registries.trigger_module.rule.TriggerModuleSnapshot;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
@@ -47,10 +50,8 @@ public class TriggerModuleEvents {
 
         // 获取queue并且触发所有模块
         entity.getCapability(EffectModulesProvider.EFFECT_MODULES).ifPresent(triggerModule -> {
-            var queue = triggerModule.getTriggerModules().copy();
-            context.set(ContextKeys.TRIGGER_MODULE_QUEUE, queue);
-
-            if (queue == null || queue.isEmpty()) return;
+            TriggerModuleSnapshot snapshot = triggerModule.getTriggerModules().snapshot();
+            if (snapshot.isEmpty()) return;
 
             IForgeRegistry<TriggerModule> reg =
                     RegistryManager.ACTIVE.getRegistry(ModTriggerModule.TRIGGER_MODULE_KEY);
@@ -60,12 +61,14 @@ public class TriggerModuleEvents {
             BeforeTriggerModuleActiveEvent preEvent = new BeforeTriggerModuleActiveEvent(context);
             MinecraftForge.EVENT_BUS.post(preEvent);
 
-            queue.lock();
-
-            for (var inst : queue.getQueue()) {
-                context.set(ContextKeys.AMPLIFIER, (double) inst.stacks);
-                TriggerModule module = reg.getValue(inst.id);
+            for (var inst : snapshot.modules()) {
+                TriggerModule module = reg.getValue(inst.id());
                 if (module == null) continue;
+
+                TriggerModuleRuleContext ruleContext = new TriggerModuleRuleContext(inst, type, context, snapshot);
+                if (!TriggerModuleRuleIndex.allows(ruleContext)) continue;
+
+                context.set(ContextKeys.AMPLIFIER, (double) inst.stacks());
 
                 // 调用模块的 fire 方法，触发对应 TriggerType 的 SimpleTrigger
                 module.fire(context, type);

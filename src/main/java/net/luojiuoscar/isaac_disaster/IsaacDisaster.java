@@ -13,6 +13,7 @@ import net.luojiuoscar.isaac_disaster.loot.ModLootModifiers;
 import net.luojiuoscar.isaac_disaster.loot.ModLootTypes;
 import net.luojiuoscar.isaac_disaster.networking.ModMessages;
 import net.luojiuoscar.isaac_disaster.registries.ModRegistries;
+import net.luojiuoscar.isaac_disaster.registries.trigger_module.rule.TriggerModuleRuleIndex;
 import net.luojiuoscar.isaac_disaster.sound.ModSounds;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
@@ -80,9 +81,7 @@ public class IsaacDisaster
     private void commonSetup(final FMLCommonSetupEvent event) {
         ModMessages.register();
 
-        event.enqueueWork(() -> {
-
-        });
+        event.enqueueWork(TriggerModuleRuleIndex::rebuild);
     }
 
 

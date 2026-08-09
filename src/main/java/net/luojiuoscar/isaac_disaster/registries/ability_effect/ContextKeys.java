@@ -3,7 +3,6 @@ package net.luojiuoscar.isaac_disaster.registries.ability_effect;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.profile.PotionProfile;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.IBulletObject;
 import net.luojiuoscar.isaac_disaster.registries.recursive_module.RecursiveModuleQueue;
-import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerModuleQueue;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
@@ -32,10 +31,6 @@ public final class ContextKeys {
     public static final ContextKey<Event> EVENT = new ContextKey<>();
     public static final ContextKey<IBulletObject> BULLET = new ContextKey<>();
     public static final ContextKey<ResourceLocation> BULLET_COLOR_ID = new ContextKey<>();
-
-    /** 用于效果的上下文查找。但是CompositeTriggerView不一定包含所有的上下文，如从TriggerModuleQueue中触发时。
-     * 对于Bullet实体（直接持有CompositeTrigger)而言，能够获取到全部的上下文 */
-    public static final ContextKey<TriggerModuleQueue> TRIGGER_MODULE_QUEUE = new ContextKey<>();
     public static final ContextKey<RecursiveModuleQueue> RECURSIVE_MODULE_QUEUE = new ContextKey<>();
     public static final ContextKey<CompositeTriggerView> COMPOSITE_TRIGGER_VIEW = new ContextKey<>();
 

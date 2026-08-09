@@ -1,53 +1,45 @@
 package net.luojiuoscar.isaac_disaster.registries.trigger_module;
 
+import net.luojiuoscar.isaac_disaster.registries.trigger_module.rule.TriggerModuleSnapshot;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.registries.IForgeRegistry;
 import net.minecraftforge.registries.RegistryManager;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 public class TriggerModuleQueue {
-    public static final TriggerModuleQueue EMPTY = new TriggerModuleQueue();
-
-    private final List<TriggerModuleInstance> queue;
-    private boolean locked = false;
-
-    public TriggerModuleQueue(){
-        this.queue = new ArrayList<>();
-    }
-
-    public TriggerModuleQueue(List<TriggerModuleInstance> modules) {
-        this.queue = new ArrayList<>(modules);
-    }
+    private final List<TriggerModuleInstance> queue = new ArrayList<>();
 
     public void clear() {
-        if (locked) return;
-
         queue.clear();
     }
 
-    public void rawAdd(TriggerModuleInstance inst) {
-        if (locked) return;
+    public void copyFrom(TriggerModuleQueue source) {
+        replaceAll(source.snapshot().modules());
+    }
 
-        queue.add(inst);
+    public void replaceAll(List<TriggerModuleInstance> modules) {
+        queue.clear();
+        modules.stream()
+                .filter(module -> module.stacks() > 0)
+                .sorted(Comparator.comparingDouble(TriggerModuleInstance::priority).reversed())
+                .forEach(queue::add);
     }
 
     /** 仅在当前模块不存在的时候才加 */
-    public void addIfNotExist(ResourceLocation id, int stacks){
+    public void addIfNotExist(ResourceLocation id, int stacks) {
         if (!contains(id) && stacks > 0) {
             add(id, 1);
         }
     }
 
-    public void add(TriggerModuleInstance inst){
-        if (locked) return;
-
-        add(inst.id, inst.stacks);
+    public void add(TriggerModuleInstance instance) {
+        add(instance.id(), instance.stacks());
     }
 
     public void add(ResourceLocation id, int stacks) {
-        if (locked) return;
         // 获取注册表
         IForgeRegistry<TriggerModule> registry =
                 RegistryManager.ACTIVE.getRegistry(ModTriggerModule.TRIGGER_MODULE_KEY);
@@ -56,97 +48,59 @@ public class TriggerModuleQueue {
         TriggerModule module = registry.getValue(id);
         if (module == null) return; // 无效 id
 
-        double priority = module.getPriority();
-        TriggerModuleInstance found = null;
-
-        for (TriggerModuleInstance inst : queue) {
-            if (inst.id.equals(id)) {
-                found = inst;
-                break;
+        TriggerModuleInstance existing = get(id);
+        if (existing == null) {
+            if (stacks > 0) {
+                insertSorted(new TriggerModuleInstance(id, stacks, module.getPriority()));
             }
+            return;
         }
 
-        if (found != null) {
-            // 修改已有实例
-            found.stacks += stacks;
-
-            if (found.stacks <= 0) {
-                queue.remove(found);
-                return;
-            }
-
-            found.priority = priority;
-            queue.remove(found); // 先移除，重新插入
-            insertSortedBinary(found);
-        } else {
-            if (stacks <= 0) return;
-
-            TriggerModuleInstance newInst = new TriggerModuleInstance(id, stacks, priority);
-            insertSortedBinary(newInst);
+        queue.remove(existing);
+        int updatedStacks = existing.stacks() + stacks;
+        if (updatedStacks > 0) {
+            insertSorted(new TriggerModuleInstance(id, updatedStacks, module.getPriority()));
         }
     }
-
-    private void insertSortedBinary(TriggerModuleInstance inst) {
-        int left = 0;
-        int right = queue.size() - 1;
-
-        while (left <= right) {
-            int mid = (left + right) >>> 1;
-            double midPriority = queue.get(mid).priority;
-
-            if (inst.priority > midPriority) {
-                right = mid - 1;
-            } else {
-                left = mid + 1;
-            }
-        }
-
-        // left
-        queue.add(left, inst);
-    }
-
 
     public void remove(ResourceLocation id) {
-        if (locked) return;
-
-        queue.removeIf(inst -> inst.id.equals(id));
+        queue.removeIf(instance -> instance.id().equals(id));
     }
 
-    public List<TriggerModuleInstance> getQueue(){
-        return queue;
-    }
-
-    public TriggerModuleQueue copy(){
-        return new TriggerModuleQueue(queue);
+    public TriggerModuleSnapshot snapshot() {
+        return queue.isEmpty() ? TriggerModuleSnapshot.empty() : new TriggerModuleSnapshot(queue);
     }
 
     public boolean contains(ResourceLocation id) {
-        for (TriggerModuleInstance inst : queue) {
-            if (inst.id.equals(id)) {
-                return true;
-            }
-        }
-        return false;
+        return get(id) != null;
     }
 
     public TriggerModuleInstance get(ResourceLocation id) {
-        for (TriggerModuleInstance inst : queue) {
-            if (inst.id.equals(id)) {
-                return inst;
+        for (TriggerModuleInstance instance : queue) {
+            if (instance.id().equals(id)) {
+                return instance;
             }
         }
         return null;
     }
 
-    public boolean isEmpty(){
+    public boolean isEmpty() {
         return queue.isEmpty();
     }
 
-    public void lock() {
-        this.locked = true;
-    }
+    private void insertSorted(TriggerModuleInstance instance) {
+        int left = 0;
+        int right = queue.size() - 1;
 
-    public void unlock(){
-        this.locked = false;
+        while (left <= right) {
+            int middle = (left + right) >>> 1;
+            if (instance.priority() > queue.get(middle).priority()) {
+                right = middle - 1;
+            } else {
+                left = middle + 1;
+            }
+        }
+        // left
+        queue.add(left, instance);
     }
 }

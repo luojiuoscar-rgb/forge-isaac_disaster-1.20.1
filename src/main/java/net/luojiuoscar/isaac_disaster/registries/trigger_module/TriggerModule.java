@@ -34,10 +34,10 @@ public abstract class TriggerModule {
     public double getPriority() {return 0; }
 
     /** 每一次获取模块的时候都会触发 */
-    public void onAdded(LivingEntity entity, TriggerModuleQueue queue){}
+    public void onAdded(LivingEntity entity){}
 
     /** 每一次失去该模块的时候都会触发 */
-    public void onRemove(LivingEntity entity, TriggerModuleQueue queue){}
+    public void onRemove(LivingEntity entity){}
 
     protected static double getLuck(LivingEntity entity){
         AttributeInstance instance = entity.getAttribute(Attributes.LUCK);

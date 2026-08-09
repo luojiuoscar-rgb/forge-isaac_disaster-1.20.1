@@ -13,7 +13,6 @@ import net.luojiuoscar.isaac_disaster.networking.ModMessages;
 import net.luojiuoscar.isaac_disaster.networking.packet.RefreshScaleS2CPacket;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerModule;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerModule;
-import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerModuleQueue;
 import net.luojiuoscar.isaac_disaster.system.ScaleUtils;
 import net.luojiuoscar.isaac_disaster.system.flight.IsaacFlightController;
 import net.minecraft.ChatFormatting;
@@ -395,13 +394,10 @@ public enum StatManager {
                     TriggerModule module = reg.getValue(rl);
                     if (module == null) return;
 
-                    TriggerModuleQueue queue = effectModules.getTriggerModules().copy();
-                    queue.lock();
-
                     if (count > 0){
-                        module.onAdded(entity, queue);
+                        module.onAdded(entity);
                     }else if (count < 0){
-                        module.onRemove(entity, queue);
+                        module.onRemove(entity);
                     }
                 }
         );
