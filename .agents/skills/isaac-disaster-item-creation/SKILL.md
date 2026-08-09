@@ -71,6 +71,7 @@ Implement passive items as an item instance plus a passive ability. Read current
 - Append `ItemId`; its `ordinal()` is the mod ID, never the Wiki ID. Never insert or reorder constants; use original level.
 - Add the ability under `registries/ability/passive/impl`, register it in `ModPassiveAbility`, bind it in `ModPassiveItems`, and add its static object to the passive-item list for datagen.
 - Use `StatManager` for stats, descriptions, modules, sets, inverse removal, spiritual/homing/piercing/controllable tears, and required `Type`, `IExecutableEffect`, or bullet trigger support. Preserve the distinct `TEARS` and `TEARS_CORRECTION` fields when implementing fire-rate effects.
+- When creating a `ResourceLocation` for a mod-owned resource, use `IsaacDisaster.MOD_ID` as the namespace, for example `ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "path")`; never hardcode the literal namespace string `"isaac_disaster"` in new mod code. Keep explicitly required external or vanilla namespaces unchanged.
 - Register `bullet_color` when the item changes projectile color. Default to no `ItemStack` data; use it only after the approved focused plan.
 - Add concise inline comments only for genuinely complex logic and Javadoc only for reusable utility methods.
 

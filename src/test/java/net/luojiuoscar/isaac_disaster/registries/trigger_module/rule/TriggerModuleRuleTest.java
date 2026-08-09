@@ -4,6 +4,9 @@ import net.luojiuoscar.isaac_disaster.registries.ability_effect.ContextKey;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ExecutableEffectContext;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerModuleInstance;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerType;
+import net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerTypes;
+import net.luojiuoscar.isaac_disaster.registries.trigger_module.rule.impl.normal.BlackCandleCursedEyeRule;
+import net.luojiuoscar.isaac_disaster.registries.trigger_module.rule.impl.normal.BlackCandleCurseOfTheTowerRule;
 import net.minecraft.resources.ResourceLocation;
 import org.junit.jupiter.api.Test;
 
@@ -51,7 +54,7 @@ class TriggerModuleRuleTest {
         TriggerModuleRuleContext context = new TriggerModuleRuleContext(
                 snapshot.modules().get(0), HIT, new ExecutableEffectContext(null), snapshot);
 
-        assertFalse(TriggerModuleRuleIndex.allows(List.of(
+        assertFalse(TriggerModuleRules.allows(List.of(
                 new TestRule(Set.of(MODULE_A), Set.of(HIT), true),
                 new TestRule(Set.of(MODULE_A), Set.of(HIT), false)
         ), context));
@@ -72,6 +75,22 @@ class TriggerModuleRuleTest {
 
         assertEquals(List.of("before"), visibleValues);
         assertThrows(UnsupportedOperationException.class, () -> visibleValues.add("blocked"));
+    }
+
+    @Test
+    void blackCandleRulesTargetTheirOwnHurtModules() {
+        TriggerModuleRule cursedEyeRule = new BlackCandleCursedEyeRule();
+        TriggerModuleRule curseOfTheTowerRule = new BlackCandleCurseOfTheTowerRule();
+
+        ResourceLocation cursedEye = ResourceLocation.fromNamespaceAndPath("isaac_disaster", "cursed_eye");
+        ResourceLocation curseOfTheTower = ResourceLocation.fromNamespaceAndPath("isaac_disaster", "curse_of_the_tower");
+
+        assertTrue(cursedEyeRule.appliesTo(cursedEye, ModTriggerTypes.ON_HURT_NEGATIVE));
+        assertFalse(cursedEyeRule.appliesTo(cursedEye, ModTriggerTypes.ON_HURT));
+        assertFalse(cursedEyeRule.appliesTo(curseOfTheTower, ModTriggerTypes.ON_HURT_NEGATIVE));
+        assertTrue(curseOfTheTowerRule.appliesTo(curseOfTheTower, ModTriggerTypes.ON_HURT_NEGATIVE));
+        assertFalse(curseOfTheTowerRule.appliesTo(curseOfTheTower, ModTriggerTypes.ON_HURT));
+        assertFalse(curseOfTheTowerRule.appliesTo(cursedEye, ModTriggerTypes.ON_HURT_NEGATIVE));
     }
 
     private static final class TestRule extends TriggerModuleRule {

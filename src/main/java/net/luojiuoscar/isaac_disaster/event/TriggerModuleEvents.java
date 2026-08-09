@@ -18,7 +18,7 @@ import net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerTypes;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerModule;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerType;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.rule.TriggerModuleRuleContext;
-import net.luojiuoscar.isaac_disaster.registries.trigger_module.rule.TriggerModuleRuleIndex;
+import net.luojiuoscar.isaac_disaster.registries.trigger_module.rule.TriggerModuleRules;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.rule.TriggerModuleSnapshot;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
@@ -66,7 +66,7 @@ public class TriggerModuleEvents {
                 if (module == null) continue;
 
                 TriggerModuleRuleContext ruleContext = new TriggerModuleRuleContext(inst, type, context, snapshot);
-                if (!TriggerModuleRuleIndex.allows(ruleContext)) continue;
+                if (!TriggerModuleRules.allows(ruleContext)) continue;
 
                 context.set(ContextKeys.AMPLIFIER, (double) inst.stacks());
 

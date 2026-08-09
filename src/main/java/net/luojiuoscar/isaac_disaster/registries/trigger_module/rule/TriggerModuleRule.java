@@ -5,6 +5,9 @@ import net.minecraft.resources.ResourceLocation;
 
 import java.util.Set;
 
+/**
+ * A registered gate evaluated before a target trigger module executes.
+ */
 public abstract class TriggerModuleRule {
     private final Set<ResourceLocation> targetModules;
     private final Set<TriggerType> triggerTypes;
@@ -25,11 +28,16 @@ public abstract class TriggerModuleRule {
         return triggerTypes;
     }
 
+    /**
+     * Returns whether this rule targets the module and trigger type.
+     * An empty trigger type set applies to every trigger type.
+     */
     public boolean appliesTo(ResourceLocation moduleId, TriggerType triggerType) {
         return targetModules.contains(moduleId)
                 && (triggerTypes.isEmpty()
                 || triggerTypes.stream().anyMatch(type -> type.getId().equals(triggerType.getId())));
     }
 
+    /** Returns whether the candidate module may execute for this trigger. */
     public abstract boolean allows(TriggerModuleRuleContext context);
 }

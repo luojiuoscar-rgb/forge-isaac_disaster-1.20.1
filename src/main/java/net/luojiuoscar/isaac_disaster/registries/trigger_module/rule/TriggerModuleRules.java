@@ -10,12 +10,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public final class TriggerModuleRuleIndex {
+/**
+ * Runtime lookup for registered trigger module rules.
+ */
+public final class TriggerModuleRules {
     private static volatile Map<ResourceLocation, RuleBucket> rulesByModule = Map.of();
 
-    private TriggerModuleRuleIndex() {
+    private TriggerModuleRules() {
     }
 
+    /** Rebuilds the immutable lookup after the Forge rule registry is ready. */
     public static void rebuild() {
         IForgeRegistry<TriggerModuleRule> registry =
                 RegistryManager.ACTIVE.getRegistry(ModTriggerModuleRules.TRIGGER_MODULE_RULE_KEY);
@@ -43,6 +47,7 @@ public final class TriggerModuleRuleIndex {
         rulesByModule = Map.copyOf(immutableIndex);
     }
 
+    /** Returns false when any rule matching the candidate rejects this execution. */
     public static boolean allows(TriggerModuleRuleContext context) {
         RuleBucket bucket = rulesByModule.get(context.getCandidateModuleId());
         if (bucket == null) return true;

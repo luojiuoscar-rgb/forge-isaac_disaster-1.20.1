@@ -11,6 +11,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * Read-only data supplied to a rule while a trigger module is being evaluated.
+ */
 public final class TriggerModuleRuleContext {
     private final TriggerModuleInstance candidate;
     private final TriggerType triggerType;
@@ -41,10 +44,18 @@ public final class TriggerModuleRuleContext {
         return effectContext.getEntity();
     }
 
+    /**
+     * Reads a context value without allowing rules to replace it.
+     * Collection values are returned as unmodifiable snapshots.
+     */
     public <T> T get(ContextKey<T> key) {
         return readOnlyValue(effectContext.get(key));
     }
 
+    /**
+     * Reads a context value or the supplied default without allowing replacement.
+     * Collection values are returned as unmodifiable snapshots.
+     */
     public <T> T getOrDefault(ContextKey<T> key, T defaultValue) {
         return readOnlyValue(effectContext.getOrDefault(key, defaultValue));
     }
