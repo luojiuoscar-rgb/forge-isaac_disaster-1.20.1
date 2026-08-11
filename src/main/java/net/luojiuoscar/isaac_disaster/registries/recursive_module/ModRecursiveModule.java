@@ -54,4 +54,6 @@ public class ModRecursiveModule {
             RECURSIVE_MODULE_REGISTRY.register("safety_scissors", SafetyScissors::new);
     public static final RegistryObject<RecursiveModule> PLACENTA =
             RECURSIVE_MODULE_REGISTRY.register("placenta", Placenta::new);
+    public static final RegistryObject<RecursiveModule> THE_WAFER =
+            RECURSIVE_MODULE_REGISTRY.register("the_wafer", TheWafer::new);
 }

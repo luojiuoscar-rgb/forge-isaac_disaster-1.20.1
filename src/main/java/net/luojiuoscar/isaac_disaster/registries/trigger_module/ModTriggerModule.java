@@ -25,8 +25,6 @@ public class ModTriggerModule {
             TRIGGER_MODULE_REGISTRY.register("curse_of_the_tower", CurseOfTheTower::new);
     public static final RegistryObject<TriggerModule> HABIT =
             TRIGGER_MODULE_REGISTRY.register("habit", Habit::new);
-    public static final RegistryObject<TriggerModule> THE_WAFER =
-            TRIGGER_MODULE_REGISTRY.register("the_wafer", TheWafer::new);
     public static final RegistryObject<TriggerModule> THE_COMMON_COLD =
             TRIGGER_MODULE_REGISTRY.register("the_common_cold", TheCommonCold::new);
     public static final RegistryObject<TriggerModule> SWALLOWED_PENNY =

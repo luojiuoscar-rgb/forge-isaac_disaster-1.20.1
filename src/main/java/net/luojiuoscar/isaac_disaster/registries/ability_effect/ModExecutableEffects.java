@@ -75,8 +75,6 @@ public class ModExecutableEffects {
             EXECUTABLE_EFFECT_REGISTRY.register("crooked_penny", CrookedPenny::new);
     public static final RegistryObject<IExecutableEffect> SPAWN_BOMB_NEARBY =
             EXECUTABLE_EFFECT_REGISTRY.register("spawn_bomb_nearby", SpawnBombNearby::new);
-    public static final RegistryObject<IExecutableEffect> THE_WAFER =
-            EXECUTABLE_EFFECT_REGISTRY.register("the_wafer", TheWafer::new);
     public static final RegistryObject<IExecutableEffect> RANDOM_HARMFUL_POTION =
             EXECUTABLE_EFFECT_REGISTRY.register("random_harmful_potion", RandomHarmfulPotion::new);
     public static final RegistryObject<IExecutableEffect> BREAK_BLOCK_AND_DROP =
@@ -926,6 +924,21 @@ public class ModExecutableEffects {
                     ATTACH_EFFECT_TO_TNT, ctx ->
                     ctx.set(ContextKeys.EXECUTABLE_EFFECT, ModExecutableEffects.SAD_BOMB.get())
             ));
+    public static final RegistryObject<IExecutableEffect> THE_WAFER =
+            EXECUTABLE_EFFECT_REGISTRY.register("the_wafer", () -> new AbilityEffectEntry(
+                            POTIONS, ctx -> ctx.set(ContextKeys.POTIONS, List.of(
+                            new PotionProfile(
+                                    MobEffects.DAMAGE_RESISTANCE,
+                                    100,
+                                    1,
+                                    0,
+                                    0,
+                                    false
+                            )
+                    )))
+            );
+
+
     //</editor-fold>
     // entry end
 }
