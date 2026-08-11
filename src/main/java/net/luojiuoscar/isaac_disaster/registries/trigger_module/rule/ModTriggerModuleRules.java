@@ -1,8 +1,8 @@
 package net.luojiuoscar.isaac_disaster.registries.trigger_module.rule;
 
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
-import net.luojiuoscar.isaac_disaster.registries.trigger_module.rule.impl.normal.BlackCandleCursedEyeRule;
-import net.luojiuoscar.isaac_disaster.registries.trigger_module.rule.impl.normal.BlackCandleCurseOfTheTowerRule;
+import net.luojiuoscar.isaac_disaster.registries.trigger_module.rule.impl.BlackCandleCursedEyeRule;
+import net.luojiuoscar.isaac_disaster.registries.trigger_module.rule.impl.BlackCandleCurseOfTheTowerRule;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;

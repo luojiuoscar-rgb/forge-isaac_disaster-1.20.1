@@ -128,15 +128,20 @@ public class TriggerModuleEvents {
     @SubscribeEvent
     public static void onLivingHurt(LivingHurtEvent event) {
         LivingEntity entity = event.getEntity();
+        Entity sourceEntity = event.getSource().getEntity();
+        Entity directEntity = event.getSource().getDirectEntity();
         ExecutableEffectContext context = new ExecutableEffectContext(entity);
         context.set(ContextKeys.EVENT, event);
         context.set(ContextKeys.TARGET_POSITION, entity.position());
 
         List<LivingEntity> secondary_entities = new ArrayList<>();
+        if (sourceEntity instanceof LivingEntity livingSource) {
+            secondary_entities.add(livingSource);
+        }
         context.set(ContextKeys.SECONDARY_LIVING_ENTITIES, secondary_entities);
         context.set(ContextKeys.DOUBLE, List.of((double) event.getAmount()));
-        if (event.getSource().getDirectEntity() != null){
-            context.set(ContextKeys.ENTITY, List.of(event.getSource().getDirectEntity()));
+        if (directEntity != null){
+            context.set(ContextKeys.ENTITY, List.of(directEntity));
         }
 
         dispatch(context, ModTriggerTypes.ON_HURT);

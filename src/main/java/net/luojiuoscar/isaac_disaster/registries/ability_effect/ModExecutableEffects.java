@@ -883,19 +883,7 @@ public class ModExecutableEffects {
                     }
             ));
     public static final RegistryObject<IExecutableEffect> MIDAS_TOUCH =
-            EXECUTABLE_EFFECT_REGISTRY.register("midas_touch", () -> new AbilityEffectEntry(
-                    APPLY_EFFECT_TO_SECONDARY_LIVING_ENTITY, ctx -> {
-                ctx.set(ContextKeys.POTIONS, List.of(
-                        new PotionProfile(
-                                ModEffects.GOLDEN.get(),
-                                100,
-                                0,
-                                0,
-                                0,
-                                true
-                        )));
-                ctx.set(ContextKeys.EXECUTABLE_EFFECT, POTIONS.get());
-            }));
+            EXECUTABLE_EFFECT_REGISTRY.register("midas_touch", MidasTouch::new);
     public static final RegistryObject<IExecutableEffect> MOMS_EYESHADOW =
             EXECUTABLE_EFFECT_REGISTRY.register("moms_eyeshadow", () -> new AbilityEffectEntry(
                     APPLY_EFFECT_TO_SECONDARY_LIVING_ENTITY, ctx -> {

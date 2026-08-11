@@ -4,6 +4,7 @@ import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.networking.packet.*;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.Entity;
 import net.minecraftforge.network.NetworkDirection;
 import net.minecraftforge.network.NetworkRegistry;
 import net.minecraftforge.network.PacketDistributor;
@@ -105,6 +106,12 @@ public class ModMessages {
                 .encoder(IsaacFlightStateS2CPacket::toBytes)
                 .consumerNetworkThread(IsaacFlightStateS2CPacket::handle)
                 .add();
+
+        net.messageBuilder(EntityVisualStateS2CPacket.class, id(), NetworkDirection.PLAY_TO_CLIENT)
+                .decoder(EntityVisualStateS2CPacket::new)
+                .encoder(EntityVisualStateS2CPacket::toBytes)
+                .consumerNetworkThread(EntityVisualStateS2CPacket::handle)
+                .add();
     }
 
     public static <MSG> void sendToServer(MSG message){
@@ -113,6 +120,10 @@ public class ModMessages {
 
     public static <MSG> void sentToPlayer(MSG message, ServerPlayer player){
         INSTANCE.send(PacketDistributor.PLAYER.with(() -> player), message);
+    }
+
+    public static <MSG> void sendToTracking(MSG message, Entity entity) {
+        INSTANCE.send(PacketDistributor.TRACKING_ENTITY.with(() -> entity), message);
     }
 
 }

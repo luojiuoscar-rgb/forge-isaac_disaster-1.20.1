@@ -8,13 +8,13 @@ import net.luojiuoscar.isaac_disaster.registries.ability_effect.IAbilityEffect;
 import net.minecraft.world.item.ItemStack;
 
 public class ContractFromBelow implements IAbilityEffect {
-    public static int calculateStackCount(int originalCount, int amplifier, int maxStackSize) {
+    private static int calculateStackCount(int originalCount, int amplifier, int maxStackSize) {
         if (maxStackSize <= 1) return originalCount;
         int multipliedCount = originalCount * (amplifier + 1);
         return Math.min(multipliedCount, maxStackSize);
     }
 
-    public static double getCancellationChance(int stacks) {
+    private static double getCancellationChance(int stacks) {
         return 0.5D * Math.pow(0.666D, stacks);
     }
 

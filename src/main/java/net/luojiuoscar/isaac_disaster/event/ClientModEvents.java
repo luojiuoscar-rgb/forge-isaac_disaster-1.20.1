@@ -13,11 +13,18 @@ import net.luojiuoscar.isaac_disaster.entity.ModEntities;
 import net.luojiuoscar.isaac_disaster.entity.tnt.CustomTntRenderer;
 import net.luojiuoscar.isaac_disaster.renderer.FetusBulletRenderer;
 import net.luojiuoscar.isaac_disaster.renderer.InvincibleChargeLayer;
+import net.luojiuoscar.isaac_disaster.renderer.layer.golden.GoldenLayer;
+import net.luojiuoscar.isaac_disaster.renderer.layer.golden.SlimeGoldenLayer;
 import net.luojiuoscar.isaac_disaster.renderer.IsaacBulletRenderer;
 import net.luojiuoscar.isaac_disaster.renderer.familiar.MomKnifeRenderer;
 import net.minecraft.client.renderer.entity.NoopRenderer;
 import net.minecraft.client.renderer.entity.player.PlayerRenderer;
+import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.client.renderer.entity.SlimeRenderer;
+import net.minecraft.world.entity.ai.attributes.DefaultAttributes;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraftforge.client.event.ModelEvent;
@@ -26,6 +33,7 @@ import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
 import net.minecraftforge.client.gui.overlay.VanillaGuiOverlay;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.registries.ForgeRegistries;
 
 
 @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
@@ -99,12 +107,41 @@ public class ClientModEvents {
 
     @SubscribeEvent
     public static void onLayerRegister(EntityRenderersEvent.AddLayers event) {
+        for (EntityType<?> entityType : ForgeRegistries.ENTITY_TYPES.getValues()) {
+            if (DefaultAttributes.hasSupplier(entityType)) {
+                addGoldenLayer(event, entityType);
+            }
+        }
+
         for (String skin : event.getSkins()) {
             PlayerRenderer renderer = event.getSkin(skin);
             if (renderer != null) {
                 renderer.addLayer(new InvincibleChargeLayer<>(renderer));
             }
         }
+    }
+
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    private static void addGoldenLayer(EntityRenderersEvent.AddLayers event, EntityType<?> entityType) {
+        EntityType<? extends LivingEntity> livingEntityType = (EntityType<? extends LivingEntity>) entityType;
+        LivingEntityRenderer renderer = event.getRenderer(livingEntityType);
+        if (renderer == null) {
+            return;
+        }
+
+        if (renderer instanceof SlimeRenderer) {
+            renderer.addLayer(new SlimeGoldenLayer(renderer, event.getEntityModels()));
+        } else {
+            addGoldenLayer(renderer);
+        }
+    }
+
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    static void addGoldenLayer(LivingEntityRenderer renderer) {
+        if (renderer == null) {
+            return;
+        }
+        renderer.addLayer(new GoldenLayer(renderer));
     }
 
     @SubscribeEvent

@@ -1,4 +1,4 @@
-package net.luojiuoscar.isaac_disaster.registries.trigger_module.rule.impl.normal;
+package net.luojiuoscar.isaac_disaster.registries.trigger_module.rule.impl;
 
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
@@ -11,9 +11,9 @@ import net.minecraft.server.level.ServerPlayer;
 
 import java.util.Set;
 
-public class BlackCandleCursedEyeRule extends TriggerModuleRule {
-    public BlackCandleCursedEyeRule() {
-        super(Set.of(ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "cursed_eye")),
+public class BlackCandleCurseOfTheTowerRule extends TriggerModuleRule {
+    public BlackCandleCurseOfTheTowerRule() {
+        super(Set.of(ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "curse_of_the_tower")),
                 Set.of(ModTriggerTypes.ON_HURT_NEGATIVE));
     }
 

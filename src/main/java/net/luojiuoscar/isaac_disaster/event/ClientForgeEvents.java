@@ -1,6 +1,7 @@
 package net.luojiuoscar.isaac_disaster.event;
 
 import net.luojiuoscar.isaac_disaster.client.ClientDataManager;
+import net.luojiuoscar.isaac_disaster.client.EntityRenderFreeze;
 import net.luojiuoscar.isaac_disaster.client.ModKeyMappings;
 import net.luojiuoscar.isaac_disaster.client.flight.IsaacFlightClientController;
 import net.luojiuoscar.isaac_disaster.networking.ModMessages;
@@ -11,6 +12,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.InputEvent;
+import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
 import net.minecraftforge.client.event.RenderLivingEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
@@ -42,6 +44,11 @@ public class ClientForgeEvents {
         if (scale != 1.0F) {
             event.getPoseStack().scale(scale, scale, scale);
         }
+    }
+
+    @SubscribeEvent
+    public static void clearFrozenPoses(ClientPlayerNetworkEvent.LoggingOut event) {
+        EntityRenderFreeze.clear();
     }
 
     @SubscribeEvent

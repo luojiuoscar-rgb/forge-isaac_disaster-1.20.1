@@ -1,6 +1,7 @@
 package net.luojiuoscar.isaac_disaster.event;
 
 import net.luojiuoscar.isaac_disaster.Config;
+import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.attribute.ModAttributes;
 import net.luojiuoscar.isaac_disaster.capability.entity.EffectModulesProvider;
 import net.luojiuoscar.isaac_disaster.capability.entity.EntityEffectProvider;
@@ -27,7 +28,9 @@ import net.luojiuoscar.isaac_disaster.manager.EffectManager;
 import net.luojiuoscar.isaac_disaster.manager.ModDamageType;
 import net.luojiuoscar.isaac_disaster.manager.ModLootTables;
 import net.luojiuoscar.isaac_disaster.manager.PillEffectManager;
+import net.luojiuoscar.isaac_disaster.effect.custom.GoldenEffect;
 import net.luojiuoscar.isaac_disaster.networking.ModMessages;
+import net.luojiuoscar.isaac_disaster.networking.EntityVisualStateSync;
 import net.luojiuoscar.isaac_disaster.networking.packet.PassiveItemMapSyncS2CPacket;
 import net.luojiuoscar.isaac_disaster.networking.packet.PillRecordsSyncS2CPacket;
 import net.luojiuoscar.isaac_disaster.networking.packet.RefreshScaleS2CPacket;
@@ -36,6 +39,7 @@ import net.luojiuoscar.isaac_disaster.registries.ability.set.ModSetAbility;
 import net.luojiuoscar.isaac_disaster.registries.ability.set.SetAbility;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerModule;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerModuleQueue;
+import net.luojiuoscar.isaac_disaster.system.EntityVisualState;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -43,6 +47,7 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.npc.WanderingTrader;
@@ -52,17 +57,17 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.trading.MerchantOffer;
 import net.minecraft.world.item.trading.MerchantOffers;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
-import net.minecraftforge.event.entity.living.LivingDeathEvent;
-import net.minecraftforge.event.entity.living.LivingHurtEvent;
-import net.minecraftforge.event.entity.living.LivingKnockBackEvent;
-import net.minecraftforge.event.entity.living.MobEffectEvent;
+import net.minecraftforge.event.entity.living.*;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.level.LevelEvent;
+import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -105,7 +110,18 @@ public class ForgeEvents {
 
         // 添加永久模块
         player.getCapability(EffectModulesProvider.EFFECT_MODULES).ifPresent(
-                effectModules -> addPermanentModules(effectModules.getTriggerModules()));
+        effectModules -> addPermanentModules(effectModules.getTriggerModules()));
+    }
+
+    @SubscribeEvent
+    public static void onStartTracking(PlayerEvent.StartTracking event) {
+        if (!(event.getEntity() instanceof ServerPlayer player)
+                || !(event.getTarget() instanceof LivingEntity target)) {
+            return;
+        }
+
+        GoldenEffect.reconcileVisualState(target);
+        EntityVisualStateSync.syncToPlayer(target, player);
     }
 
     public static void syncAllDataToClient(ServerPlayer player){
@@ -340,6 +356,18 @@ public class ForgeEvents {
     public static void onLivingHurt(LivingHurtEvent event) {
         LivingEntity victim = event.getEntity();
 
+        //TODO 金化受击音效（暂定）
+        if (!victim.level().isClientSide && victim.hasEffect(ModEffects.GOLDEN.get())) {
+            victim.level().playSound(
+                    null,
+                    victim.blockPosition(),
+                    SoundEvents.METAL_PLACE,
+                    SoundSource.BLOCKS,
+                    1.0F,
+                    1.0F
+            );
+        }
+
         // 易伤
         if (victim.hasEffect(ModEffects.VULNERABLE.get())){
             int level = victim.getEffect(ModEffects.VULNERABLE.get()).getAmplifier() + 1;
@@ -362,10 +390,33 @@ public class ForgeEvents {
         }
     }
 
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
+    public static void onFrozenLivingTick(LivingEvent.LivingTickEvent event) {
+        // 清除冻结生物的自主移动能力
+        if (!(event.getEntity() instanceof Mob mob) || !EntityVisualState.isFrozen(mob)) return;
+
+        mob.xxa = 0.0F;
+        mob.yya = 0.0F;
+        mob.zza = 0.0F;
+        mob.setJumping(false);
+
+        if (mob.onGround()) {
+            mob.setDeltaMovement(0.0, 0.0, 0.0);
+            return;
+        }
+
+        mob.setDeltaMovement(0.0, mob.getDeltaMovement().y, 0.0);
+    }
+
 
     @SubscribeEvent
     public static void onEntityKnockback(LivingKnockBackEvent event) {
         LivingEntity entity = event.getEntity();
+        if (entity.hasEffect(ModEffects.GOLDEN.get())) {
+            event.setCanceled(true);
+            return;
+        }
+
         DamageSource source = entity.getLastDamageSource();
 
         if (source == null) return;
@@ -433,6 +484,10 @@ public class ForgeEvents {
     // 临时流浪商人交易系统
     @SubscribeEvent
     public static void onEntityJoin(EntityJoinLevelEvent event) {
+        if (!event.getLevel().isClientSide && event.getEntity() instanceof LivingEntity livingEntity) {
+            GoldenEffect.reconcileVisualState(livingEntity);
+        }
+
         if (event.getEntity() instanceof WanderingTrader trader) {
             // if modified skip
             if (trader.getPersistentData().getBoolean("IsaacDisasterWanderingTraderModified")) return;

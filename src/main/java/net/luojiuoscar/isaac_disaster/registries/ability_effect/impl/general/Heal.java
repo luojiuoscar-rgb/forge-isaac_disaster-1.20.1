@@ -23,7 +23,7 @@ public class Heal implements IAbilityEffect {
         return true;
     }
 
-    static double getHealingAmplifier(double amplifier, boolean hasMaggysBow, boolean isRedHeartPickup) {
+    private static double getHealingAmplifier(double amplifier, boolean hasMaggysBow, boolean isRedHeartPickup) {
         return hasMaggysBow && isRedHeartPickup ? amplifier * 2 : amplifier;
     }
 
