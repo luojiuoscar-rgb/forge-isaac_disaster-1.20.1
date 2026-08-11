@@ -93,9 +93,14 @@ public class ModEffects {
     public static final RegistryObject<MobEffect> GOLDEN = MOB_EFFECTS.register(EffectManager.GOLDEN.getName(),
             () -> new GoldenEffect(MobEffectCategory.HARMFUL, 0xefe300));
 
+    public static final RegistryObject<MobEffect> PETRIFIED = MOB_EFFECTS.register(EffectManager.PETRIFIED.getName(),
+            () -> new PetrifiedEffect(MobEffectCategory.HARMFUL, 0x808080));
+
     // curses
     public static final RegistryObject<MobEffect> CURSE_OF_THE_BLIND = MOB_EFFECTS.register(EffectManager.CURSE_OF_THE_BLIND.getName(),
             () -> new CurseOfTheBlind(MobEffectCategory.HARMFUL, 0x512799));
     public static final RegistryObject<MobEffect> CURSE_OF_THE_MAZE = MOB_EFFECTS.register(EffectManager.CURSE_OF_THE_MAZE.getName(),
             () -> new CurseOfTheMaze(MobEffectCategory.HARMFUL, 0x512799));
+
+
 }

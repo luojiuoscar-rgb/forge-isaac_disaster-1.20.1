@@ -16,7 +16,10 @@ public final class ModVisualLayers {
             DeferredRegister.create(VISUAL_LAYER_KEY, IsaacDisaster.MOD_ID);
 
     public static final RegistryObject<VisualLayer> GOLDEN = VISUAL_LAYER_REGISTRY.register(
-            "golden", () -> new VisualLayer(VisualLayerGroups.BODY_MATERIAL, 10));
+            "golden", () -> new VisualLayer(VisualLayerGroups.BODY_MATERIAL, 20));
+
+    public static final RegistryObject<VisualLayer> PETRIFIED = VISUAL_LAYER_REGISTRY.register(
+            "petrified", () -> new VisualLayer(VisualLayerGroups.BODY_MATERIAL, 10));
 
     private ModVisualLayers() {
     }

@@ -27,6 +27,7 @@ public enum EffectManager {
     GILDING("gilding"),
     THE_WIZ("the_wiz"),
     GOLDEN("golden"),
+    PETRIFIED("petrified"),
 
     // Curses
     CURSE_OF_THE_BLIND("curse_of_the_blind"),

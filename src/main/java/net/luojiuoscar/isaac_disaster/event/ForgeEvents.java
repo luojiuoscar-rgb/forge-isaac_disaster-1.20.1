@@ -1,7 +1,6 @@
 package net.luojiuoscar.isaac_disaster.event;
 
 import net.luojiuoscar.isaac_disaster.Config;
-import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.attribute.ModAttributes;
 import net.luojiuoscar.isaac_disaster.capability.entity.EffectModulesProvider;
 import net.luojiuoscar.isaac_disaster.capability.entity.EntityEffectProvider;
@@ -19,6 +18,8 @@ import net.luojiuoscar.isaac_disaster.commands.player.PlayerResetDataCmd;
 import net.luojiuoscar.isaac_disaster.commands.trinket.TrinketClearSwallowedCmd;
 import net.luojiuoscar.isaac_disaster.commands.trinket.TrinketSetEnchanted;
 import net.luojiuoscar.isaac_disaster.effect.ModEffects;
+import net.luojiuoscar.isaac_disaster.effect.custom.GoldenEffect;
+import net.luojiuoscar.isaac_disaster.effect.custom.PetrifiedEffect;
 import net.luojiuoscar.isaac_disaster.helper.CuriosHelper;
 import net.luojiuoscar.isaac_disaster.helper.LootHelper;
 import net.luojiuoscar.isaac_disaster.item.ModItems;
@@ -28,9 +29,8 @@ import net.luojiuoscar.isaac_disaster.manager.EffectManager;
 import net.luojiuoscar.isaac_disaster.manager.ModDamageType;
 import net.luojiuoscar.isaac_disaster.manager.ModLootTables;
 import net.luojiuoscar.isaac_disaster.manager.PillEffectManager;
-import net.luojiuoscar.isaac_disaster.effect.custom.GoldenEffect;
-import net.luojiuoscar.isaac_disaster.networking.ModMessages;
 import net.luojiuoscar.isaac_disaster.networking.EntityVisualStateSync;
+import net.luojiuoscar.isaac_disaster.networking.ModMessages;
 import net.luojiuoscar.isaac_disaster.networking.packet.PassiveItemMapSyncS2CPacket;
 import net.luojiuoscar.isaac_disaster.networking.packet.PillRecordsSyncS2CPacket;
 import net.luojiuoscar.isaac_disaster.networking.packet.RefreshScaleS2CPacket;
@@ -43,6 +43,8 @@ import net.luojiuoscar.isaac_disaster.system.EntityVisualState;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
@@ -57,9 +59,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.trading.MerchantOffer;
 import net.minecraft.world.item.trading.MerchantOffers;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.level.Level;
+import net.minecraftforge.common.ToolActions;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
@@ -121,6 +122,7 @@ public class ForgeEvents {
         }
 
         GoldenEffect.reconcileVisualState(target);
+        PetrifiedEffect.reconcileVisualState(target);
         EntityVisualStateSync.syncToPlayer(target, player);
     }
 
@@ -352,31 +354,37 @@ public class ForgeEvents {
         }
     }
 
-    @SubscribeEvent
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
     public static void onLivingHurt(LivingHurtEvent event) {
         LivingEntity victim = event.getEntity();
 
         //TODO 金化受击音效（暂定）
-        if (!victim.level().isClientSide && victim.hasEffect(ModEffects.GOLDEN.get())) {
-            victim.level().playSound(
-                    null,
-                    victim.blockPosition(),
-                    SoundEvents.METAL_PLACE,
-                    SoundSource.BLOCKS,
-                    1.0F,
-                    1.0F
-            );
+        if (!victim.level().isClientSide
+                && (victim.hasEffect(ModEffects.GOLDEN.get())
+                || victim.hasEffect(ModEffects.PETRIFIED.get()))) {
+
+            for (int i = 0; i < 4; i++) {
+                victim.level().playSound(
+                        null,
+                        victim.blockPosition(),
+                        SoundEvents.METAL_PLACE,
+                        SoundSource.BLOCKS,
+                        1.0F,
+                        1.0F
+                );
+            }
+
+            // 如果玩家用镐子攻击
+            if (event.getSource().getDirectEntity() instanceof Player player
+                    && player.getMainHandItem().canPerformAction(ToolActions.PICKAXE_DIG)) {
+                event.setAmount(event.getAmount() * 2.0F);
+            }
         }
 
         // 易伤
         if (victim.hasEffect(ModEffects.VULNERABLE.get())){
             int level = victim.getEffect(ModEffects.VULNERABLE.get()).getAmplifier() + 1;
             float newDamage = event.getAmount() * (1 + 0.3f * level);
-            event.setAmount(newDamage);
-        }
-        // 金化
-        if (victim.hasEffect(ModEffects.GOLDEN.get())){
-            float newDamage = event.getAmount() * 2;
             event.setAmount(newDamage);
         }
     }
@@ -412,7 +420,7 @@ public class ForgeEvents {
     @SubscribeEvent
     public static void onEntityKnockback(LivingKnockBackEvent event) {
         LivingEntity entity = event.getEntity();
-        if (entity.hasEffect(ModEffects.GOLDEN.get())) {
+        if (EntityVisualState.isFrozen(entity)) {
             event.setCanceled(true);
             return;
         }
@@ -486,6 +494,7 @@ public class ForgeEvents {
     public static void onEntityJoin(EntityJoinLevelEvent event) {
         if (!event.getLevel().isClientSide && event.getEntity() instanceof LivingEntity livingEntity) {
             GoldenEffect.reconcileVisualState(livingEntity);
+            PetrifiedEffect.reconcileVisualState(livingEntity);
         }
 
         if (event.getEntity() instanceof WanderingTrader trader) {

@@ -15,6 +15,8 @@ import net.luojiuoscar.isaac_disaster.renderer.FetusBulletRenderer;
 import net.luojiuoscar.isaac_disaster.renderer.InvincibleChargeLayer;
 import net.luojiuoscar.isaac_disaster.renderer.layer.golden.GoldenLayer;
 import net.luojiuoscar.isaac_disaster.renderer.layer.golden.SlimeGoldenLayer;
+import net.luojiuoscar.isaac_disaster.renderer.layer.petrified.PetrifiedLayer;
+import net.luojiuoscar.isaac_disaster.renderer.layer.petrified.SlimePetrifiedLayer;
 import net.luojiuoscar.isaac_disaster.renderer.IsaacBulletRenderer;
 import net.luojiuoscar.isaac_disaster.renderer.familiar.MomKnifeRenderer;
 import net.minecraft.client.renderer.entity.NoopRenderer;
@@ -109,7 +111,7 @@ public class ClientModEvents {
     public static void onLayerRegister(EntityRenderersEvent.AddLayers event) {
         for (EntityType<?> entityType : ForgeRegistries.ENTITY_TYPES.getValues()) {
             if (DefaultAttributes.hasSupplier(entityType)) {
-                addGoldenLayer(event, entityType);
+                addMaterialLayers(event, entityType);
             }
         }
 
@@ -122,7 +124,7 @@ public class ClientModEvents {
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
-    private static void addGoldenLayer(EntityRenderersEvent.AddLayers event, EntityType<?> entityType) {
+    private static void addMaterialLayers(EntityRenderersEvent.AddLayers event, EntityType<?> entityType) {
         EntityType<? extends LivingEntity> livingEntityType = (EntityType<? extends LivingEntity>) entityType;
         LivingEntityRenderer renderer = event.getRenderer(livingEntityType);
         if (renderer == null) {
@@ -131,17 +133,19 @@ public class ClientModEvents {
 
         if (renderer instanceof SlimeRenderer) {
             renderer.addLayer(new SlimeGoldenLayer(renderer, event.getEntityModels()));
+            renderer.addLayer(new SlimePetrifiedLayer(renderer, event.getEntityModels()));
         } else {
-            addGoldenLayer(renderer);
+            addMaterialLayers(renderer);
         }
     }
 
     @SuppressWarnings({"rawtypes", "unchecked"})
-    static void addGoldenLayer(LivingEntityRenderer renderer) {
+    private static void addMaterialLayers(LivingEntityRenderer renderer) {
         if (renderer == null) {
             return;
         }
         renderer.addLayer(new GoldenLayer(renderer));
+        renderer.addLayer(new PetrifiedLayer(renderer));
     }
 
     @SubscribeEvent

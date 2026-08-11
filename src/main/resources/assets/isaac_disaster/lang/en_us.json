@@ -112,7 +112,9 @@
   "effect.isaac_disaster.the_wiz": "\"智慧\"",
   "effect.isaac_disaster.the_wiz.description": "子弹向左前方、右前方发射",
   "effect.isaac_disaster.golden": "金化",
-  "effect.isaac_disaster.golden.description": "使生物无法移动，受到2倍伤害，并且死亡时掉落0-2钱币",
+  "effect.isaac_disaster.golden.description": "使生物无法移动，并且死亡时掉落0-2钱币",
+  "effect.isaac_disaster.petrified": "石化",
+  "effect.isaac_disaster.petrified.description": "使生物无法移动",
 
   "attribute.isaac_disaster.max_health": "生命上限",
   "attribute.isaac_disaster.movement_speed": "移动速度",

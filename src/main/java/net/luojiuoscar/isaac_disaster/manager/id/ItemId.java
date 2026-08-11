@@ -152,7 +152,7 @@ public enum ItemId {
     THE_POOP(0),
     STEAM_SALE(2),
     IRON_BAR(2),
-    MIDAS_TOUCH(2),
+    MIDAS_TOUCH(3),
     BOGO_BOMBS(1),
     THE_BEAN(0),
     LOKIS_HORNS(1),
