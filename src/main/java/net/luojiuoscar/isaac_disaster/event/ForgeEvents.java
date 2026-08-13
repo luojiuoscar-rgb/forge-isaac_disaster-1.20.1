@@ -40,6 +40,8 @@ import net.luojiuoscar.isaac_disaster.registries.ability.set.SetAbility;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerModule;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerModuleQueue;
 import net.luojiuoscar.isaac_disaster.system.EntityVisualState;
+import net.luojiuoscar.isaac_disaster.system.EntityFreezeState;
+import net.luojiuoscar.isaac_disaster.system.TimeStopState;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -64,10 +66,12 @@ import net.minecraftforge.common.ToolActions;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
+import net.minecraftforge.event.entity.EntityLeaveLevelEvent;
 import net.minecraftforge.event.entity.living.*;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.level.LevelEvent;
+import net.minecraftforge.event.server.ServerStoppingEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -93,6 +97,18 @@ public class ForgeEvents {
         }
     }
 
+    @SubscribeEvent
+    public static void onWorldUnload(LevelEvent.Unload event) {
+        if (event.getLevel() instanceof ServerLevel serverLevel) {
+            TimeStopState.clearPlayerSnapshots(serverLevel);
+        }
+    }
+
+    @SubscribeEvent
+    public static void onServerStopping(ServerStoppingEvent event) {
+        TimeStopState.clearAllPlayerSnapshots();
+    }
+
     /**
      * 玩家登录时同步数据到客户端
      */
@@ -115,6 +131,20 @@ public class ForgeEvents {
     }
 
     @SubscribeEvent
+    public static void onPlayerLoggedOut(PlayerEvent.PlayerLoggedOutEvent event) {
+        if (event.getEntity() instanceof ServerPlayer player) {
+            TimeStopState.clearPlayerSnapshots(player.getUUID());
+        }
+    }
+
+    @SubscribeEvent
+    public static void onPlayerChangedDimension(PlayerEvent.PlayerChangedDimensionEvent event) {
+        if (event.getEntity() instanceof ServerPlayer player) {
+            TimeStopState.clearPlayerSnapshots(player.getUUID());
+        }
+    }
+
+    @SubscribeEvent
     public static void onStartTracking(PlayerEvent.StartTracking event) {
         if (!(event.getEntity() instanceof ServerPlayer player)
                 || !(event.getTarget() instanceof LivingEntity target)) {
@@ -124,6 +154,13 @@ public class ForgeEvents {
         GoldenEffect.reconcileVisualState(target);
         PetrifiedEffect.reconcileVisualState(target);
         EntityVisualStateSync.syncToPlayer(target, player);
+    }
+
+    @SubscribeEvent
+    public static void onEntityLeaveLevel(EntityLeaveLevelEvent event) {
+        if (event.getEntity() instanceof ServerPlayer player) {
+            TimeStopState.clearPlayerSnapshots(player.getUUID());
+        }
     }
 
     public static void syncAllDataToClient(ServerPlayer player){
@@ -392,6 +429,9 @@ public class ForgeEvents {
     @SubscribeEvent
     public static void onLivingDeath(LivingDeathEvent event){
         LivingEntity entity = event.getEntity();
+        if (entity instanceof ServerPlayer player) {
+            TimeStopState.clearPlayerSnapshots(player.getUUID());
+        }
         if (entity.hasEffect(ModEffects.GOLDEN.get())){
             LootHelper.spawnLootAtPos(entity, entity.position(), ModLootTables.RANDOM_COINS,
                     entity.getRandom().nextInt(0,3));
@@ -400,27 +440,28 @@ public class ForgeEvents {
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public static void onFrozenLivingTick(LivingEvent.LivingTickEvent event) {
-        // 清除冻结生物的自主移动能力
-        if (!(event.getEntity() instanceof Mob mob) || !EntityVisualState.isFrozen(mob)) return;
+        // 金化和石化清除自主输入，但保留 travel 对自然重力和碰撞的处理。
+        LivingEntity entity = event.getEntity();
+        if (entity instanceof Mob mob && EntityVisualState.isFrozen(mob)) {
+            mob.xxa = 0.0F;
+            mob.yya = 0.0F;
+            mob.zza = 0.0F;
+            mob.setJumping(false);
 
-        mob.xxa = 0.0F;
-        mob.yya = 0.0F;
-        mob.zza = 0.0F;
-        mob.setJumping(false);
-
-        if (mob.onGround()) {
-            mob.setDeltaMovement(0.0, 0.0, 0.0);
-            return;
+            if (mob.onGround()) {
+                mob.setDeltaMovement(0.0, 0.0, 0.0);
+            } else {
+                mob.setDeltaMovement(0.0, mob.getDeltaMovement().y, 0.0);
+            }
         }
 
-        mob.setDeltaMovement(0.0, mob.getDeltaMovement().y, 0.0);
     }
 
 
     @SubscribeEvent
     public static void onEntityKnockback(LivingKnockBackEvent event) {
         LivingEntity entity = event.getEntity();
-        if (EntityVisualState.isFrozen(entity)) {
+        if (EntityFreezeState.shouldFreeze(entity)) {
             event.setCanceled(true);
             return;
         }

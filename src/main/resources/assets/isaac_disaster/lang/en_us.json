@@ -965,6 +965,8 @@
   "config.isaac_disaster.entry.players_share_item_pools.desc": "所有玩家是否共享同一套道具池",
   "config.isaac_disaster.entry.auto_use_passive_item": "自动使用被动道具",
   "config.isaac_disaster.entry.auto_use_passive_item.desc": "玩家获得被动道具时是否自动使用",
+  "config.isaac_disaster.entry.time_stop_exclude_friendly": "队友共享时停",
+  "config.isaac_disaster.entry.time_stop_exclude_friendly.desc": "开启后，与时停来源判定为友方的生物（包括宠物、队友等）不会受到时停影响",
 
   "config.isaac_disaster.entry.coin_tier_1_id": "1 级硬币物品 ID",
   "config.isaac_disaster.entry.coin_tier_1_id.desc": "1 级硬币对应的物品 ID",

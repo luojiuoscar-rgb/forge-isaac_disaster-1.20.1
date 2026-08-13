@@ -1,9 +1,10 @@
-package net.luojiuoscar.isaac_disaster.client;
+package net.luojiuoscar.isaac_disaster.client.item_related;
 
-import net.luojiuoscar.isaac_disaster.system.EntityVisualState;
+import net.luojiuoscar.isaac_disaster.system.EntityFreezeState;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 
@@ -26,7 +27,7 @@ public final class EntityRenderFreeze {
 
     public static void begin(LivingEntity entity) {
         Deque<RenderContext> contexts = RENDER_CONTEXTS.get();
-        if (!shouldFreeze(entity)) {
+        if (!(entity instanceof Mob) || !EntityFreezeState.shouldFreeze(entity)) {
             FROZEN_POSES.remove(entity);
             contexts.push(RenderContext.INACTIVE);
             return;
@@ -91,10 +92,6 @@ public final class EntityRenderFreeze {
     public static void clear() {
         FROZEN_POSES.clear();
         RENDER_CONTEXTS.remove();
-    }
-
-    private static boolean shouldFreeze(LivingEntity entity) {
-        return EntityVisualState.isFrozen(entity) && EntityVisualState.isEligible(entity);
     }
 
     private static FrozenPose activePose() {

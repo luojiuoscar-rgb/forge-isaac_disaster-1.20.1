@@ -142,6 +142,8 @@ repositories {
 }
 
 dependencies {
+    annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
+
     // Specify the version of Minecraft to use.
     // Any artifact can be supplied so long as it has a "userdev" classifier artifact and is a compatible patcher artifact.
     // The "userdev" classifier will be requested and setup by ForgeGradle.
@@ -240,5 +242,12 @@ publishing {
 }
 
 tasks.withType(JavaCompile).configureEach {
+    dependsOn tasks.named('createMcpToSrg')
+
     options.encoding = 'UTF-8' // Use the UTF-8 charset for Java compilation
+    options.compilerArgs += [
+            "-AoutRefMapFile=${file("${buildDir}/resources/main/${mod_id}.refmap.json").absolutePath}",
+            "-AmappingTypes=tsrg",
+            "-AreobfTsrgFile=${file("${buildDir}/createMcpToSrg/output.tsrg").absolutePath}"
+    ]
 }

@@ -1,6 +1,6 @@
 package net.luojiuoscar.isaac_disaster.networking.packet;
 
-import net.luojiuoscar.isaac_disaster.client.EntityVisualStateClient;
+import net.luojiuoscar.isaac_disaster.client.item_related.EntityVisualStateClient;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;

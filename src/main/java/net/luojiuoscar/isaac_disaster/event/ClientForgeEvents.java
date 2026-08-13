@@ -1,13 +1,14 @@
 package net.luojiuoscar.isaac_disaster.event;
 
 import net.luojiuoscar.isaac_disaster.client.ClientDataManager;
-import net.luojiuoscar.isaac_disaster.client.EntityRenderFreeze;
+import net.luojiuoscar.isaac_disaster.client.item_related.EntityRenderFreeze;
 import net.luojiuoscar.isaac_disaster.client.ModKeyMappings;
 import net.luojiuoscar.isaac_disaster.client.flight.IsaacFlightClientController;
 import net.luojiuoscar.isaac_disaster.networking.ModMessages;
 import net.luojiuoscar.isaac_disaster.networking.packet.OpenIsaacItemScreenC2SPacket;
 import net.luojiuoscar.isaac_disaster.networking.packet.SetRightClickC2SPacket;
 import net.luojiuoscar.isaac_disaster.system.ScaleUtils;
+import net.luojiuoscar.isaac_disaster.system.TimeStopState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.api.distmarker.Dist;
@@ -49,13 +50,22 @@ public class ClientForgeEvents {
     @SubscribeEvent
     public static void clearFrozenPoses(ClientPlayerNetworkEvent.LoggingOut event) {
         EntityRenderFreeze.clear();
+        TimeStopState.clearClientPlayerSnapshots();
     }
 
     @SubscribeEvent
     public static void onClientTick(TickEvent.ClientTickEvent event) {
+        Minecraft mc = Minecraft.getInstance();
         if (event.phase != TickEvent.Phase.END) return;
 
-        Player player = Minecraft.getInstance().player;
+        // Detect at END and prepare the snapshot for the next client tick.
+        if (mc.level == null) {
+            TimeStopState.clearClientPlayerSnapshots();
+        } else {
+            TimeStopState.tickClientPlayers(mc.level);
+        }
+
+        Player player = mc.player;
         if (player == null) {
             lastLocalPlayerScale = 1.0F;
             IsaacFlightClientController.resetRuntimeInput();

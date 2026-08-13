@@ -3,12 +3,10 @@ package net.luojiuoscar.isaac_disaster.event;
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerIsaacItemsProvider;
 import net.luojiuoscar.isaac_disaster.effect.custom.SoulStateEffect;
-import net.luojiuoscar.isaac_disaster.effect.custom.TheWorldEffect;
 import net.luojiuoscar.isaac_disaster.event.custom.misc.GetShotDelayEvent;
 import net.luojiuoscar.isaac_disaster.manager.id.ItemId;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.event.entity.ProjectileImpactEvent;
-import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -21,12 +19,6 @@ public class ItemEvents {
     public static void onProjectileImpact(ProjectileImpactEvent event) {
         SoulStateEffect.onTriggered(event);
     }
-
-    @SubscribeEvent(priority = EventPriority.HIGHEST)
-    public static void onLivingTick(LivingEvent.LivingTickEvent event){
-        TheWorldEffect.onTriggered(event);
-    }
-
 
     @SubscribeEvent
     public static void onGetShotDelay(GetShotDelayEvent event){

@@ -86,7 +86,9 @@ public final class IsaacConfigCatalog {
                 booleanEntry("players_share_item_pools", IsaacConfigCategory.MISC,
                         Config.PLAYERS_SHARE_ITEM_POOLS, false),
                 booleanEntry("auto_use_passive_item", IsaacConfigCategory.MISC,
-                        Config.AUTO_USE_PASSIVE_ITEM, false)
+                        Config.AUTO_USE_PASSIVE_ITEM, false),
+                booleanEntry("time_stop_exclude_friendly", IsaacConfigCategory.MISC,
+                        Config.TIME_STOP_EXCLUDE_FRIENDLY, false)
         ));
 
         entries.addAll(Arrays.asList(

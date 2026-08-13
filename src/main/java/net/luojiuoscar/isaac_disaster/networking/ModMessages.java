@@ -112,6 +112,7 @@ public class ModMessages {
                 .encoder(EntityVisualStateS2CPacket::toBytes)
                 .consumerNetworkThread(EntityVisualStateS2CPacket::handle)
                 .add();
+
     }
 
     public static <MSG> void sendToServer(MSG message){

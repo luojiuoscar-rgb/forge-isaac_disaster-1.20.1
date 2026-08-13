@@ -1,4 +1,4 @@
-package net.luojiuoscar.isaac_disaster.client;
+package net.luojiuoscar.isaac_disaster.client.item_related;
 
 import net.luojiuoscar.isaac_disaster.capability.entity.ExtraDataProvider;
 import net.minecraft.client.Minecraft;

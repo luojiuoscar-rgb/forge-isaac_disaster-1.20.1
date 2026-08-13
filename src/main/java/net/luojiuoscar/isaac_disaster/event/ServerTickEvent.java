@@ -23,6 +23,7 @@ import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackType;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackExecutor;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.IChargeableAttack;
 import net.luojiuoscar.isaac_disaster.system.ScaleUtils;
+import net.luojiuoscar.isaac_disaster.system.TimeStopState;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
@@ -49,9 +50,20 @@ public class ServerTickEvent {
     private static int tickCounter;
 
     @SubscribeEvent
-    public static void onServerTick(TickEvent.PlayerTickEvent event) {
+    public static void onServerTickEnd(TickEvent.ServerTickEvent event) {
+        if (event.phase == TickEvent.Phase.END) {
+            TimeStopState.refreshServer(event.getServer());
+        }
+    }
+
+    @SubscribeEvent
+    public static void onPlayerTick(TickEvent.PlayerTickEvent event) {
         // 只在服务器端处理，避免客户端和服务器重复执行
-        if (event.phase != TickEvent.Phase.END || event.side.isClient()) {
+        if (event.side.isClient()) {
+            return;
+        }
+
+        if (event.phase != TickEvent.Phase.END) {
             return;
         }
 
@@ -90,6 +102,7 @@ public class ServerTickEvent {
         // 每tick执行一次
         for (ServerPlayer player : server.getPlayerList().getPlayers()){
 
+            TimeStopState.updatePlayerFreezeState(player);
             IsaacHeadAttack(player);
             recursiveModuleTick(player);
             refreshScaleIfChanged(player);

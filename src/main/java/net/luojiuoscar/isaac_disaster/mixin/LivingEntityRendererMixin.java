@@ -1,7 +1,7 @@
 package net.luojiuoscar.isaac_disaster.mixin;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import net.luojiuoscar.isaac_disaster.client.EntityRenderFreeze;
+import net.luojiuoscar.isaac_disaster.client.item_related.EntityRenderFreeze;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.world.entity.LivingEntity;
@@ -17,12 +17,12 @@ public abstract class LivingEntityRendererMixin {
     private static final String RENDER = "render(Lnet/minecraft/world/entity/LivingEntity;FF"
             + "Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;I)V";
 
-    @Shadow
-    protected abstract void setupRotations(LivingEntity entity, PoseStack poseStack,
-                                            float ageInTicks, float bodyYaw, float partialTick);
+    @Shadow(remap = false, aliases = "setupRotations")
+    protected abstract void m_7523_(LivingEntity entity, PoseStack poseStack,
+                                    float ageInTicks, float bodyYaw, float partialTick);
 
-    @Shadow
-    protected abstract void scale(LivingEntity entity, PoseStack poseStack, float partialTick);
+    @Shadow(remap = false, aliases = "scale")
+    protected abstract void m_7546_(LivingEntity entity, PoseStack poseStack, float partialTick);
 
     @Inject(method = RENDER, at = @At("HEAD"))
     private void beginFrozenRender(LivingEntity entity, float entityYaw, float partialTick,
@@ -44,7 +44,7 @@ public abstract class LivingEntityRendererMixin {
                                        PoseStack poseStack,
                                        float ageInTicks, float bodyYaw, float partialTick) {
         EntityRenderFreeze.freezeRotations(entity, poseStack,
-                () -> setupRotations(entity, poseStack, ageInTicks, bodyYaw, partialTick));
+                () -> m_7523_(entity, poseStack, ageInTicks, bodyYaw, partialTick));
     }
 
     @Redirect(
@@ -59,7 +59,7 @@ public abstract class LivingEntityRendererMixin {
     private void freezeFrozenScale(LivingEntityRenderer<?, ?> renderer, LivingEntity entity,
                                    PoseStack poseStack, float partialTick) {
         EntityRenderFreeze.freezeScale(entity, poseStack,
-                () -> scale(entity, poseStack, partialTick));
+                () -> m_7546_(entity, poseStack, partialTick));
     }
 
     @Inject(method = RENDER, at = @At("RETURN"))

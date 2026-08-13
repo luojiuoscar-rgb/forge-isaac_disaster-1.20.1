@@ -79,6 +79,7 @@ public class Config
     public static ForgeConfigSpec.BooleanValue ITEM_REMOVAL_FROM_ALL_POOL;
     public static ForgeConfigSpec.BooleanValue PLAYERS_SHARE_ITEM_POOLS;
     public static ForgeConfigSpec.BooleanValue AUTO_USE_PASSIVE_ITEM;
+    public static ForgeConfigSpec.BooleanValue TIME_STOP_EXCLUDE_FRIENDLY;
 
     // 临时
     public static ForgeConfigSpec.BooleanValue ENABLE_WANDERING_TRADER_SHOP;
@@ -270,6 +271,10 @@ public class Config
         AUTO_USE_PASSIVE_ITEM = BUILDER
                 .comment("Automatically use passive item once it is acquired by player.")
                 .define("auto_use_passive_item", false);
+
+        TIME_STOP_EXCLUDE_FRIENDLY = BUILDER
+                .comment("Whether time stop excludes entities friendly to at least one time stop source.")
+                .define("time_stop_exclude_friendly", false);
 
         BUILDER.pop();
     }
