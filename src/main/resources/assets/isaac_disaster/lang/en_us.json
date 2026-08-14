@@ -10,6 +10,9 @@
   "death.attack.laser": "%1$s 死于激光",
   "death.attack.laser.player": "%1$s 被 %2$s 的激光杀死了",
   "death.attack.laser.item": "%1$s 被 %2$s 使用 %3$s 的激光杀死了",
+  "death.attack.frozen_shatter": "%1$s 碎裂了",
+  "death.attack.frozen_shatter.player": "%1$s 被 %2$s 推碎了",
+  "death.attack.frozen_shatter.item": "%1$s 被 %2$s 使用 %3$s 推碎了",
 
   "item.isaac_disaster.pill1": "未知胶囊#1",
   "item.isaac_disaster.pill2": "未知胶囊#2",
@@ -115,6 +118,8 @@
   "effect.isaac_disaster.golden.description": "使生物无法移动，并且死亡时掉落0-2钱币",
   "effect.isaac_disaster.petrified": "石化",
   "effect.isaac_disaster.petrified.description": "使生物无法移动",
+  "effect.isaac_disaster.frozen": "冻结",
+  "effect.isaac_disaster.frozen.description": "使生物被冻结",
 
   "attribute.isaac_disaster.max_health": "生命上限",
   "attribute.isaac_disaster.movement_speed": "移动速度",

@@ -96,6 +96,9 @@ public class ModEffects {
     public static final RegistryObject<MobEffect> PETRIFIED = MOB_EFFECTS.register(EffectManager.PETRIFIED.getName(),
             () -> new PetrifiedEffect(MobEffectCategory.HARMFUL, 0x808080));
 
+    public static final RegistryObject<MobEffect> FROZEN = MOB_EFFECTS.register(EffectManager.FROZEN.getName(),
+            () -> new FrozenEffect(MobEffectCategory.HARMFUL, 0xA7E8FF));
+
     // curses
     public static final RegistryObject<MobEffect> CURSE_OF_THE_BLIND = MOB_EFFECTS.register(EffectManager.CURSE_OF_THE_BLIND.getName(),
             () -> new CurseOfTheBlind(MobEffectCategory.HARMFUL, 0x512799));

@@ -1,4 +1,4 @@
-package net.luojiuoscar.isaac_disaster.system;
+package net.luojiuoscar.isaac_disaster.system.freeze.state;
 
 import net.luojiuoscar.isaac_disaster.capability.entity.ExtraData;
 import net.luojiuoscar.isaac_disaster.capability.entity.ExtraDataProvider;
@@ -30,6 +30,12 @@ public final class EntityVisualState {
     public static boolean isFrozen(LivingEntity entity) {
         return entity.getCapability(ExtraDataProvider.EXTRA_DATA_CAP)
                 .map(ExtraData::isFrozen)
+                .orElse(false);
+    }
+
+    public static boolean hasFreezeSource(LivingEntity entity, ResourceLocation source) {
+        return entity.getCapability(ExtraDataProvider.EXTRA_DATA_CAP)
+                .map(state -> state.hasFreezeSource(source))
                 .orElse(false);
     }
 

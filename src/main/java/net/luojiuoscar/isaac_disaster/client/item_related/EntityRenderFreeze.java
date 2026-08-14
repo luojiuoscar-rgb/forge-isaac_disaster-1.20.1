@@ -1,6 +1,6 @@
 package net.luojiuoscar.isaac_disaster.client.item_related;
 
-import net.luojiuoscar.isaac_disaster.system.EntityFreezeState;
+import net.luojiuoscar.isaac_disaster.system.freeze.EntityFreezeRules;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.world.entity.LivingEntity;
@@ -27,7 +27,7 @@ public final class EntityRenderFreeze {
 
     public static void begin(LivingEntity entity) {
         Deque<RenderContext> contexts = RENDER_CONTEXTS.get();
-        if (!(entity instanceof Mob) || !EntityFreezeState.shouldFreeze(entity)) {
+        if (!(entity instanceof Mob) || !EntityFreezeRules.shouldFreeze(entity)) {
             FROZEN_POSES.remove(entity);
             contexts.push(RenderContext.INACTIVE);
             return;

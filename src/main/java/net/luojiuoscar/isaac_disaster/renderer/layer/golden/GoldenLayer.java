@@ -4,7 +4,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.registries.visual.ModVisualLayers;
 import net.luojiuoscar.isaac_disaster.renderer.layer.material.MaterialLayerSupport;
-import net.luojiuoscar.isaac_disaster.system.EntityVisualState;
+import net.luojiuoscar.isaac_disaster.system.freeze.state.EntityVisualState;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;

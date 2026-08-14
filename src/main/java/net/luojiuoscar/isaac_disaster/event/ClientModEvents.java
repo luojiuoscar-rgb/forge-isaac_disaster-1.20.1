@@ -13,19 +13,20 @@ import net.luojiuoscar.isaac_disaster.entity.ModEntities;
 import net.luojiuoscar.isaac_disaster.entity.tnt.CustomTntRenderer;
 import net.luojiuoscar.isaac_disaster.renderer.FetusBulletRenderer;
 import net.luojiuoscar.isaac_disaster.renderer.InvincibleChargeLayer;
+import net.luojiuoscar.isaac_disaster.renderer.IsaacBulletRenderer;
+import net.luojiuoscar.isaac_disaster.renderer.familiar.MomKnifeRenderer;
+import net.luojiuoscar.isaac_disaster.renderer.layer.frozen.FrozenShellLayer;
 import net.luojiuoscar.isaac_disaster.renderer.layer.golden.GoldenLayer;
 import net.luojiuoscar.isaac_disaster.renderer.layer.golden.SlimeGoldenLayer;
 import net.luojiuoscar.isaac_disaster.renderer.layer.petrified.PetrifiedLayer;
 import net.luojiuoscar.isaac_disaster.renderer.layer.petrified.SlimePetrifiedLayer;
-import net.luojiuoscar.isaac_disaster.renderer.IsaacBulletRenderer;
-import net.luojiuoscar.isaac_disaster.renderer.familiar.MomKnifeRenderer;
 import net.minecraft.client.renderer.entity.NoopRenderer;
-import net.minecraft.client.renderer.entity.player.PlayerRenderer;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
+import net.minecraft.client.renderer.entity.SlimeRenderer;
+import net.minecraft.client.renderer.entity.player.PlayerRenderer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.client.renderer.entity.SlimeRenderer;
 import net.minecraft.world.entity.ai.attributes.DefaultAttributes;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.EntityRenderersEvent;
@@ -134,6 +135,7 @@ public class ClientModEvents {
         if (renderer instanceof SlimeRenderer) {
             renderer.addLayer(new SlimeGoldenLayer(renderer, event.getEntityModels()));
             renderer.addLayer(new SlimePetrifiedLayer(renderer, event.getEntityModels()));
+            renderer.addLayer(new FrozenShellLayer(renderer));
         } else {
             addMaterialLayers(renderer);
         }
@@ -146,6 +148,7 @@ public class ClientModEvents {
         }
         renderer.addLayer(new GoldenLayer(renderer));
         renderer.addLayer(new PetrifiedLayer(renderer));
+        renderer.addLayer(new FrozenShellLayer(renderer));
     }
 
     @SubscribeEvent

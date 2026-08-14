@@ -1,4 +1,4 @@
-package net.luojiuoscar.isaac_disaster.system;
+package net.luojiuoscar.isaac_disaster.system.freeze.state;
 
 import net.luojiuoscar.isaac_disaster.Config;
 import net.luojiuoscar.isaac_disaster.effect.ModEffects;
@@ -111,27 +111,24 @@ public final class TimeStopState {
         CLIENT_PLAYER_POSITIONS.keySet().removeIf(key -> !activeSnapshots.contains(key));
     }
 
-    public static void clearPlayerSnapshots(UUID playerUuid) {
+    public static void clearServerPlayerSnapshots(UUID playerUuid) {
         SERVER_PLAYER_POSITIONS.keySet().removeIf(key -> key.uuid().equals(playerUuid));
-        CLIENT_PLAYER_POSITIONS.keySet().removeIf(key -> key.uuid().equals(playerUuid));
         SERVER_SOURCES.values().forEach(sourceIds -> sourceIds.remove(playerUuid));
         SERVER_SOURCES.values().removeIf(Set::isEmpty);
     }
 
-    public static void clearPlayerSnapshots(Level level) {
+    public static void clearServerLevelState(Level level) {
         if (level == null) {
             return;
         }
         ResourceKey<Level> dimension = level.dimension();
         SERVER_PLAYER_POSITIONS.keySet().removeIf(key -> key.dimension().equals(dimension));
-        CLIENT_PLAYER_POSITIONS.keySet().removeIf(key -> key.dimension().equals(dimension));
         SERVER_SOURCES.remove(dimension);
     }
 
-    public static void clearAllPlayerSnapshots() {
+    public static void clearServerState() {
         SERVER_SOURCES.clear();
         SERVER_PLAYER_POSITIONS.clear();
-        clearClientPlayerSnapshots();
     }
 
     public static void clearClientPlayerSnapshots() {

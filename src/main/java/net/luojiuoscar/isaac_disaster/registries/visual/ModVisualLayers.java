@@ -21,6 +21,9 @@ public final class ModVisualLayers {
     public static final RegistryObject<VisualLayer> PETRIFIED = VISUAL_LAYER_REGISTRY.register(
             "petrified", () -> new VisualLayer(VisualLayerGroups.BODY_MATERIAL, 10));
 
+    public static final RegistryObject<VisualLayer> FROZEN = VISUAL_LAYER_REGISTRY.register(
+            "frozen", () -> new VisualLayer(null, 0));
+
     private ModVisualLayers() {
     }
 }

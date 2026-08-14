@@ -1,7 +1,7 @@
 package net.luojiuoscar.isaac_disaster.mixin;
 
-import net.luojiuoscar.isaac_disaster.system.EntityFreezeState;
-import net.luojiuoscar.isaac_disaster.system.TimeStopState;
+import net.luojiuoscar.isaac_disaster.system.freeze.EntityFreezeRules;
+import net.luojiuoscar.isaac_disaster.system.freeze.state.TimeStopState;
 import net.minecraft.world.entity.Mob;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -31,7 +31,7 @@ public abstract class MobMixin {
     private void freezeFrozenMobAi(CallbackInfo ci) {
         // 服务端暂停冻结生物的 AI
         Mob self = (Mob) (Object) this;
-        if (EntityFreezeState.shouldFreeze(self)) {
+        if (EntityFreezeRules.shouldFreeze(self)) {
             ci.cancel();
         }
     }

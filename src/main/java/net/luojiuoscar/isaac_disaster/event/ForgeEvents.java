@@ -18,18 +18,13 @@ import net.luojiuoscar.isaac_disaster.commands.player.PlayerResetDataCmd;
 import net.luojiuoscar.isaac_disaster.commands.trinket.TrinketClearSwallowedCmd;
 import net.luojiuoscar.isaac_disaster.commands.trinket.TrinketSetEnchanted;
 import net.luojiuoscar.isaac_disaster.effect.ModEffects;
-import net.luojiuoscar.isaac_disaster.effect.custom.GoldenEffect;
-import net.luojiuoscar.isaac_disaster.effect.custom.PetrifiedEffect;
 import net.luojiuoscar.isaac_disaster.helper.CuriosHelper;
-import net.luojiuoscar.isaac_disaster.helper.LootHelper;
 import net.luojiuoscar.isaac_disaster.item.ModItems;
 import net.luojiuoscar.isaac_disaster.item.item.IsaacItem;
 import net.luojiuoscar.isaac_disaster.item.pickup.special.IsaacHead;
 import net.luojiuoscar.isaac_disaster.manager.EffectManager;
 import net.luojiuoscar.isaac_disaster.manager.ModDamageType;
-import net.luojiuoscar.isaac_disaster.manager.ModLootTables;
 import net.luojiuoscar.isaac_disaster.manager.PillEffectManager;
-import net.luojiuoscar.isaac_disaster.networking.EntityVisualStateSync;
 import net.luojiuoscar.isaac_disaster.networking.ModMessages;
 import net.luojiuoscar.isaac_disaster.networking.packet.PassiveItemMapSyncS2CPacket;
 import net.luojiuoscar.isaac_disaster.networking.packet.PillRecordsSyncS2CPacket;
@@ -39,19 +34,13 @@ import net.luojiuoscar.isaac_disaster.registries.ability.set.ModSetAbility;
 import net.luojiuoscar.isaac_disaster.registries.ability.set.SetAbility;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerModule;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerModuleQueue;
-import net.luojiuoscar.isaac_disaster.system.EntityVisualState;
-import net.luojiuoscar.isaac_disaster.system.EntityFreezeState;
-import net.luojiuoscar.isaac_disaster.system.TimeStopState;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.sounds.SoundSource;
-import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.npc.WanderingTrader;
@@ -62,16 +51,15 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.trading.MerchantOffer;
 import net.minecraft.world.item.trading.MerchantOffers;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.common.ToolActions;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
-import net.minecraftforge.event.entity.EntityLeaveLevelEvent;
-import net.minecraftforge.event.entity.living.*;
+import net.minecraftforge.event.entity.living.LivingHurtEvent;
+import net.minecraftforge.event.entity.living.LivingKnockBackEvent;
+import net.minecraftforge.event.entity.living.MobEffectEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.level.LevelEvent;
-import net.minecraftforge.event.server.ServerStoppingEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -97,18 +85,6 @@ public class ForgeEvents {
         }
     }
 
-    @SubscribeEvent
-    public static void onWorldUnload(LevelEvent.Unload event) {
-        if (event.getLevel() instanceof ServerLevel serverLevel) {
-            TimeStopState.clearPlayerSnapshots(serverLevel);
-        }
-    }
-
-    @SubscribeEvent
-    public static void onServerStopping(ServerStoppingEvent event) {
-        TimeStopState.clearAllPlayerSnapshots();
-    }
-
     /**
      * 玩家登录时同步数据到客户端
      */
@@ -128,39 +104,6 @@ public class ForgeEvents {
         // 添加永久模块
         player.getCapability(EffectModulesProvider.EFFECT_MODULES).ifPresent(
         effectModules -> addPermanentModules(effectModules.getTriggerModules()));
-    }
-
-    @SubscribeEvent
-    public static void onPlayerLoggedOut(PlayerEvent.PlayerLoggedOutEvent event) {
-        if (event.getEntity() instanceof ServerPlayer player) {
-            TimeStopState.clearPlayerSnapshots(player.getUUID());
-        }
-    }
-
-    @SubscribeEvent
-    public static void onPlayerChangedDimension(PlayerEvent.PlayerChangedDimensionEvent event) {
-        if (event.getEntity() instanceof ServerPlayer player) {
-            TimeStopState.clearPlayerSnapshots(player.getUUID());
-        }
-    }
-
-    @SubscribeEvent
-    public static void onStartTracking(PlayerEvent.StartTracking event) {
-        if (!(event.getEntity() instanceof ServerPlayer player)
-                || !(event.getTarget() instanceof LivingEntity target)) {
-            return;
-        }
-
-        GoldenEffect.reconcileVisualState(target);
-        PetrifiedEffect.reconcileVisualState(target);
-        EntityVisualStateSync.syncToPlayer(target, player);
-    }
-
-    @SubscribeEvent
-    public static void onEntityLeaveLevel(EntityLeaveLevelEvent event) {
-        if (event.getEntity() instanceof ServerPlayer player) {
-            TimeStopState.clearPlayerSnapshots(player.getUUID());
-        }
     }
 
     public static void syncAllDataToClient(ServerPlayer player){
@@ -394,30 +337,6 @@ public class ForgeEvents {
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public static void onLivingHurt(LivingHurtEvent event) {
         LivingEntity victim = event.getEntity();
-
-        //TODO 金化受击音效（暂定）
-        if (!victim.level().isClientSide
-                && (victim.hasEffect(ModEffects.GOLDEN.get())
-                || victim.hasEffect(ModEffects.PETRIFIED.get()))) {
-
-            for (int i = 0; i < 4; i++) {
-                victim.level().playSound(
-                        null,
-                        victim.blockPosition(),
-                        SoundEvents.METAL_PLACE,
-                        SoundSource.BLOCKS,
-                        1.0F,
-                        1.0F
-                );
-            }
-
-            // 如果玩家用镐子攻击
-            if (event.getSource().getDirectEntity() instanceof Player player
-                    && player.getMainHandItem().canPerformAction(ToolActions.PICKAXE_DIG)) {
-                event.setAmount(event.getAmount() * 2.0F);
-            }
-        }
-
         // 易伤
         if (victim.hasEffect(ModEffects.VULNERABLE.get())){
             int level = victim.getEffect(ModEffects.VULNERABLE.get()).getAmplifier() + 1;
@@ -427,62 +346,18 @@ public class ForgeEvents {
     }
 
     @SubscribeEvent
-    public static void onLivingDeath(LivingDeathEvent event){
-        LivingEntity entity = event.getEntity();
-        if (entity instanceof ServerPlayer player) {
-            TimeStopState.clearPlayerSnapshots(player.getUUID());
-        }
-        if (entity.hasEffect(ModEffects.GOLDEN.get())){
-            LootHelper.spawnLootAtPos(entity, entity.position(), ModLootTables.RANDOM_COINS,
-                    entity.getRandom().nextInt(0,3));
-        }
-    }
-
-    @SubscribeEvent(priority = EventPriority.HIGHEST)
-    public static void onFrozenLivingTick(LivingEvent.LivingTickEvent event) {
-        // 金化和石化清除自主输入，但保留 travel 对自然重力和碰撞的处理。
-        LivingEntity entity = event.getEntity();
-        if (entity instanceof Mob mob && EntityVisualState.isFrozen(mob)) {
-            mob.xxa = 0.0F;
-            mob.yya = 0.0F;
-            mob.zza = 0.0F;
-            mob.setJumping(false);
-
-            if (mob.onGround()) {
-                mob.setDeltaMovement(0.0, 0.0, 0.0);
-            } else {
-                mob.setDeltaMovement(0.0, mob.getDeltaMovement().y, 0.0);
-            }
-        }
-
-    }
-
-
-    @SubscribeEvent
     public static void onEntityKnockback(LivingKnockBackEvent event) {
-        LivingEntity entity = event.getEntity();
-        if (EntityFreezeState.shouldFreeze(entity)) {
+        DamageSource source = event.getEntity().getLastDamageSource();
+        if (source != null && source.is(ModDamageType.LASER)) {
             event.setCanceled(true);
             return;
         }
 
-        DamageSource source = entity.getLastDamageSource();
-
-        if (source == null) return;
-
-        if (source.is(ModDamageType.LASER)) {
+        if (event.getEntity() instanceof Player player
+                && player.hasEffect(ModEffects.HOLY_SHIELD.get())) {
             event.setCanceled(true);
-            return;
-        }
-
-        if (entity instanceof Player player){
-            // 神圣护盾
-            if (player.hasEffect(ModEffects.HOLY_SHIELD.get())){
-                event.setCanceled(true);
-            }
         }
     }
-
 
     @SubscribeEvent
     public static void onRightClickBlock(PlayerInteractEvent.RightClickBlock event) {
@@ -533,11 +408,6 @@ public class ForgeEvents {
     // 临时流浪商人交易系统
     @SubscribeEvent
     public static void onEntityJoin(EntityJoinLevelEvent event) {
-        if (!event.getLevel().isClientSide && event.getEntity() instanceof LivingEntity livingEntity) {
-            GoldenEffect.reconcileVisualState(livingEntity);
-            PetrifiedEffect.reconcileVisualState(livingEntity);
-        }
-
         if (event.getEntity() instanceof WanderingTrader trader) {
             // if modified skip
             if (trader.getPersistentData().getBoolean("IsaacDisasterWanderingTraderModified")) return;

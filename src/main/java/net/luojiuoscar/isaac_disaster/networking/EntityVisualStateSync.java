@@ -1,7 +1,7 @@
 package net.luojiuoscar.isaac_disaster.networking;
 
 import net.luojiuoscar.isaac_disaster.networking.packet.EntityVisualStateS2CPacket;
-import net.luojiuoscar.isaac_disaster.system.EntityVisualState;
+import net.luojiuoscar.isaac_disaster.system.freeze.state.EntityVisualState;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 

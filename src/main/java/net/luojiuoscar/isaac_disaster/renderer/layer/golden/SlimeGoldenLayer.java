@@ -3,7 +3,7 @@ package net.luojiuoscar.isaac_disaster.renderer.layer.golden;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.registries.visual.ModVisualLayers;
-import net.luojiuoscar.isaac_disaster.system.EntityVisualState;
+import net.luojiuoscar.isaac_disaster.system.freeze.state.EntityVisualState;
 import net.luojiuoscar.isaac_disaster.renderer.layer.material.MaterialLayerSupport;
 import net.minecraft.client.model.SlimeModel;
 import net.minecraft.client.model.geom.EntityModelSet;
