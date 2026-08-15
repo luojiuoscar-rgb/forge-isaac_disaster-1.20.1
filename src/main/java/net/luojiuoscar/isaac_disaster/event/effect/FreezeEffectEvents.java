@@ -19,6 +19,7 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraftforge.common.ToolActions;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
@@ -121,12 +122,26 @@ public final class FreezeEffectEvents {
         if (event.getSource().is(ModDamageType.FROZEN_SHATTER)) {
             return;
         }
+
+        Mob attacker = resolveMobAttacker(event.getSource());
+        if (attacker != null && EntityFreezeRules.shouldFreeze(attacker)) {
+            event.setCanceled(true);
+            return;
+        }
+
         if (event.getEntity() instanceof Mob mob && EntityFreezeRules.usesLowFriction(mob)) {
             if (!mob.level().isClientSide) {
                 FrozenImpactState.recordAttack(mob, event.getSource(), FROZEN_HIT_PUSH_SPEED);
             }
             event.setCanceled(true);
         }
+    }
+
+    private static Mob resolveMobAttacker(DamageSource source) {
+        if (source.getEntity() instanceof Mob mob) {
+            return mob;
+        }
+        return source.getDirectEntity() instanceof Mob mob ? mob : null;
     }
 
     @SubscribeEvent
