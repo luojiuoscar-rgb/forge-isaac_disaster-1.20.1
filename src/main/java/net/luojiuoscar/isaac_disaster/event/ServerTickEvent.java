@@ -23,7 +23,6 @@ import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackType;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackExecutor;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.IChargeableAttack;
 import net.luojiuoscar.isaac_disaster.system.ScaleUtils;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
@@ -46,8 +45,6 @@ public class ServerTickEvent {
     private static final float SCALE_REFRESH_EPSILON = 0.0001F;
     private static final Map<UUID, Float> PLAYER_SCALE_CACHE = new HashMap<>();
 
-    private static int tickCounter;
-
     @SubscribeEvent
     public static void onPlayerTick(TickEvent.PlayerTickEvent event) {
         // 只在服务器端处理，避免客户端和服务器重复执行
@@ -59,54 +56,42 @@ public class ServerTickEvent {
             return;
         }
 
-        tickCounter++;
-        // 重置计数器，防止整数溢出
-        if (tickCounter >= Integer.MAX_VALUE - 10) {
-            tickCounter = 0;
-        }
-        MinecraftServer server = event.player.getServer();
-        if (server == null) return;
-
-        // 每tickCounter执行一次
-        if (tickCounter % TICK_FREQUENCY == 0){
-            for (ServerPlayer player : server.getPlayerList().getPlayers()){
-
-                chargeActiveItem(player);
-                onPlayerSprint(player);
-            }
+        if (!(event.player instanceof ServerPlayer player)) {
+            return;
         }
 
-        // 每秒执行
-        if (tickCounter % 20 == 0){
-            for (ServerPlayer player : server.getPlayerList().getPlayers()){
-
-                bugsFix(player);
-                ForgeEvents.syncAllDataToClient(player);
-            }
+        // 每个玩家每4 tick执行一次
+        if (player.tickCount % TICK_FREQUENCY == 0) {
+            chargeActiveItem(player);
+            onPlayerSprint(player);
         }
 
-        if (tickCounter % 200 == 0) {
-            for (ServerPlayer player : server.getPlayerList().getPlayers()) {
-                CuriosHelper.syncAllIsaacCurios(player);
-            }
+        // 每个玩家每秒执行一次
+        if (player.tickCount % 20 == 0) {
+            bugsFix(player);
         }
 
-        // 每tick执行一次
-        for (ServerPlayer player : server.getPlayerList().getPlayers()){
-
-            IsaacHeadAttack(player);
-            recursiveModuleTick(player);
-            refreshScaleIfChanged(player);
-
-            if (tickCounter % 3 == 0){
-                updateClientCharge(player);
-            }
+        if (player.tickCount % 200 == 0) {
+            CuriosHelper.syncAllIsaacCurios(player);
         }
 
-        // 更新所有scheduled function
-        ScheduledFuncHelper.tick(server);
+        IsaacHeadAttack(player);
+        recursiveModuleTick(player);
+        refreshScaleIfChanged(player);
+
+        if (player.tickCount % 3 == 0) {
+            updateClientCharge(player);
+        }
+    }
+
+    @SubscribeEvent
+    public static void onServerTickEnd(TickEvent.ServerTickEvent event) {
+        if (event.phase != TickEvent.Phase.END) {
+            return;
+        }
+
+        ScheduledFuncHelper.tick(event.getServer());
         AbilityEffectTokenBucket.getInstance().tick();
-
     }
 
     private static void refreshScaleIfChanged(ServerPlayer player) {

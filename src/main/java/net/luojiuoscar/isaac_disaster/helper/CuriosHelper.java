@@ -6,6 +6,7 @@ import net.luojiuoscar.isaac_disaster.capability.player.PlayerAbilityProvider;
 import net.luojiuoscar.isaac_disaster.capability.player.CurioSlotKey;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerIsaacItems;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerIsaacItemsProvider;
+import net.luojiuoscar.isaac_disaster.event.ForgeEvents;
 import net.luojiuoscar.isaac_disaster.item.item.IIsaacCuriosItem;
 import net.luojiuoscar.isaac_disaster.item.item.Trinket;
 import net.minecraft.server.level.ServerPlayer;
@@ -89,6 +90,7 @@ public class CuriosHelper {
         player.getCapability(PlayerIsaacItemsProvider.PLAYER_ISAAC_ITEMS).ifPresent(
                 playerIsaacItems -> equipSlot(playerIsaacItems, key, slotContext, prevStack, stack, item)
         );
+        ForgeEvents.syncItemDataToClient(player);
     }
 
     public static void handleIsaacCurioUnequip(SlotContext slotContext, ItemStack newStack, ItemStack stack) {
@@ -111,12 +113,14 @@ public class CuriosHelper {
                 item.tryUnequip(slotContext, newStack, stackForUnequip);
             }
         });
+        ForgeEvents.syncItemDataToClient(player);
     }
 
     public static void forgetIsaacCurioSlot(ServerPlayer player, CurioSlotKey key) {
         player.getCapability(PlayerIsaacItemsProvider.PLAYER_ISAAC_ITEMS).ifPresent(
                 playerIsaacItems -> playerIsaacItems.removeActiveCurioStack(key)
         );
+        ForgeEvents.syncItemDataToClient(player);
     }
 
     public static void syncIsaacCurioSlot(ServerPlayer player, CurioSlotKey key) {
@@ -173,6 +177,10 @@ public class CuriosHelper {
     }
 
     public static void syncAllIsaacCurios(ServerPlayer player) {
+        Map<Integer, Integer> previousItemCounts = player.getCapability(
+                PlayerIsaacItemsProvider.PLAYER_ISAAC_ITEMS
+        ).map(PlayerIsaacItems::getItemCountMapFromAll).orElse(Map.of());
+
         Optional<ICuriosItemHandler> optional = CuriosApi.getCuriosInventory(player).resolve();
         if (optional.isEmpty()) return;
 
@@ -197,6 +205,12 @@ public class CuriosHelper {
                         item.tryUnequip(createSlotContext(player, key), ItemStack.EMPTY, stack);
                     }
                 });
+            }
+        });
+
+        player.getCapability(PlayerIsaacItemsProvider.PLAYER_ISAAC_ITEMS).ifPresent(playerIsaacItems -> {
+            if (!previousItemCounts.equals(playerIsaacItems.getItemCountMapFromAll())) {
+                ForgeEvents.syncItemDataToClient(player);
             }
         });
     }

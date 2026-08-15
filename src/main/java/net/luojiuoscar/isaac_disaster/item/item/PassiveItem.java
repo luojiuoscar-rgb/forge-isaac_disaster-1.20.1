@@ -56,6 +56,16 @@ public class PassiveItem extends IsaacItem implements IIsaacCuriosItem {
         PassiveAbility ability = (PassiveAbility) this.getAbility();
 
         if (player instanceof ServerPlayer serverPlayer){
+            boolean canStore = player.getCapability(PlayerIsaacItemsProvider.PLAYER_ISAAC_ITEMS)
+                    .map(playerPassiveItems -> playerPassiveItems.getTotalItemsCountInCap()
+                            < Config.PASSIVE_ITEM_LIMIT.get())
+                    .orElse(false);
+            if (!canStore) {
+                player.getCapability(PlayerIsaacItemsProvider.PLAYER_ISAAC_ITEMS)
+                        .ifPresent(playerPassiveItems -> playerPassiveItems.addItem(serverPlayer, stack));
+                return InteractionResultHolder.fail(stack);
+            }
+
             // 触发效果 (先触发效果以适配会对stack本身产生变化的道具；确保后续正确存入)
             ability.onObtain(serverPlayer, stack);
             ability.makeSound(serverPlayer);

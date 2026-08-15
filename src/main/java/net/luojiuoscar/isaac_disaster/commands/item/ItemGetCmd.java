@@ -44,7 +44,7 @@ public class ItemGetCmd {
                                             }
 
                                             player.getCapability(PlayerIsaacItemsProvider.PLAYER_ISAAC_ITEMS).ifPresent(playerPassiveItem -> {
-                                                int count = playerPassiveItem.getItemCountFromAll(player, pItem.getId());
+                                                int count = playerPassiveItem.getItemCountFromAll(pItem.getId());
                                                 player.sendSystemMessage(
                                                         Component.literal("You have " + count + " of this item.")
                                                 );

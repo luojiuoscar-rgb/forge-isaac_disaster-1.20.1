@@ -27,7 +27,7 @@ public class ItemEvents {
 
         player.getCapability(PlayerIsaacItemsProvider.PLAYER_ISAAC_ITEMS).ifPresent(
                 playerPassiveItem -> {
-                    Set<Integer> keys = playerPassiveItem.getItemCountMapFromAll(player).keySet();
+                    Set<Integer> keys = playerPassiveItem.getItemCountMapFromAll().keySet();
 
                     if (keys.contains(ItemId.POLYPHEMUS.getId()) || keys.contains(ItemId.MUTANT_SPIDER.getId())
                             || keys.contains(ItemId.THE_INNER_EYE.getId())){

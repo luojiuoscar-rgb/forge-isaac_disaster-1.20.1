@@ -1,8 +1,8 @@
 package net.luojiuoscar.isaac_disaster.registries.ability.passive.impl;
 
-import net.luojiuoscar.isaac_disaster.manager.StatManager;
+import net.luojiuoscar.isaac_disaster.capability.player.PlayerIsaacItemsProvider;
+import net.luojiuoscar.isaac_disaster.system.rockbottom.RockBottomState;
 import net.luojiuoscar.isaac_disaster.registries.ability.passive.PassiveAbility;
-import net.luojiuoscar.isaac_disaster.registries.recursive_module.ModRecursiveModule;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
@@ -24,21 +24,23 @@ public class RockBottom extends PassiveAbility {
 
     @Override
     public void handleObtain(ServerPlayer player, @Nullable ItemStack stack) {
-        StatManager.addRecursiveModule(player, ModRecursiveModule.ROCK_BOTTOM.getId(), 1);
+        player.getCapability(PlayerIsaacItemsProvider.PLAYER_ISAAC_ITEMS).ifPresent(
+                playerIsaacItems -> playerIsaacItems.modifyRockBottomCount(1)
+        );
     }
 
     @Override
     public void handleRemove(ServerPlayer player, @Nullable ItemStack stack) {
-        StatManager.addRecursiveModule(player, ModRecursiveModule.ROCK_BOTTOM.getId(), -1);
+        player.getCapability(PlayerIsaacItemsProvider.PLAYER_ISAAC_ITEMS).ifPresent(
+                playerIsaacItems -> playerIsaacItems.modifyRockBottomCount(-1)
+        );
+        RockBottomState.clearHistoryIfInactive(player);
     }
 
     @Override
     public List<Component> getDesc(@Nullable ItemStack stack, Player player) {
         return List.of(
-                Component.translatable("item.isaac_disaster.rock_bottom.lore.1"),
-                Component.translatable("item.isaac_disaster.rock_bottom.lore.2"),
-                Component.translatable("item.isaac_disaster.rock_bottom.lore.3"),
-                Component.translatable("item.isaac_disaster.rock_bottom.lore.4")
+                Component.translatable("item.isaac_disaster.rock_bottom.lore.1")
 
         );
     }

@@ -43,7 +43,7 @@ public class PerfectVision extends PassiveAbility {
         // 伤害修正
         player.getCapability(PlayerIsaacItemsProvider.PLAYER_ISAAC_ITEMS).ifPresent(
                 playerPassiveItem -> {
-                    int count = playerPassiveItem.getItemCountFromAll(player, ItemId.PERFECT_VISION.getId());
+                    int count = playerPassiveItem.getItemCountFromAll(ItemId.PERFECT_VISION.getId());
                     // 当最后一个已经被移除时；移除对应的modifier
                     if (count == 0){
                         AttributeInstance instance = player.getAttribute(Attributes.ATTACK_DAMAGE);

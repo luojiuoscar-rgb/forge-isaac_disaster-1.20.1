@@ -1,5 +1,6 @@
 package net.luojiuoscar.isaac_disaster.mixin;
 
+import net.luojiuoscar.isaac_disaster.accessor.AttributeMapOwnerAccess;
 import net.luojiuoscar.isaac_disaster.accessor.LivingEntityFreezeAccess;
 import net.luojiuoscar.isaac_disaster.system.freeze.EntityFreezeRules;
 import net.luojiuoscar.isaac_disaster.system.ScaleUtils;
@@ -8,7 +9,9 @@ import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.state.BlockState;
 import org.spongepowered.asm.mixin.Mixin;
@@ -24,6 +27,14 @@ public abstract class LivingEntityMixin implements LivingEntityFreezeAccess {
     @Unique
     private static final EntityDataAccessor<Boolean> FROZEN =
             SynchedEntityData.defineId(LivingEntity.class, EntityDataSerializers.BOOLEAN);
+
+    @Inject(method = "<init>", at = @At("RETURN"))
+    private void isaacDisaster$bindAttributeOwner(EntityType<? extends LivingEntity> entityType,
+                                                   Level level,
+                                                   CallbackInfo ci) {
+        LivingEntity self = (LivingEntity) (Object) this;
+        ((AttributeMapOwnerAccess) (Object) self.getAttributes()).isaacDisaster$setOwner(self);
+    }
 
     @Inject(method = "defineSynchedData", at = @At("TAIL"))
     private void isaacDisaster$defineTimeStopData(CallbackInfo ci) {

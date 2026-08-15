@@ -113,6 +113,12 @@ public class ModMessages {
                 .consumerNetworkThread(EntityVisualStateS2CPacket::handle)
                 .add();
 
+        net.messageBuilder(RockBottomHistorySyncS2CPacket.class, id(), NetworkDirection.PLAY_TO_CLIENT)
+                .decoder(RockBottomHistorySyncS2CPacket::new)
+                .encoder(RockBottomHistorySyncS2CPacket::toBytes)
+                .consumerNetworkThread(RockBottomHistorySyncS2CPacket::handle)
+                .add();
+
     }
 
     public static <MSG> void sendToServer(MSG message){

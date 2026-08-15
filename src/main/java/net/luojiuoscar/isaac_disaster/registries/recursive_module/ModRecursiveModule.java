@@ -34,8 +34,6 @@ public class ModRecursiveModule {
             RECURSIVE_MODULE_REGISTRY.register("gilded_key", GildedKey::new);
     public static final RegistryObject<RecursiveModule> THE_LEFT_HAND =
             RECURSIVE_MODULE_REGISTRY.register("the_left_hand", TheLeftHand::new);
-    public static final RegistryObject<RecursiveModule> ROCK_BOTTOM =
-            RECURSIVE_MODULE_REGISTRY.register("rock_bottom", RockBottom::new);
     public static final RegistryObject<RecursiveModule> VENUS =
             RECURSIVE_MODULE_REGISTRY.register("venus", Venus::new);
     public static final RegistryObject<RecursiveModule> SACK_OF_PENNIES =

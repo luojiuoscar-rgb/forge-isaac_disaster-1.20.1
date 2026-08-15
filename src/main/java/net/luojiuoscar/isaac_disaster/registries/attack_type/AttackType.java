@@ -136,9 +136,9 @@ public abstract class AttackType {
         int[] count = {bulletCount == null ? 1 : (int) bulletCount.getValue()};
 
         player.getCapability(PlayerIsaacItemsProvider.PLAYER_ISAAC_ITEMS).ifPresent(passive -> {
-            int innerEye = passive.getItemCountFromAll(player, ItemId.THE_INNER_EYE.getId());
-            int mutantSpider = passive.getItemCountFromAll(player, ItemId.MUTANT_SPIDER.getId());
-            int perfectVision = passive.getItemCountFromAll(player, ItemId.PERFECT_VISION.getId());
+            int innerEye = passive.getItemCountFromAll(ItemId.THE_INNER_EYE.getId());
+            int mutantSpider = passive.getItemCountFromAll(ItemId.MUTANT_SPIDER.getId());
+            int perfectVision = passive.getItemCountFromAll(ItemId.PERFECT_VISION.getId());
 
             if (perfectVision >= 1){
                 if (innerEye + mutantSpider == 0){

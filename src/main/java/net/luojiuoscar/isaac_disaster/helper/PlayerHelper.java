@@ -97,12 +97,12 @@ public class PlayerHelper {
     }
     public static boolean hasItem(int itemId, ServerPlayer player){
         return player.getCapability(PlayerIsaacItemsProvider.PLAYER_ISAAC_ITEMS)
-                .map(p -> p.getItemCountFromAll(player, itemId) > 0)
+                .map(p -> p.getItemCountFromAll(itemId) > 0)
                 .orElse(false);
     }
     public static int getItemCount(int itemId, ServerPlayer player){
         return player.getCapability(PlayerIsaacItemsProvider.PLAYER_ISAAC_ITEMS)
-                .map(p -> p.getItemCountFromAll(player, itemId))
+                .map(p -> p.getItemCountFromAll(itemId))
                 .orElse(0);
     }
     public static boolean hasTrinket(int itemId, ServerPlayer player){

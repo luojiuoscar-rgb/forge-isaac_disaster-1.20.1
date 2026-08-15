@@ -127,8 +127,6 @@ public class ModExecutableEffects {
             EXECUTABLE_EFFECT_REGISTRY.register("magneto", Magneto::new);
     public static final RegistryObject<IExecutableEffect> MONEY_IS_POWER =
             EXECUTABLE_EFFECT_REGISTRY.register("money_is_power", MoneyIsPower::new);
-    public static final RegistryObject<IExecutableEffect> ROCK_BOTTOM =
-            EXECUTABLE_EFFECT_REGISTRY.register("rock_bottom", RockBottom::new);
     public static final RegistryObject<IExecutableEffect> LOOT_MONEY =
             EXECUTABLE_EFFECT_REGISTRY.register("loot_money", LootMoney::new);
     public static final RegistryObject<IExecutableEffect> THE_LEFT_HAND =

@@ -1,8 +1,10 @@
 package net.luojiuoscar.isaac_disaster.capability.player;
 
+import net.luojiuoscar.isaac_disaster.event.ForgeEvents;
 import net.luojiuoscar.isaac_disaster.helper.CuriosHelper;
 import net.luojiuoscar.isaac_disaster.item.item.PassiveItem;
 import net.luojiuoscar.isaac_disaster.item.item.Trinket;
+import net.luojiuoscar.isaac_disaster.manager.id.ItemId;
 import net.luojiuoscar.isaac_disaster.registries.ability.passive.ModPassiveAbility;
 import net.luojiuoscar.isaac_disaster.registries.ability.passive.PassiveAbility;
 import net.luojiuoscar.isaac_disaster.registries.ability.set.ModSetAbility;
@@ -36,6 +38,9 @@ public class PlayerIsaacItems {
     private final Set<Integer> obtainedSets; // 已经获得过的套装
     private final Map<CurioSlotKey, ItemStack> activeCurioSlots; // 已经应用过效果的 Curios 槽位
 
+    // cache
+    private int rockBottomCount;
+
 
     // constructor
     public PlayerIsaacItems(){
@@ -55,6 +60,7 @@ public class PlayerIsaacItems {
         this.setCountMap.clear();
         this.obtainedSets.clear();
         this.activeCurioSlots.clear();
+        this.rockBottomCount = 0;
     }
 
     public void clearSetMap(){
@@ -85,26 +91,37 @@ public class PlayerIsaacItems {
     /** 通过循环删除最先获取的道具来清空道具列表 */
     public void clearPlayerPassiveItems(ServerPlayer player){
         // 循环清除最先获取的道具 （用于触发效果）
-        while(removeFromIndex(player, 0));
+        while(removeFromIndex(player, 0, false));
         // 清空哈希表
         clearSetMap();
+        ForgeEvents.syncItemDataToClient(player);
     }
 
     /**
      * 获取某个道具的总数
      */
-    public int getItemCountFromAll(Player player, int id) {
-        int count = (int) playerPassiveItems.stream()
-                .filter(s -> id == (((PassiveItem) s.getItem()).getId()))
-                .count();
-        // curios
-        List<ItemStack> stackList = CuriosHelper.getEquippedItemsInSlot(player, CuriosHelper.PASSIVE_ITEM);
+    public int getItemCountFromAll(int id) {
+        if (id == ItemId.ROCK_BOTTOM.getId()) {
+            return rockBottomCount;
+        }
 
-        count += (int) stackList.stream()
-                .filter(s -> ((s.getItem() instanceof PassiveItem item) && item.getId() == id))
+        int count = (int) playerPassiveItems.stream()
+                .filter(s -> s.getItem() instanceof PassiveItem item && item.getId() == id)
+                .count();
+
+        count += (int) activeCurioSlots.values().stream()
+                .filter(s -> s.getItem() instanceof PassiveItem item && item.getId() == id)
                 .count();
 
         return count;
+    }
+
+    public int getRockBottomCount() {
+        return rockBottomCount;
+    }
+
+    public void modifyRockBottomCount(int n) {
+        rockBottomCount = Math.max(rockBottomCount + n, 0);
     }
 
     public Map<Integer, Integer> getItemCountMap() {
@@ -119,22 +136,26 @@ public class PlayerIsaacItems {
         return map;
     }
 
-    public Map<Integer, Integer> getItemCountMapFromAll(Player player) {
+    public Map<Integer, Integer> getItemCountMapFromAll() {
         Map<Integer, Integer> map = new HashMap<>();
 
         for (ItemStack stack : playerPassiveItems){
             int id = ((PassiveItem) stack.getItem()).getId();
+            if (id == ItemId.ROCK_BOTTOM.getId()) continue;
 
             map.put(id, map.getOrDefault(id, 0) + 1);
         }
 
-        // curios
-        List<ItemStack> stackList = CuriosHelper.getEquippedItemsInSlot(player, CuriosHelper.PASSIVE_ITEM);
-
-        for (ItemStack stack : stackList){
-            int id = ((PassiveItem) stack.getItem()).getId();
+        for (ItemStack stack : activeCurioSlots.values()){
+            if (!(stack.getItem() instanceof PassiveItem passiveItem)) continue;
+            int id = passiveItem.getId();
+            if (id == ItemId.ROCK_BOTTOM.getId()) continue;
 
             map.put(id, map.getOrDefault(id, 0) + 1);
+        }
+
+        if (rockBottomCount > 0) {
+            map.put(ItemId.ROCK_BOTTOM.getId(), rockBottomCount);
         }
         return map;
     }
@@ -157,9 +178,14 @@ public class PlayerIsaacItems {
 
         // 增加被动道具到列表
         playerPassiveItems.add(stack.copy());
+        ForgeEvents.syncItemDataToClient(player);
     }
 
     public boolean removeFromIndex(ServerPlayer player, int index) {
+        return removeFromIndex(player, index, true);
+    }
+
+    private boolean removeFromIndex(ServerPlayer player, int index, boolean sync) {
         // 确保索引有效
         if (index < 0 || index >= playerPassiveItems.size()) {
             return false; // 索引无效，直接返回失败
@@ -170,13 +196,20 @@ public class PlayerIsaacItems {
 
         IForgeRegistry<PassiveAbility> passiveAbilityIForgeRegistry =
                 RegistryManager.ACTIVE.getRegistry(ModPassiveAbility.PASSIVE_ABILITY_KEY);
-        if (passiveAbilityIForgeRegistry == null) return false;
+        if (passiveAbilityIForgeRegistry == null) {
+            if (sync) ForgeEvents.syncItemDataToClient(player);
+            return false;
+        }
 
         PassiveAbility ability = passiveAbilityIForgeRegistry.getValue(removeId);
-        if (ability == null) return false;
+        if (ability == null) {
+            if (sync) ForgeEvents.syncItemDataToClient(player);
+            return false;
+        }
 
         //移除效果
         ability.onRemove(player, stack);
+        if (sync) ForgeEvents.syncItemDataToClient(player);
         return true;
     }
 
@@ -191,12 +224,13 @@ public class PlayerIsaacItems {
 
                 IForgeRegistry<PassiveAbility> passiveAbilityIForgeRegistry =
                         RegistryManager.ACTIVE.getRegistry(ModPassiveAbility.PASSIVE_ABILITY_KEY);
-                if (passiveAbilityIForgeRegistry == null) return;
-
-                PassiveAbility ability = passiveAbilityIForgeRegistry.getValue(itemId);
-                if (ability == null) return;
-
-                ability.onRemove(player, stack);
+                if (passiveAbilityIForgeRegistry != null) {
+                    PassiveAbility ability = passiveAbilityIForgeRegistry.getValue(itemId);
+                    if (ability != null) {
+                        ability.onRemove(player, stack);
+                    }
+                }
+                ForgeEvents.syncItemDataToClient(player);
                 break;
             }
         }
@@ -413,6 +447,8 @@ public class PlayerIsaacItems {
         for (Map.Entry<CurioSlotKey, ItemStack> entry : source.activeCurioSlots.entrySet()) {
             this.activeCurioSlots.put(entry.getKey(), entry.getValue().copy());
         }
+
+        rebuildRockBottomCount();
     }
 
     public void saveNBTData(CompoundTag nbt) {
@@ -536,6 +572,27 @@ public class PlayerIsaacItems {
                 }
             }
         }
+
+        rebuildRockBottomCount();
+    }
+
+    private void rebuildRockBottomCount() {
+        rockBottomCount = 0;
+        for (ItemStack stack : playerPassiveItems) {
+            if (isRockBottom(stack)) {
+                rockBottomCount++;
+            }
+        }
+        for (ItemStack stack : activeCurioSlots.values()) {
+            if (isRockBottom(stack)) {
+                rockBottomCount++;
+            }
+        }
+    }
+
+    private static boolean isRockBottom(ItemStack stack) {
+        return stack.getItem() instanceof PassiveItem item
+                && item.getId() == ItemId.ROCK_BOTTOM.getId();
     }
 
 }

@@ -34,6 +34,7 @@ import net.luojiuoscar.isaac_disaster.registries.ability.set.ModSetAbility;
 import net.luojiuoscar.isaac_disaster.registries.ability.set.SetAbility;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerModule;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerModuleQueue;
+import net.luojiuoscar.isaac_disaster.system.rockbottom.RockBottomState;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -91,6 +92,7 @@ public class ForgeEvents {
     @SubscribeEvent
     public static void onPlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
         if (!(event.getEntity() instanceof ServerPlayer player)) return;
+        CuriosHelper.syncAllIsaacCurios(player);
         syncAllDataToClient(player);
         player.refreshDimensions();
         ModMessages.sentToPlayer(new RefreshScaleS2CPacket(), player);
@@ -98,7 +100,6 @@ public class ForgeEvents {
         // update cached attack type
         player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY).ifPresent(
                 playerAbility -> playerAbility.updateBestAttackType(player));
-        CuriosHelper.syncAllIsaacCurios(player);
         IsaacFlightEvents.sendState(player);
 
         // 添加永久模块
@@ -106,10 +107,18 @@ public class ForgeEvents {
         effectModules -> addPermanentModules(effectModules.getTriggerModules()));
     }
 
+    @SubscribeEvent
+    public static void onPlayerRespawn(PlayerEvent.PlayerRespawnEvent event) {
+        if (!(event.getEntity() instanceof ServerPlayer player)) return;
+        CuriosHelper.syncAllIsaacCurios(player);
+        syncAllDataToClient(player);
+    }
+
     public static void syncAllDataToClient(ServerPlayer player){
         syncSetDataToClient(player);
         syncPillDataToClient(player);
         syncItemDataToClient(player);
+        RockBottomState.syncHistoryToClient(player);
     }
 
     /**
@@ -146,7 +155,7 @@ public class ForgeEvents {
     public static void syncItemDataToClient(ServerPlayer player) {
         player.getCapability(PlayerIsaacItemsProvider.PLAYER_ISAAC_ITEMS).ifPresent(
                 playerPassiveItem -> {
-                    Map<Integer, Integer> items = playerPassiveItem.getItemCountMapFromAll(player);
+                    Map<Integer, Integer> items = playerPassiveItem.getItemCountMapFromAll();
                     ModMessages.sentToPlayer(new PassiveItemMapSyncS2CPacket(items), player);
                 });
     }

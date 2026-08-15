@@ -13,6 +13,7 @@ public class ClientDataManager {
     private final Map<Integer, Integer> itemCountMap;
     private final Map<Integer, Integer> setCountMap;
     private final Map<Integer, ResourceLocation> pillRecords;
+    private final Map<ResourceLocation, Double> rockBottomHistory;
     private int flyUnits;
     private int pillQuality;
 
@@ -23,6 +24,7 @@ public class ClientDataManager {
         itemCountMap = new HashMap<>();
         setCountMap = new HashMap<>();
         pillRecords = new HashMap<>();
+        rockBottomHistory = new HashMap<>();
         init();
     }
 
@@ -30,6 +32,7 @@ public class ClientDataManager {
         itemCountMap.clear();
         setCountMap.clear();
         pillRecords.clear();
+        rockBottomHistory.clear();
         pillQuality = 0;
         flyUnits = 0;
         chargeProgress = 0;
@@ -77,6 +80,10 @@ public class ClientDataManager {
         return chargeProgress;
     }
 
+    public Double getRockBottomHistory(ResourceLocation key) {
+        return rockBottomHistory.get(key);
+    }
+
     public void setChargeProgress(float chargeProgress) {
         this.chargeProgress = chargeProgress;
     }
@@ -106,5 +113,10 @@ public class ClientDataManager {
     }
     public void setPillQuality(int pillQuality){
         this.pillQuality = pillQuality;
+    }
+
+    public void replaceRockBottomHistory(Map<ResourceLocation, Double> history) {
+        rockBottomHistory.clear();
+        rockBottomHistory.putAll(history);
     }
 }
