@@ -3,7 +3,9 @@ package net.luojiuoscar.isaac_disaster.client;
 import net.luojiuoscar.isaac_disaster.manager.PillEffectManager;
 import net.minecraft.resources.ResourceLocation;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 // 客户端专用的数据缓存类，存储从服务端同步过来的信息
@@ -14,6 +16,7 @@ public class ClientDataManager {
     private final Map<Integer, Integer> setCountMap;
     private final Map<Integer, ResourceLocation> pillRecords;
     private final Map<ResourceLocation, Double> rockBottomHistory;
+    private final List<ResourceLocation> reviveHudIcons;
     private int flyUnits;
     private int pillQuality;
 
@@ -25,6 +28,7 @@ public class ClientDataManager {
         setCountMap = new HashMap<>();
         pillRecords = new HashMap<>();
         rockBottomHistory = new HashMap<>();
+        reviveHudIcons = new ArrayList<>();
         init();
     }
 
@@ -33,6 +37,7 @@ public class ClientDataManager {
         setCountMap.clear();
         pillRecords.clear();
         rockBottomHistory.clear();
+        reviveHudIcons.clear();
         pillQuality = 0;
         flyUnits = 0;
         chargeProgress = 0;
@@ -84,6 +89,10 @@ public class ClientDataManager {
         return rockBottomHistory.get(key);
     }
 
+    public List<ResourceLocation> getReviveHudIcons() {
+        return List.copyOf(reviveHudIcons);
+    }
+
     public void setChargeProgress(float chargeProgress) {
         this.chargeProgress = chargeProgress;
     }
@@ -118,5 +127,10 @@ public class ClientDataManager {
     public void replaceRockBottomHistory(Map<ResourceLocation, Double> history) {
         rockBottomHistory.clear();
         rockBottomHistory.putAll(history);
+    }
+
+    public void replaceReviveHudIcons(List<ResourceLocation> icons) {
+        reviveHudIcons.clear();
+        reviveHudIcons.addAll(icons);
     }
 }

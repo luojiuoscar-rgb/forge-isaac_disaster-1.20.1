@@ -15,6 +15,7 @@ import net.luojiuoscar.isaac_disaster.commands.pill.PillShuffleCmd;
 import net.luojiuoscar.isaac_disaster.commands.pill.PillTriggerByEffectCmd;
 import net.luojiuoscar.isaac_disaster.commands.player.PlayerRefreshPoolCmd;
 import net.luojiuoscar.isaac_disaster.commands.player.PlayerResetDataCmd;
+import net.luojiuoscar.isaac_disaster.commands.revive.ReviveModuleCmd;
 import net.luojiuoscar.isaac_disaster.commands.trinket.TrinketClearSwallowedCmd;
 import net.luojiuoscar.isaac_disaster.commands.trinket.TrinketSetEnchanted;
 import net.luojiuoscar.isaac_disaster.effect.ModEffects;
@@ -29,6 +30,7 @@ import net.luojiuoscar.isaac_disaster.networking.ModMessages;
 import net.luojiuoscar.isaac_disaster.networking.packet.PassiveItemMapSyncS2CPacket;
 import net.luojiuoscar.isaac_disaster.networking.packet.PillRecordsSyncS2CPacket;
 import net.luojiuoscar.isaac_disaster.networking.packet.RefreshScaleS2CPacket;
+import net.luojiuoscar.isaac_disaster.networking.packet.ReviveHudSyncS2CPacket;
 import net.luojiuoscar.isaac_disaster.networking.packet.SetCountSyncS2CPacket;
 import net.luojiuoscar.isaac_disaster.registries.ability.set.ModSetAbility;
 import net.luojiuoscar.isaac_disaster.registries.ability.set.SetAbility;
@@ -38,6 +40,7 @@ import net.luojiuoscar.isaac_disaster.system.rockbottom.RockBottomState;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
@@ -55,6 +58,7 @@ import net.minecraft.world.level.Level;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
+import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.living.LivingKnockBackEvent;
 import net.minecraftforge.event.entity.living.MobEffectEvent;
@@ -118,6 +122,7 @@ public class ForgeEvents {
         syncSetDataToClient(player);
         syncPillDataToClient(player);
         syncItemDataToClient(player);
+        syncReviveHudToClient(player);
         RockBottomState.syncHistoryToClient(player);
     }
 
@@ -158,6 +163,30 @@ public class ForgeEvents {
                     Map<Integer, Integer> items = playerPassiveItem.getItemCountMapFromAll();
                     ModMessages.sentToPlayer(new PassiveItemMapSyncS2CPacket(items), player);
                 });
+    }
+
+    public static void syncReviveHudToClient(ServerPlayer player) {
+        player.getCapability(EffectModulesProvider.EFFECT_MODULES).ifPresent(
+                effectModules -> ModMessages.sentToPlayer(
+                        new ReviveHudSyncS2CPacket(effectModules.getReviveSequence().getHudPreview(10)),
+                        player)
+        );
+    }
+
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
+    public static void onLivingDeath(LivingDeathEvent event) {
+        if (!(event.getEntity() instanceof ServerPlayer player)) {
+            return;
+        }
+        if (event.getSource().is(DamageTypes.GENERIC_KILL)) {
+            return;
+        }
+
+        player.getCapability(EffectModulesProvider.EFFECT_MODULES).ifPresent(effectModules -> {
+            if (effectModules.getReviveSequence().tryConsumeOnDeath(player, event)) {
+                syncReviveHudToClient(player);
+            }
+        });
     }
 
     /**
@@ -205,6 +234,7 @@ public class ForgeEvents {
     @SubscribeEvent
     public static void onPlayerCloned(PlayerEvent.Clone event){
         if(event.isWasDeath()){
+            ServerPlayer newPlayer = event.getEntity() instanceof ServerPlayer serverPlayer ? serverPlayer : null;
             // 玩家的cap信息会在死亡后删除。需要用到reviveCaps恢复。复制完后再删除
             event.getOriginal().reviveCaps();
             // passive item
@@ -249,9 +279,14 @@ public class ForgeEvents {
             event.getOriginal().getCapability(EffectModulesProvider.EFFECT_MODULES).ifPresent(oldStore -> {
                 event.getEntity().getCapability(EffectModulesProvider.EFFECT_MODULES).ifPresent(newStore -> {
                     newStore.copyFrom(oldStore);
+                    newStore.getReviveSequence().rebuildConsumerFromProvider();
 
                     // 给玩家添加默认模块
                     addPermanentModules(newStore.getTriggerModules());
+
+                    if (newPlayer != null) {
+                        syncReviveHudToClient(newPlayer);
+                    }
                 });
             });
             // extra data
@@ -312,6 +347,9 @@ public class ForgeEvents {
 
         // familiar
         new FamiliarCmd(event.getDispatcher());
+
+        // revive module
+        new ReviveModuleCmd(event.getDispatcher());
 
 
         ConfigCommand.register(event.getDispatcher());

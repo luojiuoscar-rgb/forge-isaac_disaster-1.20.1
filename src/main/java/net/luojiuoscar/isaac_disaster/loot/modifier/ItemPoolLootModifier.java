@@ -3,6 +3,7 @@ package net.luojiuoscar.isaac_disaster.loot.modifier;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.helper.PoolHelper;
 import net.luojiuoscar.isaac_disaster.item.ModPassiveItems;
 import net.luojiuoscar.isaac_disaster.item.item.IsaacItem;
@@ -57,7 +58,7 @@ public class ItemPoolLootModifier extends LootModifier {
         ItemStack stack = objectArrayList.get(0);
 
         if (!(stack.getItem() instanceof IsaacItem) || objectArrayList.size() > 1 ||
-                !tableId.getNamespace().equals("isaac_disaster") || !tableId.getPath().startsWith("pools/item/"))
+                !tableId.getNamespace().equals(IsaacDisaster.MOD_ID) || !tableId.getPath().startsWith("pools/item/"))
             return objectArrayList;
 
         // 获取原表

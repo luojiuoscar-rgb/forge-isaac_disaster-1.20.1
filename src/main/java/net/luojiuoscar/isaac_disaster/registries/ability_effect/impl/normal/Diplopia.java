@@ -18,11 +18,10 @@ public class Diplopia implements IAbilityEffect {
         if (!(context.getEntity() instanceof Player player)) return false;
         ItemStack stack = context.getOrDefault(ContextKeys.ITEM_STACK, ItemStack.EMPTY);
 
-        // 遍历背包并生成掉落，除了自身
+        // 遍历主背包并生成掉落，除了自身
         Inventory inv = player.getInventory();
         List<ItemStack> invItems = new ArrayList<>();
         invItems.addAll(inv.items);
-        invItems.addAll(inv.offhand);
 
         if (stack != ItemStack.EMPTY){
             invItems.remove(stack);

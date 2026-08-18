@@ -1,5 +1,8 @@
 package net.luojiuoscar.isaac_disaster.registries.recursive_module;
 
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraftforge.registries.IForgeRegistry;
@@ -26,6 +29,13 @@ public class RecursiveModuleQueue {
         queue.clear();
     }
 
+    public void copyFrom(RecursiveModuleQueue source) {
+        queue.clear();
+        for (RecursiveModuleInstance inst : source.queue) {
+            queue.add(new RecursiveModuleInstance(inst.id, inst.stacks, inst.coolDown));
+        }
+    }
+
     /**
      * Adds an instance restored from persisted data.
      */
@@ -33,6 +43,41 @@ public class RecursiveModuleQueue {
         if (inst == null || inst.stacks <= 0) return;
 
         queue.add(inst);
+    }
+
+    public ListTag saveNBTData() {
+        ListTag list = new ListTag();
+        for (RecursiveModuleInstance inst : queue) {
+            if (inst.stacks <= 0) continue;
+
+            CompoundTag tag = new CompoundTag();
+            tag.putString("id", inst.id.toString());
+            tag.putInt("stacks", inst.stacks);
+            tag.putInt("coolDown", inst.coolDown);
+            list.add(tag);
+        }
+        return list;
+    }
+
+    public void loadNBTData(ListTag list) {
+        queue.clear();
+        for (Tag value : list) {
+            if (!(value instanceof CompoundTag tag)) {
+                continue;
+            }
+
+            try {
+                ResourceLocation id = ResourceLocation.parse(tag.getString("id"));
+                int stacks = tag.getInt("stacks");
+                int coolDown = tag.getInt("coolDown");
+                if (stacks <= 0) {
+                    continue;
+                }
+
+                rawAdd(new RecursiveModuleInstance(id, stacks, coolDown));
+            } catch (Exception ignored) {
+            }
+        }
     }
 
     /**

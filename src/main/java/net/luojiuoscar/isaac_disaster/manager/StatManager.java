@@ -8,6 +8,7 @@ import net.luojiuoscar.isaac_disaster.capability.player.PlayerAbilityProvider;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerFamiliarDataProvider;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerIsaacItemsProvider;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerStatModifierProvider;
+import net.luojiuoscar.isaac_disaster.event.ForgeEvents;
 import net.luojiuoscar.isaac_disaster.helper.FlightHelper;
 import net.luojiuoscar.isaac_disaster.networking.ModMessages;
 import net.luojiuoscar.isaac_disaster.networking.packet.RefreshScaleS2CPacket;
@@ -407,6 +408,22 @@ public enum StatManager {
         entity.getCapability(EffectModulesProvider.EFFECT_MODULES).ifPresent(
                 effectModules -> effectModules.getRecursiveModuleQueue().add(entity, rl, count)
         );
+    }
+
+    public static void addReviveModuleProvider(LivingEntity entity, ResourceLocation rl, int count) {
+        entity.getCapability(EffectModulesProvider.EFFECT_MODULES).ifPresent(
+                effectModules -> effectModules.getReviveSequence().addProvider(rl, count)
+        );
+    }
+
+    public static void addReviveModuleConsumer(LivingEntity entity, ResourceLocation rl, int count) {
+        entity.getCapability(EffectModulesProvider.EFFECT_MODULES).ifPresent(
+                effectModules -> effectModules.getReviveSequence().addConsumer(rl, count)
+        );
+
+        if (count != 0 && entity instanceof ServerPlayer player) {
+            ForgeEvents.syncReviveHudToClient(player);
+        }
     }
 
     public static void addFamiliar(Player player, ResourceLocation rl, int count) {

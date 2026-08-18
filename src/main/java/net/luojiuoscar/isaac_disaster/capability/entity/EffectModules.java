@@ -1,16 +1,10 @@
 package net.luojiuoscar.isaac_disaster.capability.entity;
 
-import net.luojiuoscar.isaac_disaster.registries.recursive_module.RecursiveModuleInstance;
 import net.luojiuoscar.isaac_disaster.registries.recursive_module.RecursiveModuleQueue;
-import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerModuleInstance;
+import net.luojiuoscar.isaac_disaster.registries.revive_module.ReviveSequence;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerModuleQueue;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
-import net.minecraft.resources.ResourceLocation;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * 目前EffectModule只挂在给玩家以确保性能不会被影响
@@ -18,88 +12,60 @@ import java.util.List;
 public class EffectModules {
     private final TriggerModuleQueue triggerModuleQueue;
     private final RecursiveModuleQueue recursiveModuleQueue;
+    private final ReviveSequence reviveSequence;
 
     public EffectModules() {
         triggerModuleQueue = new TriggerModuleQueue();
         recursiveModuleQueue = new RecursiveModuleQueue();
+        reviveSequence = new ReviveSequence();
         init();
     }
 
     public void init() {
         triggerModuleQueue.clear();
         recursiveModuleQueue.clear();
+        reviveSequence.clear();
     }
 
     public void copyFrom(EffectModules source) {
         triggerModuleQueue.copyFrom(source.triggerModuleQueue);
+        recursiveModuleQueue.copyFrom(source.recursiveModuleQueue);
 
-        recursiveModuleQueue.clear();
-        for (RecursiveModuleInstance inst : source.recursiveModuleQueue.getQueue()) {
-            recursiveModuleQueue.rawAdd(inst);
-        }
+        reviveSequence.copyFrom(source.reviveSequence);
     }
 
     public void saveNBTData(CompoundTag nbt) {
         /* ---------- Trigger Modules ---------- */
-        ListTag triggerList = new ListTag();
-        for (TriggerModuleInstance inst : triggerModuleQueue.snapshot().modules()) {
-            CompoundTag tag = new CompoundTag();
-            tag.putString("id", inst.id().toString());
-            tag.putInt("stacks", inst.stacks());
-            tag.putDouble("priority", inst.priority());
-            triggerList.add(tag);
-        }
-        nbt.put("trigger_modules", triggerList);
+        nbt.put("trigger_modules", triggerModuleQueue.saveNBTData());
 
         /* ---------- Recursive Modules ---------- */
-        ListTag recursiveList = new ListTag();
-        for (RecursiveModuleInstance inst : recursiveModuleQueue.getQueue()) {
-            if (inst.stacks <= 0) continue;
+        nbt.put("recursive_modules", recursiveModuleQueue.saveNBTData());
 
-            CompoundTag tag = new CompoundTag();
-            tag.putString("id", inst.id.toString());
-            tag.putInt("stacks", inst.stacks);
-            tag.putInt("coolDown", inst.coolDown);
-            recursiveList.add(tag);
-        }
-        nbt.put("recursive_modules", recursiveList);
+        /* ---------- Revive Sequence ---------- */
+        CompoundTag reviveTag = new CompoundTag();
+        reviveSequence.saveNBTData(reviveTag);
+        nbt.put("revive_sequence", reviveTag);
     }
 
 
     public void loadNBTData(CompoundTag nbt) {
+        triggerModuleQueue.clear();
+        recursiveModuleQueue.clear();
+        reviveSequence.clear();
+
         /* ---------- Trigger Modules ---------- */
-        List<TriggerModuleInstance> triggerModules = new ArrayList<>();
         if (nbt.contains("trigger_modules", Tag.TAG_LIST)) {
-            ListTag list = nbt.getList("trigger_modules", Tag.TAG_COMPOUND);
-            for (Tag t : list) {
-                CompoundTag tag = (CompoundTag) t;
-                try {
-                    triggerModules.add(new TriggerModuleInstance(
-                            ResourceLocation.parse(tag.getString("id")),
-                            tag.getInt("stacks"),
-                            tag.getDouble("priority")));
-                } catch (Exception ignored) {}
-            }
+            triggerModuleQueue.loadNBTData(nbt.getList("trigger_modules", Tag.TAG_COMPOUND));
         }
-        triggerModuleQueue.replaceAll(triggerModules);
 
         /* ---------- Recursive Modules ---------- */
-        recursiveModuleQueue.clear();
         if (nbt.contains("recursive_modules", Tag.TAG_LIST)) {
-            ListTag list = nbt.getList("recursive_modules", Tag.TAG_COMPOUND);
-            for (Tag t : list) {
-                CompoundTag tag = (CompoundTag) t;
-                try {
-                    ResourceLocation id = ResourceLocation.parse(tag.getString("id"));
-                    int stacks = tag.getInt("stacks");
-                    int coolDown = tag.getInt("coolDown");
-                    if (stacks <= 0) continue;
+            recursiveModuleQueue.loadNBTData(nbt.getList("recursive_modules", Tag.TAG_COMPOUND));
+        }
 
-                    RecursiveModuleInstance inst = new RecursiveModuleInstance(id, stacks, coolDown);
-
-                    recursiveModuleQueue.rawAdd(inst);
-                } catch (Exception ignored) {}
-            }
+        /* ---------- Revive Sequence ---------- */
+        if (nbt.contains("revive_sequence", Tag.TAG_COMPOUND)) {
+            reviveSequence.loadNBTData(nbt.getCompound("revive_sequence"));
         }
     }
 
@@ -110,5 +76,9 @@ public class EffectModules {
 
     public RecursiveModuleQueue getRecursiveModuleQueue(){
         return recursiveModuleQueue;
+    }
+
+    public ReviveSequence getReviveSequence() {
+        return reviveSequence;
     }
 }

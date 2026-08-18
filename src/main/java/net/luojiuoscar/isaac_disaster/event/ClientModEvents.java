@@ -9,6 +9,7 @@ import net.luojiuoscar.isaac_disaster.block.renderer.PedestalRenderer;
 import net.luojiuoscar.isaac_disaster.client.ModKeyMappings;
 import net.luojiuoscar.isaac_disaster.client.hud.ChargeBarHudOverlay;
 import net.luojiuoscar.isaac_disaster.client.hud.FlyHudOverlay;
+import net.luojiuoscar.isaac_disaster.client.hud.ReviveHudOverlay;
 import net.luojiuoscar.isaac_disaster.entity.ModEntities;
 import net.luojiuoscar.isaac_disaster.entity.tnt.CustomTntRenderer;
 import net.luojiuoscar.isaac_disaster.renderer.FetusBulletRenderer;
@@ -153,6 +154,7 @@ public class ClientModEvents {
 
     @SubscribeEvent
     public static void registerGuiOverlays(RegisterGuiOverlaysEvent event) {
+        event.registerAbove(VanillaGuiOverlay.PLAYER_HEALTH.id(), "revive", ReviveHudOverlay.HUD_REVIVE);
         event.registerAbove(VanillaGuiOverlay.FOOD_LEVEL.id(), "fly", FlyHudOverlay.HUD_FLY);
         event.registerAbove(VanillaGuiOverlay.CROSSHAIR.id(), "charge_bar", ChargeBarHudOverlay.HUD_CHARGE_BAR);
     }

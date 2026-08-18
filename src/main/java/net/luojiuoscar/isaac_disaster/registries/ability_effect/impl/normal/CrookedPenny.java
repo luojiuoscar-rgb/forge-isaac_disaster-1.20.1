@@ -19,11 +19,9 @@ public class CrookedPenny implements IAbilityEffect {
         if (random.nextDouble() < 0.5){
             ModExecutableEffects.DIPLOPIA.get().apply(context);
         }else{
-            // 清空背包并给予1块钱，返还弯币
+            // 清空主背包并给予1块钱，返还弯币
             Inventory inv = player.getInventory();
             inv.items.clear();
-            inv.offhand.clear();
-            inv.armor.clear();
             PlayerHelper.giveItem(player, ModActiveItems.CROOKED_PENNY.get(), 1);
             PlayerHelper.giveMoney(player, 1);
         }

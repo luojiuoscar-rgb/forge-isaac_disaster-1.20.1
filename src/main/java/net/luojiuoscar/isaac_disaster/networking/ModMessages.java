@@ -119,6 +119,12 @@ public class ModMessages {
                 .consumerNetworkThread(RockBottomHistorySyncS2CPacket::handle)
                 .add();
 
+        net.messageBuilder(ReviveHudSyncS2CPacket.class, id(), NetworkDirection.PLAY_TO_CLIENT)
+                .decoder(ReviveHudSyncS2CPacket::new)
+                .encoder(ReviveHudSyncS2CPacket::toBytes)
+                .consumerNetworkThread(ReviveHudSyncS2CPacket::handle)
+                .add();
+
     }
 
     public static <MSG> void sendToServer(MSG message){

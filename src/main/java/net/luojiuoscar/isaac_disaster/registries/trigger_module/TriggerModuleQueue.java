@@ -1,5 +1,8 @@
 package net.luojiuoscar.isaac_disaster.registries.trigger_module;
 
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.rule.TriggerModuleSnapshot;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.registries.IForgeRegistry;
@@ -18,6 +21,36 @@ public class TriggerModuleQueue {
 
     public void copyFrom(TriggerModuleQueue source) {
         replaceAll(source.snapshot().modules());
+    }
+
+    public ListTag saveNBTData() {
+        ListTag list = new ListTag();
+        for (TriggerModuleInstance inst : queue) {
+            CompoundTag tag = new CompoundTag();
+            tag.putString("id", inst.id().toString());
+            tag.putInt("stacks", inst.stacks());
+            tag.putDouble("priority", inst.priority());
+            list.add(tag);
+        }
+        return list;
+    }
+
+    public void loadNBTData(ListTag list) {
+        List<TriggerModuleInstance> modules = new ArrayList<>();
+        for (Tag value : list) {
+            if (!(value instanceof CompoundTag tag)) {
+                continue;
+            }
+
+            try {
+                modules.add(new TriggerModuleInstance(
+                        ResourceLocation.parse(tag.getString("id")),
+                        tag.getInt("stacks"),
+                        tag.getDouble("priority")));
+            } catch (Exception ignored) {
+            }
+        }
+        replaceAll(modules);
     }
 
     public void replaceAll(List<TriggerModuleInstance> modules) {

@@ -12,6 +12,7 @@ import net.luojiuoscar.isaac_disaster.registries.attack_type.combination.AttackC
 import net.luojiuoscar.isaac_disaster.registries.bullet_color.BulletColor;
 import net.luojiuoscar.isaac_disaster.registries.familiar.FamiliarEntityType;
 import net.luojiuoscar.isaac_disaster.registries.recursive_module.RecursiveModule;
+import net.luojiuoscar.isaac_disaster.registries.revive_module.ReviveModule;
 import net.luojiuoscar.isaac_disaster.registries.trajectory.IAttackTrajectory;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerModule;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.rule.TriggerModuleRule;
@@ -31,6 +32,7 @@ import static net.luojiuoscar.isaac_disaster.registries.attack_type.combination.
 import static net.luojiuoscar.isaac_disaster.registries.bullet_color.ModBulletColor.BULLET_COLOR_REGISTRY;
 import static net.luojiuoscar.isaac_disaster.registries.familiar.ModFamiliarEntities.FAMILIAR_ENTITY_REGISTRY;
 import static net.luojiuoscar.isaac_disaster.registries.recursive_module.ModRecursiveModule.RECURSIVE_MODULE_REGISTRY;
+import static net.luojiuoscar.isaac_disaster.registries.revive_module.ModReviveModule.REVIVE_MODULE_REGISTRY;
 import static net.luojiuoscar.isaac_disaster.registries.trajectory.ModAttackTrajectory.ATTACK_TRAJECTORY_REGISTRY;
 import static net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerModule.TRIGGER_MODULE_REGISTRY;
 import static net.luojiuoscar.isaac_disaster.registries.trigger_module.rule.ModTriggerModuleRules.TRIGGER_MODULE_RULE_REGISTRY;
@@ -64,6 +66,10 @@ public class ModRegistries {
         RECURSIVE_MODULE_REGISTRY.makeRegistry(() -> {return new RegistryBuilder<RecursiveModule>()
                 .setName(ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "recursive_module"));});
         RECURSIVE_MODULE_REGISTRY.register(modEventBus);
+
+        REVIVE_MODULE_REGISTRY.makeRegistry(() -> new RegistryBuilder<ReviveModule>()
+                .setName(ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "revive_module")));
+        REVIVE_MODULE_REGISTRY.register(modEventBus);
 
         PASSIVE_ABILITY_REGISTRY.makeRegistry(() -> {return new RegistryBuilder<PassiveAbility>()
                 .setName(ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "passive_ability"));});

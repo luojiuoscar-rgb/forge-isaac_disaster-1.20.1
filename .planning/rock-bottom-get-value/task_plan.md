@@ -1,11 +1,17 @@
 # Task Plan: 谷底石 GetValue 重构
 
+> Final state note (2026-08-15): This feature history includes several superseded
+> proposals. The implemented design does not preserve unpublished old-save
+> compatibility, does not use sprint-specific handling, and owns Rock Bottom
+> counting in `handleObtain()`/`handleRemove()`. See
+> `.planning/project-memory/` for the consolidated final state.
+
 > 执行必须继续使用 `isaac-disaster-item-creation` 技能。
 
 ## Goal
 
 将谷底石从每 20 tick 添加补偿 modifier 的实现重构为在
-`AttributeInstance#getValue()` 返回最终属性值时维护历史最高值，并保持旧存档、客户端同步和现有注册身份兼容。
+`AttributeInstance#getValue()` 返回最终属性值时维护历史最高值，并保持客户端同步和现有注册身份；不考虑未发布版本的旧存档兼容。
 
 ## Confirmed Identity And Scope
 

@@ -5,7 +5,6 @@ import net.luojiuoscar.isaac_disaster.effect.custom.FrozenEffect;
 import net.luojiuoscar.isaac_disaster.effect.custom.GoldenEffect;
 import net.luojiuoscar.isaac_disaster.effect.custom.PetrifiedEffect;
 import net.luojiuoscar.isaac_disaster.helper.LootHelper;
-import net.luojiuoscar.isaac_disaster.manager.ModDamageType;
 import net.luojiuoscar.isaac_disaster.manager.ModLootTables;
 import net.luojiuoscar.isaac_disaster.networking.EntityVisualStateSync;
 import net.luojiuoscar.isaac_disaster.system.freeze.EntityFreezeRules;
@@ -16,6 +15,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.player.Player;
@@ -119,7 +119,7 @@ public final class FreezeEffectEvents {
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public static void onLivingAttack(LivingAttackEvent event) {
-        if (event.getSource().is(ModDamageType.FROZEN_SHATTER)) {
+        if (event.getSource().is(DamageTypeTags.BYPASSES_INVULNERABILITY)) {
             return;
         }
 
