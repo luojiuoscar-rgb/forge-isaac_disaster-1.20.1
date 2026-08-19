@@ -282,7 +282,11 @@ public class EntityHelper {
             amplifier += mobEffectInstance.getAmplifier() + 1;
         }
         if (stackDuration && mobEffectInstance != null){
-            duration += mobEffectInstance.getDuration();
+            if (duration < 0 || mobEffectInstance.getDuration() < 0) {
+                duration = -1;
+            } else {
+                duration += mobEffectInstance.getDuration();
+            }
         }
 
         entity.addEffect(new MobEffectInstance(effect, duration, amplifier, isAmbient, isVisible, showIcon));

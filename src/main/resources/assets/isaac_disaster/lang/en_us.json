@@ -120,6 +120,8 @@
   "effect.isaac_disaster.petrified.description": "使生物无法移动",
   "effect.isaac_disaster.frozen": "冻结",
   "effect.isaac_disaster.frozen.description": "使生物被冻结",
+  "effect.isaac_disaster.inner_child": "内在孩童",
+  "effect.isaac_disaster.inner_child.description": "缩小、加速并提升挖掘速度",
 
   "attribute.isaac_disaster.max_health": "生命上限",
   "attribute.isaac_disaster.movement_speed": "移动速度",
@@ -526,6 +528,10 @@
   "item.isaac_disaster.maggys_bow.lore.2": "移除红心副作用",
   "item.isaac_disaster.one_up": "1up!",
   "item.isaac_disaster.one_up.lore.1": "获得一条额外生命",
+  "item.isaac_disaster.inner_child": "内在孩童",
+  "item.isaac_disaster.inner_child.lore.1": "获得一次复活",
+  "item.isaac_disaster.inner_child.lore.2": "复活后产生小范围爆炸",
+  "item.isaac_disaster.inner_child.lore.3": "并获得一层内在孩童效果",
   "item end": "",
 
 

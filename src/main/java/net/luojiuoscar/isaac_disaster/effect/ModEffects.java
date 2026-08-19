@@ -21,6 +21,14 @@ public class ModEffects {
         MOB_EFFECTS.register(eventBus);
     }
 
+    // curses
+    public static final RegistryObject<MobEffect> CURSE_OF_THE_BLIND = MOB_EFFECTS.register(EffectManager.CURSE_OF_THE_BLIND.getName(),
+            () -> new CurseOfTheBlind(MobEffectCategory.HARMFUL, 0x512799));
+
+    public static final RegistryObject<MobEffect> CURSE_OF_THE_MAZE = MOB_EFFECTS.register(EffectManager.CURSE_OF_THE_MAZE.getName(),
+            () -> new CurseOfTheMaze(MobEffectCategory.HARMFUL, 0x512799));
+
+    // normal effects
     public static final RegistryObject<MobEffect> POISON = MOB_EFFECTS.register(EffectManager.POISON.getName(),
             () -> new PoisonEffect(MobEffectCategory.HARMFUL, 8889187));
 
@@ -99,11 +107,8 @@ public class ModEffects {
     public static final RegistryObject<MobEffect> FROZEN = MOB_EFFECTS.register(EffectManager.FROZEN.getName(),
             () -> new FrozenEffect(MobEffectCategory.HARMFUL, 0xA7E8FF));
 
-    // curses
-    public static final RegistryObject<MobEffect> CURSE_OF_THE_BLIND = MOB_EFFECTS.register(EffectManager.CURSE_OF_THE_BLIND.getName(),
-            () -> new CurseOfTheBlind(MobEffectCategory.HARMFUL, 0x512799));
-    public static final RegistryObject<MobEffect> CURSE_OF_THE_MAZE = MOB_EFFECTS.register(EffectManager.CURSE_OF_THE_MAZE.getName(),
-            () -> new CurseOfTheMaze(MobEffectCategory.HARMFUL, 0x512799));
+    public static final RegistryObject<MobEffect> INNER_CHILD = MOB_EFFECTS.register(EffectManager.INNER_CHILD.getName(),
+            () -> new InnerChildEffect(MobEffectCategory.BENEFICIAL, 0xF4D2A0));
 
 
 }

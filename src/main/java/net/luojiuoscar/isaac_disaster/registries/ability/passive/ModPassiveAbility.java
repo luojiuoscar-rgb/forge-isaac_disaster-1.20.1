@@ -579,4 +579,8 @@ public class ModPassiveAbility {
     public static final RegistryObject<PassiveAbility> ONE_UP =
             PASSIVE_ABILITY_REGISTRY.register("one_up",
                     () -> new OneUp(ItemId.ONE_UP.getId(), ItemId.ONE_UP.getLevel()));
+
+    public static final RegistryObject<PassiveAbility> INNER_CHILD =
+            PASSIVE_ABILITY_REGISTRY.register("inner_child",
+                    () -> new InnerChild(ItemId.INNER_CHILD.getId(), ItemId.INNER_CHILD.getLevel()));
 }

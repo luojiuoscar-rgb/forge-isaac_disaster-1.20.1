@@ -4,6 +4,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.effect.MobEffect;
 
 public class PotionProfile {
+    public static final int PERMANENT_DURATION = -1;
 
     public final MobEffect effect;
     public final int duration;
@@ -30,6 +31,17 @@ public class PotionProfile {
         this.duration_increment = duration_increment;
         this.amplifier_increment = amplifier_increment;
         this.has_particle = has_particle;
+    }
+
+    public int resolveDuration(int multiplier) {
+        if (duration < 0) {
+            return PERMANENT_DURATION;
+        }
+        return Mth.clamp(duration + duration_increment * multiplier, 0, 1000000);
+    }
+
+    public int resolveAmplifier(int multiplier) {
+        return Mth.clamp(amplifier + amplifier_increment * multiplier, 0, 255);
     }
 
 }

@@ -364,6 +364,8 @@ public class ModExecutableEffects {
             EXECUTABLE_EFFECT_REGISTRY.register("simple_revive_effect", SimpleReviveEffect::new);
     public static final RegistryObject<IExecutableEffect> ONE_UP_REVIVE_EFFECT =
             EXECUTABLE_EFFECT_REGISTRY.register("one_up_revive_effect", OneUpReviveEffect::new);
+    public static final RegistryObject<IExecutableEffect> INNER_CHILD_REVIVE_EFFECT =
+            EXECUTABLE_EFFECT_REGISTRY.register("inner_child_revive_effect", InnerChildReviveEffect::new);
 
     //</editor-fold>
 

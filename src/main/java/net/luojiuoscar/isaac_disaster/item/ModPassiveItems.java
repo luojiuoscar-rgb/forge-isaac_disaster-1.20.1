@@ -584,4 +584,8 @@ public class ModPassiveItems {
     public static final RegistryObject<Item> ONE_UP = ITEMS.register("one_up",
             () -> new PassiveItem(new Item.Properties(), ModPassiveAbility.ONE_UP));
     static {ItemListManager.PASSIVE_ITEM_LIST.add(ONE_UP);}
+
+    public static final RegistryObject<Item> INNER_CHILD = ITEMS.register("inner_child",
+            () -> new PassiveItem(new Item.Properties(), ModPassiveAbility.INNER_CHILD));
+    static {ItemListManager.PASSIVE_ITEM_LIST.add(INNER_CHILD);}
 }

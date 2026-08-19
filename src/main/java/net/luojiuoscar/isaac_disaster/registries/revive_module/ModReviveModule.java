@@ -1,6 +1,7 @@
 package net.luojiuoscar.isaac_disaster.registries.revive_module;
 
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
+import net.luojiuoscar.isaac_disaster.registries.revive_module.impl.InnerChild;
 import net.luojiuoscar.isaac_disaster.registries.revive_module.impl.SimpleRevive;
 import net.luojiuoscar.isaac_disaster.registries.revive_module.impl.TotemOfUndying;
 import net.luojiuoscar.isaac_disaster.registries.revive_module.impl.OneUp;
@@ -23,5 +24,7 @@ public final class ModReviveModule {
             REVIVE_MODULE_REGISTRY.register("simple_revive", SimpleRevive::new);
     public static final RegistryObject<ReviveModule> ONE_UP =
             REVIVE_MODULE_REGISTRY.register("one_up", OneUp::new);
+    public static final RegistryObject<ReviveModule> INNER_CHILD =
+            REVIVE_MODULE_REGISTRY.register("inner_child", InnerChild::new);
 
 }

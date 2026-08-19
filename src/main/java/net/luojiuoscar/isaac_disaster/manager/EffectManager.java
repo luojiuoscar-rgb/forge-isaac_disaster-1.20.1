@@ -3,6 +3,11 @@ package net.luojiuoscar.isaac_disaster.manager;
 import net.minecraft.network.chat.Component;
 
 public enum EffectManager {
+    // Curses
+    CURSE_OF_THE_BLIND("curse_of_the_blind"),
+    CURSE_OF_THE_MAZE("curse_of_the_maze"),
+
+    // normal effects
     POISON("poison"),
     POWER_OF_BELIAL("power_of_belial"),
     DIZZINESS("dizziness"),
@@ -29,10 +34,11 @@ public enum EffectManager {
     GOLDEN("golden"),
     PETRIFIED("petrified"),
     FROZEN("frozen"),
+    INNER_CHILD("inner_child");
 
-    // Curses
-    CURSE_OF_THE_BLIND("curse_of_the_blind"),
-    CURSE_OF_THE_MAZE("curse_of_the_maze");
+
+
+
 
     private final int id;
     private final String name;
