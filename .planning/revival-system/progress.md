@@ -113,6 +113,7 @@
 | Full project build | `gradle build` with JDK 17 | Verify revive integration compiles in full mod build | Build successful | pass |
 | Revive regression tests | Local Gradle 8.8 + JDK 17, targeted at revive sequence, revive command, simple revive, and totem revive tests | Verify the executable-effect registration cleanup and existing revive behavior | Build successful | pass |
 | Full project build after revive effect cleanup | Local Gradle 8.8 + JDK 17, `gradle build` | Verify the registry refactor does not break the rest of the mod | Build successful | pass |
+| Full project build after removing the revive-sequence test seam | Local Gradle 8.8 + JDK 17, `gradle build` | Verify the revive cleanup still compiles after deleting the dedicated test seam | Build successful | pass |
 
 ## Error Log
 | Timestamp | Error | Attempt | Resolution |
@@ -121,6 +122,7 @@
 | 2026-08-17 | Repository `JAVA_HOME` pointed at an invalid JDK 21 path | 1 | Verified with `C:\Program Files\Microsoft\jdk-17.0.11.9-hotspot` instead |
 | 2026-08-17 | Sandbox/offline Gradle resolution failed on `org.gradle.toolchains.foojay-resolver-convention` | 1 | Re-ran verification with approved escalation and completed both test and build successfully |
 | 2026-08-18 | Gradle verification for the revive cleanup still required repository access for the settings plugin | 1 | Switched to the cached local Gradle 8.8 binary, kept JDK 17 explicit, and re-ran verification with repository access allowed |
+| 2026-08-18 | Wrapper verification inherited an invalid JDK 21 `JAVA_HOME`, and the wrapper download path was blocked by sandboxed network restrictions | 1 | Switched to explicit JDK 17 plus the cached local Gradle 8.8 distribution, then re-ran `build` with repository access allowed |
 
 ## 5-Question Reboot Check
 | Question | Answer |
@@ -130,3 +132,40 @@
 | What's the goal? | Ship a reusable revive system that item abilities can feed without breaking current architecture |
 | What have I learned? | The clean seam is a dedicated sequence plus HUD-only sync, with provider changes deferred until the next true life and revive behavior funneled through registered executable effects |
 | What have I done? | Implemented the sequence, events, sync, HUD, tests, executable-effect registration cleanup, and verified both revive-targeted tests and the full build |
+
+## Session: 2026-08-18 (1up! follow-up)
+
+### 1up! passive item implementation
+- **Status:** complete
+- Actions taken:
+  - Added the `one_up` passive ability, revive module, and registered revive executable effect.
+  - Wired `handleFirstObtain` to current-life consumer grants and `handleObtain` / `handleRemove` to provider-only updates.
+  - Added the item registry entry, `ItemId.ONE_UP`, localization, a 32x32 item texture, and a basic item model.
+  - Added revive-sequence tests for ordering, provider rebuild behavior, `clear(id)`, and NBT round-trip.
+  - Verified the new test target and `runData` with JDK 17.
+- Files created/modified:
+  - `src/main/java/net/luojiuoscar/isaac_disaster/registries/ability/passive/impl/OneUp.java`
+  - `src/main/java/net/luojiuoscar/isaac_disaster/registries/revive_module/impl/OneUp.java`
+  - `src/main/java/net/luojiuoscar/isaac_disaster/registries/ability_effect/impl/revive/OneUpReviveEffect.java`
+  - `src/main/resources/assets/isaac_disaster/textures/item/one_up.png`
+  - `src/main/resources/assets/isaac_disaster/models/item/one_up.json`
+  - `src/test/java/net/luojiuoscar/isaac_disaster/registries/revive_module/ReviveSequenceTest.java`
+
+### 1up! texture correction
+- **Status:** complete
+- Actions taken:
+  - Replaced the incorrect self-drawn `one_up.png` with the official 32x32 English Wiki collectible icon for `1up!`.
+  - Verified the resulting resource is still 32x32 and matches the item-skill contract for a passive item texture.
+- Files created/modified:
+  - `src/main/resources/assets/isaac_disaster/textures/item/one_up.png`
+
+### Revive sequence test seam removal
+- **Status:** complete
+- Actions taken:
+  - Deleted `src/test/java/net/luojiuoscar/isaac_disaster/registries/revive_module/ReviveSequenceTest.java` after deciding not to keep a dedicated revive-queue test in the repo.
+  - Removed the temporary resolver-injection seam from `ReviveSequence`; production code now resolves revive modules directly from the registered revive-module registry.
+  - Searched revive-related production code for remaining test-only entry points and did not keep any extra visibility relaxations or helper APIs for this deleted test.
+  - Rebuilt the mod with local Gradle 8.8 + JDK 17 and confirmed `build` still succeeds.
+- Files created/modified:
+  - `src/main/java/net/luojiuoscar/isaac_disaster/registries/revive_module/ReviveSequence.java`
+  - `src/test/java/net/luojiuoscar/isaac_disaster/registries/revive_module/ReviveSequenceTest.java` (deleted)

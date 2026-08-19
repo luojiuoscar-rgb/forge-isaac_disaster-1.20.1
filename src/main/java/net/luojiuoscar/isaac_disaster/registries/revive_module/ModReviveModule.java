@@ -3,6 +3,7 @@ package net.luojiuoscar.isaac_disaster.registries.revive_module;
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.registries.revive_module.impl.SimpleRevive;
 import net.luojiuoscar.isaac_disaster.registries.revive_module.impl.TotemOfUndying;
+import net.luojiuoscar.isaac_disaster.registries.revive_module.impl.OneUp;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -20,5 +21,7 @@ public final class ModReviveModule {
             REVIVE_MODULE_REGISTRY.register("totem_of_undying", TotemOfUndying::new);
     public static final RegistryObject<ReviveModule> SIMPLE_REVIVE =
             REVIVE_MODULE_REGISTRY.register("simple_revive", SimpleRevive::new);
+    public static final RegistryObject<ReviveModule> ONE_UP =
+            REVIVE_MODULE_REGISTRY.register("one_up", OneUp::new);
 
 }

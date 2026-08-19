@@ -1,0 +1,4 @@
+interface:
+  display_name: "Isaac Disaster Revive HUD Creation"
+  short_description: "Create and verify revive HUD icons"
+  default_prompt: "Use this skill to create or update revive HUD icons for the Isaac Disaster Forge 1.20.1 project."

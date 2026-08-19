@@ -2,6 +2,8 @@ package net.luojiuoscar.isaac_disaster.registries.revive_module;
 
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ContextKeys;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ExecutableEffectContext;
+import net.luojiuoscar.isaac_disaster.networking.ModMessages;
+import net.luojiuoscar.isaac_disaster.networking.packet.ReviveEntityEventS2CPacket;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
@@ -25,22 +27,11 @@ public class ReviveSequence {
             .comparingDouble(Entry::priority).reversed()
             .thenComparingLong(Entry::grantOrder);
 
-    @FunctionalInterface
-    interface ReviveModuleResolver {
-        @Nullable ReviveModule resolve(ResourceLocation id);
-    }
-
-    private final ReviveModuleResolver resolver;
     private final List<Entry> providerEntries;
     private final List<Entry> consumerEntries;
     private long nextGrantOrder;
 
     public ReviveSequence() {
-        this(ReviveSequence::resolveRegisteredModule);
-    }
-
-    ReviveSequence(ReviveModuleResolver resolver) {
-        this.resolver = resolver == null ? id -> null : resolver;
         this.providerEntries = new ArrayList<>();
         this.consumerEntries = new ArrayList<>();
     }
@@ -90,19 +81,21 @@ public class ReviveSequence {
 
         while (!consumerEntries.isEmpty()) {
             Entry entry = consumerEntries.remove(0);
-            ReviveModule module = resolver.resolve(entry.id());
+            ReviveModule module = resolveRegisteredModule(entry.id());
             if (module == null) {
                 continue;
             }
 
             event.setCanceled(true);
-            player.setHealth(1.0F);
-            player.level().broadcastEntityEvent(player, (byte) 35);
+            player.setHealth(1.0F); // default health
 
             ExecutableEffectContext context = new ExecutableEffectContext(player);
             context.set(ContextKeys.EVENT, event);
             context.set(ContextKeys.TARGET_POSITION, player.position());
             module.getReviveEffect().apply(context);
+
+            ModMessages.sendToTrackingAndSelf(
+                    new ReviveEntityEventS2CPacket(player, module.getReviveDisplayItem()), player);
             return true;
         }
 
@@ -124,7 +117,7 @@ public class ReviveSequence {
 
         List<ResourceLocation> icons = new ArrayList<>(Math.min(limit, consumerEntries.size()));
         for (Entry entry : consumerEntries) {
-            ReviveModule module = resolver.resolve(entry.id());
+            ReviveModule module = resolveRegisteredModule(entry.id());
             if (module == null) {
                 continue;
             }
@@ -156,7 +149,7 @@ public class ReviveSequence {
             return;
         }
 
-        ReviveModule module = resolver.resolve(id);
+        ReviveModule module = resolveRegisteredModule(id);
         if (module == null) {
             return;
         }
@@ -197,7 +190,7 @@ public class ReviveSequence {
 
             try {
                 ResourceLocation id = ResourceLocation.parse(tag.getString("id"));
-                ReviveModule module = resolver.resolve(id);
+                ReviveModule module = resolveRegisteredModule(id);
                 if (module == null) {
                     continue;
                 }

@@ -52,9 +52,10 @@ public class IsaacDisasterEvents {
             creeper.explodeCreeper();
         }
         if (eatenEntity instanceof EnderMan || eatenEntity instanceof Endermite){
-            EntityHelper.teleportToRandomLocation(player, 10);
-            level.playSound(null, player.getX(), player.getY(), player.getZ(),
-                    SoundEvents.ENDERMAN_TELEPORT, SoundSource.PLAYERS, 1.0f, 1.0f);
+            if (EntityHelper.teleportToRandomLocation(player, StatManager.getNearbyRange())) {
+                level.playSound(null, player.getX(), player.getY(), player.getZ(),
+                        SoundEvents.ENDERMAN_TELEPORT, SoundSource.PLAYERS, 1.0f, 1.0f);
+            }
         }
     }
 

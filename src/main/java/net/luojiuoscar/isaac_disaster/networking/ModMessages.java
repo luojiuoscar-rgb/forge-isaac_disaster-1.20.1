@@ -125,6 +125,12 @@ public class ModMessages {
                 .consumerNetworkThread(ReviveHudSyncS2CPacket::handle)
                 .add();
 
+        net.messageBuilder(ReviveEntityEventS2CPacket.class, id(), NetworkDirection.PLAY_TO_CLIENT)
+                .decoder(ReviveEntityEventS2CPacket::new)
+                .encoder(ReviveEntityEventS2CPacket::toBytes)
+                .consumerNetworkThread(ReviveEntityEventS2CPacket::handle)
+                .add();
+
     }
 
     public static <MSG> void sendToServer(MSG message){
@@ -137,6 +143,10 @@ public class ModMessages {
 
     public static <MSG> void sendToTracking(MSG message, Entity entity) {
         INSTANCE.send(PacketDistributor.TRACKING_ENTITY.with(() -> entity), message);
+    }
+
+    public static <MSG> void sendToTrackingAndSelf(MSG message, Entity entity) {
+        INSTANCE.send(PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> entity), message);
     }
 
 }

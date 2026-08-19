@@ -177,7 +177,8 @@ public enum ItemId {
     PLACENTA(2),
     CONTRACT_FROM_BELOW(2),
     MOMS_PERFUME(2),
-    MAGGYS_BOW(2);
+    MAGGYS_BOW(2),
+    ONE_UP(2);
 
 
 

@@ -28,6 +28,7 @@ Implement passive items as an item instance plus a passive ability. Read current
 
 - Confirm every gameplay number, special-character technical name, module name, Minecraft-only field, color priority, set name, missing asset, persistent `ItemStack` data, and Wiki disagreement. Do not choose balance values independently.
 - Use direct `StatManager` changes for persistent stats, trigger modules for events, and recursive modules for repeated behavior. Reuse only complete semantic matches; for each proposed module confirm scope, event/cadence, conditions, targets, values, chance/cooldown/duration, stacking, lifecycle/cleanup, side, and bullet interaction.
+- For revive passive items, explicitly plan lifecycle ownership. In `handleRemove`, always remove both the revive `provider` and revive `consumer`; do not leave either registration or its associated state behind after the item is removed.
 - Create every new trigger or recursive module with its trigger graph as a class-level `private static final CompositeTrigger TRIGGER = ...;` and make its constructor only call `super(TRIGGER);`. Do not construct or inline the trigger graph in the constructor; follow the existing module pattern.
 - When a trigger or recursive module represents stacked effect strength through `ContextKey.AMPLIFIER`, prefer `amplifier` in module names and related identifiers instead of `stacks` or `stack`. This distinguishes effect amplification from item `ItemStack` stacking; keep existing project names when extending an established API unless a rename is necessary.
 - When creating an `IExecutableEffect`, inspect the existing trigger types first and reuse an existing type by default. If the effect appears to require a new trigger type because no current type expresses its event or execution semantics accurately, state that finding and ask for approval before creating one.
@@ -69,7 +70,7 @@ Implement passive items as an item instance plus a passive ability. Read current
 ## Implement Approved Items
 
 - Append `ItemId`; its `ordinal()` is the mod ID, never the Wiki ID. Never insert or reorder constants; use original level.
-- Add the ability under `registries/ability/passive/impl`, register it in `ModPassiveAbility`, bind it in `ModPassiveItems`, and add its static object to the passive-item list for datagen.
+- Add the ability under `registries/ability/passive/impl`, register it in `ModPassiveAbility`, bind it in `ModPassiveItems`, and add its static object to the passive-item list for datagen. Do not create item models manually; `runData` will generate them automatically from that list.
 - Use `StatManager` for stats, descriptions, modules, sets, inverse removal, spiritual/homing/piercing/controllable tears, and required `Type`, `IExecutableEffect`, or bullet trigger support. Preserve the distinct `TEARS` and `TEARS_CORRECTION` fields when implementing fire-rate effects.
 - When creating a `ResourceLocation` for a mod-owned resource, use `IsaacDisaster.MOD_ID` as the namespace, for example `ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "path")`; never hardcode the literal namespace string `"isaac_disaster"` in new mod code. Keep explicitly required external or vanilla namespaces unchanged.
 - Register `bullet_color` when the item changes projectile color. Default to no `ItemStack` data; use it only after the approved focused plan.
@@ -77,7 +78,7 @@ Implement passive items as an item instance plus a passive ability. Read current
 
 ## Resources, Text, Pools, And Validation
 
-- Obtain only the 32x32-pixel PNG Repentance icon from the English Wiki, verify both PNG format and dimensions, and save it under the confirmed texture name. Use the same 32x32 PNG requirement for active-item icons if active-item support is added later. Report missing icons; request all non-image assets from the user.
+- Obtain only the 32x32-pixel PNG Repentance icon from the English Wiki, verify both PNG format and dimensions, and save it under the confirmed texture name. When choosing from wiki image files, names with the `Collectible_` prefix are usually the correct item images. Use the same 32x32 PNG requirement for active-item icons if active-item support is added later. Report missing icons; request all non-image assets from the user.
 - Insert localization before `\"item end\": \"\"`; use `StatManager` text for common wording and add translations only for unique effects. Add every Repentance+ pool in `src/main/resources/data/isaac_disaster/loot_tables/pools/item/` without weights.
 - After every item is confirmed, present one Chinese batch plan and wait for approval. Implement approved items one at a time. Run `runData` once per single item or once after a batch; inspect generated-data errors. Do not compile or run `build`.
 - Report changed files, reused/new modules, images, pools, `runData`, and missing non-image assets in Chinese.

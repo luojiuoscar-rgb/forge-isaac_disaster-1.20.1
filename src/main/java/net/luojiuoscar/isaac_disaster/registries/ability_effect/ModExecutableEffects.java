@@ -362,6 +362,8 @@ public class ModExecutableEffects {
             EXECUTABLE_EFFECT_REGISTRY.register("totem_of_undying_revive_effect", TotemOfUndyingReviveEffect::new);
     public static final RegistryObject<IExecutableEffect> SIMPLE_REVIVE_EFFECT =
             EXECUTABLE_EFFECT_REGISTRY.register("simple_revive_effect", SimpleReviveEffect::new);
+    public static final RegistryObject<IExecutableEffect> ONE_UP_REVIVE_EFFECT =
+            EXECUTABLE_EFFECT_REGISTRY.register("one_up_revive_effect", OneUpReviveEffect::new);
 
     //</editor-fold>
 

@@ -3,6 +3,7 @@ package net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.normal;
 import net.luojiuoscar.isaac_disaster.Config;
 import net.luojiuoscar.isaac_disaster.helper.EntityHelper;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
+import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ExecutableEffectContext;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ContextKeys;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.IAbilityEffect;
@@ -25,7 +26,7 @@ public class CursedPenny implements IAbilityEffect {
         if (item.equals(tier1Coin) || item.equals(tier2Coin) || item.equals(tier3Coin)){
             if (player.getRandom().nextDouble() < 0.1){
 
-                EntityHelper.teleportToRandomLocation(player, 8);
+                EntityHelper.teleportToRandomLocation(player, StatManager.getNearbyRange());
 
                 player.playNotifySound(SoundEvents.ENDERMAN_TELEPORT, SoundSource.PLAYERS, 1.0f, 1.0f);
             }

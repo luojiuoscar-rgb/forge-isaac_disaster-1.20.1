@@ -89,7 +89,13 @@
   - Refined so `TotemOfUndying` and `SimpleRevive` reference registered revive executable effects instead of embedding private static implementations.
   - Final revive-effect seam is hybrid: potion buffs go through `PotionProfile + POTIONS`, while non-potion steps such as `removeAllEffects()` stay in small dedicated revive effect classes.
   - Test-only state helpers in `ReviveSequence` were removed after the tests were rewritten to use NBT/public behavior instead.
-  - `SimpleReviveEffect` constants were tightened to package-private once the test file moved into the same package.
+  - The temporary `ReviveSequence` test seam was removed again: production code now resolves revive modules directly from the registry, and the dedicated revive-sequence test file no longer exists in the worktree.
+
+## 1up! Follow-up
+- `1up!` is now implemented on the same revive queue path as the rest of the system, with first-version HUD still using the default totem icon.
+- Its revive behavior is registered as a revive executable effect rather than being hardcoded inside the revive module wrapper.
+- The effect uses nearby safe teleport plus full red-heart restore when red-heart capacity exists, and a half soul-heart fallback when it does not.
+- The temporary self-drawn `one_up.png` was replaced with the official English Wiki collectible icon `Collectible_1up!_icon.png`, because the item skill now treats this as a passive item texture, not a HUD icon.
 
 ## Issues Encountered
 | Issue | Resolution |
