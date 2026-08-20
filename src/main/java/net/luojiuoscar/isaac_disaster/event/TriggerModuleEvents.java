@@ -226,18 +226,19 @@ public class TriggerModuleEvents {
         death_ctx.set(ContextKeys.EVENT, event);
         death_ctx.set(ContextKeys.TARGET_POSITION, victim.position());
 
-        if (!(attacker instanceof LivingEntity entity)) return;
-
         List<LivingEntity> secondary_entities = new ArrayList<>();
-        secondary_entities.add(entity);
+        if (attacker instanceof LivingEntity entity) {
+            secondary_entities.add(entity);
+        }
         death_ctx.set(ContextKeys.SECONDARY_LIVING_ENTITIES, secondary_entities);
 
-        ExecutableEffectContext kill_ctx = new ExecutableEffectContext(entity);
-        kill_ctx.set(ContextKeys.EVENT, event);
-        kill_ctx.set(ContextKeys.TARGET_POSITION, victim.position());
-        kill_ctx.set(ContextKeys.SECONDARY_LIVING_ENTITIES, secondary_entities);
-
-        dispatch(kill_ctx, ModTriggerTypes.KILL_ENTITY);
+        if (attacker instanceof LivingEntity entity) {
+            ExecutableEffectContext kill_ctx = new ExecutableEffectContext(entity);
+            kill_ctx.set(ContextKeys.EVENT, event);
+            kill_ctx.set(ContextKeys.TARGET_POSITION, victim.position());
+            kill_ctx.set(ContextKeys.SECONDARY_LIVING_ENTITIES, secondary_entities);
+            dispatch(kill_ctx, ModTriggerTypes.KILL_ENTITY);
+        }
         dispatch(death_ctx, ModTriggerTypes.DEATH);
     }
 

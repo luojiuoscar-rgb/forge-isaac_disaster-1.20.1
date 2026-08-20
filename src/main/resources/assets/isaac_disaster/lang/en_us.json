@@ -535,6 +535,8 @@
   "item.isaac_disaster.dead_cat": "嗝屁猫",
   "item.isaac_disaster.dead_cat.lore.1": "红心上限降至%d",
   "item.isaac_disaster.dead_cat.lore.2": "获得9条额外生命",
+  "item.isaac_disaster.guppys_collar": "嗝屁猫的项圈",
+  "item.isaac_disaster.guppys_collar.lore.1": "死亡时有50%概率复活",
   "item end": "",
 
 

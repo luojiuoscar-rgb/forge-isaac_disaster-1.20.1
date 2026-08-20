@@ -592,4 +592,8 @@ public class ModPassiveItems {
     public static final RegistryObject<Item> DEAD_CAT = ITEMS.register("dead_cat",
             () -> new PassiveItem(new Item.Properties(), ModPassiveAbility.DEAD_CAT));
     static {ItemListManager.PASSIVE_ITEM_LIST.add(DEAD_CAT);}
+
+    public static final RegistryObject<Item> GUPPYS_COLLAR = ITEMS.register("guppys_collar",
+            () -> new PassiveItem(new Item.Properties(), ModPassiveAbility.GUPPYS_COLLAR));
+    static {ItemListManager.PASSIVE_ITEM_LIST.add(GUPPYS_COLLAR);}
 }

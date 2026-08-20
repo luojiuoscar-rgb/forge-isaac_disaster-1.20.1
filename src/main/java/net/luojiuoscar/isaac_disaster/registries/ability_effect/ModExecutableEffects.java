@@ -369,6 +369,8 @@ public class ModExecutableEffects {
             EXECUTABLE_EFFECT_REGISTRY.register("inner_child_revive_effect", InnerChildReviveEffect::new);
     public static final RegistryObject<IExecutableEffect> DEAD_CAT_REVIVE_EFFECT =
             EXECUTABLE_EFFECT_REGISTRY.register("dead_cat_revive_effect", DeadCatReviveEffect::new);
+    public static final RegistryObject<IExecutableEffect> GUPPYS_COLLAR_REVIVE_EFFECT =
+            EXECUTABLE_EFFECT_REGISTRY.register("guppys_collar_revive_effect", GuppysCollarReviveEffect::new);
 
     //</editor-fold>
 

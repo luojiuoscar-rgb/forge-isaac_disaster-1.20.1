@@ -8,7 +8,8 @@
         {"type": "minecraft:item", "name": "isaac_disaster:tarot_cloth"},
         {"type": "minecraft:item", "name": "isaac_disaster:pentagram"},
         {"type": "minecraft:item", "name": "isaac_disaster:the_mark"},
-        {"type": "minecraft:item", "name": "isaac_disaster:the_pact"}
+        {"type": "minecraft:item", "name": "isaac_disaster:the_pact"},
+        {"type": "minecraft:item", "name": "isaac_disaster:guppys_collar"}
       ]
     }
   ]

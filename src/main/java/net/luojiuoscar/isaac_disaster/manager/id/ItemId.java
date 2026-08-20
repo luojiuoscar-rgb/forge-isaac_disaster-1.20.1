@@ -180,7 +180,8 @@ public enum ItemId {
     MAGGYS_BOW(2),
     ONE_UP(2),
     INNER_CHILD(3),
-    DEAD_CAT(3);
+    DEAD_CAT(3),
+    GUPPYS_COLLAR(2);
 
 
 
