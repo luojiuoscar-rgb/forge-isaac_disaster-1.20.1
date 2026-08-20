@@ -31,4 +31,7 @@ public class ModSetAbility {
     public static final RegistryObject<SetAbility> MOM =
             SET_ABILITY_REGISTRY.register("mom", () -> new Mom(SetId.MOM.getId()));
 
+    public static final RegistryObject<SetAbility> CAT =
+            SET_ABILITY_REGISTRY.register("cat", () -> new Cat(SetId.CAT.getId()));
+
 }

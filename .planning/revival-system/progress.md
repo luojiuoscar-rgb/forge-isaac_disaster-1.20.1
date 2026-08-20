@@ -169,3 +169,23 @@
 - Files created/modified:
   - `src/main/java/net/luojiuoscar/isaac_disaster/registries/revive_module/ReviveSequence.java`
   - `src/test/java/net/luojiuoscar/isaac_disaster/registries/revive_module/ReviveSequenceTest.java` (deleted)
+
+## Session: 2026-08-20 (Dead Cat and revive-effect follow-up)
+
+### Completed source changes
+- Reworked `StatManager.set` to target final project-unit attribute values rather than the internal Isaac modifier amount.
+- Fixed the missing-`StatInstance` path that caused Dead Cat acquisition to throw through `LazyOptional.map`.
+- Updated Dead Cat to request one project health unit on first obtain and revive.
+- Completed the source-level move of revive presentation to `ReviveExecutableEffect`, with custom display items on the One Up, Inner Child, and Dead Cat effects.
+
+### Verification status
+- `git diff --check` and `git diff --cached --check` passed.
+- Static searches found no stale `ReviveModule#getSound`, `getReviveDisplayItem`, `DeadCat.applyHealthCap`, or old persistent-cap helper usages.
+- Java compilation was blocked before source compilation: the Gradle wrapper download was sandbox-blocked, and the cached Gradle 8.8 offline run lacks `org.gradle.toolchains.foojay-resolver-convention:0.7.0`.
+- The temporary `tmp/dead_cat_*` files are absent from the working tree but remain staged because this environment cannot write `.git/index`; they must be removed from the index when staging is available.
+
+### Revive presentation position fix
+- Moved `applyReviveEffect(context)` before the presentation packet is sent, so teleporting revive effects finish movement first.
+- Added final server-side `x/y/z` coordinates to `ReviveEntityEventS2CPacket`; client sound playback now uses those coordinates instead of the potentially stale client entity position.
+- Removed the unused packet constructor that could have created a packet with an invalid `(0, 0, 0)` position.
+- `git diff --check` passed; full compilation remains blocked by the missing cached ForgeGradle settings plugin.

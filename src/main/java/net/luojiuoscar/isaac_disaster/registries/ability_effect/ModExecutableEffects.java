@@ -9,6 +9,7 @@ import net.luojiuoscar.isaac_disaster.manager.ModLootTables;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.manager.id.ItemId;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.general.*;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.bomb.*;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.normal.*;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.pill_effect.impl.*;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.revive.*;
@@ -366,6 +367,8 @@ public class ModExecutableEffects {
             EXECUTABLE_EFFECT_REGISTRY.register("one_up_revive_effect", OneUpReviveEffect::new);
     public static final RegistryObject<IExecutableEffect> INNER_CHILD_REVIVE_EFFECT =
             EXECUTABLE_EFFECT_REGISTRY.register("inner_child_revive_effect", InnerChildReviveEffect::new);
+    public static final RegistryObject<IExecutableEffect> DEAD_CAT_REVIVE_EFFECT =
+            EXECUTABLE_EFFECT_REGISTRY.register("dead_cat_revive_effect", DeadCatReviveEffect::new);
 
     //</editor-fold>
 

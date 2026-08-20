@@ -179,7 +179,8 @@ public enum ItemId {
     MOMS_PERFUME(2),
     MAGGYS_BOW(2),
     ONE_UP(2),
-    INNER_CHILD(3);
+    INNER_CHILD(3),
+    DEAD_CAT(3);
 
 
 

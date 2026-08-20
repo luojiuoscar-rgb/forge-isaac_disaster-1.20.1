@@ -2,8 +2,6 @@ package net.luojiuoscar.isaac_disaster.registries.revive_module;
 
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ContextKeys;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ExecutableEffectContext;
-import net.luojiuoscar.isaac_disaster.networking.ModMessages;
-import net.luojiuoscar.isaac_disaster.networking.packet.ReviveEntityEventS2CPacket;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
@@ -86,16 +84,10 @@ public class ReviveSequence {
                 continue;
             }
 
-            event.setCanceled(true);
-            player.setHealth(1.0F); // default health
-
             ExecutableEffectContext context = new ExecutableEffectContext(player);
             context.set(ContextKeys.EVENT, event);
             context.set(ContextKeys.TARGET_POSITION, player.position());
             module.getReviveEffect().apply(context);
-
-            ModMessages.sendToTrackingAndSelf(
-                    new ReviveEntityEventS2CPacket(player, module.getReviveDisplayItem()), player);
             return true;
         }
 

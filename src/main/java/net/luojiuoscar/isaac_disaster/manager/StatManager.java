@@ -4,16 +4,13 @@ import net.luojiuoscar.isaac_disaster.Config;
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.attribute.ModAttributes;
 import net.luojiuoscar.isaac_disaster.capability.entity.EffectModulesProvider;
-import net.luojiuoscar.isaac_disaster.capability.player.PlayerAbilityProvider;
-import net.luojiuoscar.isaac_disaster.capability.player.PlayerFamiliarDataProvider;
-import net.luojiuoscar.isaac_disaster.capability.player.PlayerIsaacItemsProvider;
-import net.luojiuoscar.isaac_disaster.capability.player.PlayerStatModifierProvider;
+import net.luojiuoscar.isaac_disaster.capability.player.*;
 import net.luojiuoscar.isaac_disaster.event.ForgeEvents;
 import net.luojiuoscar.isaac_disaster.helper.FlightHelper;
 import net.luojiuoscar.isaac_disaster.networking.ModMessages;
 import net.luojiuoscar.isaac_disaster.networking.packet.RefreshScaleS2CPacket;
-import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerModule;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerModule;
+import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerModule;
 import net.luojiuoscar.isaac_disaster.system.ScaleUtils;
 import net.luojiuoscar.isaac_disaster.system.flight.IsaacFlightController;
 import net.minecraft.ChatFormatting;
@@ -48,6 +45,11 @@ public enum StatManager {
 
             if (player.getMaxHealth() + player.getAbsorptionAmount() <= 0)
                 player.kill();
+        }
+
+        @Override
+        public boolean clampActualValue() {
+            return true;
         }
     },
     MOVEMENT_SPEED("movement_speed", Attributes.MOVEMENT_SPEED, 0, true,
@@ -176,10 +178,40 @@ public enum StatManager {
     public Double getMinVal() {return minVal; }
     public Double getMaxVal() {return maxVal; }
 
+    /** 是否丢弃超出 minVal/maxVal 的 actualValue，而不是只限制显示值。 */
+    public boolean clampActualValue() {
+        return false;
+    }
+
     /** 通用 apply 方法，可被 override */
     public void apply(Player player, double ratio){
         if (!(player instanceof ServerPlayer p)) return;
-        StatManager.addModifier(p, uuid, attribute,ratio * getBonus(), minVal, maxVal, operationType);
+        StatManager.addModifier(p, uuid, attribute, ratio * getBonus(), minVal, maxVal, operationType);
+    }
+
+    /**
+     * 将该属性设为目标项目单位对应的最终基础属性值。
+     * 外部 modifier 不在此处移除；本方法只调整 Isaac 自己的 modifier。
+     */
+    public void set(Player player, double ratio){
+        if (!(player instanceof ServerPlayer serverPlayer)) return;
+
+        AttributeInstance instance = serverPlayer.getAttribute(attribute);
+        if (instance == null) return;
+
+        double currentAmount = 0.0D;
+        var capability = serverPlayer.getCapability(PlayerStatModifierProvider.PLAYER_STAT_MODIFIER);
+        if (capability.isPresent()) {
+            PlayerStatModifier.StatInstance statInstance = capability.resolve()
+                    .map(modifiers -> modifiers.getStatInstance(uuid))
+                    .orElse(null);
+            if (statInstance != null) {
+                currentAmount = statInstance.getActualValue();
+            }
+        }
+
+        double targetAmount = ratio * getBonus() - instance.getBaseValue();
+        apply(serverPlayer, (targetAmount - currentAmount) / getBonus());
     }
 
     public void refresh(ServerPlayer player) {
@@ -263,6 +295,9 @@ public enum StatManager {
                     var statInst = playerStatModifier.getStatInstance(uuid);
                     if (statInst == null) return;
 
+                    StatManager manager = fromUUID(uuid);
+                    if (manager != null) manager.clampActualValue(statInst);
+
                     statInst.updateValue(player);
                     double val = statInst.getDisplayValue();
 
@@ -285,12 +320,24 @@ public enum StatManager {
                     var statInst = playerStatModifier.getStatInstance(uuid);
                     if (statInst == null) return;
 
+                    StatManager manager = fromUUID(uuid);
+                    if (manager != null) manager.clampActualValue(statInst);
+
                     statInst.updateValue(player);
                     double val = statInst.getDisplayValue();
 
                     setModifierValue(instance, uuid, val, operationType);
                 }
         );
+    }
+
+    private void clampActualValue(PlayerStatModifier.StatInstance statInstance) {
+        if (!clampActualValue()) return;
+
+        double value = statInstance.getActualValue();
+        if (minVal != null) value = Math.max(value, minVal);
+        if (maxVal != null) value = Math.min(value, maxVal);
+        statInstance.setActualValue(value);
     }
 
     /**

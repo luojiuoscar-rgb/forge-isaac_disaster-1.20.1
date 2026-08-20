@@ -5,6 +5,7 @@ import net.luojiuoscar.isaac_disaster.registries.revive_module.impl.InnerChild;
 import net.luojiuoscar.isaac_disaster.registries.revive_module.impl.SimpleRevive;
 import net.luojiuoscar.isaac_disaster.registries.revive_module.impl.TotemOfUndying;
 import net.luojiuoscar.isaac_disaster.registries.revive_module.impl.OneUp;
+import net.luojiuoscar.isaac_disaster.registries.revive_module.impl.DeadCat;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -26,5 +27,7 @@ public final class ModReviveModule {
             REVIVE_MODULE_REGISTRY.register("one_up", OneUp::new);
     public static final RegistryObject<ReviveModule> INNER_CHILD =
             REVIVE_MODULE_REGISTRY.register("inner_child", InnerChild::new);
+    public static final RegistryObject<ReviveModule> DEAD_CAT =
+            REVIVE_MODULE_REGISTRY.register("dead_cat", DeadCat::new);
 
 }

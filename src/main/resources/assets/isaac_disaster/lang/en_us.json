@@ -532,6 +532,9 @@
   "item.isaac_disaster.inner_child.lore.1": "获得一次复活",
   "item.isaac_disaster.inner_child.lore.2": "复活后产生小范围爆炸",
   "item.isaac_disaster.inner_child.lore.3": "并获得一层内在孩童效果",
+  "item.isaac_disaster.dead_cat": "嗝屁猫",
+  "item.isaac_disaster.dead_cat.lore.1": "红心上限降至%d",
+  "item.isaac_disaster.dead_cat.lore.2": "获得9条额外生命",
   "item end": "",
 
 
@@ -878,6 +881,8 @@
   "set.isaac_disaster.book.lore.1": "有概率多发射一颗泪弹",
   "set.isaac_disaster.mom": "母亲",
   "set.isaac_disaster.mom.lore.1": "在背后生成一把会攻击敌人的菜刀",
+  "set.isaac_disaster.cat": "猫套",
+  "set.isaac_disaster.cat.lore.1": "暂无额外效果",
 
   "config.isaac_disaster.title": "以撒的灾难配置",
   "config.isaac_disaster.subtitle": "选择一个配置分类",

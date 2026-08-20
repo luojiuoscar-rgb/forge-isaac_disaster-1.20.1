@@ -101,6 +101,12 @@
 | Issue | Resolution |
 |-------|------------|
 | `planning-with-files` catchup helper could not run because the shell had no `python` command | Switched to manual repo inspection and documented the limitation |
+| Dead Cat first obtain crashed in `LazyOptional.map` | `PlayerStatModifier#getStatInstance` may return null before an Isaac modifier exists; `StatManager.set` now treats that state as a zero modifier without mapping null through `LazyOptional` |
+
+## 2026-08-20 Follow-up
+- `StatManager.set(player, ratio)` now means target final attribute value in project units. It calculates the Isaac-owned modifier against `AttributeInstance#getBaseValue()` and leaves external Forge modifiers untouched.
+- `MAX_HEALTH.set(player, 1)` therefore targets the configured one-health-unit final value (currently 10 raw health points), and Dead Cat uses this at first obtain and on each revive.
+- Revive presentation has been migrated to `ReviveExecutableEffect`; modules now retain only queue metadata, HUD texture, and their registered executable effect.
 
 ## Resources
 - `D:/Oscar/MC/mods/forge-1.20.1-47.4.9-mdk/README.md`

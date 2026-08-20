@@ -1,9 +1,7 @@
 package net.luojiuoscar.isaac_disaster.helper;
 
 import net.luojiuoscar.isaac_disaster.entity.ModEntities;
-import net.luojiuoscar.isaac_disaster.entity.fireball.TimedFireball;
 import net.luojiuoscar.isaac_disaster.entity.tnt.BombData;
-import net.luojiuoscar.isaac_disaster.entity.tnt.GigaBomb;
 import net.luojiuoscar.isaac_disaster.entity.tnt.IsaacBomb;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
@@ -162,71 +160,6 @@ public class EntityHelper {
         bomb.setScale(scale);
     }
 
-
-    public static void bomberBoy(LivingEntity entity, IsaacBomb source, Vec3 center, Level level) {
-        if (!isValidOrigin(source)) return;
-
-        int power = source.getPower();
-        float offset = power + 1f;
-
-        Vec3[] offsets = new Vec3[]{
-                new Vec3(offset, 0, 0),
-                new Vec3(-offset, 0, 0),
-                new Vec3(0, 0, offset),
-                new Vec3(0, 0, -offset)
-        };
-
-        for (Vec3 delta : offsets) {
-            spawnBomb(center.add(delta), entity, level, Vec3.ZERO, 0, power, source.getScale(), false);
-        }
-    }
-
-    /**
-     * 炸弹碎裂效果（分裂炸弹）
-     */
-    public static void scatterBomb(LivingEntity entity, IsaacBomb source, Vec3 center, Level level) {
-        if (!isValidOrigin(source)) return;
-
-        int power = source.getPower() - 3;
-        float scale = (power == BombData.SMALL.power()) ? BombData.SMALL.size() : BombData.NORMAL.size();
-
-        for (int i = 0; i < 4; i++) {
-            Vec3 randomVel = new Vec3(
-                    Math.random() * 0.6 - 0.3,
-                    Math.random() * 0.4,
-                    Math.random() * 0.6 - 0.3
-            );
-            spawnBomb(center, entity, level, randomVel, 30, power, scale,
-                    power != BombData.SMALL.power());
-        }
-    }
-
-    private static boolean isValidOrigin(IsaacBomb bomb) {
-        return bomb != null && bomb.isOriginal() && !(bomb instanceof GigaBomb);
-    }
-
-    public static void HotBomb(LivingEntity entity, IsaacBomb tnt, Vec3 pos, Level level){
-        if(!isValidOrigin(tnt)) return;
-
-        int power = 0;
-        if(tnt.getPower() > 4){
-            power = 3;
-        }else if (tnt.getPower() > 1){
-            power = 5;
-        }
-
-        for (int i = 0; i < power; i++) {  // 火球数量可调
-            double vx = (level.random.nextDouble() - 0.5) * 0.5;
-            double vy = (level.random.nextDouble() - 0.5) * 0.5;
-            double vz = (level.random.nextDouble() - 0.5) * 0.5;
-
-            TimedFireball fireball = new TimedFireball(level, entity, vx, vy, vz, power);
-
-            fireball.setPos(pos);
-            fireball.setDeltaMovement(new Vec3(vx, vy, vz)); // 设速度
-            level.addFreshEntity(fireball);
-        }
-    }
 
     public static boolean isFriendly(LivingEntity a, LivingEntity b) {
         if (a == null || b == null) return false;

@@ -3,10 +3,6 @@ package net.luojiuoscar.isaac_disaster.registries.revive_module;
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.IExecutableEffect;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.sounds.SoundEvent;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 
 public abstract class ReviveModule {
     private static final ResourceLocation DEFAULT_HUD_TEXTURE =
@@ -30,11 +26,4 @@ public abstract class ReviveModule {
         return reviveEffect;
     }
 
-    public SoundEvent getSound() {
-        return SoundEvents.TOTEM_USE;
-    }
-
-    public ItemStack getReviveDisplayItem() {
-        return new ItemStack(Items.TOTEM_OF_UNDYING);
-    }
 }

@@ -1,5 +1,6 @@
-package net.luojiuoscar.isaac_disaster.registries.ability_effect.impl;
+package net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.bomb;
 
+import net.luojiuoscar.isaac_disaster.entity.tnt.GigaBomb;
 import net.luojiuoscar.isaac_disaster.entity.tnt.IsaacBomb;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ContextKeys;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ExecutableEffectContext;
@@ -17,11 +18,14 @@ public abstract class BombRelated implements IAbilityEffect {
 
         Level level = player.level();
         Vec3 pos = context.getOrDefault(ContextKeys.TARGET_POSITION, player.position());
-
         return customEffect(context, player, level, pos, bomb);
     }
 
-    abstract protected boolean customEffect(ExecutableEffectContext context,
-                                         ServerPlayer player,
-                                         Level level, Vec3 pos, IsaacBomb bomb);
+    protected abstract boolean customEffect(ExecutableEffectContext context,
+                                             ServerPlayer player,
+                                             Level level, Vec3 pos, IsaacBomb bomb);
+
+    protected boolean isValidOrigin(IsaacBomb bomb) {
+        return bomb != null && bomb.isOriginal() && !(bomb instanceof GigaBomb);
+    }
 }

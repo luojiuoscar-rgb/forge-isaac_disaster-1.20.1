@@ -588,4 +588,8 @@ public class ModPassiveItems {
     public static final RegistryObject<Item> INNER_CHILD = ITEMS.register("inner_child",
             () -> new PassiveItem(new Item.Properties(), ModPassiveAbility.INNER_CHILD));
     static {ItemListManager.PASSIVE_ITEM_LIST.add(INNER_CHILD);}
+
+    public static final RegistryObject<Item> DEAD_CAT = ITEMS.register("dead_cat",
+            () -> new PassiveItem(new Item.Properties(), ModPassiveAbility.DEAD_CAT));
+    static {ItemListManager.PASSIVE_ITEM_LIST.add(DEAD_CAT);}
 }

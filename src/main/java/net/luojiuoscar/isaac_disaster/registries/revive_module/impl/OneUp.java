@@ -2,10 +2,8 @@ package net.luojiuoscar.isaac_disaster.registries.revive_module.impl;
 
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ModExecutableEffects;
-import net.luojiuoscar.isaac_disaster.item.ModPassiveItems;
 import net.luojiuoscar.isaac_disaster.registries.revive_module.ReviveModule;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.ItemStack;
 
 public class OneUp extends ReviveModule {
     private static final ResourceLocation HUD_TEXTURE =
@@ -20,8 +18,4 @@ public class OneUp extends ReviveModule {
         return HUD_TEXTURE;
     }
 
-    @Override
-    public ItemStack getReviveDisplayItem() {
-        return new ItemStack(ModPassiveItems.ONE_UP.get());
-    }
 }

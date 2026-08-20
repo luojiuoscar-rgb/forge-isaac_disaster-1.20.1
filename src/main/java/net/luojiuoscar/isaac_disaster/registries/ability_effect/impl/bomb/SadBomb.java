@@ -1,4 +1,4 @@
-package net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.normal;
+package net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.bomb;
 
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerAbilityProvider;
 import net.luojiuoscar.isaac_disaster.entity.tnt.BombData;
@@ -6,7 +6,6 @@ import net.luojiuoscar.isaac_disaster.entity.tnt.IsaacBomb;
 import net.luojiuoscar.isaac_disaster.event.custom.attack.GetAttackContextEvent;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.CompositeTrigger;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ExecutableEffectContext;
-import net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.BombRelated;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackContext;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackType;
 import net.minecraft.resources.ResourceLocation;
@@ -55,9 +54,7 @@ public class SadBomb extends BombRelated {
                         curAngle += angleInterval;
                     }
 
-                    // 给bullet附加CompositeTrigger
-                    GetAttackContextEvent event =
-                            new GetAttackContextEvent(player, contexts, attack, false);
+                    GetAttackContextEvent event = new GetAttackContextEvent(player, contexts, attack, false);
                     MinecraftForge.EVENT_BUS.post(event);
                     contexts = event.getContexts();
 
@@ -67,12 +64,12 @@ public class SadBomb extends BombRelated {
         return true;
     }
 
-    private int getBulletCount(int power){
-        if (power == BombData.MEGA.power()){
+    private int getBulletCount(int power) {
+        if (power == BombData.MEGA.power()) {
             return 13;
-        }else if (power == BombData.NORMAL.power()){
+        } else if (power == BombData.NORMAL.power()) {
             return 8;
-        }else {
+        } else {
             return 0;
         }
     }
