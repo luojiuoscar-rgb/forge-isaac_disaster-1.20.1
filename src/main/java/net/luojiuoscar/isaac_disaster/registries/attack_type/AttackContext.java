@@ -76,17 +76,20 @@ public class AttackContext {
     }
 
     public AttackContext copy(){
-        return new AttackContext(
+        AttackContext copy = new AttackContext(
                 this.owner,
                 this.shooter,
                 this.colorRl,
-                this.trigger,
+                this.trigger.copy(),
                 new HashMap<>(this.trajectories),
                 this.pos,
                 this.xRot,
                 this.yRot,
                 this.damage
         );
+        copy.setXRotOffset(this.xRotOffset);
+        copy.setYRotOffset(this.yRotOffset);
+        return copy;
     }
 
     public void addSimpleTrigger(SimpleTrigger trigger) {
@@ -115,6 +118,19 @@ public class AttackContext {
 
     public void setYRot(float yRot) {
         this.yRot = yRot;
+    }
+
+    /** Sets the absolute firing direction and clears relative rotation offsets. */
+    public void setDirection(Vec3 direction) {
+        if (direction.lengthSqr() < 1.0E-8) {
+            throw new IllegalArgumentException("direction must not be zero");
+        }
+
+        Vec3 normalized = direction.normalize();
+        this.xRot = (float) Math.toDegrees(Math.asin(-normalized.y));
+        this.yRot = (float) Math.toDegrees(Math.atan2(-normalized.x, normalized.z));
+        this.xRotOffset = 0.0f;
+        this.yRotOffset = 0.0f;
     }
 
     public Entity getShooter() {

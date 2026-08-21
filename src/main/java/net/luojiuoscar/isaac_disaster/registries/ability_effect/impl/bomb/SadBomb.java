@@ -6,6 +6,8 @@ import net.luojiuoscar.isaac_disaster.entity.tnt.IsaacBomb;
 import net.luojiuoscar.isaac_disaster.event.custom.attack.GetAttackContextEvent;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.CompositeTrigger;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ExecutableEffectContext;
+import net.luojiuoscar.isaac_disaster.registries.attack_pattern.AttackPatternContext;
+import net.luojiuoscar.isaac_disaster.registries.attack_pattern.ModAttackPattern;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackContext;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackType;
 import net.minecraft.resources.ResourceLocation;
@@ -14,7 +16,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.MinecraftForge;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -31,10 +32,6 @@ public class SadBomb extends BombRelated {
 
                     int bulletCount = getBulletCount(bomb.getPower());
 
-                    float angleInterval = (float) 360 / bulletCount;
-                    float curAngle = -angleInterval * (bulletCount - 1) / 2.0f;
-
-                    List<AttackContext> contexts = new ArrayList<>();
                     AttackContext ctx = new AttackContext(
                             player,
                             bomb,
@@ -46,13 +43,8 @@ public class SadBomb extends BombRelated {
                             bomb.getYRot()
                     );
 
-                    for (int i = 0; i < bulletCount; i++) {
-                        AttackContext c = ctx.copy();
-                        c.setYRotOffset(curAngle);
-                        contexts.add(c);
-
-                        curAngle += angleInterval;
-                    }
+                    List<AttackContext> contexts = ModAttackPattern.RING.get().generate(
+                            new AttackPatternContext(ctx, bulletCount));
 
                     GetAttackContextEvent event = new GetAttackContextEvent(player, contexts, attack, false);
                     MinecraftForge.EVENT_BUS.post(event);

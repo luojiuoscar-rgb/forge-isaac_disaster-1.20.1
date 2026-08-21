@@ -6,6 +6,8 @@ import net.luojiuoscar.isaac_disaster.registries.ability_effect.CompositeTrigger
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ContextKeys;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ExecutableEffectContext;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.IAbilityEffect;
+import net.luojiuoscar.isaac_disaster.registries.attack_pattern.AttackPatternContext;
+import net.luojiuoscar.isaac_disaster.registries.attack_pattern.ModAttackPattern;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackContext;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackType;
 import net.minecraft.resources.ResourceLocation;
@@ -34,8 +36,6 @@ public class LokisHorns implements IAbilityEffect {
                     Map<ResourceLocation, Integer> trajectories = playerAbility.getTrajectories();
                     Vec3 eyePos = player.getEyePosition().add(0, player.getBbHeight() * -0.15, 0);
 
-                    List<AttackContext> attackContexts = new ArrayList<>();
-
                     AttackContext baseCtx = new AttackContext(
                             player,
                             player,
@@ -47,26 +47,25 @@ public class LokisHorns implements IAbilityEffect {
                             player.getYRot()
                     );
 
-                    // 三个方向：左、右、后
-                    float[] offsets = new float[] {
-                            -90f,  // 左
-                            90f,   // 右
-                            180f   // 后
-                    };
+                    AttackContext reversedReference = baseCtx.copy();
+                    Vec3 reversedDirection = Vec3.directionFromRotation(
+                            baseCtx.getXRot(), baseCtx.getYRot()).scale(-1.0);
+                    reversedReference.setDirection(reversedDirection);
 
-                    for (float offset : offsets) {
-                        AttackContext c = baseCtx.copy();
-                        c.setYRotOffset(offset);
-                        attackContexts.add(c);
-                    }
+                    List<AttackContext> extraContexts = ModAttackPattern.SEMICIRCLE.get().generate(
+                            new AttackPatternContext(reversedReference, 3));
 
                     // 触发事件错误时：直接发射；触发事件正确时，如果是直接发射则加入发射序列，否则阻止
                     if (!(context.get(ContextKeys.EVENT) instanceof GetAttackContextEvent event)){
-                        attack.performAttack(attackContexts);
+                        attack.performAttack(extraContexts);
                     }else if (event.isDirectlyShotByPlayer()) {
-                        event.getContexts().addAll(attackContexts);
+                        List<AttackContext> contexts = new ArrayList<>(event.getContexts());
+                        contexts.addAll(extraContexts);
+                        event.setContexts(contexts);
                     }
                     // do nothing
                 }
         );
-    }}
+    }
+
+}

@@ -8,6 +8,8 @@ import net.luojiuoscar.isaac_disaster.registries.ability_effect.CompositeTrigger
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ContextKeys;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ExecutableEffectContext;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.IAbilityEffect;
+import net.luojiuoscar.isaac_disaster.registries.attack_pattern.AttackPatternContext;
+import net.luojiuoscar.isaac_disaster.registries.attack_pattern.ModAttackPattern;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackContext;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackType;
 import net.minecraft.resources.ResourceLocation;
@@ -15,7 +17,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.MinecraftForge;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -42,12 +43,7 @@ public class TammysHead implements IAbilityEffect {
                     Map<ResourceLocation, Integer> trajectories = playerAbility.getTrajectories();
                     Vec3 eyePos = player.getEyePosition().add(0, player.getBbHeight() * -0.15, 0);
 
-                    int bulletCount = 13;
-
-                    float angleInterval = 30;
-                    float curAngle = -angleInterval * (bulletCount - 1) / 2.0f;
-
-                    List<AttackContext> contexts = new ArrayList<>();
+                    int bulletCount = 12;
                     AttackContext ctx = new AttackContext(
                             player,
                             player,
@@ -59,13 +55,8 @@ public class TammysHead implements IAbilityEffect {
                             player.getYRot()
                     );
 
-                    for (int i = 0; i < bulletCount; i++) {
-                        AttackContext c = ctx.copy();
-                        c.setYRotOffset(curAngle);
-                        contexts.add(c);
-
-                        curAngle += angleInterval;
-                    }
+                    List<AttackContext> contexts = ModAttackPattern.RING.get().generate(
+                            new AttackPatternContext(ctx, bulletCount));
 
                     // 给bullet附加CompositeTrigger
                     GetAttackContextEvent event =

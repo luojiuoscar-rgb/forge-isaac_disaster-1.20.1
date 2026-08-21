@@ -22,6 +22,10 @@ public class CompositeTrigger {
         this.triggers = new ArrayList<>(triggers);
     }
 
+    public CompositeTrigger copy() {
+        return new CompositeTrigger(this.triggers);
+    }
+
     public void fire(ExecutableEffectContext context, @Nullable TriggerType type) {
         context.set(ContextKeys.COMPOSITE_TRIGGER_VIEW, getView());
         getView().fire(context, type);
