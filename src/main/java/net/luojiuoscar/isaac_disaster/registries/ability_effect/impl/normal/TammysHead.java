@@ -2,7 +2,6 @@ package net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.normal;
 
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerAbilityProvider;
-import net.luojiuoscar.isaac_disaster.event.custom.attack.GetAttackContextEvent;
 import net.luojiuoscar.isaac_disaster.helper.ScheduledFuncHelper;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.CompositeTrigger;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ContextKeys;
@@ -11,6 +10,10 @@ import net.luojiuoscar.isaac_disaster.registries.ability_effect.IAbilityEffect;
 import net.luojiuoscar.isaac_disaster.registries.attack_pattern.AttackPatternContext;
 import net.luojiuoscar.isaac_disaster.registries.attack_pattern.ModAttackPattern;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackContext;
+import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackExecutor;
+import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackOrigin;
+import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackPipelineMode;
+import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackRequest;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackType;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
@@ -58,16 +61,9 @@ public class TammysHead implements IAbilityEffect {
                     List<AttackContext> contexts = ModAttackPattern.RING.get().generate(
                             new AttackPatternContext(ctx, bulletCount));
 
-                    // 给bullet附加CompositeTrigger
-                    GetAttackContextEvent event =
-                            new GetAttackContextEvent(player, contexts, attack, false);
-                    MinecraftForge.EVENT_BUS.post(event);
-                    contexts = event.getContexts();
-
-                    IsaacDisaster.LOGGER.info("List of bullets: "+contexts);
-
-                    attack.performAttack(contexts);
-                    attack.makeSound(player);
+                    AttackExecutor.perform(AttackRequest.withContexts(
+                            player, attack, AttackOrigin.ABILITY_EXTRA,
+                            AttackPipelineMode.BULLET_ONLY, contexts, true));
                 }
         );
     }

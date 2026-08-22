@@ -327,7 +327,7 @@ public class PlayerHelper {
 
     public static boolean hasSet(ResourceLocation id, ServerPlayer player){
         return player.getCapability(PlayerIsaacItemsProvider.PLAYER_ISAAC_ITEMS)
-                .map(p -> p.getSetCountFromId(id) > 3)
+                .map(p -> p.getSetCountFromId(id) >= 3)
                 .orElse(false);
     }
 

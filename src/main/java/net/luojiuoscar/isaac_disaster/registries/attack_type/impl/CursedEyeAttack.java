@@ -6,6 +6,10 @@ import net.luojiuoscar.isaac_disaster.event.custom.attack.BeforePerformAttackEve
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.helper.ScheduledFuncHelper;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackContext;
+import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackExecutor;
+import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackOrigin;
+import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackPipelineMode;
+import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackRequest;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackType;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.DelegatingAttackType;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.IChargeableAttack;
@@ -99,7 +103,9 @@ public class CursedEyeAttack extends AttackType implements IChargeableAttack, De
                         ScheduledFuncHelper.scheduleForPlayer(player.getUUID(), SCHEDULE_TYPE,
                                 1,1, count, false, () -> {
 
-                            attack.performAttack(attack.getAttackContextsWithEvent(player, attack.getBulletCount(player)));
+                            AttackExecutor.perform(AttackRequest.generated(
+                                    player, attack, AttackOrigin.PLAYER_SCHEDULED,
+                                    AttackPipelineMode.GROUP_AND_BULLET, false));
                             attack.makeSound(player);
                         });
                     }

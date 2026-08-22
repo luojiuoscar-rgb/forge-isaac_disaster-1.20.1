@@ -29,13 +29,11 @@ public class TheCommonCold extends TriggerModule {
     }
 
     @Override
-    public void attachToBullet(ExecutableEffectContext context, List<AttackContext> attCtxs) {
+    public void attachToBullet(ExecutableEffectContext context, AttackContext attackContext) {
         LivingEntity entity = context.getEntity();
-        for (var ctx : attCtxs) {
-            if (entity.getRandom().nextDouble() < getTriggerChance(entity)){
-                ctx.colorRl = ModBulletColor.POISON.getId();
-                ctx.getTrigger().addAll(bullet_triggers);
-            }
+        if (entity.getRandom().nextDouble() < getTriggerChance(entity)){
+            attackContext.colorRl = ModBulletColor.POISON.getId();
+            attackContext.getTrigger().addAll(bullet_triggers);
         }
     }
 }

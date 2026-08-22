@@ -32,10 +32,9 @@ public class BulletAttack extends AttackType {
 
     @Override
     public List<AttackContext> getAttackContexts(ServerPlayer player, int bulletCount) {
-        AttackContext ctx = getOneAttackContext(player, player);
+        AttackContext ctx = createAttackContext(player, player);
 
         List<AttackContext> contexts = new ArrayList<>();
-        if (ctx == null) return contexts;
 
         if (bulletCount == 2) {
             Vec3 look = player.getLookAngle();
@@ -86,10 +85,11 @@ public class BulletAttack extends AttackType {
     // =================== 子弹发射 ===================
     @Override
     public void shoot(AttackContext ctx) {
-        if (ctx.getOwner().level().isClientSide()) return;
+        LivingEntity owner = ctx.getOwner();
+        if (owner == null || owner.level().isClientSide()) return;
 
         TearBullet bullet = createBullet(ctx);
-        ctx.getOwner().level().addFreshEntity(bullet);
+        finalizeShot(ctx, bullet);
     }
 
     protected TearBullet createBullet(AttackContext context) {
@@ -116,11 +116,30 @@ public class BulletAttack extends AttackType {
         bullet.setVelocity(look.scale(getBulletSpeed(owner)));
         bullet.setDeltaMovement(bullet.getVelocity());
 
-        if (!owner.level().isClientSide)
-            MinecraftForge.EVENT_BUS.post(
-                    new TearBulletShootEvent(bullet, bullet.getOwner(), getId(), context.getTrigger(), bullet));
-
         return bullet;
+    }
+
+    protected void finalizeShot(AttackContext context, TearBullet bullet) {
+        if (!postShootEvent(context, bullet)) {
+            return;
+        }
+        spawnBullet(context, bullet);
+    }
+
+    protected boolean postShootEvent(AttackContext context, TearBullet bullet) {
+        LivingEntity owner = context.getOwner();
+        if (owner == null || owner.level().isClientSide) {
+            return true;
+        }
+
+        TearBulletShootEvent event =
+                new TearBulletShootEvent(bullet, bullet.getOwner(), getId(), context.getTrigger(), bullet);
+        MinecraftForge.EVENT_BUS.post(event);
+        return !event.isCanceled();
+    }
+
+    protected void spawnBullet(AttackContext context, TearBullet bullet) {
+        context.getOwner().level().addFreshEntity(bullet);
     }
 
     public TearBullet getBulletObject(AttackContext c){

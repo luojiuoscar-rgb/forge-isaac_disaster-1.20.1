@@ -323,6 +323,7 @@ public class ForgeEvents {
     private static void addPermanentModules(TriggerModuleQueue queue){
         queue.addIfNotExist(ModTriggerModule.HIGH_PRIORITY_PLAYER_PERMANENT_MODULE.getId(), 1);
         queue.addIfNotExist(ModTriggerModule.PLAYER_PERMANENT_MODULE.getId(), 1);
+        queue.addIfNotExist(ModTriggerModule.LOW_PRIORITY_PLAYER_PERMANENT_MODULE.getId(), 1);
     }
 
 

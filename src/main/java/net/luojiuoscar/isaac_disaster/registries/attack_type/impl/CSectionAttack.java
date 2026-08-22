@@ -8,6 +8,10 @@ import net.luojiuoscar.isaac_disaster.event.custom.attack.BeforePerformAttackEve
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.CompositeTrigger;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackContext;
+import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackExecutor;
+import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackOrigin;
+import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackPipelineMode;
+import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackRequest;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.IChargeableAttack;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.ModAttackType;
 import net.luojiuoscar.isaac_disaster.sound.ModSounds;
@@ -118,7 +122,7 @@ public class CSectionAttack extends BulletAttack implements IChargeableAttack {
 
     /** 胎儿子弹从腹部发射 */
     @Override
-    public AttackContext getOneAttackContext(ServerPlayer player, Entity shooter) {
+    public AttackContext createAttackContext(ServerPlayer player, Entity shooter) {
         return player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY)
                 .map(playerAbility -> {
                     ResourceLocation colorRl = playerAbility.getBestBulletColor();
@@ -154,7 +158,9 @@ public class CSectionAttack extends BulletAttack implements IChargeableAttack {
                             MinecraftForge.EVENT_BUS.post(event);
                             if (event.isCanceled()) return;
 
-                            performAttack(getAttackContextsWithEvent(player, getBulletCount(player)));
+                            AttackExecutor.perform(AttackRequest.generated(
+                                    player, this, AttackOrigin.PLAYER_PRIMARY,
+                                    AttackPipelineMode.GROUP_AND_BULLET, false));
                             makeSound(player);
 
                         }else{

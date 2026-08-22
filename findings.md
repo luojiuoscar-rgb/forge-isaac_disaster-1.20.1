@@ -154,7 +154,7 @@ This is the canonical durable knowledge base for future Codex sessions working o
 - `AttackCombinationRule` is registry-driven, requires a set of attack IDs, may return any registered result attack type, and has its own candidate tier/priority. Single and composite attacks therefore compete in one candidate list.
 - `AttackType.isActive(AttackSelectionContext)` is the extension point for temporarily disabling an attack. Combination candidates are rejected if any required attack is inactive.
 - Delegating attack types such as Neptunus/Cursed Eye request the strongest lower candidate while explicitly skipping other `DelegatingAttackType` results, preventing recursive delegation chains.
-- Attack execution remains directly available on each concrete `AttackType`: callers can obtain contexts with or without `GetAttackContextEvent`, pass contexts to `performAttack`, or invoke the concrete shooting path. The selector only chooses/caches a type; it does not replace implementation classes.
+- Attack execution remains implemented by each concrete `AttackType`, while structured callers enter through `AttackExecutor.perform(AttackRequest)`. The selector only chooses/caches a type; it does not replace implementation classes.
 
 ### Tear Bullet Movement And Trajectories
 - `TearBullet` uses a one-tick planned-movement pipeline: execute the previously stored delta movement first, then on the server fire `BulletTickEvent`, apply steering/registered trajectories, compute the next `finalMove`, collision-test the current-to-next segment, store it as delta movement, and advance traveled distance from velocity.
@@ -286,3 +286,13 @@ This is the canonical durable knowledge base for future Codex sessions working o
 
 ## Visual/Browser Findings
 - No visual or browser research was required for this memory migration so far.
+
+## 2026-08-21 - Attack Pipeline Refactor Findings
+
+- `AttackPipeline`, `AttackRequest`, `AttackPlan`, `AttackPlanEvent`, and `AttackContextPrepareEvent` already exist in the working tree.
+- `TriggerModule` handles `ATTACK_PLAN` and `ATTACK_CONTEXT_PREPARE`; per-context attachment is performed only during the latter stage.
+- `BulletAttack.finalizeShot` now gates spawning on `TearBulletShootEvent` cancellation.
+- `LokisHorns` and `TheWizEffect` use only `AttackPlanEvent`; group mutation no longer has a second legacy event path.
+- `AttackPipeline` only plays sound when the request has a non-null owner; ownerless synthetic tests should not expect a sound log entry.
+- `TriggerModule` must read `ContextKeys.ATTACK_CONTEXT` directly and null-check it; pattern matching against the generic return type is a compile-time error.
+- `gradlew test` and `gradlew build` both pass after the compile fix and test expectation adjustment.

@@ -3,7 +3,6 @@ package net.luojiuoscar.isaac_disaster.registries.attack_type;
 import net.luojiuoscar.isaac_disaster.attribute.ModAttributes;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerAbilityProvider;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerIsaacItemsProvider;
-import net.luojiuoscar.isaac_disaster.event.custom.attack.GetAttackContextEvent;
 import net.luojiuoscar.isaac_disaster.event.custom.misc.GetShotDelayEvent;
 import net.luojiuoscar.isaac_disaster.event.custom.misc.IsaacGetBulletCountEvent;
 import net.luojiuoscar.isaac_disaster.manager.id.ItemId;
@@ -19,7 +18,7 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.MinecraftForge;
-import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.Map;
@@ -47,16 +46,6 @@ public abstract class AttackType {
 
     public abstract ResourceLocation getId();
 
-    public List<AttackContext> getAttackContextsWithEvent(ServerPlayer player, int bulletCount){
-        List<AttackContext> contexts = getAttackContexts(player, bulletCount);
-
-        GetAttackContextEvent event =
-                new GetAttackContextEvent(player, contexts, this, true);
-        MinecraftForge.EVENT_BUS.post(event);
-
-        return event.getContexts();
-    }
-
     public abstract List<AttackContext> getAttackContexts(ServerPlayer player, int bulletCount);
     public abstract void performAttack(List<AttackContext> ctxList);
     public abstract void makeSound(LivingEntity entity);
@@ -73,8 +62,8 @@ public abstract class AttackType {
         return true;
     }
 
-    @Nullable
-    public AttackContext getOneAttackContext(ServerPlayer player, Entity shooter) {
+    @NotNull
+    public AttackContext createAttackContext(ServerPlayer player, Entity shooter) {
         return player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY)
                 .map(playerAbility -> {
                     ResourceLocation colorRl = playerAbility.getBestBulletColor();

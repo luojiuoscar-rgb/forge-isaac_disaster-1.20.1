@@ -8,6 +8,10 @@ import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.helper.ScheduledFuncHelper;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackContext;
+import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackExecutor;
+import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackOrigin;
+import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackPipelineMode;
+import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackRequest;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.IChargeableAttack;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.ModAttackType;
 import net.luojiuoscar.isaac_disaster.sound.ModSounds;
@@ -124,7 +128,9 @@ public class BrimstoneAttack extends LaserAttack implements IChargeableAttack {
                         if (event.isCanceled()) return;
 
                         // attack
-                        performAttack(getAttackContextsWithEvent(player, getBulletCount(player)));
+                        AttackExecutor.perform(AttackRequest.generated(
+                                player, this, AttackOrigin.PLAYER_PRIMARY,
+                                AttackPipelineMode.GROUP_AND_BULLET, false));
                         makeSound(player);
                     }
                     playerAbility.setChargeAmount(0);

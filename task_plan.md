@@ -68,3 +68,28 @@ Phase 5
 - Update `findings.md` after every two view/search operations during complex work.
 - Log errors instead of silently repeating failed commands.
 - Feature-specific implementation plans may later use `.planning/<plan-id>/`; these root files remain the project-wide memory.
+
+## 2026-08-21 - Attack Pipeline Refactor
+
+## Goal
+Finish the staged attack-pipeline rewrite for Isaac Disaster: keep `AttackPattern` separate, route attacks through `AttackPipeline`, and remove the obsolete attack-context event path so the workspace has one unambiguous attack flow.
+
+## Phases
+
+### Phase 1: Inspect Current State
+- [x] Read the existing planning files and relevant skills.
+- [x] Inspect the new pipeline/request/plan/event classes.
+- [x] Search current attack call sites and legacy event usage.
+- **Status:** complete
+
+### Phase 2: Fix And Finish Migration
+- [x] Resolve compile or logic issues in the new pipeline.
+- [x] Finish migrating remaining attack-entry call sites.
+- [x] Remove obsolete compatibility paths and migrate all callers to the unified pipeline.
+- **Status:** complete
+
+### Phase 3: Verify
+- [x] Run focused tests for the pipeline and shot flow.
+- [x] Run Gradle verification with Java 17.
+- [x] Record any remaining blockers or follow-up work.
+- **Status:** complete

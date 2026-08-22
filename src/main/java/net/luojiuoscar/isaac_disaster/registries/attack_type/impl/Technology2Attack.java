@@ -8,7 +8,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.Vec3;
-import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.Map;
@@ -36,8 +36,7 @@ public class Technology2Attack extends LaserAttack {
     }
 
     @Override
-    @Nullable
-    public AttackContext getOneAttackContext(ServerPlayer player, Entity shooter) {
+    public @NotNull AttackContext createAttackContext(ServerPlayer player, Entity shooter) {
         return player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY)
                 .map(playerAbility -> {
                     ResourceLocation colorRl = playerAbility.getBestBulletColor();
@@ -64,7 +63,7 @@ public class Technology2Attack extends LaserAttack {
 
     @Override
     public List<AttackContext> getAttackContexts(ServerPlayer player, int bulletCount) {
-        AttackContext context = getOneAttackContext(player, player);
-        return context != null ? List.of(context) : List.of();
+        AttackContext context = createAttackContext(player, player);
+        return List.of(context);
     }
 }

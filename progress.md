@@ -141,3 +141,31 @@
 - Added Chinese localization, English Wiki icon converted to PNG, generated model, and Curse Room, Devil Beggar, and Devil Room pool entries.
 - Verification: focused algorithm tests passed; `runData` and `compileJava` passed; pool JSON and PNG signature checks passed.
 - Existing `en_us.json` contains unrelated malformed legacy entries, so full-language JSON parsing remains unavailable.
+
+## 2026-08-21 - Attack Pipeline Refactor
+
+- Read the planning-with-files and minecraft-modding skills, then re-read the current root planning files.
+- Inspected the new attack pipeline classes, trigger-module bridge, and the legacy compatibility path.
+- Searched current attack-entry call sites and found the main transition points still in motion.
+- Fixed the `TriggerModule` compile error by replacing the invalid generic `instanceof` check with a direct null check.
+- Adjusted the pipeline test expectation for ownerless requests so sound is not required when no owner exists.
+- Verification: `gradlew test` and `gradlew build` both passed under Java 17 after allowing the Gradle wrapper download.
+
+## 2026-08-22 - Attack Request Interface Convergence
+
+- Renamed request factories to generated and withContexts, with mode validation.
+- Reduced AttackExecutor to the single public perform(AttackRequest) entrypoint and migrated all current callers.
+- Renamed pipeline and plan terminology: pipelineMode, providedContexts, AttackPipelineHooks, and freezeContexts.
+- Replaced the direct-player helper with explicit PLAYER_PRIMARY checks in The Wiz and Loki's Horns.
+- Added request contract tests and updated pipeline tests to use the public factories.
+- Gradle test was attempted with Microsoft JDK 17.0.11, but ForgeGradle timed out while downloading net.minecraft:client:1.20.1 before Java compilation or test execution.
+
+## 2026-08-22 - Attack Legacy Path Removal
+
+- Removed the obsolete attack-context event and all related trigger type, category, listener, and ability-effect compatibility code.
+- Moved default attack-plan and per-context Forge/TriggerModule handling into `TriggerModuleEvents`; `AttackPipeline` now delegates through its default hooks.
+- Removed unused attack request/plan/index ContextKeys, retaining only the per-context key required by `TriggerModule`.
+- Renamed the single-context construction helper to `createAttackContext` and changed its return contract to non-null across attack types and callers.
+- Updated The Wiz, Loki's Horns, tests, and planning findings to describe only the unified attack pipeline.
+- Static residual scan found no obsolete attack-event symbols or old context-construction name in source/tests/docs.
+- Java 17 `gradlew test` was attempted twice, including `--offline`; both attempts stalled during ForgeGradle MCP download preparation before compilation and were stopped. A separate Java 17 `gradlew build --offline` attempt stalled at the same MCP preparation stage and was also stopped.

@@ -5,8 +5,6 @@ import net.luojiuoscar.isaac_disaster.capability.player.PlayerAbility;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerAbilityProvider;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerIsaacItemsProvider;
 import net.luojiuoscar.isaac_disaster.effect.ModEffects;
-import net.luojiuoscar.isaac_disaster.effect.custom.TheWizEffect;
-import net.luojiuoscar.isaac_disaster.event.custom.attack.GetAttackContextEvent;
 import net.luojiuoscar.isaac_disaster.event.custom.misc.*;
 import net.luojiuoscar.isaac_disaster.helper.EntityHelper;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
@@ -142,15 +140,4 @@ public class IsaacDisasterEvents {
             }
         }
     }
-
-    @SubscribeEvent
-    public static void onGettingAttackCtx(GetAttackContextEvent event){
-        LivingEntity entity = event.getPlayer();
-
-        if (entity.hasEffect(ModEffects.THE_WIZ.get())){
-            TheWizEffect.onTriggered(event);
-        }
-    }
-
-
 }

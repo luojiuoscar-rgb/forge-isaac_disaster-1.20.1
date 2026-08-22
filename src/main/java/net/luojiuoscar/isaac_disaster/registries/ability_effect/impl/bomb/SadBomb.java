@@ -3,18 +3,20 @@ package net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.bomb;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerAbilityProvider;
 import net.luojiuoscar.isaac_disaster.entity.tnt.BombData;
 import net.luojiuoscar.isaac_disaster.entity.tnt.IsaacBomb;
-import net.luojiuoscar.isaac_disaster.event.custom.attack.GetAttackContextEvent;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.CompositeTrigger;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ExecutableEffectContext;
 import net.luojiuoscar.isaac_disaster.registries.attack_pattern.AttackPatternContext;
 import net.luojiuoscar.isaac_disaster.registries.attack_pattern.ModAttackPattern;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackContext;
+import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackExecutor;
+import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackOrigin;
+import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackPipelineMode;
+import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackRequest;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackType;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.common.MinecraftForge;
 
 import java.util.List;
 import java.util.Map;
@@ -45,13 +47,9 @@ public class SadBomb extends BombRelated {
 
                     List<AttackContext> contexts = ModAttackPattern.RING.get().generate(
                             new AttackPatternContext(ctx, bulletCount));
-
-                    GetAttackContextEvent event = new GetAttackContextEvent(player, contexts, attack, false);
-                    MinecraftForge.EVENT_BUS.post(event);
-                    contexts = event.getContexts();
-
-                    attack.performAttack(contexts);
-                    attack.makeSound(player);
+                    AttackExecutor.perform(AttackRequest.withContexts(
+                            player, attack, AttackOrigin.ABILITY_EXTRA,
+                            AttackPipelineMode.BULLET_ONLY, contexts, true));
                 });
         return true;
     }

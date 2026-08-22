@@ -46,8 +46,8 @@ public class AttackContext {
         this.owner = owner;
         this.shooter = shooter;
         this.colorRl = colorRl;
-        // 避免外部修改影响 AttackContext 内部
-        this.trigger = trigger;
+        // Keep secondary attack preparation from mutating the caller's bullet trigger state.
+        this.trigger = trigger.copy();
         this.trajectories = new HashMap<>(trajectories);
         this.pos = pos;
         this.xRot = xRot;
@@ -62,8 +62,8 @@ public class AttackContext {
         this.owner = owner;
         this.shooter = shooter;
         this.colorRl = colorRl;
-        // 避免外部修改影响 AttackContext 内部
-        this.trigger = trigger;
+        // Keep secondary attack preparation from mutating the caller's bullet trigger state.
+        this.trigger = trigger.copy();
         this.trajectories = new HashMap<>(trajectories);
         this.pos = pos;
         this.xRot = xRot;

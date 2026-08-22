@@ -28,12 +28,10 @@ public class IronBar extends TriggerModule {
     }
 
     @Override
-    public void attachToBullet(ExecutableEffectContext context, List<AttackContext> attCtxs) {
+    public void attachToBullet(ExecutableEffectContext context, AttackContext attackContext) {
         LivingEntity entity = context.getEntity();
-        for (var ctx : attCtxs) {
-            if (entity.getRandom().nextDouble() < getTriggerChance(entity)){
-                ctx.getTrigger().addAll(BULLET_TRIGGER);
-            }
+        if (entity.getRandom().nextDouble() < getTriggerChance(entity)){
+            attackContext.getTrigger().addAll(BULLET_TRIGGER);
         }
     }
 }

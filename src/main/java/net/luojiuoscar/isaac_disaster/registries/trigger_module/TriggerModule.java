@@ -1,6 +1,5 @@
 package net.luojiuoscar.isaac_disaster.registries.trigger_module;
 
-import net.luojiuoscar.isaac_disaster.event.custom.attack.GetAttackContextEvent;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.CompositeTrigger;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ContextKeys;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ExecutableEffectContext;
@@ -9,8 +8,6 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 
-import java.util.List;
-
 public abstract class TriggerModule {
     private final CompositeTrigger trigger;
 
@@ -18,14 +15,15 @@ public abstract class TriggerModule {
         this.trigger = trigger;
     }
 
-    public void attachToBullet(ExecutableEffectContext context, List<AttackContext> attCtxs){}
+    public void attachToBullet(ExecutableEffectContext context, AttackContext attackContext){}
 
     // 执行所有fire
     public void fire(ExecutableEffectContext context, TriggerType type){
-        // 如果需要附加给子弹
-        if (type.is(ModTriggerTypes.GET_ATTACK_CONTEXT)
-                && context.get(ContextKeys.EVENT) instanceof GetAttackContextEvent event){
-            attachToBullet(context, event.getContexts());
+        if (type.is(ModTriggerTypes.ATTACK_CONTEXT_PREPARE)) {
+            AttackContext attackContext = context.get(ContextKeys.ATTACK_CONTEXT);
+            if (attackContext != null) {
+                attachToBullet(context, attackContext);
+            }
         }
 
         trigger.fire(context, type);

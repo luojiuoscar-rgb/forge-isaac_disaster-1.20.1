@@ -4,6 +4,10 @@ import net.luojiuoscar.isaac_disaster.capability.player.PlayerAbilityProvider;
 import net.luojiuoscar.isaac_disaster.event.custom.attack.BeforePerformAttackEvent;
 import net.luojiuoscar.isaac_disaster.item.ModItems;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackContext;
+import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackExecutor;
+import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackOrigin;
+import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackPipelineMode;
+import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackRequest;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackType;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.DelegatingAttackType;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.IChargeableAttack;
@@ -75,9 +79,9 @@ public class NeptunusAttack extends AttackType implements IChargeableAttack, Del
                     MinecraftForge.EVENT_BUS.post(event);
                     if (event.isCanceled()) return;
 
-                    attack.performAttack(
-                            attack.getAttackContextsWithEvent(player, attack.getBulletCount(player))
-                    );
+                    AttackExecutor.perform(AttackRequest.generated(
+                            player, attack, AttackOrigin.PLAYER_PRIMARY,
+                            AttackPipelineMode.GROUP_AND_BULLET, false));
                     attack.makeSound(player);
                 }
 
@@ -100,9 +104,9 @@ public class NeptunusAttack extends AttackType implements IChargeableAttack, Del
                 MinecraftForge.EVENT_BUS.post(event);
                 if (event.isCanceled()) return;
 
-                attack.performAttack(
-                        attack.getAttackContextsWithEvent(player, attack.getBulletCount(player))
-                );
+                AttackExecutor.perform(AttackRequest.generated(
+                        player, attack, AttackOrigin.PLAYER_PRIMARY,
+                        AttackPipelineMode.GROUP_AND_BULLET, false));
 
                 attack.makeSound(player);
 

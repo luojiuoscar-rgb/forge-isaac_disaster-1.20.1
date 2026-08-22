@@ -1,6 +1,7 @@
 package net.luojiuoscar.isaac_disaster.registries.ability_effect;
 
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.profile.PotionProfile;
+import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackContext;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.IBulletObject;
 import net.luojiuoscar.isaac_disaster.registries.recursive_module.RecursiveModuleQueue;
 import net.minecraft.resources.ResourceLocation;
@@ -31,6 +32,7 @@ public final class ContextKeys {
     public static final ContextKey<Event> EVENT = new ContextKey<>();
     public static final ContextKey<IBulletObject> BULLET = new ContextKey<>();
     public static final ContextKey<ResourceLocation> BULLET_COLOR_ID = new ContextKey<>();
+    public static final ContextKey<AttackContext> ATTACK_CONTEXT = new ContextKey<>();
     public static final ContextKey<RecursiveModuleQueue> RECURSIVE_MODULE_QUEUE = new ContextKey<>();
     public static final ContextKey<CompositeTriggerView> COMPOSITE_TRIGGER_VIEW = new ContextKey<>();
 

@@ -82,17 +82,6 @@ public class TriggerModuleEvents {
     }
 
     @SubscribeEvent
-    public static void getAttackContext(GetAttackContextEvent event) {
-        LivingEntity entity = event.getPlayer();
-
-        ExecutableEffectContext context = new ExecutableEffectContext(entity);
-        context.set(ContextKeys.EVENT, event);
-        context.set(ContextKeys.TARGET_POSITION, entity.position());
-
-        dispatch(context, ModTriggerTypes.GET_ATTACK_CONTEXT);
-    }
-
-    @SubscribeEvent
     public static void beforePerformAttack(BeforePerformAttackEvent event) {
         LivingEntity entity = event.getEntity();
 
@@ -337,6 +326,31 @@ public class TriggerModuleEvents {
 
         // 触发对应爆炸效果
         bomb.getCachedEffect().apply(context);
+    }
+
+    @SubscribeEvent
+    public static void onAttackPlan(AttackPlanEvent event) {
+        LivingEntity owner = event.getOwner();
+        if (owner == null) return;
+
+        ExecutableEffectContext context = new ExecutableEffectContext(owner);
+        context.set(ContextKeys.EVENT, event);
+        context.set(ContextKeys.TARGET_POSITION, event.getBaseContexts().isEmpty()
+                ? owner.position()
+                : event.getBaseContexts().get(0).getPos());
+        dispatch(context, ModTriggerTypes.ATTACK_PLAN);
+    }
+
+    @SubscribeEvent
+    public static void onAttackContextPrepare(AttackContextPrepareEvent event) {
+        LivingEntity owner = event.getOwner();
+        if (owner == null) return;
+
+        ExecutableEffectContext context = new ExecutableEffectContext(owner);
+        context.set(ContextKeys.EVENT, event);
+        context.set(ContextKeys.ATTACK_CONTEXT, event.getAttackContext());
+        context.set(ContextKeys.TARGET_POSITION, event.getAttackContext().getPos());
+        dispatch(context, ModTriggerTypes.ATTACK_CONTEXT_PREPARE);
     }
 
 

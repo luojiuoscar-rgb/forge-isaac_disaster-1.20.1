@@ -4,6 +4,7 @@ import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.impl.normal.*;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.impl.special.BulletTriggerModule;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.impl.special.HighPriorityPlayerPermanentModule;
+import net.luojiuoscar.isaac_disaster.registries.trigger_module.impl.special.LowPriorityPlayerPermanentModule;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.impl.special.PlayerPermanentModule;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
@@ -65,6 +66,8 @@ public class ModTriggerModule {
             TRIGGER_MODULE_REGISTRY.register("player_permanent_module", PlayerPermanentModule::new);
     public static final RegistryObject<TriggerModule> HIGH_PRIORITY_PLAYER_PERMANENT_MODULE =
             TRIGGER_MODULE_REGISTRY.register("high_priority_player_permanent_module", HighPriorityPlayerPermanentModule::new);
+    public static final RegistryObject<TriggerModule> LOW_PRIORITY_PLAYER_PERMANENT_MODULE =
+            TRIGGER_MODULE_REGISTRY.register("low_priority_player_permanent_module", LowPriorityPlayerPermanentModule::new);
     public static final RegistryObject<TriggerModule> EXPLOSION_IMMUNE =
             TRIGGER_MODULE_REGISTRY.register("explosion_immune", ExplosionImmune::new);
     public static final RegistryObject<TriggerModule> EXPLOSION_REGENERATION =

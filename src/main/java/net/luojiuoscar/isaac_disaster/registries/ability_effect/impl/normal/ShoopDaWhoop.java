@@ -6,6 +6,10 @@ import net.luojiuoscar.isaac_disaster.registries.ability_effect.ContextKeys;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ExecutableEffectContext;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.IAbilityEffect;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackContext;
+import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackExecutor;
+import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackOrigin;
+import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackPipelineMode;
+import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackRequest;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.ModAttackType;
 import net.luojiuoscar.isaac_disaster.registries.bullet_color.ModBulletColor;
 import net.minecraft.world.entity.LivingEntity;
@@ -40,8 +44,9 @@ public class ShoopDaWhoop implements IAbilityEffect {
                 damage * 2 * amplifier
         );
 
-        ModAttackType.SHOOP_DA_WHOOP.get().performAttack(List.of(ctx));
-        ModAttackType.SHOOP_DA_WHOOP.get().makeSound(entity);
+        AttackExecutor.perform(AttackRequest.withContexts(
+                entity, ModAttackType.SHOOP_DA_WHOOP.get(), AttackOrigin.ABILITY_EXTRA,
+                AttackPipelineMode.BULLET_ONLY, List.of(ctx), true));
         return true;
     }
 }

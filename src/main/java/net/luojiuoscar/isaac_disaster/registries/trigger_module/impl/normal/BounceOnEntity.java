@@ -18,10 +18,8 @@ public class BounceOnEntity extends TriggerModule {
     }
 
     @Override
-    public void attachToBullet(ExecutableEffectContext context, List<AttackContext> attCtxs) {
-        for (var ctx : attCtxs) {
-            ctx.getTrigger().addAll(bullet_triggers);
-        }
+    public void attachToBullet(ExecutableEffectContext context, AttackContext attackContext) {
+        attackContext.getTrigger().addAll(bullet_triggers);
     }
 
     @Override

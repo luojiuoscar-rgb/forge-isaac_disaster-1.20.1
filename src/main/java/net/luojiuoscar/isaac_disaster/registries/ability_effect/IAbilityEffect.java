@@ -10,19 +10,7 @@ public interface IAbilityEffect extends IExecutableEffect {
     default void apply(ExecutableEffectContext context){
         if (context.getEntity().level().isClientSide) return;
 
-        // 使用try确保不会崩溃；通过token bucket限制单tick触发量
-
         boolean success = applyEffect(context);
-
-
-//      boolean success = AbilityEffectTokenBucket.getInstance().tryConsume(1);
-//        if (success){
-//            try {
-//                success = applyEffect(context);
-//            }catch (Exception ignored){
-//                success = false;
-//            }
-//        }
 
         // default behaviour
         if (!success){

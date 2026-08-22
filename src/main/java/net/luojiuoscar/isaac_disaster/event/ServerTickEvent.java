@@ -21,6 +21,9 @@ import net.luojiuoscar.isaac_disaster.networking.packet.RefreshScaleS2CPacket;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.data.AbilityEffectTokenBucket;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackType;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackExecutor;
+import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackOrigin;
+import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackPipelineMode;
+import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackRequest;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.IChargeableAttack;
 import net.luojiuoscar.isaac_disaster.system.ScaleUtils;
 import net.minecraft.server.level.ServerPlayer;
@@ -213,7 +216,13 @@ public class ServerTickEvent {
                     // perform attack
                     if (!(attack instanceof IChargeableAttack)){
 
-                        if (!AttackExecutor.performPrimary(player, attack)) return;
+                        if (!AttackExecutor.perform(AttackRequest.generated(
+                                player,
+                                attack,
+                                AttackOrigin.PLAYER_PRIMARY,
+                                AttackPipelineMode.FULL,
+                                true
+                        ))) return;
 
                         // 射击延迟
                         player.getCooldowns().addCooldown(stack.getItem(), (int) PlayerHelper.getShotDelay(player));

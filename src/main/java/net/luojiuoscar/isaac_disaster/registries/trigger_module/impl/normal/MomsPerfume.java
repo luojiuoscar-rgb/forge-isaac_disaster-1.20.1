@@ -33,16 +33,14 @@ public class MomsPerfume extends TriggerModule {
     }
 
     @Override
-    public void attachToBullet(ExecutableEffectContext context, List<AttackContext> attackContexts) {
+    public void attachToBullet(ExecutableEffectContext context, AttackContext attackContext) {
         LivingEntity entity = context.getEntity();
         List<SimpleTrigger> bulletTriggers = List.of(
                 new SimpleTrigger(ModTriggerTypes.BULLET_HIT_ENTITY_BEFORE, ModExecutableEffects.MOMS_PERFUME)
         );
-        for (AttackContext attackContext : attackContexts) {
-            if (entity.getRandom().nextDouble() < getTriggerChance(entity)) {
-                attackContext.colorRl = ModBulletColor.FEAR.getId();
-                attackContext.getTrigger().addAll(bulletTriggers);
-            }
+        if (entity.getRandom().nextDouble() < getTriggerChance(entity)) {
+            attackContext.colorRl = ModBulletColor.FEAR.getId();
+            attackContext.getTrigger().addAll(bulletTriggers);
         }
     }
 }

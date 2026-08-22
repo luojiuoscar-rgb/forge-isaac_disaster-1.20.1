@@ -224,10 +224,9 @@ public class LaserAttack extends AttackType {
     // ================== handleAttack ==================
     @Override
     public List<AttackContext> getAttackContexts(ServerPlayer player, int bulletCount) {
-        AttackContext ctx = getOneAttackContext(player, player);
+        AttackContext ctx = createAttackContext(player, player);
 
         List<AttackContext> contexts = new ArrayList<>();
-        if (ctx == null) return contexts;
 
         float angleInterval = 8;
         float curAngle = -angleInterval * (bulletCount - 1) / 2.0f;
