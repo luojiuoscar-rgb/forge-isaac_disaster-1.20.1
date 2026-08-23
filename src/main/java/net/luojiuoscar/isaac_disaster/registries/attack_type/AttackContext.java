@@ -2,7 +2,6 @@ package net.luojiuoscar.isaac_disaster.registries.attack_type;
 
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.CompositeTrigger;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.SimpleTrigger;
-import net.luojiuoscar.isaac_disaster.registries.bullet_color.ModBulletColors;
 import net.luojiuoscar.isaac_disaster.registries.split_module.SplitSequence;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
@@ -12,7 +11,9 @@ import net.minecraft.world.phys.Vec3;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.NotNull;
 
 public class AttackContext {
     public ResourceLocation colorRl;
@@ -25,30 +26,18 @@ public class AttackContext {
     private float xRotOffset = 0.0f;
     private float yRotOffset = 0.0f;
     private Double damage = null;
-    @Nullable
     private SplitSequence splitSequence;
 
     private final Entity shooter;
     private final LivingEntity owner;
 
-    public AttackContext(){
-        this.colorRl = ModBulletColors.BASE.getId();
-        this.trajectories = new HashMap<>();
-        this.trigger = new CompositeTrigger();
-        this.pos = Vec3.ZERO;
-        this.xRot = 0.0f;
-        this.yRot = 0.0f;
-        this.shooter = null;
-        this.owner = null;
-    }
-
-    public AttackContext(LivingEntity owner, Entity shooter,
+    public AttackContext(@NotNull LivingEntity owner, @Nullable Entity shooter,
                          ResourceLocation colorRl,
                          CompositeTrigger trigger,
                          Map<ResourceLocation, Integer> trajectories,
                          Vec3 pos, float xRot, float yRot) {
-        this.owner = owner;
-        this.shooter = shooter;
+        this.owner = Objects.requireNonNull(owner, "owner");
+        this.shooter = shooter == null ? owner : shooter;
         this.colorRl = colorRl;
         // Keep secondary attack preparation from mutating the caller's bullet trigger state.
         this.trigger = trigger.copy();
@@ -58,13 +47,13 @@ public class AttackContext {
         this.yRot = yRot;
     }
 
-    public AttackContext(LivingEntity owner, Entity shooter,
+    public AttackContext(@NotNull LivingEntity owner, @Nullable Entity shooter,
                          ResourceLocation colorRl,
                          CompositeTrigger trigger,
                          Map<ResourceLocation, Integer> trajectories,
                          Vec3 pos, float xRot, float yRot, Double damage) {
-        this.owner = owner;
-        this.shooter = shooter;
+        this.owner = Objects.requireNonNull(owner, "owner");
+        this.shooter = shooter == null ? owner : shooter;
         this.colorRl = colorRl;
         // Keep secondary attack preparation from mutating the caller's bullet trigger state.
         this.trigger = trigger.copy();
@@ -97,9 +86,10 @@ public class AttackContext {
         return copy;
     }
 
-    /** Returns the split sequence that will be copied into a spawned bullet. */
-    @Nullable
+    /** Returns this context's split sequence, creating an empty sequence when needed. */
+    @NotNull
     public SplitSequence getSplitSequence() {
+        if (splitSequence == null) splitSequence = new SplitSequence();
         return splitSequence;
     }
 
@@ -107,6 +97,7 @@ public class AttackContext {
     public void setSplitSequence(@Nullable SplitSequence splitSequence) {
         this.splitSequence = splitSequence == null ? null : splitSequence.copy();
     }
+
 
     public void addSimpleTrigger(SimpleTrigger trigger) {
         this.trigger.add(trigger);
@@ -149,10 +140,12 @@ public class AttackContext {
         this.yRotOffset = 0.0f;
     }
 
+    @NotNull
     public Entity getShooter() {
         return shooter;
     }
 
+    @NotNull
     public LivingEntity getOwner() {
         return owner;
     }
@@ -167,11 +160,7 @@ public class AttackContext {
 
     public float getDamage() {
         if (this.damage == null){
-            if (this.owner == null){
-                this.damage = 1.0;
-            }else {
-                this.damage = this.owner.getAttributeValue(Attributes.ATTACK_DAMAGE);
-            }
+            this.damage = this.owner.getAttributeValue(Attributes.ATTACK_DAMAGE);
         }
 
         return damage.floatValue();

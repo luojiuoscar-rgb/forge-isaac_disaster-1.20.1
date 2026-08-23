@@ -10,10 +10,14 @@ import net.luojiuoscar.isaac_disaster.helper.EntityHelper;
 import net.luojiuoscar.isaac_disaster.manager.ModDamageType;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.CompositeTrigger;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackType;
+import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackContext;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.IBulletObject;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.ModAttackTypes;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.util.DamagedEntities;
 import net.luojiuoscar.isaac_disaster.registries.split_module.SplitSequence;
+import net.luojiuoscar.isaac_disaster.registries.split_module.SplitExecutor;
+import net.luojiuoscar.isaac_disaster.registries.split_module.SplitTriggerCounts;
+import net.luojiuoscar.isaac_disaster.registries.split_module.SplitTriggerType;
 import net.luojiuoscar.isaac_disaster.registries.bullet_color.BulletColor;
 import net.luojiuoscar.isaac_disaster.registries.bullet_color.ModBulletColors;
 import net.luojiuoscar.isaac_disaster.registries.trajectory.IAttackTrajectory;
@@ -50,6 +54,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 
 public class TearBullet extends Entity implements IBulletObject {
@@ -89,7 +94,9 @@ public class TearBullet extends Entity implements IBulletObject {
     protected ResourceLocation colorRl = ModBulletColors.BASE.getId();
     protected final CompositeTrigger trigger = new CompositeTrigger();
     @Nullable
-    private SplitSequence splitSequence;
+    private AttackContext attackContext;
+    private final SplitTriggerCounts splitTriggerCounts = new SplitTriggerCounts();
+    private boolean endOfLifeTriggered;
     protected Vec3 extraPositionOffset = Vec3.ZERO;
 
     protected enum CollisionResult {
@@ -142,14 +149,17 @@ public class TearBullet extends Entity implements IBulletObject {
 
         this(type, level);
 
-        this.ownerUUID = shooter.getUUID();
-        this.cachedOwner = owner;
-        this.shooter = shooter;
+        LivingEntity actualOwner = Objects.requireNonNull(owner, "owner");
+        Entity actualShooter = shooter == null ? actualOwner : shooter;
+
+        this.ownerUUID = actualOwner.getUUID();
+        this.cachedOwner = actualOwner;
+        this.shooter = actualShooter;
         this.lifeTick = lifeTick;
         this.totalLifeTick = lifeTick;
         this.damage = damage;
-        this.yRotAngle = shooter.getYRot() - yRot;
-        this.xRotAngle = shooter.getXRot() - xRot;
+        this.yRotAngle = actualShooter.getYRot() - yRot;
+        this.xRotAngle = actualShooter.getXRot() - xRot;
 
         setScale(scale);
 
@@ -163,6 +173,11 @@ public class TearBullet extends Entity implements IBulletObject {
     @Override
     public void tick() {
         super.tick();
+
+        if (!level().isClientSide && (getOwner() == null || attackContext == null)) {
+            discard();
+            return;
+        }
 
         if (!level().isClientSide && handlePreflightCollision()) {
             return;
@@ -220,6 +235,11 @@ public class TearBullet extends Entity implements IBulletObject {
 
             // ================== 碰撞检测 ==================
             if (--lifeTick <= 0) {
+                if (!endOfLifeTriggered) {
+                    endOfLifeTriggered = true;
+                    recordSplitTrigger(SplitTriggerType.END_OF_LIFE);
+                    SplitExecutor.execute(this, SplitTriggerType.END_OF_LIFE);
+                }
                 if (!MinecraftForge.EVENT_BUS.post(new TearBulletEndOfLifeEvent(this))) discard();
                 return;
             }
@@ -290,6 +310,9 @@ public class TearBullet extends Entity implements IBulletObject {
 
         if (shape.isEmpty() || shape.bounds().getSize() < 0.01) return false;
 
+        recordSplitTrigger(SplitTriggerType.BLOCK);
+        SplitExecutor.execute(this, SplitTriggerType.BLOCK);
+
         IsaacAttackHitBlockEvent event =
                 new IsaacAttackHitBlockEvent(this, getOwner(), ModAttackTypes.BULLET.getId(), trigger, blockHit);
         if (!MinecraftForge.EVENT_BUS.post(event)) {
@@ -327,6 +350,9 @@ public class TearBullet extends Entity implements IBulletObject {
 
         if (EntityHelper.isFriendly(living, getOwner()) || living == getOwner() || damagedEntities.contains(target.getUUID()))
             return CollisionResult.NONE;
+
+        recordSplitTrigger(SplitTriggerType.ENTITY);
+        SplitExecutor.execute(this, SplitTriggerType.ENTITY);
 
         IsaacAttackBeforeHitEntityEvent beforeEvent = new IsaacAttackBeforeHitEntityEvent(
                 this, getOwner(), ModAttackTypes.BULLET.getId(), trigger, entityHit, damage);
@@ -510,8 +536,8 @@ public class TearBullet extends Entity implements IBulletObject {
     }
 
     public void setOwner(LivingEntity entity) {
-        this.cachedOwner = entity;
-        this.ownerUUID = entity == null ? null : entity.getUUID();
+        this.cachedOwner = Objects.requireNonNull(entity, "owner");
+        this.ownerUUID = entity.getUUID();
     }
 
     // ======== 同步数据 ========
@@ -614,6 +640,26 @@ public class TearBullet extends Entity implements IBulletObject {
     public void setIsCurrentlySteering(boolean b) { this.isCurrentlySteering = b; }
 
     public void setDamage(float damage) { this.damage = damage; }
+
+    /** Stores an independent copy of the context that created this bullet. */
+    public void setAttackContext(AttackContext context) {
+        this.attackContext = Objects.requireNonNull(context, "context").copy();
+    }
+
+    @Override
+    public AttackContext getAttackContext() {
+        return Objects.requireNonNull(attackContext, "attackContext").copy();
+    }
+
+    @Override
+    public @NotNull SplitTriggerCounts getSplitTriggerCounts() {
+        return splitTriggerCounts.copy();
+    }
+
+    @Override
+    public void recordSplitTrigger(SplitTriggerType type) {
+        splitTriggerCounts.increment(type);
+    }
     @Override
     public float getDamage() { return damage; }
 
@@ -654,15 +700,10 @@ public class TearBullet extends Entity implements IBulletObject {
         entityData.set(TRAJECTORIES, s);
     }
 
-    /** Returns this bullet's remaining split sequence, if it carries any. */
-    @Nullable
+    /** Returns this bullet's split sequence, creating an empty sequence when needed. */
+    @Override
     public SplitSequence getSplitSequence() {
-        return splitSequence;
-    }
-
-    /** Stores an independent split-sequence copy for this server-side bullet. */
-    public void setSplitSequence(@Nullable SplitSequence splitSequence) {
-        this.splitSequence = splitSequence == null ? null : splitSequence.copy();
+        return Objects.requireNonNull(attackContext, "attackContext").getSplitSequence();
     }
 
     @Override

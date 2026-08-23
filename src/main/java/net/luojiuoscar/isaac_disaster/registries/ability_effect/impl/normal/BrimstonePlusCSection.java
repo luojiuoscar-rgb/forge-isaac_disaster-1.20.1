@@ -5,6 +5,7 @@ import net.luojiuoscar.isaac_disaster.helper.ScheduledFuncHelper;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ExecutableEffectContext;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.IAbilityEffect;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackType;
+import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackContext;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackExecutor;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackOrigin;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackPipelineMode;
@@ -26,10 +27,13 @@ public class BrimstonePlusCSection implements IAbilityEffect {
         AttackType attack = ModAttackTypes.C_SECTION.get();
 
         ScheduledFuncHelper.scheduleForPlayer(player.getUUID(), SCHEDULE_TYPE, 3,3, 4, false, () -> {
+            AttackContext attackContext = attack.createAttackContext(player, player);
+            if (attackContext == null) return;
+
             AttackExecutor.perform(AttackRequest.withContexts(
                     player, attack, AttackOrigin.ABILITY_EXTRA,
                     AttackPipelineMode.BULLET_ONLY,
-                    List.of(attack.createAttackContext(player, player)), true));
+                    List.of(attackContext), true));
         });
 
         return true;

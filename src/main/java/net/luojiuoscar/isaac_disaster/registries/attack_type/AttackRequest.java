@@ -10,17 +10,17 @@ import java.util.Objects;
 
 public final class AttackRequest {
     private final @NotNull AttackType attackType;
-    private final @Nullable LivingEntity owner;
+    private final @NotNull LivingEntity owner;
     private final @NotNull AttackOrigin origin;
     private final @NotNull AttackPipelineMode pipelineMode;
     private final @NotNull List<AttackContext> providedContexts;
     private final boolean playSound;
 
-    AttackRequest(@NotNull AttackType attackType, @Nullable LivingEntity owner,
+    AttackRequest(@NotNull AttackType attackType, @NotNull LivingEntity owner,
                   @NotNull AttackOrigin origin, @NotNull AttackPipelineMode pipelineMode,
                   @NotNull List<AttackContext> providedContexts, boolean playSound) {
         this.attackType = Objects.requireNonNull(attackType, "attackType");
-        this.owner = owner;
+        this.owner = Objects.requireNonNull(owner, "owner");
         this.origin = Objects.requireNonNull(origin, "origin");
         this.pipelineMode = Objects.requireNonNull(pipelineMode, "pipelineMode");
         this.providedContexts = List.copyOf(Objects.requireNonNull(providedContexts, "providedContexts"));
@@ -49,7 +49,7 @@ public final class AttackRequest {
     /**
      * Creates a request that starts from contexts already provided by the caller.
      *
-     * @param owner the optional owner of the attack
+     * @param owner the non-null owner of the attack
      * @param attackType the attack type to execute
      * @param origin where the attack came from
      * @param pipelineMode must be {@link AttackPipelineMode#BULLET_ONLY} or {@link AttackPipelineMode#RAW}
@@ -57,7 +57,7 @@ public final class AttackRequest {
      * @param playSound whether the attack should play its sound after execution
      * @return a request backed by caller-provided contexts
      */
-    public static AttackRequest withContexts(@Nullable LivingEntity owner, @NotNull AttackType attackType,
+    public static AttackRequest withContexts(@NotNull LivingEntity owner, @NotNull AttackType attackType,
                                              @NotNull AttackOrigin origin, @NotNull AttackPipelineMode pipelineMode,
                                              @NotNull List<AttackContext> providedContexts, boolean playSound) {
         requireProvidedMode(Objects.requireNonNull(pipelineMode, "pipelineMode"));
@@ -81,8 +81,8 @@ public final class AttackRequest {
         return attackType;
     }
 
-    /** Returns the entity that owns the attack, when one exists. */
-    public @Nullable LivingEntity getOwner() {
+    /** Returns the non-null entity that owns the attack. */
+    public @NotNull LivingEntity getOwner() {
         return owner;
     }
 

@@ -7,6 +7,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ItemListManager {
+    private ItemListManager() {
+    }
+
     // 统一存储所有被动道具（物品形式）
     public static final List<RegistryObject<Item>> PASSIVE_ITEM_LIST = new ArrayList<>();
     public static final List<RegistryObject<Item>> ACTIVE_ITEM_LIST = new ArrayList<>();

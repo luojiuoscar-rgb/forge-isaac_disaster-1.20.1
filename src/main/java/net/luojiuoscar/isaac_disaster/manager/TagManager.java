@@ -8,6 +8,9 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
 
 public class TagManager {
+    private TagManager() {
+    }
+
     public static final TagKey<Item> PASSIVE_ITEMS =
             TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "passive_items"));
     public static final TagKey<Item> ACTIVE_ITEMS =

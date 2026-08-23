@@ -8,6 +8,9 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class TempPoolManager {
+    private TempPoolManager() {
+    }
+
     private static final Map<UUID, LootPool> tempPools = new ConcurrentHashMap<>();
 
     public static void put(ServerPlayer player, LootPool pool) {

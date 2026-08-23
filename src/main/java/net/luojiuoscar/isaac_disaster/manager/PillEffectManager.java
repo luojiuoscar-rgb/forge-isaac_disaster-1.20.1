@@ -18,9 +18,9 @@ import net.minecraftforge.registries.RegistryObject;
 import java.util.*;
 
 public class PillEffectManager {
+    private PillEffectManager() {}
 
     private static final PillEffectManager INSTANCE = new PillEffectManager();
-    private PillEffectManager() {}
     public static PillEffectManager getInstance() {
         return INSTANCE;
     }

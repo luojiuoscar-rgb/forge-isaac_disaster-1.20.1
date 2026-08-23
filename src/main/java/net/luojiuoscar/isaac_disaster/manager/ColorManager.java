@@ -1,6 +1,9 @@
 package net.luojiuoscar.isaac_disaster.manager;
 
 public class ColorManager {
+    private ColorManager() {
+    }
+
     public static final int COMMON_WHITE = 0xFFFFFF;
     public static final int UNCOMMON_GREEN = 0x55FF55;
     public static final int RARE_BLUE = 0x00FFFF;

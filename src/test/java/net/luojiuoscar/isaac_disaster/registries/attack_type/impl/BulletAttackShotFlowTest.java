@@ -4,6 +4,7 @@ import net.luojiuoscar.isaac_disaster.entity.custom.TearBullet;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.CompositeTrigger;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackContext;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.phys.Vec3;
 import org.junit.jupiter.api.Test;
 
@@ -27,19 +28,9 @@ class BulletAttackShotFlowTest {
         assertTrue(attack.spawnCalled);
     }
 
-    @Test
-    void nullOwnerContextIsIgnored() {
-        RecordingBulletAttack attack = new RecordingBulletAttack();
-
-        attack.shoot(testContext());
-
-        assertFalse(attack.createBulletCalled);
-        assertFalse(attack.spawnCalled);
-    }
-
     private static AttackContext testContext() {
         return new AttackContext(
-                null,
+                new ArmorStand(null, 0.0, 0.0, 0.0),
                 null,
                 ResourceLocation.fromNamespaceAndPath("test", "bullet"),
                 new CompositeTrigger(),

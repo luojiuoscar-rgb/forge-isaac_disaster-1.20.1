@@ -27,6 +27,8 @@ import java.util.List;
  * LootHelper - 用于在指定位置生成或提取掉落物。
  */
 public class LootHelper {
+    private LootHelper() {
+    }
 
     public static void spawnLootAtPos(LivingEntity source, Vec3 pos, ResourceLocation tableId) {
         spawnLootAtPos(source, pos, tableId, LootContextParamSets.EMPTY);

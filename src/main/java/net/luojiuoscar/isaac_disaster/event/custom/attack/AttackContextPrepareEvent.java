@@ -57,7 +57,7 @@ public class AttackContextPrepareEvent extends Event {
         return request.getPipelineMode();
     }
 
-    public @Nullable LivingEntity getOwner() {
+    public @NotNull LivingEntity getOwner() {
         return request.getOwner();
     }
 

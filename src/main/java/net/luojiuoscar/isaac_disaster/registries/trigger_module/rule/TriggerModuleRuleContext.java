@@ -12,7 +12,7 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Read-only data supplied to a rule while a trigger module is being evaluated.
+ * Data supplied to a rule while a trigger module is being evaluated.
  */
 public final class TriggerModuleRuleContext {
     private final TriggerModuleInstance candidate;

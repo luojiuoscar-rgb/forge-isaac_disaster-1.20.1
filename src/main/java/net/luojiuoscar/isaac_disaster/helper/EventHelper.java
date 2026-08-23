@@ -5,6 +5,8 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.player.Player;
 
 public class EventHelper {
+    private EventHelper() {
+    }
 
     /**
      * 根据权重随机触发一个事件

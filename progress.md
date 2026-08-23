@@ -1,5 +1,18 @@
 # Progress Log
 
+## Session: 2026-08-23 - SplitModule 与基础子弹分裂事件
+
+- 已确认上一轮修改已加入 SplitContext、SplitTriggerType、SplitTriggerCounts 和 IBulletObject 新接口。
+- 当前残留：SplitRule 注册表、SplitRuleCache、初始化调用、测试旧断言；TearBullet/LaserProjectile 尚未实现新接口，BulletSplitEvent 尚未接入生产流程。
+- 本轮按 task_plan.md 的六个阶段继续实现。
+- 已删除 SplitRule、SplitRuleCache、ModSplitRules 及其注册/初始化/测试引用。
+- 已实现 SplitExecutor；泪弹和激光均保存独立 AttackContext，维护三类 SplitTriggerCounts，并接入分裂事件边界。
+- `compileJava` 与 `test --offline --no-daemon` 已通过，使用 JDK 23；项目要求的 JDK 17 当前不可用。
+- 已补齐泪弹 END_OF_LIFE 的一次性触发保护；全局扫描确认 SplitRule、SPLIT_RULE、setEndOfLife 均无残留。
+- `build --offline --no-daemon` 已通过，仍使用 JDK 23。
+- 后续收口：AttackContext 只保留隐式创建的 `getSplitSequence()`；RuleContext 不再触碰 AttackContext/SplitSequence；SplitSequence 使用 `SplitModuleEntry` 并删除 `ResolvedModule`；SplitTriggerCounts 改为可变计数类。
+- 收口后的 `test --offline --no-daemon` 已通过。
+
 ## Session: 2026-07-12
 
 ### Phase 1: Initialize And Recover

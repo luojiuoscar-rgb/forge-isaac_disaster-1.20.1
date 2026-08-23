@@ -27,6 +27,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.MinecraftForge;
 import org.joml.Vector3f;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
 
@@ -122,7 +123,7 @@ public class CSectionAttack extends BulletAttack implements IChargeableAttack {
 
     /** 胎儿子弹从腹部发射 */
     @Override
-    public AttackContext createAttackContext(ServerPlayer player, Entity shooter) {
+    public @Nullable AttackContext createAttackContext(ServerPlayer player, Entity shooter) {
         return player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY)
                 .map(playerAbility -> {
                     ResourceLocation colorRl = playerAbility.getBestBulletColor();
@@ -139,7 +140,7 @@ public class CSectionAttack extends BulletAttack implements IChargeableAttack {
                             player.getXRot(),
                             player.getYRot());
                 })
-                .orElse(new AttackContext());
+                .orElse(null);
     }
 
     @Override

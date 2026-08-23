@@ -15,7 +15,6 @@ import net.luojiuoscar.isaac_disaster.registries.familiar.FamiliarEntityType;
 import net.luojiuoscar.isaac_disaster.registries.recursive_module.RecursiveModule;
 import net.luojiuoscar.isaac_disaster.registries.revive_module.ReviveModule;
 import net.luojiuoscar.isaac_disaster.registries.split_module.SplitModule;
-import net.luojiuoscar.isaac_disaster.registries.split_module.SplitRule;
 import net.luojiuoscar.isaac_disaster.registries.trajectory.IAttackTrajectory;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerModule;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.rule.TriggerModuleRule;
@@ -38,7 +37,6 @@ import static net.luojiuoscar.isaac_disaster.registries.familiar.ModFamiliarEnti
 import static net.luojiuoscar.isaac_disaster.registries.recursive_module.ModRecursiveModules.RECURSIVE_MODULE_REGISTRY;
 import static net.luojiuoscar.isaac_disaster.registries.revive_module.ModReviveModules.REVIVE_MODULE_REGISTRY;
 import static net.luojiuoscar.isaac_disaster.registries.split_module.ModSplitModules.SPLIT_MODULE_REGISTRY;
-import static net.luojiuoscar.isaac_disaster.registries.split_module.ModSplitRules.SPLIT_RULE_REGISTRY;
 import static net.luojiuoscar.isaac_disaster.registries.trajectory.ModAttackTrajectories.ATTACK_TRAJECTORY_REGISTRY;
 import static net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerModules.TRIGGER_MODULE_REGISTRY;
 import static net.luojiuoscar.isaac_disaster.registries.trigger_module.rule.ModTriggerModuleRules.TRIGGER_MODULE_RULE_REGISTRY;
@@ -80,10 +78,6 @@ public class ModRegistries {
         SPLIT_MODULE_REGISTRY.makeRegistry(() -> new RegistryBuilder<SplitModule>()
                 .setName(ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "split_module")));
         SPLIT_MODULE_REGISTRY.register(modEventBus);
-
-        SPLIT_RULE_REGISTRY.makeRegistry(() -> new RegistryBuilder<SplitRule>()
-                .setName(ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "split_rule")));
-        SPLIT_RULE_REGISTRY.register(modEventBus);
 
         PASSIVE_ABILITY_REGISTRY.makeRegistry(() -> {return new RegistryBuilder<PassiveAbility>()
                 .setName(ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "passive_ability"));});

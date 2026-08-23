@@ -27,6 +27,9 @@ import java.util.Optional;
 import java.util.UUID;
 
 public class CuriosHelper {
+    private CuriosHelper() {
+    }
+
     public static final String TRINKET = "isaac_trinket";
     public static final String PASSIVE_ITEM = "isaac_passive_item";
     private static final String LEGACY_ON_CURIOS = "on_curios";

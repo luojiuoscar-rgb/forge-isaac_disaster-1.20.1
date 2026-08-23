@@ -4,7 +4,25 @@
 Build and maintain an AI-oriented, file-backed project memory for Isaac Disaster using `task_plan.md`, `findings.md`, and `progress.md`, so future work can recover current architecture, decisions, risks, and workflow constraints after context loss.
 
 ## Current Phase
-Phase 5
+SplitModule 与基础子弹分裂事件实现
+
+## Active Feature Plan
+
+### Goal
+完成 SplitModule 行为重构，并为泪弹和激光接入统一的 BLOCK、ENTITY、END_OF_LIFE 分裂事件及运行时计数；不添加 setEndOfLife，不持久化分裂状态，不实现具体道具。
+
+### Phases
+- [x] 清理废弃 SplitRule 注册表及测试残留
+- [x] 完成 IBulletObject、TearBullet、LaserProjectile 的运行时数据接口
+- [x] 新增统一 SplitExecutor 并接入 AttackExecutor
+- [x] 接入泪弹三类触发边界
+- [x] 接入激光三类触发边界
+- [x] 更新测试、全局扫描并运行构建验证
+
+### Known Errors
+| Error | Attempt | Resolution |
+|---|---:|---|
+| 新增 IBulletObject 方法但 TearBullet/LaserProjectile 尚未实现 | 1 | 本计划第二阶段补齐实现 |
 
 ## Phases
 

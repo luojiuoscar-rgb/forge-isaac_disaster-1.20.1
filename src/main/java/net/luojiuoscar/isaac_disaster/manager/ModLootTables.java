@@ -4,6 +4,9 @@ import net.minecraft.resources.ResourceLocation;
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 
 public class ModLootTables {
+    private ModLootTables() {
+    }
+
     // random pickups
     public static final ResourceLocation RANDOM_PICKUPS =
             ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "pickups/random/pickups");

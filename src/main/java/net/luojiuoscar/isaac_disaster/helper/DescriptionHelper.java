@@ -10,6 +10,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DescriptionHelper {
+    private DescriptionHelper() {
+    }
+
     /**
      * Creates a two-decimal description value that is highlighted when its displayed value differs from its base value.
      *

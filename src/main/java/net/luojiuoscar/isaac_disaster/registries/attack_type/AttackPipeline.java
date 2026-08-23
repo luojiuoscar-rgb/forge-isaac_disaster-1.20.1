@@ -29,8 +29,8 @@ public final class AttackPipeline {
     /** Generates contexts from the attack type after the FULL-mode cancellation check. */
     private static boolean executeGeneratedAttack(@NotNull AttackRequest request) {
         if (request.getPipelineMode() == AttackPipelineMode.FULL) {
-            LivingEntity owner = Objects.requireNonNull(request.getOwner(), "FULL attacks require an owner");
-            if (MinecraftForge.EVENT_BUS.post(new BeforePerformAttackEvent(owner, request.getAttackType()))) {
+            if (MinecraftForge.EVENT_BUS.post(new BeforePerformAttackEvent(
+                    request.getOwner(), request.getAttackType()))) {
                 return false;
             }
         }
@@ -38,7 +38,10 @@ public final class AttackPipeline {
         ServerPlayer player = Objects.requireNonNull(
                 request.getPlayer(), "generated attacks require a server player");
         int bulletCount = request.getAttackType().getBulletCount(player);
-        List<AttackContext> baseContexts = request.getAttackType().getAttackContexts(player, bulletCount);
+        List<AttackContext> baseContexts = request.getAttackType().getAttackContexts(player, bulletCount)
+                .stream()
+                .filter(Objects::nonNull)
+                .toList();
         return executeAttackPlan(request, baseContexts);
     }
 
@@ -72,9 +75,8 @@ public final class AttackPipeline {
         }
 
         request.getAttackType().performAttack(preparedContexts);
-        LivingEntity owner = request.getOwner();
-        if (request.shouldPlaySound() && owner != null) {
-            request.getAttackType().makeSound(owner);
+        if (request.shouldPlaySound()) {
+            request.getAttackType().makeSound(request.getOwner());
         }
         return true;
     }
@@ -82,9 +84,8 @@ public final class AttackPipeline {
     /** Executes the provided contexts directly without publishing any pipeline events. */
     private static boolean executeRawAttack(@NotNull AttackRequest request) {
         request.getAttackType().performAttack(request.getProvidedContexts());
-        LivingEntity owner = request.getOwner();
-        if (request.shouldPlaySound() && owner != null) {
-            request.getAttackType().makeSound(owner);
+        if (request.shouldPlaySound()) {
+            request.getAttackType().makeSound(request.getOwner());
         }
         return true;
     }

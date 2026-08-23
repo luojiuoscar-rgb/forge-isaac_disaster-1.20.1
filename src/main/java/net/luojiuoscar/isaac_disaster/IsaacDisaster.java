@@ -14,7 +14,6 @@ import net.luojiuoscar.isaac_disaster.loot.ModLootTypes;
 import net.luojiuoscar.isaac_disaster.networking.ModMessages;
 import net.luojiuoscar.isaac_disaster.registries.ModRegistries;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.rule.TriggerModuleRules;
-import net.luojiuoscar.isaac_disaster.registries.split_module.SplitRuleCache;
 import net.luojiuoscar.isaac_disaster.sound.ModSounds;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
@@ -83,7 +82,6 @@ public class IsaacDisaster
         ModMessages.register();
 
         event.enqueueWork(TriggerModuleRules::rebuildCache);
-        event.enqueueWork(SplitRuleCache::rebuildCache);
     }
 
 

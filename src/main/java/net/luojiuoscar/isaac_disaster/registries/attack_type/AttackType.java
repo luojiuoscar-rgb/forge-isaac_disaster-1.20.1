@@ -19,6 +19,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.MinecraftForge;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Map;
@@ -62,7 +63,7 @@ public abstract class AttackType {
         return true;
     }
 
-    @NotNull
+    @Nullable
     public AttackContext createAttackContext(ServerPlayer player, Entity shooter) {
         return player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY)
                 .map(playerAbility -> {
@@ -80,7 +81,7 @@ public abstract class AttackType {
                             player.getXRot(),
                             player.getYRot());
                 })
-                .orElse(new AttackContext());
+                .orElse(null);
     }
 
     // ============ 属性相关 =============

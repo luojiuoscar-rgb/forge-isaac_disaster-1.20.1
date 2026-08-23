@@ -9,6 +9,10 @@ import net.luojiuoscar.isaac_disaster.registries.ability_effect.CompositeTrigger
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackContext;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackType;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.IBulletObject;
+import net.luojiuoscar.isaac_disaster.registries.split_module.SplitExecutor;
+import net.luojiuoscar.isaac_disaster.registries.split_module.SplitSequence;
+import net.luojiuoscar.isaac_disaster.registries.split_module.SplitTriggerCounts;
+import net.luojiuoscar.isaac_disaster.registries.split_module.SplitTriggerType;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.ModAttackTypes;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.util.DamagedEntities;
 import net.luojiuoscar.isaac_disaster.registries.bullet_color.BulletColor;
@@ -18,6 +22,7 @@ import net.luojiuoscar.isaac_disaster.registries.trajectory.ModAttackTrajectorie
 import net.luojiuoscar.isaac_disaster.registries.trajectory.TrajectoryContext;
 import net.luojiuoscar.isaac_disaster.sound.ModSounds;
 import net.minecraft.core.particles.DustParticleOptions;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
@@ -34,12 +39,14 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.registries.IForgeRegistry;
 import net.minecraftforge.registries.RegistryManager;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class LaserAttack extends AttackType {
 
@@ -88,6 +95,10 @@ public class LaserAttack extends AttackType {
         public double yRotAngle;
         public double xRotAngle;
         private final AttackContext attackContext;
+        private final SplitTriggerCounts splitTriggerCounts = new SplitTriggerCounts();
+        private boolean endOfLifeTriggered;
+        private boolean terminatedByBlock;
+        private BlockPos lastSplitBlockPosition;
 
         public LaserProjectile(LivingEntity owner, Entity shooter,
                                Vec3 startPos, Vec3 direction,
@@ -95,8 +106,11 @@ public class LaserAttack extends AttackType {
                                float damage,
                                boolean homing, boolean spectral, double yRotAngle, double xRotAngle,
                                AttackContext attackContext) {
-            this.owner = owner;
-            this.shooter = shooter;
+            LivingEntity actualOwner = Objects.requireNonNull(owner, "owner");
+            Entity actualShooter = shooter == null ? actualOwner : shooter;
+
+            this.owner = actualOwner;
+            this.shooter = actualShooter;
             this.position = startPos;
             this.direction = direction;
             this.step = step;
@@ -110,11 +124,43 @@ public class LaserAttack extends AttackType {
             this.homingTarget = null;
             this.yRotAngle = yRotAngle;
             this.xRotAngle = xRotAngle;
-            this.attackContext = attackContext;
+            this.attackContext = attackContext.copy();
 
-            if (shooter != null){
-                prevShooterPos = getShooterWaistPosition();
+            this.prevShooterPos = getShooterWaistPosition();
+        }
+
+        @Override
+        public AttackContext getAttackContext() { return attackContext.copy(); }
+
+        @Override
+        public @NotNull SplitSequence getSplitSequence() { return attackContext.getSplitSequence(); }
+
+        @Override
+        public @NotNull SplitTriggerCounts getSplitTriggerCounts() { return splitTriggerCounts.copy(); }
+
+        @Override
+        public void recordSplitTrigger(SplitTriggerType type) {
+            splitTriggerCounts.increment(type);
+        }
+
+        public boolean markEndOfLifeTriggered() {
+            if (endOfLifeTriggered) return false;
+            endOfLifeTriggered = true;
+            return true;
+        }
+
+        /** Records a block split position unless it is inside the previous hit's 3x3x3 area. */
+        public boolean markBlockSplitPosition(BlockPos position) {
+            BlockPos current = Objects.requireNonNull(position, "position");
+            if (lastSplitBlockPosition != null
+                    && Math.abs(lastSplitBlockPosition.getX() - current.getX()) <= 1
+                    && Math.abs(lastSplitBlockPosition.getY() - current.getY()) <= 1
+                    && Math.abs(lastSplitBlockPosition.getZ() - current.getZ()) <= 1) {
+                return false;
             }
+
+            lastSplitBlockPosition = current.immutable();
+            return true;
         }
 
         @Override
@@ -225,6 +271,7 @@ public class LaserAttack extends AttackType {
     @Override
     public List<AttackContext> getAttackContexts(ServerPlayer player, int bulletCount) {
         AttackContext ctx = createAttackContext(player, player);
+        if (ctx == null) return List.of();
 
         List<AttackContext> contexts = new ArrayList<>();
 
@@ -278,6 +325,11 @@ public class LaserAttack extends AttackType {
 
         while (laser.traveled < getRange(entity)) {
             stepLaser(laser, level, ctx);
+        }
+
+        if (!laser.terminatedByBlock && laser.markEndOfLifeTriggered()) {
+            laser.recordSplitTrigger(SplitTriggerType.END_OF_LIFE);
+            SplitExecutor.execute(laser, SplitTriggerType.END_OF_LIFE);
         }
     }
 
@@ -350,6 +402,7 @@ public class LaserAttack extends AttackType {
         // --------- Block Collision ---------
         AABB box = createCollisionBox(nextPos, laser.width);
         if (handleBlockCollision(laser, level, context.getTrigger()) && !laser.spectral) {
+            laser.terminatedByBlock = true;
             laser.traveled = getRange(laser.owner);
             return;
         }
@@ -377,6 +430,11 @@ public class LaserAttack extends AttackType {
         ));
 
         if (blockHit.getType() == BlockHitResult.Type.BLOCK) {
+            if (laser.markBlockSplitPosition(blockHit.getBlockPos())) {
+                laser.recordSplitTrigger(SplitTriggerType.BLOCK);
+                SplitExecutor.execute(laser, SplitTriggerType.BLOCK);
+            }
+
             IsaacAttackHitBlockEvent blockEvent =
                     new IsaacAttackHitBlockEvent(laser, laser.owner, getId(), triggers, blockHit);
             MinecraftForge.EVENT_BUS.post(blockEvent);
@@ -393,6 +451,10 @@ public class LaserAttack extends AttackType {
         );
 
         for (LivingEntity target : entities) {
+
+            laser.recordSplitTrigger(SplitTriggerType.ENTITY);
+            SplitExecutor.execute(laser, SplitTriggerType.ENTITY);
+
             EntityHitResult hitResult = new EntityHitResult(target);
 
             IsaacAttackBeforeHitEntityEvent beforeHit = new IsaacAttackBeforeHitEntityEvent(

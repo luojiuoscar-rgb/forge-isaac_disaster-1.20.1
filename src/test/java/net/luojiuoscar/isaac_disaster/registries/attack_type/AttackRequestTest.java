@@ -1,9 +1,12 @@
 package net.luojiuoscar.isaac_disaster.registries.attack_type;
 
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.Bootstrap;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.CompositeTrigger;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -14,6 +17,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class AttackRequestTest {
+    @BeforeAll
+    static void bootstrapMinecraft() {
+        Bootstrap.bootStrap();
+    }
+
     @Test
     void generatedRejectsUnsupportedModes() {
         assertThrows(IllegalArgumentException.class, () -> AttackRequest.generated(
@@ -29,7 +37,7 @@ class AttackRequestTest {
     void withContextsCopiesProvidedContextsAndRejectsUnsupportedModes() {
         List<AttackContext> contexts = new ArrayList<>(List.of(testContext()));
         AttackRequest request = AttackRequest.withContexts(
-                null,
+                testOwner(),
                 new RecordingAttackType(),
                 AttackOrigin.SYSTEM,
                 AttackPipelineMode.BULLET_ONLY,
@@ -44,10 +52,10 @@ class AttackRequestTest {
         List<AttackContext> contextsWithNull = new ArrayList<>();
         contextsWithNull.add(null);
         assertThrows(NullPointerException.class, () -> AttackRequest.withContexts(
-                null, new RecordingAttackType(), AttackOrigin.SYSTEM,
+                testOwner(), new RecordingAttackType(), AttackOrigin.SYSTEM,
                 AttackPipelineMode.BULLET_ONLY, contextsWithNull, false));
         assertThrows(IllegalArgumentException.class, () -> AttackRequest.withContexts(
-                null,
+                testOwner(),
                 new RecordingAttackType(),
                 AttackOrigin.SYSTEM,
                 AttackPipelineMode.FULL,
@@ -58,7 +66,7 @@ class AttackRequestTest {
 
     private static AttackContext testContext() {
         return new AttackContext(
-                null,
+                testOwner(),
                 null,
                 ResourceLocation.fromNamespaceAndPath("test", "bullet"),
                 new CompositeTrigger(),
@@ -67,6 +75,10 @@ class AttackRequestTest {
                 0.0f,
                 0.0f
         );
+    }
+
+    private static LivingEntity testOwner() {
+        return new ArmorStand(null, 0.0, 0.0, 0.0);
     }
 
     private static final class RecordingAttackType extends AttackType {

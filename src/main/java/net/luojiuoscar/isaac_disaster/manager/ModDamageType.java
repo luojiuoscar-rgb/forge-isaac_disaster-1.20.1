@@ -7,6 +7,9 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.damagesource.DamageType;
 
 public class ModDamageType {
+    private ModDamageType() {
+    }
+
     public static final ResourceKey<DamageType> TEAR =
             ResourceKey.create(
                     Registries.DAMAGE_TYPE,

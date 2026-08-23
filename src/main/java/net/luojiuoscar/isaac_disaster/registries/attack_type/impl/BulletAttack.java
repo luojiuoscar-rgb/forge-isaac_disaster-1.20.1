@@ -35,6 +35,7 @@ public class BulletAttack extends AttackType {
         AttackContext ctx = createAttackContext(player, player);
 
         List<AttackContext> contexts = new ArrayList<>();
+        if (ctx == null) return contexts;
 
         if (bulletCount == 2) {
             Vec3 look = player.getLookAngle();
@@ -100,6 +101,7 @@ public class BulletAttack extends AttackType {
         Vec3 adjustedPos = context.getPos().add(look.scale(forwardOffset));
 
         TearBullet bullet = getBulletObject(context);
+        bullet.setAttackContext(context);
 
         bullet.setSpectral(isSpectral(owner));
         bullet.setPiercing(isPiercing(owner));
@@ -108,7 +110,6 @@ public class BulletAttack extends AttackType {
 
         bullet.getTriggers().addAll(context.getTrigger());
         bullet.setTrajectories(context.trajectories);
-        bullet.setSplitSequence(context.getSplitSequence());
 
         bullet.setBulletColor(context.colorRl);
 

@@ -10,6 +10,15 @@ import java.util.Map;
 
 // 客户端专用的数据缓存类，存储从服务端同步过来的信息
 public class ClientDataManager {
+    private ClientDataManager() {
+        itemCountMap = new HashMap<>();
+        setCountMap = new HashMap<>();
+        pillRecords = new HashMap<>();
+        rockBottomHistory = new HashMap<>();
+        reviveHudIcons = new ArrayList<>();
+        init();
+    }
+
     private static final ClientDataManager INSTANCE = new ClientDataManager();
 
     private final Map<Integer, Integer> itemCountMap;
@@ -21,16 +30,6 @@ public class ClientDataManager {
     private int pillQuality;
 
     private float chargeProgress;
-
-    // constructor
-    private ClientDataManager() {
-        itemCountMap = new HashMap<>();
-        setCountMap = new HashMap<>();
-        pillRecords = new HashMap<>();
-        rockBottomHistory = new HashMap<>();
-        reviveHudIcons = new ArrayList<>();
-        init();
-    }
 
     public void init() {
         itemCountMap.clear();

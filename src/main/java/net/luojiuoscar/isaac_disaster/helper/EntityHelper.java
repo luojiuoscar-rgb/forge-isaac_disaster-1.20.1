@@ -21,6 +21,8 @@ import java.util.List;
 import java.util.function.Predicate;
 
 public class EntityHelper {
+    private EntityHelper() {
+    }
 
 
     /**

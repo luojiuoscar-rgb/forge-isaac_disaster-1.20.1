@@ -10,6 +10,8 @@ import java.util.*;
  * 支持全局任务和按玩家独立任务
  */
 public class ScheduledFuncHelper {
+    private ScheduledFuncHelper() {
+    }
 
     // 自动生成 taskId
     private static int NEXT_TASK_ID = 1;

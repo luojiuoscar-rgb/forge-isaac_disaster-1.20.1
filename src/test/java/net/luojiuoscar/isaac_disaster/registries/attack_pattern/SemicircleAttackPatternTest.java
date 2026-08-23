@@ -4,7 +4,10 @@ import net.luojiuoscar.isaac_disaster.registries.ability_effect.CompositeTrigger
 import net.luojiuoscar.isaac_disaster.registries.attack_pattern.impl.SemicircleAttackPattern;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackContext;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.Bootstrap;
+import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.phys.Vec3;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -15,6 +18,11 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 
 class SemicircleAttackPatternTest {
     private static final double DELTA = 1.0E-4;
+
+    @BeforeAll
+    static void bootstrapMinecraft() {
+        Bootstrap.bootStrap();
+    }
 
     private final AttackPattern pattern = new SemicircleAttackPattern();
 
@@ -89,7 +97,7 @@ class SemicircleAttackPatternTest {
 
     private static AttackContext testContext() {
         return new AttackContext(
-                null,
+                new ArmorStand(null, 0.0, 0.0, 0.0),
                 null,
                 ResourceLocation.fromNamespaceAndPath("test", "bullet"),
                 new CompositeTrigger(),

@@ -39,6 +39,9 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.Predicate;
 
 public class LevelHelper {
+    private LevelHelper() {
+    }
+
     public static List<LivingEntity> selectBySphere(Level level, Vec3 pos, double radius) {
         List<Entity> entities = selectBySphere(level, pos, radius, e -> e instanceof LivingEntity);
         return entities.stream().map(e -> (LivingEntity) e).toList();

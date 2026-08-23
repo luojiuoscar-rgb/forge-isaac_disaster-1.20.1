@@ -9,6 +9,9 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class LootModifierManager {
+    private LootModifierManager() {
+    }
+
     private static final LinkedHashMap<String, LootModifier> MODIFIERS = new LinkedHashMap<>();
 
     public static void register(String name, LootModifier modifier) {
