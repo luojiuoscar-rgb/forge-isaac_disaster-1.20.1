@@ -13,7 +13,7 @@ import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackOrigin;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackPipelineMode;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackRequest;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.IChargeableAttack;
-import net.luojiuoscar.isaac_disaster.registries.attack_type.ModAttackType;
+import net.luojiuoscar.isaac_disaster.registries.attack_type.ModAttackTypes;
 import net.luojiuoscar.isaac_disaster.sound.ModSounds;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
@@ -40,7 +40,7 @@ public class BrimstoneAttack extends LaserAttack implements IChargeableAttack {
 
     @Override
     public ResourceLocation getId() {
-        return ModAttackType.BRIMSTONE.getId();
+        return ModAttackTypes.BRIMSTONE.getId();
     }
 
     // ================== handleAttack ==================

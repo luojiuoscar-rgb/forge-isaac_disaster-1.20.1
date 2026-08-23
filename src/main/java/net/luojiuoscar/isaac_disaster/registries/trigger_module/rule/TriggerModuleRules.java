@@ -20,7 +20,7 @@ public final class TriggerModuleRules {
     }
 
     /** Rebuilds the immutable lookup after the Forge rule registry is ready. */
-    public static void rebuild() {
+    public static void rebuildCache() {
         IForgeRegistry<TriggerModuleRule> registry =
                 RegistryManager.ACTIVE.getRegistry(ModTriggerModuleRules.TRIGGER_MODULE_RULE_KEY);
         if (registry == null) {

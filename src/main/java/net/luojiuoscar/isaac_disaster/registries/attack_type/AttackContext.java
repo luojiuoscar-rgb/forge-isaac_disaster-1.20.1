@@ -2,7 +2,8 @@ package net.luojiuoscar.isaac_disaster.registries.attack_type;
 
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.CompositeTrigger;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.SimpleTrigger;
-import net.luojiuoscar.isaac_disaster.registries.bullet_color.ModBulletColor;
+import net.luojiuoscar.isaac_disaster.registries.bullet_color.ModBulletColors;
+import net.luojiuoscar.isaac_disaster.registries.split_module.SplitSequence;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -11,6 +12,7 @@ import net.minecraft.world.phys.Vec3;
 
 import java.util.HashMap;
 import java.util.Map;
+import org.jetbrains.annotations.Nullable;
 
 public class AttackContext {
     public ResourceLocation colorRl;
@@ -23,12 +25,14 @@ public class AttackContext {
     private float xRotOffset = 0.0f;
     private float yRotOffset = 0.0f;
     private Double damage = null;
+    @Nullable
+    private SplitSequence splitSequence;
 
     private final Entity shooter;
     private final LivingEntity owner;
 
     public AttackContext(){
-        this.colorRl = ModBulletColor.BASE.getId();
+        this.colorRl = ModBulletColors.BASE.getId();
         this.trajectories = new HashMap<>();
         this.trigger = new CompositeTrigger();
         this.pos = Vec3.ZERO;
@@ -89,7 +93,19 @@ public class AttackContext {
         );
         copy.setXRotOffset(this.xRotOffset);
         copy.setYRotOffset(this.yRotOffset);
+        copy.splitSequence = this.splitSequence == null ? null : this.splitSequence.copy();
         return copy;
+    }
+
+    /** Returns the split sequence that will be copied into a spawned bullet. */
+    @Nullable
+    public SplitSequence getSplitSequence() {
+        return splitSequence;
+    }
+
+    /** Sets a defensive copy of the split sequence carried by this context. */
+    public void setSplitSequence(@Nullable SplitSequence splitSequence) {
+        this.splitSequence = splitSequence == null ? null : splitSequence.copy();
     }
 
     public void addSimpleTrigger(SimpleTrigger trigger) {

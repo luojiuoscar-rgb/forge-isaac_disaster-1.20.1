@@ -2,8 +2,8 @@ package net.luojiuoscar.isaac_disaster.registries.ability.passive.impl;
 
 import net.luojiuoscar.isaac_disaster.registries.ability.passive.PassiveAbility;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
-import net.luojiuoscar.isaac_disaster.registries.recursive_module.ModRecursiveModule;
-import net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerModule;
+import net.luojiuoscar.isaac_disaster.registries.recursive_module.ModRecursiveModules;
+import net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerModules;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
@@ -23,16 +23,16 @@ public class Pyromaniac extends PassiveAbility {
 
     @Override
     public void handleObtain(ServerPlayer player, @Nullable ItemStack stack) {
-        StatManager.addRecursiveModule(player, ModRecursiveModule.FIRE_RESISTANCE.getId(), 1);
-        StatManager.addTriggerModule(player, ModTriggerModule.EXPLOSION_IMMUNE.getId(), 1);
-        StatManager.addTriggerModule(player, ModTriggerModule.EXPLOSION_REGENERATION.getId(), 1);
+        StatManager.addRecursiveModule(player, ModRecursiveModules.FIRE_RESISTANCE.getId(), 1);
+        StatManager.addTriggerModule(player, ModTriggerModules.EXPLOSION_IMMUNE.getId(), 1);
+        StatManager.addTriggerModule(player, ModTriggerModules.EXPLOSION_REGENERATION.getId(), 1);
     }
 
     @Override
     public void handleRemove(ServerPlayer player, @Nullable ItemStack stack) {
-        StatManager.addRecursiveModule(player, ModRecursiveModule.FIRE_RESISTANCE.getId(), -1);
-        StatManager.addTriggerModule(player, ModTriggerModule.EXPLOSION_IMMUNE.getId(), -1);
-        StatManager.addTriggerModule(player, ModTriggerModule.EXPLOSION_REGENERATION.getId(), -1);
+        StatManager.addRecursiveModule(player, ModRecursiveModules.FIRE_RESISTANCE.getId(), -1);
+        StatManager.addTriggerModule(player, ModTriggerModules.EXPLOSION_IMMUNE.getId(), -1);
+        StatManager.addTriggerModule(player, ModTriggerModules.EXPLOSION_REGENERATION.getId(), -1);
     }
 
     @Override

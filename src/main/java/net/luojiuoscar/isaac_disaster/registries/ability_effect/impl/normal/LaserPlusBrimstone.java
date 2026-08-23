@@ -4,13 +4,13 @@ import net.luojiuoscar.isaac_disaster.event.custom.attack.IsaacAttackBeforeHitEn
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ExecutableEffectContext;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ContextKeys;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.IAbilityEffect;
-import net.luojiuoscar.isaac_disaster.registries.attack_type.ModAttackType;
+import net.luojiuoscar.isaac_disaster.registries.attack_type.ModAttackTypes;
 
 public class LaserPlusBrimstone implements IAbilityEffect {
     @Override
     public boolean applyEffect(ExecutableEffectContext context) {
         if (context.get(ContextKeys.EVENT) instanceof IsaacAttackBeforeHitEntityEvent event){
-            if (event.getAttackType().equals(ModAttackType.BRIMSTONE.getId())){
+            if (event.getAttackType().equals(ModAttackTypes.BRIMSTONE.getId())){
                 event.setDamage(event.getDamage() * 1.5);
                 return true;
             }

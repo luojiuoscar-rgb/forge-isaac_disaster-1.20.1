@@ -2,7 +2,7 @@ package net.luojiuoscar.isaac_disaster.registries.ability.passive.impl;
 
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.registries.ability.passive.PassiveAbility;
-import net.luojiuoscar.isaac_disaster.registries.ability.set.ModSetAbility;
+import net.luojiuoscar.isaac_disaster.registries.ability.set.ModSetAbilities;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
@@ -24,14 +24,14 @@ public class GrowthHormones extends PassiveAbility {
     public void handleObtain(ServerPlayer player, @Nullable ItemStack stack) {
         StatManager.DAMAGE.apply(player, 1);
         StatManager.MOVEMENT_SPEED.apply(player, 1);
-        StatManager.modifySetWithId(player, ModSetAbility.SPUN.getId(), 1);
+        StatManager.modifySetWithId(player, ModSetAbilities.SPUN.getId(), 1);
     }
 
     @Override
     public void handleRemove(ServerPlayer player, @Nullable ItemStack stack) {
         StatManager.DAMAGE.apply(player, -1);
         StatManager.MOVEMENT_SPEED.apply(player, -1);
-        StatManager.modifySetWithId(player, ModSetAbility.SPUN.getId(), -1);
+        StatManager.modifySetWithId(player, ModSetAbilities.SPUN.getId(), -1);
     }
 
     @Override
@@ -44,11 +44,11 @@ public class GrowthHormones extends PassiveAbility {
 
     @Override
     public List<Component> getSynergyDesc(@Nullable ItemStack stack, Player player){
-        return ModSetAbility.SPUN.get().getSynergyDesc();
+        return ModSetAbilities.SPUN.get().getSynergyDesc();
     }
 
     @Override
     public List<Component> getExtraDesc(@Nullable ItemStack stack, Player player){
-        return ModSetAbility.SPUN.get().getExtraDesc();
+        return ModSetAbilities.SPUN.get().getExtraDesc();
     }
 }

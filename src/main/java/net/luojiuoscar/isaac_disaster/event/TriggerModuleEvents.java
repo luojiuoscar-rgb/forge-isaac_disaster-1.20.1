@@ -13,7 +13,7 @@ import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ContextKeys;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ExecutableEffectContext;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.IBulletObject;
-import net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerModule;
+import net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerModules;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerTypes;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerModule;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerType;
@@ -54,7 +54,7 @@ public class TriggerModuleEvents {
             if (snapshot.isEmpty()) return;
 
             IForgeRegistry<TriggerModule> reg =
-                    RegistryManager.ACTIVE.getRegistry(ModTriggerModule.TRIGGER_MODULE_KEY);
+                    RegistryManager.ACTIVE.getRegistry(ModTriggerModules.TRIGGER_MODULE_KEY);
             if (reg == null) return;
 
             // 触发前事件
@@ -78,7 +78,7 @@ public class TriggerModuleEvents {
 
     public static void dispatchBullet(ExecutableEffectContext context, TriggerType type){
         context.set(ContextKeys.AMPLIFIER, 1.);
-        ModTriggerModule.BULLET_TRIGGER_MODULE.get().fire(context, type);
+        ModTriggerModules.BULLET_TRIGGER_MODULE.get().fire(context, type);
     }
 
     @SubscribeEvent

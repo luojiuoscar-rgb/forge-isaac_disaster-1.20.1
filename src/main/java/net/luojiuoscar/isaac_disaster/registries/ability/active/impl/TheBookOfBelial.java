@@ -5,7 +5,7 @@ import net.luojiuoscar.isaac_disaster.helper.DescriptionHelper;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.manager.id.ItemId;
 import net.luojiuoscar.isaac_disaster.registries.ability.active.ActiveAbility;
-import net.luojiuoscar.isaac_disaster.registries.ability.set.ModSetAbility;
+import net.luojiuoscar.isaac_disaster.registries.ability.set.ModSetAbilities;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.CompositeTrigger;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ModExecutableEffects;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.SimpleTrigger;
@@ -33,7 +33,7 @@ public class TheBookOfBelial extends ActiveAbility {
 
     @Override
     public void onFirstUse(ServerPlayer player, ItemStack stack, @Nullable InteractionHand hand){
-        StatManager.modifySetWithId(player, ModSetAbility.BOOK.getId(), 1);
+        StatManager.modifySetWithId(player, ModSetAbilities.BOOK.getId(), 1);
     }
 
     @Override
@@ -54,7 +54,7 @@ public class TheBookOfBelial extends ActiveAbility {
     public List<Component> getSynergyDesc(@Nullable ItemStack stack, Player player) {
         List<Component> description = new ArrayList<>();
 
-        description.addAll(ModSetAbility.BOOK.get().getSynergyDesc());
+        description.addAll(ModSetAbilities.BOOK.get().getSynergyDesc());
 
         if (ClientDataManager.getInstance().getCountFromId(ItemId.CAR_BATTERY.getId()) > 0){
             description.add(DescriptionHelper.getSynergyDesc(
@@ -75,7 +75,7 @@ public class TheBookOfBelial extends ActiveAbility {
     public List<Component> getExtraDesc(@Nullable ItemStack stack, Player player){
         List<Component> description = new ArrayList<>();
 
-        description.addAll(ModSetAbility.BOOK.get().getExtraDesc());
+        description.addAll(ModSetAbilities.BOOK.get().getExtraDesc());
 
         description.add(Component.translatable("effect.isaac_disaster.power_of_belial").append(": ")
                 .append(StatManager.DAMAGE_MULTIPLY_BASE.description(0.5)));

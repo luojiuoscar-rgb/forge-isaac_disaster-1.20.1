@@ -10,8 +10,8 @@ import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackExecutor;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackOrigin;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackPipelineMode;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackRequest;
-import net.luojiuoscar.isaac_disaster.registries.attack_type.ModAttackType;
-import net.luojiuoscar.isaac_disaster.registries.bullet_color.ModBulletColor;
+import net.luojiuoscar.isaac_disaster.registries.attack_type.ModAttackTypes;
+import net.luojiuoscar.isaac_disaster.registries.bullet_color.ModBulletColors;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.phys.Vec3;
@@ -35,7 +35,7 @@ public class ShoopDaWhoop implements IAbilityEffect {
         AttackContext ctx = new AttackContext(
                 entity,
                 entity,
-                ModBulletColor.SHOOP_DA_WHOOP.getId(),
+                ModBulletColors.SHOOP_DA_WHOOP.getId(),
                 new CompositeTrigger(),
                 new HashMap<>(),
                 position,
@@ -45,7 +45,7 @@ public class ShoopDaWhoop implements IAbilityEffect {
         );
 
         AttackExecutor.perform(AttackRequest.withContexts(
-                entity, ModAttackType.SHOOP_DA_WHOOP.get(), AttackOrigin.ABILITY_EXTRA,
+                entity, ModAttackTypes.SHOOP_DA_WHOOP.get(), AttackOrigin.ABILITY_EXTRA,
                 AttackPipelineMode.BULLET_ONLY, List.of(ctx), true));
         return true;
     }

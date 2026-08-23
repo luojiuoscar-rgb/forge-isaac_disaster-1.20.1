@@ -17,10 +17,10 @@ import net.luojiuoscar.isaac_disaster.manager.id.TrinketId;
 import net.luojiuoscar.isaac_disaster.registries.ability.passive.impl.BingeEater;
 import net.luojiuoscar.isaac_disaster.registries.ability.passive.impl.EchoChamber;
 import net.luojiuoscar.isaac_disaster.registries.ability.passive.impl.GlitchedCrown;
-import net.luojiuoscar.isaac_disaster.registries.ability.set.ModSetAbility;
+import net.luojiuoscar.isaac_disaster.registries.ability.set.ModSetAbilities;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackType;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.IChargeableAttack;
-import net.luojiuoscar.isaac_disaster.registries.attack_type.ModAttackType;
+import net.luojiuoscar.isaac_disaster.registries.attack_type.ModAttackTypes;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -110,7 +110,7 @@ public class IsaacDisasterEvents {
         RandomSource rand = player.getRandom();
         int count = event.getCount();
 
-        if (PlayerHelper.hasSet(ModSetAbility.BOOK.getId(), player) && rand.nextDouble() < 0.25){
+        if (PlayerHelper.hasSet(ModSetAbilities.BOOK.getId(), player) && rand.nextDouble() < 0.25){
             count++;
         }
 
@@ -128,7 +128,7 @@ public class IsaacDisasterEvents {
 
         AttackType attack = player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY)
                 .map(PlayerAbility::getCachedAttackType)
-                .orElse(ModAttackType.BULLET.get());
+                .orElse(ModAttackTypes.BULLET.get());
 
         if (attack instanceof IChargeableAttack a){
             if (event.isOnPressed()){

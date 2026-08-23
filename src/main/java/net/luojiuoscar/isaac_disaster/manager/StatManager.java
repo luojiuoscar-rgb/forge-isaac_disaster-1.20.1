@@ -9,7 +9,7 @@ import net.luojiuoscar.isaac_disaster.event.ForgeEvents;
 import net.luojiuoscar.isaac_disaster.helper.FlightHelper;
 import net.luojiuoscar.isaac_disaster.networking.ModMessages;
 import net.luojiuoscar.isaac_disaster.networking.packet.RefreshScaleS2CPacket;
-import net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerModule;
+import net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerModules;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerModule;
 import net.luojiuoscar.isaac_disaster.system.ScaleUtils;
 import net.luojiuoscar.isaac_disaster.system.flight.IsaacFlightController;
@@ -433,7 +433,7 @@ public enum StatManager {
 
     public static void addTriggerModule(LivingEntity entity, ResourceLocation rl, int count){
         IForgeRegistry<TriggerModule> reg =
-                RegistryManager.ACTIVE.getRegistry(ModTriggerModule.TRIGGER_MODULE_KEY);
+                RegistryManager.ACTIVE.getRegistry(ModTriggerModules.TRIGGER_MODULE_KEY);
 
         entity.getCapability(EffectModulesProvider.EFFECT_MODULES).ifPresent(
                 effectModules -> {

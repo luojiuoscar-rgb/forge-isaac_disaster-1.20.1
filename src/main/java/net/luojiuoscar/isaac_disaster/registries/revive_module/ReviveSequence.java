@@ -200,7 +200,7 @@ public class ReviveSequence {
     @Nullable
     private static ReviveModule resolveRegisteredModule(ResourceLocation id) {
         IForgeRegistry<ReviveModule> registry =
-                RegistryManager.ACTIVE.getRegistry(ModReviveModule.REVIVE_MODULE_KEY);
+                RegistryManager.ACTIVE.getRegistry(ModReviveModules.REVIVE_MODULE_KEY);
         return registry == null ? null : registry.getValue(id);
     }
 

@@ -46,6 +46,27 @@
 | Planning catch-up | Bundled Python runtime + `session-catchup.py` | Catch-up runs without PATH-dependent failure | Ran successfully with no additional unsynced context output | ✓ |
 | Exact-item search | `rg` for Haemolacria / Parasite / Compound Fracture / Cricket's Body names | Either existing implementation matches or clean absence | No direct implementation matches in current source/resources | ✓ |
 
+## Session: 2026-08-23 - SplitSequence convergence
+
+- **Status:** in_progress
+- Recovered the approved convergence plan and inspected the current draft split classes.
+- Confirmed the current implementation still contains State/Queue/Snapshot/Instance/Context/Generation/Resolver/Rules/Cause types.
+- Confirmed `EffectModules` still persists the unused split queue and common setup still calls both old `rebuild()` methods.
+- Next: replace the draft model with the four domain types, then scan and verify.
+
+- Implemented `SplitSequence`, the new `SplitModule`/`SplitRule`/`BulletSplitEvent` contracts, and `SplitRuleCache`.
+- Removed split queue persistence from `EffectModules`; renamed runtime fields to `splitSequence`.
+- Deleted obsolete split implementation types and renamed both cache rebuild methods.
+- Online Gradle resolution was blocked by MCP/Minecraft repository timeouts before compilation.
+- Offline verification after the final test cleanup: `gradlew test --offline --no-daemon` passed; `gradlew build --offline --no-daemon` passed.
+- Final source scan found no obsolete split symbols or old split field names; `git diff --check` reported no whitespace errors.
+- **Status:** complete
+
+- Implemented `SplitSequence`, the new `SplitModule`/`SplitRule`/`BulletSplitEvent` contracts, and `SplitRuleCache`.
+- Removed split queue persistence from `EffectModules`; renamed runtime fields to `splitSequence`.
+- Deleted obsolete split implementation types and renamed both cache rebuild methods.
+- Gradle test reached ForgeGradle configuration but was blocked by repeated MCP/Minecraft repository connection timeouts before compilation.
+
 ## Error Log
 | Timestamp | Error | Attempt | Resolution |
 |-----------|-------|---------|------------|

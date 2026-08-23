@@ -2,7 +2,7 @@ package net.luojiuoscar.isaac_disaster.registries.trigger_module.impl.normal;
 
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.*;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackContext;
-import net.luojiuoscar.isaac_disaster.registries.bullet_color.ModBulletColor;
+import net.luojiuoscar.isaac_disaster.registries.bullet_color.ModBulletColors;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerTypes;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerModule;
 import net.minecraft.world.entity.LivingEntity;
@@ -31,7 +31,7 @@ public class MomsEyeshadow extends TriggerModule {
     public void attachToBullet(ExecutableEffectContext context, AttackContext attackContext) {
         LivingEntity entity = context.getEntity();
         if (entity.getRandom().nextDouble() < getTriggerChance(entity)){
-            attackContext.colorRl = ModBulletColor.CHARM.getId();
+            attackContext.colorRl = ModBulletColors.CHARM.getId();
             attackContext.getTrigger().addAll(bullet_triggers);
         }
     }

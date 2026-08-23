@@ -5,9 +5,9 @@ import net.luojiuoscar.isaac_disaster.helper.CuriosHelper;
 import net.luojiuoscar.isaac_disaster.item.item.PassiveItem;
 import net.luojiuoscar.isaac_disaster.item.item.Trinket;
 import net.luojiuoscar.isaac_disaster.manager.id.ItemId;
-import net.luojiuoscar.isaac_disaster.registries.ability.passive.ModPassiveAbility;
+import net.luojiuoscar.isaac_disaster.registries.ability.passive.ModPassiveAbilities;
 import net.luojiuoscar.isaac_disaster.registries.ability.passive.PassiveAbility;
-import net.luojiuoscar.isaac_disaster.registries.ability.set.ModSetAbility;
+import net.luojiuoscar.isaac_disaster.registries.ability.set.ModSetAbilities;
 import net.luojiuoscar.isaac_disaster.registries.ability.set.SetAbility;
 import net.luojiuoscar.isaac_disaster.registries.ability.trinket.TrinketAbilityContext;
 import net.minecraft.nbt.CompoundTag;
@@ -195,7 +195,7 @@ public class PlayerIsaacItems {
         ResourceLocation removeId = ForgeRegistries.ITEMS.getKey(stack.getItem());
 
         IForgeRegistry<PassiveAbility> passiveAbilityIForgeRegistry =
-                RegistryManager.ACTIVE.getRegistry(ModPassiveAbility.PASSIVE_ABILITY_KEY);
+                RegistryManager.ACTIVE.getRegistry(ModPassiveAbilities.PASSIVE_ABILITY_KEY);
         if (passiveAbilityIForgeRegistry == null) {
             if (sync) ForgeEvents.syncItemDataToClient(player);
             return false;
@@ -223,7 +223,7 @@ public class PlayerIsaacItems {
                 iterator.remove();
 
                 IForgeRegistry<PassiveAbility> passiveAbilityIForgeRegistry =
-                        RegistryManager.ACTIVE.getRegistry(ModPassiveAbility.PASSIVE_ABILITY_KEY);
+                        RegistryManager.ACTIVE.getRegistry(ModPassiveAbilities.PASSIVE_ABILITY_KEY);
                 if (passiveAbilityIForgeRegistry != null) {
                     PassiveAbility ability = passiveAbilityIForgeRegistry.getValue(itemId);
                     if (ability != null) {
@@ -243,7 +243,7 @@ public class PlayerIsaacItems {
 
     public void modifySetCount(ServerPlayer player, ResourceLocation id, int amount){
         IForgeRegistry<SetAbility> registry =
-                RegistryManager.ACTIVE.getRegistry(ModSetAbility.SET_ABILITY_KEY);
+                RegistryManager.ACTIVE.getRegistry(ModSetAbilities.SET_ABILITY_KEY);
         if (registry == null) return;
 
         SetAbility ability = registry.getValue(id);

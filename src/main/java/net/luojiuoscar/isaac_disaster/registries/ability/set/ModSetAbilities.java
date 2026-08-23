@@ -9,7 +9,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.RegistryObject;
 
-public class ModSetAbility {
+public class ModSetAbilities {
     public static final ResourceKey<Registry<SetAbility>> SET_ABILITY_KEY =
             ResourceKey.createRegistryKey(ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "set_ability"));
 

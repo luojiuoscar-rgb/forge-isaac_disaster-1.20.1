@@ -75,7 +75,7 @@ public class TriggerModuleQueue {
     public void add(ResourceLocation id, int stacks) {
         // 获取注册表
         IForgeRegistry<TriggerModule> registry =
-                RegistryManager.ACTIVE.getRegistry(ModTriggerModule.TRIGGER_MODULE_KEY);
+                RegistryManager.ACTIVE.getRegistry(ModTriggerModules.TRIGGER_MODULE_KEY);
         if (registry == null) return;
 
         TriggerModule module = registry.getValue(id);

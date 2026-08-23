@@ -5,7 +5,7 @@ import net.luojiuoscar.isaac_disaster.helper.EntityHelper;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ExecutableEffectContext;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.IAbilityEffect;
-import net.luojiuoscar.isaac_disaster.registries.attack_type.ModAttackType;
+import net.luojiuoscar.isaac_disaster.registries.attack_type.ModAttackTypes;
 import net.minecraft.server.level.ServerPlayer;
 
 public class CursedEye implements IAbilityEffect {
@@ -15,7 +15,7 @@ public class CursedEye implements IAbilityEffect {
 
         player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY).ifPresent(
                 playerAbility -> {
-                    if (playerAbility.getCachedAttackType() != ModAttackType.CURSED_EYE.get()
+                    if (playerAbility.getCachedAttackType() != ModAttackTypes.CURSED_EYE.get()
                             || playerAbility.getChargeAmount() == 0) return;
 
                     playerAbility.setChargeAmount(0);

@@ -3,7 +3,7 @@ package net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.pill_effec
 
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.registries.ability.active.ActiveAbility;
-import net.luojiuoscar.isaac_disaster.registries.ability.active.ModActiveAbility;
+import net.luojiuoscar.isaac_disaster.registries.ability.active.ModActiveAbilities;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ExecutableEffectContext;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ContextKeys;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ModExecutableEffects;
@@ -22,7 +22,7 @@ public class FeelsLikeImWalkingOnSunshine extends PillEffect {
 
     @Override
     protected boolean pillActive(ServerPlayer player, boolean isHorse, ExecutableEffectContext context) {
-        ActiveAbility ability = ModActiveAbility.THE_GAMEKID.get();
+        ActiveAbility ability = ModActiveAbilities.THE_GAMEKID.get();
 
         context.set(ContextKeys.AMPLIFIER, isHorse ? ability.getStrongerAmplifier() : ability.getNormalAmplifier());
         ability.getTrigger().fire(context, null);

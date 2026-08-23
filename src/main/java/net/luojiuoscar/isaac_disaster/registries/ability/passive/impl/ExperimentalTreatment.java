@@ -6,7 +6,7 @@ import net.luojiuoscar.isaac_disaster.item.item.PassiveItem;
 import net.luojiuoscar.isaac_disaster.item.item.custom.ExperimentalTreatmentItem;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.registries.ability.passive.PassiveAbility;
-import net.luojiuoscar.isaac_disaster.registries.ability.set.ModSetAbility;
+import net.luojiuoscar.isaac_disaster.registries.ability.set.ModSetAbilities;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
@@ -61,7 +61,7 @@ public class ExperimentalTreatment extends PassiveAbility {
     @Override
     public void handleObtain(ServerPlayer player, @Nullable ItemStack stack) {
         if (stack == null) return;
-        StatManager.modifySetWithId(player, ModSetAbility.SPUN.getId(), 1);
+        StatManager.modifySetWithId(player, ModSetAbilities.SPUN.getId(), 1);
         Map<UUID, Double> map = ExperimentalTreatmentItem.getModifierMap(stack);
 
         for (Map.Entry<UUID, Double> entry : map.entrySet()){
@@ -75,7 +75,7 @@ public class ExperimentalTreatment extends PassiveAbility {
     @Override
     public void handleRemove(ServerPlayer player, @Nullable ItemStack stack) {
         if (stack == null) return;
-        StatManager.modifySetWithId(player, ModSetAbility.SPUN.getId(), -1);
+        StatManager.modifySetWithId(player, ModSetAbilities.SPUN.getId(), -1);
 
         Map<UUID, Double> map = ExperimentalTreatmentItem.getModifierMap(stack);
 
@@ -121,11 +121,11 @@ public class ExperimentalTreatment extends PassiveAbility {
 
     @Override
     public List<Component> getSynergyDesc(@Nullable ItemStack stack, Player player){
-        return ModSetAbility.SPUN.get().getSynergyDesc();
+        return ModSetAbilities.SPUN.get().getSynergyDesc();
     }
 
     @Override
     public List<Component> getExtraDesc(@Nullable ItemStack stack, Player player){
-        return ModSetAbility.SPUN.get().getExtraDesc();
+        return ModSetAbilities.SPUN.get().getExtraDesc();
     }
 }

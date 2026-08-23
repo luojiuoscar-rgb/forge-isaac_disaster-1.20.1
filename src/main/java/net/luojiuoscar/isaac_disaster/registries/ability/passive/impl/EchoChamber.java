@@ -3,7 +3,7 @@ package net.luojiuoscar.isaac_disaster.registries.ability.passive.impl;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerItemUseRecord;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerItemUseRecordProvider;
 import net.luojiuoscar.isaac_disaster.registries.ability.passive.PassiveAbility;
-import net.luojiuoscar.isaac_disaster.registries.ability.pickup.ModPickupAbility;
+import net.luojiuoscar.isaac_disaster.registries.ability.pickup.ModPickupAbilities;
 import net.luojiuoscar.isaac_disaster.registries.ability.pickup.PickupAbility;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ExecutableEffectContext;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ContextKeys;
@@ -51,7 +51,7 @@ public class EchoChamber extends PassiveAbility {
         IForgeRegistry<IExecutableEffect> pillRegistry =
                 RegistryManager.ACTIVE.getRegistry(ModExecutableEffects.EXECUTABLE_EFFECT);
         IForgeRegistry<PickupAbility> pickupRegistry =
-                RegistryManager.ACTIVE.getRegistry(ModPickupAbility.PICKUP_ABILITY_KEY);
+                RegistryManager.ACTIVE.getRegistry(ModPickupAbilities.PICKUP_ABILITY_KEY);
 
 
         player.getCapability(PlayerItemUseRecordProvider.PLAYER_ITEM_USE_RECORD).ifPresent(

@@ -4,9 +4,9 @@ import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackType;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackSelection;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackSelectionContext;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackSelector;
-import net.luojiuoscar.isaac_disaster.registries.attack_type.ModAttackType;
+import net.luojiuoscar.isaac_disaster.registries.attack_type.ModAttackTypes;
 import net.luojiuoscar.isaac_disaster.registries.bullet_color.BulletColor;
-import net.luojiuoscar.isaac_disaster.registries.bullet_color.ModBulletColor;
+import net.luojiuoscar.isaac_disaster.registries.bullet_color.ModBulletColors;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
@@ -55,9 +55,9 @@ public class PlayerAbility {
         extraTrinketSlotCounts = 0;
         chargeAmount = 0;
 
-        bestBulletColor = ModBulletColor.BASE.getId();
-        bestAttackType = ModAttackType.BULLET.getId();
-        cachedAttackType = ModAttackType.BULLET.get();
+        bestBulletColor = ModBulletColors.BASE.getId();
+        bestAttackType = ModAttackTypes.BULLET.getId();
+        cachedAttackType = ModAttackTypes.BULLET.get();
         cachedAttackPriorityTier = cachedAttackType.getPriorityTier();
         cachedAttackPriority = cachedAttackType.getPriority();
 
@@ -303,11 +303,11 @@ public class PlayerAbility {
     }
 
     public void updateBestBulletColor() {
-        IForgeRegistry<BulletColor> registry = RegistryManager.ACTIVE.getRegistry(ModBulletColor.BULLET_COLOR_KEY);
+        IForgeRegistry<BulletColor> registry = RegistryManager.ACTIVE.getRegistry(ModBulletColors.BULLET_COLOR_KEY);
         if (registry == null) return;
 
-        double bestPriority = ModBulletColor.BASE.get().priority();
-        ResourceLocation bestKey = ModBulletColor.BASE.getId();
+        double bestPriority = ModBulletColors.BASE.get().priority();
+        ResourceLocation bestKey = ModBulletColors.BASE.getId();
 
         for (ResourceLocation key : this.bulletColor.keySet()) {
             BulletColor color = registry.getValue(key);

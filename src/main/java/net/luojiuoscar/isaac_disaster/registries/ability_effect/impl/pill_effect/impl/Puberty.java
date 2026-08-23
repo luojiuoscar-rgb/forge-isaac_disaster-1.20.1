@@ -1,7 +1,7 @@
 package net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.pill_effect.impl;
 
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
-import net.luojiuoscar.isaac_disaster.registries.ability.set.ModSetAbility;
+import net.luojiuoscar.isaac_disaster.registries.ability.set.ModSetAbilities;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ExecutableEffectContext;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.pill_effect.PillEffect;
 import net.luojiuoscar.isaac_disaster.sound.ModSounds;
@@ -17,7 +17,7 @@ public class Puberty extends PillEffect {
 
     @Override
     protected boolean pillActive(ServerPlayer player, boolean isHorse, ExecutableEffectContext context) {
-        StatManager.modifySetWithId(player, ModSetAbility.ADULT.getId(), isHorse ? 2 : 1);
+        StatManager.modifySetWithId(player, ModSetAbilities.ADULT.getId(), isHorse ? 2 : 1);
         return true;
     }
 

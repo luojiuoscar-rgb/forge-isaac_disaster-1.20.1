@@ -4,7 +4,7 @@ import net.luojiuoscar.isaac_disaster.attribute.ModAttributes;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.manager.id.ItemId;
-import net.luojiuoscar.isaac_disaster.registries.bullet_color.ModBulletColor;
+import net.luojiuoscar.isaac_disaster.registries.bullet_color.ModBulletColors;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
@@ -37,7 +37,7 @@ public class PowerOfBelialEffect extends MobEffect {
             return;
         }
 
-        StatManager.addBulletColor(player, ModBulletColor.BLOOD_TEAR.getId(), 1);
+        StatManager.addBulletColor(player, ModBulletColors.BLOOD_TEAR.getId(), 1);
 
         AttributeInstance attr = player.getAttribute(ModAttributes.BULLET_RANGE.get());
         if (attr != null) {
@@ -68,7 +68,7 @@ public class PowerOfBelialEffect extends MobEffect {
         super.removeAttributeModifiers(entity, attributes, amplifier);
 
         if (entity instanceof ServerPlayer player) {
-            StatManager.addBulletColor(player, ModBulletColor.BLOOD_TEAR.getId(), -1);
+            StatManager.addBulletColor(player, ModBulletColors.BLOOD_TEAR.getId(), -1);
 
             AttributeInstance attackDamage = player.getAttribute(Attributes.ATTACK_DAMAGE);
             if (attackDamage != null) {

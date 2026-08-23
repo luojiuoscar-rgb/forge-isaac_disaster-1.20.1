@@ -2,8 +2,8 @@ package net.luojiuoscar.isaac_disaster.registries.ability.passive.impl;
 
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.registries.ability.passive.PassiveAbility;
-import net.luojiuoscar.isaac_disaster.registries.attack_type.ModAttackType;
-import net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerModule;
+import net.luojiuoscar.isaac_disaster.registries.attack_type.ModAttackTypes;
+import net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerModules;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
@@ -23,14 +23,14 @@ public class CursedEye extends PassiveAbility {
 
     @Override
     public void handleObtain(ServerPlayer player, @Nullable ItemStack stack) {
-        StatManager.addAttackType(player, ModAttackType.CURSED_EYE.getId(), 1);
-        StatManager.addTriggerModule(player, ModTriggerModule.CURSED_EYE.getId(), 1);
+        StatManager.addAttackType(player, ModAttackTypes.CURSED_EYE.getId(), 1);
+        StatManager.addTriggerModule(player, ModTriggerModules.CURSED_EYE.getId(), 1);
     }
 
     @Override
     public void handleRemove(ServerPlayer player, @Nullable ItemStack stack) {
-        StatManager.addAttackType(player, ModAttackType.CURSED_EYE.getId(), -1);
-        StatManager.addTriggerModule(player, ModTriggerModule.CURSED_EYE.getId(), -1);
+        StatManager.addAttackType(player, ModAttackTypes.CURSED_EYE.getId(), -1);
+        StatManager.addTriggerModule(player, ModTriggerModules.CURSED_EYE.getId(), -1);
     }
 
     @Override

@@ -9,7 +9,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.RegistryObject;
 
-public class ModTrinketAbility {
+public class ModTrinketAbilities {
     public static final ResourceKey<Registry<TrinketAbility>> TRINKET_ABILITY_KEY =
             ResourceKey.createRegistryKey(ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "trinket_ability"));
 

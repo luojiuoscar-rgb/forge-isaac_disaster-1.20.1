@@ -46,10 +46,10 @@ public final class AttackSelector {
     public static AttackSelection select(AttackSelectionContext context) {
         Map<ResourceLocation, Integer> ownedAttackTypes = context.attackTypes();
         IForgeRegistry<AttackType> attackRegistry =
-                RegistryManager.ACTIVE.getRegistry(ModAttackType.ATTACK_TYPE_KEY);
+                RegistryManager.ACTIVE.getRegistry(ModAttackTypes.ATTACK_TYPE_KEY);
 
-        AttackType fallbackAttack = ModAttackType.BULLET.get();
-        ResourceLocation fallbackId = ModAttackType.BULLET.getId();
+        AttackType fallbackAttack = ModAttackTypes.BULLET.get();
+        ResourceLocation fallbackId = ModAttackTypes.BULLET.getId();
         if (attackRegistry == null) {
             return new AttackSelection(fallbackId, fallbackAttack,
                     fallbackAttack.getPriorityTier(), fallbackAttack.getPriority());
@@ -96,15 +96,15 @@ public final class AttackSelector {
                                                  AttackSelectionContext context, int index) {
         Map<ResourceLocation, Integer> ownedAttackTypes = context.attackTypes();
         IForgeRegistry<AttackType> attackRegistry =
-                RegistryManager.ACTIVE.getRegistry(ModAttackType.ATTACK_TYPE_KEY);
-        if (attackRegistry == null) return ModAttackType.BULLET.get();
+                RegistryManager.ACTIVE.getRegistry(ModAttackTypes.ATTACK_TYPE_KEY);
+        if (attackRegistry == null) return ModAttackTypes.BULLET.get();
 
         List<AttackCandidate> candidates = new ArrayList<>();
         collectSingleAttackCandidates(ownedAttackTypes, attackRegistry, candidates);
         collectCombinationCandidates(context, attackRegistry, candidates);
-        candidates.add(new AttackCandidate(ModAttackType.BULLET.getId(), ModAttackType.BULLET.get(),
-                ModAttackType.BULLET.getId(), 1, ModAttackType.BULLET.get().getPriorityTier(),
-                ModAttackType.BULLET.get().getPriority()));
+        candidates.add(new AttackCandidate(ModAttackTypes.BULLET.getId(), ModAttackTypes.BULLET.get(),
+                ModAttackTypes.BULLET.getId(), 1, ModAttackTypes.BULLET.get().getPriorityTier(),
+                ModAttackTypes.BULLET.get().getPriority()));
 
         List<AttackCandidate> lowerCandidates = candidates.stream()
                 .filter(candidate -> comparePriority(candidate.priorityTier(), candidate.priority(),
@@ -117,7 +117,7 @@ public final class AttackSelector {
         if (index >= 0 && index < lowerCandidates.size()) {
             return lowerCandidates.get(index).attackType();
         }
-        return ModAttackType.BULLET.get();
+        return ModAttackTypes.BULLET.get();
     }
 
     private static void collectSingleAttackCandidates(Map<ResourceLocation, Integer> ownedAttackTypes,

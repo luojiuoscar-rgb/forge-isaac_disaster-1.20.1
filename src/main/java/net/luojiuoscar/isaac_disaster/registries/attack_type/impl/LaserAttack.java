@@ -9,12 +9,12 @@ import net.luojiuoscar.isaac_disaster.registries.ability_effect.CompositeTrigger
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackContext;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackType;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.IBulletObject;
-import net.luojiuoscar.isaac_disaster.registries.attack_type.ModAttackType;
+import net.luojiuoscar.isaac_disaster.registries.attack_type.ModAttackTypes;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.util.DamagedEntities;
 import net.luojiuoscar.isaac_disaster.registries.bullet_color.BulletColor;
-import net.luojiuoscar.isaac_disaster.registries.bullet_color.ModBulletColor;
+import net.luojiuoscar.isaac_disaster.registries.bullet_color.ModBulletColors;
 import net.luojiuoscar.isaac_disaster.registries.trajectory.IAttackTrajectory;
-import net.luojiuoscar.isaac_disaster.registries.trajectory.ModAttackTrajectory;
+import net.luojiuoscar.isaac_disaster.registries.trajectory.ModAttackTrajectories;
 import net.luojiuoscar.isaac_disaster.registries.trajectory.TrajectoryContext;
 import net.luojiuoscar.isaac_disaster.sound.ModSounds;
 import net.minecraft.core.particles.DustParticleOptions;
@@ -53,7 +53,7 @@ public class LaserAttack extends AttackType {
 
     @Override
     public ResourceLocation getId() {
-        return ModAttackType.LASER.getId();
+        return ModAttackTypes.LASER.getId();
     }
 
     @Override
@@ -309,7 +309,7 @@ public class LaserAttack extends AttackType {
         Vec3 totalPositionOffset = Vec3.ZERO;
         Vec3 totalVelocityOffset = Vec3.ZERO;
         IForgeRegistry<IAttackTrajectory> trajectoryIForgeRegistry =
-                RegistryManager.ACTIVE.getRegistry(ModAttackTrajectory.ATTACK_TRAJECTORY_KEY);
+                RegistryManager.ACTIVE.getRegistry(ModAttackTrajectories.ATTACK_TRAJECTORY_KEY);
 
         if (!laser.isCurrentlyHoming && trajectoryIForgeRegistry != null) {
             for (Map.Entry<ResourceLocation, Integer> entry : context.trajectories.entrySet()) {
@@ -405,7 +405,7 @@ public class LaserAttack extends AttackType {
                 laser.homingTarget = null; // 清空当前追踪目标，开始追踪下一个目标
 
                 IsaacAttackAfterHitEvent afterHit = new IsaacAttackAfterHitEvent(
-                        laser, laser.owner, ModAttackType.LASER.getId(), triggers, hitResult, actualDamage, target.getHealth()
+                        laser, laser.owner, ModAttackTypes.LASER.getId(), triggers, hitResult, actualDamage, target.getHealth()
                 );
                 MinecraftForge.EVENT_BUS.post(afterHit);
             }
@@ -457,13 +457,13 @@ public class LaserAttack extends AttackType {
     }
 
     private void spawnInterpolatedParticles(ServerLevel level, Vec3 from, Vec3 to, double width, ResourceLocation colorRl) {
-        IForgeRegistry<BulletColor> registry = RegistryManager.ACTIVE.getRegistry(ModBulletColor.BULLET_COLOR_KEY);
+        IForgeRegistry<BulletColor> registry = RegistryManager.ACTIVE.getRegistry(ModBulletColors.BULLET_COLOR_KEY);
 
-        BulletColor c = registry != null ? registry.getValue(colorRl) : ModBulletColor.BASE.get();
-        c = c == null ? ModBulletColor.BASE.get() : c;
+        BulletColor c = registry != null ? registry.getValue(colorRl) : ModBulletColors.BASE.get();
+        c = c == null ? ModBulletColors.BASE.get() : c;
 
         Vector3f color = BulletColor.getVec3fColorById(c.color());
-        if (c == ModBulletColor.BASE.get()) color = new Vector3f(1f, 0f, 0f);
+        if (c == ModBulletColors.BASE.get()) color = new Vector3f(1f, 0f, 0f);
 
         Vec3 delta = to.subtract(from);
         double distance = delta.length();

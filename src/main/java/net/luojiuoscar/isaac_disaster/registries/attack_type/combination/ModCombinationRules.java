@@ -2,7 +2,7 @@ package net.luojiuoscar.isaac_disaster.registries.attack_type.combination;
 
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackPrio;
-import net.luojiuoscar.isaac_disaster.registries.attack_type.ModAttackType;
+import net.luojiuoscar.isaac_disaster.registries.attack_type.ModAttackTypes;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -21,24 +21,24 @@ public class ModCombinationRules {
     public static final RegistryObject<AttackCombinationRule> NEPTUNUS_CURSED_EYE =
             ATTACK_COMBINATION_RULE_REGISTRY.register(
                     "neptunus_cursed_eye", () -> new AttackCombinationRule(
-                            Set.of(ModAttackType.CURSED_EYE, ModAttackType.NEPTUNUS),
-                            ModAttackType.NEPTUNUS,
+                            Set.of(ModAttackTypes.CURSED_EYE, ModAttackTypes.NEPTUNUS),
+                            ModAttackTypes.NEPTUNUS,
                             AttackPrio.NEPTUNUS_CURSED_EYE_COMBO.getTier(),
                             AttackPrio.NEPTUNUS_CURSED_EYE_COMBO.getPriority()));
 
     public static final RegistryObject<AttackCombinationRule> NEPTUNUS_LASER =
             ATTACK_COMBINATION_RULE_REGISTRY.register(
                     "neptunus_laser", () -> new AttackCombinationRule(
-                            Set.of(ModAttackType.NEPTUNUS, ModAttackType.LASER),
-                            ModAttackType.NEPTUNUS,
+                            Set.of(ModAttackTypes.NEPTUNUS, ModAttackTypes.LASER),
+                            ModAttackTypes.NEPTUNUS,
                             AttackPrio.NEPTUNUS_LASER_COMBO.getTier(),
                             AttackPrio.NEPTUNUS_LASER_COMBO.getPriority()));
 
     public static final RegistryObject<AttackCombinationRule> C_SECTION_LASER =
             ATTACK_COMBINATION_RULE_REGISTRY.register(
                     "c_section_laser", () -> new AttackCombinationRule(
-                            Set.of(ModAttackType.C_SECTION, ModAttackType.LASER),
-                            ModAttackType.C_SECTION,
+                            Set.of(ModAttackTypes.C_SECTION, ModAttackTypes.LASER),
+                            ModAttackTypes.C_SECTION,
                             AttackPrio.C_SECTION_LASER_COMBO.getTier(),
                             AttackPrio.C_SECTION_LASER_COMBO.getPriority()));
 }

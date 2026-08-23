@@ -5,7 +5,7 @@ import net.luojiuoscar.isaac_disaster.item.block.IsaacChestBlockItem;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ExecutableEffectContext;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ContextKeys;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.IAbilityEffect;
-import net.luojiuoscar.isaac_disaster.registries.recursive_module.ModRecursiveModule;
+import net.luojiuoscar.isaac_disaster.registries.recursive_module.ModRecursiveModules;
 import net.luojiuoscar.isaac_disaster.registries.recursive_module.RecursiveModuleQueue;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -22,7 +22,7 @@ public class TheLeftHand implements IAbilityEffect {
         RecursiveModuleQueue queue = context.get(ContextKeys.RECURSIVE_MODULE_QUEUE);
         int amplifier = context.getOrDefault(ContextKeys.AMPLIFIER, 1.).intValue();
 
-        if (queue != null && queue.get(ModRecursiveModule.GILDED_KEY.getId()).stacks > amplifier) return true;
+        if (queue != null && queue.get(ModRecursiveModules.GILDED_KEY.getId()).stacks > amplifier) return true;
 
         List<ItemStack> items = new ArrayList<>();
         Inventory inv = player.getInventory();

@@ -5,7 +5,7 @@ import net.luojiuoscar.isaac_disaster.registries.ability_effect.ExecutableEffect
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ModExecutableEffects;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.SimpleTrigger;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackContext;
-import net.luojiuoscar.isaac_disaster.registries.bullet_color.ModBulletColor;
+import net.luojiuoscar.isaac_disaster.registries.bullet_color.ModBulletColors;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerTypes;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerModule;
 import net.minecraft.world.entity.LivingEntity;
@@ -39,7 +39,7 @@ public class MomsPerfume extends TriggerModule {
                 new SimpleTrigger(ModTriggerTypes.BULLET_HIT_ENTITY_BEFORE, ModExecutableEffects.MOMS_PERFUME)
         );
         if (entity.getRandom().nextDouble() < getTriggerChance(entity)) {
-            attackContext.colorRl = ModBulletColor.FEAR.getId();
+            attackContext.colorRl = ModBulletColors.FEAR.getId();
             attackContext.getTrigger().addAll(bulletTriggers);
         }
     }

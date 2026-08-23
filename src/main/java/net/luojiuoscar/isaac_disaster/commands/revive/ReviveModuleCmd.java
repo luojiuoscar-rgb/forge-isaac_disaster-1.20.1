@@ -9,7 +9,7 @@ import com.mojang.brigadier.suggestion.SuggestionProvider;
 import net.luojiuoscar.isaac_disaster.capability.entity.EffectModulesProvider;
 import net.luojiuoscar.isaac_disaster.event.ForgeEvents;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
-import net.luojiuoscar.isaac_disaster.registries.revive_module.ModReviveModule;
+import net.luojiuoscar.isaac_disaster.registries.revive_module.ModReviveModules;
 import net.luojiuoscar.isaac_disaster.registries.revive_module.ReviveModule;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -133,6 +133,6 @@ public class ReviveModuleCmd {
     }
 
     private static IForgeRegistry<ReviveModule> getRegistry() {
-        return RegistryManager.ACTIVE.getRegistry(ModReviveModule.REVIVE_MODULE_KEY);
+        return RegistryManager.ACTIVE.getRegistry(ModReviveModules.REVIVE_MODULE_KEY);
     }
 }

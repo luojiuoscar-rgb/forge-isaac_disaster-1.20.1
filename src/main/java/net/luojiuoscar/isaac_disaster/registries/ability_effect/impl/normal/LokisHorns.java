@@ -7,7 +7,7 @@ import net.luojiuoscar.isaac_disaster.registries.ability_effect.ContextKeys;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ExecutableEffectContext;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.IAbilityEffect;
 import net.luojiuoscar.isaac_disaster.registries.attack_pattern.AttackPatternContext;
-import net.luojiuoscar.isaac_disaster.registries.attack_pattern.ModAttackPattern;
+import net.luojiuoscar.isaac_disaster.registries.attack_pattern.ModAttackPatterns;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackContext;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackExecutor;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackOrigin;
@@ -55,7 +55,7 @@ public class LokisHorns implements IAbilityEffect {
                             baseCtx.getXRot(), baseCtx.getYRot()).scale(-1.0);
                     reversedReference.setDirection(reversedDirection);
 
-                    List<AttackContext> extraContexts = ModAttackPattern.SEMICIRCLE.get().generate(
+                    List<AttackContext> extraContexts = ModAttackPatterns.SEMICIRCLE.get().generate(
                             new AttackPatternContext(reversedReference, 3));
 
                     Object event = context.get(ContextKeys.EVENT);

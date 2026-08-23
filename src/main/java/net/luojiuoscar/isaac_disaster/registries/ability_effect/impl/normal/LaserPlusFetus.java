@@ -9,7 +9,7 @@ import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackExecutor;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackOrigin;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackPipelineMode;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackRequest;
-import net.luojiuoscar.isaac_disaster.registries.attack_type.ModAttackType;
+import net.luojiuoscar.isaac_disaster.registries.attack_type.ModAttackTypes;
 import net.minecraft.world.entity.player.Player;
 
 import java.util.List;
@@ -29,7 +29,7 @@ public class LaserPlusFetus implements IAbilityEffect {
         if (bullet.tickCount % interval != 0) return true;
 
         AttackExecutor.perform(AttackRequest.withContexts(
-                player, ModAttackType.LASER.get(), AttackOrigin.BULLET_SECONDARY,
+                player, ModAttackTypes.LASER.get(), AttackOrigin.BULLET_SECONDARY,
                 secondaryLaserPipelineMode(), List.of(
                 new AttackContext(
                         player,

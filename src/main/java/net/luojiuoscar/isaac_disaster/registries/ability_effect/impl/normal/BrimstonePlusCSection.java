@@ -9,7 +9,7 @@ import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackExecutor;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackOrigin;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackPipelineMode;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackRequest;
-import net.luojiuoscar.isaac_disaster.registries.attack_type.ModAttackType;
+import net.luojiuoscar.isaac_disaster.registries.attack_type.ModAttackTypes;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import java.util.List;
@@ -23,7 +23,7 @@ public class BrimstonePlusCSection implements IAbilityEffect {
     public boolean applyEffect(ExecutableEffectContext context) {
         if (!(context.getEntity() instanceof ServerPlayer player)) return false;
 
-        AttackType attack = ModAttackType.C_SECTION.get();
+        AttackType attack = ModAttackTypes.C_SECTION.get();
 
         ScheduledFuncHelper.scheduleForPlayer(player.getUUID(), SCHEDULE_TYPE, 3,3, 4, false, () -> {
             AttackExecutor.perform(AttackRequest.withContexts(

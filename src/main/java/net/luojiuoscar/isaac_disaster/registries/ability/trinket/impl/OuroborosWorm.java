@@ -5,7 +5,7 @@ import net.luojiuoscar.isaac_disaster.item.item.Trinket;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.registries.ability.trinket.TrinketAbility;
 import net.luojiuoscar.isaac_disaster.registries.ability.trinket.TrinketAbilityContext;
-import net.luojiuoscar.isaac_disaster.registries.trajectory.ModAttackTrajectory;
+import net.luojiuoscar.isaac_disaster.registries.trajectory.ModAttackTrajectories;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
@@ -30,7 +30,7 @@ public class OuroborosWorm extends TrinketAbility {
     public void onEquipped(LivingEntity entity, TrinketAbilityContext ctx) {
         if (!(entity instanceof ServerPlayer player)) return;
 
-        StatManager.addTrajectory(player, ModAttackTrajectory.OUROBOROS_WORM.getId(), 1);
+        StatManager.addTrajectory(player, ModAttackTrajectories.OUROBOROS_WORM.getId(), 1);
         if (ctx.isEnchanted){
             StatManager.TEARS.apply(player, 1);
             StatManager.RANGE.apply(player, 1);
@@ -45,7 +45,7 @@ public class OuroborosWorm extends TrinketAbility {
     public void onUnequipped(LivingEntity entity, TrinketAbilityContext ctx) {
         if (!(entity instanceof ServerPlayer player)) return;
 
-        StatManager.addTrajectory(player, ModAttackTrajectory.OUROBOROS_WORM.getId(), -1);
+        StatManager.addTrajectory(player, ModAttackTrajectories.OUROBOROS_WORM.getId(), -1);
         if (ctx.isEnchanted){
             StatManager.TEARS.apply(player, -1);
             StatManager.RANGE.apply(player, -1);

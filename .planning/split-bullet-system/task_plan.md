@@ -1,10 +1,10 @@
-# Task Plan: AttackPattern Subsystem v1
+# Task Plan: SplitSequence Structure Convergence
 
 ## Goal
-Add a reusable, registry-backed AttackPattern abstraction for generating independent AttackContext instances, implement the generic ring pattern, and migrate the three approved fixed-ring callers.
+Converge the draft split-bullet subsystem into SplitModule, SplitSequence, SplitRule, BulletSplitEvent, and the two registry declarations. Remove process-only types, NBT persistence, and stale split naming.
 
 ## Current Phase
-Phase 6: semicircle follow-up
+Phase 1: implementation setup
 
 ## Phases
 
@@ -18,6 +18,14 @@ Phase 6: semicircle follow-up
 - [x] Add AttackPattern and AttackPatternContext.
 - [x] Add ModAttackPattern and register the custom Forge registry.
 - [x] Register the generic ring pattern only.
+- **Status:** complete
+
+### Phase 7: SplitSequence convergence
+- [x] Add SplitSequence and revise SplitModule, SplitRule, and BulletSplitEvent.
+- [x] Rename split state fields to splitSequence and remove player capability persistence.
+- [x] Rename rule caches to rebuildCache and delete obsolete split classes.
+- [x] Update tests and scan stale symbols.
+- [x] Complete offline Gradle test and build verification.
 - **Status:** complete
 
 ### Phase 3: Generation and caller migration

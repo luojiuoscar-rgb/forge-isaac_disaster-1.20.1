@@ -8,7 +8,7 @@ import net.luojiuoscar.isaac_disaster.registries.ability_effect.ContextKeys;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ExecutableEffectContext;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.IAbilityEffect;
 import net.luojiuoscar.isaac_disaster.registries.attack_pattern.AttackPatternContext;
-import net.luojiuoscar.isaac_disaster.registries.attack_pattern.ModAttackPattern;
+import net.luojiuoscar.isaac_disaster.registries.attack_pattern.ModAttackPatterns;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackContext;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackExecutor;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackOrigin;
@@ -18,7 +18,6 @@ import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackType;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.common.MinecraftForge;
 
 import java.util.List;
 import java.util.Map;
@@ -58,7 +57,7 @@ public class TammysHead implements IAbilityEffect {
                             player.getYRot()
                     );
 
-                    List<AttackContext> contexts = ModAttackPattern.RING.get().generate(
+                    List<AttackContext> contexts = ModAttackPatterns.RING.get().generate(
                             new AttackPatternContext(ctx, bulletCount));
 
                     AttackExecutor.perform(AttackRequest.withContexts(

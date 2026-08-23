@@ -3,8 +3,8 @@ package net.luojiuoscar.isaac_disaster.registries.ability.passive.impl;
 import net.luojiuoscar.isaac_disaster.helper.DescriptionHelper;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.registries.ability.passive.PassiveAbility;
-import net.luojiuoscar.isaac_disaster.registries.ability.set.ModSetAbility;
-import net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerModule;
+import net.luojiuoscar.isaac_disaster.registries.ability.set.ModSetAbilities;
+import net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerModules;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
@@ -30,15 +30,15 @@ public class MomsPerfume extends PassiveAbility {
     @Override
     public void handleObtain(ServerPlayer player, @Nullable ItemStack stack) {
         StatManager.TEARS_CORRECTION.apply(player, 0.5);
-        StatManager.modifySetWithId(player, ModSetAbility.MOM.getId(), 1);
-        StatManager.addTriggerModule(player, ModTriggerModule.MOMS_PERFUME.getId(), 1);
+        StatManager.modifySetWithId(player, ModSetAbilities.MOM.getId(), 1);
+        StatManager.addTriggerModule(player, ModTriggerModules.MOMS_PERFUME.getId(), 1);
     }
 
     @Override
     public void handleRemove(ServerPlayer player, @Nullable ItemStack stack) {
         StatManager.TEARS_CORRECTION.apply(player, -0.5);
-        StatManager.modifySetWithId(player, ModSetAbility.MOM.getId(), -1);
-        StatManager.addTriggerModule(player, ModTriggerModule.MOMS_PERFUME.getId(), -1);
+        StatManager.modifySetWithId(player, ModSetAbilities.MOM.getId(), -1);
+        StatManager.addTriggerModule(player, ModTriggerModules.MOMS_PERFUME.getId(), -1);
     }
 
     @Override
@@ -55,11 +55,11 @@ public class MomsPerfume extends PassiveAbility {
 
     @Override
     public List<Component> getSynergyDesc(@Nullable ItemStack stack, @Nullable Player player) {
-        return ModSetAbility.MOM.get().getSynergyDesc();
+        return ModSetAbilities.MOM.get().getSynergyDesc();
     }
 
     @Override
     public List<Component> getExtraDesc(@Nullable ItemStack stack, @Nullable Player player) {
-        return ModSetAbility.MOM.get().getExtraDesc();
+        return ModSetAbilities.MOM.get().getExtraDesc();
     }
 }

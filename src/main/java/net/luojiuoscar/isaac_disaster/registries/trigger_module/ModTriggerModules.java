@@ -12,7 +12,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.RegistryObject;
 
-public class ModTriggerModule {
+public class ModTriggerModules {
     public static final ResourceKey<Registry<TriggerModule>> TRIGGER_MODULE_KEY =
             ResourceKey.createRegistryKey(ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "trigger_module"));
 

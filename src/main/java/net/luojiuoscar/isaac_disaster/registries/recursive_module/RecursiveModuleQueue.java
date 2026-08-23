@@ -91,7 +91,7 @@ public class RecursiveModuleQueue {
         if (stacks == 0) return;
 
         IForgeRegistry<RecursiveModule> registry =
-                RegistryManager.ACTIVE.getRegistry(ModRecursiveModule.RECURSIVE_MODULE_KEY);
+                RegistryManager.ACTIVE.getRegistry(ModRecursiveModules.RECURSIVE_MODULE_KEY);
         if (registry == null) return;
 
         RecursiveModule module = registry.getValue(id);

@@ -8,7 +8,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.RegistryObject;
 
-public class ModAttackType {
+public class ModAttackTypes {
     public static final ResourceKey<Registry<AttackType>> ATTACK_TYPE_KEY =
             ResourceKey.createRegistryKey(ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "attack_type"));
 

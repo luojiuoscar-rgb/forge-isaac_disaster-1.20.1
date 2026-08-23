@@ -3,8 +3,8 @@ package net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.normal;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerItemUseRecord;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerItemUseRecordProvider;
 import net.luojiuoscar.isaac_disaster.registries.ability.active.ActiveAbility;
-import net.luojiuoscar.isaac_disaster.registries.ability.active.ModActiveAbility;
-import net.luojiuoscar.isaac_disaster.registries.ability.pickup.ModPickupAbility;
+import net.luojiuoscar.isaac_disaster.registries.ability.active.ModActiveAbilities;
+import net.luojiuoscar.isaac_disaster.registries.ability.pickup.ModPickupAbilities;
 import net.luojiuoscar.isaac_disaster.registries.ability.pickup.PickupAbility;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.*;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.pill_effect.PillEffect;
@@ -23,9 +23,9 @@ public class WildCard implements IAbilityEffect {
         IForgeRegistry<IExecutableEffect> pillRegistry =
                 RegistryManager.ACTIVE.getRegistry(ModExecutableEffects.EXECUTABLE_EFFECT);
         IForgeRegistry<PickupAbility> pickupRegistry =
-                RegistryManager.ACTIVE.getRegistry(ModPickupAbility.PICKUP_ABILITY_KEY);
+                RegistryManager.ACTIVE.getRegistry(ModPickupAbilities.PICKUP_ABILITY_KEY);
         IForgeRegistry<ActiveAbility> activeRegistry =
-                RegistryManager.ACTIVE.getRegistry(ModActiveAbility.ACTIVE_ABILITY_KEY);
+                RegistryManager.ACTIVE.getRegistry(ModActiveAbilities.ACTIVE_ABILITY_KEY);
 
         player.getCapability(PlayerItemUseRecordProvider.PLAYER_ITEM_USE_RECORD).ifPresent(
                 playerItemUseRecord -> {

@@ -3,7 +3,7 @@ package net.luojiuoscar.isaac_disaster.registries.trigger_module.impl.special;
 import net.luojiuoscar.isaac_disaster.effect.ModEffects;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.manager.id.TrinketId;
-import net.luojiuoscar.isaac_disaster.registries.ability.set.ModSetAbility;
+import net.luojiuoscar.isaac_disaster.registries.ability.set.ModSetAbilities;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.CompositeTrigger;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ModExecutableEffects;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.SimpleTrigger;
@@ -23,7 +23,7 @@ public class PlayerPermanentModule extends TriggerModule {
 
             new SimpleTrigger(ModTriggerTypes.ON_HURT, ModExecutableEffects.ADULT_SET,
                     context -> context.getEntity() instanceof ServerPlayer player
-                            && PlayerHelper.hasSet(ModSetAbility.ADULT.getId(), player)),
+                            && PlayerHelper.hasSet(ModSetAbilities.ADULT.getId(), player)),
 
             new SimpleTrigger(ModTriggerTypes.ON_HURT, ModExecutableEffects.FRAGILE_HEART_ACTIVE,
                     context -> context.getEntity().hasEffect(ModEffects.FRAGILE_HEART.get())),

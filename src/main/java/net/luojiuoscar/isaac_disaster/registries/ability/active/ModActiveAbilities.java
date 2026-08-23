@@ -9,7 +9,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.RegistryObject;
 
-public class ModActiveAbility {
+public class ModActiveAbilities {
     public static final ResourceKey<Registry<ActiveAbility>> ACTIVE_ABILITY_KEY =
             ResourceKey.createRegistryKey(ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "active_ability"));
 

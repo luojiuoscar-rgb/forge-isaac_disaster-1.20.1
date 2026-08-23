@@ -4,7 +4,7 @@ import net.luojiuoscar.isaac_disaster.entity.custom.TearBullet;
 import net.luojiuoscar.isaac_disaster.event.custom.attack.tear_bullet.TearBulletShootEvent;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackContext;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackType;
-import net.luojiuoscar.isaac_disaster.registries.attack_type.ModAttackType;
+import net.luojiuoscar.isaac_disaster.registries.attack_type.ModAttackTypes;
 import net.luojiuoscar.isaac_disaster.sound.ModSounds;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
@@ -27,7 +27,7 @@ public class BulletAttack extends AttackType {
 
     @Override
     public ResourceLocation getId() {
-        return ModAttackType.BULLET.getId();
+        return ModAttackTypes.BULLET.getId();
     }
 
     @Override
@@ -108,6 +108,7 @@ public class BulletAttack extends AttackType {
 
         bullet.getTriggers().addAll(context.getTrigger());
         bullet.setTrajectories(context.trajectories);
+        bullet.setSplitSequence(context.getSplitSequence());
 
         bullet.setBulletColor(context.colorRl);
 

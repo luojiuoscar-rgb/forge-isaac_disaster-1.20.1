@@ -13,7 +13,7 @@ import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackRequest;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackType;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.DelegatingAttackType;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.IChargeableAttack;
-import net.luojiuoscar.isaac_disaster.registries.attack_type.ModAttackType;
+import net.luojiuoscar.isaac_disaster.registries.attack_type.ModAttackTypes;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
@@ -36,7 +36,7 @@ public class CursedEyeAttack extends AttackType implements IChargeableAttack, De
 
     @Override
     public ResourceLocation getId() {
-        return ModAttackType.CURSED_EYE.getId();
+        return ModAttackTypes.CURSED_EYE.getId();
     }
 
     @Override

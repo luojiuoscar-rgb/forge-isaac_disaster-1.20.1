@@ -8,7 +8,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.RegistryObject;
 
-public class ModRecursiveModule {
+public class ModRecursiveModules {
     public static final ResourceKey<Registry<RecursiveModule>> RECURSIVE_MODULE_KEY =
             ResourceKey.createRegistryKey(ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "recursive_module"));
 

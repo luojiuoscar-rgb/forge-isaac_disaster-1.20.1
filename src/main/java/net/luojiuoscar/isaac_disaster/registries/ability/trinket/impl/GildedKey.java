@@ -7,7 +7,7 @@ import net.luojiuoscar.isaac_disaster.item.item.Trinket;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.registries.ability.trinket.TrinketAbility;
 import net.luojiuoscar.isaac_disaster.registries.ability.trinket.TrinketAbilityContext;
-import net.luojiuoscar.isaac_disaster.registries.recursive_module.ModRecursiveModule;
+import net.luojiuoscar.isaac_disaster.registries.recursive_module.ModRecursiveModules;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -31,12 +31,12 @@ public class GildedKey extends TrinketAbility {
 
     @Override
     public void onEquipped(LivingEntity entity, TrinketAbilityContext ctx) {
-        StatManager.addRecursiveModule(entity, ModRecursiveModule.GILDED_KEY.getId(), ctx.isEnchanted ? 2 : 1);
+        StatManager.addRecursiveModule(entity, ModRecursiveModules.GILDED_KEY.getId(), ctx.isEnchanted ? 2 : 1);
     }
 
     @Override
     public void onUnequipped(LivingEntity entity, TrinketAbilityContext ctx) {
-        StatManager.addRecursiveModule(entity, ModRecursiveModule.GILDED_KEY.getId(), ctx.isEnchanted ? -2 : -1);
+        StatManager.addRecursiveModule(entity, ModRecursiveModules.GILDED_KEY.getId(), ctx.isEnchanted ? -2 : -1);
     }
 
     @Override

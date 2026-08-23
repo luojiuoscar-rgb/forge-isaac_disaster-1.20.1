@@ -9,7 +9,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.RegistryObject;
 
-public class ModPassiveAbility {
+public class ModPassiveAbilities {
     public static final ResourceKey<Registry<PassiveAbility>> PASSIVE_ABILITY_KEY =
             ResourceKey.createRegistryKey(ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "passive_ability"));
 

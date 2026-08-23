@@ -13,7 +13,7 @@ import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackOrigin;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackPipelineMode;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackRequest;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.IChargeableAttack;
-import net.luojiuoscar.isaac_disaster.registries.attack_type.ModAttackType;
+import net.luojiuoscar.isaac_disaster.registries.attack_type.ModAttackTypes;
 import net.luojiuoscar.isaac_disaster.sound.ModSounds;
 import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.resources.ResourceLocation;
@@ -43,7 +43,7 @@ public class CSectionAttack extends BulletAttack implements IChargeableAttack {
 
     @Override
     public ResourceLocation getId() {
-        return ModAttackType.C_SECTION.getId();
+        return ModAttackTypes.C_SECTION.getId();
     }
 
     @Override

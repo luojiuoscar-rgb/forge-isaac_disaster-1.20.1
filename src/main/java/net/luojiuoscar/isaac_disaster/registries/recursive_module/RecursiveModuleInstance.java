@@ -19,7 +19,7 @@ public class RecursiveModuleInstance {
         this.coolDown = coolDown;
 
         IForgeRegistry<RecursiveModule> registry =
-                RegistryManager.ACTIVE.getRegistry(ModRecursiveModule.RECURSIVE_MODULE_KEY);
+                RegistryManager.ACTIVE.getRegistry(ModRecursiveModules.RECURSIVE_MODULE_KEY);
         this.recursiveModule = registry == null ? null : registry.getValue(id);
     }
 

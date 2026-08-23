@@ -2,7 +2,7 @@ package net.luojiuoscar.isaac_disaster.registries.ability.passive.impl;
 
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.registries.ability.passive.PassiveAbility;
-import net.luojiuoscar.isaac_disaster.registries.bullet_color.ModBulletColor;
+import net.luojiuoscar.isaac_disaster.registries.bullet_color.ModBulletColors;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
@@ -28,7 +28,7 @@ public class DeadOnion extends PassiveAbility {
         StatManager.BULLET_SCALE.apply(player, 2);
         StatManager.addPiercing(player, 1);
         StatManager.addSpectral(player, 1);
-        StatManager.addBulletColor(player, ModBulletColor.DEAD_ONION.getId(), 1);
+        StatManager.addBulletColor(player, ModBulletColors.DEAD_ONION.getId(), 1);
     }
 
     @Override
@@ -38,7 +38,7 @@ public class DeadOnion extends PassiveAbility {
         StatManager.BULLET_SCALE.apply(player, -2);
         StatManager.addPiercing(player, -1);
         StatManager.addSpectral(player, -1);
-        StatManager.addBulletColor(player, ModBulletColor.DEAD_ONION.getId(), -1);
+        StatManager.addBulletColor(player, ModBulletColors.DEAD_ONION.getId(), -1);
     }
 
     @Override

@@ -11,12 +11,13 @@ import net.luojiuoscar.isaac_disaster.manager.ModDamageType;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.CompositeTrigger;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackType;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.IBulletObject;
-import net.luojiuoscar.isaac_disaster.registries.attack_type.ModAttackType;
+import net.luojiuoscar.isaac_disaster.registries.attack_type.ModAttackTypes;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.util.DamagedEntities;
+import net.luojiuoscar.isaac_disaster.registries.split_module.SplitSequence;
 import net.luojiuoscar.isaac_disaster.registries.bullet_color.BulletColor;
-import net.luojiuoscar.isaac_disaster.registries.bullet_color.ModBulletColor;
+import net.luojiuoscar.isaac_disaster.registries.bullet_color.ModBulletColors;
 import net.luojiuoscar.isaac_disaster.registries.trajectory.IAttackTrajectory;
-import net.luojiuoscar.isaac_disaster.registries.trajectory.ModAttackTrajectory;
+import net.luojiuoscar.isaac_disaster.registries.trajectory.ModAttackTrajectories;
 import net.luojiuoscar.isaac_disaster.registries.trajectory.TrajectoryContext;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
@@ -85,8 +86,10 @@ public class TearBullet extends Entity implements IBulletObject {
 
     // ======== 状态 ========
     protected final DamagedEntities damagedEntities = new DamagedEntities();
-    protected ResourceLocation colorRl = ModBulletColor.BASE.getId();
+    protected ResourceLocation colorRl = ModBulletColors.BASE.getId();
     protected final CompositeTrigger trigger = new CompositeTrigger();
+    @Nullable
+    private SplitSequence splitSequence;
     protected Vec3 extraPositionOffset = Vec3.ZERO;
 
     protected enum CollisionResult {
@@ -180,7 +183,7 @@ public class TearBullet extends Entity implements IBulletObject {
             Vec3 baseDir = getVelocity().normalize(); // 当前方向
             double speed = getVelocity().length();    // 当前速度大小
             IForgeRegistry<IAttackTrajectory> trajectoryIForgeRegistry =
-                    RegistryManager.ACTIVE.getRegistry(ModAttackTrajectory.ATTACK_TRAJECTORY_KEY);
+                    RegistryManager.ACTIVE.getRegistry(ModAttackTrajectories.ATTACK_TRAJECTORY_KEY);
 
             if (!isCurrentlySteering() && trajectoryIForgeRegistry != null) { // 非跟踪时
                 for (Map.Entry<ResourceLocation, Integer> entry : getTrajectories().entrySet()) {
@@ -288,7 +291,7 @@ public class TearBullet extends Entity implements IBulletObject {
         if (shape.isEmpty() || shape.bounds().getSize() < 0.01) return false;
 
         IsaacAttackHitBlockEvent event =
-                new IsaacAttackHitBlockEvent(this, getOwner(), ModAttackType.BULLET.getId(), trigger, blockHit);
+                new IsaacAttackHitBlockEvent(this, getOwner(), ModAttackTypes.BULLET.getId(), trigger, blockHit);
         if (!MinecraftForge.EVENT_BUS.post(event)) {
             discard();
         }
@@ -326,7 +329,7 @@ public class TearBullet extends Entity implements IBulletObject {
             return CollisionResult.NONE;
 
         IsaacAttackBeforeHitEntityEvent beforeEvent = new IsaacAttackBeforeHitEntityEvent(
-                this, getOwner(), ModAttackType.BULLET.getId(), trigger, entityHit, damage);
+                this, getOwner(), ModAttackTypes.BULLET.getId(), trigger, entityHit, damage);
         if (MinecraftForge.EVENT_BUS.post(beforeEvent)) return CollisionResult.CONTINUE;
 
         double damageValue = beforeEvent.getDamage();
@@ -337,7 +340,7 @@ public class TearBullet extends Entity implements IBulletObject {
         }
 
         IsaacAttackAfterHitEvent afterEvent = new IsaacAttackAfterHitEvent(
-                this, getOwner(), ModAttackType.BULLET.getId(), trigger, entityHit, damageValue, living.getHealth());
+                this, getOwner(), ModAttackTypes.BULLET.getId(), trigger, entityHit, damageValue, living.getHealth());
         if (MinecraftForge.EVENT_BUS.post(afterEvent)) return CollisionResult.STOP;
 
 
@@ -595,10 +598,10 @@ public class TearBullet extends Entity implements IBulletObject {
     }
 
     public void setBulletColor(ResourceLocation id){
-        IForgeRegistry<BulletColor> registry = RegistryManager.ACTIVE.getRegistry(ModBulletColor.BULLET_COLOR_KEY);
+        IForgeRegistry<BulletColor> registry = RegistryManager.ACTIVE.getRegistry(ModBulletColors.BULLET_COLOR_KEY);
 
-        BulletColor c = registry != null ? registry.getValue(id) : ModBulletColor.BASE.get();
-        c = c == null ? ModBulletColor.BASE.get() : c;
+        BulletColor c = registry != null ? registry.getValue(id) : ModBulletColors.BASE.get();
+        c = c == null ? ModBulletColors.BASE.get() : c;
 
         setColor(c.color());
         setAlpha(c.alpha());
@@ -649,6 +652,17 @@ public class TearBullet extends Entity implements IBulletObject {
                 .reduce((a, b) -> a + "," + b)
                 .orElse("");
         entityData.set(TRAJECTORIES, s);
+    }
+
+    /** Returns this bullet's remaining split sequence, if it carries any. */
+    @Nullable
+    public SplitSequence getSplitSequence() {
+        return splitSequence;
+    }
+
+    /** Stores an independent split-sequence copy for this server-side bullet. */
+    public void setSplitSequence(@Nullable SplitSequence splitSequence) {
+        this.splitSequence = splitSequence == null ? null : splitSequence.copy();
     }
 
     @Override

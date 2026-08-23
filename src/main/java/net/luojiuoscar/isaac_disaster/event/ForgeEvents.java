@@ -32,9 +32,9 @@ import net.luojiuoscar.isaac_disaster.networking.packet.PillRecordsSyncS2CPacket
 import net.luojiuoscar.isaac_disaster.networking.packet.RefreshScaleS2CPacket;
 import net.luojiuoscar.isaac_disaster.networking.packet.ReviveHudSyncS2CPacket;
 import net.luojiuoscar.isaac_disaster.networking.packet.SetCountSyncS2CPacket;
-import net.luojiuoscar.isaac_disaster.registries.ability.set.ModSetAbility;
+import net.luojiuoscar.isaac_disaster.registries.ability.set.ModSetAbilities;
 import net.luojiuoscar.isaac_disaster.registries.ability.set.SetAbility;
-import net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerModule;
+import net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerModules;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerModuleQueue;
 import net.luojiuoscar.isaac_disaster.system.rockbottom.RockBottomState;
 import net.minecraft.resources.ResourceLocation;
@@ -135,7 +135,7 @@ public class ForgeEvents {
                     Map<ResourceLocation, Integer> map = playerPassiveItem.getSetCountMap();
 
                     IForgeRegistry<SetAbility> registry =
-                            RegistryManager.ACTIVE.getRegistry(ModSetAbility.SET_ABILITY_KEY);
+                            RegistryManager.ACTIVE.getRegistry(ModSetAbilities.SET_ABILITY_KEY);
                     if (registry == null) return;
 
                     for (Map.Entry<ResourceLocation, Integer> entry : map.entrySet()) {
@@ -321,9 +321,9 @@ public class ForgeEvents {
 
     /** 给玩家添加默认模块 */
     private static void addPermanentModules(TriggerModuleQueue queue){
-        queue.addIfNotExist(ModTriggerModule.HIGH_PRIORITY_PLAYER_PERMANENT_MODULE.getId(), 1);
-        queue.addIfNotExist(ModTriggerModule.PLAYER_PERMANENT_MODULE.getId(), 1);
-        queue.addIfNotExist(ModTriggerModule.LOW_PRIORITY_PLAYER_PERMANENT_MODULE.getId(), 1);
+        queue.addIfNotExist(ModTriggerModules.HIGH_PRIORITY_PLAYER_PERMANENT_MODULE.getId(), 1);
+        queue.addIfNotExist(ModTriggerModules.PLAYER_PERMANENT_MODULE.getId(), 1);
+        queue.addIfNotExist(ModTriggerModules.LOW_PRIORITY_PLAYER_PERMANENT_MODULE.getId(), 1);
     }
 
 

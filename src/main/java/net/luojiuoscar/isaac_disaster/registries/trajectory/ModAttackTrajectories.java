@@ -7,7 +7,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.RegistryObject;
 
-public final class ModAttackTrajectory {
+public final class ModAttackTrajectories {
 
     public static final ResourceKey<Registry<IAttackTrajectory>> ATTACK_TRAJECTORY_KEY =
             ResourceKey.createRegistryKey(ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "attack_trajectory"));

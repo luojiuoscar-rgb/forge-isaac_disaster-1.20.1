@@ -4,7 +4,7 @@ import net.luojiuoscar.isaac_disaster.event.custom.attack.BeforePerformAttackEve
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.CompositeTrigger;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ContextKeys;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ModExecutableEffects;
-import net.luojiuoscar.isaac_disaster.registries.attack_type.ModAttackType;
+import net.luojiuoscar.isaac_disaster.registries.attack_type.ModAttackTypes;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerModule;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerTypes;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.SimpleTrigger;
@@ -18,7 +18,7 @@ public class CSection extends TriggerModule {
                     context -> {
                         if (!(context.get(ContextKeys.EVENT) instanceof BeforePerformAttackEvent event)) return false;
                         if (!(context.getEntity() instanceof ServerPlayer)) return false;
-                        return event.getAttackType() == ModAttackType.BRIMSTONE.get();
+                        return event.getAttackType() == ModAttackTypes.BRIMSTONE.get();
                     })
     ));
 
