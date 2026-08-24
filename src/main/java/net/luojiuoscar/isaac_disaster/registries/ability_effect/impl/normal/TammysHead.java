@@ -54,7 +54,9 @@ public class TammysHead implements IAbilityEffect {
                             trajectories,
                             eyePos,
                             player.getXRot(),
-                            player.getYRot()
+                            player.getYRot(),
+                            attack.getRange(player),
+                            attack.getBulletSpeed(player)
                     );
 
                     List<AttackContext> contexts = ModAttackPatterns.RING.get().generate(

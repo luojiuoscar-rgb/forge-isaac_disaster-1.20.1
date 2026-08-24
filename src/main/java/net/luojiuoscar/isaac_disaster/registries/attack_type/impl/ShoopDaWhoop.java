@@ -40,7 +40,7 @@ public class ShoopDaWhoop extends BrimstoneAttack{
     }
 
     @Override
-    protected double getRange(LivingEntity entity) {
+    public double getRange(LivingEntity entity) {
         return 48;
     }
 }

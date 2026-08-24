@@ -79,7 +79,9 @@ public abstract class AttackType {
                             trajectories,
                             eyePos,
                             player.getXRot(),
-                            player.getYRot());
+                            player.getYRot(),
+                            getRange(player),
+                            getBulletSpeed(player));
                 })
                 .orElse(null);
     }
@@ -154,12 +156,12 @@ public abstract class AttackType {
         return attr != null ? (float) attr.getValue() : 1f;
     }
 
-    protected double getBulletSpeed(LivingEntity entity) {
+    public double getBulletSpeed(LivingEntity entity) {
         AttributeInstance attr = entity.getAttribute(ModAttributes.BULLET_SPEED.get());
         return attr != null ? Math.max(attr.getValue(), 0.1) : 1.0;
     }
 
-    protected double getRange(LivingEntity entity) {
+    public double getRange(LivingEntity entity) {
         AttributeInstance attr = entity.getAttribute(ModAttributes.BULLET_RANGE.get());
         return attr != null ? Math.max(Math.min(attr.getValue(), 64), 1) : 18.0;
     }

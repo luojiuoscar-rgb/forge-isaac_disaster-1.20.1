@@ -600,4 +600,8 @@ public class ModPassiveItems {
     public static final RegistryObject<Item> THE_PARASITE = ITEMS.register("the_parasite",
             () -> new PassiveItem(new Item.Properties(), ModPassiveAbilities.THE_PARASITE));
     static {ItemListManager.PASSIVE_ITEM_LIST.add(THE_PARASITE);}
+
+    public static final RegistryObject<Item> CRICKETS_BODY = ITEMS.register("crickets_body",
+            () -> new PassiveItem(new Item.Properties(), ModPassiveAbilities.CRICKETS_BODY));
+    static {ItemListManager.PASSIVE_ITEM_LIST.add(CRICKETS_BODY);}
 }

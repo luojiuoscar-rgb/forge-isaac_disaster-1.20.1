@@ -26,8 +26,9 @@ public class AttackContext {
     private float xRotOffset = 0.0f;
     private float yRotOffset = 0.0f;
     private Double damage = null;
-    @Nullable
-    private Integer bulletLifetime;
+    private double bulletRange;
+    private double bulletSpeed = 1.0;
+    private int attackSequenceIndex;
     private SplitSequence splitSequence;
     private boolean useExactSpawnPosition;
 
@@ -38,7 +39,8 @@ public class AttackContext {
                          ResourceLocation colorRl,
                          CompositeTrigger trigger,
                          Map<ResourceLocation, Integer> trajectories,
-                         Vec3 pos, float xRot, float yRot) {
+                         Vec3 pos, float xRot, float yRot,
+                         double bulletRange, double bulletSpeed) {
         this.owner = Objects.requireNonNull(owner, "owner");
         this.shooter = shooter == null ? owner : shooter;
         this.colorRl = colorRl;
@@ -48,13 +50,16 @@ public class AttackContext {
         this.pos = pos;
         this.xRot = xRot;
         this.yRot = yRot;
+        setBulletRange(bulletRange);
+        setBulletSpeed(bulletSpeed);
     }
 
     public AttackContext(@NotNull LivingEntity owner, @Nullable Entity shooter,
                          ResourceLocation colorRl,
                          CompositeTrigger trigger,
                          Map<ResourceLocation, Integer> trajectories,
-                         Vec3 pos, float xRot, float yRot, Double damage) {
+                         Vec3 pos, float xRot, float yRot, Double damage,
+                         double bulletRange, double bulletSpeed) {
         this.owner = Objects.requireNonNull(owner, "owner");
         this.shooter = shooter == null ? owner : shooter;
         this.colorRl = colorRl;
@@ -65,6 +70,8 @@ public class AttackContext {
         this.xRot = xRot;
         this.yRot = yRot;
         this.damage = damage;
+        setBulletRange(bulletRange);
+        setBulletSpeed(bulletSpeed);
     }
 
     public CompositeTrigger getTrigger() {
@@ -81,12 +88,14 @@ public class AttackContext {
                 this.pos,
                 this.xRot,
                 this.yRot,
-                this.damage
+                this.damage,
+                this.bulletRange,
+                this.bulletSpeed
         );
+        copy.attackSequenceIndex = this.attackSequenceIndex;
         copy.setXRotOffset(this.xRotOffset);
         copy.setYRotOffset(this.yRotOffset);
         copy.splitSequence = this.splitSequence == null ? null : this.splitSequence.copy();
-        copy.bulletLifetime = this.bulletLifetime;
         copy.useExactSpawnPosition = this.useExactSpawnPosition;
         return copy;
     }
@@ -184,16 +193,36 @@ public class AttackContext {
         this.damage = damage;
     }
 
-    @Nullable
-    public Integer getBulletLifetime() {
-        return bulletLifetime;
+    public double getBulletRange() {
+        return bulletRange;
     }
 
-    public void setBulletLifetime(int bulletLifetime) {
-        if (bulletLifetime <= 0) {
-            throw new IllegalArgumentException("bulletLifetime must be positive");
+    /** Ignores non-positive values so malformed effects cannot abort the attack pipeline. */
+    public void setBulletRange(double bulletRange) {
+        if (bulletRange <= 0) {
+            return;
         }
-        this.bulletLifetime = bulletLifetime;
+        this.bulletRange = bulletRange;
+    }
+
+    public double getBulletSpeed() {
+        return bulletSpeed;
+    }
+
+    /** Ignores non-positive values so malformed effects cannot abort the attack pipeline. */
+    public void setBulletSpeed(double bulletSpeed) {
+        if (bulletSpeed <= 0) {
+            return;
+        }
+        this.bulletSpeed = bulletSpeed;
+    }
+
+    public int getAttackSequenceIndex() {
+        return attackSequenceIndex;
+    }
+
+    public void setAttackSequenceIndex(int attackSequenceIndex) {
+        this.attackSequenceIndex = attackSequenceIndex;
     }
 
     @Override

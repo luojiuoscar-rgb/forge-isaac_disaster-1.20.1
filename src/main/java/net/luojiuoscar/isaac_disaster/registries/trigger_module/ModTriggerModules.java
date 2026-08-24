@@ -122,5 +122,7 @@ public class ModTriggerModules {
             TRIGGER_MODULE_REGISTRY.register("guppys_collar", GuppysCollar::new);
     public static final RegistryObject<TriggerModule> PARASITE =
             TRIGGER_MODULE_REGISTRY.register("parasite", Parasite::new);
+    public static final RegistryObject<TriggerModule> CRICKETS_BODY =
+            TRIGGER_MODULE_REGISTRY.register("crickets_body", CricketsBody::new);
 
 }

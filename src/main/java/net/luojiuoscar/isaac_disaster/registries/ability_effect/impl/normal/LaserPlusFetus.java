@@ -39,7 +39,9 @@ public class LaserPlusFetus implements IAbilityEffect {
                         bullet.getTrajectories(),
                         bullet.getPosition(),
                         bullet.getXRot(),
-                        bullet.getYRot()
+                        bullet.getYRot(),
+                        ModAttackTypes.LASER.get().getRange(player),
+                        ModAttackTypes.LASER.get().getBulletSpeed(player)
                 )
         ), false));
 

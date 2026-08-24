@@ -13,6 +13,11 @@ public final class SplitExecutor {
     private SplitExecutor() {
     }
 
+    public static void executeEntityHit(IBulletObject parent) {
+        parent.recordSplitTrigger(SplitTriggerType.ENTITY);
+        execute(parent, SplitTriggerType.ENTITY);
+    }
+
     /**
      * Posts a split event and executes all requests produced by the event's sequence.
      * A cancelled event produces no child attacks.
@@ -27,6 +32,7 @@ public final class SplitExecutor {
         referenceContext.setPos(parent.getPosition());
         referenceContext.useExactSpawnPosition();
         referenceContext.setDamage(parent.getDamage());
+        referenceContext.setBulletRange(parent.getRange());
         Vec3 velocity = parent.getVelocity();
         if (velocity.lengthSqr() > 1.0E-8) {
             referenceContext.setDirection(velocity);

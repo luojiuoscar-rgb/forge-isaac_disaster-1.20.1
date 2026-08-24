@@ -134,7 +134,6 @@ public enum StatManager {
         }
     };
 
-
     private final UUID uuid;
     private final Attribute attribute;
     private final int operationType;
@@ -143,7 +142,6 @@ public enum StatManager {
     private final Supplier<Double> bonus;
     private final Double minVal;
     private final Double maxVal;
-
 
     // UUID -> 枚举反查Map
     private static final Map<UUID, StatManager> UUID_TO_ENUM = new HashMap<>();

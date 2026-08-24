@@ -29,10 +29,9 @@ public class Technology2Attack extends LaserAttack {
     }
 
     @Override
-    protected LivingEntity makeDamage(LivingEntity source, LivingEntity target, float damage) {
+    protected boolean makeDamage(LivingEntity source, LivingEntity target, float damage) {
         target.invulnerableTime = 0;
-        target.hurt(getDamageSource(source), damage * DAMAGE_PERCENTAGE);
-        return target;
+        return target.hurt(getDamageSource(source), damage * DAMAGE_PERCENTAGE);
     }
 
     @Override
@@ -56,7 +55,9 @@ public class Technology2Attack extends LaserAttack {
                             trajectories,
                             eyePos,
                             player.getXRot(),
-                            player.getYRot());
+                            player.getYRot(),
+                            getRange(player),
+                            getBulletSpeed(player));
                 })
                 .orElse(null);
     }

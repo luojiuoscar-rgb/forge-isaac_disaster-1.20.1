@@ -42,7 +42,9 @@ public class SadBomb extends BombRelated {
                             trajectories,
                             pos,
                             bomb.getXRot(),
-                            bomb.getYRot()
+                            bomb.getYRot(),
+                            attack.getRange(player),
+                            attack.getBulletSpeed(player)
                     );
 
                     List<AttackContext> contexts = ModAttackPatterns.RING.get().generate(

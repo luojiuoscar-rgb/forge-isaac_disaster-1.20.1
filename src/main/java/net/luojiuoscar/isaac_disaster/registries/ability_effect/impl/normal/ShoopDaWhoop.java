@@ -41,7 +41,9 @@ public class ShoopDaWhoop implements IAbilityEffect {
                 position,
                 entity.getXRot(),
                 entity.getYRot(),
-                damage * 2 * amplifier
+                damage * 2 * amplifier,
+                ModAttackTypes.SHOOP_DA_WHOOP.get().getRange(entity),
+                ModAttackTypes.SHOOP_DA_WHOOP.get().getBulletSpeed(entity)
         );
 
         AttackExecutor.perform(AttackRequest.withContexts(

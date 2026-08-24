@@ -117,7 +117,7 @@ public class BulletAttack extends AttackType {
 
         bullet.moveTo(adjustedPos.x, adjustedPos.y, adjustedPos.z, context.getYRot(), context.getXRot());
         bullet.setPreflightStart(context.getPos());
-        bullet.setVelocity(look.scale(getBulletSpeed(owner)));
+        bullet.setVelocity(look.scale(context.getBulletSpeed()));
         bullet.setDeltaMovement(bullet.getVelocity());
 
         return bullet;
@@ -147,30 +147,8 @@ public class BulletAttack extends AttackType {
     }
 
     public TearBullet getBulletObject(AttackContext c){
-        LivingEntity owner = c.getOwner();
-
-        float damage = c.getDamage();
-
-        return new TearBullet(
-                owner.level(),
-                c.getOwner(),
-                c.getShooter(),
-                c.getBulletLifetime() == null
-                        ? getBulletLiftTime(owner)
-                        : c.getBulletLifetime(),
-                getBulletSpeed(owner),
-                getBulletScale(owner, damage),
-                damage,
-                c.getXRot(),
-                c.getYRot(),
-                c.getPos()
-        );
-    }
-
-    // =================== 基础属性 ===================
-    int getBulletLiftTime(LivingEntity entity) {
-        double speed = getBulletSpeed(entity);
-        double range = getRange(entity);
-        return (int) Math.min(Math.max(1, range / speed), 200);
+        TearBullet bullet = new TearBullet(c);
+        bullet.setScale(getBulletScale(c.getOwner(), c.getDamage()));
+        return bullet;
     }
 }

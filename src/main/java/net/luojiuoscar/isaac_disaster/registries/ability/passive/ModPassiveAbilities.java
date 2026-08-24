@@ -595,4 +595,8 @@ public class ModPassiveAbilities {
     public static final RegistryObject<PassiveAbility> THE_PARASITE =
             PASSIVE_ABILITY_REGISTRY.register("the_parasite",
                     () -> new TheParasite(ItemId.THE_PARASITE.getId(), ItemId.THE_PARASITE.getLevel()));
+
+    public static final RegistryObject<PassiveAbility> CRICKETS_BODY =
+            PASSIVE_ABILITY_REGISTRY.register("crickets_body",
+                    () -> new CricketsBody(ItemId.CRICKETS_BODY.getId(), ItemId.CRICKETS_BODY.getLevel()));
 }

@@ -12,6 +12,7 @@ import net.luojiuoscar.isaac_disaster.registries.ability_effect.CompositeTrigger
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackType;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackContext;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.IBulletObject;
+import net.luojiuoscar.isaac_disaster.registries.attack_type.BulletSourceType;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.ModAttackTypes;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.util.DamagedEntities;
 import net.luojiuoscar.isaac_disaster.registries.split_module.SplitSequence;
@@ -60,8 +61,10 @@ import java.util.UUID;
 public class TearBullet extends Entity implements IBulletObject {
 
     // ======== 基础属性 ========
+    // Internal lifetime derived from range and speed; not a gameplay-facing parameter.
     protected int lifeTick;
     protected int totalLifeTick;
+    protected double range;
     protected float damage;
     protected UUID ownerUUID;
     protected LivingEntity cachedOwner;
@@ -120,6 +123,9 @@ public class TearBullet extends Entity implements IBulletObject {
     // ======== 构造函数 ========
     public TearBullet(EntityType<? extends TearBullet> type, Level level) {
         super(type, level);
+        this.lifeTick = 1;
+        this.totalLifeTick = 1;
+        this.range = 1.0;
         this.noPhysics = true;
         this.damage = 1.0f;
         this.setColor(0xFFFFFF);
@@ -128,45 +134,32 @@ public class TearBullet extends Entity implements IBulletObject {
         setVelocity(Vec3.ZERO);
     }
 
-    public TearBullet(Level level,
-                      LivingEntity owner, Entity shooter,
-                      int lifeTick, double bulletSpeed, float scale, float damage,
-                      float xRot, float yRot, Vec3 pos) {
-        this(ModEntities.TEAR_BULLET.get(), level, owner, shooter, lifeTick, bulletSpeed, scale, damage, xRot, yRot, pos);
+    public TearBullet(AttackContext context) {
+        this(ModEntities.TEAR_BULLET.get(), context);
     }
 
-    protected TearBullet(EntityType<? extends TearBullet> type,
-                         Level level,
-                         LivingEntity owner,
-                         Entity shooter,
-                         int lifeTick,
-                         double bulletSpeed,
-                         float scale,
-                         float damage,
-                         float xRot,
-                         float yRot,
-                         Vec3 pos) {
+    protected TearBullet(EntityType<? extends TearBullet> type, AttackContext context) {
+        this(type, context.getOwner().level());
 
-        this(type, level);
-
-        LivingEntity actualOwner = Objects.requireNonNull(owner, "owner");
-        Entity actualShooter = shooter == null ? actualOwner : shooter;
+        LivingEntity actualOwner = context.getOwner();
+        Entity actualShooter = context.getShooter();
+        double bulletSpeed = context.getBulletSpeed();
 
         this.ownerUUID = actualOwner.getUUID();
         this.cachedOwner = actualOwner;
         this.shooter = actualShooter;
-        this.lifeTick = lifeTick;
-        this.totalLifeTick = lifeTick;
-        this.damage = damage;
-        this.yRotAngle = actualShooter.getYRot() - yRot;
-        this.xRotAngle = actualShooter.getXRot() - xRot;
+        this.lifeTick = calculateLifeTime(context.getBulletRange(), bulletSpeed);
+        this.totalLifeTick = this.lifeTick;
+        this.range = context.getBulletRange();
+        this.damage = context.getDamage();
+        this.yRotAngle = actualShooter.getYRot() - context.getYRot();
+        this.xRotAngle = actualShooter.getXRot() - context.getXRot();
 
-        setScale(scale);
+        moveTo(context.getPos().x, context.getPos().y, context.getPos().z,
+                context.getYRot(), context.getXRot());
 
-        moveTo(pos.x, pos.y, pos.z, yRot, xRot);
-
-        Vec3 look = Vec3.directionFromRotation(xRot, yRot);
-        setVelocity(look.scale(bulletSpeed));
+        Vec3 direction = Vec3.directionFromRotation(context.getXRot(), context.getYRot());
+        setVelocity(direction.scale(bulletSpeed));
     }
 
     // ======== 核心逻辑 ========
@@ -351,19 +344,18 @@ public class TearBullet extends Entity implements IBulletObject {
         if (EntityHelper.isFriendly(living, getOwner()) || living == getOwner() || damagedEntities.contains(target.getUUID()))
             return CollisionResult.NONE;
 
-        recordSplitTrigger(SplitTriggerType.ENTITY);
-        SplitExecutor.execute(this, SplitTriggerType.ENTITY);
-
         IsaacAttackBeforeHitEntityEvent beforeEvent = new IsaacAttackBeforeHitEntityEvent(
                 this, getOwner(), ModAttackTypes.BULLET.getId(), trigger, entityHit, damage);
         if (MinecraftForge.EVENT_BUS.post(beforeEvent)) return CollisionResult.CONTINUE;
 
         double damageValue = beforeEvent.getDamage();
 
-        boolean success = makeDamage(living, (float) damageValue);
-        if (!success){
+        if (!makeDamage(living, (float) damageValue)) {
             return CollisionResult.CONTINUE;
         }
+
+        damagedEntities.add(living.getUUID());
+        SplitExecutor.executeEntityHit(this);
 
         IsaacAttackAfterHitEvent afterEvent = new IsaacAttackAfterHitEvent(
                 this, getOwner(), ModAttackTypes.BULLET.getId(), trigger, entityHit, damageValue, living.getHealth());
@@ -465,9 +457,7 @@ public class TearBullet extends Entity implements IBulletObject {
     // ======== DamageSource ========
     protected boolean makeDamage(LivingEntity victim, float damage){
         victim.invulnerableTime = 0;
-        victim.hurt(getDamageSource(), damage);
-        damagedEntities.add(victim.getUUID());
-        return true;
+        return victim.hurt(getDamageSource(), damage);
     }
 
     protected DamageSource getDamageSource() {
@@ -647,6 +637,11 @@ public class TearBullet extends Entity implements IBulletObject {
     }
 
     @Override
+    public BulletSourceType getSourceType() {
+        return BulletSourceType.TEAR_BULLET;
+    }
+
+    @Override
     public AttackContext getAttackContext() {
         return Objects.requireNonNull(attackContext, "attackContext").copy();
     }
@@ -664,8 +659,12 @@ public class TearBullet extends Entity implements IBulletObject {
     public float getDamage() { return damage; }
 
     @Override
-    public int getTotalLifeTick() {
-        return totalLifeTick;
+    public double getRange() {
+        return range;
+    }
+
+    private static int calculateLifeTime(double range, double speed) {
+        return (int) Math.min(Math.max(1, range / speed), 200);
     }
 
     @Override

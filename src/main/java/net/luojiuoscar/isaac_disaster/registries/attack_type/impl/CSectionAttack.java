@@ -61,22 +61,9 @@ public class CSectionAttack extends BulletAttack implements IChargeableAttack {
 
     @Override
     public TearBullet getBulletObject(AttackContext c){
-        LivingEntity owner = c.getOwner();
-
-        float damage = c.getDamage();
-
-        return new FetusBullet(
-                owner.level(),
-                c.getOwner(),
-                c.getShooter(),
-                getBulletLiftTime(owner),
-                getBulletSpeed(owner),
-                getBulletScale(owner, damage),
-                damage,
-                c.getXRot(),
-                c.getYRot(),
-                c.getPos()
-        );
+        FetusBullet bullet = new FetusBullet(c);
+        bullet.setScale(getBulletScale(c.getOwner(), c.getDamage()));
+        return bullet;
     }
 
     @Override
@@ -138,7 +125,9 @@ public class CSectionAttack extends BulletAttack implements IChargeableAttack {
                             trajectories,
                             eyePos,
                             player.getXRot(),
-                            player.getYRot());
+                            player.getYRot(),
+                            getRange(player),
+                            getBulletSpeed(player));
                 })
                 .orElse(null);
     }
@@ -190,7 +179,7 @@ public class CSectionAttack extends BulletAttack implements IChargeableAttack {
     }
 
     @Override
-    protected double getBulletSpeed(LivingEntity entity) {
+    public double getBulletSpeed(LivingEntity entity) {
         AttributeInstance attr = entity.getAttribute(ModAttributes.BULLET_SPEED.get());
         return attr != null ? Math.max(attr.getValue(), 0.1) * 0.7 : 0.7;
     }

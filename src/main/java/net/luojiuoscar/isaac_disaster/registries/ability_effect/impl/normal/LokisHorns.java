@@ -47,7 +47,9 @@ public class LokisHorns implements IAbilityEffect {
                             trajectories,
                             eyePos,
                             player.getXRot(),
-                            player.getYRot()
+                            player.getYRot(),
+                            attack.getRange(player),
+                            attack.getBulletSpeed(player)
                     );
 
                     AttackContext reversedReference = baseCtx.copy();

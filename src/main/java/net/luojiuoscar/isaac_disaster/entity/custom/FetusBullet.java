@@ -1,6 +1,8 @@
 package net.luojiuoscar.isaac_disaster.entity.custom;
 
 import net.luojiuoscar.isaac_disaster.entity.ModEntities;
+import net.luojiuoscar.isaac_disaster.registries.attack_type.BulletSourceType;
+import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackContext;
 import net.luojiuoscar.isaac_disaster.helper.EntityHelper;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
@@ -13,13 +15,18 @@ import net.minecraft.world.phys.Vec3;
 public class FetusBullet extends TearBullet{
     private int attackInterval = 0;
 
-    public FetusBullet(Level level, LivingEntity owner, Entity shooter, int lifeTick, double bulletSpeed, float scale, float damage, float xRot, float yRot, Vec3 pos) {
-        super(ModEntities.FETUS_BULLET.get(), level, owner, shooter, lifeTick, bulletSpeed, scale, damage, xRot, yRot, pos);
+    public FetusBullet(AttackContext context) {
+        super(ModEntities.FETUS_BULLET.get(), context);
         homingRange = 6.0;
     }
 
     public FetusBullet(EntityType<? extends TearBullet> type, Level level) {
         super(type, level);
+    }
+
+    @Override
+    public BulletSourceType getSourceType() {
+        return BulletSourceType.FETUS_BULLET;
     }
 
     @Override
@@ -32,7 +39,10 @@ public class FetusBullet extends TearBullet{
     protected boolean makeDamage(LivingEntity victim, float damage){
         if (attackInterval <= 0){
             victim.invulnerableTime = 0;
-            victim.hurt(getDamageSource(), damage);
+            boolean success = victim.hurt(getDamageSource(), damage);
+            if (!success) {
+                return false;
+            }
             attackInterval = 5;
             return true;
         }

@@ -4,9 +4,9 @@ import java.util.Objects;
 
 /** Runtime split-trigger counters owned by one bullet object. */
 public final class SplitTriggerCounts {
-    private int blockHits;
-    private int entityHits;
-    private int endOfLife;
+    private int blockHits = 0;
+    private int entityHits = 0;
+    private int endOfLife = 0;
 
     /** Returns an independent snapshot that cannot mutate the owning bullet's counters. */
     public SplitTriggerCounts copy() {

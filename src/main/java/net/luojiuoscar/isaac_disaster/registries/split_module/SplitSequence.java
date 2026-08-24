@@ -85,7 +85,9 @@ public final class SplitSequence {
      * Creates a child sequence by asking every registered module whether it inherits this child.
      * Each retained entry preserves its independent runtime data.
      */
-    public SplitSequence copyForChild(@NotNull SplitContext context, @NotNull AttackContext childContext) {
+    public SplitSequence copyForChild(@NotNull SplitContext context, @NotNull AttackContext childContext,
+                                      boolean inheritModules) {
+        if (!inheritModules) return new SplitSequence();
         IForgeRegistry<SplitModule> registry = registry();
         if (registry == null) return new SplitSequence();
 
