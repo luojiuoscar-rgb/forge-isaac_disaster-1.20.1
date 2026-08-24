@@ -26,7 +26,10 @@ public class AttackContext {
     private float xRotOffset = 0.0f;
     private float yRotOffset = 0.0f;
     private Double damage = null;
+    @Nullable
+    private Integer bulletLifetime;
     private SplitSequence splitSequence;
+    private boolean useExactSpawnPosition;
 
     private final Entity shooter;
     private final LivingEntity owner;
@@ -83,6 +86,8 @@ public class AttackContext {
         copy.setXRotOffset(this.xRotOffset);
         copy.setYRotOffset(this.yRotOffset);
         copy.splitSequence = this.splitSequence == null ? null : this.splitSequence.copy();
+        copy.bulletLifetime = this.bulletLifetime;
+        copy.useExactSpawnPosition = this.useExactSpawnPosition;
         return copy;
     }
 
@@ -96,6 +101,15 @@ public class AttackContext {
     /** Sets a defensive copy of the split sequence carried by this context. */
     public void setSplitSequence(@Nullable SplitSequence splitSequence) {
         this.splitSequence = splitSequence == null ? null : splitSequence.copy();
+    }
+
+    /** Makes the attack type spawn the bullet at {@link #getPos()} without its normal forward offset. */
+    public void useExactSpawnPosition() {
+        this.useExactSpawnPosition = true;
+    }
+
+    public boolean usesExactSpawnPosition() {
+        return useExactSpawnPosition;
     }
 
 
@@ -164,6 +178,22 @@ public class AttackContext {
         }
 
         return damage.floatValue();
+    }
+
+    public void setDamage(double damage) {
+        this.damage = damage;
+    }
+
+    @Nullable
+    public Integer getBulletLifetime() {
+        return bulletLifetime;
+    }
+
+    public void setBulletLifetime(int bulletLifetime) {
+        if (bulletLifetime <= 0) {
+            throw new IllegalArgumentException("bulletLifetime must be positive");
+        }
+        this.bulletLifetime = bulletLifetime;
     }
 
     @Override

@@ -67,13 +67,6 @@ public final class SplitSequence {
         return new SplitSequence(entries);
     }
 
-    /** Returns a copy without one module, for modules that do not inherit themselves. */
-    public SplitSequence copyWithout(@NotNull ResourceLocation moduleId) {
-        SplitSequence copy = copy();
-        copy.remove(moduleId);
-        return copy;
-    }
-
     /** Returns a copy with the current module's runtime trigger count advanced. */
     public SplitSequence copyWithIncrementedTriggerCount(@NotNull ResourceLocation moduleId) {
         SplitSequence copy = copy();
@@ -86,6 +79,28 @@ public final class SplitSequence {
             }
         }
         return copy;
+    }
+
+    /**
+     * Creates a child sequence by asking every registered module whether it inherits this child.
+     * Each retained entry preserves its independent runtime data.
+     */
+    public SplitSequence copyForChild(@NotNull SplitContext context, @NotNull AttackContext childContext) {
+        IForgeRegistry<SplitModule> registry = registry();
+        if (registry == null) return new SplitSequence();
+
+        List<SplitModuleEntry> childEntries = new ArrayList<>();
+        for (SplitModuleEntry entry : entries) {
+            SplitModule module = registry.getValue(entry.moduleId);
+            if (module == null) continue;
+
+            SplitContext entryContext = new SplitContext(
+                    context.getEvent(), entry.moduleId, module, entry.stacks, entry.triggerCount);
+            if (module.shouldInherit(entryContext, childContext)) {
+                childEntries.add(entry);
+            }
+        }
+        return new SplitSequence(childEntries);
     }
 
     /** Resolves one highest applicable priority layer and builds child requests. */
@@ -124,7 +139,7 @@ public final class SplitSequence {
                 if (group.getValue().isEmpty()) continue;
                 requests.add(AttackRequest.withContexts(
                         event.getParent().getOwner(), group.getKey(), AttackOrigin.SPLIT_CHILD,
-                        AttackPipelineMode.BULLET_ONLY, group.getValue(), false));
+                        AttackPipelineMode.RAW, group.getValue(), false));
             }
             return List.copyOf(requests);
         }

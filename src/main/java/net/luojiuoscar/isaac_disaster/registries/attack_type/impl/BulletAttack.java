@@ -98,7 +98,9 @@ public class BulletAttack extends AttackType {
         double width = owner.getBbWidth();
         double forwardOffset = 0.4 * (width / 0.6);
         Vec3 look = Vec3.directionFromRotation(context.getXRot(), context.getYRot());
-        Vec3 adjustedPos = context.getPos().add(look.scale(forwardOffset));
+        Vec3 adjustedPos = context.usesExactSpawnPosition()
+                ? context.getPos()
+                : context.getPos().add(look.scale(forwardOffset));
 
         TearBullet bullet = getBulletObject(context);
         bullet.setAttackContext(context);
@@ -153,7 +155,9 @@ public class BulletAttack extends AttackType {
                 owner.level(),
                 c.getOwner(),
                 c.getShooter(),
-                getBulletLiftTime(owner),
+                c.getBulletLifetime() == null
+                        ? getBulletLiftTime(owner)
+                        : c.getBulletLifetime(),
                 getBulletSpeed(owner),
                 getBulletScale(owner, damage),
                 damage,

@@ -181,7 +181,8 @@ public enum ItemId {
     ONE_UP(2),
     INNER_CHILD(3),
     DEAD_CAT(3),
-    GUPPYS_COLLAR(2);
+    GUPPYS_COLLAR(2),
+    THE_PARASITE(2);
 
 
 

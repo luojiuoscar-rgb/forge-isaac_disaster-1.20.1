@@ -6,6 +6,7 @@ import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackExecutor;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.IBulletObject;
 import net.minecraftforge.common.MinecraftForge;
 import org.jetbrains.annotations.NotNull;
+import net.minecraft.world.phys.Vec3;
 
 /** Publishes and executes one split boundary for a runtime bullet object. */
 public final class SplitExecutor {
@@ -23,6 +24,13 @@ public final class SplitExecutor {
         if (sequence == null || sequence.isEmpty()) return;
 
         AttackContext referenceContext = parent.getAttackContext();
+        referenceContext.setPos(parent.getPosition());
+        referenceContext.useExactSpawnPosition();
+        referenceContext.setDamage(parent.getDamage());
+        Vec3 velocity = parent.getVelocity();
+        if (velocity.lengthSqr() > 1.0E-8) {
+            referenceContext.setDirection(velocity);
+        }
         BulletSplitEvent event = new BulletSplitEvent(parent, sequence, referenceContext, triggerType);
         if (MinecraftForge.EVENT_BUS.post(event)) return;
 

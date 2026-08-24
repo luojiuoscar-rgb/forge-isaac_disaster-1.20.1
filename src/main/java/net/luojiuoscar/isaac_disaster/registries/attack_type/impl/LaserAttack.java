@@ -96,8 +96,6 @@ public class LaserAttack extends AttackType {
         public double xRotAngle;
         private final AttackContext attackContext;
         private final SplitTriggerCounts splitTriggerCounts = new SplitTriggerCounts();
-        private boolean endOfLifeTriggered;
-        private boolean terminatedByBlock;
         private BlockPos lastSplitBlockPosition;
 
         public LaserProjectile(LivingEntity owner, Entity shooter,
@@ -133,20 +131,14 @@ public class LaserAttack extends AttackType {
         public AttackContext getAttackContext() { return attackContext.copy(); }
 
         @Override
-        public @NotNull SplitSequence getSplitSequence() { return attackContext.getSplitSequence(); }
+        public SplitSequence getSplitSequence() { return attackContext.getSplitSequence(); }
 
         @Override
-        public @NotNull SplitTriggerCounts getSplitTriggerCounts() { return splitTriggerCounts.copy(); }
+        public SplitTriggerCounts getSplitTriggerCounts() { return splitTriggerCounts.copy(); }
 
         @Override
         public void recordSplitTrigger(SplitTriggerType type) {
             splitTriggerCounts.increment(type);
-        }
-
-        public boolean markEndOfLifeTriggered() {
-            if (endOfLifeTriggered) return false;
-            endOfLifeTriggered = true;
-            return true;
         }
 
         /** Records a block split position unless it is inside the previous hit's 3x3x3 area. */
@@ -174,6 +166,11 @@ public class LaserAttack extends AttackType {
         @Override
         public double getTraveled() {
             return this.traveled;
+        }
+
+        @Override
+        public int getTotalLifeTick() {
+            return 0;
         }
 
         @Override
@@ -327,10 +324,6 @@ public class LaserAttack extends AttackType {
             stepLaser(laser, level, ctx);
         }
 
-        if (!laser.terminatedByBlock && laser.markEndOfLifeTriggered()) {
-            laser.recordSplitTrigger(SplitTriggerType.END_OF_LIFE);
-            SplitExecutor.execute(laser, SplitTriggerType.END_OF_LIFE);
-        }
     }
 
     // ================== stepLaser ==================
@@ -402,7 +395,6 @@ public class LaserAttack extends AttackType {
         // --------- Block Collision ---------
         AABB box = createCollisionBox(nextPos, laser.width);
         if (handleBlockCollision(laser, level, context.getTrigger()) && !laser.spectral) {
-            laser.terminatedByBlock = true;
             laser.traveled = getRange(laser.owner);
             return;
         }

@@ -30,6 +30,8 @@ public interface IBulletObject {
 
     double getTraveled();
 
+    int getTotalLifeTick();
+
     Vec3 getPosition();
 
     @Nullable

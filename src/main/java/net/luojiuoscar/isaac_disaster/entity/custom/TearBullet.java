@@ -664,6 +664,11 @@ public class TearBullet extends Entity implements IBulletObject {
     public float getDamage() { return damage; }
 
     @Override
+    public int getTotalLifeTick() {
+        return totalLifeTick;
+    }
+
+    @Override
     public Vec3 getVelocity() {
         return this.velocity;
     }
@@ -702,7 +707,7 @@ public class TearBullet extends Entity implements IBulletObject {
 
     /** Returns this bullet's split sequence, creating an empty sequence when needed. */
     @Override
-    public SplitSequence getSplitSequence() {
+    public @NotNull SplitSequence getSplitSequence() {
         return Objects.requireNonNull(attackContext, "attackContext").getSplitSequence();
     }
 

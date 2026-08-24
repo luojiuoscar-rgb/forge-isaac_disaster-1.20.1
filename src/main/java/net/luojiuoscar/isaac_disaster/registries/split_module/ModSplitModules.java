@@ -1,10 +1,12 @@
 package net.luojiuoscar.isaac_disaster.registries.split_module;
 
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
+import net.luojiuoscar.isaac_disaster.registries.split_module.impl.ParasiteSplitModule;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.registries.DeferredRegister;
+import net.minecraftforge.registries.RegistryObject;
 
 /** Forge registry for split behavior definitions. */
 public final class ModSplitModules {
@@ -13,5 +15,7 @@ public final class ModSplitModules {
     public static final DeferredRegister<SplitModule> SPLIT_MODULE_REGISTRY =
             DeferredRegister.create(SPLIT_MODULE_KEY, IsaacDisaster.MOD_ID);
 
+    public static final RegistryObject<SplitModule> PARASITE =
+            SPLIT_MODULE_REGISTRY.register("parasite", ParasiteSplitModule::new);
 
 }
