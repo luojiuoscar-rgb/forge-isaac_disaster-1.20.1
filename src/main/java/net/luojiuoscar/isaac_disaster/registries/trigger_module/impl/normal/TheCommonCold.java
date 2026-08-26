@@ -32,7 +32,7 @@ public class TheCommonCold extends TriggerModule {
     public void attachToBullet(ExecutableEffectContext context, AttackContext attackContext) {
         LivingEntity entity = context.getEntity();
         if (entity.getRandom().nextDouble() < getTriggerChance(entity)){
-            attackContext.colorRl = ModBulletColors.POISON.getId();
+            attackContext.setColorRl(ModBulletColors.POISON.getId());
             attackContext.getTrigger().addAll(bullet_triggers);
         }
     }

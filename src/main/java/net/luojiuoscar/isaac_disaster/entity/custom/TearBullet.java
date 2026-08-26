@@ -98,6 +98,8 @@ public class TearBullet extends Entity implements IBulletObject {
     protected final CompositeTrigger trigger = new CompositeTrigger();
     @Nullable
     private AttackContext attackContext;
+    @Nullable
+    private BlockHitResult lastBlockHit;
     private final SplitTriggerCounts splitTriggerCounts = new SplitTriggerCounts();
     private boolean endOfLifeTriggered;
     protected Vec3 extraPositionOffset = Vec3.ZERO;
@@ -303,6 +305,7 @@ public class TearBullet extends Entity implements IBulletObject {
 
         if (shape.isEmpty() || shape.bounds().getSize() < 0.01) return false;
 
+        setLastBlockHit(blockHit);
         recordSplitTrigger(SplitTriggerType.BLOCK);
         SplitExecutor.execute(this, SplitTriggerType.BLOCK);
 
@@ -704,6 +707,11 @@ public class TearBullet extends Entity implements IBulletObject {
         entityData.set(TRAJECTORIES, s);
     }
 
+    @Override
+    public void setLastBlockHit(@Nullable BlockHitResult lastBlockHit) {
+        this.lastBlockHit = lastBlockHit;
+    }
+
     /** Returns this bullet's split sequence, creating an empty sequence when needed. */
     @Override
     public @NotNull SplitSequence getSplitSequence() {
@@ -736,6 +744,12 @@ public class TearBullet extends Entity implements IBulletObject {
 
     @Override
     public DamagedEntities getDamagedEntities() { return damagedEntities; }
+
+    @Override
+    @Nullable
+    public BlockHitResult getLastBlockHit() {
+        return lastBlockHit;
+    }
 
     public void setExtraPositionOffset(Vec3 extraPositionOffset) {
         this.extraPositionOffset = extraPositionOffset;

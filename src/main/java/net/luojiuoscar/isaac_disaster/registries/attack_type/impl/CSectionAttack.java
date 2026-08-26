@@ -117,17 +117,10 @@ public class CSectionAttack extends BulletAttack implements IChargeableAttack {
                     Map<ResourceLocation, Integer> trajectories = playerAbility.getTrajectories();
                     Vec3 eyePos = player.position().add(0, player.getBbHeight() * 0.5, 0);
 
-                    return new AttackContext(
-                            player,
-                            shooter,
-                            colorRl,
-                            new CompositeTrigger(),
-                            trajectories,
-                            eyePos,
-                            player.getXRot(),
-                            player.getYRot(),
-                            getRange(player),
-                            getBulletSpeed(player));
+                    return AttackContext.builder(player, shooter)
+                            .color(colorRl).trigger(new CompositeTrigger()).trajectories(trajectories)
+                            .position(eyePos).rotation(player.getXRot(), player.getYRot())
+                            .range(getRange(player)).speed(getBulletSpeed(player)).build();
                 })
                 .orElse(null);
     }

@@ -39,18 +39,10 @@ public class LokisHorns implements IAbilityEffect {
                     Map<ResourceLocation, Integer> trajectories = playerAbility.getTrajectories();
                     Vec3 eyePos = player.getEyePosition().add(0, player.getBbHeight() * -0.15, 0);
 
-                    AttackContext baseCtx = new AttackContext(
-                            player,
-                            player,
-                            colorRl,
-                            new CompositeTrigger(),
-                            trajectories,
-                            eyePos,
-                            player.getXRot(),
-                            player.getYRot(),
-                            attack.getRange(player),
-                            attack.getBulletSpeed(player)
-                    );
+                    AttackContext baseCtx = AttackContext.builder(player, player)
+                            .color(colorRl).trigger(new CompositeTrigger()).trajectories(trajectories)
+                            .position(eyePos).rotation(player.getXRot(), player.getYRot())
+                            .range(attack.getRange(player)).speed(attack.getBulletSpeed(player)).build();
 
                     AttackContext reversedReference = baseCtx.copy();
                     Vec3 reversedDirection = Vec3.directionFromRotation(

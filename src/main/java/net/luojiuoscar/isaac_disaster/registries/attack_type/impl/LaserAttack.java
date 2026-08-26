@@ -99,6 +99,7 @@ public class LaserAttack extends AttackType {
         private final double range;
         private final SplitTriggerCounts splitTriggerCounts = new SplitTriggerCounts();
         private BlockPos lastSplitBlockPosition;
+        private BlockHitResult lastBlockHit;
 
         public LaserProjectile(AttackContext attackContext) {
             this.owner = attackContext.getOwner();
@@ -117,6 +118,7 @@ public class LaserAttack extends AttackType {
             this.attackContext = attackContext.copy();
             this.attackSequenceIndex = 0;
             this.range = attackContext.getBulletRange();
+            this.lastBlockHit = null;
 
             this.prevShooterPos = getShooterWaistPosition();
         }
@@ -126,6 +128,8 @@ public class LaserAttack extends AttackType {
         public void setHoming(boolean homing) { this.homing = homing; }
         public void setSpectral(boolean spectral) { this.spectral = spectral; }
         public void setAttackSequenceIndex(int attackSequenceIndex) { this.attackSequenceIndex = attackSequenceIndex; }
+        @Override
+        public void setLastBlockHit(@Nullable BlockHitResult lastBlockHit) { this.lastBlockHit = lastBlockHit; }
 
         @Override
         public AttackContext getAttackContext() { return attackContext.copy(); }
@@ -136,6 +140,9 @@ public class LaserAttack extends AttackType {
         }
 
         public int getAttackSequenceIndex() { return attackSequenceIndex; }
+        @Nullable
+        @Override
+        public BlockHitResult getLastBlockHit() { return lastBlockHit; }
 
         @Override
         public SplitSequence getSplitSequence() { return attackContext.getSplitSequence(); }
@@ -252,12 +259,12 @@ public class LaserAttack extends AttackType {
 
         @Override
         public ResourceLocation getColorId() {
-            return attackContext.colorRl;
+            return attackContext.getColorRl();
         }
 
         @Override
         public Map<ResourceLocation, Integer> getTrajectories() {
-            return attackContext.trajectories;
+            return attackContext.getTrajectories();
         }
 
         @Override
@@ -304,7 +311,7 @@ public class LaserAttack extends AttackType {
     // ================== shotLaser ==================
     @Override
     public void shoot(AttackContext ctx) {
-        shootSingleLaser(ctx, ctx.getAttackSequenceIndex());
+        shootSingleLaser(ctx, 0);
     }
 
     protected void shootSingleLaser(AttackContext ctx, int attackSequenceIndex) {
@@ -361,7 +368,7 @@ public class LaserAttack extends AttackType {
                 RegistryManager.ACTIVE.getRegistry(ModAttackTrajectories.ATTACK_TRAJECTORY_KEY);
 
         if (!laser.isCurrentlyHoming && trajectoryIForgeRegistry != null) {
-            for (Map.Entry<ResourceLocation, Integer> entry : context.trajectories.entrySet()) {
+            for (Map.Entry<ResourceLocation, Integer> entry : context.getTrajectories().entrySet()) {
                 ResourceLocation trajId = entry.getKey();
                 int amplifier = entry.getValue() - 1;
 
@@ -394,7 +401,7 @@ public class LaserAttack extends AttackType {
         Vec3 nextPos = laser.position.add(laser.direction.scale(laser.step)).add(totalPositionOffset);
 
         // --------- 粒子 ---------
-        spawnInterpolatedParticles(level, laser.position, nextPos, laser.width, context.colorRl);
+        spawnInterpolatedParticles(level, laser.position, nextPos, laser.width, context.getColorRl());
 
         // --------- Block Collision ---------
         AABB box = createCollisionBox(nextPos, laser.width);
@@ -426,6 +433,7 @@ public class LaserAttack extends AttackType {
         ));
 
         if (blockHit.getType() == BlockHitResult.Type.BLOCK) {
+            laser.setLastBlockHit(blockHit);
             if (laser.markBlockSplitPosition(blockHit.getBlockPos())) {
                 laser.recordSplitTrigger(SplitTriggerType.BLOCK);
                 SplitExecutor.execute(laser, SplitTriggerType.BLOCK);

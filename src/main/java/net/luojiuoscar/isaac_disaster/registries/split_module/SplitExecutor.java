@@ -4,6 +4,8 @@ import net.luojiuoscar.isaac_disaster.event.custom.attack.tear_bullet.BulletSpli
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackContext;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackExecutor;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.IBulletObject;
+import net.luojiuoscar.isaac_disaster.registries.attack_type.impl.BrimstoneAttack;
+import net.luojiuoscar.isaac_disaster.registries.attack_type.impl.LaserAttack;
 import net.minecraftforge.common.MinecraftForge;
 import org.jetbrains.annotations.NotNull;
 import net.minecraft.world.phys.Vec3;
@@ -28,19 +30,27 @@ public final class SplitExecutor {
         SplitSequence sequence = parent.getSplitSequence();
         if (sequence == null || sequence.isEmpty()) return;
 
-        AttackContext referenceContext = parent.getAttackContext();
-        referenceContext.setPos(parent.getPosition());
-        referenceContext.useExactSpawnPosition();
-        referenceContext.setDamage(parent.getDamage());
-        referenceContext.setBulletRange(parent.getRange());
+        AttackContext.Builder referenceBuilder = parent.getAttackContext().toBuilder()
+                .position(parent.getPosition())
+                .useExactSpawnPosition()
+                .damage((double) parent.getDamage())
+                .range(parent.getRange());
         Vec3 velocity = parent.getVelocity();
         if (velocity.lengthSqr() > 1.0E-8) {
-            referenceContext.setDirection(velocity);
+            referenceBuilder.direction(velocity);
         }
+        AttackContext referenceContext = referenceBuilder.build();
         BulletSplitEvent event = new BulletSplitEvent(parent, sequence, referenceContext, triggerType);
         if (MinecraftForge.EVENT_BUS.post(event)) return;
 
         for (var request : event.getSplitSequence().createChildRequests(event)) {
+            if (request.getAttackType() instanceof BrimstoneAttack brimstone
+                    && parent instanceof LaserAttack.LaserProjectile laser) {
+                for (AttackContext childContext : request.getProvidedContexts()) {
+                    brimstone.shootSingle(childContext, laser.getAttackSequenceIndex());
+                }
+                continue;
+            }
             AttackExecutor.perform(request);
         }
     }

@@ -46,30 +46,25 @@ public class BrimstoneAttack extends LaserAttack implements IChargeableAttack {
 
     // ================== handleAttack ==================
     @Override
-    public void shoot(AttackContext ctx) {
-        if (ctx.usesExactSpawnPosition()) {
-            shootSingleLaser(ctx, ctx.getAttackSequenceIndex());
-            return;
-        }
-
-        // 玩家域的schedule
+    public void shoot(AttackContext baseContext) {
         AtomicInteger sequenceIndex = new AtomicInteger();
-        ScheduledFuncHelper.scheduleForPlayer(ctx.getOwner().getUUID(),
+        ScheduledFuncHelper.scheduleForPlayer(baseContext.getOwner().getUUID(),
                 SCHEDULE_TYPE, 1,1, 13, false, () -> {
+            int currentSequenceIndex = sequenceIndex.incrementAndGet();
 
-            ctx.setAttackSequenceIndex(sequenceIndex.incrementAndGet());
-
-            Entity s = ctx.getShooter();
-            Vec3 eyePos = s.getEyePosition().add(0, s.getBbHeight() * -0.15, 0);
-            ctx.setPos(eyePos);
-
-            if (isControllable(ctx.getOwner())){
-                ctx.setXRot(s.getXRot());
-                ctx.setYRot(s.getYRot());
+            Entity shooter = baseContext.getShooter();
+            Vec3 spawnPosition = shooter.getEyePosition().add(0, shooter.getBbHeight() * -0.15, 0);
+            AttackContext.Builder shotBuilder = baseContext.toBuilder().position(spawnPosition);
+            if (isControllable(baseContext.getOwner())) {
+                shotBuilder.rotation(shooter.getXRot(), shooter.getYRot());
             }
-
-            shootSingleLaser(ctx, ctx.getAttackSequenceIndex());
+            shootSingle(shotBuilder.build(), currentSequenceIndex);
         });
+    }
+
+    /** Fires one Brimstone laser using the caller-provided runtime sequence identity. */
+    public void shootSingle(AttackContext context, int sequenceIndex) {
+        shootSingleLaser(context, sequenceIndex);
     }
 
     @Override

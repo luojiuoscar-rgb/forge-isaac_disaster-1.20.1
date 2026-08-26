@@ -47,17 +47,10 @@ public class Technology2Attack extends LaserAttack {
                     Vec3 left = look.cross(up).normalize();
                     eyePos = eyePos.add(left.scale(-0.5));
 
-                    return new AttackContext(
-                            player,
-                            shooter,
-                            colorRl,
-                            new CompositeTrigger(),
-                            trajectories,
-                            eyePos,
-                            player.getXRot(),
-                            player.getYRot(),
-                            getRange(player),
-                            getBulletSpeed(player));
+                    return AttackContext.builder(player, shooter)
+                            .color(colorRl).trigger(new CompositeTrigger()).trajectories(trajectories)
+                            .position(eyePos).rotation(player.getXRot(), player.getYRot())
+                            .range(getRange(player)).speed(getBulletSpeed(player)).build();
                 })
                 .orElse(null);
     }

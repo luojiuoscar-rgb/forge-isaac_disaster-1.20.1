@@ -34,18 +34,10 @@ public class SadBomb extends BombRelated {
 
                     int bulletCount = getBulletCount(bomb.getPower());
 
-                    AttackContext ctx = new AttackContext(
-                            player,
-                            bomb,
-                            colorRl,
-                            new CompositeTrigger(),
-                            trajectories,
-                            pos,
-                            bomb.getXRot(),
-                            bomb.getYRot(),
-                            attack.getRange(player),
-                            attack.getBulletSpeed(player)
-                    );
+                    AttackContext ctx = AttackContext.builder(player, bomb)
+                            .color(colorRl).trigger(new CompositeTrigger()).trajectories(trajectories)
+                            .position(pos).rotation(bomb.getXRot(), bomb.getYRot())
+                            .range(attack.getRange(player)).speed(attack.getBulletSpeed(player)).build();
 
                     List<AttackContext> contexts = ModAttackPatterns.RING.get().generate(
                             new AttackPatternContext(ctx, bulletCount));

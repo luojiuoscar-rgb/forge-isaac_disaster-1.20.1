@@ -7,6 +7,7 @@ import net.luojiuoscar.isaac_disaster.registries.split_module.SplitTriggerCounts
 import net.luojiuoscar.isaac_disaster.registries.split_module.SplitTriggerType;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 
 import javax.annotation.Nullable;
@@ -60,6 +61,11 @@ public interface IBulletObject {
     Map<ResourceLocation, Integer> getTrajectories();
 
     CompositeTrigger getTriggers();
+
+    @Nullable
+    BlockHitResult getLastBlockHit();
+
+    void setLastBlockHit(@Nullable BlockHitResult lastBlockHit);
 
     DamagedEntities getDamagedEntities();
 

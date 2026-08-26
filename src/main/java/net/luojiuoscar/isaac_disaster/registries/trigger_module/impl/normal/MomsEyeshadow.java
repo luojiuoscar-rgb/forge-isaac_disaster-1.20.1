@@ -31,7 +31,7 @@ public class MomsEyeshadow extends TriggerModule {
     public void attachToBullet(ExecutableEffectContext context, AttackContext attackContext) {
         LivingEntity entity = context.getEntity();
         if (entity.getRandom().nextDouble() < getTriggerChance(entity)){
-            attackContext.colorRl = ModBulletColors.CHARM.getId();
+            attackContext.setColorRl(ModBulletColors.CHARM.getId());
             attackContext.getTrigger().addAll(bullet_triggers);
         }
     }

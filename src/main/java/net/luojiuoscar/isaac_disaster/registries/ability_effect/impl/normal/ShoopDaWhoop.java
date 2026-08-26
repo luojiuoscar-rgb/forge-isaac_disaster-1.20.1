@@ -32,19 +32,12 @@ public class ShoopDaWhoop implements IAbilityEffect {
             damage = inst.getValue();
         }
 
-        AttackContext ctx = new AttackContext(
-                entity,
-                entity,
-                ModBulletColors.SHOOP_DA_WHOOP.getId(),
-                new CompositeTrigger(),
-                new HashMap<>(),
-                position,
-                entity.getXRot(),
-                entity.getYRot(),
-                damage * 2 * amplifier,
-                ModAttackTypes.SHOOP_DA_WHOOP.get().getRange(entity),
-                ModAttackTypes.SHOOP_DA_WHOOP.get().getBulletSpeed(entity)
-        );
+        AttackContext ctx = AttackContext.builder(entity, entity)
+                .color(ModBulletColors.SHOOP_DA_WHOOP.getId()).trigger(new CompositeTrigger())
+                .position(position).rotation(entity.getXRot(), entity.getYRot())
+                .damage(damage * 2 * amplifier)
+                .range(ModAttackTypes.SHOOP_DA_WHOOP.get().getRange(entity))
+                .speed(ModAttackTypes.SHOOP_DA_WHOOP.get().getBulletSpeed(entity)).build();
 
         AttackExecutor.perform(AttackRequest.withContexts(
                 entity, ModAttackTypes.SHOOP_DA_WHOOP.get(), AttackOrigin.ABILITY_EXTRA,

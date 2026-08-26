@@ -31,18 +31,12 @@ public class LaserPlusFetus implements IAbilityEffect {
         AttackExecutor.perform(AttackRequest.withContexts(
                 player, ModAttackTypes.LASER.get(), AttackOrigin.BULLET_SECONDARY,
                 secondaryLaserPipelineMode(), List.of(
-                new AttackContext(
-                        player,
-                        bullet,
-                        bullet.getColorId(),
-                        bullet.getTriggers(),
-                        bullet.getTrajectories(),
-                        bullet.getPosition(),
-                        bullet.getXRot(),
-                        bullet.getYRot(),
-                        ModAttackTypes.LASER.get().getRange(player),
-                        ModAttackTypes.LASER.get().getBulletSpeed(player)
-                )
+                AttackContext.builder(player, bullet)
+                        .color(bullet.getColorId()).trigger(bullet.getTriggers())
+                        .trajectories(bullet.getTrajectories()).position(bullet.getPosition())
+                        .rotation(bullet.getXRot(), bullet.getYRot())
+                        .range(ModAttackTypes.LASER.get().getRange(player))
+                        .speed(ModAttackTypes.LASER.get().getBulletSpeed(player)).build()
         ), false));
 
         return true;

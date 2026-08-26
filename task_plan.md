@@ -1,113 +1,40 @@
-# Task Plan: Isaac Disaster Persistent Project Memory
+# Isaac Disaster Project Plan
 
-## Goal
-Build and maintain an AI-oriented, file-backed project memory for Isaac Disaster using `task_plan.md`, `findings.md`, and `progress.md`, so future work can recover current architecture, decisions, risks, and workflow constraints after context loss.
+## Status
 
-## Current Phase
-SplitModule 与基础子弹分裂事件实现
+No project-wide implementation plan is active. Feature work belongs in
+`.planning/<task-id>/`.
 
-## Active Feature Plan
+## Project Rules
 
-### Goal
-完成 SplitModule 行为重构，并为泪弹和激光接入统一的 BLOCK、ENTITY、END_OF_LIFE 分裂事件及运行时计数；不添加 setEndOfLife，不持久化分裂状态，不实现具体道具。
+- Target Forge `1.20.1`, Forge `47.4.9`, and the repository's configured Java
+  toolchain.
+- Read this file, `findings.md`, and the tail of `progress.md` when recovering
+  project-level context.
+- For an active feature, read that feature's `.planning/<task-id>/task_plan.md`,
+  `findings.md`, and `progress.md` first.
+- Keep detailed design decisions, experiments, errors, and test output in the
+  feature directory. Promote only durable cross-feature facts to root
+  `findings.md`.
+- Do not use root `progress.md` as a complete historical log.
 
-### Phases
-- [x] 清理废弃 SplitRule 注册表及测试残留
-- [x] 完成 IBulletObject、TearBullet、LaserProjectile 的运行时数据接口
-- [x] 新增统一 SplitExecutor 并接入 AttackExecutor
-- [x] 接入泪弹三类触发边界
-- [x] 接入激光三类触发边界
-- [x] 更新测试、全局扫描并运行构建验证
+## Planning Directory Convention
 
-### Known Errors
-| Error | Attempt | Resolution |
-|---|---:|---|
-| 新增 IBulletObject 方法但 TearBullet/LaserProjectile 尚未实现 | 1 | 本计划第二阶段补齐实现 |
+Each substantial feature or investigation gets:
 
-## Phases
+```text
+.planning/<task-id>/
+├── task_plan.md
+├── findings.md
+└── progress.md
+```
 
-### Phase 1: Initialize And Recover
-- [x] Read the planning-with-files skill and templates.
-- [x] Run session catch-up with an available Python launcher.
-- [x] Create the three root planning files.
-- **Status:** complete
+Completed task directories remain as historical implementation records. Current
+source code takes precedence over any archived plan.
 
-### Phase 2: Inventory Existing Knowledge
-- [x] Read the existing project memory and diagnosis files.
-- [x] Inspect current repository structure and Git state.
-- [x] Separate current facts from historical or resolved findings.
-- **Status:** complete
+## Root Maintenance
 
-### Phase 3: Rebuild Persistent Findings
-- [x] Organize stable architecture by subsystem and ownership boundary.
-- [x] Record extension contracts, implementation conventions, and testing constraints.
-- [x] Record unresolved issues separately from completed work.
-- [x] Add a concise reboot/read-order section and audit source paths.
-- **Status:** complete
-
-### Phase 4: Verify Recovery Quality
-- [x] Check all three files for contradictions and stale statements.
-- [x] Run the 5-question reboot test from the skill.
-- [x] Verify Markdown and Git diffs.
-- **Status:** complete
-
-### Phase 5: Deliver And Maintain
-- [x] Mark migration complete.
-- [x] Explain which file future sessions should read and update.
-- [x] Keep the planning files current in later complex tasks.
-- **Status:** complete
-
-## Key Questions
-1. Which statements in the old memory remain true in the current codebase?
-2. Which historical diagnoses have already been resolved and should not guide future edits?
-3. What minimum source map lets a future agent recover each subsystem without reading every implementation class?
-4. How should future feature-specific plans coexist with this project-wide memory?
-
-## Decisions Made
-| Decision | Rationale |
-|----------|-----------|
-| Store the persistent memory files in the repository root | This is required by the planning-with-files skill and enables automatic recovery hooks. |
-| Keep `codex/项目记忆.md` and `codex/初步诊断.md` as archives | They preserve design history, but classification is complete and they are no longer canonical operational sources. |
-| Use `findings.md` as the canonical stable knowledge base | Architecture facts and durable decisions should not be mixed with task phases or chronological logs. |
-| Treat implementation files as samples, not an exhaustive reading target | Many passive-item implementation classes are intentionally repetitive. |
-
-## Errors Encountered
-| Error | Attempt | Resolution |
-|-------|---------|------------|
-| `python` command was unavailable when running `session-catchup.py` | 1 | Locate an available launcher such as `py` or a bundled Python runtime before retrying. |
-| `py` launcher was also unavailable | 2 | Stop probing PATH aliases and use the workspace dependency locator to obtain an absolute Python path. |
-| Catch-up reported three unsynced tool calls | 3 | Compared Git diffs and re-read all planning files; no missing design or implementation context was found. |
-| Assumed renderer path `renderer/entity/MomKnifeRenderer.java` did not exist | 1 | Locate the renderer with `rg --files` before reading; do not retry the guessed path. |
-| Assumed an `entity/laser` package while searching trajectory consumers | 1 | Source search showed laser behavior lives primarily in `LaserAttack` and trigger/effect classes. |
-| Findings patch used stale section ordering | 1 | No file changed; inspect current heading positions and apply smaller section-specific patches. |
-
-## Notes
-- Re-read this file before major architectural decisions.
-- Update `findings.md` after every two view/search operations during complex work.
-- Log errors instead of silently repeating failed commands.
-- Feature-specific implementation plans may later use `.planning/<plan-id>/`; these root files remain the project-wide memory.
-
-## 2026-08-21 - Attack Pipeline Refactor
-
-## Goal
-Finish the staged attack-pipeline rewrite for Isaac Disaster: keep `AttackPattern` separate, route attacks through `AttackPipeline`, and remove the obsolete attack-context event path so the workspace has one unambiguous attack flow.
-
-## Phases
-
-### Phase 1: Inspect Current State
-- [x] Read the existing planning files and relevant skills.
-- [x] Inspect the new pipeline/request/plan/event classes.
-- [x] Search current attack call sites and legacy event usage.
-- **Status:** complete
-
-### Phase 2: Fix And Finish Migration
-- [x] Resolve compile or logic issues in the new pipeline.
-- [x] Finish migrating remaining attack-entry call sites.
-- [x] Remove obsolete compatibility paths and migrate all callers to the unified pipeline.
-- **Status:** complete
-
-### Phase 3: Verify
-- [x] Run focused tests for the pipeline and shot flow.
-- [x] Run Gradle verification with Java 17.
-- [x] Record any remaining blockers or follow-up work.
-- **Status:** complete
+- Keep this file limited to project-wide workflow and release constraints.
+- Keep stable architecture and unresolved cross-feature issues in
+  `findings.md`.
+- Keep only recent project-level maintenance entries in `progress.md`.

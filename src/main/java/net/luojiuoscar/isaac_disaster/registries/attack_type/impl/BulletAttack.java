@@ -111,9 +111,9 @@ public class BulletAttack extends AttackType {
         bullet.setControllable(isControllable(owner));
 
         bullet.getTriggers().addAll(context.getTrigger());
-        bullet.setTrajectories(context.trajectories);
+        bullet.setTrajectories(context.getTrajectories());
 
-        bullet.setBulletColor(context.colorRl);
+        bullet.setBulletColor(context.getColorRl());
 
         bullet.moveTo(adjustedPos.x, adjustedPos.y, adjustedPos.z, context.getYRot(), context.getXRot());
         bullet.setPreflightStart(context.getPos());

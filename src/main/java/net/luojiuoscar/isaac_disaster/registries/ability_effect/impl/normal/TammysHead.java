@@ -46,18 +46,10 @@ public class TammysHead implements IAbilityEffect {
                     Vec3 eyePos = player.getEyePosition().add(0, player.getBbHeight() * -0.15, 0);
 
                     int bulletCount = 12;
-                    AttackContext ctx = new AttackContext(
-                            player,
-                            player,
-                            colorRl,
-                            new CompositeTrigger(),
-                            trajectories,
-                            eyePos,
-                            player.getXRot(),
-                            player.getYRot(),
-                            attack.getRange(player),
-                            attack.getBulletSpeed(player)
-                    );
+                    AttackContext ctx = AttackContext.builder(player, player)
+                            .color(colorRl).trigger(new CompositeTrigger()).trajectories(trajectories)
+                            .position(eyePos).rotation(player.getXRot(), player.getYRot())
+                            .range(attack.getRange(player)).speed(attack.getBulletSpeed(player)).build();
 
                     List<AttackContext> contexts = ModAttackPatterns.RING.get().generate(
                             new AttackPatternContext(ctx, bulletCount));

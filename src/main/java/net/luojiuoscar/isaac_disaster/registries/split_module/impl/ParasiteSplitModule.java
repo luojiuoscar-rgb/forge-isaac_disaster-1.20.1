@@ -38,17 +38,23 @@ public final class ParasiteSplitModule extends SplitModule {
         List<AttackContext> children = getPattern().generate(
                 new AttackPatternContext(context.getReferenceContext(), getBulletCount()));
         AttackContext reference = context.getReferenceContext();
-        for (AttackContext child : children) {
-            child.setDamage(reference.getDamage() * 0.5);
-            child.setBulletRange(context.getParent().getRange() * 0.5);
+        for (int i = 0; i < children.size(); i++) {
+            AttackContext child = children.get(i);
+            children.set(i, child.toBuilder()
+                    .damage(reference.getDamage() * 0.5)
+                    .range(context.getParent().getRange() * 0.5)
+                    .build());
         }
         return children;
     }
 
     @Override
     public void applyInheritance(SplitContext context, List<AttackContext> children) {
-        for (AttackContext child : children) {
-            child.setSplitSequence(context.getSequence().copyForChild(context, child, true));
+        for (int i = 0; i < children.size(); i++) {
+            AttackContext child = children.get(i);
+            children.set(i, child.toBuilder()
+                    .splitSequence(context.getSequence().copyForChild(context, child, true))
+                    .build());
         }
     }
 
