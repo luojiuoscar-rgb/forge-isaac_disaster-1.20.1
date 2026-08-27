@@ -1,5 +1,6 @@
 package net.luojiuoscar.isaac_disaster.registries.attack_type;
 
+import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.CompositeTrigger;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.SimpleTrigger;
 import net.luojiuoscar.isaac_disaster.helper.GeometryHelper;
@@ -36,6 +37,7 @@ public class AttackContext {
     private final double bulletSpeed;
     private SplitSequence splitSequence;
     private boolean useExactSpawnPosition;
+    private boolean frozen;
     private final Entity shooter;
     private final LivingEntity owner;
 
@@ -58,6 +60,7 @@ public class AttackContext {
         this.bulletSpeed = sanitizeSpeed(builder.speed);
         this.splitSequence = builder.splitSequence == null ? new SplitSequence() : builder.splitSequence.copy();
         this.useExactSpawnPosition = builder.useExactSpawnPosition;
+        this.frozen = false;
     }
 
     public static Builder builder(@NotNull LivingEntity owner, @Nullable Entity shooter) {
@@ -65,36 +68,51 @@ public class AttackContext {
     }
 
     public Builder toBuilder() {
-        return builder(owner, shooter).color(colorRl).trigger(trigger).trajectories(trajectories)
+        return Builder.from(this).color(colorRl).trigger(trigger).trajectories(trajectories)
                 .position(pos).mainAxis(mainAxis).damage((double) damage).range(bulletRange)
                 .speed(bulletSpeed).splitSequence(splitSequence).useExactSpawnPosition(useExactSpawnPosition);
     }
 
     public AttackContext copy() { return new AttackContext(this); }
 
-    public CompositeTrigger getTrigger() { return trigger; }
     public CompositeTrigger copyTrigger() { return trigger.copy(); }
-    public void addSimpleTrigger(SimpleTrigger trigger) { this.trigger.add(Objects.requireNonNull(trigger, "trigger")); }
-    public void addSimpleTriggers(List<SimpleTrigger> triggers) { this.trigger.addAll(Objects.requireNonNull(triggers, "triggers")); }
+    public void addSimpleTrigger(SimpleTrigger trigger) {
+        if (!ensureMutable("addSimpleTrigger")) return;
+        this.trigger.add(Objects.requireNonNull(trigger, "trigger"));
+    }
+    public void addSimpleTriggers(List<SimpleTrigger> triggers) {
+        if (!ensureMutable("addSimpleTriggers")) return;
+        this.trigger.addAll(Objects.requireNonNull(triggers, "triggers"));
+    }
 
     public Vec3 getPos() { return pos; }
-    public void setPos(Vec3 pos) { this.pos = Objects.requireNonNull(pos, "pos"); }
+    public void setPos(Vec3 pos) { if (ensureMutable("setPos")) this.pos = Objects.requireNonNull(pos, "pos"); }
     public Vec3 getMainAxis() { return mainAxis; }
-    public void setMainAxis(Vec3 mainAxis) { this.mainAxis = normalizeMainAxis(mainAxis); }
+    public void setMainAxis(Vec3 mainAxis) { if (ensureMutable("setMainAxis")) this.mainAxis = normalizeMainAxis(mainAxis); }
 
     @NotNull public Entity getShooter() { return shooter; }
     @NotNull public LivingEntity getOwner() { return owner; }
     public ResourceLocation getColorRl() { return colorRl; }
-    public void setColorRl(ResourceLocation colorRl) { this.colorRl = colorRl; }
+    public void setColorRl(ResourceLocation colorRl) { if (ensureMutable("setColorRl")) this.colorRl = colorRl; }
     public Map<ResourceLocation, Integer> getTrajectories() { return trajectories; }
     public float getDamage() { return damage; }
     public double getBulletRange() { return bulletRange; }
     public double getBulletSpeed() { return bulletSpeed; }
 
-    /** Returns this context's split sequence, which is always initialized. */
-    @NotNull public SplitSequence getSplitSequence() { return splitSequence; }
-    public void useExactSpawnPosition() { this.useExactSpawnPosition = true; }
+    public SplitSequence copySplitSequence() { return splitSequence.copy(); }
+    public void addSplitModule(@NotNull ResourceLocation moduleId, int stacks) {
+        if (ensureMutable("addSplitModule")) splitSequence.add(moduleId, stacks);
+    }
+    public void useExactSpawnPosition() { if (ensureMutable("useExactSpawnPosition")) this.useExactSpawnPosition = true; }
     public boolean usesExactSpawnPosition() { return useExactSpawnPosition; }
+    public boolean isFrozen() { return frozen; }
+    public void freeze() { frozen = true; }
+
+    private boolean ensureMutable(String operation) {
+        if (!frozen) return true;
+        IsaacDisaster.LOGGER.warn("Ignored {} on frozen AttackContext", operation);
+        return false;
+    }
 
     private static Map<ResourceLocation, Integer> immutableMap(Map<ResourceLocation, Integer> source) {
         if (source == null || source.isEmpty()) return Map.of();
@@ -143,11 +161,31 @@ public class AttackContext {
         this.bulletSpeed = source.bulletSpeed;
         this.splitSequence = source.splitSequence.copy();
         this.useExactSpawnPosition = source.useExactSpawnPosition;
+        this.frozen = source.frozen;
+    }
+
+    private AttackContext(AttackContext source, Builder builder) {
+        this.owner = source.owner;
+        this.shooter = source.shooter;
+        this.colorRl = builder.colorRl;
+        this.trigger = builder.trigger == null ? new CompositeTrigger() : builder.trigger.copy();
+        this.trajectories = immutableMap(builder.trajectories);
+        this.pos = Objects.requireNonNull(builder.position, "position");
+        this.mainAxis = builder.direction != null
+                ? normalizeMainAxis(builder.direction)
+                : normalizeMainAxis(Objects.requireNonNull(builder.mainAxis, "mainAxis"));
+        this.damage = Objects.requireNonNull(builder.damage, "damage").floatValue();
+        this.bulletRange = sanitizeRange(builder.range);
+        this.bulletSpeed = sanitizeSpeed(builder.speed);
+        this.splitSequence = builder.splitSequence == null ? new SplitSequence() : builder.splitSequence.copy();
+        this.useExactSpawnPosition = builder.useExactSpawnPosition;
+        this.frozen = false;
     }
 
     public static final class Builder {
         private final LivingEntity owner;
         private final Entity shooter;
+        private AttackContext source;
         private ResourceLocation colorRl;
         private CompositeTrigger trigger;
         private Map<ResourceLocation, Integer> trajectories = Map.of();
@@ -163,6 +201,16 @@ public class AttackContext {
         private Builder(@NotNull LivingEntity owner, @Nullable Entity shooter) {
             this.owner = Objects.requireNonNull(owner, "owner");
             this.shooter = shooter;
+        }
+
+        private Builder(AttackContext source) {
+            this.owner = null;
+            this.shooter = null;
+            this.source = source;
+        }
+
+        private static Builder from(AttackContext source) {
+            return new Builder(source);
         }
 
         public Builder color(ResourceLocation colorRl) { this.colorRl = colorRl; return this; }
@@ -183,6 +231,6 @@ public class AttackContext {
         public Builder splitSequence(SplitSequence splitSequence) { this.splitSequence = splitSequence; return this; }
         public Builder useExactSpawnPosition() { this.useExactSpawnPosition = true; return this; }
         private Builder useExactSpawnPosition(boolean value) { this.useExactSpawnPosition = value; return this; }
-        public AttackContext build() { return new AttackContext(this); }
+        public AttackContext build() { return source == null ? new AttackContext(this) : new AttackContext(source, this); }
     }
 }

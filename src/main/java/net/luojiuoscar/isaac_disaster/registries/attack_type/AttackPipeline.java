@@ -20,13 +20,13 @@ public final class AttackPipeline {
     public static boolean executeRequest(@NotNull AttackRequest request) {
         Objects.requireNonNull(request, "request");
         return switch (request.getPipelineMode()) {
-            case FULL, GROUP_AND_BULLET -> executeGeneratedAttack(request);
-            case BULLET_ONLY -> executeProvidedContexts(request);
-            case RAW -> executeRawAttack(request);
+            case FULL, PLAN_PREPARE_AND_EXECUTE -> executeGeneratedAttack(request);
+            case PREPARE_AND_EXECUTE -> executePrepareAndExecute(request);
+            case EXECUTE_ONLY -> executeExecuteOnly(request);
         };
     }
 
-    /** Generates contexts from the attack type after the FULL-mode cancellation check. */
+    /** Generates contexts, optionally after the FULL-mode attack-level cancellation check. */
     private static boolean executeGeneratedAttack(@NotNull AttackRequest request) {
         if (request.getPipelineMode() == AttackPipelineMode.FULL) {
             if (MinecraftForge.EVENT_BUS.post(new BeforePerformAttackEvent(
@@ -45,19 +45,19 @@ public final class AttackPipeline {
         return executeAttackPlan(request, baseContexts);
     }
 
-    /** Runs the one-time attack-plan phase and then freezes its final contexts. */
+    /** Runs the one-time attack-plan phase and finalizes its final context sequence. */
     private static boolean executeAttackPlan(@NotNull AttackRequest request,
                                              @NotNull List<AttackContext> baseContexts) {
         AttackPlan plan = new AttackPlan(request, baseContexts);
         AttackPlanEvent planEvent = new AttackPlanEvent(request, plan);
         MinecraftForge.EVENT_BUS.post(planEvent);
-        return executePreparedContexts(request, plan, plan.freezeContexts());
+        return executePreparedContexts(request, plan, plan.finalizeContexts());
     }
 
     /** Creates a fixed plan wrapper for caller-provided contexts and prepares each context. */
-    private static boolean executeProvidedContexts(@NotNull AttackRequest request) {
+    private static boolean executePrepareAndExecute(@NotNull AttackRequest request) {
         AttackPlan plan = new AttackPlan(request, request.getProvidedContexts());
-        return executePreparedContexts(request, plan, plan.freezeContexts());
+        return executePreparedContexts(request, plan, plan.finalizeContexts());
     }
 
     /** Runs the per-context stage, omitting only contexts whose prepare event was cancelled. */
@@ -74,6 +74,7 @@ public final class AttackPipeline {
             }
         }
 
+        preparedContexts.forEach(AttackContext::freeze);
         request.getAttackType().performAttack(preparedContexts);
         if (request.shouldPlaySound()) {
             request.getAttackType().makeSound(request.getOwner());
@@ -81,9 +82,11 @@ public final class AttackPipeline {
         return true;
     }
 
-    /** Executes the provided contexts directly without publishing any pipeline events. */
-    private static boolean executeRawAttack(@NotNull AttackRequest request) {
-        request.getAttackType().performAttack(request.getProvidedContexts());
+    /** Executes already-prepared contexts directly without publishing pipeline events. */
+    private static boolean executeExecuteOnly(@NotNull AttackRequest request) {
+        List<AttackContext> contexts = request.getProvidedContexts();
+        contexts.forEach(AttackContext::freeze);
+        request.getAttackType().performAttack(contexts);
         if (request.shouldPlaySound()) {
             request.getAttackType().makeSound(request.getOwner());
         }

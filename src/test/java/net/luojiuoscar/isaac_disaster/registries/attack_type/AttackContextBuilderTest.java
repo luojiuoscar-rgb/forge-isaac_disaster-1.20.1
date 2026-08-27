@@ -58,9 +58,9 @@ class AttackContextBuilderTest {
 
         trajectories.clear();
         assertEquals(1, context.getTrajectories().size());
-        assertNotSame(trigger, context.getTrigger());
-        assertNotSame(sequence, context.getSplitSequence());
-        assertNotSame(context.getTrigger(), context.copyTrigger());
+        assertNotSame(trigger, context.copyTrigger());
+        assertNotSame(sequence, context.copySplitSequence());
+        assertNotSame(context.copyTrigger(), context.copyTrigger());
     }
 
     @Test

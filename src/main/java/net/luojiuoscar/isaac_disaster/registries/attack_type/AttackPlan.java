@@ -52,8 +52,8 @@ public final class AttackPlan {
         this.extraContexts.addAll(Objects.requireNonNull(contexts, "contexts"));
     }
 
-    /** Freezes and returns the final base-plus-extra context sequence. */
-    public @NotNull List<AttackContext> freezeContexts() {
+    /** Finalizes and returns the plan's base-plus-extra context sequence. */
+    public @NotNull List<AttackContext> finalizeContexts() {
         if (frozenContexts == null) {
             List<AttackContext> merged = new ArrayList<>(currentBaseContexts);
             merged.addAll(extraContexts);

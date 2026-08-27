@@ -88,7 +88,7 @@ public class BulletAttack extends AttackType {
         bullet.setHoming(isHoming(owner));
         bullet.setControllable(isControllable(owner));
 
-        bullet.getTriggers().addAll(context.getTrigger());
+        bullet.getTriggers().addAll(context.copyTrigger());
         bullet.setTrajectories(context.getTrajectories());
 
         bullet.setBulletColor(context.getColorRl());
@@ -115,7 +115,7 @@ public class BulletAttack extends AttackType {
         }
 
         TearBulletShootEvent event =
-                new TearBulletShootEvent(bullet, bullet.getOwner(), getId(), context.getTrigger(), bullet);
+                new TearBulletShootEvent(bullet, bullet.getOwner(), getId(), bullet.getTriggers(), bullet);
         MinecraftForge.EVENT_BUS.post(event);
         return !event.isCanceled();
     }

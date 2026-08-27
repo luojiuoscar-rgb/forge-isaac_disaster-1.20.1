@@ -45,8 +45,9 @@ public final class SplitExecutor {
 
         for (var request : event.getSplitSequence().createChildRequests(event)) {
             if (request.getAttackType() instanceof BrimstoneAttack brimstone
-                    && parent instanceof LaserAttack.LaserProjectile laser) {
+                && parent instanceof LaserAttack.LaserProjectile laser) {
                 for (AttackContext childContext : request.getProvidedContexts()) {
+                    childContext.freeze();
                     brimstone.shootSingle(childContext, laser.getAttackSequenceIndex());
                 }
                 continue;

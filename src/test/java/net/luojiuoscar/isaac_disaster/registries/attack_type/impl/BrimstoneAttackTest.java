@@ -18,7 +18,7 @@ class BrimstoneAttackTest {
     @Test
     void refreshShotContextUpdatesGeometryWhenControllable() throws Exception {
         AttackContext base = PatternTestSupport.context(10.0f, 20.0f);
-        AttackContext working = base.copy();
+        AttackContext working = base.toBuilder().build();
         Vec3 spawn = new Vec3(4.0, 5.0, 6.0);
 
         AttackContext returned = BrimstoneAttack.refreshBrimstoneShotContext(
@@ -37,7 +37,7 @@ class BrimstoneAttackTest {
     @Test
     void refreshShotContextKeepsRotationWhenUncontrollable() throws Exception {
         AttackContext base = PatternTestSupport.context(10.0f, 20.0f);
-        AttackContext working = base.copy();
+        AttackContext working = base.toBuilder().build();
         Vec3 spawn = new Vec3(1.0, 2.0, 3.0);
 
         AttackContext returned = BrimstoneAttack.refreshBrimstoneShotContext(

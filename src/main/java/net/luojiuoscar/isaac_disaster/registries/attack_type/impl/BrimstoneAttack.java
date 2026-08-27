@@ -49,7 +49,7 @@ public class BrimstoneAttack extends LaserAttack implements IChargeableAttack {
     // ================== handleAttack ==================
     @Override
     public void shoot(AttackContext baseContext) {
-        AttackContext shotContext = baseContext.copy();
+        AttackContext shotContext = baseContext.toBuilder().build();
         boolean controllable = isControllable(baseContext.getOwner());
         AtomicInteger sequenceIndex = new AtomicInteger();
         ScheduledFuncHelper.scheduleForPlayer(baseContext.getOwner().getUUID(),
@@ -148,7 +148,7 @@ public class BrimstoneAttack extends LaserAttack implements IChargeableAttack {
                         // attack
                         AttackExecutor.perform(AttackRequest.generated(
                                 player, this, AttackOrigin.PLAYER_PRIMARY,
-                                AttackPipelineMode.GROUP_AND_BULLET, false));
+                                AttackPipelineMode.PLAN_PREPARE_AND_EXECUTE, false));
                         makeSound(player);
                     }
                     playerAbility.setChargeAmount(0);

@@ -81,7 +81,7 @@ public class NeptunusAttack extends AttackType implements IChargeableAttack, Del
 
                     AttackExecutor.perform(AttackRequest.generated(
                             player, attack, AttackOrigin.PLAYER_PRIMARY,
-                            AttackPipelineMode.GROUP_AND_BULLET, false));
+                                AttackPipelineMode.PLAN_PREPARE_AND_EXECUTE, false));
                     attack.makeSound(player);
                 }
 
@@ -106,7 +106,7 @@ public class NeptunusAttack extends AttackType implements IChargeableAttack, Del
 
                 AttackExecutor.perform(AttackRequest.generated(
                         player, attack, AttackOrigin.PLAYER_PRIMARY,
-                        AttackPipelineMode.GROUP_AND_BULLET, false));
+                        AttackPipelineMode.PLAN_PREPARE_AND_EXECUTE, false));
 
                 attack.makeSound(player);
 

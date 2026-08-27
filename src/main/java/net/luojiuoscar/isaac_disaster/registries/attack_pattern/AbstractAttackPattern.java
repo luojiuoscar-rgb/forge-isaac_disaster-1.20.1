@@ -11,9 +11,7 @@ public abstract class AbstractAttackPattern implements AttackPattern {
     }
 
     protected AttackContext copyWithMainAxis(AttackContext reference, Vec3 axis) {
-        AttackContext copy = reference.copy();
-        copy.setMainAxis(axis);
-        return copy;
+        return reference.toBuilder().mainAxis(axis).build();
     }
 
     protected Vec3 lateralAxis(Vec3 axis) {

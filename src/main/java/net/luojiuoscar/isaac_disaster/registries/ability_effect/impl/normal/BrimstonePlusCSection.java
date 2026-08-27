@@ -32,7 +32,7 @@ public class BrimstonePlusCSection implements IAbilityEffect {
 
             AttackExecutor.perform(AttackRequest.withContexts(
                     player, attack, AttackOrigin.ABILITY_EXTRA,
-                    AttackPipelineMode.BULLET_ONLY,
+                    AttackPipelineMode.PREPARE_AND_EXECUTE,
                     List.of(attackContext), true));
         });
 

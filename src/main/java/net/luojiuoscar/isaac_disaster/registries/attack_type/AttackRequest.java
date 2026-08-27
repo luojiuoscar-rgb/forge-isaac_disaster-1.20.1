@@ -14,6 +14,7 @@ public final class AttackRequest {
     private final @NotNull AttackOrigin origin;
     private final @NotNull AttackPipelineMode pipelineMode;
     private final @NotNull List<AttackContext> providedContexts;
+    /** Whether the pipeline should invoke {@link AttackType#makeSound(LivingEntity)} after execution. */
     private final boolean playSound;
 
     AttackRequest(@NotNull AttackType attackType, @NotNull LivingEntity owner,
@@ -33,8 +34,8 @@ public final class AttackRequest {
      * @param player the player initiating the attack
      * @param attackType the attack type to execute
      * @param origin where the attack came from
-     * @param pipelineMode must be {@link AttackPipelineMode#FULL} or {@link AttackPipelineMode#GROUP_AND_BULLET}
-     * @param playSound whether the attack should play its sound after execution
+     * @param pipelineMode must be {@link AttackPipelineMode#FULL} or {@link AttackPipelineMode#PLAN_PREPARE_AND_EXECUTE}
+     * @param playSound whether the pipeline should play the sound after execution; use {@code false} when the caller owns timing
      * @return a generated attack request
      */
     public static AttackRequest generated(@NotNull ServerPlayer player, @NotNull AttackType attackType,
@@ -52,9 +53,9 @@ public final class AttackRequest {
      * @param owner the non-null owner of the attack
      * @param attackType the attack type to execute
      * @param origin where the attack came from
-     * @param pipelineMode must be {@link AttackPipelineMode#BULLET_ONLY} or {@link AttackPipelineMode#RAW}
+     * @param pipelineMode must be {@link AttackPipelineMode#PREPARE_AND_EXECUTE} or {@link AttackPipelineMode#EXECUTE_ONLY}
      * @param providedContexts the contexts to execute
-     * @param playSound whether the attack should play its sound after execution
+     * @param playSound whether the pipeline should play the sound after execution; use {@code false} when the caller owns timing
      * @return a request backed by caller-provided contexts
      */
     public static AttackRequest withContexts(@NotNull LivingEntity owner, @NotNull AttackType attackType,
@@ -65,14 +66,14 @@ public final class AttackRequest {
     }
 
     private static void requireGeneratedMode(AttackPipelineMode pipelineMode) {
-        if (pipelineMode != AttackPipelineMode.FULL && pipelineMode != AttackPipelineMode.GROUP_AND_BULLET) {
-            throw new IllegalArgumentException("generated requests require FULL or GROUP_AND_BULLET mode");
+        if (pipelineMode != AttackPipelineMode.FULL && pipelineMode != AttackPipelineMode.PLAN_PREPARE_AND_EXECUTE) {
+            throw new IllegalArgumentException("generated requests require FULL or PLAN_PREPARE_AND_EXECUTE mode");
         }
     }
 
     private static void requireProvidedMode(AttackPipelineMode pipelineMode) {
-        if (pipelineMode != AttackPipelineMode.BULLET_ONLY && pipelineMode != AttackPipelineMode.RAW) {
-            throw new IllegalArgumentException("withContexts requests require BULLET_ONLY or RAW mode");
+        if (pipelineMode != AttackPipelineMode.PREPARE_AND_EXECUTE && pipelineMode != AttackPipelineMode.EXECUTE_ONLY) {
+            throw new IllegalArgumentException("withContexts requests require PREPARE_AND_EXECUTE or EXECUTE_ONLY mode");
         }
     }
 

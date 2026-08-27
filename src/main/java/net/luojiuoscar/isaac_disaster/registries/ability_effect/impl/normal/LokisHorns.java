@@ -45,9 +45,8 @@ public class LokisHorns implements IAbilityEffect {
                             .position(eyePos).mainAxis(GeometryHelper.mainAxisFromRotation(player.getXRot(), player.getYRot()))
                             .range(attack.getRange(player)).speed(attack.getBulletSpeed(player)).build();
 
-                    AttackContext reversedReference = baseCtx.copy();
                     Vec3 reversedDirection = baseCtx.getMainAxis().scale(-1.0);
-                    reversedReference.setMainAxis(reversedDirection);
+                    AttackContext reversedReference = baseCtx.toBuilder().mainAxis(reversedDirection).build();
 
                     List<AttackContext> extraContexts = ModAttackPatterns.SEMICIRCLE.get().generate(
                             new AttackPatternContext(reversedReference, 3));
@@ -59,7 +58,7 @@ public class LokisHorns implements IAbilityEffect {
                     } else {
                         AttackExecutor.perform(AttackRequest.withContexts(
                                 player, attack, AttackOrigin.ABILITY_EXTRA,
-                                AttackPipelineMode.BULLET_ONLY, extraContexts, false));
+                                AttackPipelineMode.PREPARE_AND_EXECUTE, extraContexts, false));
                    }
                 }
         );

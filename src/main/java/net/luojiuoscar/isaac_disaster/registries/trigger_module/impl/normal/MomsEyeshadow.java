@@ -32,7 +32,7 @@ public class MomsEyeshadow extends TriggerModule {
         LivingEntity entity = context.getEntity();
         if (entity.getRandom().nextDouble() < getTriggerChance(entity)){
             attackContext.setColorRl(ModBulletColors.CHARM.getId());
-            attackContext.getTrigger().addAll(bullet_triggers);
+            attackContext.addSimpleTriggers(bullet_triggers);
         }
     }
 }

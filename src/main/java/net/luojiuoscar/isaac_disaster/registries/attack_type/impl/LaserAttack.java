@@ -98,6 +98,8 @@ public class LaserAttack extends AttackType {
         public double yRotAngle;
         public double xRotAngle;
         private final AttackContext attackContext;
+        private final CompositeTrigger triggers;
+        private final SplitSequence splitSequence;
         private int attackSequenceIndex;
         private final double range;
         private final SplitTriggerCounts splitTriggerCounts = new SplitTriggerCounts();
@@ -120,6 +122,8 @@ public class LaserAttack extends AttackType {
             this.yRotAngle = owner.getYRot() - rotation.yRot();
             this.xRotAngle = owner.getXRot() - rotation.xRot();
             this.attackContext = attackContext.copy();
+            this.triggers = attackContext.copyTrigger();
+            this.splitSequence = attackContext.copySplitSequence();
             this.attackSequenceIndex = 0;
             this.range = attackContext.getBulletRange();
             this.lastBlockHit = null;
@@ -149,7 +153,7 @@ public class LaserAttack extends AttackType {
         public BlockHitResult getLastBlockHit() { return lastBlockHit; }
 
         @Override
-        public SplitSequence getSplitSequence() { return attackContext.getSplitSequence(); }
+        public SplitSequence getSplitSequence() { return splitSequence; }
 
         @Override
         public SplitTriggerCounts getSplitTriggerCounts() { return splitTriggerCounts.copy(); }
@@ -273,7 +277,7 @@ public class LaserAttack extends AttackType {
 
         @Override
         public CompositeTrigger getTriggers() {
-            return attackContext.getTrigger();
+            return triggers;
         }
 
         @Override
@@ -395,13 +399,13 @@ public class LaserAttack extends AttackType {
 
         // --------- Block Collision ---------
         AABB box = createCollisionBox(nextPos, laser.width);
-        if (handleBlockCollision(laser, level, context.getTrigger()) && !laser.spectral) {
+        if (handleBlockCollision(laser, level, laser.getTriggers()) && !laser.spectral) {
             laser.traveled = laser.range;
             return;
         }
 
         // --------- Entity Collision ---------
-        handleEntityCollision(laser, level, box, context.getTrigger());
+        handleEntityCollision(laser, level, box, laser.getTriggers());
 
         // -------- 重新计算nextPos以防pos被修改后行为出错 --------
         nextPos = laser.position.add(laser.direction.scale(laser.step)).add(totalPositionOffset);

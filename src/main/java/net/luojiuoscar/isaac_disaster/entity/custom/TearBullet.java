@@ -96,6 +96,7 @@ public class TearBullet extends Entity implements IBulletObject {
     protected final DamagedEntities damagedEntities = new DamagedEntities();
     protected ResourceLocation colorRl = ModBulletColors.BASE.getId();
     protected final CompositeTrigger trigger = new CompositeTrigger();
+    private SplitSequence splitSequence = new SplitSequence();
     @Nullable
     private AttackContext attackContext;
     @Nullable
@@ -637,7 +638,9 @@ public class TearBullet extends Entity implements IBulletObject {
 
     /** Stores an independent copy of the context that created this bullet. */
     public void setAttackContext(AttackContext context) {
-        this.attackContext = Objects.requireNonNull(context, "context").copy();
+        AttackContext source = Objects.requireNonNull(context, "context");
+        this.attackContext = source.copy();
+        this.splitSequence = source.copySplitSequence();
     }
 
     @Override
@@ -716,7 +719,7 @@ public class TearBullet extends Entity implements IBulletObject {
     /** Returns this bullet's split sequence, creating an empty sequence when needed. */
     @Override
     public @NotNull SplitSequence getSplitSequence() {
-        return Objects.requireNonNull(attackContext, "attackContext").getSplitSequence();
+        return splitSequence;
     }
 
     @Override

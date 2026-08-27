@@ -57,7 +57,7 @@ public class TammysHead implements IAbilityEffect {
 
                     AttackExecutor.perform(AttackRequest.withContexts(
                             player, attack, AttackOrigin.ABILITY_EXTRA,
-                            AttackPipelineMode.BULLET_ONLY, contexts, true));
+                            AttackPipelineMode.PREPARE_AND_EXECUTE, contexts, true));
                 }
         );
     }

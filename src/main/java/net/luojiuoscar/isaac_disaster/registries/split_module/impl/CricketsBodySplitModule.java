@@ -66,7 +66,7 @@ public final class CricketsBodySplitModule extends SplitModule {
         double angle = Math.toRadians(Objects.requireNonNull(context.getParent().getOwner(), "owner")
                 .getRandom().nextDouble() * 45.0);
         Vec3 direction = GeometryHelper.rotateAroundAxis(reference.getMainAxis(), WORLD_UP, angle);
-        reference.setMainAxis(direction);
+        reference = reference.toBuilder().mainAxis(direction).build();
 
         List<AttackContext> children = PATTERN.generate(new AttackPatternContext(reference, getBulletCount()));
         for (int i = 0; i < children.size(); i++) {
@@ -89,9 +89,7 @@ public final class CricketsBodySplitModule extends SplitModule {
         List<Vec3> directions = buildPlaneAlignedSpread(incomingDirection, planeNormal, getBulletCount(), angle);
         List<AttackContext> children = new ArrayList<>(directions.size());
         for (Vec3 direction : directions) {
-            AttackContext child = reference.copy();
-            child.setMainAxis(direction);
-            children.add(child);
+            children.add(reference.toBuilder().mainAxis(direction).build());
         }
 
         for (int i = 0; i < children.size(); i++) {

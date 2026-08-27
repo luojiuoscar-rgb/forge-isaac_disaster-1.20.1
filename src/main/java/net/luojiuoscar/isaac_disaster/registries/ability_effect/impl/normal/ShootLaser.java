@@ -17,7 +17,7 @@ public class ShootLaser implements IAbilityEffect {
             AttackType attack = ModAttackTypes.TECHNOLOGY2.get();
             AttackExecutor.perform(AttackRequest.withContexts(
                     player, attack, AttackOrigin.ABILITY_EXTRA,
-                    AttackPipelineMode.BULLET_ONLY, attack.getAttackContexts(player, 1), false));
+                    AttackPipelineMode.PREPARE_AND_EXECUTE, attack.getAttackContexts(player, 1), false));
             return true;
         }
         return false;

@@ -141,7 +141,7 @@ public final class SplitSequence {
                 if (group.getValue().isEmpty()) continue;
                 requests.add(AttackRequest.withContexts(
                         event.getParent().getOwner(), group.getKey(), AttackOrigin.SPLIT_CHILD,
-                        AttackPipelineMode.RAW, group.getValue(), false));
+                        AttackPipelineMode.EXECUTE_ONLY, group.getValue(), false));
             }
             return List.copyOf(requests);
         }

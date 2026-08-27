@@ -13,10 +13,8 @@ public final class WizAttackPattern {
     public static List<AttackContext> rotateContexts(List<AttackContext> baseContexts, float rotationDegrees) {
         List<AttackContext> contexts = new ArrayList<>(baseContexts.size());
         for (AttackContext context : baseContexts) {
-            AttackContext copy = context.copy();
-            copy.setMainAxis(GeometryHelper.rotateAroundAxis(
-                    context.getMainAxis(), new net.minecraft.world.phys.Vec3(0, 1, 0), -Math.toRadians(rotationDegrees)));
-            contexts.add(copy);
+            contexts.add(context.toBuilder().mainAxis(GeometryHelper.rotateAroundAxis(
+                    context.getMainAxis(), new net.minecraft.world.phys.Vec3(0, 1, 0), -Math.toRadians(rotationDegrees))).build());
         }
         return contexts;
     }

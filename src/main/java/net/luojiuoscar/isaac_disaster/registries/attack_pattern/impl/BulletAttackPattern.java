@@ -25,12 +25,12 @@ public final class BulletAttackPattern extends AbstractAttackPattern {
             Vec3 sideAxis = lateralAxis(mainAxis);
 
             List<AttackContext> children = new ArrayList<>(2);
-            AttackContext right = mainBulletContext.copy();
-            right.setPos(mainBulletContext.getPos().add(sideAxis.scale(SIDE_OFFSET)));
+            AttackContext right = mainBulletContext.toBuilder()
+                    .position(mainBulletContext.getPos().add(sideAxis.scale(SIDE_OFFSET))).build();
             children.add(right);
 
-            AttackContext left = mainBulletContext.copy();
-            left.setPos(mainBulletContext.getPos().add(sideAxis.scale(-SIDE_OFFSET)));
+            AttackContext left = mainBulletContext.toBuilder()
+                    .position(mainBulletContext.getPos().add(sideAxis.scale(-SIDE_OFFSET))).build();
             children.add(left);
             return children;
         }

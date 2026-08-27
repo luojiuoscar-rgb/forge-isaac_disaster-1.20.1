@@ -42,7 +42,7 @@ public class ShoopDaWhoop implements IAbilityEffect {
 
         AttackExecutor.perform(AttackRequest.withContexts(
                 entity, ModAttackTypes.SHOOP_DA_WHOOP.get(), AttackOrigin.ABILITY_EXTRA,
-                AttackPipelineMode.BULLET_ONLY, List.of(ctx), true));
+                AttackPipelineMode.PREPARE_AND_EXECUTE, List.of(ctx), true));
         return true;
     }
 }

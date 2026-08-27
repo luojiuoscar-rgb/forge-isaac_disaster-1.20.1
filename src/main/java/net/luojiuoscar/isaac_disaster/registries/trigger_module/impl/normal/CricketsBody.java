@@ -14,6 +14,6 @@ public final class CricketsBody extends TriggerModule {
 
     @Override
     public void attachToBullet(ExecutableEffectContext context, AttackContext attackContext) {
-        attackContext.getSplitSequence().add(ModSplitModules.CRICKETS_BODY.getId(), 1);
+        attackContext.addSplitModule(ModSplitModules.CRICKETS_BODY.getId(), 1);
     }
 }

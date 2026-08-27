@@ -14,6 +14,6 @@ public final class Parasite extends TriggerModule {
 
     @Override
     public void attachToBullet(ExecutableEffectContext context, AttackContext attackContext) {
-        attackContext.getSplitSequence().add(ModSplitModules.PARASITE.getId(), 1);
+        attackContext.addSplitModule(ModSplitModules.PARASITE.getId(), 1);
     }
 }

@@ -23,19 +23,20 @@ public class ShoopDaWhoop extends BrimstoneAttack{
 
     @Override
     public void shoot(AttackContext ctx) {
+        AttackContext workingContext = ctx.toBuilder().build();
         // 玩家域的schedule
         ScheduledFuncHelper.scheduleForPlayer(ctx.getOwner().getUUID(),
                 SCHEDULE_TYPE, 1,1, 26, true, () -> {
 
-                    Entity s = ctx.getShooter();
+                    Entity s = workingContext.getShooter();
                     Vec3 eyePos = s.getEyePosition().add(0, s.getBbHeight() * -0.15, 0);
-                    ctx.setPos(eyePos);
+                    workingContext.setPos(eyePos);
 
-                    if (isControllable(ctx.getOwner())){
-                        ctx.setMainAxis(GeometryHelper.mainAxisFromRotation(s.getXRot(), s.getYRot()));
+                    if (isControllable(workingContext.getOwner())){
+                        workingContext.setMainAxis(GeometryHelper.mainAxisFromRotation(s.getXRot(), s.getYRot()));
                     }
 
-                    super.shoot(ctx);
+                    super.shoot(workingContext);
                 });
     }
 

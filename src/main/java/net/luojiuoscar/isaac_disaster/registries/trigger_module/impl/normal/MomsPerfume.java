@@ -40,7 +40,7 @@ public class MomsPerfume extends TriggerModule {
         );
         if (entity.getRandom().nextDouble() < getTriggerChance(entity)) {
             attackContext.setColorRl(ModBulletColors.FEAR.getId());
-            attackContext.getTrigger().addAll(bulletTriggers);
+            attackContext.addSimpleTriggers(bulletTriggers);
         }
     }
 }

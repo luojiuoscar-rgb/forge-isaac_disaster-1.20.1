@@ -144,7 +144,7 @@ public class CSectionAttack extends BulletAttack implements IChargeableAttack {
 
                             AttackExecutor.perform(AttackRequest.generated(
                                     player, this, AttackOrigin.PLAYER_PRIMARY,
-                                    AttackPipelineMode.GROUP_AND_BULLET, false));
+                                    AttackPipelineMode.PLAN_PREPARE_AND_EXECUTE, false));
                             makeSound(player);
 
                         }else{

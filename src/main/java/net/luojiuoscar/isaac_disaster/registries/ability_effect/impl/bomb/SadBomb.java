@@ -44,7 +44,7 @@ public class SadBomb extends BombRelated {
                             new AttackPatternContext(ctx, bulletCount));
                     AttackExecutor.perform(AttackRequest.withContexts(
                             player, attack, AttackOrigin.ABILITY_EXTRA,
-                            AttackPipelineMode.BULLET_ONLY, contexts, true));
+                            AttackPipelineMode.PREPARE_AND_EXECUTE, contexts, true));
                 });
         return true;
     }

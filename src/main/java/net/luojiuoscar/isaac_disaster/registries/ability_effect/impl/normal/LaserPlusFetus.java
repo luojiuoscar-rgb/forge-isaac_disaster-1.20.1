@@ -17,7 +17,7 @@ import java.util.List;
 
 public class LaserPlusFetus implements IAbilityEffect {
     static AttackPipelineMode secondaryLaserPipelineMode() {
-        return AttackPipelineMode.RAW;
+        return AttackPipelineMode.EXECUTE_ONLY;
     }
 
     @Override

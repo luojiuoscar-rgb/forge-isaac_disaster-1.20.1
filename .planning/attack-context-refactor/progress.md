@@ -1,5 +1,24 @@
 # Progress Log: AttackContext Refactor
 
+## Session: 2026-08-27 V5 Freeze Boundary Implementation
+- **Status:** in progress
+- Added `AttackContext` freeze state; frozen mutation attempts log a warning and preserve the existing value.
+- Removed Context trigger/split mutable getters. Prepare modules now use controlled trigger/split mutation methods; runtime Tear/Laser objects own independent trigger and split-sequence snapshots.
+- Pipeline finalizes the plan list, runs Prepare, then freezes successful Contexts immediately before execution. `EXECUTE_ONLY` freezes supplied Contexts before direct execution.
+- Pattern, split, Brimstone, and Shoop paths now use `toBuilder()` for mutable derivation rather than mutating a Context copy.
+- Added freeze and derivation regression coverage; plain Gradle focused tests pass after retaining the Unsafe fixture's non-entity owner fields through the dedicated derived-builder path.
+- Verification: focused freeze, Bullet/Laser/Wiz Pattern, and Brimstone tests passed; `compileJava --offline` completed with updated class output; `git diff --check` reports only existing line-ending warnings.
+- **Status:** complete
+
+## Session: 2026-08-27 V4 Pipeline Semantics
+- **Status:** complete
+- Approved scope: rename pipeline modes to explicit lifecycle stages; remove `AttackOrigin.PLAYER_SCHEDULED`; route Cursed Eye scheduled shots through player-primary plan/prepare execution while retaining one release-level Before event.
+- Confirmed `EXECUTE_ONLY` remains necessary for split children and Laser Plus Fetus trigger-snapshot isolation.
+- Environment note: system `python` is unavailable; verification will use the Gradle-managed JDK 17 toolchain.
+- Renamed all pipeline modes and migrated all production callers; no old mode names or `PLAYER_SCHEDULED` remain in source/test code.
+- Cursed Eye now sends one release-level Before event and uses `PLAYER_PRIMARY + PLAN_PREPARE_AND_EXECUTE` for each delayed shot, allowing The Wiz Plan handling.
+- Verification: focused pipeline-mode, GeometryHelper, Bullet/Laser/Wiz Pattern, Cricket's Body, and Brimstone tests passed; offline `compileJava` passed; `git diff --check` clean apart from pre-existing line-ending warnings.
+
 ## Session: 2026-08-25
 
 ### Phase 0: Review and Scope Capture

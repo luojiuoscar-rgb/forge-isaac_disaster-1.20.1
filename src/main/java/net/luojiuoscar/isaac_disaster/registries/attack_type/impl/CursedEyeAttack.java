@@ -104,8 +104,8 @@ public class CursedEyeAttack extends AttackType implements IChargeableAttack, De
                                 1,1, count, false, () -> {
 
                             AttackExecutor.perform(AttackRequest.generated(
-                                    player, attack, AttackOrigin.PLAYER_SCHEDULED,
-                                    AttackPipelineMode.GROUP_AND_BULLET, false));
+                                    player, attack, AttackOrigin.PLAYER_PRIMARY,
+                                    AttackPipelineMode.PLAN_PREPARE_AND_EXECUTE, false));
                             attack.makeSound(player);
                         });
                     }
