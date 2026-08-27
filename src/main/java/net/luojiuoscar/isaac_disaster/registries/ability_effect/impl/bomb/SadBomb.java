@@ -8,6 +8,7 @@ import net.luojiuoscar.isaac_disaster.registries.ability_effect.ExecutableEffect
 import net.luojiuoscar.isaac_disaster.registries.attack_pattern.AttackPatternContext;
 import net.luojiuoscar.isaac_disaster.registries.attack_pattern.ModAttackPatterns;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackContext;
+import net.luojiuoscar.isaac_disaster.helper.GeometryHelper;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackExecutor;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackOrigin;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackPipelineMode;
@@ -36,7 +37,7 @@ public class SadBomb extends BombRelated {
 
                     AttackContext ctx = AttackContext.builder(player, bomb)
                             .color(colorRl).trigger(new CompositeTrigger()).trajectories(trajectories)
-                            .position(pos).rotation(bomb.getXRot(), bomb.getYRot())
+                            .position(pos).mainAxis(GeometryHelper.mainAxisFromRotation(bomb.getXRot(), bomb.getYRot()))
                             .range(attack.getRange(player)).speed(attack.getBulletSpeed(player)).build();
 
                     List<AttackContext> contexts = ModAttackPatterns.RING.get().generate(

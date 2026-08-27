@@ -1,6 +1,7 @@
 package net.luojiuoscar.isaac_disaster.registries.split_module.impl;
 
 import net.minecraft.world.phys.Vec3;
+import net.luojiuoscar.isaac_disaster.helper.GeometryHelper;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -42,7 +43,7 @@ class CricketsBodySplitModulePlaneAlignmentTest {
         Vec3 normal = new Vec3(1.0, 0.0, 0.0);
         Vec3 incoming = normal.scale(2.0);
 
-        Vec3 aligned = CricketsBodySplitModule.alignDirectionToImpactPlane(incoming, normal);
+        Vec3 aligned = GeometryHelper.projectOntoPlane(incoming, normal);
 
         assertPlaneAligned(aligned, normal);
         assertTrue(aligned.lengthSqr() > EPSILON);

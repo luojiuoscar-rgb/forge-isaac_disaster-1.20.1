@@ -3,6 +3,7 @@ package net.luojiuoscar.isaac_disaster.registries.attack_type.impl;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerAbilityProvider;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.CompositeTrigger;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackContext;
+import net.luojiuoscar.isaac_disaster.helper.GeometryHelper;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
@@ -49,7 +50,7 @@ public class Technology2Attack extends LaserAttack {
 
                     return AttackContext.builder(player, shooter)
                             .color(colorRl).trigger(new CompositeTrigger()).trajectories(trajectories)
-                            .position(eyePos).rotation(player.getXRot(), player.getYRot())
+                            .position(eyePos).mainAxis(GeometryHelper.mainAxisFromRotation(player.getXRot(), player.getYRot()))
                             .range(getRange(player)).speed(getBulletSpeed(player)).build();
                 })
                 .orElse(null);

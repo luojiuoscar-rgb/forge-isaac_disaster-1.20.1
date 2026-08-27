@@ -1,7 +1,10 @@
 package net.luojiuoscar.isaac_disaster.registries.attack_type.impl;
 
 import net.luojiuoscar.isaac_disaster.entity.custom.TearBullet;
+import net.luojiuoscar.isaac_disaster.helper.GeometryHelper;
 import net.luojiuoscar.isaac_disaster.event.custom.attack.tear_bullet.TearBulletShootEvent;
+import net.luojiuoscar.isaac_disaster.registries.attack_pattern.AttackPatternContext;
+import net.luojiuoscar.isaac_disaster.registries.attack_pattern.impl.BulletAttackPattern;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackContext;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackType;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.ModAttackTypes;
@@ -17,6 +20,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class BulletAttack extends AttackType {
+    private static final BulletAttackPattern PATTERN = new BulletAttackPattern();
+
     public BulletAttack(int priorityTier, double priority) {
         super(priorityTier, priority);
     }
@@ -33,36 +38,8 @@ public class BulletAttack extends AttackType {
     @Override
     public List<AttackContext> getAttackContexts(ServerPlayer player, int bulletCount) {
         AttackContext ctx = createAttackContext(player, player);
-
-        List<AttackContext> contexts = new ArrayList<>();
-        if (ctx == null) return contexts;
-
-        if (bulletCount == 2) {
-            Vec3 look = player.getLookAngle();
-            Vec3 right = look.cross(new Vec3(0, 1, 0)).normalize();
-
-            AttackContext c = ctx.copy();
-            c.setPos(ctx.getPos().add(right.scale(0.25)));
-            contexts.add(c);
-
-            c = ctx.copy();
-            c.setPos(ctx.getPos().add(right.scale(-0.25)));
-            contexts.add(c);
-
-        } else {
-            float angleInterval = Math.max(11 - bulletCount, 5) * 2;
-            float curAngle = -angleInterval * (bulletCount - 1) / 2.0f;
-
-            for (int i = 0; i < bulletCount; i++) {
-                AttackContext c = ctx.copy();
-                c.setYRotOffset(curAngle);
-                contexts.add(c);
-
-                curAngle += angleInterval;
-            }
-        }
-
-        return contexts;
+        if (ctx == null) return List.of();
+        return PATTERN.generate(new AttackPatternContext(ctx, bulletCount));
     }
 
     @Override
@@ -97,7 +74,8 @@ public class BulletAttack extends AttackType {
         LivingEntity owner = context.getOwner();
         double width = owner.getBbWidth();
         double forwardOffset = 0.4 * (width / 0.6);
-        Vec3 look = Vec3.directionFromRotation(context.getXRot(), context.getYRot());
+        Vec3 look = context.getMainAxis();
+        GeometryHelper.Rotation rotation = GeometryHelper.rotationFromMainAxis(look);
         Vec3 adjustedPos = context.usesExactSpawnPosition()
                 ? context.getPos()
                 : context.getPos().add(look.scale(forwardOffset));
@@ -115,7 +93,7 @@ public class BulletAttack extends AttackType {
 
         bullet.setBulletColor(context.getColorRl());
 
-        bullet.moveTo(adjustedPos.x, adjustedPos.y, adjustedPos.z, context.getYRot(), context.getXRot());
+        bullet.moveTo(adjustedPos.x, adjustedPos.y, adjustedPos.z, rotation.yRot(), rotation.xRot());
         bullet.setPreflightStart(context.getPos());
         bullet.setVelocity(look.scale(context.getBulletSpeed()));
         bullet.setDeltaMovement(bullet.getVelocity());

@@ -2,6 +2,7 @@ package net.luojiuoscar.isaac_disaster.registries.attack_type.impl;
 
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.helper.ScheduledFuncHelper;
+import net.luojiuoscar.isaac_disaster.helper.GeometryHelper;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackContext;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
@@ -31,8 +32,7 @@ public class ShoopDaWhoop extends BrimstoneAttack{
                     ctx.setPos(eyePos);
 
                     if (isControllable(ctx.getOwner())){
-                        ctx.setXRot(s.getXRot());
-                        ctx.setYRot(s.getYRot());
+                        ctx.setMainAxis(GeometryHelper.mainAxisFromRotation(s.getXRot(), s.getYRot()));
                     }
 
                     super.shoot(ctx);

@@ -1,10 +1,13 @@
 package net.luojiuoscar.isaac_disaster.registries.attack_type.impl;
 
 import net.luojiuoscar.isaac_disaster.event.custom.attack.IsaacAttackAfterHitEvent;
+import net.luojiuoscar.isaac_disaster.helper.GeometryHelper;
 import net.luojiuoscar.isaac_disaster.event.custom.attack.IsaacAttackBeforeHitEntityEvent;
 import net.luojiuoscar.isaac_disaster.event.custom.attack.IsaacAttackHitBlockEvent;
 import net.luojiuoscar.isaac_disaster.helper.EntityHelper;
 import net.luojiuoscar.isaac_disaster.manager.ModDamageType;
+import net.luojiuoscar.isaac_disaster.registries.attack_pattern.AttackPatternContext;
+import net.luojiuoscar.isaac_disaster.registries.attack_pattern.impl.LaserAttackPattern;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.CompositeTrigger;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackContext;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackType;
@@ -43,12 +46,12 @@ import net.minecraftforge.registries.RegistryManager;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
 public class LaserAttack extends AttackType {
+    private static final LaserAttackPattern PATTERN = new LaserAttackPattern();
 
     public LaserAttack(int priorityTier, double priority) {
         super(priorityTier, priority);
@@ -105,7 +108,7 @@ public class LaserAttack extends AttackType {
             this.owner = attackContext.getOwner();
             this.shooter = attackContext.getShooter();
             this.position = attackContext.getPos();
-            this.direction = Vec3.directionFromRotation(attackContext.getXRot(), attackContext.getYRot());
+            this.direction = attackContext.getMainAxis();
             this.damage = attackContext.getDamage();
             this.homing = false;
             this.spectral = false;
@@ -113,8 +116,9 @@ public class LaserAttack extends AttackType {
             this.isCurrentlyHoming = false;
             this.tickCount = 0;
             this.homingTarget = null;
-            this.yRotAngle = owner.getYRot() - attackContext.getYRot();
-            this.xRotAngle = owner.getXRot() - attackContext.getXRot();
+            GeometryHelper.Rotation rotation = GeometryHelper.rotationFromMainAxis(attackContext.getMainAxis());
+            this.yRotAngle = owner.getYRot() - rotation.yRot();
+            this.xRotAngle = owner.getXRot() - rotation.xRot();
             this.attackContext = attackContext.copy();
             this.attackSequenceIndex = 0;
             this.range = attackContext.getBulletRange();
@@ -283,21 +287,7 @@ public class LaserAttack extends AttackType {
     public List<AttackContext> getAttackContexts(ServerPlayer player, int bulletCount) {
         AttackContext ctx = createAttackContext(player, player);
         if (ctx == null) return List.of();
-
-        List<AttackContext> contexts = new ArrayList<>();
-
-        float angleInterval = 8;
-        float curAngle = -angleInterval * (bulletCount - 1) / 2.0f;
-
-        for (int i = 0; i < bulletCount; i++) {
-            AttackContext c = ctx.copy();
-            c.setYRotOffset(curAngle);
-            contexts.add(c);
-
-            curAngle += angleInterval;
-        }
-
-        return contexts;
+        return PATTERN.generate(new AttackPatternContext(ctx, bulletCount));
     }
 
 
@@ -318,7 +308,7 @@ public class LaserAttack extends AttackType {
         LivingEntity entity = ctx.getOwner();
         if (!(entity.level() instanceof ServerLevel level)) return;
 
-        Vec3 direction = getDirectionFromRotation(ctx.getXRot(), ctx.getYRot()).normalize();
+        Vec3 direction = ctx.getMainAxis();
         float damage = ctx.getDamage();
 
         double width = getWidth(entity, damage);
@@ -385,11 +375,11 @@ public class LaserAttack extends AttackType {
                 // ---- 应用旋转到方向 ----
                 // yRot 绕世界上方向旋转
                 Vec3 up = new Vec3(0, 1, 0);
-                laser.direction = AttackType.rotateAroundAxis(laser.direction, up, result.yRot());
+                laser.direction = GeometryHelper.rotateAroundAxis(laser.direction, up, result.yRot());
 
                 // xRot 绕局部右方向旋转（如果 xRot 不为0）
                 Vec3 right = laser.direction.cross(up).normalize();
-                laser.direction = AttackType.rotateAroundAxis(laser.direction, right, result.xRot());
+                laser.direction = GeometryHelper.rotateAroundAxis(laser.direction, right, result.xRot());
             }
         }
 
@@ -521,7 +511,7 @@ public class LaserAttack extends AttackType {
 
         axis = axis.normalize();
 
-        return AttackType.rotateAroundAxis(current, axis, rotateAngle).normalize();
+        return GeometryHelper.rotateAroundAxis(current, axis, rotateAngle);
     }
 
     private void spawnInterpolatedParticles(ServerLevel level, Vec3 from, Vec3 to, double width, ResourceLocation colorRl) {

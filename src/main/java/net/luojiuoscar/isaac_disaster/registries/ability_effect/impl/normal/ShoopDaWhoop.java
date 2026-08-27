@@ -6,6 +6,7 @@ import net.luojiuoscar.isaac_disaster.registries.ability_effect.ContextKeys;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ExecutableEffectContext;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.IAbilityEffect;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackContext;
+import net.luojiuoscar.isaac_disaster.helper.GeometryHelper;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackExecutor;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackOrigin;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackPipelineMode;
@@ -34,7 +35,7 @@ public class ShoopDaWhoop implements IAbilityEffect {
 
         AttackContext ctx = AttackContext.builder(entity, entity)
                 .color(ModBulletColors.SHOOP_DA_WHOOP.getId()).trigger(new CompositeTrigger())
-                .position(position).rotation(entity.getXRot(), entity.getYRot())
+                .position(position).mainAxis(GeometryHelper.mainAxisFromRotation(entity.getXRot(), entity.getYRot()))
                 .damage(damage * 2 * amplifier)
                 .range(ModAttackTypes.SHOOP_DA_WHOOP.get().getRange(entity))
                 .speed(ModAttackTypes.SHOOP_DA_WHOOP.get().getBulletSpeed(entity)).build();

@@ -6,6 +6,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.SharedConstants;
 import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.phys.Vec3;
+import net.luojiuoscar.isaac_disaster.helper.GeometryHelper;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -30,7 +31,7 @@ class AttackContextBuilderTest {
         ArmorStand owner = owner();
         AttackContext context = AttackContext.builder(owner, null)
                 .position(Vec3.ZERO)
-                .rotation(0.0f, 0.0f)
+                .mainAxis(GeometryHelper.mainAxisFromRotation(0.0f, 0.0f))
                 .range(0.0)
                 .speed(Double.NaN)
                 .build();
@@ -67,7 +68,7 @@ class AttackContextBuilderTest {
         ArmorStand owner = owner();
         AttackContext original = AttackContext.builder(owner, null)
                 .position(Vec3.ZERO)
-                .rotation(0.0f, 0.0f)
+                .mainAxis(GeometryHelper.mainAxisFromRotation(0.0f, 0.0f))
                 .damage(4.0)
                 .range(10.0)
                 .speed(2.0)

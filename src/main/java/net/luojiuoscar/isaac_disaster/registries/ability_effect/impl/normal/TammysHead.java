@@ -10,6 +10,7 @@ import net.luojiuoscar.isaac_disaster.registries.ability_effect.IAbilityEffect;
 import net.luojiuoscar.isaac_disaster.registries.attack_pattern.AttackPatternContext;
 import net.luojiuoscar.isaac_disaster.registries.attack_pattern.ModAttackPatterns;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackContext;
+import net.luojiuoscar.isaac_disaster.helper.GeometryHelper;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackExecutor;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackOrigin;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackPipelineMode;
@@ -48,7 +49,7 @@ public class TammysHead implements IAbilityEffect {
                     int bulletCount = 12;
                     AttackContext ctx = AttackContext.builder(player, player)
                             .color(colorRl).trigger(new CompositeTrigger()).trajectories(trajectories)
-                            .position(eyePos).rotation(player.getXRot(), player.getYRot())
+                            .position(eyePos).mainAxis(GeometryHelper.mainAxisFromRotation(player.getXRot(), player.getYRot()))
                             .range(attack.getRange(player)).speed(attack.getBulletSpeed(player)).build();
 
                     List<AttackContext> contexts = ModAttackPatterns.RING.get().generate(

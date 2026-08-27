@@ -5,6 +5,7 @@ import net.luojiuoscar.isaac_disaster.registries.ability_effect.ContextKeys;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ExecutableEffectContext;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.IAbilityEffect;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackContext;
+import net.luojiuoscar.isaac_disaster.helper.GeometryHelper;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackExecutor;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackOrigin;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackPipelineMode;
@@ -34,7 +35,7 @@ public class LaserPlusFetus implements IAbilityEffect {
                 AttackContext.builder(player, bullet)
                         .color(bullet.getColorId()).trigger(bullet.getTriggers())
                         .trajectories(bullet.getTrajectories()).position(bullet.getPosition())
-                        .rotation(bullet.getXRot(), bullet.getYRot())
+                        .mainAxis(GeometryHelper.mainAxisFromRotation(bullet.getXRot(), bullet.getYRot()))
                         .range(ModAttackTypes.LASER.get().getRange(player))
                         .speed(ModAttackTypes.LASER.get().getBulletSpeed(player)).build()
         ), false));

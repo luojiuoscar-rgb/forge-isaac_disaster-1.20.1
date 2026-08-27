@@ -5,6 +5,7 @@ import net.luojiuoscar.isaac_disaster.attribute.ModAttributes;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerAbilityProvider;
 import net.luojiuoscar.isaac_disaster.event.custom.attack.BeforePerformAttackEvent;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
+import net.luojiuoscar.isaac_disaster.helper.GeometryHelper;
 import net.luojiuoscar.isaac_disaster.helper.ScheduledFuncHelper;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackContext;
@@ -28,6 +29,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class BrimstoneAttack extends LaserAttack implements IChargeableAttack {
     private static final float DAMAGE_PERCENTAGE = 0.6f;
+    static final int SHOT_COUNT = 13;
     private static final ResourceLocation SCHEDULE_TYPE =
             ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "brimstone_attack");
 
@@ -47,24 +49,37 @@ public class BrimstoneAttack extends LaserAttack implements IChargeableAttack {
     // ================== handleAttack ==================
     @Override
     public void shoot(AttackContext baseContext) {
+        AttackContext shotContext = baseContext.copy();
+        boolean controllable = isControllable(baseContext.getOwner());
         AtomicInteger sequenceIndex = new AtomicInteger();
         ScheduledFuncHelper.scheduleForPlayer(baseContext.getOwner().getUUID(),
-                SCHEDULE_TYPE, 1,1, 13, false, () -> {
+                SCHEDULE_TYPE, 1,1, SHOT_COUNT, false, () -> {
             int currentSequenceIndex = sequenceIndex.incrementAndGet();
 
-            Entity shooter = baseContext.getShooter();
-            Vec3 spawnPosition = shooter.getEyePosition().add(0, shooter.getBbHeight() * -0.15, 0);
-            AttackContext.Builder shotBuilder = baseContext.toBuilder().position(spawnPosition);
-            if (isControllable(baseContext.getOwner())) {
-                shotBuilder.rotation(shooter.getXRot(), shooter.getYRot());
-            }
-            shootSingle(shotBuilder.build(), currentSequenceIndex);
+            Entity shooter = shotContext.getShooter();
+            Vec3 spawnPosition = resolveSpawnPosition(shooter);
+            refreshBrimstoneShotContext(shotContext, spawnPosition, GeometryHelper.mainAxisFromRotation(shooter.getXRot(), shooter.getYRot()),
+                    controllable);
+            shootSingle(shotContext, currentSequenceIndex);
         });
     }
 
     /** Fires one Brimstone laser using the caller-provided runtime sequence identity. */
     public void shootSingle(AttackContext context, int sequenceIndex) {
         shootSingleLaser(context, sequenceIndex);
+    }
+
+    static AttackContext refreshBrimstoneShotContext(AttackContext shotContext, Vec3 spawnPosition,
+                                                     Vec3 mainAxis, boolean controllable) {
+        shotContext.setPos(spawnPosition);
+        if (controllable) {
+            shotContext.setMainAxis(mainAxis);
+        }
+        return shotContext;
+    }
+
+    private static Vec3 resolveSpawnPosition(Entity shooter) {
+        return shooter.getEyePosition().add(0, shooter.getBbHeight() * -0.15, 0);
     }
 
     @Override

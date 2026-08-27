@@ -2,8 +2,8 @@ package net.luojiuoscar.isaac_disaster.registries.split_module.impl;
 
 import net.luojiuoscar.isaac_disaster.registries.attack_pattern.AttackPatternContext;
 import net.luojiuoscar.isaac_disaster.registries.attack_pattern.impl.RingAttackPattern;
+import net.luojiuoscar.isaac_disaster.helper.GeometryHelper;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackContext;
-import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackType;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.BulletSourceType;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.ModAttackTypes;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.impl.BrimstoneAttack;
@@ -12,8 +12,8 @@ import net.luojiuoscar.isaac_disaster.registries.split_module.SplitContext;
 import net.luojiuoscar.isaac_disaster.registries.split_module.SplitModule;
 import net.luojiuoscar.isaac_disaster.registries.split_module.SplitModulePriority;
 import net.luojiuoscar.isaac_disaster.registries.split_module.SplitTriggerType;
-import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.phys.BlockHitResult;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -65,8 +65,8 @@ public final class CricketsBodySplitModule extends SplitModule {
         AttackContext reference = context.getReferenceContext();
         double angle = Math.toRadians(Objects.requireNonNull(context.getParent().getOwner(), "owner")
                 .getRandom().nextDouble() * 45.0);
-        Vec3 direction = Vec3.directionFromRotation(reference.getXRot(), reference.getYRot());
-        reference.setDirection(AttackType.rotateAroundAxis(direction, WORLD_UP, angle));
+        Vec3 direction = GeometryHelper.rotateAroundAxis(reference.getMainAxis(), WORLD_UP, angle);
+        reference.setMainAxis(direction);
 
         List<AttackContext> children = PATTERN.generate(new AttackPatternContext(reference, getBulletCount()));
         for (int i = 0; i < children.size(); i++) {
@@ -84,13 +84,13 @@ public final class CricketsBodySplitModule extends SplitModule {
         Vec3 planeNormal = resolveImpactPlaneNormal(context);
         double angle = Math.toRadians(Objects.requireNonNull(context.getParent().getOwner(), "owner")
                 .getRandom().nextDouble() * 45.0);
-        Vec3 incomingDirection = Vec3.directionFromRotation(reference.getXRot(), reference.getYRot());
+        Vec3 incomingDirection = reference.getMainAxis();
 
         List<Vec3> directions = buildPlaneAlignedSpread(incomingDirection, planeNormal, getBulletCount(), angle);
         List<AttackContext> children = new ArrayList<>(directions.size());
         for (Vec3 direction : directions) {
             AttackContext child = reference.copy();
-            child.setDirection(direction);
+            child.setMainAxis(direction);
             children.add(child);
         }
 
@@ -124,31 +124,18 @@ public final class CricketsBodySplitModule extends SplitModule {
         return SplitModulePriority.CRICKETS_BODY.priority();
     }
 
-    static Vec3 alignDirectionToImpactPlane(Vec3 direction, Vec3 planeNormal) {
-        Vec3 normal = normalizeOrFallback(planeNormal);
-        Vec3 projected = direction.subtract(normal.scale(direction.dot(normal)));
-        if (projected.lengthSqr() < EPSILON) {
-            projected = fallbackTangent(normal);
-        }
-        return projected.normalize();
-    }
-
     static List<Vec3> buildPlaneAlignedSpread(Vec3 direction, Vec3 planeNormal, int bulletCount, double spinRadians) {
         if (bulletCount <= 0) {
             return List.of();
         }
 
-        Vec3 normal = normalizeOrFallback(planeNormal);
-        Vec3 forward = alignDirectionToImpactPlane(direction, normal);
+        Vec3 normal = planeNormal.normalize();
+        Vec3 forward = GeometryHelper.projectOntoPlane(direction, normal);
         if (bulletCount == 1) {
             return List.of(forward);
         }
 
-        Vec3 side = normal.cross(forward);
-        if (side.lengthSqr() < EPSILON) {
-            side = fallbackTangent(normal);
-        }
-        side = side.normalize();
+        Vec3 side = normal.cross(forward).normalize();
 
         List<Vec3> directions = new ArrayList<>(bulletCount);
         for (int index = 0; index < bulletCount; index++) {
@@ -161,33 +148,7 @@ public final class CricketsBodySplitModule extends SplitModule {
 
     private static Vec3 resolveImpactPlaneNormal(SplitContext context) {
         BlockHitResult blockHit = context.getParent().getLastBlockHit();
-        if (blockHit != null) {
-            return Vec3.atLowerCornerOf(blockHit.getDirection().getNormal()).normalize();
-        }
-        return WORLD_UP;
+        return GeometryHelper.normalFromDirection(blockHit == null ? null : blockHit.getDirection());
     }
-
-    private static Vec3 normalizeOrFallback(Vec3 vector) {
-        if (vector == null || !Double.isFinite(vector.x) || !Double.isFinite(vector.y)
-                || !Double.isFinite(vector.z) || vector.lengthSqr() < EPSILON) {
-            return WORLD_UP;
-        }
-        return vector.normalize();
-    }
-
-    private static Vec3 fallbackTangent(Vec3 planeNormal) {
-        Vec3 up = Math.abs(planeNormal.y) < 0.999 ? WORLD_UP : WORLD_EAST;
-        Vec3 tangent = planeNormal.cross(up);
-        if (tangent.lengthSqr() < EPSILON) {
-            tangent = planeNormal.cross(WORLD_FORWARD);
-        }
-        if (tangent.lengthSqr() < EPSILON) {
-            tangent = WORLD_EAST;
-        }
-        return tangent.normalize();
-    }
-
-    private static final Vec3 WORLD_EAST = new Vec3(1.0, 0.0, 0.0);
-    private static final Vec3 WORLD_FORWARD = new Vec3(0.0, 0.0, 1.0);
     private static final double EPSILON = 1.0E-8;
 }

@@ -1,6 +1,7 @@
 package net.luojiuoscar.isaac_disaster.registries.attack_type;
 
 import net.luojiuoscar.isaac_disaster.attribute.ModAttributes;
+import net.luojiuoscar.isaac_disaster.helper.GeometryHelper;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerAbilityProvider;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerIsaacItemsProvider;
 import net.luojiuoscar.isaac_disaster.event.custom.misc.GetShotDelayEvent;
@@ -73,7 +74,7 @@ public abstract class AttackType {
 
                     return AttackContext.builder(player, shooter)
                             .color(colorRl).trigger(new CompositeTrigger()).trajectories(trajectories)
-                            .position(eyePos).rotation(player.getXRot(), player.getYRot())
+                            .position(eyePos).mainAxis(GeometryHelper.mainAxisFromRotation(player.getXRot(), player.getYRot()))
                             .range(getRange(player)).speed(getBulletSpeed(player)).build();
                 })
                 .orElse(null);
@@ -238,20 +239,5 @@ public abstract class AttackType {
                 })
                 .orElseGet(() -> AttackSelector.pickLowerAttackType(this, context, index));
     }
-
-
-    public static Vec3 rotateAroundAxis(Vec3 v, Vec3 axis, double radians) {
-        axis = axis.normalize();
-        double cos = Math.cos(radians);
-        double sin = Math.sin(radians);
-
-        Vec3 term1 = v.scale(cos);
-        Vec3 term2 = axis.cross(v).scale(sin);
-        Vec3 term3 = axis.scale(axis.dot(v) * (1 - cos));
-
-        return term1.add(term2).add(term3);
-    }
-
-
 
 }

@@ -8,6 +8,7 @@ import net.luojiuoscar.isaac_disaster.event.custom.attack.BeforePerformAttackEve
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.CompositeTrigger;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackContext;
+import net.luojiuoscar.isaac_disaster.helper.GeometryHelper;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackExecutor;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackOrigin;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackPipelineMode;
@@ -119,7 +120,7 @@ public class CSectionAttack extends BulletAttack implements IChargeableAttack {
 
                     return AttackContext.builder(player, shooter)
                             .color(colorRl).trigger(new CompositeTrigger()).trajectories(trajectories)
-                            .position(eyePos).rotation(player.getXRot(), player.getYRot())
+                            .position(eyePos).mainAxis(GeometryHelper.mainAxisFromRotation(player.getXRot(), player.getYRot()))
                             .range(getRange(player)).speed(getBulletSpeed(player)).build();
                 })
                 .orElse(null);

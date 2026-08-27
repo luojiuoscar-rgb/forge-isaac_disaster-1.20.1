@@ -9,6 +9,7 @@ import net.luojiuoscar.isaac_disaster.registries.ability_effect.IAbilityEffect;
 import net.luojiuoscar.isaac_disaster.registries.attack_pattern.AttackPatternContext;
 import net.luojiuoscar.isaac_disaster.registries.attack_pattern.ModAttackPatterns;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackContext;
+import net.luojiuoscar.isaac_disaster.helper.GeometryHelper;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackExecutor;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackOrigin;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackPipelineMode;
@@ -41,13 +42,12 @@ public class LokisHorns implements IAbilityEffect {
 
                     AttackContext baseCtx = AttackContext.builder(player, player)
                             .color(colorRl).trigger(new CompositeTrigger()).trajectories(trajectories)
-                            .position(eyePos).rotation(player.getXRot(), player.getYRot())
+                            .position(eyePos).mainAxis(GeometryHelper.mainAxisFromRotation(player.getXRot(), player.getYRot()))
                             .range(attack.getRange(player)).speed(attack.getBulletSpeed(player)).build();
 
                     AttackContext reversedReference = baseCtx.copy();
-                    Vec3 reversedDirection = Vec3.directionFromRotation(
-                            baseCtx.getXRot(), baseCtx.getYRot()).scale(-1.0);
-                    reversedReference.setDirection(reversedDirection);
+                    Vec3 reversedDirection = baseCtx.getMainAxis().scale(-1.0);
+                    reversedReference.setMainAxis(reversedDirection);
 
                     List<AttackContext> extraContexts = ModAttackPatterns.SEMICIRCLE.get().generate(
                             new AttackPatternContext(reversedReference, 3));

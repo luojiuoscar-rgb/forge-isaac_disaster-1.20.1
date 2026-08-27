@@ -7,9 +7,9 @@ import net.luojiuoscar.isaac_disaster.event.custom.attack.IsaacAttackHitBlockEve
 import net.luojiuoscar.isaac_disaster.event.custom.attack.tear_bullet.BulletTickEvent;
 import net.luojiuoscar.isaac_disaster.event.custom.attack.tear_bullet.TearBulletEndOfLifeEvent;
 import net.luojiuoscar.isaac_disaster.helper.EntityHelper;
+import net.luojiuoscar.isaac_disaster.helper.GeometryHelper;
 import net.luojiuoscar.isaac_disaster.manager.ModDamageType;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.CompositeTrigger;
-import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackType;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackContext;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.IBulletObject;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.BulletSourceType;
@@ -154,13 +154,14 @@ public class TearBullet extends Entity implements IBulletObject {
         this.totalLifeTick = this.lifeTick;
         this.range = context.getBulletRange();
         this.damage = context.getDamage();
-        this.yRotAngle = actualShooter.getYRot() - context.getYRot();
-        this.xRotAngle = actualShooter.getXRot() - context.getXRot();
+        GeometryHelper.Rotation rotation = GeometryHelper.rotationFromMainAxis(context.getMainAxis());
+        this.yRotAngle = actualShooter.getYRot() - rotation.yRot();
+        this.xRotAngle = actualShooter.getXRot() - rotation.xRot();
 
         moveTo(context.getPos().x, context.getPos().y, context.getPos().z,
-                context.getYRot(), context.getXRot());
+                rotation.yRot(), rotation.xRot());
 
-        Vec3 direction = Vec3.directionFromRotation(context.getXRot(), context.getYRot());
+        Vec3 direction = context.getMainAxis();
         setVelocity(direction.scale(bulletSpeed));
     }
 
@@ -210,9 +211,9 @@ public class TearBullet extends Entity implements IBulletObject {
 
                     // ---- 应用旋转到方向 ----
                     Vec3 up = new Vec3(0, 1, 0);
-                    baseDir = AttackType.rotateAroundAxis(baseDir, up, result.yRot());
+                    baseDir = GeometryHelper.rotateAroundAxis(baseDir, up, result.yRot());
                     Vec3 right = baseDir.cross(up).normalize();
-                    baseDir = AttackType.rotateAroundAxis(baseDir, right, result.xRot());
+                    baseDir = GeometryHelper.rotateAroundAxis(baseDir, right, result.xRot());
 
                     // ---- 将旋转后的方向应用到速度 ----
                     Vec3 newVelocity = baseDir.scale(speed).add(result.velocityOffset());

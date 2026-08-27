@@ -58,6 +58,16 @@ At each scheduled firing step, sample the current shooter direction, build a fre
 ### Pipeline
 After Context and Pattern contracts stabilize, remove manual before-event dispatch from special attack types if it is confirmed redundant. Then make sound/cancellation ownership and mode semantics explicit and tested.
 
+## V2 Implementation Notes
+- AttackPatternContext now uses main-axis terminology.
+- AttackContext.copy() is a pure snapshot clone, while Builder remains the creation path.
+- Bullet, Laser, and Wiz now share the same main-axis pattern model; Brimstone remains on the V1 runtime path.
+
+## V3 Implementation Notes
+- Brimstone now uses a dedicated sequence helper for its 13-shot schedule rather than inlining the shot snapshot logic inside BrimstoneAttack.
+- Brimstone shot contexts are derived from AttackContext.copy() and then patched with the current spawn position and, when controllable, the current shooter rotation.
+- The helper keeps the 13-shot count explicit and preserves spread offsets on the copied context.
+
 ## Risks to Recheck During Implementation
 - Trigger copying may be correct for parent/child isolation but too expensive if deep module graphs grow; measure before optimizing.
 - `AttackContext` trigger mutation during preparation must not leak into already-created runtime objects.
@@ -76,3 +86,8 @@ After Context and Pattern contracts stabilize, remove manual before-event dispat
 - `src/main/java/net/luojiuoscar/isaac_disaster/registries/attack_type/impl/CSectionAttack.java`
 - `src/main/java/net/luojiuoscar/isaac_disaster/registries/ability_effect/impl/normal/TheWizAttackPlan.java`
 - `src/main/java/net/luojiuoscar/isaac_disaster/registries/ability_effect/impl/normal/LaserPlusFetus.java`
+
+## V4 Implementation Notes
+- Brimstone now reuses one working context across the 13 scheduled emissions instead of allocating a fresh snapshot per shot.
+- The standalone BrimstonePattern helper was removed; its spawn-position and per-shot patch logic now live inside BrimstoneAttack.
+- Brimstone shot execution remains sequence-indexed at runtime only, with shootSingle as the low-level entrypoint.

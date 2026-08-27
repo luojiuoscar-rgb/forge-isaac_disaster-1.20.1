@@ -1,6 +1,6 @@
 package net.luojiuoscar.isaac_disaster.registries.attack_pattern.impl;
 
-import net.luojiuoscar.isaac_disaster.registries.attack_pattern.AttackPattern;
+import net.luojiuoscar.isaac_disaster.registries.attack_pattern.AbstractAttackPattern;
 import net.luojiuoscar.isaac_disaster.registries.attack_pattern.AttackPatternContext;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackContext;
 import net.minecraft.world.phys.Vec3;
@@ -8,11 +8,7 @@ import net.minecraft.world.phys.Vec3;
 import java.util.ArrayList;
 import java.util.List;
 
-public final class SemicircleAttackPattern implements AttackPattern {
-    private static final Vec3 WORLD_UP = new Vec3(0.0, 1.0, 0.0);
-    private static final Vec3 FALLBACK_AXIS = new Vec3(1.0, 0.0, 0.0);
-    private static final double EPSILON = 1.0E-8;
-
+public final class SemicircleAttackPattern extends AbstractAttackPattern {
     @Override
     public List<AttackContext> generate(AttackPatternContext context) {
         int count = context.getBulletCount();
@@ -20,19 +16,13 @@ public final class SemicircleAttackPattern implements AttackPattern {
             return new ArrayList<>();
         }
 
-        AttackContext reference = context.getReferenceContext();
-        Vec3 forward = Vec3.directionFromRotation(reference.getXRot(), reference.getYRot()).normalize();
-        Vec3 side = forward.cross(WORLD_UP);
-        if (side.lengthSqr() < EPSILON) {
-            side = forward.cross(FALLBACK_AXIS);
-        }
-        side = side.normalize();
+        AttackContext reference = context.getMainBulletContext();
+        Vec3 forward = mainAxis(reference);
+        Vec3 side = lateralAxis(forward);
 
         List<AttackContext> result = new ArrayList<>(count);
         if (count == 1) {
-            AttackContext child = reference.copy();
-            child.setDirection(forward);
-            result.add(child);
+            result.add(copyWithMainAxis(reference, forward));
             return result;
         }
 
@@ -42,9 +32,7 @@ public final class SemicircleAttackPattern implements AttackPattern {
                     .add(side.scale(Math.sin(angle)))
                     .normalize();
 
-            AttackContext child = reference.copy();
-            child.setDirection(direction);
-            result.add(child);
+            result.add(copyWithMainAxis(reference, direction));
         }
         return result;
     }

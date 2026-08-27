@@ -99,3 +99,69 @@
 | What's the goal? | Stable creation-time Context snapshots with Pattern-driven attacks and separated runtime state. |
 | What have I learned? | See `findings.md`; key decisions are Builder, Pattern, per-step Brimstone contexts, and runtime-only sequenceIndex. |
 | What have I done? | Implemented and verified V1 Builder/scalar/snapshot changes and recorded the results above. |
+
+## Session: 2026-08-26 V2 main-axis pattern migration
+- **Status:** complete
+- **Actions taken:**
+  - Renamed AttackPatternContext to main-axis terminology and migrated pattern callers.
+  - Added shared main-axis pattern support plus Bullet, Laser, and Wiz pattern implementations.
+  - Routed BulletAttack and LaserAttack through the new pattern classes.
+  - Refactored TheWizAttackPlan to replace base-context lists through the Wiz helper instead of mutating them in place.
+  - Changed AttackContext.copy() into a true snapshot clone.
+  - Added focused regression tests for Bullet, Laser, Wiz, and the shared main-axis helper.
+  - Verified compileJava and the focused pattern test set with Gradle-managed JDK 17.
+  - Verified git diff --check; remaining output was only pre-existing LF/CRLF warnings in dirty files.
+- **Files created/modified:**
+  - src/main/java/net/luojiuoscar/isaac_disaster/registries/attack_pattern/AttackPatternContext.java
+  - src/main/java/net/luojiuoscar/isaac_disaster/registries/attack_pattern/impl/MainAxisPatternSupport.java
+  - src/main/java/net/luojiuoscar/isaac_disaster/registries/attack_pattern/impl/BulletAttackPattern.java
+  - src/main/java/net/luojiuoscar/isaac_disaster/registries/attack_pattern/impl/LaserAttackPattern.java
+  - src/main/java/net/luojiuoscar/isaac_disaster/registries/attack_pattern/impl/WizAttackPattern.java
+  - src/main/java/net/luojiuoscar/isaac_disaster/registries/attack_type/AttackContext.java
+  - src/main/java/net/luojiuoscar/isaac_disaster/registries/attack_type/impl/BulletAttack.java
+  - src/main/java/net/luojiuoscar/isaac_disaster/registries/attack_type/impl/LaserAttack.java
+  - src/main/java/net/luojiuoscar/isaac_disaster/registries/ability_effect/impl/normal/TheWizAttackPlan.java
+  - src/test/java/net/luojiuoscar/isaac_disaster/registries/attack_pattern/impl/PatternTestSupport.java
+  - src/test/java/net/luojiuoscar/isaac_disaster/registries/attack_pattern/impl/MainAxisPatternSupportTest.java
+  - src/test/java/net/luojiuoscar/isaac_disaster/registries/attack_pattern/impl/BulletAttackPatternTest.java
+  - src/test/java/net/luojiuoscar/isaac_disaster/registries/attack_pattern/impl/LaserAttackPatternTest.java
+  - src/test/java/net/luojiuoscar/isaac_disaster/registries/attack_pattern/impl/WizAttackPatternTest.java
+
+## Session: 2026-08-26 V3 Brimstone sequence helper
+- **Status:** complete
+- **Actions taken:**
+  - Added a dedicated BrimstonePattern helper to own the explicit 13-shot sequence boundary.
+  - Moved Brimstone shot snapshot creation into the helper so each callback derives a fresh copied Context with the current spawn position.
+  - Kept controllable Brimstone rotation updates while preserving the copied spread offsets.
+  - Left AttackPipeline semantics and shootSingle runtime behavior unchanged.
+  - Added focused BrimstonePatternTest coverage and reused the existing pattern test support across packages.
+  - Verified compileJava, the focused test set, and git diff --check with Gradle-managed JDK 17.
+- **Files created/modified:**
+- src/main/java/net/luojiuoscar/isaac_disaster/registries/attack_type/impl/BrimstonePattern.java
+- src/main/java/net/luojiuoscar/isaac_disaster/registries/attack_type/impl/BrimstoneAttack.java
+- src/test/java/net/luojiuoscar/isaac_disaster/registries/attack_type/impl/BrimstonePatternTest.java
+- src/test/java/net/luojiuoscar/isaac_disaster/registries/attack_pattern/impl/PatternTestSupport.java
+
+## Session: 2026-08-26 V4 Brimstone single-context sequence
+- **Status:** complete
+- **Actions taken:**
+  - Collapsed the Brimstone helper back into BrimstoneAttack so scheduled shots reuse one working context.
+  - Refresh the shared shot context in place before each emission, updating only spawn position and controllable rotation.
+  - Removed the standalone BrimstonePattern helper and replaced its coverage with BrimstoneAttack behavior tests.
+  - Kept shootSingle as the runtime-sequence entrypoint for split children and direct single-laser emission.
+- **Files created/modified:**
+  - src/main/java/net/luojiuoscar/isaac_disaster/registries/attack_type/impl/BrimstoneAttack.java
+  - src/test/java/net/luojiuoscar/isaac_disaster/registries/attack_type/impl/BrimstoneAttackTest.java
+
+## Session: 2026-08-27 V2/V3 follow-up main-axis optimization
+- **Status:** complete
+- Replaced `AttackContext`'s `xRot`, `yRot`, and offset state with one validated, normalized `Vec3 mainAxis`.
+- Moved direction/rotation conversion, axis rotation, lateral-axis selection, and impact-plane projection to `helper/GeometryHelper`.
+- Added `AbstractAttackPattern` for Pattern-specific Context snapshot cloning and main-axis replacement; removed the obsolete pattern support helpers.
+- Migrated Bullet, Laser, Wiz, Ring, Semicircle, Parasite, Brimstone, Shoop Da Whoop, Context construction call sites, TearBullet, LaserProjectile, and Cricket's Body to the main-axis contract.
+- Replaced the duplicate `AttackType.rotateAroundAxis` implementation with `GeometryHelper` usage.
+- Verified with the Gradle-managed Java 17 runtime in offline mode:
+  - `compileJava`: PASS
+  - focused Bullet/Laser/Wiz/Cricket's Body/Brimstone tests: PASS
+  - `testClasses`: PASS
+- The first online compile attempt was blocked by MCPRepo connection timeout; offline verification succeeded from the local Forge cache.

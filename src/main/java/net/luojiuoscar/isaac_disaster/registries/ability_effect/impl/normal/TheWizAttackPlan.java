@@ -7,6 +7,7 @@ import net.luojiuoscar.isaac_disaster.registries.ability_effect.ExecutableEffect
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.IExecutableEffect;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackContext;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackType;
+import net.luojiuoscar.isaac_disaster.registries.attack_pattern.impl.WizAttackPattern;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffectInstance;
 
@@ -34,22 +35,14 @@ public class TheWizAttackPlan implements IExecutableEffect {
         AttackType attackType = event.getAttackType();
         List<AttackContext> contexts = new ArrayList<>();
 
-        for (AttackContext attackContext : attackType.getAttackContexts(player, bulletCount)) {
-            attackContext.setYRot(attackContext.getYRot() - 45);
-            contexts.add(attackContext);
-        }
-        for (AttackContext attackContext : attackType.getAttackContexts(player, bulletCount)) {
-            attackContext.setYRot(attackContext.getYRot() + 45);
-            contexts.add(attackContext);
-        }
+        contexts.addAll(WizAttackPattern.rotateContexts(attackType.getAttackContexts(player, bulletCount), -45.0f));
+        contexts.addAll(WizAttackPattern.rotateContexts(attackType.getAttackContexts(player, bulletCount), 45.0f));
 
         event.replaceBaseContexts(contexts);
     }
 
     private static void rotateBaseContexts(AttackPlanEvent event, ServerPlayer player) {
         float rotation = player.getRandom().nextDouble() < 0.5 ? -45.0f : 45.0f;
-        for (AttackContext attackContext : event.getBaseContexts()) {
-            attackContext.setYRot(attackContext.getYRot() + rotation);
-        }
+        event.replaceBaseContexts(WizAttackPattern.rotateContexts(event.getBaseContexts(), rotation));
     }
 }
