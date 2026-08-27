@@ -3,6 +3,8 @@ package net.luojiuoscar.isaac_disaster.renderer;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import net.luojiuoscar.isaac_disaster.entity.custom.FetusBullet;
+import net.luojiuoscar.isaac_disaster.renderer.material.BulletMaterial;
+import net.luojiuoscar.isaac_disaster.renderer.material.BulletMaterialResolver;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.PlayerModel;
 import net.minecraft.client.model.geom.ModelLayers;
@@ -59,19 +61,9 @@ public class FetusBulletRenderer extends EntityRenderer<FetusBullet> {
         poseStack.scale(scale, scale, scale);
 
         // ================= 颜色 / Alpha =================
-        int color = bullet.getColor();
-        float alpha = bullet.getAlpha();
-
-        float r = ((color >> 16) & 0xFF) / 255f;
-        float g = ((color >> 8) & 0xFF) / 255f;
-        float b = (color & 0xFF) / 255f;
-
         // ================= 皮肤 =================
-        ResourceLocation skin = getSkin(bullet);
-
-        var vertexConsumer = buffer.getBuffer(
-                RenderType.entityTranslucent(skin)
-        );
+        BulletMaterial material = resolveMaterial(bullet);
+        var vertexConsumer = buffer.getBuffer(material.renderType());
 
         // ================= 渲染 PlayerModel =================
         playerModel.renderToBuffer(
@@ -79,7 +71,7 @@ public class FetusBulletRenderer extends EntityRenderer<FetusBullet> {
                 vertexConsumer,
                 packedLight,
                 OverlayTexture.NO_OVERLAY,
-                r, g, b, alpha
+                material.red(), material.green(), material.blue(), material.alpha()
         );
 
         poseStack.popPose();
@@ -87,10 +79,8 @@ public class FetusBulletRenderer extends EntityRenderer<FetusBullet> {
     }
 
     private ResourceLocation getSkin(FetusBullet bullet) {
-        if (bullet.getOwner() != null) {
-            var info = Minecraft.getInstance()
-                    .getConnection()
-                    .getPlayerInfo(bullet.getOwner().getUUID());
+        if (bullet.getOwner() != null && Minecraft.getInstance().getConnection() != null) {
+            var info = Minecraft.getInstance().getConnection().getPlayerInfo(bullet.getOwner().getUUID());
 
             if (info != null) {
                 return info.getSkinLocation();
@@ -99,8 +89,13 @@ public class FetusBulletRenderer extends EntityRenderer<FetusBullet> {
         return DefaultPlayerSkin.getDefaultSkin();
     }
 
+    private BulletMaterial resolveMaterial(FetusBullet bullet) {
+        ResourceLocation skin = getSkin(bullet);
+        return BulletMaterialResolver.of(skin, bullet.getColor(), bullet.getAlpha());
+    }
+
     @Override
     public ResourceLocation getTextureLocation(FetusBullet entity) {
-        return DefaultPlayerSkin.getDefaultSkin();
+        return resolveMaterial(entity).texture();
     }
 }

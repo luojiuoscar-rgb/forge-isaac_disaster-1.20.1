@@ -17,7 +17,7 @@ public class ModBulletColors {
 
     /** 不一定是白色。如果颜色为Base，对应攻击方式会选择自己的默认颜色。 */
     public static final RegistryObject<BulletColor> BASE =
-            BULLET_COLOR_REGISTRY.register("base", () -> new BulletColor(0xFFFFFF, 1.0f, 0));
+            BULLET_COLOR_REGISTRY.register("base", () -> new BulletColor(0xE7C5E0, 1.0f, 0));
 
     public static final RegistryObject<BulletColor> SPOON_BENDER =
             BULLET_COLOR_REGISTRY.register("spoon_bender", () -> new BulletColor(0x7A33C0, 1.0f, 1));

@@ -1,3 +1,0 @@
-[278月2026 17:43:39.327] [Test worker/WARN] [net.luojiuoscar.isaac_disaster.IsaacDisaster/]: Ignored setPos on frozen AttackContext
-[278月2026 17:43:39.336] [Test worker/WARN] [net.luojiuoscar.isaac_disaster.IsaacDisaster/]: Ignored setMainAxis on frozen AttackContext
-[278月2026 17:43:39.338] [Test worker/WARN] [net.luojiuoscar.isaac_disaster.IsaacDisaster/]: Ignored useExactSpawnPosition on frozen AttackContext

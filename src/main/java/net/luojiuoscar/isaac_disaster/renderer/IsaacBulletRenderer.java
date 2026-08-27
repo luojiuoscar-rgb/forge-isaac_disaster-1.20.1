@@ -3,8 +3,9 @@ package net.luojiuoscar.isaac_disaster.renderer;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
-import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.entity.custom.TearBullet;
+import net.luojiuoscar.isaac_disaster.renderer.material.BulletMaterial;
+import net.luojiuoscar.isaac_disaster.renderer.material.BulletMaterialResolver;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
@@ -15,9 +16,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 
 public class IsaacBulletRenderer extends EntityRenderer<TearBullet> {
-    private static final ResourceLocation TEAR_BULLET =
-            ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "textures/particle/tear_bullet.png");
-
     // 可调参数
     private static final float SCALE_FADE_THRESHOLD = 1.4f;    // 超过这个大小才触发
     private static final float MAX_FADE_DISTANCE = 2.0f;       // 超过此距离完全不透明
@@ -41,15 +39,14 @@ public class IsaacBulletRenderer extends EntityRenderer<TearBullet> {
         poseStack.scale(scale, scale, scale);
 
         float size = 0.1f;
-        VertexConsumer vertexConsumer = buffer.getBuffer(RenderType.entityTranslucent(TEAR_BULLET));
+        BulletMaterial material = BulletMaterialResolver.tear(bullet);
+        VertexConsumer vertexConsumer = buffer.getBuffer(material.renderType());
 
         // 基础颜色计算
-        int color = bullet.getColor();
-        float alpha = bullet.getAlpha();
-
-        float r = ((color >> 16) & 0xFF) / 255f;
-        float g = ((color >> 8) & 0xFF) / 255f;
-        float b = (color & 0xFF) / 255f;
+        float r = material.red();
+        float g = material.green();
+        float b = material.blue();
+        float alpha = material.alpha();
 
         // 近距离淡出逻辑
         Minecraft mc = Minecraft.getInstance();
@@ -65,7 +62,8 @@ public class IsaacBulletRenderer extends EntityRenderer<TearBullet> {
                 // 计算距离影响因子 (0 ~ 1)
                 float distFactor = (float) Math.min(1.0, dist / MAX_FADE_DISTANCE);
                 // 生成时间影响因子 (线性过渡)
-                float timeFactor = (float) bullet.tickCount / FADE_DURATION_TICKS;
+                float age = bullet.tickCount + partialTicks;
+                float timeFactor = Math.min(1.0F, age / FADE_DURATION_TICKS);
 
                 // 越近越透明，时间越久越不透明
                 alpha = alpha * Math.min(1.0f, Math.min(1.0f, distFactor + 0.3f) * timeFactor);
@@ -100,6 +98,6 @@ public class IsaacBulletRenderer extends EntityRenderer<TearBullet> {
 
     @Override
     public ResourceLocation getTextureLocation(TearBullet entity) {
-        return TEAR_BULLET;
+        return BulletMaterialResolver.TEAR_TEXTURE;
     }
 }
