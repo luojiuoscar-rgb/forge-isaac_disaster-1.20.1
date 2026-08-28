@@ -5,6 +5,7 @@ import net.luojiuoscar.isaac_disaster.registries.attack_type.BulletSourceType;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackContext;
 import net.luojiuoscar.isaac_disaster.helper.EntityHelper;
 import net.minecraft.util.Mth;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -13,6 +14,8 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
 public class FetusBullet extends TearBullet{
+    public static final ResourceLocation DEFAULT_VISUAL_ID =
+            ResourceLocation.fromNamespaceAndPath("isaac_disaster", "default_fetus");
     private int attackInterval = 0;
 
     public FetusBullet(AttackContext context) {
@@ -27,6 +30,11 @@ public class FetusBullet extends TearBullet{
     @Override
     public BulletSourceType getSourceType() {
         return BulletSourceType.FETUS_BULLET;
+    }
+
+    @Override
+    public ResourceLocation getDefaultVisualId() {
+        return DEFAULT_VISUAL_ID;
     }
 
     @Override

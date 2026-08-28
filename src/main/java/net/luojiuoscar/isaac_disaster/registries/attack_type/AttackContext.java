@@ -19,6 +19,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 
 /** Creation-time data used to construct one attack object. */
 public class AttackContext {
@@ -28,6 +29,7 @@ public class AttackContext {
     public static final double MAX_RANGE = 64.0;
 
     private ResourceLocation colorRl;
+    private Set<ResourceLocation> visualIds;
     private final CompositeTrigger trigger;
     private final Map<ResourceLocation, Integer> trajectories;
     private Vec3 pos;
@@ -45,6 +47,7 @@ public class AttackContext {
         this.owner = Objects.requireNonNull(builder.owner, "owner");
         this.shooter = builder.shooter == null ? owner : builder.shooter;
         this.colorRl = builder.colorRl;
+        this.visualIds = Set.copyOf(builder.visualIds);
         this.trigger = builder.trigger == null ? new CompositeTrigger() : builder.trigger.copy();
         this.trajectories = immutableMap(builder.trajectories);
         this.pos = builder.position == null ? owner.position() : builder.position;
@@ -68,7 +71,7 @@ public class AttackContext {
     }
 
     public Builder toBuilder() {
-        return Builder.from(this).color(colorRl).trigger(trigger).trajectories(trajectories)
+        return Builder.from(this).color(colorRl).visuals(visualIds).trigger(trigger).trajectories(trajectories)
                 .position(pos).mainAxis(mainAxis).damage((double) damage).range(bulletRange)
                 .speed(bulletSpeed).splitSequence(splitSequence).useExactSpawnPosition(useExactSpawnPosition);
     }
@@ -94,6 +97,8 @@ public class AttackContext {
     @NotNull public LivingEntity getOwner() { return owner; }
     public ResourceLocation getColorRl() { return colorRl; }
     public void setColorRl(ResourceLocation colorRl) { if (ensureMutable("setColorRl")) this.colorRl = colorRl; }
+    public Set<ResourceLocation> getVisualIds() { return visualIds; }
+    public void setVisualIds(Set<ResourceLocation> visualIds) { if (ensureMutable("setVisualIds")) this.visualIds = Set.copyOf(visualIds); }
     public Map<ResourceLocation, Integer> getTrajectories() { return trajectories; }
     public float getDamage() { return damage; }
     public double getBulletRange() { return bulletRange; }
@@ -152,6 +157,7 @@ public class AttackContext {
         this.owner = source.owner;
         this.shooter = source.shooter;
         this.colorRl = source.colorRl;
+        this.visualIds = source.visualIds;
         this.trigger = source.trigger.copy();
         this.trajectories = immutableMap(source.trajectories);
         this.pos = source.pos;
@@ -168,6 +174,7 @@ public class AttackContext {
         this.owner = source.owner;
         this.shooter = source.shooter;
         this.colorRl = builder.colorRl;
+        this.visualIds = Set.copyOf(builder.visualIds);
         this.trigger = builder.trigger == null ? new CompositeTrigger() : builder.trigger.copy();
         this.trajectories = immutableMap(builder.trajectories);
         this.pos = Objects.requireNonNull(builder.position, "position");
@@ -187,6 +194,7 @@ public class AttackContext {
         private final Entity shooter;
         private AttackContext source;
         private ResourceLocation colorRl;
+        private Set<ResourceLocation> visualIds = Set.of();
         private CompositeTrigger trigger;
         private Map<ResourceLocation, Integer> trajectories = Map.of();
         private Vec3 position;
@@ -214,6 +222,7 @@ public class AttackContext {
         }
 
         public Builder color(ResourceLocation colorRl) { this.colorRl = colorRl; return this; }
+        public Builder visuals(Set<ResourceLocation> visualIds) { this.visualIds = visualIds == null ? Set.of() : Set.copyOf(visualIds); return this; }
         public Builder trigger(CompositeTrigger trigger) { this.trigger = trigger; return this; }
         public Builder trajectories(Map<ResourceLocation, Integer> trajectories) {
             this.trajectories = trajectories == null ? Map.of() : trajectories; return this;

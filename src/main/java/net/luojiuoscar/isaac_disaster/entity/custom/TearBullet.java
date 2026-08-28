@@ -57,8 +57,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.Set;
+import java.util.TreeSet;
 
 public class TearBullet extends Entity implements IBulletObject {
+    public static final ResourceLocation DEFAULT_VISUAL_ID =
+            ResourceLocation.fromNamespaceAndPath("isaac_disaster", "default_tear");
 
     // ======== 基础属性 ========
     // Internal lifetime derived from range and speed; not a gameplay-facing parameter.
@@ -121,6 +125,10 @@ public class TearBullet extends Entity implements IBulletObject {
 
     protected static final EntityDataAccessor<String> TRAJECTORIES =
             SynchedEntityData.defineId(TearBullet.class, EntityDataSerializers.STRING);
+    protected static final EntityDataAccessor<String> VISUAL_IDS =
+            SynchedEntityData.defineId(TearBullet.class, EntityDataSerializers.STRING);
+    protected static final EntityDataAccessor<String> OWNER_UUID =
+            SynchedEntityData.defineId(TearBullet.class, EntityDataSerializers.STRING);
 
 
     // ======== 构造函数 ========
@@ -149,6 +157,7 @@ public class TearBullet extends Entity implements IBulletObject {
         double bulletSpeed = context.getBulletSpeed();
 
         this.ownerUUID = actualOwner.getUUID();
+        this.entityData.set(OWNER_UUID, ownerUUID.toString());
         this.cachedOwner = actualOwner;
         this.shooter = actualShooter;
         this.lifeTick = calculateLifeTime(context.getBulletRange(), bulletSpeed);
@@ -530,9 +539,49 @@ public class TearBullet extends Entity implements IBulletObject {
         return colorRl;
     }
 
+    public Set<ResourceLocation> getVisualIds() {
+        TreeSet<ResourceLocation> result = new TreeSet<>((a, b) -> a.toString().compareTo(b.toString()));
+        for (String value : getVisualIdsSignature().split(";")) {
+            try { if (!value.isBlank()) result.add(ResourceLocation.parse(value)); } catch (Exception ignored) { }
+        }
+        if (result.isEmpty()) result.add(getDefaultVisualId());
+        return Set.copyOf(result);
+    }
+
+    /**
+     * Returns the synchronized candidate signature without parsing it. Client renderers use it to
+     * determine whether a cached visual selection is still valid.
+     */
+    public String getVisualIdsSignature() {
+        return entityData.get(VISUAL_IDS);
+    }
+
+    public ResourceLocation getDefaultVisualId() {
+        return DEFAULT_VISUAL_ID;
+    }
+
+    public void setVisualIds(Set<ResourceLocation> visualIds) {
+        TreeSet<String> ids = new TreeSet<>();
+        if (visualIds != null) for (ResourceLocation id : visualIds) if (id != null) ids.add(id.toString());
+        ids.add(getDefaultVisualId().toString());
+        entityData.set(VISUAL_IDS, String.join(";", ids));
+    }
+
     public void setOwner(LivingEntity entity) {
         this.cachedOwner = Objects.requireNonNull(entity, "owner");
         this.ownerUUID = entity.getUUID();
+        this.entityData.set(OWNER_UUID, ownerUUID.toString());
+    }
+
+    @Nullable
+    public UUID getOwnerUuid() {
+        String value = entityData.get(OWNER_UUID);
+        if (value.isBlank()) return null;
+        try {
+            return UUID.fromString(value);
+        } catch (IllegalArgumentException ignored) {
+            return null;
+        }
     }
 
     // ======== 同步数据 ========
@@ -542,6 +591,8 @@ public class TearBullet extends Entity implements IBulletObject {
         entityData.define(COLOR, 0xFFFFFF);
         entityData.define(ALPHA, 1.0F);
         entityData.define(TRAJECTORIES, "");
+        entityData.define(VISUAL_IDS, getDefaultVisualId().toString());
+        entityData.define(OWNER_UUID, "");
     }
 
     // ======== NBT读写(不保存子弹) ========

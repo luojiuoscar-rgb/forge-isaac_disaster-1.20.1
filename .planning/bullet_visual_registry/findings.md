@@ -1,0 +1,4 @@
+- The approved architecture supersedes the earlier Forge custom Registry design.
+- PlayerAbility now stores visual ID/count only; target and priority are client-only.
+- TearBullet synchronizes a stable, semicolon-separated candidate-ID set and always appends its default ID.
+- Client BulletVisualRegistry is the sole visual registry and caches a selection per bullet candidate signature.

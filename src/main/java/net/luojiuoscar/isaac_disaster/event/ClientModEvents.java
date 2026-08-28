@@ -12,9 +12,8 @@ import net.luojiuoscar.isaac_disaster.client.hud.FlyHudOverlay;
 import net.luojiuoscar.isaac_disaster.client.hud.ReviveHudOverlay;
 import net.luojiuoscar.isaac_disaster.entity.ModEntities;
 import net.luojiuoscar.isaac_disaster.entity.tnt.CustomTntRenderer;
-import net.luojiuoscar.isaac_disaster.renderer.FetusBulletRenderer;
+import net.luojiuoscar.isaac_disaster.renderer.BulletRenderer;
 import net.luojiuoscar.isaac_disaster.renderer.InvincibleChargeLayer;
-import net.luojiuoscar.isaac_disaster.renderer.IsaacBulletRenderer;
 import net.luojiuoscar.isaac_disaster.renderer.familiar.MomKnifeRenderer;
 import net.luojiuoscar.isaac_disaster.renderer.layer.frozen.FrozenShellLayer;
 import net.luojiuoscar.isaac_disaster.renderer.layer.golden.GoldenLayer;
@@ -45,11 +44,10 @@ public class ClientModEvents {
     // 订阅实体渲染器注册事件
     @SubscribeEvent
     public static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
-
         event.registerEntityRenderer(ModEntities.ISAAC_BOMB.get(), CustomTntRenderer::new);
         event.registerEntityRenderer(ModEntities.GIGA_BOMB.get(), CustomTntRenderer::new);
-        event.registerEntityRenderer(ModEntities.TEAR_BULLET.get(), IsaacBulletRenderer::new);
-        event.registerEntityRenderer(ModEntities.FETUS_BULLET.get(), FetusBulletRenderer::new);
+        event.registerEntityRenderer(ModEntities.TEAR_BULLET.get(), BulletRenderer::new);
+        event.registerEntityRenderer(ModEntities.FETUS_BULLET.get(), BulletRenderer::new);
         event.registerEntityRenderer(ModEntities.SELECTIVE_EFFECT_CLOUD.get(), NoopRenderer::new);
         event.registerEntityRenderer(ModEntities.MOM_KNIFE.get(), MomKnifeRenderer::new);
 

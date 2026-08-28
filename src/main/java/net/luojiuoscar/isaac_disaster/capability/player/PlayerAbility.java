@@ -15,8 +15,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.registries.IForgeRegistry;
 import net.minecraftforge.registries.RegistryManager;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class PlayerAbility {
     private boolean holdRightClick;
@@ -35,14 +34,16 @@ public class PlayerAbility {
     private AttackType cachedAttackType;
     private int cachedAttackPriorityTier;
     private double cachedAttackPriority;
-    private final Map<ResourceLocation, Integer> bulletColor; // bullet color id : count
+    private final LinkedHashMap<ResourceLocation, Integer> bulletColor; // priority-ordered color id : count
     private ResourceLocation bestBulletColor;
     private final HashMap<ResourceLocation, Integer> trajectories;
+    private final Map<ResourceLocation, Integer> bulletVisuals;
 
     public PlayerAbility() {
         attackType = new HashMap<>();
-        bulletColor = new HashMap<>();
+        bulletColor = new LinkedHashMap<>();
         trajectories = new HashMap<>();
+        bulletVisuals = new HashMap<>();
         init();
     }
 
@@ -64,6 +65,7 @@ public class PlayerAbility {
         attackType.clear();
         bulletColor.clear();
         trajectories.clear();
+        bulletVisuals.clear();
     }
 
     public void copyFrom(PlayerAbility source) {
@@ -85,6 +87,8 @@ public class PlayerAbility {
         this.bulletColor.putAll(source.bulletColor);
         this.trajectories.clear();
         this.trajectories.putAll(source.trajectories);
+        this.bulletVisuals.clear();
+        this.bulletVisuals.putAll(source.bulletVisuals);
     }
 
     public void saveNBTData(CompoundTag nbt) {
@@ -122,6 +126,15 @@ public class PlayerAbility {
             trajectoriesList.add(tag);
         }
         nbt.put("trajectories", trajectoriesList);
+
+        ListTag visualList = new ListTag();
+        for (var entry : bulletVisuals.entrySet()) {
+            CompoundTag tag = new CompoundTag();
+            tag.putString("visual_id", entry.getKey().toString());
+            tag.putInt("count", entry.getValue());
+            visualList.add(tag);
+        }
+        nbt.put("bullet_visuals", visualList);
     }
 
     public void loadNBTData(CompoundTag nbt) {
@@ -153,11 +166,12 @@ public class PlayerAbility {
                 int count = tag.getInt("count");
                 try{
                     ResourceLocation rl = ResourceLocation.parse(colorStr);
-                    bulletColor.put(rl, count);
+                    if (count > 0) bulletColor.put(rl, count);
                 }catch (Exception ignored) {}
             }
         }
 
+        sortBulletColors();
         trajectories.clear();
         if (nbt.contains("trajectories", Tag.TAG_LIST)) {
             ListTag list = nbt.getList("trajectories", Tag.TAG_COMPOUND);
@@ -169,6 +183,18 @@ public class PlayerAbility {
                     ResourceLocation rl = ResourceLocation.parse(trajIdStr);
                     trajectories.put(rl, count);
                 } catch (Exception ignored) {}
+            }
+        }
+
+        bulletVisuals.clear();
+        if (nbt.contains("bullet_visuals", Tag.TAG_LIST)) {
+            for (Tag t : nbt.getList("bullet_visuals", Tag.TAG_COMPOUND)) {
+                CompoundTag tag = (CompoundTag) t;
+                try {
+                    ResourceLocation visualId = ResourceLocation.parse(tag.getString("visual_id"));
+                    int count = tag.getInt("count");
+                    if (count > 0) bulletVisuals.put(visualId, count);
+                } catch (Exception ignored) { }
             }
         }
 
@@ -299,28 +325,12 @@ public class PlayerAbility {
     }
 
     public Map<ResourceLocation, Integer> getBulletColor(){
-        return new HashMap<>(bulletColor);
+        return new LinkedHashMap<>(bulletColor);
     }
 
     public void updateBestBulletColor() {
-        IForgeRegistry<BulletColor> registry = RegistryManager.ACTIVE.getRegistry(ModBulletColors.BULLET_COLOR_KEY);
-        if (registry == null) return;
-
-        double bestPriority = ModBulletColors.BASE.get().priority();
-        ResourceLocation bestKey = ModBulletColors.BASE.getId();
-
-        for (ResourceLocation key : this.bulletColor.keySet()) {
-            BulletColor color = registry.getValue(key);
-            if (color == null) continue;
-
-            double priority = color.priority();
-            if (priority > bestPriority) {
-                bestPriority = priority;
-                bestKey = key;
-            }
-        }
-
-        this.bestBulletColor = bestKey;
+        sortBulletColors();
+        this.bestBulletColor = bulletColor.isEmpty() ? ModBulletColors.BASE.getId() : bulletColor.keySet().iterator().next();
     }
 
     public ResourceLocation getBestBulletColor() {
@@ -337,6 +347,32 @@ public class PlayerAbility {
         }
 
         updateBestBulletColor();
+    }
+
+    public void addBulletVisual(ResourceLocation id, int count) {
+        if (count == 0) return;
+        int next = bulletVisuals.getOrDefault(id, 0) + count;
+        if (next <= 0) bulletVisuals.remove(id);
+        else bulletVisuals.put(id, next);
+    }
+
+    public Set<ResourceLocation> getBulletVisuals() {
+        return Set.copyOf(bulletVisuals.keySet());
+    }
+
+    private void sortBulletColors() {
+        IForgeRegistry<BulletColor> registry = RegistryManager.ACTIVE.getRegistry(ModBulletColors.BULLET_COLOR_KEY);
+        if (registry == null) return;
+        LinkedHashMap<ResourceLocation, Integer> sorted = new LinkedHashMap<>();
+        bulletColor.entrySet().stream()
+                .filter(entry -> entry.getValue() > 0 && registry.getValue(entry.getKey()) != null)
+                .sorted(Map.Entry.<ResourceLocation, Integer>comparingByKey((a, b) -> {
+                    int priority = Double.compare(registry.getValue(b).priority(), registry.getValue(a).priority());
+                    return priority != 0 ? priority : a.toString().compareTo(b.toString());
+                }))
+                .forEach(entry -> sorted.put(entry.getKey(), entry.getValue()));
+        bulletColor.clear();
+        bulletColor.putAll(sorted);
     }
 
 

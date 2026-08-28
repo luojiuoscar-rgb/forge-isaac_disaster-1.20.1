@@ -73,7 +73,8 @@ public abstract class AttackType {
                     Vec3 eyePos = player.getEyePosition().add(0, player.getBbHeight() * -0.15, 0);
 
                     return AttackContext.builder(player, shooter)
-                            .color(colorRl).trigger(new CompositeTrigger()).trajectories(trajectories)
+                            .color(colorRl).visuals(playerAbility.getBulletVisuals())
+                            .trigger(new CompositeTrigger()).trajectories(trajectories)
                             .position(eyePos).mainAxis(GeometryHelper.mainAxisFromRotation(player.getXRot(), player.getYRot()))
                             .range(getRange(player)).speed(getBulletSpeed(player)).build();
                 })

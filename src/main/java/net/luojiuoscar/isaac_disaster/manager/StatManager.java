@@ -423,6 +423,10 @@ public enum StatManager {
         );
     }
 
+    public static void addBulletVisual(ServerPlayer player, ResourceLocation id, int count) {
+        player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY).ifPresent(a -> a.addBulletVisual(id, count));
+    }
+
     public static void addTrajectory(ServerPlayer player, ResourceLocation rl, int count){
         player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY).ifPresent(
                 playerAbility -> playerAbility.addTrajectory(rl, count)

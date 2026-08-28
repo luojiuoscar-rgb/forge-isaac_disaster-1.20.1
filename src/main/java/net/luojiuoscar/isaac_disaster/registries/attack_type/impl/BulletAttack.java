@@ -92,6 +92,7 @@ public class BulletAttack extends AttackType {
         bullet.setTrajectories(context.getTrajectories());
 
         bullet.setBulletColor(context.getColorRl());
+        bullet.setVisualIds(context.getVisualIds());
 
         bullet.moveTo(adjustedPos.x, adjustedPos.y, adjustedPos.z, rotation.yRot(), rotation.xRot());
         bullet.setPreflightStart(context.getPos());
