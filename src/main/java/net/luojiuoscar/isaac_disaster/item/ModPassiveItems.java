@@ -604,4 +604,8 @@ public class ModPassiveItems {
     public static final RegistryObject<Item> CRICKETS_BODY = ITEMS.register("crickets_body",
             () -> new PassiveItem(new Item.Properties(), ModPassiveAbilities.CRICKETS_BODY));
     static {ItemListManager.PASSIVE_ITEM_LIST.add(CRICKETS_BODY);}
+
+    public static final RegistryObject<Item> COMPOUND_FRACTURE = ITEMS.register("compound_fracture",
+            () -> new PassiveItem(new Item.Properties(), ModPassiveAbilities.COMPOUND_FRACTURE));
+    static {ItemListManager.PASSIVE_ITEM_LIST.add(COMPOUND_FRACTURE);}
 }

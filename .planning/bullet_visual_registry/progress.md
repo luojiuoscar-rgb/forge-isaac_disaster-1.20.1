@@ -42,3 +42,14 @@
 - Git index normalization could not be performed because `.git/index` was
   write-protected and the escalated `git add -u` request was rejected by the
   approval service; no workaround was used.
+
+## 2026-08-28 Archive handoff
+
+- Retried `git add -u` after approval was enabled; it succeeded and removed the
+  prior `AD` mixed index state without staging the two untracked `codex/*.md`
+  files.
+- Final `gradlew test build` succeeded on JDK 23.
+- `git diff --check` succeeded and `git ls-files '*latest.log' '*logs/latest.log'`
+  returned no entries.
+- The review-fix implementation is complete and the planning folder now
+  contains the final architecture, findings, progress, and verification state.

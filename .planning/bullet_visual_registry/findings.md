@@ -2,3 +2,7 @@
 - PlayerAbility now stores visual ID/count only; target and priority are client-only.
 - TearBullet synchronizes a stable, semicolon-separated candidate-ID set and always appends its default ID.
 - Client BulletVisualRegistry is the sole visual registry and caches a selection per bullet candidate signature.
+- Review found that computing the signature through `getVisualIds()` every frame defeated the intended cache; the renderer now compares the raw synchronized signature and returns the cached best visual.
+- Fetus skin rendering requires both wide and slim `PlayerModel` instances; `PlayerInfo#getModelName()` selects the model and the default skin falls back to wide.
+- Forge 1.20.1 `EntityRenderersEvent.RegisterRenderers` does not expose a renderer context, so default visual registration remains lazy in `BulletRenderer` construction while duplicate registration is guarded.
+- The Git index had staged additions for deleted legacy visual files (`AD` state). A successful `git add -u` synchronized the index with the working tree; only two unrelated untracked `codex/*.md` files remain.

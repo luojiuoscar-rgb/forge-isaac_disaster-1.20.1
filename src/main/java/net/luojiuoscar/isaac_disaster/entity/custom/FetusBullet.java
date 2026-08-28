@@ -3,6 +3,7 @@ package net.luojiuoscar.isaac_disaster.entity.custom;
 import net.luojiuoscar.isaac_disaster.entity.ModEntities;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.BulletSourceType;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackContext;
+import net.luojiuoscar.isaac_disaster.registries.bullet_visual.ModBulletVisuals;
 import net.luojiuoscar.isaac_disaster.helper.EntityHelper;
 import net.minecraft.util.Mth;
 import net.minecraft.resources.ResourceLocation;
@@ -14,8 +15,7 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
 public class FetusBullet extends TearBullet{
-    public static final ResourceLocation DEFAULT_VISUAL_ID =
-            ResourceLocation.fromNamespaceAndPath("isaac_disaster", "default_fetus");
+    public static final ResourceLocation DEFAULT_VISUAL_ID = ModBulletVisuals.DEFAULT_FETUS.getId();
     private int attackInterval = 0;
 
     public FetusBullet(AttackContext context) {

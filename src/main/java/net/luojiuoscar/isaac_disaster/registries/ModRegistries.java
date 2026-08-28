@@ -11,6 +11,7 @@ import net.luojiuoscar.isaac_disaster.registries.attack_pattern.AttackPattern;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackType;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.combination.AttackCombinationRule;
 import net.luojiuoscar.isaac_disaster.registries.bullet_color.BulletColor;
+import net.luojiuoscar.isaac_disaster.registries.bullet_visual.BulletVisual;
 import net.luojiuoscar.isaac_disaster.registries.familiar.FamiliarEntityType;
 import net.luojiuoscar.isaac_disaster.registries.recursive_module.RecursiveModule;
 import net.luojiuoscar.isaac_disaster.registries.revive_module.ReviveModule;
@@ -33,6 +34,7 @@ import static net.luojiuoscar.isaac_disaster.registries.attack_pattern.ModAttack
 import static net.luojiuoscar.isaac_disaster.registries.attack_type.ModAttackTypes.ATTACK_TYPE_REGISTER;
 import static net.luojiuoscar.isaac_disaster.registries.attack_type.combination.ModCombinationRules.ATTACK_COMBINATION_RULE_REGISTRY;
 import static net.luojiuoscar.isaac_disaster.registries.bullet_color.ModBulletColors.BULLET_COLOR_REGISTRY;
+import static net.luojiuoscar.isaac_disaster.registries.bullet_visual.ModBulletVisuals.BULLET_VISUAL_REGISTRY;
 import static net.luojiuoscar.isaac_disaster.registries.familiar.ModFamiliarEntities.FAMILIAR_ENTITY_REGISTRY;
 import static net.luojiuoscar.isaac_disaster.registries.recursive_module.ModRecursiveModules.RECURSIVE_MODULE_REGISTRY;
 import static net.luojiuoscar.isaac_disaster.registries.revive_module.ModReviveModules.REVIVE_MODULE_REGISTRY;
@@ -54,6 +56,10 @@ public class ModRegistries {
         BULLET_COLOR_REGISTRY.makeRegistry(() -> {return new RegistryBuilder<BulletColor>()
                 .setName(ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "bullet_color"));});
         BULLET_COLOR_REGISTRY.register(modEventBus);
+
+        BULLET_VISUAL_REGISTRY.makeRegistry(() -> new RegistryBuilder<BulletVisual>()
+                .setName(ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "bullet_visual")));
+        BULLET_VISUAL_REGISTRY.register(modEventBus);
 
         TRIGGER_MODULE_REGISTRY.makeRegistry(() -> {return new RegistryBuilder<TriggerModule>()
                 .setName(ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "trigger_module"));});

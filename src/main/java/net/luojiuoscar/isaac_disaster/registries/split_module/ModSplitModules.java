@@ -3,6 +3,8 @@ package net.luojiuoscar.isaac_disaster.registries.split_module;
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.registries.split_module.impl.ParasiteSplitModule;
 import net.luojiuoscar.isaac_disaster.registries.split_module.impl.CricketsBodySplitModule;
+import net.luojiuoscar.isaac_disaster.registries.split_module.impl.CompoundFractureSplitModule;
+import net.luojiuoscar.isaac_disaster.registries.split_module.impl.EnhancedCompoundFractureSplitModule;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -20,5 +22,9 @@ public final class ModSplitModules {
             SPLIT_MODULE_REGISTRY.register("parasite", ParasiteSplitModule::new);
     public static final RegistryObject<SplitModule> CRICKETS_BODY =
             SPLIT_MODULE_REGISTRY.register("crickets_body", CricketsBodySplitModule::new);
+    public static final RegistryObject<SplitModule> COMPOUND_FRACTURE =
+            SPLIT_MODULE_REGISTRY.register("compound_fracture", CompoundFractureSplitModule::new);
+    public static final RegistryObject<SplitModule> COMPOUND_FRACTURE_ENHANCED =
+            SPLIT_MODULE_REGISTRY.register("compound_fracture_enhanced", EnhancedCompoundFractureSplitModule::new);
 
 }

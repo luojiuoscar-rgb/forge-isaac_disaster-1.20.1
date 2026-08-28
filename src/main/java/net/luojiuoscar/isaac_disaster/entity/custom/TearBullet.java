@@ -21,6 +21,7 @@ import net.luojiuoscar.isaac_disaster.registries.split_module.SplitTriggerCounts
 import net.luojiuoscar.isaac_disaster.registries.split_module.SplitTriggerType;
 import net.luojiuoscar.isaac_disaster.registries.bullet_color.BulletColor;
 import net.luojiuoscar.isaac_disaster.registries.bullet_color.ModBulletColors;
+import net.luojiuoscar.isaac_disaster.registries.bullet_visual.ModBulletVisuals;
 import net.luojiuoscar.isaac_disaster.registries.trajectory.IAttackTrajectory;
 import net.luojiuoscar.isaac_disaster.registries.trajectory.ModAttackTrajectories;
 import net.luojiuoscar.isaac_disaster.registries.trajectory.TrajectoryContext;
@@ -61,8 +62,7 @@ import java.util.Set;
 import java.util.TreeSet;
 
 public class TearBullet extends Entity implements IBulletObject {
-    public static final ResourceLocation DEFAULT_VISUAL_ID =
-            ResourceLocation.fromNamespaceAndPath("isaac_disaster", "default_tear");
+    public static final ResourceLocation DEFAULT_VISUAL_ID = ModBulletVisuals.DEFAULT_TEAR.getId();
 
     // ======== 基础属性 ========
     // Internal lifetime derived from range and speed; not a gameplay-facing parameter.

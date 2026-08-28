@@ -1,5 +1,13 @@
 # Progress Log: AttackContext Refactor
 
+## Session: 2026-08-28 Final Synchronization
+- **Status:** complete
+- Consolidated the completed refactor into the final `task_plan.md` and `findings.md` state. Removed stale descriptions of angle offsets, old pipeline modes, standalone BrimstonePattern, and per-emission Context allocation.
+- Recorded the final main-axis, freeze, runtime snapshot, split inheritance, Cricket's Body impact-plane, and Parasite contracts for subsequent split-item work.
+- Recorded the latest split derivation fix: `toBuilder().direction(velocity).build()` now normalizes `direction` as the derived Context main axis instead of requiring a non-null `mainAxis`.
+- Latest verification before this documentation sync: Gradle `compileJava` and `test` passed in the available terminal JDK environment; final Forge/JDK 17 runtime validation remains IDE/manual work.
+- Documentation note: the first replacement patch attempted delete/add for the same file in one `apply_patch` operation and was rejected before changes. The files were then replaced through separate delete and add operations.
+
 ## Session: 2026-08-27 V5 Freeze Boundary Implementation
 - **Status:** in progress
 - Added `AttackContext` freeze state; frozen mutation attempts log a warning and preserve the existing value.

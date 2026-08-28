@@ -4,6 +4,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 import net.luojiuoscar.isaac_disaster.entity.custom.TearBullet;
+import net.luojiuoscar.isaac_disaster.registries.bullet_visual.TearBulletVisual;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
@@ -11,27 +12,15 @@ import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 
-public final class DefaultTearVisual implements BulletVisual {
-    private static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath(
-            "isaac_disaster", "textures/particle/tear_bullet.png");
-
+public final class DefaultTearVisual implements BulletVisualRenderer<TearBulletVisual> {
     @Override
-    public BulletVisualTarget target() {
-        return BulletVisualTarget.TEAR;
+    public ResourceLocation textureLocation(TearBulletVisual visual, TearBullet bullet) {
+        return visual.getTexture();
     }
 
     @Override
-    public double priority() {
-        return 0.0D;
-    }
-
-    @Override
-    public ResourceLocation textureLocation(TearBullet bullet) {
-        return TEXTURE;
-    }
-
-    @Override
-    public void render(BulletRenderContext context, PoseStack poseStack, MultiBufferSource buffer) {
+    public void render(TearBulletVisual visual, BulletRenderContext context, PoseStack poseStack,
+                       MultiBufferSource buffer) {
         TearBullet bullet = context.bullet();
         poseStack.pushPose();
         poseStack.mulPose(Minecraft.getInstance().getEntityRenderDispatcher().cameraOrientation());
@@ -56,12 +45,12 @@ public final class DefaultTearVisual implements BulletVisual {
         }
 
         int color = bullet.getColor();
-        float red = ((color >> 16) & 255) / 255.0F;
-        float green = ((color >> 8) & 255) / 255.0F;
-        float blue = (color & 255) / 255.0F;
+        float red = visual.acceptsTint() ? ((color >> 16) & 255) / 255.0F : 1.0F;
+        float green = visual.acceptsTint() ? ((color >> 8) & 255) / 255.0F : 1.0F;
+        float blue = visual.acceptsTint() ? (color & 255) / 255.0F : 1.0F;
         alpha = Math.max(0.0F, Math.min(1.0F, alpha));
 
-        VertexConsumer vertexConsumer = buffer.getBuffer(RenderType.entityTranslucent(TEXTURE));
+        VertexConsumer vertexConsumer = buffer.getBuffer(RenderType.entityTranslucent(visual.getTexture()));
         float halfSize = 0.1F;
         quad(vertexConsumer, poseStack, -halfSize, -halfSize, 0.0F, 0.0F, 1.0F,
                 red, green, blue, alpha, context.packedLight());

@@ -13,6 +13,11 @@ import net.luojiuoscar.isaac_disaster.client.hud.ReviveHudOverlay;
 import net.luojiuoscar.isaac_disaster.entity.ModEntities;
 import net.luojiuoscar.isaac_disaster.entity.tnt.CustomTntRenderer;
 import net.luojiuoscar.isaac_disaster.renderer.BulletRenderer;
+import net.luojiuoscar.isaac_disaster.renderer.visual.BulletVisualClientRenderers;
+import net.luojiuoscar.isaac_disaster.renderer.visual.CompoundFractureFetusVisual;
+import net.luojiuoscar.isaac_disaster.renderer.visual.DefaultFetusVisual;
+import net.luojiuoscar.isaac_disaster.renderer.visual.DefaultTearVisual;
+import net.luojiuoscar.isaac_disaster.registries.bullet_visual.ModBulletVisuals;
 import net.luojiuoscar.isaac_disaster.renderer.InvincibleChargeLayer;
 import net.luojiuoscar.isaac_disaster.renderer.familiar.MomKnifeRenderer;
 import net.luojiuoscar.isaac_disaster.renderer.layer.frozen.FrozenShellLayer;
@@ -44,6 +49,15 @@ public class ClientModEvents {
     // 订阅实体渲染器注册事件
     @SubscribeEvent
     public static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
+        BulletVisualClientRenderers.register(ModBulletVisuals.DEFAULT_TEAR, context -> new DefaultTearVisual());
+        BulletVisualClientRenderers.register(
+                ModBulletVisuals.COMPOUND_FRACTURE_BONE_TEAR,
+                context -> new DefaultTearVisual());
+        BulletVisualClientRenderers.register(ModBulletVisuals.DEFAULT_FETUS, DefaultFetusVisual::new);
+        BulletVisualClientRenderers.register(
+                ModBulletVisuals.COMPOUND_FRACTURE_FETUS_SKELETON,
+                CompoundFractureFetusVisual::new);
+
         event.registerEntityRenderer(ModEntities.ISAAC_BOMB.get(), CustomTntRenderer::new);
         event.registerEntityRenderer(ModEntities.GIGA_BOMB.get(), CustomTntRenderer::new);
         event.registerEntityRenderer(ModEntities.TEAR_BULLET.get(), BulletRenderer::new);

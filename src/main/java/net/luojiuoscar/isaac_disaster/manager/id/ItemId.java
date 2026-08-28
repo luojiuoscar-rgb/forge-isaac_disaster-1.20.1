@@ -183,7 +183,8 @@ public enum ItemId {
     DEAD_CAT(3),
     GUPPYS_COLLAR(2),
     THE_PARASITE(2),
-    CRICKETS_BODY(3);
+    CRICKETS_BODY(3),
+    COMPOUND_FRACTURE(2);
 
 
 

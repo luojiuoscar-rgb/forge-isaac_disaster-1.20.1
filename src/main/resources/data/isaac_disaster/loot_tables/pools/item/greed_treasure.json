@@ -81,7 +81,8 @@
         {"type": "minecraft:item", "name": "isaac_disaster:dead_onion"},
         {"type": "minecraft:item", "name": "isaac_disaster:maggys_bow"},
         {"type": "minecraft:item", "name": "isaac_disaster:the_parasite"},
-        {"type": "minecraft:item", "name": "isaac_disaster:crickets_body"}
+        {"type": "minecraft:item", "name": "isaac_disaster:crickets_body"},
+        {"type": "minecraft:item", "name": "isaac_disaster:compound_fracture"}
       ]
     }
   ]

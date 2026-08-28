@@ -124,5 +124,7 @@ public class ModTriggerModules {
             TRIGGER_MODULE_REGISTRY.register("parasite", Parasite::new);
     public static final RegistryObject<TriggerModule> CRICKETS_BODY =
             TRIGGER_MODULE_REGISTRY.register("crickets_body", CricketsBody::new);
+    public static final RegistryObject<TriggerModule> COMPOUND_FRACTURE =
+            TRIGGER_MODULE_REGISTRY.register("compound_fracture", CompoundFracture::new);
 
 }
