@@ -1,6 +1,7 @@
 package net.luojiuoscar.isaac_disaster.registries.attack_type;
 
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
+import net.luojiuoscar.isaac_disaster.attribute.ModAttributes;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.CompositeTrigger;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.SimpleTrigger;
 import net.luojiuoscar.isaac_disaster.helper.GeometryHelper;
@@ -27,6 +28,8 @@ public class AttackContext {
     public static final double DEFAULT_SPEED = 1.0;
     public static final double MIN_RANGE = 1.0;
     public static final double MAX_RANGE = 64.0;
+    private static final double MIN_BULLET_SCALE = 0.25D;
+    private static final double BULLET_SCALE_BASE_DAMAGE = 2.0D;
 
     private ResourceLocation colorRl;
     private Set<ResourceLocation> visualIds;
@@ -35,6 +38,9 @@ public class AttackContext {
     private Vec3 pos;
     private Vec3 mainAxis;
     private final float damage;
+    private double bulletScaleModifier;
+    private double bulletScale;
+    private boolean directBulletScaleOverride;
     private final double bulletRange;
     private final double bulletSpeed;
     private SplitSequence splitSequence;
@@ -59,6 +65,9 @@ public class AttackContext {
                     : normalizeMainAxis(builder.mainAxis);
         }
         this.damage = resolveDamage(owner, builder.damage);
+        this.bulletScaleModifier = resolveBulletScaleModifier(owner, builder.bulletScaleModifier);
+        this.bulletScale = resolveBulletScale(damage, bulletScaleModifier);
+        this.directBulletScaleOverride = false;
         this.bulletRange = sanitizeRange(builder.range);
         this.bulletSpeed = sanitizeSpeed(builder.speed);
         this.splitSequence = builder.splitSequence == null ? new SplitSequence() : builder.splitSequence.copy();
@@ -73,7 +82,8 @@ public class AttackContext {
     public Builder toBuilder() {
         return Builder.from(this).color(colorRl).visuals(visualIds).trigger(trigger).trajectories(trajectories)
                 .position(pos).mainAxis(mainAxis).damage((double) damage).range(bulletRange)
-                .speed(bulletSpeed).splitSequence(splitSequence).useExactSpawnPosition(useExactSpawnPosition);
+                .speed(bulletSpeed).bulletScaleModifier(bulletScaleModifier)
+                .splitSequence(splitSequence).useExactSpawnPosition(useExactSpawnPosition);
     }
 
     public AttackContext copy() { return new AttackContext(this); }
@@ -101,6 +111,19 @@ public class AttackContext {
     public void setVisualIds(Set<ResourceLocation> visualIds) { if (ensureMutable("setVisualIds")) this.visualIds = Set.copyOf(visualIds); }
     public Map<ResourceLocation, Integer> getTrajectories() { return trajectories; }
     public float getDamage() { return damage; }
+    public double getBulletScaleModifier() { return bulletScaleModifier; }
+    public double getBulletScale() { return bulletScale; }
+    public void setBulletScale(double value, boolean useAsFinalScale) {
+        if (!ensureMutable("setBulletScale")) return;
+        if (useAsFinalScale) {
+            bulletScale = sanitizeFinalBulletScale(value);
+            directBulletScaleOverride = true;
+        } else {
+            bulletScaleModifier = value;
+            directBulletScaleOverride = false;
+            bulletScale = resolveBulletScale(damage, bulletScaleModifier);
+        }
+    }
     public double getBulletRange() { return bulletRange; }
     public double getBulletSpeed() { return bulletSpeed; }
 
@@ -129,6 +152,23 @@ public class AttackContext {
         AttributeInstance attribute = owner.getAttribute(Attributes.ATTACK_DAMAGE);
         double value = attribute == null ? 1.0 : attribute.getValue();
         return Double.isFinite(value) && value >= 0.0 ? (float) value : 1.0f;
+    }
+
+    private static double resolveBulletScaleModifier(LivingEntity owner, @Nullable Double requested) {
+        if (requested != null) return requested;
+        AttributeInstance attribute = owner.getAttribute(ModAttributes.BULLET_SCALE.get());
+        return attribute == null ? 0.0D : attribute.getValue();
+    }
+
+    private static double resolveBulletScale(double damage, double bulletScaleModifier) {
+        if (!Double.isFinite(damage) || !Double.isFinite(bulletScaleModifier)) return MIN_BULLET_SCALE;
+        double size = Math.sqrt(Math.max(0.0D, damage) / BULLET_SCALE_BASE_DAMAGE)
+                * (1.0D + bulletScaleModifier);
+        return sanitizeFinalBulletScale(size);
+    }
+
+    private static double sanitizeFinalBulletScale(double value) {
+        return Double.isFinite(value) && value >= MIN_BULLET_SCALE ? value : MIN_BULLET_SCALE;
     }
 
     private static double sanitizeRange(double range) {
@@ -163,6 +203,9 @@ public class AttackContext {
         this.pos = source.pos;
         this.mainAxis = source.mainAxis;
         this.damage = source.damage;
+        this.bulletScaleModifier = source.bulletScaleModifier;
+        this.bulletScale = source.bulletScale;
+        this.directBulletScaleOverride = source.directBulletScaleOverride;
         this.bulletRange = source.bulletRange;
         this.bulletSpeed = source.bulletSpeed;
         this.splitSequence = source.splitSequence.copy();
@@ -182,6 +225,11 @@ public class AttackContext {
                 ? normalizeMainAxis(builder.direction)
                 : normalizeMainAxis(Objects.requireNonNull(builder.mainAxis, "mainAxis"));
         this.damage = Objects.requireNonNull(builder.damage, "damage").floatValue();
+        this.bulletScaleModifier = builder.bulletScaleModifier == null
+                ? source.bulletScaleModifier
+                : resolveBulletScaleModifier(source.owner, builder.bulletScaleModifier);
+        this.bulletScale = resolveBulletScale(damage, bulletScaleModifier);
+        this.directBulletScaleOverride = false;
         this.bulletRange = sanitizeRange(builder.range);
         this.bulletSpeed = sanitizeSpeed(builder.speed);
         this.splitSequence = builder.splitSequence == null ? new SplitSequence() : builder.splitSequence.copy();
@@ -201,6 +249,7 @@ public class AttackContext {
         private Vec3 mainAxis;
         private Vec3 direction;
         private Double damage;
+        private Double bulletScaleModifier;
         private double range = DEFAULT_RANGE;
         private double speed = DEFAULT_SPEED;
         private SplitSequence splitSequence;
@@ -235,6 +284,10 @@ public class AttackContext {
             this.direction = Objects.requireNonNull(direction, "direction"); this.mainAxis = null; return this;
         }
         public Builder damage(@Nullable Double damage) { this.damage = damage; return this; }
+        public Builder bulletScaleModifier(@Nullable Double bulletScaleModifier) {
+            this.bulletScaleModifier = bulletScaleModifier;
+            return this;
+        }
         public Builder range(double range) { this.range = range; return this; }
         public Builder speed(double speed) { this.speed = speed; return this; }
         public Builder splitSequence(SplitSequence splitSequence) { this.splitSequence = splitSequence; return this; }

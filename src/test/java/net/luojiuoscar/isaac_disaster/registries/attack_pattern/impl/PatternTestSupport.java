@@ -10,6 +10,7 @@ import net.minecraft.world.phys.Vec3;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Map;
+import java.util.Set;
 
 public final class PatternTestSupport {
     private static final double DEFAULT_DAMAGE = 4.0;
@@ -30,11 +31,15 @@ public final class PatternTestSupport {
         AttackContext context = (AttackContext) allocateInstance.invoke(unsafe, AttackContext.class);
 
         setObject(unsafe, context, "colorRl", null);
+        setObject(unsafe, context, "visualIds", Set.of());
         setObject(unsafe, context, "trigger", new CompositeTrigger());
         setObject(unsafe, context, "trajectories", Map.<ResourceLocation, Integer>of());
         setObject(unsafe, context, "pos", pos);
         setObject(unsafe, context, "mainAxis", GeometryHelper.mainAxisFromRotation(xRot, yRot));
         setFloat(unsafe, context, "damage", (float) DEFAULT_DAMAGE);
+        setDouble(unsafe, context, "bulletScaleModifier", 0.0D);
+        setDouble(unsafe, context, "bulletScale", 0.25D);
+        setBoolean(unsafe, context, "directBulletScaleOverride", false);
         setDouble(unsafe, context, "bulletRange", DEFAULT_RANGE);
         setDouble(unsafe, context, "bulletSpeed", DEFAULT_SPEED);
         setObject(unsafe, context, "splitSequence", new SplitSequence());

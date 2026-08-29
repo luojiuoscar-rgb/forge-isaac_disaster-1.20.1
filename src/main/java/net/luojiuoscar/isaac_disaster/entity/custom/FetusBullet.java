@@ -11,11 +11,13 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
 public class FetusBullet extends TearBullet{
     public static final ResourceLocation DEFAULT_VISUAL_ID = ModBulletVisuals.DEFAULT_FETUS.getId();
+    private static final float MODEL_SCALE_PER_BULLET_SCALE = 0.35F;
+    private static final float PLAYER_MODEL_WIDTH = 0.6F;
+    private static final float PLAYER_MODEL_HEIGHT = 1.8F;
     private int attackInterval = 0;
 
     public FetusBullet(AttackContext context) {
@@ -116,13 +118,13 @@ public class FetusBullet extends TearBullet{
     }
 
     @Override
-    protected AABB getAABB(Vec3 motion){
-        return getBoundingBox().expandTowards(motion).inflate(getScale());
+    public float getCollisionWidth() {
+        return getScale() * MODEL_SCALE_PER_BULLET_SCALE * PLAYER_MODEL_WIDTH;
     }
 
     @Override
-    protected double getEntityCollisionInflation() {
-        return Math.max(0.05, getScale());
+    public float getCollisionHeight() {
+        return getScale() * MODEL_SCALE_PER_BULLET_SCALE * PLAYER_MODEL_HEIGHT;
     }
 
     @Override

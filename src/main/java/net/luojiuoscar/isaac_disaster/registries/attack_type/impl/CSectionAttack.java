@@ -63,7 +63,7 @@ public class CSectionAttack extends BulletAttack implements IChargeableAttack {
     @Override
     public TearBullet getBulletObject(AttackContext c){
         FetusBullet bullet = new FetusBullet(c);
-        bullet.setScale(getBulletScale(c.getOwner(), c.getDamage()));
+        bullet.setScale((float) c.getBulletScale());
         return bullet;
     }
 

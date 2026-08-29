@@ -381,18 +381,6 @@ public class PlayerHelper {
         if (extraBulletScale != null) extraScale = (float) extraBulletScale.getValue();
         return extraScale;
     }
-    public static float getBulletScale(double damage, float extraScale) {
-        float scale = 1.0f;
-
-        if (damage <= 198){
-            scale *= (float) Math.log10(9 + damage / 2);
-        }else {
-            scale *= Math.min(4f, (float) (2 + Math.log10((damage-198) / 20))); // max 2.5f
-        }
-
-        return scale + extraScale;
-    }
-
 
     // 衍生
     public static double getShotDelay(Player player) {

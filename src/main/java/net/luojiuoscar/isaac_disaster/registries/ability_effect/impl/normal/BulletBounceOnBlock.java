@@ -27,6 +27,7 @@ public class BulletBounceOnBlock implements IAbilityEffect {
             if (speed < 1e-6) return true;
 
             Vec3 reflected = motion.subtract(normal.scale(2 * motion.dot(normal)));
+            bullet.pushOutOfBlock(normal);
             bullet.setVelocity(reflected);
             bullet.setDeltaMovement(reflected);
 
@@ -41,7 +42,7 @@ public class BulletBounceOnBlock implements IAbilityEffect {
 
             Vec3 reflected = direction.subtract(normal.scale(2 * direction.dot(normal)));
             laser.direction = reflected;
-            laser.position = laser.position.add(reflected.scale(laser.step));
+            laser.position = hit.getLocation().add(reflected.normalize().scale(1.0E-4));
         }
 
 

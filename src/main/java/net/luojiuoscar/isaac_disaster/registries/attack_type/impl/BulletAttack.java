@@ -95,7 +95,6 @@ public class BulletAttack extends AttackType {
         bullet.setVisualIds(context.getVisualIds());
 
         bullet.moveTo(adjustedPos.x, adjustedPos.y, adjustedPos.z, rotation.yRot(), rotation.xRot());
-        bullet.setPreflightStart(context.getPos());
         bullet.setVelocity(look.scale(context.getBulletSpeed()));
         bullet.setDeltaMovement(bullet.getVelocity());
 
@@ -127,7 +126,7 @@ public class BulletAttack extends AttackType {
 
     public TearBullet getBulletObject(AttackContext c){
         TearBullet bullet = new TearBullet(c);
-        bullet.setScale(getBulletScale(c.getOwner(), c.getDamage()));
+        bullet.setScale((float) c.getBulletScale());
         return bullet;
     }
 }

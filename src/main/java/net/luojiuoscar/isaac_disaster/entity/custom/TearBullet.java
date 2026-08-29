@@ -8,6 +8,7 @@ import net.luojiuoscar.isaac_disaster.event.custom.attack.tear_bullet.BulletTick
 import net.luojiuoscar.isaac_disaster.event.custom.attack.tear_bullet.TearBulletEndOfLifeEvent;
 import net.luojiuoscar.isaac_disaster.helper.EntityHelper;
 import net.luojiuoscar.isaac_disaster.helper.GeometryHelper;
+import net.luojiuoscar.isaac_disaster.helper.ProjectileCollisionHelper;
 import net.luojiuoscar.isaac_disaster.manager.ModDamageType;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.CompositeTrigger;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackContext;
@@ -26,6 +27,7 @@ import net.luojiuoscar.isaac_disaster.registries.trajectory.IAttackTrajectory;
 import net.luojiuoscar.isaac_disaster.registries.trajectory.ModAttackTrajectories;
 import net.luojiuoscar.isaac_disaster.registries.trajectory.TrajectoryContext;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.Packet;
@@ -38,15 +40,13 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityDimensions;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.MoverType;
-import net.minecraft.world.entity.projectile.ProjectileUtil;
-import net.minecraft.world.level.ClipContext;
+import net.minecraft.world.entity.Pose;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.*;
-import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.network.NetworkHooks;
 import net.minecraftforge.registries.IForgeRegistry;
@@ -54,15 +54,20 @@ import net.minecraftforge.registries.RegistryManager;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.UUID;
+import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.UUID;
 
 public class TearBullet extends Entity implements IBulletObject {
     public static final ResourceLocation DEFAULT_VISUAL_ID = ModBulletVisuals.DEFAULT_TEAR.getId();
+    public static final float TEAR_VISUAL_SIZE_PER_SCALE = 0.2F;
 
     // ======== 基础属性 ========
     // Internal lifetime derived from range and speed; not a gameplay-facing parameter.
@@ -80,8 +85,6 @@ public class TearBullet extends Entity implements IBulletObject {
     private Vec3 velocity = Vec3.ZERO;
     private boolean isCurrentlySteering = false;
     private Vec3 prevShooterPos = null;
-    private Vec3 preflightStart = null;
-    private boolean preflightChecked = false;
 
     // ======== 特性 ========
     public boolean isSpectral = false;
@@ -113,6 +116,12 @@ public class TearBullet extends Entity implements IBulletObject {
         NONE,
         CONTINUE,
         STOP
+    }
+
+    private record EntitySweepHit(EntityHitResult hit, double parameter) {
+    }
+
+    private record BlockSweepHit(BlockHitResult hit, double parameter) {
     }
 
     // ======== 客户端同步属性 ========
@@ -185,12 +194,6 @@ public class TearBullet extends Entity implements IBulletObject {
             return;
         }
 
-        if (!level().isClientSide && handlePreflightCollision()) {
-            return;
-        }
-
-        move(MoverType.SELF, getDeltaMovement());
-
         if (!level().isClientSide){
             MinecraftForge.EVENT_BUS.post(new BulletTickEvent(this));
 
@@ -250,40 +253,18 @@ public class TearBullet extends Entity implements IBulletObject {
                 return;
             }
 
-            Vec3 start = position();
-            Vec3 end = start.add(finalMove);
-
-            if (handleBlockCollision(start, end)) return;
-            handleEntityCollision(start, end, finalMove);
-
             setTraveled((float)(traveled + velocityMove.length()));
+
+            if (moveAndCollide(finalMove) == CollisionResult.STOP) {
+                extraPositionOffset = Vec3.ZERO;
+                return;
+            }
 
             updateDirection();
             extraPositionOffset = Vec3.ZERO;
+        } else {
+            move(MoverType.SELF, getDeltaMovement());
         }
-    }
-
-    protected boolean handlePreflightCollision() {
-        if (preflightChecked) return false;
-        preflightChecked = true;
-
-        if (preflightStart != null) {
-            Vec3 start = preflightStart;
-            Vec3 end = position();
-            preflightStart = null;
-
-            if (start.distanceToSqr(end) > 1.0e-8
-                    && handleEntityCollision(start, end, end.subtract(start)) == CollisionResult.STOP) {
-                return true;
-            }
-        }
-
-        Vec3 motion = getDeltaMovement();
-        if (motion.lengthSqr() <= 1.0e-8) return false;
-
-        Vec3 start = position();
-        Vec3 end = start.add(motion);
-        return handleEntityCollision(start, end, motion) == CollisionResult.STOP;
     }
 
     protected void updateDirection(){
@@ -301,21 +282,56 @@ public class TearBullet extends Entity implements IBulletObject {
     }
 
     // ======== 碰撞与追踪 ========
-    protected boolean handleBlockCollision(Vec3 start, Vec3 end) {
-        if (isSpectral) return false;
+    protected CollisionResult moveAndCollide(Vec3 motion) {
+        if (motion.lengthSqr() <= 1.0E-12) {
+            return CollisionResult.CONTINUE;
+        }
 
-        BlockHitResult blockHit = level().clip(
-                new ClipContext(start, end, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, this)
-        );
+        Vec3 start = getCollisionCenter();
+        Vec3 end = start.add(motion);
+        Vec3 halfExtents = getCollisionHalfExtents();
+        BlockSweepHit blockHit = findBlockCollision(motion);
+        List<EntitySweepHit> entityHits = findEntityCollisions(start, end, motion, halfExtents);
+        double movedParameter = 0.0D;
 
-        if (blockHit.getType() != HitResult.Type.BLOCK) return false;
+        for (EntitySweepHit entityHit : entityHits) {
+            if (blockHit != null && entityHit.parameter() >= blockHit.parameter()) {
+                break;
+            }
 
-        BlockPos pos = blockHit.getBlockPos();
-        BlockState state = level().getBlockState(pos);
-        VoxelShape shape = state.getCollisionShape(level(), pos);
+            moveBySweepFraction(motion, entityHit.parameter() - movedParameter);
+            movedParameter = entityHit.parameter();
 
-        if (shape.isEmpty() || shape.bounds().getSize() < 0.01) return false;
+            if (handleEntityCollision(entityHit.hit()) == CollisionResult.STOP) {
+                return CollisionResult.STOP;
+            }
+        }
 
+        if (blockHit != null) {
+            moveBySweepFraction(motion, blockHit.parameter() - movedParameter);
+            handleBlockCollision(blockHit.hit());
+            return CollisionResult.STOP;
+        }
+
+        moveBySweepFraction(motion, 1.0D - movedParameter);
+        return CollisionResult.CONTINUE;
+    }
+
+    private Vec3 getCollisionCenter() {
+        return position().add(0.0D, getBbHeight() * 0.5D, 0.0D);
+    }
+
+    protected Vec3 getCollisionHalfExtents() {
+        return new Vec3(getBbWidth() * 0.5D, getBbHeight() * 0.5D, getBbWidth() * 0.5D);
+    }
+
+    private void moveBySweepFraction(Vec3 motion, double fraction) {
+        if (fraction > 1.0E-12) {
+            move(MoverType.SELF, motion.scale(fraction));
+        }
+    }
+
+    protected void handleBlockCollision(BlockHitResult blockHit) {
         setLastBlockHit(blockHit);
         recordSplitTrigger(SplitTriggerType.BLOCK);
         SplitExecutor.execute(this, SplitTriggerType.BLOCK);
@@ -325,8 +341,13 @@ public class TearBullet extends Entity implements IBulletObject {
         if (!MinecraftForge.EVENT_BUS.post(event)) {
             discard();
         }
+    }
 
-        return true;
+    /** Moves the already-resolved collision box just outside its contact surface. */
+    public void pushOutOfBlock(Vec3 outwardNormal) {
+        Vec3 normal = outwardNormal.lengthSqr() > 1.0E-12
+                ? outwardNormal.normalize() : Vec3.ZERO;
+        setPos(getX() + normal.x * 1.0E-4, getY() + normal.y * 1.0E-4, getZ() + normal.z * 1.0E-4);
     }
 
     protected boolean handleSteering() {
@@ -347,11 +368,7 @@ public class TearBullet extends Entity implements IBulletObject {
         return false;
     }
 
-    protected CollisionResult handleEntityCollision(Vec3 start, Vec3 end, Vec3 motion) {
-        EntityHitResult entityHit = findEntityCollision(start, end, motion);
-
-        if (entityHit == null) return CollisionResult.NONE;
-
+    protected CollisionResult handleEntityCollision(EntityHitResult entityHit) {
         Entity target = entityHit.getEntity();
         if (!(target instanceof LivingEntity living)) return CollisionResult.NONE;
 
@@ -384,55 +401,67 @@ public class TearBullet extends Entity implements IBulletObject {
         return CollisionResult.CONTINUE;
     }
 
-    protected EntityHitResult findEntityCollision(Vec3 start, Vec3 end, Vec3 motion) {
-        AABB box = getEntityCollisionSearchBox(start, end);
-        EntityHitResult hit = ProjectileUtil.getEntityHitResult(level(), this, start, end, box,
-                this::canHitEntity);
-        if (hit != null) return hit;
+    private List<EntitySweepHit> findEntityCollisions(Vec3 start, Vec3 end, Vec3 motion, Vec3 halfExtents) {
+        AABB searchBox = ProjectileCollisionHelper.sweptBounds(getBoundingBox(), motion);
+        List<EntitySweepHit> hits = new ArrayList<>();
 
-        Entity nearestEntity = null;
-        Vec3 nearestHit = null;
-        double nearestDistance = Double.MAX_VALUE;
-
-        for (Entity entity : level().getEntities(this, box, this::canHitEntity)) {
-            AABB targetBox = entity.getBoundingBox().inflate(getEntityCollisionInflation());
-            Vec3 hitPos = null;
-
-            if (targetBox.contains(start)) {
-                hitPos = start;
-            } else {
-                var clipped = targetBox.clip(start, end);
-                if (clipped.isPresent()) hitPos = clipped.get();
+        // Normal tears only damage living targets. Bullet-vs-bullet mechanics must use a separate,
+        // opt-in collision pass so dense ordinary tear volleys never scan one another by default.
+        for (LivingEntity entity : level().getEntitiesOfClass(LivingEntity.class, searchBox,
+                entity -> entity.isAlive() && entity != getOwner())) {
+            Optional<Vec3> hitPos = ProjectileCollisionHelper.clipExpandedTarget(start, end, entity.getBoundingBox(), halfExtents);
+            if (hitPos.isEmpty()) {
+                continue;
             }
-
-            if (hitPos == null) continue;
-
-            double distance = start.distanceToSqr(hitPos);
-            if (distance < nearestDistance) {
-                nearestEntity = entity;
-                nearestHit = hitPos;
-                nearestDistance = distance;
-            }
+            hits.add(new EntitySweepHit(
+                    new EntityHitResult(entity, hitPos.get()),
+                    ProjectileCollisionHelper.pathParameter(start, end, hitPos.get())));
         }
 
-        return nearestEntity == null ? null : new EntityHitResult(nearestEntity, nearestHit);
+        hits.sort(Comparator.comparingDouble(EntitySweepHit::parameter));
+        return hits;
     }
 
-    protected boolean canHitEntity(Entity entity) {
-        return entity.isAlive() && entity != this && entity != getOwner();
+    @Nullable
+    private BlockSweepHit findBlockCollision(Vec3 motion) {
+        if (isSpectral) {
+            return null;
+        }
+
+        Vec3 allowed = Entity.collideBoundingBox(this, motion, getBoundingBox(), level(), List.of());
+        Direction direction = ProjectileCollisionHelper.strongestBlockedFace(motion, allowed);
+        if (direction == null) return null;
+
+        double requestedAxis = switch (direction.getAxis()) {
+            case X -> motion.x;
+            case Y -> motion.y;
+            case Z -> motion.z;
+        };
+        double allowedAxis = switch (direction.getAxis()) {
+            case X -> allowed.x;
+            case Y -> allowed.y;
+            case Z -> allowed.z;
+        };
+        double parameter = Math.max(0.0D, Math.min(1.0D, Math.abs(allowedAxis / requestedAxis)));
+        AABB contactBounds = getBoundingBox().move(motion.scale(parameter));
+        Vec3 contact = contactPoint(contactBounds, direction);
+        BlockPos blockPosition = BlockPos.containing(contact.subtract(
+                Vec3.atLowerCornerOf(direction.getNormal()).scale(1.0E-5D)));
+        return new BlockSweepHit(new BlockHitResult(contact, direction, blockPosition, false), parameter);
     }
 
-    protected double getEntityCollisionInflation() {
-        return Math.max(0.05, getScale() * 0.5);
-    }
-
-    protected AABB getEntityCollisionSearchBox(Vec3 start, Vec3 end) {
-        double inflate = getScale() * 0.25 + getEntityCollisionInflation();
-        return new AABB(start, end).inflate(inflate);
-    }
-
-    protected AABB getAABB(Vec3 motion){
-        return getBoundingBox().expandTowards(motion).inflate(getScale() * 0.5);
+    private static Vec3 contactPoint(AABB bounds, Direction direction) {
+        double centerX = (bounds.minX + bounds.maxX) * 0.5D;
+        double centerY = (bounds.minY + bounds.maxY) * 0.5D;
+        double centerZ = (bounds.minZ + bounds.maxZ) * 0.5D;
+        return switch (direction) {
+            case DOWN -> new Vec3(centerX, bounds.minY, centerZ);
+            case UP -> new Vec3(centerX, bounds.maxY, centerZ);
+            case NORTH -> new Vec3(centerX, centerY, bounds.minZ);
+            case SOUTH -> new Vec3(centerX, centerY, bounds.maxZ);
+            case WEST -> new Vec3(bounds.minX, centerY, centerZ);
+            case EAST -> new Vec3(bounds.maxX, centerY, centerZ);
+        };
     }
 
     public LivingEntity getTrackingTarget() {
@@ -595,6 +624,14 @@ public class TearBullet extends Entity implements IBulletObject {
         entityData.define(OWNER_UUID, "");
     }
 
+    @Override
+    public void onSyncedDataUpdated(EntityDataAccessor<?> key) {
+        super.onSyncedDataUpdated(key);
+        if (SCALE.equals(key)) {
+            refreshDimensions();
+        }
+    }
+
     // ======== NBT读写(不保存子弹) ========
     @Override
     public boolean shouldBeSaved() {
@@ -663,10 +700,22 @@ public class TearBullet extends Entity implements IBulletObject {
 
     public boolean isCurrentlySteering() { return this.isCurrentlySteering; }
 
+    public float getCollisionWidth() {
+        return getScale() * TEAR_VISUAL_SIZE_PER_SCALE;
+    }
+
+    public float getCollisionHeight() {
+        return getCollisionWidth();
+    }
+
+    @Override
+    public EntityDimensions getDimensions(Pose pose) {
+        return EntityDimensions.scalable(getCollisionWidth(), getCollisionHeight());
+    }
+
     public void setScale(float scale) {
         this.entityData.set(SCALE, scale);
-        this.setBoundingBox(new AABB(getX() - scale * 0.25, getY() - scale * 0.25, getZ() - scale * 0.25,
-                getX() + scale * 0.25, getY() + scale * 0.25, getZ() + scale * 0.25));
+        refreshDimensions();
     }
 
     public void setBulletColor(ResourceLocation id){
@@ -746,11 +795,6 @@ public class TearBullet extends Entity implements IBulletObject {
 
     public void setPrevShooterPos(Vec3 pos) {
         this.prevShooterPos = pos;
-    }
-
-    public void setPreflightStart(Vec3 pos) {
-        this.preflightStart = pos;
-        this.preflightChecked = false;
     }
 
     public void setTrajectories(Map<ResourceLocation, Integer> map) {

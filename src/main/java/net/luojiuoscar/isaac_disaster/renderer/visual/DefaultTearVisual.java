@@ -23,6 +23,7 @@ public final class DefaultTearVisual implements BulletVisualRenderer<TearBulletV
                        MultiBufferSource buffer) {
         TearBullet bullet = context.bullet();
         poseStack.pushPose();
+        poseStack.translate(0.0D, bullet.getCollisionHeight() * 0.5D, 0.0D);
         poseStack.mulPose(Minecraft.getInstance().getEntityRenderDispatcher().cameraOrientation());
         poseStack.mulPose(Axis.YP.rotationDegrees(180.0F));
 

@@ -49,17 +49,18 @@ public class BrimstoneAttack extends LaserAttack implements IChargeableAttack {
     // ================== handleAttack ==================
     @Override
     public void shoot(AttackContext baseContext) {
-        AttackContext shotContext = baseContext.toBuilder().build();
         boolean controllable = isControllable(baseContext.getOwner());
         AtomicInteger sequenceIndex = new AtomicInteger();
         ScheduledFuncHelper.scheduleForPlayer(baseContext.getOwner().getUUID(),
                 SCHEDULE_TYPE, 1,1, SHOT_COUNT, false, () -> {
             int currentSequenceIndex = sequenceIndex.incrementAndGet();
 
+            AttackContext shotContext = baseContext.toBuilder().build();
             Entity shooter = shotContext.getShooter();
             Vec3 spawnPosition = resolveSpawnPosition(shooter);
             refreshBrimstoneShotContext(shotContext, spawnPosition, GeometryHelper.mainAxisFromRotation(shooter.getXRot(), shooter.getYRot()),
                     controllable);
+            shotContext.freeze();
             shootSingle(shotContext, currentSequenceIndex);
         });
     }
@@ -83,8 +84,8 @@ public class BrimstoneAttack extends LaserAttack implements IChargeableAttack {
     }
 
     @Override
-    protected double getWidth(LivingEntity living, double damage) {
-        return getBulletScale(living, damage);
+    protected double getWidth(AttackContext context) {
+        return 1.0D;
     }
 
     @Override

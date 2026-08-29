@@ -20,6 +20,7 @@ public class BulletBounceOnEntity implements IAbilityEffect {
         if (bullet.isPiercing) return true;
 
         double speed = bullet.getVelocity().length();
+        Vec3 contact = event.getHit().getLocation();
 
         // 50% 概率弹向最近敌对生物
         if (Math.random() < 0.5) {
@@ -33,6 +34,7 @@ public class BulletBounceOnEntity implements IAbilityEffect {
 
             if (target != null) {
                 Vec3 dir = target.getEyePosition().subtract(bullet.position()).normalize();
+                setPositionFromCenter(bullet, contact, dir);
                 bullet.setVelocity(dir.scale(speed));
                 bullet.setDeltaMovement(bullet.getVelocity());
                 event.setCanceled(true);
@@ -54,9 +56,25 @@ public class BulletBounceOnEntity implements IAbilityEffect {
         if (lastHit != null) bullet.getDamagedEntities().add(lastHit);
 
         bullet.setVelocity(randomDir.scale(speed));
+        setPositionFromCenter(bullet, contact, randomDir);
         bullet.setDeltaMovement(bullet.getVelocity());
         event.setCanceled(true);
 
         return true;
+    }
+
+    static Vec3 positionFromCenter(Vec3 center, double bbHeight, Vec3 direction) {
+        Vec3 offset = direction.lengthSqr() > 1.0E-12
+                ? direction.normalize().scale(1.0E-4)
+                : Vec3.ZERO;
+        return new Vec3(
+                center.x + offset.x,
+                center.y - bbHeight * 0.5D + offset.y,
+                center.z + offset.z);
+    }
+
+    private static void setPositionFromCenter(TearBullet bullet, Vec3 center, Vec3 direction) {
+        Vec3 position = positionFromCenter(center, bullet.getBbHeight(), direction);
+        bullet.setPos(position.x, position.y, position.z);
     }
 }

@@ -26,6 +26,7 @@ import net.luojiuoscar.isaac_disaster.registries.trajectory.ModAttackTrajectorie
 import net.luojiuoscar.isaac_disaster.registries.trajectory.TrajectoryContext;
 import net.luojiuoscar.isaac_disaster.sound.ModSounds;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
@@ -40,6 +41,7 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
+import net.luojiuoscar.isaac_disaster.helper.ProjectileCollisionHelper;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.registries.IForgeRegistry;
 import net.minecraftforge.registries.RegistryManager;
@@ -49,6 +51,7 @@ import org.joml.Vector3f;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 
 public class LaserAttack extends AttackType {
     private static final LaserAttackPattern PATTERN = new LaserAttackPattern();
@@ -313,9 +316,7 @@ public class LaserAttack extends AttackType {
         if (!(entity.level() instanceof ServerLevel level)) return;
 
         Vec3 direction = ctx.getMainAxis();
-        float damage = ctx.getDamage();
-
-        double width = getWidth(entity, damage);
+        double width = getWidth(ctx);
 
         LaserProjectile laser = new LaserProjectile(ctx);
         laser.direction = direction;
@@ -391,59 +392,80 @@ public class LaserAttack extends AttackType {
         laser.direction = laser.direction.add(totalVelocityOffset);
         if (laser.direction.lengthSqr() > 1e-6) laser.direction = laser.direction.normalize();
 
-        // --------- 计算下一帧位置 ---------
-        Vec3 nextPos = laser.position.add(laser.direction.scale(laser.step)).add(totalPositionOffset);
+        Vec3 start = laser.position;
+        Vec3 displacement = laser.direction.scale(laser.step).add(totalPositionOffset);
+        Vec3 nextPos = start.add(displacement);
+        spawnInterpolatedParticles(level, start, nextPos, laser.width, context.getColorRl());
 
-        // --------- 粒子 ---------
-        spawnInterpolatedParticles(level, laser.position, nextPos, laser.width, context.getColorRl());
-
-        // --------- Block Collision ---------
-        AABB box = createCollisionBox(nextPos, laser.width);
-        if (handleBlockCollision(laser, level, laser.getTriggers()) && !laser.spectral) {
-            laser.traveled = laser.range;
-            return;
+        if (!laser.spectral) {
+            BlockHitResult blockHit = findBlockCollision(level, start, nextPos, laser.width, laser.owner);
+            if (blockHit != null) {
+                double hitParameter = ProjectileCollisionHelper.pathParameter(start, nextPos, blockHit.getLocation());
+                laser.position = blockHit.getLocation();
+                laser.setLastBlockHit(blockHit);
+                if (laser.markBlockSplitPosition(blockHit.getBlockPos())) {
+                    laser.recordSplitTrigger(SplitTriggerType.BLOCK);
+                    SplitExecutor.execute(laser, SplitTriggerType.BLOCK);
+                }
+                IsaacAttackHitBlockEvent event = new IsaacAttackHitBlockEvent(
+                        laser, laser.owner, getId(), laser.getTriggers(), blockHit);
+                MinecraftForge.EVENT_BUS.post(event);
+                laser.traveled += laser.step * hitParameter;
+                if (!event.isCanceled()) {
+                    laser.traveled = laser.range;
+                    return;
+                }
+                if (laser.step * (1.0D - hitParameter) > 1.0E-5 && laser.direction.lengthSqr() > 1.0E-8) {
+                    laser.position = laser.position.add(laser.direction.normalize().scale(1.0E-4));
+                }
+                laser.tickCount++;
+                return;
+            }
         }
 
-        // --------- Entity Collision ---------
-        handleEntityCollision(laser, level, box, laser.getTriggers());
-
-        // -------- 重新计算nextPos以防pos被修改后行为出错 --------
-        nextPos = laser.position.add(laser.direction.scale(laser.step)).add(totalPositionOffset);
-
-        // --------- 更新位置和行进距离 ---------
+        handleEntityCollision(laser, level, start, nextPos, laser.width, laser.getTriggers());
         laser.position = nextPos;
         laser.traveled += laser.step;
         laser.tickCount++;
     }
 
     // ================== Collision & Damage ==================
-    protected boolean handleBlockCollision(LaserProjectile laser, ServerLevel level, CompositeTrigger triggers) {
-        BlockHitResult blockHit = level.clip(new ClipContext(
-                laser.position,
-                laser.position.add(laser.direction.scale(laser.step)),
-                ClipContext.Block.COLLIDER,
-                ClipContext.Fluid.NONE,
-                laser.owner
-        ));
-
-        if (blockHit.getType() == BlockHitResult.Type.BLOCK) {
-            laser.setLastBlockHit(blockHit);
-            if (laser.markBlockSplitPosition(blockHit.getBlockPos())) {
-                laser.recordSplitTrigger(SplitTriggerType.BLOCK);
-                SplitExecutor.execute(laser, SplitTriggerType.BLOCK);
+    @Nullable
+    private BlockHitResult findBlockCollision(ServerLevel level, Vec3 start, Vec3 end, double width, Entity source) {
+        AABB swept = createCollisionBox(start, width).expandTowards(end.subtract(start));
+        BlockPos min = BlockPos.containing(swept.minX, swept.minY, swept.minZ);
+        BlockPos max = BlockPos.containing(swept.maxX, swept.maxY, swept.maxZ);
+        BlockHitResult nearest = null;
+        double nearestParameter = Double.POSITIVE_INFINITY;
+        Vec3 half = new Vec3(width * 0.5, width * 0.5, width * 0.5);
+        for (BlockPos pos : BlockPos.betweenClosed(min, max)) {
+            var shape = level.getBlockState(pos).getCollisionShape(level, pos);
+            for (AABB part : shape.toAabbs()) {
+                AABB expanded = part.move(pos).inflate(half.x, half.y, half.z);
+                Vec3 hit = expanded.clip(start, end).orElse(null);
+                if (hit == null) continue;
+                double parameter = ProjectileCollisionHelper.pathParameter(start, end, hit);
+                if (parameter < nearestParameter) {
+                    nearestParameter = parameter;
+                    Vec3 motion = end.subtract(start);
+                    double dx = Math.min(Math.abs(hit.x - expanded.minX), Math.abs(hit.x - expanded.maxX));
+                    double dy = Math.min(Math.abs(hit.y - expanded.minY), Math.abs(hit.y - expanded.maxY));
+                    double dz = Math.min(Math.abs(hit.z - expanded.minZ), Math.abs(hit.z - expanded.maxZ));
+                    Direction direction = dx <= dy && dx <= dz
+                            ? (motion.x > 0 ? Direction.WEST : Direction.EAST)
+                            : dy <= dz
+                            ? (motion.y > 0 ? Direction.DOWN : Direction.UP)
+                            : (motion.z > 0 ? Direction.NORTH : Direction.SOUTH);
+                    nearest = new BlockHitResult(hit, direction, pos.immutable(), false);
+                }
             }
-
-            IsaacAttackHitBlockEvent blockEvent =
-                    new IsaacAttackHitBlockEvent(laser, laser.owner, getId(), triggers, blockHit);
-            MinecraftForge.EVENT_BUS.post(blockEvent);
-
-            return !blockEvent.isCanceled();
         }
-        return false;
+        return nearest;
     }
 
-    protected void handleEntityCollision(LaserProjectile laser, ServerLevel level, AABB box,
+    protected void handleEntityCollision(LaserProjectile laser, ServerLevel level, Vec3 start, Vec3 end, double width,
                                          CompositeTrigger triggers) {
+        AABB box = createCollisionBox(start, width).expandTowards(end.subtract(start));
         List<LivingEntity> entities = level.getEntitiesOfClass(LivingEntity.class, box,
                 e -> e != laser.owner
                         && e.isAlive()
@@ -451,8 +473,19 @@ public class LaserAttack extends AttackType {
                         && !laser.damagedEntities.contains(e.getUUID())
         );
 
+        Map<LivingEntity, Vec3> hitPositions = new java.util.HashMap<>();
+        Vec3 half = new Vec3(width * 0.5, width * 0.5, width * 0.5);
+        entities.removeIf(target -> {
+            Optional<Vec3> hit = ProjectileCollisionHelper.clipExpandedTarget(start, end, target.getBoundingBox(), half);
+            if (hit.isEmpty()) return true;
+            hitPositions.put(target, hit.get());
+            return false;
+        });
+        entities.sort(java.util.Comparator.comparingDouble(target ->
+                ProjectileCollisionHelper.pathParameter(start, end, hitPositions.get(target))));
         for (LivingEntity target : entities) {
-            EntityHitResult hitResult = new EntityHitResult(target);
+            EntityHitResult hitResult = new EntityHitResult(target,
+                    hitPositions.get(target));
 
             IsaacAttackBeforeHitEntityEvent beforeHit = new IsaacAttackBeforeHitEntityEvent(
                     laser, laser.owner, getId(), triggers, hitResult, laser.damage
@@ -534,7 +567,8 @@ public class LaserAttack extends AttackType {
         for (int i = 0; i <= steps; i++) {
             double t = (double) i / steps;
             Vec3 pos = from.add(delta.scale(t));
-            DustParticleOptions dust = new DustParticleOptions(color, (float) width * 1.5f);
+            float particleSize = (float) Math.max(0.01D, Math.min(4.0D, width));
+            DustParticleOptions dust = new DustParticleOptions(color, particleSize);
             level.sendParticles(dust, pos.x, pos.y, pos.z, 1, 0, 0, 0, 0);
         }
     }
@@ -546,7 +580,13 @@ public class LaserAttack extends AttackType {
         );
     }
 
-    protected double getWidth(LivingEntity living, double damage) {
-        return getBulletScale(living, damage) * 0.25;
+    protected double getWidth(AttackContext context) {
+        return laserWidth(context.getBulletScale(), 0.25D);
+    }
+
+    protected static double laserWidth(double bulletScale, double baseWidth) {
+        if (!Double.isFinite(bulletScale) || bulletScale <= 0.0D) return baseWidth;
+        double growth = Math.min(3.0D, Math.sqrt(bulletScale));
+        return baseWidth * growth;
     }
 }

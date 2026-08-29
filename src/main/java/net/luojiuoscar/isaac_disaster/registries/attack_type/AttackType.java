@@ -161,19 +161,6 @@ public abstract class AttackType {
         return attr != null ? Math.max(Math.min(attr.getValue(), 64), 1) : 18.0;
     }
 
-    protected float getBulletScale(LivingEntity entity, double damage) {
-        AttributeInstance extraAttr = entity.getAttribute(ModAttributes.BULLET_SCALE.get());
-        float extra = extraAttr != null ? (float) extraAttr.getValue() : 0f;
-
-        float scale = 1.0f;
-        if (damage <= 198) {
-            scale *= (float) Math.log10(9 + damage / 2);
-        } else {
-            scale *= Math.min(4f, (float) (2 + Math.log10((damage - 198) / 20)));
-        }
-        return scale + extra;
-    }
-
     protected double getTears(Player player) {
         AttributeInstance instance = player.getAttribute(ModAttributes.TEARS.get());
         if (instance == null) return 0.0;

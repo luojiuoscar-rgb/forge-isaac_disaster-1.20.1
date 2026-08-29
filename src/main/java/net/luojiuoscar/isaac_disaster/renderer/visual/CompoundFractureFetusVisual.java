@@ -28,6 +28,7 @@ public final class CompoundFractureFetusVisual implements BulletVisualRenderer<F
                        MultiBufferSource buffer) {
         FetusBullet bullet = (FetusBullet) context.bullet();
         poseStack.pushPose();
+        poseStack.translate(0.0D, bullet.getCollisionHeight() * 0.5D, 0.0D);
         Vec3 motion = bullet.getDeltaMovement();
         if (motion.lengthSqr() > 1.0E-6) {
             float yaw = (float) Math.toDegrees(Math.atan2(motion.x, motion.z));

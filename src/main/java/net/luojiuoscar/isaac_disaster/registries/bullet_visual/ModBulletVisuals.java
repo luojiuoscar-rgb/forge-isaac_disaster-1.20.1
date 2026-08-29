@@ -10,7 +10,7 @@ import net.minecraftforge.registries.RegistryObject;
 /** Forge registry containing the common definitions for all bullet visuals. */
 public final class ModBulletVisuals {
     public static final ResourceKey<Registry<BulletVisual>> BULLET_VISUAL_KEY =
-            ResourceKey.createRegistryKey(new ResourceLocation(IsaacDisaster.MOD_ID, "bullet_visual"));
+            ResourceKey.createRegistryKey(ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "bullet_visual"));
 
     public static final DeferredRegister<BulletVisual> BULLET_VISUAL_REGISTRY =
             DeferredRegister.create(BULLET_VISUAL_KEY, IsaacDisaster.MOD_ID);
@@ -19,7 +19,7 @@ public final class ModBulletVisuals {
             "default_tear",
             () -> new TearBulletVisual(
                     0.0D,
-                    new ResourceLocation(IsaacDisaster.MOD_ID, "textures/particle/tear_bullet.png"),
+                    ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "textures/particle/tear_bullet.png"),
                     true));
 
     public static final RegistryObject<TearBulletVisual> COMPOUND_FRACTURE_BONE_TEAR =
@@ -27,7 +27,7 @@ public final class ModBulletVisuals {
                     "compound_fracture_bone_tear",
                     () -> new TearBulletVisual(
                             1.0D,
-                            new ResourceLocation(IsaacDisaster.MOD_ID,
+                            ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID,
                                     "textures/particle/compound_fracture_bone_tear.png"),
                             false));
 
@@ -40,7 +40,7 @@ public final class ModBulletVisuals {
                     "compound_fracture_fetus_skeleton",
                     () -> new FetusBulletVisual(
                             1.0D,
-                            new ResourceLocation("minecraft", "textures/entity/skeleton/skeleton.png"),
+                            ResourceLocation.fromNamespaceAndPath("minecraft", "textures/entity/skeleton/skeleton.png"),
                             true));
 
     private ModBulletVisuals() {
