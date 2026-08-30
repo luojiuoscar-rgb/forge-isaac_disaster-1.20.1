@@ -131,7 +131,11 @@ public final class FreezeEffectEvents {
 
         if (event.getEntity() instanceof Mob mob && EntityFreezeRules.usesLowFriction(mob)) {
             if (!mob.level().isClientSide) {
-                FrozenImpactState.recordAttack(mob, event.getSource(), FROZEN_HIT_PUSH_SPEED);
+                if (EntityFreezeRules.isFireDamage(event.getSource())) {
+                    FrozenImpactState.shatter(mob);
+                } else {
+                    FrozenImpactState.recordAttack(mob, event.getSource(), FROZEN_HIT_PUSH_SPEED);
+                }
             }
             event.setCanceled(true);
         }

@@ -144,6 +144,11 @@ repositories {
 dependencies {
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
 
+    compileOnly(annotationProcessor("io.github.llamalad7:mixinextras-common:${mixinextras_version}"))
+    implementation(jarJar("io.github.llamalad7:mixinextras-forge:${mixinextras_version}")) {
+        jarJar.ranged(it, "[${mixinextras_version},)")
+    }
+
     // Specify the version of Minecraft to use.
     // Any artifact can be supplied so long as it has a "userdev" classifier artifact and is a compatible patcher artifact.
     // The "userdev" classifier will be requested and setup by ForgeGradle.

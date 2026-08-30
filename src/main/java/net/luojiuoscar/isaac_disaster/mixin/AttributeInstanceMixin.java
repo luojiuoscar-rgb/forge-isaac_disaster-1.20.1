@@ -1,5 +1,6 @@
 package net.luojiuoscar.isaac_disaster.mixin;
 
+import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import net.luojiuoscar.isaac_disaster.accessor.AttributeInstanceOwnerAccess;
 import net.luojiuoscar.isaac_disaster.system.rockbottom.RockBottomState;
 import net.minecraft.world.entity.LivingEntity;
@@ -8,8 +9,6 @@ import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(AttributeInstance.class)
 public abstract class AttributeInstanceMixin implements AttributeInstanceOwnerAccess {
@@ -27,12 +26,12 @@ public abstract class AttributeInstanceMixin implements AttributeInstanceOwnerAc
         return this.isaacDisaster$owner;
     }
 
-    @Inject(method = "getValue", at = @At("RETURN"), cancellable = true)
-    private void isaacDisaster$applyRockBottom(CallbackInfoReturnable<Double> cir) {
+    @ModifyReturnValue(method = "getValue", at = @At("RETURN"))
+    private double isaacDisaster$applyRockBottom(double original) {
         LivingEntity owner = this.isaacDisaster$owner;
-        if (owner == null) return;
+        if (owner == null) return original;
 
         AttributeInstance instance = (AttributeInstance) (Object) this;
-        cir.setReturnValue(RockBottomState.resolveValue(owner, instance.getAttribute(), cir.getReturnValue()));
+        return RockBottomState.resolveValue(owner, instance.getAttribute(), original);
     }
 }

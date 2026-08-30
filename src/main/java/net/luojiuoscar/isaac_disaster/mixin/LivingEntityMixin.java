@@ -14,13 +14,14 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.state.BlockState;
+import com.llamalad7.mixinextras.injector.ModifyReturnValue;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(LivingEntity.class)
 public abstract class LivingEntityMixin implements LivingEntityFreezeAccess {
@@ -56,18 +57,21 @@ public abstract class LivingEntityMixin implements LivingEntityFreezeAccess {
         }
     }
 
-    @Redirect(method = "travel", at = @At(value = "INVOKE",
+    @WrapOperation(method = "travel", at = @At(value = "INVOKE",
             target = "Lnet/minecraft/world/level/block/state/BlockState;getFriction(Lnet/minecraft/world/level/LevelReader;Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/entity/Entity;)F",
             remap = false))
-    private float isaacDisaster$useFrozenGroundFriction(BlockState state, LevelReader level, BlockPos pos, Entity entity) {
+    private float isaacDisaster$useFrozenGroundFriction(BlockState state, LevelReader level, BlockPos pos,
+                                                        Entity entity, Operation<Float> original) {
         LivingEntity self = (LivingEntity) (Object) this;
         // Only the frozen effect changes the ground-friction sample; all other travel behavior remains vanilla.
-        return EntityFreezeRules.usesLowFriction(self) ? 0.989F : state.getFriction(level, pos, entity);
+        return EntityFreezeRules.usesLowFriction(self)
+                ? 0.989F
+                : original.call(state, level, pos, entity);
     }
 
-    @Inject(method = "getScale", at = @At("RETURN"), cancellable = true)
-    private void injectScale(CallbackInfoReturnable<Float> cir) {
+    @ModifyReturnValue(method = "getScale", at = @At("RETURN"))
+    private float isaacDisaster$applyScale(float original) {
         LivingEntity self = (LivingEntity) (Object) this;
-        cir.setReturnValue(cir.getReturnValue() * ScaleUtils.getScale(self));
+        return original * ScaleUtils.getScale(self);
     }
 }

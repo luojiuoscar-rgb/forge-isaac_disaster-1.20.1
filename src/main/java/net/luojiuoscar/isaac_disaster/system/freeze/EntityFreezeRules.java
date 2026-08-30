@@ -4,6 +4,8 @@ import net.luojiuoscar.isaac_disaster.effect.ModEffects;
 import net.luojiuoscar.isaac_disaster.system.freeze.state.EntityVisualState;
 import net.luojiuoscar.isaac_disaster.system.freeze.state.TimeStopState;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.tags.DamageTypeTags;
+import net.minecraft.world.damagesource.DamageSource;
 
 /** Combines entity-owned freeze sources with the level-wide time-stop state. */
 public final class EntityFreezeRules {
@@ -32,5 +34,9 @@ public final class EntityFreezeRules {
     public static boolean usesLowFriction(LivingEntity entity) {
         // The concrete frozen effect is the only entity-owned source that changes ground friction.
         return EntityVisualState.hasFreezeSource(entity, ModEffects.FROZEN.getId());
+    }
+
+    public static boolean isFireDamage(DamageSource source) {
+        return source.is(DamageTypeTags.IS_FIRE);
     }
 }

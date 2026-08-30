@@ -104,6 +104,14 @@ public final class FrozenImpactState {
         STATES.clear();
     }
 
+    /** Triggers the same immediate shatter used when a frozen mob hits a block. */
+    public static void shatter(Mob mob) {
+        if (!(mob.level() instanceof ServerLevel level) || mob.isDeadOrDying()) {
+            return;
+        }
+        shatter(mob, level, getState(mob, level));
+    }
+
     private static boolean hasImpact(Mob mob, State state) {
         boolean hitWall = mob.horizontalCollision && state.horizontalSpeed >= IMPACT_SPEED_THRESHOLD;
         boolean landedHard = !state.wasOnGround

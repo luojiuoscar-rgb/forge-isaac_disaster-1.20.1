@@ -1,24 +1,23 @@
 package net.luojiuoscar.isaac_disaster.mixin;
 
+import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import net.minecraft.world.entity.EntityDimensions;
 import net.minecraft.world.entity.Pose;
 import net.minecraft.world.entity.player.Player;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(Player.class)
 public abstract class PlayerMixin {
-    @Inject(method = "getDimensions", at = @At("RETURN"), cancellable = true)
-    private void injectScale(Pose pose, CallbackInfoReturnable<EntityDimensions> cir) {
+    @ModifyReturnValue(method = "getDimensions", at = @At("RETURN"))
+    private EntityDimensions isaacDisaster$applyScale(EntityDimensions original) {
         Player self = (Player)(Object)this;
-        cir.setReturnValue(cir.getReturnValue().scale(self.getScale()));
+        return original.scale(self.getScale());
     }
 
-    @Inject(method = "getStandingEyeHeight", at = @At("RETURN"), cancellable = true)
-    private void injectEyeHeight(Pose pose, EntityDimensions dimensions, CallbackInfoReturnable<Float> cir) {
+    @ModifyReturnValue(method = "getStandingEyeHeight", at = @At("RETURN"))
+    private float isaacDisaster$applyEyeHeight(float original) {
         Player self = (Player)(Object)this;
-        cir.setReturnValue(cir.getReturnValue() * self.getScale());
+        return original * self.getScale();
     }
 }
