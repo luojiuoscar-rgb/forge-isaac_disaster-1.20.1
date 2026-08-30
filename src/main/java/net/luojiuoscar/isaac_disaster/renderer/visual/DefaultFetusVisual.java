@@ -11,7 +11,6 @@ import net.minecraft.client.model.PlayerModel;
 import net.minecraft.client.model.geom.ModelLayers;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.resources.DefaultPlayerSkin;
@@ -54,7 +53,7 @@ public final class DefaultFetusVisual implements BulletVisualRenderer<FetusBulle
         float blue = visual.acceptsTint() ? (color & 0xFF) / 255.0F : 1.0F;
         appearance.model().renderToBuffer(
                 poseStack,
-                buffer.getBuffer(RenderType.entityTranslucent(appearance.skin())),
+                buffer.getBuffer(ProjectileRenderTypes.translucent(appearance.skin())),
                 context.packedLight(),
                 OverlayTexture.NO_OVERLAY,
                 red,

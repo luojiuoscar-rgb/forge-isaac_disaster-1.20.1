@@ -12,6 +12,8 @@ Move the approved square-root size model into AttackContext, snapshotting the mo
 - [completed] Verify the full JUnit suite.
 - [completed] Replace projectile collision inflation with dynamic AABBs and continuous volume sweeps.
 - [completed] Rework laser width growth, swept laser collision, projectile tick ordering, and bounce contact responses.
+- [completed] Calibrate projectile shatter particles to vanilla item-breaking motion and reduced density.
+- [completed] Move tear and laser hit cooldown bypass into DamageType tags and unify projectile knockback responses.
 
 ## Decisions
 

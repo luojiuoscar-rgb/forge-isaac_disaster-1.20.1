@@ -27,13 +27,13 @@ public class BulletBounceOnEntity implements IAbilityEffect {
             LivingEntity target = EntityHelper.findNearestTrackingTarget(
                     bullet.level(),
                     bullet.getOwner(),
-                    bullet.position(),
+                    bullet.getCenter(),
                     bullet.getHomingRange(),
                     e -> !bullet.getDamagedEntities().contains(e.getUUID())
             );
 
             if (target != null) {
-                Vec3 dir = target.getEyePosition().subtract(bullet.position()).normalize();
+                Vec3 dir = target.getEyePosition().subtract(bullet.getCenter()).normalize();
                 setPositionFromCenter(bullet, contact, dir);
                 bullet.setVelocity(dir.scale(speed));
                 bullet.setDeltaMovement(bullet.getVelocity());

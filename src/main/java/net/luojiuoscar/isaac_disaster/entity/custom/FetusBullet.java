@@ -46,9 +46,8 @@ public class FetusBullet extends TearBullet{
     }
 
     @Override
-    protected boolean makeDamage(LivingEntity victim, float damage){
+    protected boolean applyDamage(LivingEntity victim, float damage){
         if (attackInterval <= 0){
-            victim.invulnerableTime = 0;
             boolean success = victim.hurt(getDamageSource(), damage);
             if (!success) {
                 return false;
@@ -61,7 +60,7 @@ public class FetusBullet extends TearBullet{
 
     @Override
     public LivingEntity getTrackingTarget() {
-        Vec3 bulletPos = this.position();
+        Vec3 bulletPos = getCenter();
         Vec3 forwardPos = bulletPos.add(getVelocity().normalize().scale(1));
 
         return EntityHelper.findNearestTrackingTarget(
@@ -88,7 +87,7 @@ public class FetusBullet extends TearBullet{
         if (target != null) {
             // 计算到目标的距离
             Vec3 targetPos = target.position().add(0, target.getBbHeight() * 0.5, 0);
-            Vec3 toTarget = targetPos.subtract(position());
+            Vec3 toTarget = targetPos.subtract(getCenter());
             double distance = toTarget.length();
 
             // 根据距离动态调节速度

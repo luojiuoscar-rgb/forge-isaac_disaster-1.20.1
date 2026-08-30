@@ -26,6 +26,14 @@ class ProjectileCollisionHelperTest {
     }
 
     @Test
+    void centerMatchesTheDynamicBoundsForTearsAndFetuses() {
+        assertVectorEquals(new Vec3(2.2, 3.2, 4.2), ProjectileCollisionHelper.center(
+                new AABB(2.0, 3.0, 4.0, 2.4, 3.4, 4.4)));
+        assertVectorEquals(new Vec3(-1.425, 5.725, -0.425), ProjectileCollisionHelper.center(
+                new AABB(-3.0, 1.0, -2.0, 0.15, 10.45, 1.15)));
+    }
+
+    @Test
     void expandedTargetDetectsOnlyTheProjectileVolume() {
         Optional<Vec3> hit = ProjectileCollisionHelper.clipExpandedTarget(
                 new Vec3(0.0, 0.5, 0.0), new Vec3(10.0, 0.5, 0.0),
@@ -46,5 +54,11 @@ class ProjectileCollisionHelperTest {
                 new Vec3(1.0, 2.0, 0.5), new Vec3(0.75, 0.2, 0.5)));
         assertEquals(Direction.WEST, ProjectileCollisionHelper.strongestBlockedFace(
                 new Vec3(2.0, -1.0, 0.5), new Vec3(0.1, -0.9, 0.5)));
+    }
+
+    private static void assertVectorEquals(Vec3 expected, Vec3 actual) {
+        assertEquals(expected.x, actual.x, EPSILON);
+        assertEquals(expected.y, actual.y, EPSILON);
+        assertEquals(expected.z, actual.z, EPSILON);
     }
 }

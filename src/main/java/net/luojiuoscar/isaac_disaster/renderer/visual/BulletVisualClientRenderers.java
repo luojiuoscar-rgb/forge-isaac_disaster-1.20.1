@@ -46,6 +46,15 @@ public final class BulletVisualClientRenderers {
         return new Dispatcher(renderers);
     }
 
+    public static synchronized boolean hasRegisteredRenderer(BulletVisual visual) {
+        for (RegistryObject<? extends BulletVisual> registeredVisual : FACTORIES.keySet()) {
+            if (registeredVisual.get() == visual) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     private static <V extends BulletVisual> BoundRenderer bind(
             BulletVisualRendererFactory<V> factory,
             EntityRendererProvider.Context context

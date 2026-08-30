@@ -7,7 +7,6 @@ import net.luojiuoscar.isaac_disaster.entity.custom.TearBullet;
 import net.luojiuoscar.isaac_disaster.registries.bullet_visual.TearBulletVisual;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
@@ -51,7 +50,7 @@ public final class DefaultTearVisual implements BulletVisualRenderer<TearBulletV
         float blue = visual.acceptsTint() ? (color & 255) / 255.0F : 1.0F;
         alpha = Math.max(0.0F, Math.min(1.0F, alpha));
 
-        VertexConsumer vertexConsumer = buffer.getBuffer(RenderType.entityTranslucent(visual.getTexture()));
+        VertexConsumer vertexConsumer = buffer.getBuffer(ProjectileRenderTypes.translucent(visual.getTexture()));
         float halfSize = 0.1F;
         quad(vertexConsumer, poseStack, -halfSize, -halfSize, 0.0F, 0.0F, 1.0F,
                 red, green, blue, alpha, context.packedLight());

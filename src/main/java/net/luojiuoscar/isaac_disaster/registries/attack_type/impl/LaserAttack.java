@@ -493,7 +493,7 @@ public class LaserAttack extends AttackType {
 
             if (!MinecraftForge.EVENT_BUS.post(beforeHit)) {
                 double actualDamage = beforeHit.getDamage();
-                if (!makeDamage(laser.owner, target, (float) actualDamage)) {
+                if (!applyDamage(laser.owner, target, (float) actualDamage)) {
                     continue;
                 }
                 laser.damagedEntities.add(target.getUUID());
@@ -508,8 +508,7 @@ public class LaserAttack extends AttackType {
         }
     }
 
-    protected boolean makeDamage(LivingEntity source, LivingEntity target, float damage) {
-        target.invulnerableTime = 0;
+    protected boolean applyDamage(LivingEntity source, LivingEntity target, float damage) {
         return target.hurt(getDamageSource(source), damage);
     }
 

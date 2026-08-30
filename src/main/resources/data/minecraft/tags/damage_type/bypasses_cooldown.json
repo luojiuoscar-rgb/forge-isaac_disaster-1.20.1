@@ -1,6 +1,8 @@
 {
   "replace": false,
   "values": [
-    "isaac_disaster:frozen_shatter"
+    "isaac_disaster:frozen_shatter",
+    "isaac_disaster:tear",
+    "isaac_disaster:laser"
   ]
 }

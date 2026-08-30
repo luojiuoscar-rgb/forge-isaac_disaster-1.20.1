@@ -101,8 +101,7 @@ public class BrimstoneAttack extends LaserAttack implements IChargeableAttack {
     }
 
     @Override
-    protected boolean makeDamage(LivingEntity source, LivingEntity target, float damage) {
-        target.invulnerableTime = 0;
+    protected boolean applyDamage(LivingEntity source, LivingEntity target, float damage) {
         return target.hurt(getDamageSource(source), damage * DAMAGE_PERCENTAGE);
     }
 

@@ -33,7 +33,7 @@ public final class ModBulletVisuals {
 
     public static final RegistryObject<FetusBulletVisual> DEFAULT_FETUS = BULLET_VISUAL_REGISTRY.register(
             "default_fetus",
-            () -> new FetusBulletVisual(0.0D, null, true));
+            () -> new FetusBulletVisual(0.0D, null, true, null));
 
     public static final RegistryObject<FetusBulletVisual> COMPOUND_FRACTURE_FETUS_SKELETON =
             BULLET_VISUAL_REGISTRY.register(
@@ -41,7 +41,8 @@ public final class ModBulletVisuals {
                     () -> new FetusBulletVisual(
                             1.0D,
                             ResourceLocation.fromNamespaceAndPath("minecraft", "textures/entity/skeleton/skeleton.png"),
-                            true));
+                            false,
+                            ResourceLocation.fromNamespaceAndPath("minecraft", "textures/block/bone_block_side.png")));
 
     private ModBulletVisuals() {
     }

@@ -47,7 +47,9 @@ import net.minecraft.world.entity.MoverType;
 import net.minecraft.world.entity.Pose;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.*;
+import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.network.NetworkHooks;
 import net.minecraftforge.registries.IForgeRegistry;
 import net.minecraftforge.registries.RegistryManager;
@@ -68,6 +70,7 @@ import java.util.UUID;
 public class TearBullet extends Entity implements IBulletObject {
     public static final ResourceLocation DEFAULT_VISUAL_ID = ModBulletVisuals.DEFAULT_TEAR.getId();
     public static final float TEAR_VISUAL_SIZE_PER_SCALE = 0.2F;
+    private static final byte SHATTER_EVENT = 97;
 
     // ======== 基础属性 ========
     // Internal lifetime derived from range and speed; not a gameplay-facing parameter.
@@ -249,7 +252,7 @@ public class TearBullet extends Entity implements IBulletObject {
                     recordSplitTrigger(SplitTriggerType.END_OF_LIFE);
                     SplitExecutor.execute(this, SplitTriggerType.END_OF_LIFE);
                 }
-                if (!MinecraftForge.EVENT_BUS.post(new TearBulletEndOfLifeEvent(this))) discard();
+                if (!MinecraftForge.EVENT_BUS.post(new TearBulletEndOfLifeEvent(this))) discardWithShatter();
                 return;
             }
 
@@ -287,7 +290,7 @@ public class TearBullet extends Entity implements IBulletObject {
             return CollisionResult.CONTINUE;
         }
 
-        Vec3 start = getCollisionCenter();
+        Vec3 start = getCenter();
         Vec3 end = start.add(motion);
         Vec3 halfExtents = getCollisionHalfExtents();
         BlockSweepHit blockHit = findBlockCollision(motion);
@@ -317,8 +320,9 @@ public class TearBullet extends Entity implements IBulletObject {
         return CollisionResult.CONTINUE;
     }
 
-    private Vec3 getCollisionCenter() {
-        return position().add(0.0D, getBbHeight() * 0.5D, 0.0D);
+    /** Returns the dynamic collision-box center used for projectile spatial logic. */
+    public Vec3 getCenter() {
+        return ProjectileCollisionHelper.center(getBoundingBox());
     }
 
     protected Vec3 getCollisionHalfExtents() {
@@ -339,7 +343,7 @@ public class TearBullet extends Entity implements IBulletObject {
         IsaacAttackHitBlockEvent event =
                 new IsaacAttackHitBlockEvent(this, getOwner(), ModAttackTypes.BULLET.getId(), trigger, blockHit);
         if (!MinecraftForge.EVENT_BUS.post(event)) {
-            discard();
+            discardWithShatter();
         }
     }
 
@@ -348,6 +352,13 @@ public class TearBullet extends Entity implements IBulletObject {
         Vec3 normal = outwardNormal.lengthSqr() > 1.0E-12
                 ? outwardNormal.normalize() : Vec3.ZERO;
         setPos(getX() + normal.x * 1.0E-4, getY() + normal.y * 1.0E-4, getZ() + normal.z * 1.0E-4);
+    }
+
+    private void discardWithShatter() {
+        if (!level().isClientSide) {
+            level().broadcastEntityEvent(this, SHATTER_EVENT);
+        }
+        discard();
     }
 
     protected boolean handleSteering() {
@@ -381,7 +392,7 @@ public class TearBullet extends Entity implements IBulletObject {
 
         double damageValue = beforeEvent.getDamage();
 
-        if (!makeDamage(living, (float) damageValue)) {
+        if (!applyDamage(living, (float) damageValue)) {
             return CollisionResult.CONTINUE;
         }
 
@@ -394,7 +405,7 @@ public class TearBullet extends Entity implements IBulletObject {
 
 
         if (!isPiercing) {
-            discard();
+            discardWithShatter();
             return CollisionResult.STOP;
         }
 
@@ -465,7 +476,7 @@ public class TearBullet extends Entity implements IBulletObject {
     }
 
     public LivingEntity getTrackingTarget() {
-        Vec3 bulletPos = this.position();
+        Vec3 bulletPos = getCenter();
         Vec3 forwardPos = bulletPos.add(getVelocity().normalize().scale(3.0));
 
         return EntityHelper.findNearestTrackingTarget(
@@ -485,7 +496,7 @@ public class TearBullet extends Entity implements IBulletObject {
     }
 
     public void steerTowards(Vec3 targetPos, double steerStrength, boolean normalizeSpeed) {
-        Vec3 toTarget = targetPos.subtract(position());
+        Vec3 toTarget = targetPos.subtract(getCenter());
         if (toTarget.lengthSqr() < 1e-6) return;
 
         double distance = toTarget.length();
@@ -498,8 +509,7 @@ public class TearBullet extends Entity implements IBulletObject {
     }
 
     // ======== DamageSource ========
-    protected boolean makeDamage(LivingEntity victim, float damage){
-        victim.invulnerableTime = 0;
+    protected boolean applyDamage(LivingEntity victim, float damage){
         return victim.hurt(getDamageSource(), damage);
     }
 
@@ -650,6 +660,16 @@ public class TearBullet extends Entity implements IBulletObject {
     @Override
     public @NotNull Packet<ClientGamePacketListener> getAddEntityPacket() {
         return NetworkHooks.getEntitySpawningPacket(this);
+    }
+
+    @Override
+    public void handleEntityEvent(byte id) {
+        if (id == SHATTER_EVENT) {
+            DistExecutor.unsafeRunWhenOn(Dist.CLIENT,
+                    () -> () -> net.luojiuoscar.isaac_disaster.client.particle.TearShatterParticles.spawn(this));
+            return;
+        }
+        super.handleEntityEvent(id);
     }
 
     @Override

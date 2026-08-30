@@ -8,7 +8,6 @@ import net.luojiuoscar.isaac_disaster.registries.bullet_visual.FetusBulletVisual
 import net.minecraft.client.model.SkeletonModel;
 import net.minecraft.client.model.geom.ModelLayers;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
@@ -50,7 +49,7 @@ public final class CompoundFractureFetusVisual implements BulletVisualRenderer<F
         float blue = visual.acceptsTint() ? (color & 0xFF) / 255.0F : 1.0F;
         model.renderToBuffer(
                 poseStack,
-                buffer.getBuffer(RenderType.entityTranslucent(texture)),
+                buffer.getBuffer(ProjectileRenderTypes.translucent(texture)),
                 context.packedLight(),
                 OverlayTexture.NO_OVERLAY,
                 red,
