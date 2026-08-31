@@ -1,5 +1,6 @@
 package net.luojiuoscar.isaac_disaster.registries.ability.passive.impl;
 
+import net.luojiuoscar.isaac_disaster.item.ModPassiveItems;
 import net.luojiuoscar.isaac_disaster.client.ClientDataManager;
 import net.luojiuoscar.isaac_disaster.registries.ability.passive.PassiveAbility;
 import net.luojiuoscar.isaac_disaster.manager.ColorManager;
@@ -58,7 +59,7 @@ public class ToothPicks extends PassiveAbility {
     public List<Component> getSynergyDesc(@Nullable ItemStack stack, Player player) {
         List<Component> description = new ArrayList<>();
 
-        if (ClientDataManager.getInstance().getCountFromId(ItemId.BINGE_EATER.getId()) > 0){
+        if (ClientDataManager.getInstance().getItemCount(ModPassiveItems.BINGE_EATER.getId()) > 0){
             description.add(Component.translatable("item.isaac_disaster.binge_eater").append(": ").withStyle(style -> style.withColor(ColorManager.SYNERGY))
                     .append(StatManager.BULLET_SPEED.description(1, Style.EMPTY.withColor(ColorManager.SYNERGY))));
             description.add(StatManager.TEARS.description(0.7, Style.EMPTY.withColor(ColorManager.SYNERGY)));

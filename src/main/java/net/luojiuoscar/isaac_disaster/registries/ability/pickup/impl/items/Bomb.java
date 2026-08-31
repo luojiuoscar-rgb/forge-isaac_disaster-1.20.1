@@ -1,5 +1,6 @@
 package net.luojiuoscar.isaac_disaster.registries.ability.pickup.impl.items;
 
+import net.luojiuoscar.isaac_disaster.item.ModPassiveItems;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.manager.id.ItemId;
 import net.luojiuoscar.isaac_disaster.registries.ability.pickup.PickupAbility;
@@ -20,15 +21,15 @@ public class Bomb extends PickupAbility {
     private static final CompositeTrigger TRIGGER = new CompositeTrigger(List.of(
             new SimpleTrigger(ModTriggerTypes.EMTPY, ModExecutableEffects.THROW_BOMB, context ->
                     !(context.getEntity() instanceof ServerPlayer player)
-                        || !PlayerHelper.hasItem(ItemId.MR_MEGA.getId(), player)
+                        || !PlayerHelper.hasItem(ModPassiveItems.MR_MEGA.getId(), player)
             ),
             new SimpleTrigger(ModTriggerTypes.EMTPY, ModExecutableEffects.THROW_MEGA_BOMB, context ->
                 (context.getEntity() instanceof ServerPlayer player)
-                        && PlayerHelper.hasItem(ItemId.MR_MEGA.getId(), player)
+                        && PlayerHelper.hasItem(ModPassiveItems.MR_MEGA.getId(), player)
             ),
             new SimpleTrigger(ModTriggerTypes.EMTPY, ModExecutableEffects.ADD_COOLDOWN_TO_ITEM, context -> {
                 if (!(context.getEntity() instanceof ServerPlayer player)) return false;
-                if (PlayerHelper.hasItem(ItemId.FAST_BOMB.getId(), player)){
+                if (PlayerHelper.hasItem(ModPassiveItems.FAST_BOMB.getId(), player)){
                     context.set(ContextKeys.DOUBLE, List.of(5.));
                 }else {
                     context.set(ContextKeys.DOUBLE, List.of(10.));

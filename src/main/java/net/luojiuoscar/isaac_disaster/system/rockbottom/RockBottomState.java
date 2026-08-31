@@ -1,5 +1,6 @@
 package net.luojiuoscar.isaac_disaster.system.rockbottom;
 
+import net.luojiuoscar.isaac_disaster.item.ModPassiveItems;
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.attribute.ModAttributes;
 import net.luojiuoscar.isaac_disaster.capability.entity.ExtraDataProvider;
@@ -107,7 +108,7 @@ public final class RockBottomState {
         }
 
         if (!(player instanceof ServerPlayer serverPlayer)) return vanillaValue;
-        if (getRockBottomCount(serverPlayer) == 0) {
+        if (!hasRockBottom(serverPlayer)) {
             clearHistoryIfInactive(serverPlayer);
             return vanillaValue;
         }
@@ -135,17 +136,12 @@ public final class RockBottomState {
      */
     public static boolean hasRockBottom(Player player) {
         if (player.level().isClientSide()) {
-            return ClientDataManager.getInstance().getCountFromId(ItemId.ROCK_BOTTOM.getId()) > 0;
+            return ClientDataManager.getInstance().getItemCount(ModPassiveItems.ROCK_BOTTOM.getId()) > 0;
         }
 
-        return player instanceof ServerPlayer serverPlayer && getRockBottomCount(serverPlayer) > 0;
-    }
-
-    /** Returns the number of effective Rock Bottom copies recorded for a server player. */
-    private static int getRockBottomCount(ServerPlayer player) {
-        return player.getCapability(PlayerIsaacItemsProvider.PLAYER_ISAAC_ITEMS)
-                .map(PlayerIsaacItems::getRockBottomCount)
-                .orElse(0);
+        return player instanceof ServerPlayer serverPlayer && player.getCapability(
+                PlayerIsaacItemsProvider.PLAYER_ISAAC_ITEMS
+        ).map(items -> items.getItemCountFromAll(ModPassiveItems.ROCK_BOTTOM.getId()) > 0).orElse(false);
     }
 
     /**
@@ -173,7 +169,7 @@ public final class RockBottomState {
      * @param player player whose history may be cleared
      */
     public static void clearHistoryIfInactive(ServerPlayer player) {
-        if (getRockBottomCount(player) > 0) return;
+        if (hasRockBottom(player)) return;
 
         final boolean[] hadHistory = {false};
         player.getCapability(ExtraDataProvider.EXTRA_DATA_CAP).ifPresent(extraData -> {

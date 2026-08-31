@@ -12,6 +12,7 @@ import java.util.Map;
 public class ClientDataManager {
     private ClientDataManager() {
         itemCountMap = new HashMap<>();
+        trinketCountMap = new HashMap<>();
         setCountMap = new HashMap<>();
         pillRecords = new HashMap<>();
         rockBottomHistory = new HashMap<>();
@@ -21,7 +22,8 @@ public class ClientDataManager {
 
     private static final ClientDataManager INSTANCE = new ClientDataManager();
 
-    private final Map<Integer, Integer> itemCountMap;
+    private final Map<ResourceLocation, Integer> itemCountMap;
+    private final Map<ResourceLocation, Integer> trinketCountMap;
     private final Map<Integer, Integer> setCountMap;
     private final Map<Integer, ResourceLocation> pillRecords;
     private final Map<ResourceLocation, Double> rockBottomHistory;
@@ -33,6 +35,7 @@ public class ClientDataManager {
 
     public void init() {
         itemCountMap.clear();
+        trinketCountMap.clear();
         setCountMap.clear();
         pillRecords.clear();
         rockBottomHistory.clear();
@@ -49,12 +52,20 @@ public class ClientDataManager {
     /**
      * GETTER
      */
-    public int getCountFromId(int id) {
+    public int getItemCount(ResourceLocation id) {
         return itemCountMap.getOrDefault(id, 0);
     }
 
     public void resetItemCountMap(){
         itemCountMap.clear();
+    }
+
+    public int getTrinketCount(ResourceLocation id) {
+        return trinketCountMap.getOrDefault(id, 0);
+    }
+
+    public void resetTrinketCountMap() {
+        trinketCountMap.clear();
     }
 
     public void resetSetCountMap(){
@@ -99,17 +110,21 @@ public class ClientDataManager {
     /**
      * SETTER
      */
-    public void setItemWithId(int id, int count) {
-        itemCountMap.put(id, count);
-    }
-    public void modifyItemCount(int id, int count) {
-        int c = itemCountMap.getOrDefault(id, 0) + count;
-        if (c <= 0){
+    public void setItemCount(ResourceLocation id, int count) {
+        if (count <= 0) {
             itemCountMap.remove(id);
-        }else{
-            itemCountMap.put(id, c);
+        } else {
+            itemCountMap.put(id, count);
         }
     }
+    public void setTrinketCount(ResourceLocation id, int count) {
+        if (count <= 0) {
+            trinketCountMap.remove(id);
+        } else {
+            trinketCountMap.put(id, count);
+        }
+    }
+
     public void setFlyPercentage(int flyUnits) {
         this.flyUnits = flyUnits;
     }

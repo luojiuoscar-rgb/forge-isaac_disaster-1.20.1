@@ -1,10 +1,5 @@
 package net.luojiuoscar.isaac_disaster.manager.id;
 
-import net.minecraft.world.item.Item;
-import net.minecraftforge.registries.RegistryObject;
-
-import java.util.HashMap;
-import java.util.Map;
 
 public enum ItemId {
     BREAKFAST(1),
@@ -190,8 +185,6 @@ public enum ItemId {
 
     private final int id;
     private final int level;
-    private static final Map<Integer, RegistryObject<Item>> ID_TO_ITEM = new HashMap<>();
-
     ItemId(int level) {
         this.id = ordinal();
         this.level = level;
@@ -205,11 +198,4 @@ public enum ItemId {
         return level;
     }
 
-    public static void registerItem(int itemId, RegistryObject<Item> regItem) {
-        ID_TO_ITEM.put(itemId, regItem);
-    }
-
-    public static RegistryObject<Item> getItemById(int id) {
-        return ID_TO_ITEM.get(id);
-    }
 }

@@ -1,5 +1,6 @@
 package net.luojiuoscar.isaac_disaster.block.block_entity.misc;
 
+import net.luojiuoscar.isaac_disaster.item.ModPassiveItems;
 import net.luojiuoscar.isaac_disaster.capability.misc.DisplayItemListCap;
 import net.luojiuoscar.isaac_disaster.event.custom.misc.ItemDisplayAddEvent;
 import net.luojiuoscar.isaac_disaster.helper.LootHelper;
@@ -20,6 +21,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
+import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.List;
 
@@ -35,7 +37,7 @@ public interface ItemDisplayContainerBlockEntity {
      */
     default boolean lootItem(ServerLevel serverLevel, Player player, BlockPos pos, ResourceLocation tableId,
                              Runnable beforeGenerateAction){
-        if (PlayerHelper.hasItem(ItemId.CHAOS.getId(), (ServerPlayer) player)) {
+        if (PlayerHelper.hasItem(ModPassiveItems.CHAOS.getId(), (ServerPlayer) player)) {
             tableId = ModLootTables.DEFAULT_ITEM_POOL;
         }
 
@@ -47,7 +49,7 @@ public interface ItemDisplayContainerBlockEntity {
         if (items.isEmpty()) return false;
         ItemStack stack = items.get(0);
 
-        if (!stack.isEmpty() && stack.getItem() instanceof IsaacItem isaacItem){
+        if (!stack.isEmpty() && stack.getItem() instanceof IsaacItem){
             beforeGenerateAction.run();
 
             stack.setCount(1);
@@ -61,7 +63,8 @@ public interface ItemDisplayContainerBlockEntity {
                 if (!extra.isEmpty()) addItemDisplay(extra);
             }
 
-            PoolHelper.markAsRemoval(player, tableId, isaacItem.getId()); // 移出道具池
+            ResourceLocation itemId = ForgeRegistries.ITEMS.getKey(stack.getItem());
+            if (itemId != null) PoolHelper.markAsRemoval(player, tableId, itemId);
 
             BlockData.get(serverLevel).addItemBlock(pos); // 记录当前坐标
             return true;

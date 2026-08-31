@@ -1,5 +1,6 @@
 package net.luojiuoscar.isaac_disaster.registries.trigger_module.impl.normal;
 
+import net.luojiuoscar.isaac_disaster.item.ModPassiveItems;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.CompositeTrigger;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ExecutableEffectContext;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackContext;
@@ -20,7 +21,7 @@ public final class CompoundFracture extends TriggerModule {
     @Override
     public void attachToBullet(ExecutableEffectContext context, AttackContext attackContext) {
         if (context.getEntity() instanceof ServerPlayer player
-                && PlayerHelper.hasItem(ItemId.CRICKETS_BODY.getId(), player)) {
+                && PlayerHelper.hasItem(ModPassiveItems.CRICKETS_BODY.getId(), player)) {
             attackContext.addSplitModule(ModSplitModules.COMPOUND_FRACTURE_ENHANCED.getId(), 1);
             return;
         }

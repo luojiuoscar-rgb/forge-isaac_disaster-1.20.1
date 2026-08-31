@@ -1,5 +1,6 @@
 package net.luojiuoscar.isaac_disaster.loot.modifier;
 
+import net.luojiuoscar.isaac_disaster.item.ModPassiveItems;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
@@ -52,7 +53,7 @@ public class SacredOrbLootModifier extends LootModifier {
             return objectArrayList;
 
         // sacred orb
-        if (PlayerHelper.getItemCount(ItemId.SACRED_ORB.getId(), player) == 0) return objectArrayList;
+        if (PlayerHelper.getItemCount(ModPassiveItems.SACRED_ORB.getId(), player) == 0) return objectArrayList;
 
         LootPool tempPool = TempPoolManager.get(player);
         if (tempPool == null) return objectArrayList;

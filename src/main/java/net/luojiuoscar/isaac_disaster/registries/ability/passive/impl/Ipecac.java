@@ -29,6 +29,7 @@ public class Ipecac extends PassiveAbility {
     public void handleObtain(ServerPlayer player, @Nullable ItemStack stack) {
         StatManager.addBulletColor(player, ModBulletColors.IPECAC.getId(), 1);
         StatManager.addTriggerModule(player, ModTriggerModules.IPECAC.getId(), 1);
+        StatManager.addTriggerModule(player, ModTriggerModules.FIRING_MODIFIER.getId(), 1);
         StatManager.addTrajectory(player, ModAttackTrajectories.GRAVITY.getId(), 1);
     }
 
@@ -36,6 +37,7 @@ public class Ipecac extends PassiveAbility {
     public void handleRemove(ServerPlayer player, @Nullable ItemStack stack) {
         StatManager.addBulletColor(player, ModBulletColors.IPECAC.getId(), -1);
         StatManager.addTriggerModule(player, ModTriggerModules.IPECAC.getId(), -1);
+        StatManager.addTriggerModule(player, ModTriggerModules.FIRING_MODIFIER.getId(), -1);
         StatManager.addTrajectory(player, ModAttackTrajectories.GRAVITY.getId(), -1);
     }
 

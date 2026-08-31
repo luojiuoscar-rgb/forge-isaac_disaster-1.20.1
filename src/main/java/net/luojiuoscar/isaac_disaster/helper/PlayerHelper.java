@@ -1,5 +1,7 @@
 package net.luojiuoscar.isaac_disaster.helper;
 
+import net.luojiuoscar.isaac_disaster.item.ModPassiveItems;
+import net.luojiuoscar.isaac_disaster.item.ModTrinkets;
 import net.luojiuoscar.isaac_disaster.Config;
 import net.luojiuoscar.isaac_disaster.attribute.ModAttributes;
 import net.luojiuoscar.isaac_disaster.block.ModBlocks;
@@ -98,20 +100,23 @@ public class PlayerHelper {
         ItemEntity itemEntity = new ItemEntity(level, player.getX(), player.getY(), player.getZ(), stack);
         level.addFreshEntity(itemEntity);
     }
-    public static boolean hasItem(int itemId, ServerPlayer player){
+    public static boolean hasItem(ResourceLocation itemId, ServerPlayer player){
         return player.getCapability(PlayerIsaacItemsProvider.PLAYER_ISAAC_ITEMS)
                 .map(p -> p.getItemCountFromAll(itemId) > 0)
                 .orElse(false);
     }
-    public static int getItemCount(int itemId, ServerPlayer player){
+    public static int getItemCount(ResourceLocation itemId, ServerPlayer player){
         return player.getCapability(PlayerIsaacItemsProvider.PLAYER_ISAAC_ITEMS)
                 .map(p -> p.getItemCountFromAll(itemId))
                 .orElse(0);
     }
-    public static boolean hasTrinket(int itemId, ServerPlayer player){
+    public static boolean hasTrinket(ResourceLocation itemId, ServerPlayer player){
         return hasTrinket(itemId, player, false);
     }
-    public static boolean hasTrinket(int itemId, ServerPlayer player, boolean onlyEnchanted){
+    public static boolean hasTrinket(ResourceLocation itemId, ServerPlayer player, boolean onlyEnchanted){
+        if (!onlyEnchanted) {
+            return getTrinketCount(itemId, player) > 0;
+        }
         return player.getCapability(PlayerIsaacItemsProvider.PLAYER_ISAAC_ITEMS)
                 .map(playerIsaacItems -> {
                     List<ItemStack> stackList = playerIsaacItems.getAllTrinketListFromId(player, itemId);
@@ -123,13 +128,13 @@ public class PlayerHelper {
                 })
                 .orElse(false);
     }
-    public static int getTrinketCount(int itemId, ServerPlayer player){
+    public static int getTrinketCount(ResourceLocation itemId, ServerPlayer player){
         return player.getCapability(PlayerIsaacItemsProvider.PLAYER_ISAAC_ITEMS)
-                .map(p -> p.getAllTrinketListFromId(player, itemId).size())
+                .map(p -> p.getTrinketCountFromAll(itemId))
                 .orElse(0);
 
     }
-    public static double getValueFromTrinket(double normal, double enchanted, int itemId, ServerPlayer player){
+    public static double getValueFromTrinket(double normal, double enchanted, ResourceLocation itemId, ServerPlayer player){
         if (!hasTrinket(itemId, player)) return 0;
         return hasTrinket(itemId, player, true) ? normal : enchanted;
     }
@@ -147,7 +152,7 @@ public class PlayerHelper {
     }
     /**若amount为null则代表直接充满*/
     public static void chargeAll(ServerPlayer player, @Nullable Integer amount){
-        boolean canOverCharge = hasItem(ItemId.THE_BATTERY.getId(), player);
+        boolean canOverCharge = hasItem(ModPassiveItems.THE_BATTERY.getId(), player);
         chargeAll(player, amount, canOverCharge);
     }
     public static void chargeAll(ServerPlayer player, @Nullable Integer amount, boolean canOverCharge){
@@ -447,7 +452,7 @@ public class PlayerHelper {
 
 
     public static IsaacBomb spawnBombFromPlayer(ServerPlayer player, Vec3 tntVelocity){
-        if (PlayerHelper.hasItem(ItemId.MR_MEGA.getId(), player)){
+        if (PlayerHelper.hasItem(ModPassiveItems.MR_MEGA.getId(), player)){
             return EntityHelper.spawnBomb(
                     player.blockPosition().getCenter(), player, player.level(), tntVelocity, BombData.MEGA, 80);
         }else {
@@ -521,7 +526,7 @@ public class PlayerHelper {
         ItemStack held = player.getItemInHand(hand);
 
 
-        int paperClip = PlayerHelper.getTrinketCount(TrinketId.PAPER_CLIP.getId(), (ServerPlayer) player);
+        int paperClip = PlayerHelper.getTrinketCount(ModTrinkets.PAPER_CLIP.getId(), (ServerPlayer) player);
 
         if (held.is(ModItems.KEY.get()) || held.is(ModItems.GOLDEN_KEY.get()) || (paperClip >= paperClipRequirements)){ // 钥匙 or 金钥匙 or paperClip
             onUnlock.run(); // behaviour

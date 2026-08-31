@@ -4,7 +4,9 @@ import net.luojiuoscar.isaac_disaster.event.ForgeEvents;
 import net.luojiuoscar.isaac_disaster.helper.CuriosHelper;
 import net.luojiuoscar.isaac_disaster.item.item.PassiveItem;
 import net.luojiuoscar.isaac_disaster.item.item.Trinket;
-import net.luojiuoscar.isaac_disaster.manager.id.ItemId;
+import net.luojiuoscar.isaac_disaster.networking.ModMessages;
+import net.luojiuoscar.isaac_disaster.networking.packet.PassiveItemCountSyncS2CPacket;
+import net.luojiuoscar.isaac_disaster.networking.packet.TrinketCountSyncS2CPacket;
 import net.luojiuoscar.isaac_disaster.registries.ability.passive.ModPassiveAbilities;
 import net.luojiuoscar.isaac_disaster.registries.ability.passive.PassiveAbility;
 import net.luojiuoscar.isaac_disaster.registries.ability.set.ModSetAbilities;
@@ -38,8 +40,8 @@ public class PlayerIsaacItems {
     private final Set<Integer> obtainedSets; // 已经获得过的套装
     private final Map<CurioSlotKey, ItemStack> activeCurioSlots; // 已经应用过效果的 Curios 槽位
 
-    // cache
-    private int rockBottomCount;
+    private final Map<ResourceLocation, Integer> itemCountCache;
+    private final Map<ResourceLocation, Integer> trinketCountCache;
 
 
     // constructor
@@ -50,6 +52,8 @@ public class PlayerIsaacItems {
         this.setCountMap = new HashMap<>();
         this.obtainedSets = new HashSet<>();
         this.activeCurioSlots = new HashMap<>();
+        this.itemCountCache = new HashMap<>();
+        this.trinketCountCache = new HashMap<>();
         init();
     }
 
@@ -60,7 +64,8 @@ public class PlayerIsaacItems {
         this.setCountMap.clear();
         this.obtainedSets.clear();
         this.activeCurioSlots.clear();
-        this.rockBottomCount = 0;
+        this.itemCountCache.clear();
+        this.trinketCountCache.clear();
     }
 
     public void clearSetMap(){
@@ -97,72 +102,103 @@ public class PlayerIsaacItems {
         ForgeEvents.syncItemDataToClient(player);
     }
 
-    /**
-     * 获取某个道具的总数
-     */
-    public int getItemCountFromAll(int id) {
-        if (id == ItemId.ROCK_BOTTOM.getId()) {
-            return rockBottomCount;
+    /** 获取被动道具在能力背包和 Curios 中的总数。 */
+    public int getItemCountFromAll(ResourceLocation id) {
+        if (itemCountCache.containsKey(id)) return itemCountCache.get(id);
+
+        int count = 0;
+        for (ItemStack stack : playerPassiveItems) {
+            if (stack.getItem() instanceof PassiveItem
+                    && id.equals(ForgeRegistries.ITEMS.getKey(stack.getItem()))) count++;
         }
-
-        int count = (int) playerPassiveItems.stream()
-                .filter(s -> s.getItem() instanceof PassiveItem item && item.getId() == id)
-                .count();
-
-        count += (int) activeCurioSlots.values().stream()
-                .filter(s -> s.getItem() instanceof PassiveItem item && item.getId() == id)
-                .count();
-
+        for (ItemStack stack : activeCurioSlots.values()) {
+            if (stack.getItem() instanceof PassiveItem
+                    && id.equals(ForgeRegistries.ITEMS.getKey(stack.getItem()))) count++;
+        }
+        itemCountCache.put(id, count);
         return count;
     }
 
-    public int getRockBottomCount() {
-        return rockBottomCount;
-    }
+    /** 获取 Trinket 在吞下列表和 Curios 中的总数。 */
+    public int getTrinketCountFromAll(ResourceLocation id) {
+        if (trinketCountCache.containsKey(id)) return trinketCountCache.get(id);
 
-    public void modifyRockBottomCount(int n) {
-        rockBottomCount = Math.max(rockBottomCount + n, 0);
-    }
-
-    public Map<Integer, Integer> getItemCountMap() {
-        Map<Integer, Integer> map = new HashMap<>();
-
-        for (ItemStack stack : playerPassiveItems){
-            int id = ((PassiveItem) stack.getItem()).getId();
-
-            map.put(id, map.getOrDefault(id, 0) + 1);
+        int count = 0;
+        for (ItemStack stack : swallowedTrinkets) {
+            if (stack.getItem() instanceof Trinket
+                    && id.equals(ForgeRegistries.ITEMS.getKey(stack.getItem()))) count++;
         }
+        for (ItemStack stack : activeCurioSlots.values()) {
+            if (stack.getItem() instanceof Trinket
+                    && id.equals(ForgeRegistries.ITEMS.getKey(stack.getItem()))) count++;
+        }
+        trinketCountCache.put(id, count);
+        return count;
+    }
 
+    public Map<ResourceLocation, Integer> getItemCountMapFromAll() {
+        Map<ResourceLocation, Integer> map = new HashMap<>();
+        itemCountCache.forEach((id, count) -> {
+            if (count > 0) map.put(id, count);
+        });
         return map;
     }
 
-    public Map<Integer, Integer> getItemCountMapFromAll() {
-        Map<Integer, Integer> map = new HashMap<>();
-
-        for (ItemStack stack : playerPassiveItems){
-            int id = ((PassiveItem) stack.getItem()).getId();
-            if (id == ItemId.ROCK_BOTTOM.getId()) continue;
-
-            map.put(id, map.getOrDefault(id, 0) + 1);
-        }
-
-        for (ItemStack stack : activeCurioSlots.values()){
-            if (!(stack.getItem() instanceof PassiveItem passiveItem)) continue;
-            int id = passiveItem.getId();
-            if (id == ItemId.ROCK_BOTTOM.getId()) continue;
-
-            map.put(id, map.getOrDefault(id, 0) + 1);
-        }
-
-        if (rockBottomCount > 0) {
-            map.put(ItemId.ROCK_BOTTOM.getId(), rockBottomCount);
-        }
+    public Map<ResourceLocation, Integer> getTrinketCountMapFromAll() {
+        Map<ResourceLocation, Integer> map = new HashMap<>();
+        trinketCountCache.forEach((id, count) -> {
+            if (count > 0) map.put(id, count);
+        });
         return map;
     }
 
-    public List<ItemStack> getItemWithList(int id){
+    /** 从能力中的权威存储完全重建数量缓存。 */
+    public void refreshItemCountCache() {
+        itemCountCache.clear();
+        trinketCountCache.clear();
+
+        for (ItemStack stack : playerPassiveItems) {
+            adjustCache(stack, 1);
+        }
+        for (ItemStack stack : swallowedTrinkets) {
+            adjustCache(stack, 1);
+        }
+        for (ItemStack stack : activeCurioSlots.values()) {
+            adjustCache(stack, 1);
+        }
+    }
+
+    private void adjustCache(ItemStack stack, int amount) {
+        ResourceLocation id = ForgeRegistries.ITEMS.getKey(stack.getItem());
+        if (id == null) return;
+
+        Map<ResourceLocation, Integer> cache;
+        if (stack.getItem() instanceof PassiveItem) {
+            cache = itemCountCache;
+        } else if (stack.getItem() instanceof Trinket) {
+            cache = trinketCountCache;
+        } else {
+            return;
+        }
+
+        int count = cache.getOrDefault(id, 0) + amount;
+        cache.put(id, Math.max(count, 0));
+    }
+
+    public void syncCountToClient(ServerPlayer player, ItemStack stack) {
+        ResourceLocation id = ForgeRegistries.ITEMS.getKey(stack.getItem());
+        if (id == null) return;
+
+        if (stack.getItem() instanceof PassiveItem) {
+            ModMessages.sentToPlayer(new PassiveItemCountSyncS2CPacket(id, getItemCountFromAll(id)), player);
+        } else if (stack.getItem() instanceof Trinket) {
+            ModMessages.sentToPlayer(new TrinketCountSyncS2CPacket(id, getTrinketCountFromAll(id)), player);
+        }
+    }
+
+    public List<ItemStack> getItemWithList(ResourceLocation id){
         return playerPassiveItems.stream()
-                .filter(s -> ((PassiveItem) s.getItem()).getId() == id)
+                .filter(s -> id.equals(ForgeRegistries.ITEMS.getKey(s.getItem())))
                 .toList();
     }
 
@@ -177,8 +213,10 @@ public class PlayerIsaacItems {
         }
 
         // 增加被动道具到列表
-        playerPassiveItems.add(stack.copy());
-        ForgeEvents.syncItemDataToClient(player);
+        ItemStack storedStack = stack.copy();
+        playerPassiveItems.add(storedStack);
+        adjustCache(storedStack, 1);
+        syncCountToClient(player, storedStack);
     }
 
     public boolean removeFromIndex(ServerPlayer player, int index) {
@@ -192,24 +230,25 @@ public class PlayerIsaacItems {
         }
 
         ItemStack stack = playerPassiveItems.remove(index);
+        adjustCache(stack, -1);
         ResourceLocation removeId = ForgeRegistries.ITEMS.getKey(stack.getItem());
 
         IForgeRegistry<PassiveAbility> passiveAbilityIForgeRegistry =
                 RegistryManager.ACTIVE.getRegistry(ModPassiveAbilities.PASSIVE_ABILITY_KEY);
         if (passiveAbilityIForgeRegistry == null) {
-            if (sync) ForgeEvents.syncItemDataToClient(player);
+            if (sync) syncCountToClient(player, stack);
             return false;
         }
 
         PassiveAbility ability = passiveAbilityIForgeRegistry.getValue(removeId);
         if (ability == null) {
-            if (sync) ForgeEvents.syncItemDataToClient(player);
+            if (sync) syncCountToClient(player, stack);
             return false;
         }
 
         //移除效果
         ability.onRemove(player, stack);
-        if (sync) ForgeEvents.syncItemDataToClient(player);
+        if (sync) syncCountToClient(player, stack);
         return true;
     }
 
@@ -221,6 +260,7 @@ public class PlayerIsaacItems {
             ResourceLocation id = (ForgeRegistries.ITEMS.getKey(stack.getItem()));
             if (id != null && id.equals(itemId)) {
                 iterator.remove();
+                adjustCache(stack, -1);
 
                 IForgeRegistry<PassiveAbility> passiveAbilityIForgeRegistry =
                         RegistryManager.ACTIVE.getRegistry(ModPassiveAbilities.PASSIVE_ABILITY_KEY);
@@ -230,7 +270,7 @@ public class PlayerIsaacItems {
                         ability.onRemove(player, stack);
                     }
                 }
-                ForgeEvents.syncItemDataToClient(player);
+                syncCountToClient(player, stack);
                 break;
             }
         }
@@ -272,7 +312,7 @@ public class PlayerIsaacItems {
     public void swallow(ItemStack stack) {
         if (!(stack.getItem() instanceof Trinket)) return;
 
-        addToList(stack.copy());
+        addToList(stack);
         Trinket.setSwallowing(stack, true);
         stack.setCount(0);
     }
@@ -285,7 +325,9 @@ public class PlayerIsaacItems {
     public void addToList(ItemStack stack){
         if (!(stack.getItem() instanceof Trinket)) return;
 
-        swallowedTrinkets.add(stack.copy());
+        ItemStack storedStack = stack.copy();
+        swallowedTrinkets.add(storedStack);
+        adjustCache(storedStack, 1);
     }
 
     /**
@@ -323,8 +365,12 @@ public class PlayerIsaacItems {
         if (index < 0 || index >= swallowedTrinkets.size()) return;
 
         ItemStack stack = swallowedTrinkets.remove(index);
+        adjustCache(stack, -1);
         if (stack.getItem() instanceof Trinket item){
             item.getAbility().onUnequipped(player, new TrinketAbilityContext(stack));
+        }
+        if (player instanceof ServerPlayer serverPlayer) {
+            syncCountToClient(serverPlayer, stack);
         }
     }
 
@@ -334,13 +380,18 @@ public class PlayerIsaacItems {
      * @param player 触发卸下效果的玩家
      * @param id     饰品数字 id
      */
-    public void removeFromId(Player player, int id){
+    public void removeFromId(Player player, ResourceLocation id){
         for (Iterator<ItemStack> iterator = swallowedTrinkets.iterator(); iterator.hasNext(); ) {
             ItemStack stack = iterator.next();
-            if (stack.getItem() instanceof Trinket item &&
-                    item.getTrinketId() == id) {
+            if (stack.getItem() instanceof Trinket
+                    && id.equals(ForgeRegistries.ITEMS.getKey(stack.getItem()))) {
                 iterator.remove();
-                item.getAbility().onUnequipped(player, new TrinketAbilityContext(stack));
+                adjustCache(stack, -1);
+                Trinket trinket = (Trinket) stack.getItem();
+                trinket.getAbility().onUnequipped(player, new TrinketAbilityContext(stack));
+                if (player instanceof ServerPlayer serverPlayer) {
+                    syncCountToClient(serverPlayer, stack);
+                }
                 break;
             }
         }
@@ -363,11 +414,11 @@ public class PlayerIsaacItems {
      * @param id 饰品数字 id
      * @return 匹配饰品的 ItemStack 副本列表
      */
-    public List<ItemStack> getCapTrinketListFromId(int id){
+    public List<ItemStack> getCapTrinketListFromId(ResourceLocation id){
         List<ItemStack> trinkets = new ArrayList<>();
         for (ItemStack stack : swallowedTrinkets){
-            if (!(stack.getItem() instanceof Trinket trinket)) continue;
-            if (trinket.getTrinketId() != id) continue;
+            if (!(stack.getItem() instanceof Trinket)) continue;
+            if (!id.equals(ForgeRegistries.ITEMS.getKey(stack.getItem()))) continue;
             trinkets.add(stack.copy());
         }
         return trinkets;
@@ -380,10 +431,11 @@ public class PlayerIsaacItems {
      * @param id     饰品数字 id
      * @return 匹配饰品的 ItemStack 副本列表
      */
-    public List<ItemStack> getAllTrinketListFromId(Player player, int id){
+    public List<ItemStack> getAllTrinketListFromId(Player player, ResourceLocation id){
         List<ItemStack> trinkets = getCapTrinketListFromId(id);
         for (ItemStack stack : CuriosHelper.getEquippedItemsInSlot(player, CuriosHelper.TRINKET)){
-            if (stack.getItem() instanceof Trinket item && item.getTrinketId() == id){
+            if (stack.getItem() instanceof Trinket
+                    && id.equals(ForgeRegistries.ITEMS.getKey(stack.getItem()))){
                 trinkets.add(stack.copy());
             }
         }
@@ -401,17 +453,22 @@ public class PlayerIsaacItems {
     }
 
     public void setActiveCurioStack(CurioSlotKey key, ItemStack stack) {
+        ItemStack previous = activeCurioSlots.get(key);
         if (stack == null || stack.isEmpty()) {
             activeCurioSlots.remove(key);
+            if (previous != null) adjustCache(previous, -1);
             return;
         }
 
         activeCurioSlots.put(key, stack.copy());
+        if (previous != null) adjustCache(previous, -1);
+        adjustCache(stack, 1);
     }
 
     public Optional<ItemStack> removeActiveCurioStack(CurioSlotKey key) {
         ItemStack stack = activeCurioSlots.remove(key);
         if (stack == null || stack.isEmpty()) return Optional.empty();
+        adjustCache(stack, -1);
         return Optional.of(stack.copy());
     }
 
@@ -448,7 +505,7 @@ public class PlayerIsaacItems {
             this.activeCurioSlots.put(entry.getKey(), entry.getValue().copy());
         }
 
-        rebuildRockBottomCount();
+        refreshItemCountCache();
     }
 
     public void saveNBTData(CompoundTag nbt) {
@@ -509,6 +566,8 @@ public class PlayerIsaacItems {
 
 
     public void loadNBTData(CompoundTag nbt) {
+        itemCountCache.clear();
+        trinketCountCache.clear();
         playerPassiveItems.clear();
         if (nbt.contains("PlayerPassiveItems", Tag.TAG_LIST)) {
             ListTag itemList = nbt.getList("PlayerPassiveItems", Tag.TAG_COMPOUND);
@@ -573,26 +632,8 @@ public class PlayerIsaacItems {
             }
         }
 
-        rebuildRockBottomCount();
-    }
-
-    private void rebuildRockBottomCount() {
-        rockBottomCount = 0;
-        for (ItemStack stack : playerPassiveItems) {
-            if (isRockBottom(stack)) {
-                rockBottomCount++;
-            }
-        }
-        for (ItemStack stack : activeCurioSlots.values()) {
-            if (isRockBottom(stack)) {
-                rockBottomCount++;
-            }
-        }
-    }
-
-    private static boolean isRockBottom(ItemStack stack) {
-        return stack.getItem() instanceof PassiveItem item
-                && item.getId() == ItemId.ROCK_BOTTOM.getId();
+        itemCountCache.clear();
+        trinketCountCache.clear();
     }
 
 }

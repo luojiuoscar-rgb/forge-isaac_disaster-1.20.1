@@ -3,10 +3,8 @@ package net.luojiuoscar.isaac_disaster.registries.attack_type;
 import net.luojiuoscar.isaac_disaster.attribute.ModAttributes;
 import net.luojiuoscar.isaac_disaster.helper.GeometryHelper;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerAbilityProvider;
-import net.luojiuoscar.isaac_disaster.capability.player.PlayerIsaacItemsProvider;
 import net.luojiuoscar.isaac_disaster.event.custom.misc.GetShotDelayEvent;
 import net.luojiuoscar.isaac_disaster.event.custom.misc.IsaacGetBulletCountEvent;
-import net.luojiuoscar.isaac_disaster.manager.id.ItemId;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.CompositeTrigger;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
@@ -120,27 +118,9 @@ public abstract class AttackType {
 
     public int getBulletCount(Player player){
         AttributeInstance bulletCount = player.getAttribute(ModAttributes.BULLET_COUNT.get());
-        int[] count = {bulletCount == null ? 1 : (int) bulletCount.getValue()};
+        int count = bulletCount == null ? 1 : (int) bulletCount.getValue();
 
-        player.getCapability(PlayerIsaacItemsProvider.PLAYER_ISAAC_ITEMS).ifPresent(passive -> {
-            int innerEye = passive.getItemCountFromAll(ItemId.THE_INNER_EYE.getId());
-            int mutantSpider = passive.getItemCountFromAll(ItemId.MUTANT_SPIDER.getId());
-            int perfectVision = passive.getItemCountFromAll(ItemId.PERFECT_VISION.getId());
-
-            if (perfectVision >= 1){
-                if (innerEye + mutantSpider == 0){
-                    count[0] += 1;
-                } else {
-                    count[0] += perfectVision - 1;
-                }
-            }
-
-            if (innerEye + mutantSpider > 0){
-                count[0] += innerEye + 2 * mutantSpider + 1;
-            }
-        });
-
-        IsaacGetBulletCountEvent event = new IsaacGetBulletCountEvent(player, count[0]);
+        IsaacGetBulletCountEvent event = new IsaacGetBulletCountEvent(player, count);
         MinecraftForge.EVENT_BUS.post(event);
 
         return Math.min(event.getCount(), 17);

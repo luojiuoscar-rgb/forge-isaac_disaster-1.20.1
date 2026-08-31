@@ -1,5 +1,6 @@
 package net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.normal;
 
+import net.luojiuoscar.isaac_disaster.item.ModTrinkets;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.luojiuoscar.isaac_disaster.event.custom.misc.GeneralLootModifyEvent;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
@@ -23,10 +24,10 @@ public class DaemonsTail implements IAbilityEffect {
         if (objectArrayList.isEmpty()) return false;
 
         if (!(event.getEntity() instanceof ServerPlayer player)
-                || !PlayerHelper.hasTrinket(TrinketId.DAEMONS_TAIL.getId(), player)) return false;
+                || !PlayerHelper.hasTrinket(ModTrinkets.DAEMONS_TAIL.getId(), player)) return false;
 
         // based on type
-        double threshold = PlayerHelper.getValueFromTrinket(0.7, 0.35, TrinketId.DAEMONS_TAIL.getId(), player);
+        double threshold = PlayerHelper.getValueFromTrinket(0.7, 0.35, ModTrinkets.DAEMONS_TAIL.getId(), player);
 
         RandomSource rand = lootContext.getRandom();
         ObjectArrayList<ItemStack> newList = new ObjectArrayList<>();

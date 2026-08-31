@@ -1,5 +1,6 @@
 package net.luojiuoscar.isaac_disaster.item.pickup;
 
+import net.luojiuoscar.isaac_disaster.item.ModPassiveItems;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerItemUseRecordProvider;
 import net.luojiuoscar.isaac_disaster.client.ClientDataManager;
 import net.luojiuoscar.isaac_disaster.item.item.IIgnoreRecord;
@@ -36,7 +37,7 @@ public class Card extends Pickup implements IUsablePickup {
 
     @Override
     public boolean isFoil(@NotNull ItemStack stack) {
-        return ClientDataManager.getInstance().getCountFromId(ItemId.TAROT_CLOTH.getId()) > 0;
+        return ClientDataManager.getInstance().getItemCount(ModPassiveItems.TAROT_CLOTH.getId()) > 0;
     }
 
     @Override

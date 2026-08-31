@@ -1,5 +1,6 @@
 package net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.general;
 
+import net.luojiuoscar.isaac_disaster.item.ModTrinkets;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.luojiuoscar.isaac_disaster.event.custom.misc.GeneralLootModifyEvent;
 import net.luojiuoscar.isaac_disaster.helper.LootHelper;
@@ -43,7 +44,7 @@ public class ChestLootTrinket implements IAbilityEffect {
         ObjectArrayList<ItemStack> newList = new ObjectArrayList<>(objectArrayList);
 
         // lucky toe
-        if (rand.nextDouble() < PlayerHelper.getValueFromTrinket(0.33, 0.66, TrinketId.LUCKY_TOE.getId(), player)){
+        if (rand.nextDouble() < PlayerHelper.getValueFromTrinket(0.33, 0.66, ModTrinkets.LUCKY_TOE.getId(), player)){
             newList.addAll(LootHelper.getLoot(level, ModLootTables.RANDOM_COINS,
                     new LootParams.Builder(level)
                             .withParameter(LootContextParams.THIS_ENTITY, player)
@@ -53,7 +54,7 @@ public class ChestLootTrinket implements IAbilityEffect {
         }
 
         // match stick
-        if (rand.nextDouble() < PlayerHelper.getValueFromTrinket(0.33, 0.66, TrinketId.MATCH_STICK.getId(), player)){
+        if (rand.nextDouble() < PlayerHelper.getValueFromTrinket(0.33, 0.66, ModTrinkets.MATCH_STICK.getId(), player)){
             newList.addAll(LootHelper.getLoot(level, ModLootTables.RANDOM_BOMBS,
                     new LootParams.Builder(level)
                             .withParameter(LootContextParams.THIS_ENTITY, player)
@@ -63,7 +64,7 @@ public class ChestLootTrinket implements IAbilityEffect {
         }
 
         // childs heart
-        if (rand.nextDouble() < PlayerHelper.getValueFromTrinket(0.33, 0.66, TrinketId.CHILDS_HEART.getId(), player)){
+        if (rand.nextDouble() < PlayerHelper.getValueFromTrinket(0.33, 0.66, ModTrinkets.CHILDS_HEART.getId(), player)){
             newList.addAll(LootHelper.getLoot(level, ModLootTables.RANDOM_HEARTS,
                     new LootParams.Builder(level)
                             .withParameter(LootContextParams.THIS_ENTITY, player)
@@ -73,7 +74,7 @@ public class ChestLootTrinket implements IAbilityEffect {
         }
 
         // rusted key
-        if (rand.nextDouble() < PlayerHelper.getValueFromTrinket(0.33, 0.66, TrinketId.RUSTED_KEY.getId(), player)){
+        if (rand.nextDouble() < PlayerHelper.getValueFromTrinket(0.33, 0.66, ModTrinkets.RUSTED_KEY.getId(), player)){
             newList.addAll(LootHelper.getLoot(level, ModLootTables.RANDOM_KEYS,
                     new LootParams.Builder(level)
                             .withParameter(LootContextParams.THIS_ENTITY, player)
@@ -83,7 +84,7 @@ public class ChestLootTrinket implements IAbilityEffect {
         }
 
         // ace of spades
-        if (rand.nextDouble() < PlayerHelper.getValueFromTrinket(0.33, 0.66, TrinketId.ACE_OF_SPADES_TRINKET.getId(), player)){
+        if (rand.nextDouble() < PlayerHelper.getValueFromTrinket(0.33, 0.66, ModTrinkets.ACE_OF_SPADES_TRINKET.getId(), player)){
             newList.addAll(LootHelper.getLoot(level, ModLootTables.RANDOM_CARDS,
                     new LootParams.Builder(level)
                             .withParameter(LootContextParams.THIS_ENTITY, player)
@@ -93,7 +94,7 @@ public class ChestLootTrinket implements IAbilityEffect {
         }
 
         // safety pin
-        if (rand.nextDouble() < PlayerHelper.getValueFromTrinket(0.33, 0.66, TrinketId.SAFETY_CAP.getId(), player)){
+        if (rand.nextDouble() < PlayerHelper.getValueFromTrinket(0.33, 0.66, ModTrinkets.SAFETY_CAP.getId(), player)){
             newList.addAll(LootHelper.getLoot(level, ModLootTables.RANDOM_PILLS,
                     new LootParams.Builder(level)
                             .withParameter(LootContextParams.THIS_ENTITY, player)
@@ -103,7 +104,7 @@ public class ChestLootTrinket implements IAbilityEffect {
         }
 
         // poker chip
-        if (PlayerHelper.hasTrinket(TrinketId.POKER_CHIP.getId(), player)){
+        if (PlayerHelper.hasTrinket(ModTrinkets.POKER_CHIP.getId(), player)){
             if (rand.nextDouble() < -1){
                 newList.clear();
             }else{

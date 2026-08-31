@@ -1,5 +1,6 @@
 package net.luojiuoscar.isaac_disaster.block.custom.chest;
 
+import net.luojiuoscar.isaac_disaster.item.ModTrinkets;
 import net.luojiuoscar.isaac_disaster.block.ModBlockEntities;
 import net.luojiuoscar.isaac_disaster.block.block_entity.chest.ItemChestBlockEntity;
 import net.luojiuoscar.isaac_disaster.block.block_entity.chest.LockedChestBlockEntity;
@@ -45,7 +46,7 @@ public class LockedChestBlock extends ItemChestBlock {
         if (level.isClientSide) return InteractionResult.SUCCESS;
 
         if (level.getBlockEntity(pos) instanceof LockedChestBlockEntity lockedChest &&
-                PlayerHelper.hasTrinket(TrinketId.GILDED_KEY.getId(), (ServerPlayer) player)){
+                PlayerHelper.hasTrinket(ModTrinkets.GILDED_KEY.getId(), (ServerPlayer) player)){
             lockedChest.setLootTable(ModLootTables.GILDED_LOCKED_CHEST, 0);
         }
 

@@ -1,5 +1,6 @@
 package net.luojiuoscar.isaac_disaster.registries.ability.pickup.impl.cards;
 
+import net.luojiuoscar.isaac_disaster.item.ModPassiveItems;
 import net.luojiuoscar.isaac_disaster.client.ClientDataManager;
 import net.luojiuoscar.isaac_disaster.helper.DescriptionHelper;
 import net.luojiuoscar.isaac_disaster.manager.id.ItemId;
@@ -38,7 +39,7 @@ public class TheChariotR extends TarotAbility {
 
         description.add(Component.translatable("item.isaac_disaster.the_chariot_r.lore.1"));
 
-        if (ClientDataManager.getInstance().getCountFromId(ItemId.TAROT_CLOTH.getId()) > 0){
+        if (ClientDataManager.getInstance().getItemCount(ModPassiveItems.TAROT_CLOTH.getId()) > 0){
             description.add(DescriptionHelper.getSynergyDesc(
                     Component.translatable("item.isaac_disaster.tarot_cloth"),
                     Component.translatable("item.isaac_disaster.synergy.description.increase_duration")

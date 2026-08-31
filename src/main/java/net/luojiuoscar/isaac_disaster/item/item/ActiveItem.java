@@ -1,5 +1,7 @@
 package net.luojiuoscar.isaac_disaster.item.item;
 
+import net.luojiuoscar.isaac_disaster.item.ModPassiveItems;
+import net.luojiuoscar.isaac_disaster.item.ModTrinkets;
 import net.luojiuoscar.isaac_disaster.Config;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerItemUseRecordProvider;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerIsaacItemsProvider;
@@ -74,7 +76,7 @@ public class ActiveItem extends IsaacItem {
         player.getCapability(PlayerIsaacItemsProvider.PLAYER_ISAAC_ITEMS).ifPresent(
                 playerPassiveItem -> {
                     List<ItemStack> stackList =
-                            playerPassiveItem.getAllTrinketListFromId(player, TrinketId.AAA_BATTERY.getId());
+                            playerPassiveItem.getAllTrinketListFromId(player, ModTrinkets.AAA_BATTERY.getId());
                     for (ItemStack stack : stackList){
                         if (Trinket.isEnchanted(stack)){
                             count[0] += 2;
@@ -154,7 +156,7 @@ public class ActiveItem extends IsaacItem {
             damage = Math.max(0, damage);
 
             // 如果有9伏特，恢复20%的耐久
-            if (PlayerHelper.hasItem(ItemId.VOLT_9.getId(), (ServerPlayer) player)){
+            if (PlayerHelper.hasItem(ModPassiveItems.VOLT_9.getId(), (ServerPlayer) player)){
                 damage -= (int) (item.getOriginalDamagePerUse() * 0.2);
             }
 

@@ -15,7 +15,7 @@ public class PoolHelper {
 
     private PoolHelper() {}
 
-    public static void markAsRemoval(Player player, ResourceLocation rl, int itemId) {
+    public static void markAsRemoval(Player player, ResourceLocation rl, ResourceLocation itemId) {
         // 根据配置决定要走全池移除还是单池移除（由 Config 控制）
         if (Config.ITEM_REMOVAL_FROM_ALL_POOL.get()) {
             removeFromAll(player, itemId);
@@ -24,7 +24,7 @@ public class PoolHelper {
         }
     }
 
-    public static void removeFromPool(Player player, ResourceLocation rl, int itemId) {
+    public static void removeFromPool(Player player, ResourceLocation rl, ResourceLocation itemId) {
         if (!(player.level() instanceof ServerLevel serverLevel)) return;
 
         if (Config.PLAYERS_SHARE_ITEM_POOLS.get()) {
@@ -35,7 +35,7 @@ public class PoolHelper {
         }
     }
 
-    public static void removeFromAll(Player player, int itemId) {
+    public static void removeFromAll(Player player, ResourceLocation itemId) {
         if (!(player.level() instanceof ServerLevel serverLevel)) return;
 
         if (Config.PLAYERS_SHARE_ITEM_POOLS.get()) {
@@ -46,7 +46,7 @@ public class PoolHelper {
         }
     }
 
-    public static void addToPool(Player player, ResourceLocation rl, int itemId) {
+    public static void addToPool(Player player, ResourceLocation rl, ResourceLocation itemId) {
         if (!(player.level() instanceof ServerLevel serverLevel)) return;
 
         if (Config.PLAYERS_SHARE_ITEM_POOLS.get()) {
@@ -57,7 +57,7 @@ public class PoolHelper {
         }
     }
 
-    public static void addToAll(Player player, int itemId) {
+    public static void addToAll(Player player, ResourceLocation itemId) {
         if (!(player.level() instanceof ServerLevel serverLevel)) return;
 
         if (Config.PLAYERS_SHARE_ITEM_POOLS.get()) {
@@ -72,7 +72,7 @@ public class PoolHelper {
     // 读取 / 查询方法
     // -----------------------
 
-    public static boolean isRemoved(Player player, ResourceLocation rl, int itemId) {
+    public static boolean isRemoved(Player player, ResourceLocation rl, ResourceLocation itemId) {
         if (!(player.level() instanceof ServerLevel serverLevel)) return false;
 
         if (Config.PLAYERS_SHARE_ITEM_POOLS.get()) {
@@ -84,7 +84,7 @@ public class PoolHelper {
         }
     }
 
-    public static boolean isAdded(Player player, ResourceLocation rl, int itemId) {
+    public static boolean isAdded(Player player, ResourceLocation rl, ResourceLocation itemId) {
         if (!(player.level() instanceof ServerLevel serverLevel)) return false;
 
         if (Config.PLAYERS_SHARE_ITEM_POOLS.get()) {
@@ -97,7 +97,7 @@ public class PoolHelper {
     }
 
 
-    public static Set<Integer> getRemoval(Player player, ResourceLocation rl) {
+    public static Set<ResourceLocation> getRemoval(Player player, ResourceLocation rl) {
         if (!(player.level() instanceof ServerLevel serverLevel)) return Collections.emptySet();
 
         if (Config.PLAYERS_SHARE_ITEM_POOLS.get()) {
@@ -110,7 +110,7 @@ public class PoolHelper {
     }
 
 
-    public static Set<Integer> getAddition(Player player, ResourceLocation rl) {
+    public static Set<ResourceLocation> getAddition(Player player, ResourceLocation rl) {
         if (!(player.level() instanceof ServerLevel serverLevel)) return Collections.emptySet();
 
         if (Config.PLAYERS_SHARE_ITEM_POOLS.get()) {

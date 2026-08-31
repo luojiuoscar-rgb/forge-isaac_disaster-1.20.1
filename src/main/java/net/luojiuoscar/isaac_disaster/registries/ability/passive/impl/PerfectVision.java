@@ -1,10 +1,12 @@
 package net.luojiuoscar.isaac_disaster.registries.ability.passive.impl;
 
 
+import net.luojiuoscar.isaac_disaster.item.ModPassiveItems;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerIsaacItemsProvider;
 import net.luojiuoscar.isaac_disaster.registries.ability.passive.PassiveAbility;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.manager.id.ItemId;
+import net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerModules;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
@@ -31,6 +33,8 @@ public class PerfectVision extends PassiveAbility {
 
     @Override
     public void handleObtain(ServerPlayer player, @Nullable ItemStack stack) {
+        StatManager.addTriggerModule(player, ModTriggerModules.FIRING_MODIFIER.getId(), 1);
+
         // 伤害修正
         AttributeInstance instance = player.getAttribute(Attributes.ATTACK_DAMAGE);
         if (instance == null) return;
@@ -43,7 +47,7 @@ public class PerfectVision extends PassiveAbility {
         // 伤害修正
         player.getCapability(PlayerIsaacItemsProvider.PLAYER_ISAAC_ITEMS).ifPresent(
                 playerPassiveItem -> {
-                    int count = playerPassiveItem.getItemCountFromAll(ItemId.PERFECT_VISION.getId());
+                    int count = playerPassiveItem.getItemCountFromAll(ModPassiveItems.PERFECT_VISION.getId());
                     // 当最后一个已经被移除时；移除对应的modifier
                     if (count == 0){
                         AttributeInstance instance = player.getAttribute(Attributes.ATTACK_DAMAGE);
@@ -52,6 +56,7 @@ public class PerfectVision extends PassiveAbility {
                     }
                 }
         );
+        StatManager.addTriggerModule(player, ModTriggerModules.FIRING_MODIFIER.getId(), -1);
     }
 
     @Override

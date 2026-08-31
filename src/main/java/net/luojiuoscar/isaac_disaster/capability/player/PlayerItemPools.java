@@ -1,8 +1,9 @@
 package net.luojiuoscar.isaac_disaster.capability.player;
 
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.IntTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.StringTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.common.capabilities.AutoRegisterCapability;
 
@@ -14,10 +15,10 @@ import java.util.Set;
 @AutoRegisterCapability
 public class PlayerItemPools {
 
-    private final Map<ResourceLocation, Set<Integer>> removeFromPool;
-    private final Map<ResourceLocation, Set<Integer>> addFromPool;
-    private final Set<Integer> addAll;
-    private final Set<Integer> removeAll;
+    private final Map<ResourceLocation, Set<ResourceLocation>> removeFromPool;
+    private final Map<ResourceLocation, Set<ResourceLocation>> addFromPool;
+    private final Set<ResourceLocation> addAll;
+    private final Set<ResourceLocation> removeAll;
 
 
     public PlayerItemPools() {
@@ -36,40 +37,40 @@ public class PlayerItemPools {
     }
 
 
-    public void removeFromPool(ResourceLocation rl, int itemId){
+    public void removeFromPool(ResourceLocation rl, ResourceLocation itemId){
         removeFromPool.computeIfAbsent(rl, k -> new HashSet<>())
                 .add(itemId);
     }
 
-    public void addToPool(ResourceLocation rl, int itemId){
+    public void addToPool(ResourceLocation rl, ResourceLocation itemId){
         addFromPool.computeIfAbsent(rl, k -> new HashSet<>())
                 .add(itemId);
     }
 
-    public void removeFromAll(int itemId){
+    public void removeFromAll(ResourceLocation itemId){
         removeAll.add(itemId);
     }
 
-    public void addToAll(int itemId){
+    public void addToAll(ResourceLocation itemId){
         addAll.add(itemId);
     }
 
-    public Set<Integer> getRemoval(ResourceLocation rl){
-        Set<Integer> ids = removeFromPool.getOrDefault(rl, new HashSet<>());
+    public Set<ResourceLocation> getRemoval(ResourceLocation rl){
+        Set<ResourceLocation> ids = new HashSet<>(removeFromPool.getOrDefault(rl, Set.of()));
         ids.addAll(removeAll);
         return ids;
     }
 
-    public Set<Integer> getAddition(ResourceLocation rl){
-        Set<Integer> ids = addFromPool.getOrDefault(rl, new HashSet<>());
+    public Set<ResourceLocation> getAddition(ResourceLocation rl){
+        Set<ResourceLocation> ids = new HashSet<>(addFromPool.getOrDefault(rl, Set.of()));
         ids.addAll(addAll);
         return ids;
     }
 
-    public boolean isRemoved(ResourceLocation rl ,int itemId){
+    public boolean isRemoved(ResourceLocation rl, ResourceLocation itemId){
         return getRemoval(rl).contains(itemId);
     }
-    public boolean isAdded(ResourceLocation rl ,int itemId){
+    public boolean isAdded(ResourceLocation rl, ResourceLocation itemId){
         return getAddition(rl).contains(itemId);
     }
 
@@ -80,8 +81,8 @@ public class PlayerItemPools {
     public void saveNBTData(CompoundTag nbt) {
         nbt.put("RemoveFromPool", writePool(removeFromPool));
         nbt.put("AddFromPool", writePool(addFromPool));
-        nbt.put("RemoveAll", writeIntSet(removeAll));
-        nbt.put("AddAll", writeIntSet(addAll));
+        nbt.put("RemoveAll", writeResourceLocationSet(removeAll));
+        nbt.put("AddAll", writeResourceLocationSet(addAll));
     }
 
     public void loadNBTData(CompoundTag nbt) {
@@ -97,10 +98,10 @@ public class PlayerItemPools {
             readPool(nbt.getList("AddFromPool", 10), addFromPool);
         }
         if (nbt.contains("RemoveAll")) {
-            removeAll.addAll(readIntSet(nbt.getList("RemoveAll", 3)));
+            removeAll.addAll(readResourceLocationSet(nbt.getList("RemoveAll", Tag.TAG_STRING)));
         }
         if (nbt.contains("AddAll")) {
-            addAll.addAll(readIntSet(nbt.getList("AddAll", 3)));
+            addAll.addAll(readResourceLocationSet(nbt.getList("AddAll", Tag.TAG_STRING)));
         }
     }
 
@@ -120,38 +121,38 @@ public class PlayerItemPools {
         this.addAll.addAll(source.addAll);
     }
 
-    private ListTag writePool(Map<ResourceLocation, Set<Integer>> pool) {
+    private ListTag writePool(Map<ResourceLocation, Set<ResourceLocation>> pool) {
         ListTag list = new ListTag();
         for (var entry : pool.entrySet()) {
             CompoundTag tag = new CompoundTag();
             tag.putString("id", entry.getKey().toString());
-            tag.put("values", writeIntSet(entry.getValue()));
+            tag.put("values", writeResourceLocationSet(entry.getValue()));
             list.add(tag);
         }
         return list;
     }
 
-    private void readPool(ListTag list, Map<ResourceLocation, Set<Integer>> target) {
+    private void readPool(ListTag list, Map<ResourceLocation, Set<ResourceLocation>> target) {
         for (int i = 0; i < list.size(); i++) {
             CompoundTag tag = list.getCompound(i);
-            ResourceLocation id = ResourceLocation.parse(tag.getString("id"));
-            Set<Integer> values = readIntSet(tag.getList("values", 3));
-            target.put(id, values);
+            ResourceLocation id = ResourceLocation.tryParse(tag.getString("id"));
+            if (id != null) target.put(id, readResourceLocationSet(tag.getList("values", Tag.TAG_STRING)));
         }
     }
 
-    private ListTag writeIntSet(Set<Integer> set) {
+    private ListTag writeResourceLocationSet(Set<ResourceLocation> set) {
         ListTag list = new ListTag();
-        for (int val : set) {
-            list.add(IntTag.valueOf(val));
+        for (ResourceLocation value : set) {
+            list.add(StringTag.valueOf(value.toString()));
         }
         return list;
     }
 
-    private Set<Integer> readIntSet(ListTag list) {
-        Set<Integer> result = new HashSet<>();
+    private Set<ResourceLocation> readResourceLocationSet(ListTag list) {
+        Set<ResourceLocation> result = new HashSet<>();
         for (int i = 0; i < list.size(); i++) {
-            result.add(list.getInt(i));
+            ResourceLocation id = ResourceLocation.tryParse(list.getString(i));
+            if (id != null) result.add(id);
         }
         return result;
     }

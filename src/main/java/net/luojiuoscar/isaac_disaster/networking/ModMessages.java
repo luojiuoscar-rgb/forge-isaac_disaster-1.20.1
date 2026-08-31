@@ -35,10 +35,22 @@ public class ModMessages {
                 .consumerNetworkThread(ClearPassiveItemC2SPacket::handle)
                 .add();
 
-        net.messageBuilder(PassiveItemMapSyncS2CPacket.class, id(), NetworkDirection.PLAY_TO_CLIENT)
-                .decoder(PassiveItemMapSyncS2CPacket::new)
-                .encoder(PassiveItemMapSyncS2CPacket::toBytes)
-                .consumerNetworkThread(PassiveItemMapSyncS2CPacket::handle)
+        net.messageBuilder(IsaacItemCountMapSyncS2CPacket.class, id(), NetworkDirection.PLAY_TO_CLIENT)
+                .decoder(IsaacItemCountMapSyncS2CPacket::new)
+                .encoder(IsaacItemCountMapSyncS2CPacket::toBytes)
+                .consumerNetworkThread(IsaacItemCountMapSyncS2CPacket::handle)
+                .add();
+
+        net.messageBuilder(PassiveItemCountSyncS2CPacket.class, id(), NetworkDirection.PLAY_TO_CLIENT)
+                .decoder(PassiveItemCountSyncS2CPacket::new)
+                .encoder(PassiveItemCountSyncS2CPacket::toBytes)
+                .consumerNetworkThread(PassiveItemCountSyncS2CPacket::handle)
+                .add();
+
+        net.messageBuilder(TrinketCountSyncS2CPacket.class, id(), NetworkDirection.PLAY_TO_CLIENT)
+                .decoder(TrinketCountSyncS2CPacket::new)
+                .encoder(TrinketCountSyncS2CPacket::toBytes)
+                .consumerNetworkThread(TrinketCountSyncS2CPacket::handle)
                 .add();
 
         net.messageBuilder(FlyUpdateS2CPacket.class, id(), NetworkDirection.PLAY_TO_CLIENT)

@@ -1,5 +1,6 @@
 package net.luojiuoscar.isaac_disaster.registries.ability_effect;
 
+import net.luojiuoscar.isaac_disaster.item.ModPassiveItems;
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.block.ModBlockEntities;
 import net.luojiuoscar.isaac_disaster.effect.ModEffects;
@@ -95,6 +96,10 @@ public class ModExecutableEffects {
             EXECUTABLE_EFFECT_REGISTRY.register("laser_plus_fetus", LaserPlusFetus::new);
     public static final RegistryObject<IExecutableEffect> IPECAC =
             EXECUTABLE_EFFECT_REGISTRY.register("ipecac", Ipecac::new);
+    public static final RegistryObject<IExecutableEffect> FIRING_MODIFIER_ATTACK_PLAN =
+            EXECUTABLE_EFFECT_REGISTRY.register("firing_modifier_attack_plan", FiringModifierAttackPlan::new);
+    public static final RegistryObject<IExecutableEffect> FIRING_MODIFIER_SHOT_DELAY =
+            EXECUTABLE_EFFECT_REGISTRY.register("firing_modifier_shot_delay", FiringModifierShotDelay::new);
     public static final RegistryObject<IExecutableEffect> HABIT =
             EXECUTABLE_EFFECT_REGISTRY.register("habit", Habit::new);
     public static final RegistryObject<IExecutableEffect> CURSE_OF_THE_TOWER =
@@ -858,7 +863,7 @@ public class ModExecutableEffects {
 
                         ctx.set(ContextKeys.ITEM, ModItems.POOP.get());
                         // midas touch synergy
-                        if (PlayerHelper.hasItem(ItemId.MIDAS_TOUCH.getId(), player)){
+                        if (PlayerHelper.hasItem(ModPassiveItems.MIDAS_TOUCH.getId(), player)){
                             ctx.set(ContextKeys.ITEM, ModItems.GOLDEN_POOP.get());
                         }
 

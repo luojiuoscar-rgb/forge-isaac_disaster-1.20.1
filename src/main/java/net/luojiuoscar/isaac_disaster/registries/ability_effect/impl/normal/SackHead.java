@@ -1,5 +1,6 @@
 package net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.normal;
 
+import net.luojiuoscar.isaac_disaster.item.ModPassiveItems;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.luojiuoscar.isaac_disaster.event.custom.misc.GeneralLootModifyEvent;
 import net.luojiuoscar.isaac_disaster.helper.LevelHelper;
@@ -26,7 +27,7 @@ public class SackHead implements IAbilityEffect {
         if (objectArrayList.isEmpty()) return true;
 
         if (!(event.getEntity() instanceof ServerPlayer player)
-                || PlayerHelper.getItemCount(ItemId.SACK_HEAD.getId(), player) == 0) return true;
+                || PlayerHelper.getItemCount(ModPassiveItems.SACK_HEAD.getId(), player) == 0) return true;
 
 
         ResourceLocation tableId = lootContext.getQueriedLootTableId();

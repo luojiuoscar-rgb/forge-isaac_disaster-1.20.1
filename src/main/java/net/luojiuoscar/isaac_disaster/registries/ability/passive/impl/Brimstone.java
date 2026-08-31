@@ -1,5 +1,6 @@
 package net.luojiuoscar.isaac_disaster.registries.ability.passive.impl;
 
+import net.luojiuoscar.isaac_disaster.item.ModPassiveItems;
 import net.luojiuoscar.isaac_disaster.client.ClientDataManager;
 import net.luojiuoscar.isaac_disaster.helper.DescriptionHelper;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
@@ -48,14 +49,14 @@ public class Brimstone extends PassiveAbility {
     public List<Component> getSynergyDesc(@Nullable ItemStack stack, Player player){
         List<Component> desc = new ArrayList<>();
 
-        if (ClientDataManager.getInstance().getCountFromId(ItemId.TECHNOLOGY.getId()) > 0){
+        if (ClientDataManager.getInstance().getItemCount(ModPassiveItems.TECHNOLOGY.getId()) > 0){
             desc.add(DescriptionHelper.getSynergyDesc(
                     Component.translatable("item.isaac_disaster.technology"),
                     Component.translatable("item.isaac_disaster.brimstone.synergy.technology.1")
             ));
         }
 
-        if (ClientDataManager.getInstance().getCountFromId(ItemId.C_SECTION.getId()) > 0){
+        if (ClientDataManager.getInstance().getItemCount(ModPassiveItems.C_SECTION.getId()) > 0){
             desc.add(DescriptionHelper.getSynergyDesc(
                     Component.translatable("item.isaac_disaster.c_section"),
                     Component.translatable("item.isaac_disaster.brimstone.synergy.c_section.1")

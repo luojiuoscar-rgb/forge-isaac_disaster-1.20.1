@@ -1,5 +1,6 @@
 package net.luojiuoscar.isaac_disaster.entity.tnt;
 
+import net.luojiuoscar.isaac_disaster.item.ModPassiveItems;
 import net.luojiuoscar.isaac_disaster.effect.ModEffects;
 import net.luojiuoscar.isaac_disaster.helper.EntityHelper;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
@@ -188,7 +189,7 @@ public class IsaacBomb extends PrimedTnt {
 
         // 波比炸弹的追踪效果
         if(this.getOwner() instanceof ServerPlayer player
-            && PlayerHelper.hasItem(ItemId.BOBBY_BOMB.getId(), player)){
+            && PlayerHelper.hasItem(ModPassiveItems.BOBBY_BOMB.getId(), player)){
 
             Vec3 forwardPos = this.position().add(this.getDeltaMovement().normalize().scale(3.0));
 

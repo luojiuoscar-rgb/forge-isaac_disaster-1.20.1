@@ -38,6 +38,8 @@ public class ModTriggerModules {
             TRIGGER_MODULE_REGISTRY.register("blind_rage", BlindRage::new);
     public static final RegistryObject<TriggerModule> IPECAC =
             TRIGGER_MODULE_REGISTRY.register("ipecac", Ipecac::new);
+    public static final RegistryObject<TriggerModule> FIRING_MODIFIER =
+            TRIGGER_MODULE_REGISTRY.register("firing_modifier", FiringModifier::new);
     public static final RegistryObject<TriggerModule> BOUNCE_ON_BLOCK =
             TRIGGER_MODULE_REGISTRY.register("bounce_on_block", BounceOnBlock::new);
     public static final RegistryObject<TriggerModule> BOUNCE_ON_ENTITY =

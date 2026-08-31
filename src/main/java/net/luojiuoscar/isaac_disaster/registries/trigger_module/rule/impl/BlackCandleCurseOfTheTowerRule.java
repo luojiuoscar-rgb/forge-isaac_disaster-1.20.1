@@ -1,5 +1,6 @@
 package net.luojiuoscar.isaac_disaster.registries.trigger_module.rule.impl;
 
+import net.luojiuoscar.isaac_disaster.item.ModPassiveItems;
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.manager.id.ItemId;
@@ -20,6 +21,6 @@ public class BlackCandleCurseOfTheTowerRule extends TriggerModuleRule {
     @Override
     public boolean allows(TriggerModuleRuleContext context) {
         return context.getEntity() instanceof ServerPlayer player
-                && !PlayerHelper.hasItem(ItemId.BLACK_CANDLE.getId(), player);
+                && !PlayerHelper.hasItem(ModPassiveItems.BLACK_CANDLE.getId(), player);
     }
 }

@@ -1,5 +1,6 @@
 package net.luojiuoscar.isaac_disaster.block.block_entity.chest;
 
+import net.luojiuoscar.isaac_disaster.item.ModTrinkets;
 import net.luojiuoscar.isaac_disaster.block.ModBlockEntities;
 import net.luojiuoscar.isaac_disaster.block.ModBlocks;
 import net.luojiuoscar.isaac_disaster.commands.gamerule.ModGameRules;
@@ -53,10 +54,10 @@ public class ChestPlaceholderBlockEntity extends ItemChestBlockEntity {
 
         // 替换成随机方块
         if (player != null) {
-            if (PlayerHelper.hasTrinket(TrinketId.THE_LEFT_HAND.getId(), (ServerPlayer) player)){
+            if (PlayerHelper.hasTrinket(ModTrinkets.THE_LEFT_HAND.getId(), (ServerPlayer) player)){
                 newState = ModBlocks.RED_CHEST_BLOCK.get().defaultBlockState();
 
-            }else if (PlayerHelper.hasTrinket(TrinketId.GILDED_KEY.getId(), (ServerPlayer) player)){
+            }else if (PlayerHelper.hasTrinket(ModTrinkets.GILDED_KEY.getId(), (ServerPlayer) player)){
                 newState = ModBlocks.LOCKED_CHEST_BLOCK.get().defaultBlockState();
 
             }else{

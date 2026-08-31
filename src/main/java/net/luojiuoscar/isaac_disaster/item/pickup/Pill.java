@@ -1,5 +1,6 @@
 package net.luojiuoscar.isaac_disaster.item.pickup;
 
+import net.luojiuoscar.isaac_disaster.item.ModPassiveItems;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerItemUseRecordProvider;
 import net.luojiuoscar.isaac_disaster.client.ClientDataManager;
 import net.luojiuoscar.isaac_disaster.event.custom.misc.PickupUseEvent;
@@ -85,8 +86,8 @@ public class Pill extends Item implements ICommonPickup {
     public @NotNull String getDescriptionId(){
         // 当有办法显示名称的时候
         if (ClientDataManager.getInstance().isPillRecordCorrectly(pillId)
-                || ClientDataManager.getInstance().getCountFromId(ItemId.PHD.getId()) > 0
-                || ClientDataManager.getInstance().getCountFromId(ItemId.FALSE_PHD.getId()) > 0){
+                || ClientDataManager.getInstance().getItemCount(ModPassiveItems.PHD.getId()) > 0
+                || ClientDataManager.getInstance().getItemCount(ModPassiveItems.FALSE_PHD.getId()) > 0){
 
             return ((PillEffect) PillEffectManager.getInstance().getEffectFromPill(pillId).get())
                     .getDescriptionId(ClientDataManager.getInstance().getPillQuality());

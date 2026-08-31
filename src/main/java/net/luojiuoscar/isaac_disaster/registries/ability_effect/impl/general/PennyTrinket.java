@@ -1,5 +1,6 @@
 package net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.general;
 
+import net.luojiuoscar.isaac_disaster.item.ModTrinkets;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.luojiuoscar.isaac_disaster.Config;
 import net.luojiuoscar.isaac_disaster.event.custom.misc.GeneralLootModifyEvent;
@@ -69,7 +70,7 @@ public class PennyTrinket implements IAbilityEffect {
 
     private ItemStack bloodyPenny(ServerPlayer player, int value, int max) {
 
-        int count = PlayerHelper.getTrinketCount(TrinketId.BLOODY_PENNY.getId(), player);
+        int count = PlayerHelper.getTrinketCount(ModTrinkets.BLOODY_PENNY.getId(), player);
 
         if (count == 0 || value <= 0) {
             return ItemStack.EMPTY;
@@ -93,7 +94,7 @@ public class PennyTrinket implements IAbilityEffect {
 
     private ItemStack burntPenny(ServerPlayer player, int value, int max) {
 
-        int count = PlayerHelper.getTrinketCount(TrinketId.BURNT_PENNY.getId(), player);
+        int count = PlayerHelper.getTrinketCount(ModTrinkets.BURNT_PENNY.getId(), player);
 
         if (count == 0 || value <= 0) {
             return ItemStack.EMPTY;
@@ -117,7 +118,7 @@ public class PennyTrinket implements IAbilityEffect {
 
     private ItemStack flatPenny(ServerPlayer player, int value, int max) {
 
-        int count = PlayerHelper.getTrinketCount(TrinketId.FLAT_PENNY.getId(), player);
+        int count = PlayerHelper.getTrinketCount(ModTrinkets.FLAT_PENNY.getId(), player);
 
         if (count == 0 || value <= 0) {
             return ItemStack.EMPTY;
@@ -141,7 +142,7 @@ public class PennyTrinket implements IAbilityEffect {
 
     private ItemStack blessedPenny(ServerPlayer player, int value, int max) {
 
-        int count = PlayerHelper.getTrinketCount(TrinketId.BLESSED_PENNY.getId(), player);
+        int count = PlayerHelper.getTrinketCount(ModTrinkets.BLESSED_PENNY.getId(), player);
 
         if (count == 0 || value <= 0) {
             return ItemStack.EMPTY;
@@ -164,7 +165,7 @@ public class PennyTrinket implements IAbilityEffect {
 
     private ItemStack chargePenny(ServerPlayer player, int value, int max) {
 
-        int count = PlayerHelper.getTrinketCount(TrinketId.CHARGED_PENNY.getId(), player);
+        int count = PlayerHelper.getTrinketCount(ModTrinkets.CHARGED_PENNY.getId(), player);
 
         if (count == 0 || value <= 0) {
             return ItemStack.EMPTY;
@@ -187,7 +188,7 @@ public class PennyTrinket implements IAbilityEffect {
 
     private ItemStack counterfeitPenny(ServerPlayer player, int value, int max) {
 
-        int count = PlayerHelper.getTrinketCount(TrinketId.COUNTERFEIT_PENNY.getId(), player);
+        int count = PlayerHelper.getTrinketCount(ModTrinkets.COUNTERFEIT_PENNY.getId(), player);
         Item tier1Coin = PlayerHelper.getItemFromConfig(Config.COIN_TIER_1_ID.get());
         if (tier1Coin == null) return ItemStack.EMPTY;
 

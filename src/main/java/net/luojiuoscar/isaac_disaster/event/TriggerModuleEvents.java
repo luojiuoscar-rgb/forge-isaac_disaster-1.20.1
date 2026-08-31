@@ -6,9 +6,7 @@ import net.luojiuoscar.isaac_disaster.entity.tnt.IsaacBomb;
 import net.luojiuoscar.isaac_disaster.event.custom.attack.*;
 import net.luojiuoscar.isaac_disaster.event.custom.attack.tear_bullet.BulletTickEvent;
 import net.luojiuoscar.isaac_disaster.event.custom.attack.tear_bullet.TearBulletEndOfLifeEvent;
-import net.luojiuoscar.isaac_disaster.event.custom.misc.BeforeTriggerModuleActiveEvent;
-import net.luojiuoscar.isaac_disaster.event.custom.misc.GeneralLootModifyEvent;
-import net.luojiuoscar.isaac_disaster.event.custom.misc.RightClickTickEvent;
+import net.luojiuoscar.isaac_disaster.event.custom.misc.*;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ContextKeys;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ExecutableEffectContext;
@@ -306,6 +304,17 @@ public class TriggerModuleEvents {
         context.set(ContextKeys.TARGET_POSITION, bomb.position());
 
         dispatch(context, ModTriggerTypes.TNT_SPAWNED);
+    }
+
+    @SubscribeEvent
+    public static void onGetShotDelay(GetShotDelayEvent event) {
+        if (event.isCanceled()) return;
+        if (!(event.getPlayer() instanceof ServerPlayer player)) return;
+
+        ExecutableEffectContext context = new ExecutableEffectContext(player);
+        context.set(ContextKeys.EVENT, event);
+        context.set(ContextKeys.TARGET_POSITION, player.position());
+        dispatch(context, ModTriggerTypes.GET_SHOT_DELAY);
     }
 
     /** 在产生爆炸的时候，根据炸弹自身的TriggerModule来触发对应效果 */

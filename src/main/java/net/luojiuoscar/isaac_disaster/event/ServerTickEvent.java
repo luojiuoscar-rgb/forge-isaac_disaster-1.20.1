@@ -1,5 +1,6 @@
 package net.luojiuoscar.isaac_disaster.event;
 
+import net.luojiuoscar.isaac_disaster.item.ModPassiveItems;
 import net.luojiuoscar.isaac_disaster.Config;
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.attribute.ModAttributes;
@@ -118,7 +119,7 @@ public class ServerTickEvent {
         if (!Config.ACTIVE_ITEM_AUTO_RESTORE.get()) return;
 
         // 有4.5伏特时不执行充能
-        if (PlayerHelper.hasItem(ItemId.VOLT_4P5.getId(), player)) return;
+        if (PlayerHelper.hasItem(ModPassiveItems.VOLT_4P5.getId(), player)) return;
 
         // 恢复耐久
         Inventory inv = player.getInventory();
@@ -135,7 +136,7 @@ public class ServerTickEvent {
         for (ItemStack stack : items) {
 
             if (!stack.isEmpty() && stack.getItem() instanceof ActiveItem) {
-                PlayerHelper.chargeItem(stack, Config.ACTIVE_ITEM_DURABILITY_RESTORE_RATE.get(), PlayerHelper.hasItem(ItemId.THE_BATTERY.getId(), player));
+                PlayerHelper.chargeItem(stack, Config.ACTIVE_ITEM_DURABILITY_RESTORE_RATE.get(), PlayerHelper.hasItem(ModPassiveItems.THE_BATTERY.getId(), player));
             }
         }
     }

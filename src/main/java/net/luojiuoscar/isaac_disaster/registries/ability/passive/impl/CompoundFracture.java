@@ -1,5 +1,6 @@
 package net.luojiuoscar.isaac_disaster.registries.ability.passive.impl;
 
+import net.luojiuoscar.isaac_disaster.item.ModPassiveItems;
 import net.luojiuoscar.isaac_disaster.client.ClientDataManager;
 import net.luojiuoscar.isaac_disaster.helper.DescriptionHelper;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
@@ -51,7 +52,7 @@ public final class CompoundFracture extends PassiveAbility {
     @Override
     public List<Component> getSynergyDesc(@Nullable ItemStack stack, Player player) {
         List<Component> desc = new ArrayList<>();
-        if (ClientDataManager.getInstance().getCountFromId(ItemId.CRICKETS_BODY.getId()) > 0) {
+        if (ClientDataManager.getInstance().getItemCount(ModPassiveItems.CRICKETS_BODY.getId()) > 0) {
             desc.add(DescriptionHelper.getSynergyDesc(
                     Component.translatable("item.isaac_disaster.crickets_body"),
                     Component.translatable("item.isaac_disaster.compound_fracture.synergy.crickets_body.1")

@@ -11,7 +11,6 @@ import net.luojiuoscar.isaac_disaster.loot.LootContextHelper;
 import net.luojiuoscar.isaac_disaster.loot.LootGenerationContext;
 import net.luojiuoscar.isaac_disaster.loot.LootGenerationMode;
 import net.luojiuoscar.isaac_disaster.loot.TempPoolManager;
-import net.luojiuoscar.isaac_disaster.manager.id.ItemId;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
@@ -28,7 +27,7 @@ import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
 import net.minecraftforge.common.loot.IGlobalLootModifier;
 import net.minecraftforge.common.loot.LootModifier;
-import net.minecraftforge.registries.RegistryObject;
+import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -77,7 +76,8 @@ public class ItemPoolLootModifier extends LootModifier {
                 ItemStack[] tempStack = new ItemStack[1];
                 lootItem.createItemStack(s -> tempStack[0] = s, lootContext);
                 Item item = tempStack[0].getItem();
-                if (item instanceof IsaacItem isaacItem && !PoolHelper.isRemoved(player, tableId, isaacItem.getId())) {
+                ResourceLocation itemId = ForgeRegistries.ITEMS.getKey(item);
+                if (item instanceof IsaacItem && itemId != null && !PoolHelper.isRemoved(player, tableId, itemId)) {
                     newEntries.add(LootItem.lootTableItem(item));
                 }
             } else {
@@ -90,7 +90,8 @@ public class ItemPoolLootModifier extends LootModifier {
                     lootContext.getLevel().registryAccess().registryOrThrow(Registries.ITEM).getTag(tagKey).ifPresent(tagItems -> {
                         for (Holder<Item> holder : tagItems) {
                             Item item = holder.value();
-                            if (item instanceof IsaacItem isaacItem && !PoolHelper.isRemoved(player, tableId, isaacItem.getId())) {
+                            ResourceLocation itemId = ForgeRegistries.ITEMS.getKey(item);
+                            if (item instanceof IsaacItem && itemId != null && !PoolHelper.isRemoved(player, tableId, itemId)) {
                                 newEntries.add(LootItem.lootTableItem(item));
                             }
                         }
@@ -100,12 +101,10 @@ public class ItemPoolLootModifier extends LootModifier {
         }
 
         // 加入玩家 addition
-        for (int addId : PoolHelper.getAddition(player, tableId)) {
-            RegistryObject<Item> addItemReg = ItemId.getItemById(addId);
-            if (addItemReg != null) {
-                Item addItem = addItemReg.get();
-                newEntries.add(LootItem.lootTableItem(addItem));
-            }
+        for (ResourceLocation addItemId : PoolHelper.getAddition(player, tableId)) {
+            Item addItem = ForgeRegistries.ITEMS.getValue(addItemId);
+            if (addItem == null) continue;
+            newEntries.add(LootItem.lootTableItem(addItem));
         }
 
         // 构建临时 pool

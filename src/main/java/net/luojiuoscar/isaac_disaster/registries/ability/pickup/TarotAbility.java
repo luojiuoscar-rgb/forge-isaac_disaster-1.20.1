@@ -1,5 +1,6 @@
 package net.luojiuoscar.isaac_disaster.registries.ability.pickup;
 
+import net.luojiuoscar.isaac_disaster.item.ModPassiveItems;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.manager.id.ItemId;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ExecutableEffectContext;
@@ -19,7 +20,7 @@ public abstract class TarotAbility extends PickupAbility{
     public void onUse(ServerPlayer player, ItemStack stack, InteractionHand hand){
 
         ExecutableEffectContext ctx = getCtx(player, stack, hand);
-        ctx.set(ContextKeys.AMPLIFIER, PlayerHelper.hasItem(ItemId.TAROT_CLOTH.getId(), player) // tarot cloth
+        ctx.set(ContextKeys.AMPLIFIER, PlayerHelper.hasItem(ModPassiveItems.TAROT_CLOTH.getId(), player) // tarot cloth
                 ? getStrongerAmplifier() : getNormalAmplifier());
 
         fire(ctx);

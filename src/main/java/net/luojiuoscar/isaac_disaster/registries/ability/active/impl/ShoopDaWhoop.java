@@ -1,5 +1,6 @@
 package net.luojiuoscar.isaac_disaster.registries.ability.active.impl;
 
+import net.luojiuoscar.isaac_disaster.item.ModPassiveItems;
 import net.luojiuoscar.isaac_disaster.client.ClientDataManager;
 import net.luojiuoscar.isaac_disaster.helper.DescriptionHelper;
 import net.luojiuoscar.isaac_disaster.manager.id.ItemId;
@@ -36,7 +37,7 @@ public class ShoopDaWhoop extends ActiveAbility {
     public List<Component> getSynergyDesc(@Nullable ItemStack stack, Player player) {
         List<Component> description = new ArrayList<>();
 
-        if (ClientDataManager.getInstance().getCountFromId(ItemId.CAR_BATTERY.getId()) > 0){
+        if (ClientDataManager.getInstance().getItemCount(ModPassiveItems.CAR_BATTERY.getId()) > 0){
             description.add(DescriptionHelper.getSynergyDesc(
                     Component.translatable("item.isaac_disaster.car_battery"),
                     Component.translatable("item.isaac_disaster.synergy.description.stronger")

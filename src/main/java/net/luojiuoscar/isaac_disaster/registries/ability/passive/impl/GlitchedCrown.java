@@ -17,6 +17,7 @@ import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import org.jetbrains.annotations.Nullable;
+import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.List;
 
@@ -61,9 +62,10 @@ public class GlitchedCrown extends PassiveAbility {
                 stack = items.get(0);
             }
 
-            if (stack.getItem() instanceof IsaacItem isaacItem){
+            if (stack.getItem() instanceof IsaacItem){
                 event.addDisplayItem(stack);
-                PoolHelper.markAsRemoval(player, tableId, isaacItem.getId()); // 移出道具池
+                ResourceLocation itemId = ForgeRegistries.ITEMS.getKey(stack.getItem());
+                if (itemId != null) PoolHelper.markAsRemoval(player, tableId, itemId);
             }
         }
     }

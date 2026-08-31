@@ -1,5 +1,6 @@
 package net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.bomb;
 
+import net.luojiuoscar.isaac_disaster.item.ModPassiveItems;
 import net.luojiuoscar.isaac_disaster.entity.tnt.BombData;
 import net.luojiuoscar.isaac_disaster.entity.tnt.IsaacBomb;
 import net.luojiuoscar.isaac_disaster.helper.EntityHelper;
@@ -13,7 +14,7 @@ import net.minecraft.world.phys.Vec3;
 public class ScatterBomb extends BombRelated {
     @Override
     protected boolean customEffect(ExecutableEffectContext context, ServerPlayer player, Level level, Vec3 pos, IsaacBomb bomb) {
-        if (PlayerHelper.hasItem(ItemId.SCATTER_BOMB.getId(), player)) {
+        if (PlayerHelper.hasItem(ModPassiveItems.SCATTER_BOMB.getId(), player)) {
             spawnScatterBombs(player, bomb, pos, level);
         }
         return true;

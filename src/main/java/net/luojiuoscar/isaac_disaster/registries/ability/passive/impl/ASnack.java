@@ -1,5 +1,6 @@
 package net.luojiuoscar.isaac_disaster.registries.ability.passive.impl;
 
+import net.luojiuoscar.isaac_disaster.item.ModPassiveItems;
 import net.luojiuoscar.isaac_disaster.client.ClientDataManager;
 import net.luojiuoscar.isaac_disaster.helper.DescriptionHelper;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
@@ -26,7 +27,7 @@ public class ASnack extends PassiveAbility {
     @Override
     public void handleFirstObtain(ServerPlayer player, @Nullable ItemStack stack) {
         StatManager.healHealth(player, 1.0f);
-        if (PlayerHelper.hasItem(ItemId.BINGE_EATER.getId(), player) && stack != null){
+        if (PlayerHelper.hasItem(ModPassiveItems.BINGE_EATER.getId(), player) && stack != null){
             player.addEffect(new MobEffectInstance(MobEffects.DAMAGE_BOOST, 600, 1));
         }
     }
@@ -35,7 +36,7 @@ public class ASnack extends PassiveAbility {
     public void handleObtain(ServerPlayer player, @Nullable ItemStack stack) {
         StatManager.MAX_HEALTH.apply(player, 1);
 
-        if (PlayerHelper.hasItem(ItemId.BINGE_EATER.getId(), player) && stack != null){
+        if (PlayerHelper.hasItem(ModPassiveItems.BINGE_EATER.getId(), player) && stack != null){
             FoodPassiveItem.setBingeEater(stack, true);
             onFoodObtainEffect(player, stack);
         }
@@ -62,7 +63,7 @@ public class ASnack extends PassiveAbility {
     public List<Component> getSynergyDesc(@Nullable ItemStack stack, Player player) {
         List<Component> description = new ArrayList<>();
 
-        if (ClientDataManager.getInstance().getCountFromId(ItemId.BINGE_EATER.getId()) > 0){
+        if (ClientDataManager.getInstance().getItemCount(ModPassiveItems.BINGE_EATER.getId()) > 0){
             description.addAll(DescriptionHelper.getSynergyDesc(
                     Component.translatable("item.isaac_disaster.binge_eater"),
                     List.of(

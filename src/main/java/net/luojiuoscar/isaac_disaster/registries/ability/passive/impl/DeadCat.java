@@ -1,5 +1,6 @@
 package net.luojiuoscar.isaac_disaster.registries.ability.passive.impl;
 
+import net.luojiuoscar.isaac_disaster.item.ModPassiveItems;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.manager.id.ItemId;
@@ -24,7 +25,7 @@ public class DeadCat extends PassiveAbility {
     @Override
     public void handleFirstObtain(ServerPlayer player, @Nullable ItemStack stack) {
         StatManager.addReviveModuleConsumer(player, ModReviveModules.DEAD_CAT.getId(), REVIVE_COUNT);
-        if (PlayerHelper.getItemCount(ItemId.DEAD_CAT.getId(), player) == 0) {
+        if (PlayerHelper.getItemCount(ModPassiveItems.DEAD_CAT.getId(), player) == 0) {
             StatManager.MAX_HEALTH.set(player, 1);
         }
     }

@@ -1,5 +1,6 @@
 package net.luojiuoscar.isaac_disaster.registries.ability.pickup.impl.items;
 
+import net.luojiuoscar.isaac_disaster.item.ModPassiveItems;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.manager.id.ItemId;
 import net.luojiuoscar.isaac_disaster.registries.ability.pickup.FoodPickupAbility;
@@ -19,7 +20,7 @@ public class HalfRedHeart extends FoodPickupAbility {
             new SimpleTrigger(ModTriggerTypes.EMTPY, ModExecutableEffects.HALF_RED_HEART),
             new SimpleTrigger(ModTriggerTypes.EMTPY, ModExecutableEffects.GIVE_HALF_FRAILTY, context ->
                     !(context.getEntity() instanceof ServerPlayer player)
-                            || !PlayerHelper.hasItem(ItemId.MAGGYS_BOW.getId(), player))
+                            || !PlayerHelper.hasItem(ModPassiveItems.MAGGYS_BOW.getId(), player))
     ));
 
     public HalfRedHeart() {

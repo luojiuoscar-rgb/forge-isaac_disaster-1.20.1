@@ -1,5 +1,6 @@
 package net.luojiuoscar.isaac_disaster.registries.trigger_module.impl.special;
 
+import net.luojiuoscar.isaac_disaster.item.ModTrinkets;
 import net.luojiuoscar.isaac_disaster.effect.ModEffects;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.manager.id.TrinketId;
@@ -33,7 +34,7 @@ public class PlayerPermanentModule extends TriggerModule {
 
             new SimpleTrigger(ModTriggerTypes.ON_HURT, ModExecutableEffects.DROP_PERFECTION,
                               context -> context.getEntity() instanceof ServerPlayer player
-                                      && PlayerHelper.hasTrinket(TrinketId.PERFECTION.getId(), player))
+                                      && PlayerHelper.hasTrinket(ModTrinkets.PERFECTION.getId(), player))
             ));
 
     public PlayerPermanentModule() {

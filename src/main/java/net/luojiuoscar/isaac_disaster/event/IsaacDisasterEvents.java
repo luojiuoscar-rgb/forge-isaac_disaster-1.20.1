@@ -1,5 +1,7 @@
 package net.luojiuoscar.isaac_disaster.event;
 
+import net.luojiuoscar.isaac_disaster.item.ModPassiveItems;
+import net.luojiuoscar.isaac_disaster.item.ModTrinkets;
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerAbility;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerAbilityProvider;
@@ -68,7 +70,7 @@ public class IsaacDisasterEvents {
                     // 损坏的遥控器
                     if (stackList.stream().anyMatch(stack -> stack.getItem() instanceof Trinket trinket &&
                             trinket.getTrinketId() == TrinketId.BROKEN_REMOTE.getId())){
-                        List<ItemStack> s = playerPassiveItem.getAllTrinketListFromId(player, TrinketId.BROKEN_REMOTE.getId());
+                        List<ItemStack> s = playerPassiveItem.getAllTrinketListFromId(player, ModTrinkets.BROKEN_REMOTE.getId());
                         if (s.stream().anyMatch(Trinket::isEnchanted)){
                             EntityHelper.teleportToRandomLocation(player, StatManager.getNearbyRange() * 6);
                         }else{
@@ -83,10 +85,10 @@ public class IsaacDisasterEvents {
         if (event.getLevel().isClientSide) return;
         ServerPlayer player = (ServerPlayer) event.getPlayer();
 
-        if (PlayerHelper.hasItem(ItemId.GLITCHED_CROWN.getId(), player)){
+        if (PlayerHelper.hasItem(ModPassiveItems.GLITCHED_CROWN.getId(), player)){
             GlitchedCrown.addDisplayItem(event);
         }
-        if (PlayerHelper.hasItem(ItemId.BINGE_EATER.getId(), player)){
+        if (PlayerHelper.hasItem(ModPassiveItems.BINGE_EATER.getId(), player)){
             BingeEater.addDisplayItem(event);
         }
 
@@ -99,7 +101,7 @@ public class IsaacDisasterEvents {
         if (stack == null || player == null || player.level().isClientSide) return;
 
         if ((stack.getItem() instanceof Pill || stack.getItem() instanceof Card) &&
-                PlayerHelper.hasItem(ItemId.ECHO_CHAMBER.getId(), (ServerPlayer) player)){
+                PlayerHelper.hasItem(ModPassiveItems.ECHO_CHAMBER.getId(), (ServerPlayer) player)){
             EchoChamber.onTriggered((ServerPlayer) player);
         }
     }

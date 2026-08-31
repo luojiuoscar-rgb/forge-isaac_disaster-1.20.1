@@ -28,7 +28,7 @@ import net.luojiuoscar.isaac_disaster.manager.EffectManager;
 import net.luojiuoscar.isaac_disaster.manager.ModDamageType;
 import net.luojiuoscar.isaac_disaster.manager.PillEffectManager;
 import net.luojiuoscar.isaac_disaster.networking.ModMessages;
-import net.luojiuoscar.isaac_disaster.networking.packet.PassiveItemMapSyncS2CPacket;
+import net.luojiuoscar.isaac_disaster.networking.packet.IsaacItemCountMapSyncS2CPacket;
 import net.luojiuoscar.isaac_disaster.networking.packet.PillRecordsSyncS2CPacket;
 import net.luojiuoscar.isaac_disaster.networking.packet.RefreshScaleS2CPacket;
 import net.luojiuoscar.isaac_disaster.networking.packet.ReviveHudSyncS2CPacket;
@@ -76,8 +76,8 @@ import net.minecraftforge.registries.IForgeRegistry;
 import net.minecraftforge.registries.RegistryManager;
 import net.minecraftforge.server.command.ConfigCommand;
 
-import java.util.List;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -102,6 +102,8 @@ public class ForgeEvents {
     public static void onPlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
         if (!(event.getEntity() instanceof ServerPlayer player)) return;
         CuriosHelper.syncAllIsaacCurios(player);
+        player.getCapability(PlayerIsaacItemsProvider.PLAYER_ISAAC_ITEMS)
+                .ifPresent(PlayerIsaacItems::refreshItemCountCache);
         syncAllDataToClient(player);
         player.refreshDimensions();
         ModMessages.sentToPlayer(new RefreshScaleS2CPacket(), player);
@@ -120,6 +122,8 @@ public class ForgeEvents {
     public static void onPlayerRespawn(PlayerEvent.PlayerRespawnEvent event) {
         if (!(event.getEntity() instanceof ServerPlayer player)) return;
         CuriosHelper.syncAllIsaacCurios(player);
+        player.getCapability(PlayerIsaacItemsProvider.PLAYER_ISAAC_ITEMS)
+                .ifPresent(PlayerIsaacItems::refreshItemCountCache);
         syncAllDataToClient(player);
     }
 
@@ -165,8 +169,9 @@ public class ForgeEvents {
     public static void syncItemDataToClient(ServerPlayer player) {
         player.getCapability(PlayerIsaacItemsProvider.PLAYER_ISAAC_ITEMS).ifPresent(
                 playerPassiveItem -> {
-                    Map<Integer, Integer> items = playerPassiveItem.getItemCountMapFromAll();
-                    ModMessages.sentToPlayer(new PassiveItemMapSyncS2CPacket(items), player);
+                    Map<ResourceLocation, Integer> items = playerPassiveItem.getItemCountMapFromAll();
+                    Map<ResourceLocation, Integer> trinkets = playerPassiveItem.getTrinketCountMapFromAll();
+                    ModMessages.sentToPlayer(new IsaacItemCountMapSyncS2CPacket(items, trinkets), player);
                 });
     }
 

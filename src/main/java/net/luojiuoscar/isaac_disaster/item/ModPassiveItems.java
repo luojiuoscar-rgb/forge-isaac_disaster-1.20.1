@@ -5,7 +5,6 @@ import net.luojiuoscar.isaac_disaster.item.item.PassiveItem;
 import net.luojiuoscar.isaac_disaster.item.item.custom.ExperimentalTreatmentItem;
 import net.luojiuoscar.isaac_disaster.item.item.custom.FoodPassiveItem;
 import net.luojiuoscar.isaac_disaster.manager.ItemListManager;
-import net.luojiuoscar.isaac_disaster.manager.id.ItemId;
 import net.luojiuoscar.isaac_disaster.registries.ability.passive.ModPassiveAbilities;
 import net.minecraft.world.item.Item;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -227,7 +226,7 @@ public class ModPassiveItems {
 
     public static final RegistryObject<Item> EXPERIMENTAL_TREATMENT = ITEMS.register("experimental_treatment",
             () -> new ExperimentalTreatmentItem(new Item.Properties(), ModPassiveAbilities.EXPERIMENTAL_TREATMENT));
-    static { ItemListManager.PASSIVE_ITEM_LIST.add(EXPERIMENTAL_TREATMENT); ItemId.registerItem(ItemId.EXPERIMENTAL_TREATMENT.getId(), EXPERIMENTAL_TREATMENT);}
+    static { ItemListManager.PASSIVE_ITEM_LIST.add(EXPERIMENTAL_TREATMENT); }
 
     public static final RegistryObject<Item> TORN_PHOTO = ITEMS.register("torn_photo",
             () -> new PassiveItem(new Item.Properties(), ModPassiveAbilities.TORN_PHOTO));

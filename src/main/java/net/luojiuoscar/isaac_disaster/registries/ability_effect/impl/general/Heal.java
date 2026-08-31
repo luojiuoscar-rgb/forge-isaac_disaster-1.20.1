@@ -1,5 +1,6 @@
 package net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.general;
 
+import net.luojiuoscar.isaac_disaster.item.ModPassiveItems;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.manager.id.ItemId;
@@ -15,7 +16,7 @@ public class Heal implements IAbilityEffect {
     public boolean applyEffect(ExecutableEffectContext context) {
         if (context.getEntity() instanceof ServerPlayer player){
             Item item = context.get(ContextKeys.ITEM);
-            boolean hasMaggysBow = PlayerHelper.hasItem(ItemId.MAGGYS_BOW.getId(), player);
+            boolean hasMaggysBow = PlayerHelper.hasItem(ModPassiveItems.MAGGYS_BOW.getId(), player);
             StatManager.healHealth(player, (float) getHealingAmplifier(
                     context.getOrDefault(ContextKeys.AMPLIFIER, 1.), hasMaggysBow, isRedHeartPickup(item)
             ));

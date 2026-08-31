@@ -31,7 +31,7 @@ public class DropPerfection implements IAbilityEffect {
         else{
             // 从cap中删除
             player.getCapability(PlayerIsaacItemsProvider.PLAYER_ISAAC_ITEMS).ifPresent(
-                    playerPassiveItem -> playerPassiveItem.removeFromId(player, TrinketId.PERFECTION.getId())
+                    playerPassiveItem -> playerPassiveItem.removeFromId(player, ModTrinkets.PERFECTION.getId())
             );
         }
         spawnFakePaper(player.level(), player);

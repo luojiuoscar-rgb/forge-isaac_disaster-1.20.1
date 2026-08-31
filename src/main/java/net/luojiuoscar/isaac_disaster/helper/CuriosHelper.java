@@ -6,7 +6,6 @@ import net.luojiuoscar.isaac_disaster.capability.player.PlayerAbilityProvider;
 import net.luojiuoscar.isaac_disaster.capability.player.CurioSlotKey;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerIsaacItems;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerIsaacItemsProvider;
-import net.luojiuoscar.isaac_disaster.event.ForgeEvents;
 import net.luojiuoscar.isaac_disaster.item.item.IIsaacCuriosItem;
 import net.luojiuoscar.isaac_disaster.item.item.Trinket;
 import net.minecraft.server.level.ServerPlayer;
@@ -93,7 +92,8 @@ public class CuriosHelper {
         player.getCapability(PlayerIsaacItemsProvider.PLAYER_ISAAC_ITEMS).ifPresent(
                 playerIsaacItems -> equipSlot(playerIsaacItems, key, slotContext, prevStack, stack, item)
         );
-        ForgeEvents.syncItemDataToClient(player);
+        syncCountToClient(player, prevStack);
+        syncCountToClient(player, stack);
     }
 
     public static void handleIsaacCurioUnequip(SlotContext slotContext, ItemStack newStack, ItemStack stack) {
@@ -116,14 +116,15 @@ public class CuriosHelper {
                 item.tryUnequip(slotContext, newStack, stackForUnequip);
             }
         });
-        ForgeEvents.syncItemDataToClient(player);
+        syncCountToClient(player, stack);
+        syncCountToClient(player, newStack);
     }
 
     public static void forgetIsaacCurioSlot(ServerPlayer player, CurioSlotKey key) {
         player.getCapability(PlayerIsaacItemsProvider.PLAYER_ISAAC_ITEMS).ifPresent(
                 playerIsaacItems -> playerIsaacItems.removeActiveCurioStack(key)
+                        .ifPresent(stack -> syncCountToClient(player, stack))
         );
-        ForgeEvents.syncItemDataToClient(player);
     }
 
     public static void syncIsaacCurioSlot(ServerPlayer player, CurioSlotKey key) {
@@ -137,6 +138,7 @@ public class CuriosHelper {
                     if (stack.getItem() instanceof IIsaacCuriosItem item) {
                         item.tryUnequip(createSlotContext(player, key), ItemStack.EMPTY, stack);
                     }
+                    syncCountToClient(player, stack);
                 });
                 return;
             }
@@ -147,6 +149,7 @@ public class CuriosHelper {
                     if (stack.getItem() instanceof IIsaacCuriosItem item) {
                         item.tryUnequip(createSlotContext(player, key), currentStack, stack);
                     }
+                    syncCountToClient(player, stack);
                 });
                 return;
             }
@@ -159,6 +162,7 @@ public class CuriosHelper {
 
                 currentItem.tryEquip(slotContext, ItemStack.EMPTY, currentStack);
                 playerIsaacItems.setActiveCurioStack(key, currentStack);
+                syncCountToClient(player, currentStack);
                 return;
             }
 
@@ -176,24 +180,22 @@ public class CuriosHelper {
 
             currentItem.tryEquip(slotContext, recordedStack, currentStack);
             playerIsaacItems.setActiveCurioStack(key, currentStack);
+            syncCountToClient(player, recordedStack);
+            syncCountToClient(player, currentStack);
         });
     }
 
     public static void syncAllIsaacCurios(ServerPlayer player) {
-        Map<Integer, Integer> previousItemCounts = player.getCapability(
-                PlayerIsaacItemsProvider.PLAYER_ISAAC_ITEMS
-        ).map(PlayerIsaacItems::getItemCountMapFromAll).orElse(Map.of());
-
         Optional<ICuriosItemHandler> optional = CuriosApi.getCuriosInventory(player).resolve();
-        if (optional.isEmpty()) return;
+        if (optional.isPresent()) {
+            ICuriosItemHandler inv = optional.get();
+            for (String slotType : List.of(TRINKET, PASSIVE_ITEM)) {
+                ICurioStacksHandler handler = inv.getCurios().get(slotType);
+                if (handler == null) continue;
 
-        ICuriosItemHandler inv = optional.get();
-        for (String slotType : List.of(TRINKET, PASSIVE_ITEM)) {
-            ICurioStacksHandler handler = inv.getCurios().get(slotType);
-            if (handler == null) continue;
-
-            for (int i = 0; i < handler.getSlots(); i++) {
-                syncIsaacCurioSlot(player, new CurioSlotKey(slotType, i));
+                for (int i = 0; i < handler.getSlots(); i++) {
+                    syncIsaacCurioSlot(player, new CurioSlotKey(slotType, i));
+                }
             }
         }
 
@@ -207,15 +209,16 @@ public class CuriosHelper {
                     if (stack.getItem() instanceof IIsaacCuriosItem item) {
                         item.tryUnequip(createSlotContext(player, key), ItemStack.EMPTY, stack);
                     }
+                    syncCountToClient(player, stack);
                 });
             }
         });
+    }
 
-        player.getCapability(PlayerIsaacItemsProvider.PLAYER_ISAAC_ITEMS).ifPresent(playerIsaacItems -> {
-            if (!previousItemCounts.equals(playerIsaacItems.getItemCountMapFromAll())) {
-                ForgeEvents.syncItemDataToClient(player);
-            }
-        });
+    private static void syncCountToClient(ServerPlayer player, ItemStack stack) {
+        if (stack.isEmpty()) return;
+        player.getCapability(PlayerIsaacItemsProvider.PLAYER_ISAAC_ITEMS)
+                .ifPresent(items -> items.syncCountToClient(player, stack));
     }
 
     private static void equipSlot(PlayerIsaacItems playerIsaacItems, CurioSlotKey key, SlotContext slotContext,

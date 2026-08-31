@@ -9,6 +9,7 @@ import net.luojiuoscar.isaac_disaster.commands.gamerule.ModGameRules;
 import net.luojiuoscar.isaac_disaster.effect.ModEffects;
 import net.luojiuoscar.isaac_disaster.entity.ModEntities;
 import net.luojiuoscar.isaac_disaster.item.*;
+import net.luojiuoscar.isaac_disaster.helper.IsaacItemRegistryHelper;
 import net.luojiuoscar.isaac_disaster.loot.ModLootModifiers;
 import net.luojiuoscar.isaac_disaster.loot.ModLootTypes;
 import net.luojiuoscar.isaac_disaster.networking.ModMessages;
@@ -81,7 +82,10 @@ public class IsaacDisaster
     private void commonSetup(final FMLCommonSetupEvent event) {
         ModMessages.register();
 
-        event.enqueueWork(TriggerModuleRules::rebuildCache);
+        event.enqueueWork(() -> {
+            IsaacItemRegistryHelper.rebuildIdMappings();
+            TriggerModuleRules.rebuildCache();
+        });
     }
 
 

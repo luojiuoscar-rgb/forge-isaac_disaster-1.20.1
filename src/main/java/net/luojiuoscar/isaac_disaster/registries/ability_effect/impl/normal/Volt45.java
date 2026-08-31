@@ -1,5 +1,6 @@
 package net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.normal;
 
+import net.luojiuoscar.isaac_disaster.item.ModPassiveItems;
 import net.luojiuoscar.isaac_disaster.Config;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.item.item.ActiveItem;
@@ -42,7 +43,7 @@ public class Volt45 implements IAbilityEffect {
                 // 充电（传入蓄电池参数）
                 PlayerHelper.chargeItem(stack,
                         Math.max((int) amount * rate, 1),
-                        PlayerHelper.hasItem(ItemId.THE_BATTERY.getId(), (ServerPlayer) player));
+                        PlayerHelper.hasItem(ModPassiveItems.THE_BATTERY.getId(), (ServerPlayer) player));
             }
         }
 

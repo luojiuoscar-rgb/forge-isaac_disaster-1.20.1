@@ -1,5 +1,6 @@
 package net.luojiuoscar.isaac_disaster.effect.custom;
 
+import net.luojiuoscar.isaac_disaster.item.ModPassiveItems;
 import net.luojiuoscar.isaac_disaster.attribute.ModAttributes;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
@@ -54,7 +55,7 @@ public class PowerOfBelialEffect extends MobEffect {
 
 
         // 检查是否拥有 BLOOD_OF_THE_MARTYR
-        if (PlayerHelper.hasItem(ItemId.BLOOD_OF_THE_MARTYR.getId(), player)) {
+        if (PlayerHelper.hasItem(ModPassiveItems.BLOOD_OF_THE_MARTYR.getId(), player)) {
             AttributeInstance attackDamage = player.getAttribute(Attributes.ATTACK_DAMAGE);
             if (attackDamage != null) {
                 attackDamage.removeModifier(MARTYR_DAMAGE_BOOST_UUID);

@@ -1,5 +1,6 @@
 package net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.general;
 
+import net.luojiuoscar.isaac_disaster.item.ModPassiveItems;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.item.item.ActiveItem;
 import net.luojiuoscar.isaac_disaster.manager.id.ItemId;
@@ -53,7 +54,7 @@ public class ChargeItemViaBattery implements IAbilityEffect {
         if (held.isEmpty()) return false;
 
         PlayerHelper.chargeItem(held, chargeAmount * ActiveItem.DAMAGE_PER_CHARGE_RATE,
-                canOverCharge || PlayerHelper.hasItem(ItemId.THE_BATTERY.getId(), player));
+                canOverCharge || PlayerHelper.hasItem(ModPassiveItems.THE_BATTERY.getId(), player));
 
         return true;
     }

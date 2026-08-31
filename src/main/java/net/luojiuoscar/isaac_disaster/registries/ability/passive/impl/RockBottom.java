@@ -1,6 +1,5 @@
 package net.luojiuoscar.isaac_disaster.registries.ability.passive.impl;
 
-import net.luojiuoscar.isaac_disaster.capability.player.PlayerIsaacItemsProvider;
 import net.luojiuoscar.isaac_disaster.system.rockbottom.RockBottomState;
 import net.luojiuoscar.isaac_disaster.registries.ability.passive.PassiveAbility;
 import net.minecraft.network.chat.Component;
@@ -24,16 +23,10 @@ public class RockBottom extends PassiveAbility {
 
     @Override
     public void handleObtain(ServerPlayer player, @Nullable ItemStack stack) {
-        player.getCapability(PlayerIsaacItemsProvider.PLAYER_ISAAC_ITEMS).ifPresent(
-                playerIsaacItems -> playerIsaacItems.modifyRockBottomCount(1)
-        );
     }
 
     @Override
     public void handleRemove(ServerPlayer player, @Nullable ItemStack stack) {
-        player.getCapability(PlayerIsaacItemsProvider.PLAYER_ISAAC_ITEMS).ifPresent(
-                playerIsaacItems -> playerIsaacItems.modifyRockBottomCount(-1)
-        );
         RockBottomState.clearHistoryIfInactive(player);
     }
 

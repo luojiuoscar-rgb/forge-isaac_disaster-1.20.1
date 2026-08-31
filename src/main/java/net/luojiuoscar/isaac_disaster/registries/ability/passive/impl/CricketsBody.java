@@ -1,5 +1,6 @@
 package net.luojiuoscar.isaac_disaster.registries.ability.passive.impl;
 
+import net.luojiuoscar.isaac_disaster.item.ModPassiveItems;
 import net.luojiuoscar.isaac_disaster.attribute.ModAttributes;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.manager.id.ItemId;
@@ -35,7 +36,7 @@ public final class CricketsBody extends PassiveAbility {
         StatManager.addTriggerModule(player, ModTriggerModules.CRICKETS_BODY.getId(), 1);
         StatManager.TEARS_CORRECTION.apply(player, 0.5);
         player.getCapability(PlayerIsaacItemsProvider.PLAYER_ISAAC_ITEMS).ifPresent(items -> {
-            if (items.getItemCountFromAll(ItemId.CRICKETS_BODY.getId()) == 1) {
+            if (items.getItemCountFromAll(ModPassiveItems.CRICKETS_BODY.getId()) == 1) {
                 StatManager.setModifier(player, RANGE_MODIFIER, ModAttributes.BULLET_RANGE.get(), -0.2,
                         null, null, 2);
             }
@@ -48,7 +49,7 @@ public final class CricketsBody extends PassiveAbility {
         StatManager.addTriggerModule(player, ModTriggerModules.CRICKETS_BODY.getId(), -1);
         StatManager.TEARS_CORRECTION.apply(player, -0.5);
         player.getCapability(PlayerIsaacItemsProvider.PLAYER_ISAAC_ITEMS).ifPresent(items -> {
-            if (items.getItemCountFromAll(ItemId.CRICKETS_BODY.getId()) == 0) {
+            if (items.getItemCountFromAll(ModPassiveItems.CRICKETS_BODY.getId()) == 0) {
                 AttributeInstance range = player.getAttribute(ModAttributes.BULLET_RANGE.get());
                 StatManager.removeModifier(player, range, RANGE_MODIFIER);
             }

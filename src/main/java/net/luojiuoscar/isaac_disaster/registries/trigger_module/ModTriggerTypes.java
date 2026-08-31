@@ -8,6 +8,10 @@ public class ModTriggerTypes {
             new TriggerType(ResourceLocation.fromNamespaceAndPath(
                     IsaacDisaster.MOD_ID, "attack_plan"));
 
+    public static final TriggerType GET_SHOT_DELAY =
+            new TriggerType(ResourceLocation.fromNamespaceAndPath(
+                    IsaacDisaster.MOD_ID, "get_shot_delay"));
+
     public static final TriggerType ATTACK_CONTEXT_PREPARE =
             new TriggerType(ResourceLocation.fromNamespaceAndPath(
                     IsaacDisaster.MOD_ID, "attack_context_prepare"));

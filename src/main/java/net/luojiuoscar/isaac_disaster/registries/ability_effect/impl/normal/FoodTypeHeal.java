@@ -1,5 +1,6 @@
 package net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.normal;
 
+import net.luojiuoscar.isaac_disaster.item.ModPassiveItems;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.manager.id.ItemId;
@@ -18,7 +19,7 @@ public class FoodTypeHeal implements IAbilityEffect {
 
         StatManager.healHealth(player, ratio);
 
-        if (PlayerHelper.hasItem(ItemId.BINGE_EATER.getId(), player)){
+        if (PlayerHelper.hasItem(ModPassiveItems.BINGE_EATER.getId(), player)){
             player.addEffect(new MobEffectInstance(MobEffects.DAMAGE_BOOST, 600, 1));
         }
 

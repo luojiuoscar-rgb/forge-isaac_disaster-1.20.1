@@ -1,5 +1,6 @@
 package net.luojiuoscar.isaac_disaster.registries.ability.passive.impl;
 
+import net.luojiuoscar.isaac_disaster.item.ModPassiveItems;
 import net.luojiuoscar.isaac_disaster.attribute.ModAttributes;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.registries.ability.passive.PassiveAbility;
@@ -63,7 +64,7 @@ public class MyReflection extends PassiveAbility {
 
     @Override
     public void handleRemove(ServerPlayer player, @Nullable ItemStack stack) {
-        if (!PlayerHelper.hasItem(ItemId.MY_REFLECTION.getId(), player)){
+        if (!PlayerHelper.hasItem(ModPassiveItems.MY_REFLECTION.getId(), player)){
             AttributeInstance range = player.getAttribute(ModAttributes.BULLET_RANGE.get());
             AttributeInstance bullet_speed = player.getAttribute(ModAttributes.BULLET_SPEED.get());
             if (range != null) range.removeModifier(MY_REFLECTION_RANGE);

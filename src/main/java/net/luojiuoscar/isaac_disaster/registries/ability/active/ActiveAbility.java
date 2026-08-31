@@ -1,5 +1,6 @@
 package net.luojiuoscar.isaac_disaster.registries.ability.active;
 
+import net.luojiuoscar.isaac_disaster.item.ModPassiveItems;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.manager.id.ItemId;
 import net.luojiuoscar.isaac_disaster.registries.ability.IsaacItemAbility;
@@ -32,7 +33,7 @@ public abstract class ActiveAbility extends IsaacItemAbility {
     public void onUse(ServerPlayer player, @Nullable InteractionHand hand){
         ItemStack stack = hand != null ? player.getItemInHand(hand) : null;
         ExecutableEffectContext context = getCtx(player, stack, hand,
-                PlayerHelper.hasItem(ItemId.CAR_BATTERY.getId(), player) // 车载电池
+                PlayerHelper.hasItem(ModPassiveItems.CAR_BATTERY.getId(), player) // 车载电池
                         ? getStrongerAmplifier() : getNormalAmplifier());
 
         trigger.fire(context, null);
