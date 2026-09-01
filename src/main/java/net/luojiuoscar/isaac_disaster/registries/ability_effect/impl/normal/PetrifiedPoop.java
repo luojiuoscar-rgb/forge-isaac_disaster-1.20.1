@@ -8,6 +8,8 @@ import net.luojiuoscar.isaac_disaster.manager.ModLootTables;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ContextKeys;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ExecutableEffectContext;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.IAbilityEffect;
+import net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerTypes;
+import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerType;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
@@ -17,6 +19,11 @@ import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.Vec3;
 
 public class PetrifiedPoop implements IAbilityEffect {
+    @Override
+    public TriggerType getRequiredTriggerType() {
+        return ModTriggerTypes.LOOT;
+    }
+
     @Override
     public boolean applyEffect(ExecutableEffectContext context) {
         if (!(context.get(ContextKeys.EVENT) instanceof GeneralLootModifyEvent event)) return false;

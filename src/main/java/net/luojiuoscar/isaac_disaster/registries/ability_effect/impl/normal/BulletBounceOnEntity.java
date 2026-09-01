@@ -6,12 +6,19 @@ import net.luojiuoscar.isaac_disaster.helper.EntityHelper;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ExecutableEffectContext;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ContextKeys;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.IAbilityEffect;
+import net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerTypes;
+import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.UUID;
 
 public class BulletBounceOnEntity implements IAbilityEffect {
+    @Override
+    public TriggerType getRequiredTriggerType() {
+        return ModTriggerTypes.BULLET_HIT_ENTITY_AFTER;
+    }
+
     @Override
     public boolean applyEffect(ExecutableEffectContext context) {
         if (!(context.get(ContextKeys.EVENT) instanceof IsaacAttackAfterHitEvent event)) return false;

@@ -5,6 +5,8 @@ import net.luojiuoscar.isaac_disaster.networking.packet.ReviveEntityEventS2CPack
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ContextKeys;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ExecutableEffectContext;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.IAbilityEffect;
+import net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerTypes;
+import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerType;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
@@ -16,6 +18,11 @@ import net.minecraft.world.item.Items;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 
 public abstract class ReviveExecutableEffect implements IAbilityEffect {
+    @Override
+    public TriggerType getRequiredTriggerType() {
+        return ModTriggerTypes.DEATH;
+    }
+
     @Override
     public final boolean applyEffect(ExecutableEffectContext context) {
         apply(context);

@@ -5,9 +5,16 @@ import net.luojiuoscar.isaac_disaster.event.custom.misc.GeneralLootModifyEvent;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ContextKeys;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ExecutableEffectContext;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.IAbilityEffect;
+import net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerTypes;
+import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerType;
 import net.minecraft.world.item.ItemStack;
 
 public class ContractFromBelow implements IAbilityEffect {
+    @Override
+    public TriggerType getRequiredTriggerType() {
+        return ModTriggerTypes.LOOT;
+    }
+
     private static int calculateStackCount(int originalCount, int amplifier, int maxStackSize) {
         if (maxStackSize <= 1) return originalCount;
         int multipliedCount = originalCount * (amplifier + 1);

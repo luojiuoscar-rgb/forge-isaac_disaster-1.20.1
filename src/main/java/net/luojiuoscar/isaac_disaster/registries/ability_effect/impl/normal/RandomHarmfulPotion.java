@@ -3,6 +3,8 @@ package net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.normal;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ExecutableEffectContext;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ContextKeys;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.IAbilityEffect;
+import net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerTypes;
+import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerType;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.damagesource.DamageTypes;
@@ -17,6 +19,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class RandomHarmfulPotion implements IAbilityEffect {
+    @Override
+    public TriggerType getRequiredTriggerType() {
+        return ModTriggerTypes.HIT_ENTITY_RESTRICTED;
+    }
+
     @Override
     public boolean applyEffect(ExecutableEffectContext context) {
         if (!(context.get(ContextKeys.EVENT) instanceof LivingAttackEvent event)) return false;

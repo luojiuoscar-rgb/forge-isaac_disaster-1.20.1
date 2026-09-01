@@ -7,9 +7,16 @@ import net.luojiuoscar.isaac_disaster.manager.id.ItemId;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ContextKeys;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ExecutableEffectContext;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.IExecutableEffect;
+import net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerTypes;
+import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerType;
 import net.minecraft.server.level.ServerPlayer;
 
 public class FiringModifierShotDelay implements IExecutableEffect {
+    @Override
+    public TriggerType getRequiredTriggerType() {
+        return ModTriggerTypes.GET_SHOT_DELAY;
+    }
+
     @Override
     public void apply(ExecutableEffectContext context) {
         if (!(context.getEntity() instanceof ServerPlayer player)) return;

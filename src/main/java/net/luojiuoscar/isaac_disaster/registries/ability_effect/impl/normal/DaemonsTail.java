@@ -10,11 +10,18 @@ import net.luojiuoscar.isaac_disaster.manager.id.TrinketId;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ContextKeys;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ExecutableEffectContext;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.IAbilityEffect;
+import net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerTypes;
+import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerType;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.ItemStack;
 
 public class DaemonsTail implements IAbilityEffect {
+    @Override
+    public TriggerType getRequiredTriggerType() {
+        return ModTriggerTypes.LOOT;
+    }
+
     @Override
     public boolean applyEffect(ExecutableEffectContext context) {
         if (!(context.get(ContextKeys.EVENT) instanceof GeneralLootModifyEvent event)) return false;

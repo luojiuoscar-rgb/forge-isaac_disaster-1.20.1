@@ -1,5 +1,7 @@
 package net.luojiuoscar.isaac_disaster.registries.ability_effect;
 
+import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerType;
+
 import net.minecraftforge.registries.RegistryObject;
 
 import java.util.function.Consumer;
@@ -18,5 +20,10 @@ public class AbilityEffectEntry implements IExecutableEffect {
     public void apply(ExecutableEffectContext context) {
         config.accept(context);   // 写入参数后调用
         effect.get().apply(context);
+    }
+
+    @Override
+    public TriggerType getRequiredTriggerType() {
+        return effect.get().getRequiredTriggerType();
     }
 }

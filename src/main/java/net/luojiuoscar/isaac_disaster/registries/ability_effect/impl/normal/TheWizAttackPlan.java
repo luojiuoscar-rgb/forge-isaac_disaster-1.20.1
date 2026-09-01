@@ -8,6 +8,8 @@ import net.luojiuoscar.isaac_disaster.registries.ability_effect.IExecutableEffec
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackContext;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackType;
 import net.luojiuoscar.isaac_disaster.registries.attack_pattern.impl.WizAttackPattern;
+import net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerTypes;
+import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerType;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffectInstance;
 
@@ -15,6 +17,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TheWizAttackPlan implements IExecutableEffect {
+    @Override
+    public TriggerType getRequiredTriggerType() {
+        return ModTriggerTypes.ATTACK_PLAN;
+    }
+
     @Override
     public void apply(ExecutableEffectContext context) {
         if (!(context.getEntity() instanceof ServerPlayer player)) return;

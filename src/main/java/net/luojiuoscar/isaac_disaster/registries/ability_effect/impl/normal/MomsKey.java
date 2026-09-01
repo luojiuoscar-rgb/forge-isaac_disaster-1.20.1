@@ -7,6 +7,8 @@ import net.luojiuoscar.isaac_disaster.loot.LootGenerationMode;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ContextKeys;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ExecutableEffectContext;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.IAbilityEffect;
+import net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerTypes;
+import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
@@ -22,6 +24,11 @@ import net.minecraft.world.phys.Vec3;
  * 效果是翻倍loot数量但是不叠加。
  */
 public class MomsKey implements IAbilityEffect {
+    @Override
+    public TriggerType getRequiredTriggerType() {
+        return ModTriggerTypes.LOOT;
+    }
+
     @Override
     public boolean applyEffect(ExecutableEffectContext context) {
         if (!(context.get(ContextKeys.EVENT) instanceof GeneralLootModifyEvent event)) return false;

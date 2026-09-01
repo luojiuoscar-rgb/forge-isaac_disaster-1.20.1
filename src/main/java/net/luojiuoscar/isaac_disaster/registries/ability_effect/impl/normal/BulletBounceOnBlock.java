@@ -5,12 +5,19 @@ import net.luojiuoscar.isaac_disaster.event.custom.attack.IsaacAttackHitBlockEve
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ExecutableEffectContext;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ContextKeys;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.IAbilityEffect;
+import net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerTypes;
+import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerType;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.IBulletObject;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.impl.LaserAttack;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 
 public class BulletBounceOnBlock implements IAbilityEffect {
+    @Override
+    public TriggerType getRequiredTriggerType() {
+        return ModTriggerTypes.BULLET_HIT_BLOCK;
+    }
+
     @Override
     public boolean applyEffect(ExecutableEffectContext context) {
         if (!(context.get(ContextKeys.EVENT) instanceof IsaacAttackHitBlockEvent event)) return false;
