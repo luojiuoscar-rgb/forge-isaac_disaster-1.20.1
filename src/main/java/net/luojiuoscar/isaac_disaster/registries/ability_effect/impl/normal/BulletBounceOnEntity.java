@@ -1,11 +1,11 @@
 package net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.normal;
 
-import net.luojiuoscar.isaac_disaster.entity.custom.TearBullet;
 import net.luojiuoscar.isaac_disaster.event.custom.attack.IsaacAttackAfterHitEvent;
 import net.luojiuoscar.isaac_disaster.helper.EntityHelper;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ExecutableEffectContext;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ContextKeys;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.IAbilityEffect;
+import net.luojiuoscar.isaac_disaster.registries.attack_type.IBulletObject;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerTypes;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerType;
 import net.minecraft.world.entity.LivingEntity;
@@ -23,8 +23,9 @@ public class BulletBounceOnEntity implements IAbilityEffect {
     public boolean applyEffect(ExecutableEffectContext context) {
         if (!(context.get(ContextKeys.EVENT) instanceof IsaacAttackAfterHitEvent event)) return false;
 
-        if (!(event.getBulletObject() instanceof TearBullet bullet)) return false;
-        if (bullet.isPiercing) return true;
+        IBulletObject bullet = event.getBulletObject();
+        if (bullet == null) return false;
+        if (bullet.isPiercing()) return true;
 
         double speed = bullet.getVelocity().length();
         Vec3 contact = event.getHit().getLocation();
@@ -32,7 +33,7 @@ public class BulletBounceOnEntity implements IAbilityEffect {
         // 50% 概率弹向最近敌对生物
         if (Math.random() < 0.5) {
             LivingEntity target = EntityHelper.findNearestTrackingTarget(
-                    bullet.level(),
+                    bullet.getBulletLevel(),
                     bullet.getOwner(),
                     bullet.getCenter(),
                     bullet.getHomingRange(),
@@ -41,9 +42,8 @@ public class BulletBounceOnEntity implements IAbilityEffect {
 
             if (target != null) {
                 Vec3 dir = target.getEyePosition().subtract(bullet.getCenter()).normalize();
-                setPositionFromCenter(bullet, contact, dir);
+                bullet.setCenter(offsetFromContact(contact, dir));
                 bullet.setVelocity(dir.scale(speed));
-                bullet.setDeltaMovement(bullet.getVelocity());
                 event.setCanceled(true);
                 return true;
             }
@@ -63,25 +63,21 @@ public class BulletBounceOnEntity implements IAbilityEffect {
         if (lastHit != null) bullet.getDamagedEntities().add(lastHit);
 
         bullet.setVelocity(randomDir.scale(speed));
-        setPositionFromCenter(bullet, contact, randomDir);
-        bullet.setDeltaMovement(bullet.getVelocity());
+        bullet.setCenter(offsetFromContact(contact, randomDir));
         event.setCanceled(true);
 
         return true;
     }
 
-    static Vec3 positionFromCenter(Vec3 center, double bbHeight, Vec3 direction) {
-        Vec3 offset = direction.lengthSqr() > 1.0E-12
-                ? direction.normalize().scale(1.0E-4)
-                : Vec3.ZERO;
-        return new Vec3(
-                center.x + offset.x,
-                center.y - bbHeight * 0.5D + offset.y,
-                center.z + offset.z);
+    /** Offsets a bounced bullet slightly along its outgoing direction before the next sweep. */
+    private static Vec3 offsetFromContact(Vec3 contact, Vec3 direction) {
+        return contact.add(direction.lengthSqr() > 1.0E-12D ? direction.normalize().scale(1.0E-4D) : Vec3.ZERO);
     }
 
-    private static void setPositionFromCenter(TearBullet bullet, Vec3 center, Vec3 direction) {
-        Vec3 position = positionFromCenter(center, bullet.getBbHeight(), direction);
-        bullet.setPos(position.x, position.y, position.z);
+    /** Retains the legacy bottom-coordinate calculation for compatibility tests and entity callers. */
+    @Deprecated
+    static Vec3 positionFromCenter(Vec3 center, double bbHeight, Vec3 direction) {
+        return offsetFromContact(center, direction).subtract(0.0D, bbHeight * 0.5D, 0.0D);
     }
+
 }

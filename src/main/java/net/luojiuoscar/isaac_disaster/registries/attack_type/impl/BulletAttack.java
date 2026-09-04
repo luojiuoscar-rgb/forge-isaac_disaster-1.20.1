@@ -1,7 +1,8 @@
 package net.luojiuoscar.isaac_disaster.registries.attack_type.impl;
 
-import net.luojiuoscar.isaac_disaster.entity.custom.TearBullet;
-import net.luojiuoscar.isaac_disaster.helper.GeometryHelper;
+import net.luojiuoscar.isaac_disaster.IsaacDisaster;
+import net.luojiuoscar.isaac_disaster.bullet.BulletRuntime;
+import net.luojiuoscar.isaac_disaster.bullet.BulletState;
 import net.luojiuoscar.isaac_disaster.event.custom.attack.tear_bullet.TearBulletShootEvent;
 import net.luojiuoscar.isaac_disaster.registries.attack_pattern.AttackPatternContext;
 import net.luojiuoscar.isaac_disaster.registries.attack_pattern.impl.BulletAttackPattern;
@@ -10,13 +11,13 @@ import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackType;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.ModAttackTypes;
 import net.luojiuoscar.isaac_disaster.sound.ModSounds;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.MinecraftForge;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class BulletAttack extends AttackType {
@@ -66,67 +67,28 @@ public class BulletAttack extends AttackType {
         LivingEntity owner = ctx.getOwner();
         if (owner == null || owner.level().isClientSide()) return;
 
-        TearBullet bullet = createBullet(ctx);
-        finalizeShot(ctx, bullet);
-    }
-
-    protected TearBullet createBullet(AttackContext context) {
-        LivingEntity owner = context.getOwner();
-        double width = owner.getBbWidth();
-        double forwardOffset = 0.4 * (width / 0.6);
-        Vec3 look = context.getMainAxis();
-        GeometryHelper.Rotation rotation = GeometryHelper.rotationFromMainAxis(look);
-        Vec3 adjustedPos = context.usesExactSpawnPosition()
-                ? context.getPos()
-                : context.getPos().add(look.scale(forwardOffset));
-
-        TearBullet bullet = getBulletObject(context);
-        bullet.setAttackContext(context);
-
-        bullet.setSpectral(isSpectral(owner));
-        bullet.setPiercing(isPiercing(owner));
-        bullet.setHoming(isHoming(owner));
-        bullet.setControllable(isControllable(owner));
-
-        bullet.getTriggers().addAll(context.copyTrigger());
-        bullet.setTrajectories(context.getTrajectories());
-
-        bullet.setBulletColor(context.getColorRl());
-        bullet.setVisualIds(context.getVisualIds());
-
-        bullet.moveTo(adjustedPos.x, adjustedPos.y, adjustedPos.z, rotation.yRot(), rotation.xRot());
-        bullet.setVelocity(look.scale(context.getBulletSpeed()));
-        bullet.setDeltaMovement(bullet.getVelocity());
-
-        return bullet;
-    }
-
-    protected void finalizeShot(AttackContext context, TearBullet bullet) {
-        if (!postShootEvent(context, bullet)) {
+        BulletState optimized = createOptimizedState(ctx);
+        if (optimized != null && owner.level() instanceof ServerLevel level) {
+            TearBulletShootEvent event = new TearBulletShootEvent(optimized, owner, getId(), optimized.getTriggers());
+            if (!MinecraftForge.EVENT_BUS.post(event)) BulletRuntime.INSTANCE.spawn(level, optimized);
             return;
         }
-        spawnBullet(context, bullet);
+        IsaacDisaster.LOGGER.warn("Discarded optimized bullet for {}", getId());
     }
 
-    protected boolean postShootEvent(AttackContext context, TearBullet bullet) {
+    /** Builds the entity-free state used by ordinary and split-created tear attacks. */
+    protected BulletState createOptimizedState(AttackContext context) {
         LivingEntity owner = context.getOwner();
-        if (owner == null || owner.level().isClientSide) {
-            return true;
-        }
-
-        TearBulletShootEvent event =
-                new TearBulletShootEvent(bullet, bullet.getOwner(), getId(), bullet.getTriggers(), bullet);
-        MinecraftForge.EVENT_BUS.post(event);
-        return !event.isCanceled();
+        Vec3 look = context.getMainAxis();
+        double forwardOffset = 0.4 * (owner.getBbWidth() / 0.6);
+        Vec3 position = context.usesExactSpawnPosition() ? context.getPos() : context.getPos().add(look.scale(forwardOffset));
+        int lifetime = (int) Math.min(Math.max(1, context.getBulletRange() / context.getBulletSpeed()), 200);
+        double scale = context.getBulletScale();
+        double collisionHeight = scale * 0.2D;
+        return BulletState.from(context).position(position.add(0.0D, collisionHeight * 0.5D, 0.0D)).lifetime(lifetime)
+                .renderScale(scale).collisionWidth(scale * 0.2).collisionHeight(collisionHeight)
+                .spectral(isSpectral(owner)).piercing(isPiercing(owner)).homing(isHoming(owner))
+                .controllable(isControllable(owner)).controlRange(64.0D).controlSteer(0.8D).build();
     }
 
-    protected void spawnBullet(AttackContext context, TearBullet bullet) {
-        context.getOwner().level().addFreshEntity(bullet);
-    }
-
-    public TearBullet getBulletObject(AttackContext c){
-        TearBullet bullet = new TearBullet(c);
-        bullet.setScale((float) c.getBulletScale());
-        return bullet;
-    }
 }

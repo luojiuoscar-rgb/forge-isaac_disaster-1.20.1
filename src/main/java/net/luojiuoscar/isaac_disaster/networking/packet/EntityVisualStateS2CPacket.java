@@ -1,5 +1,6 @@
 package net.luojiuoscar.isaac_disaster.networking.packet;
 
+import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.client.item_related.EntityVisualStateClient;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
@@ -64,7 +65,8 @@ public class EntityVisualStateS2CPacket {
     private static List<ResourceLocation> readLocations(FriendlyByteBuf buffer) {
         int size = buffer.readVarInt();
         if (size < 0 || size > 256) {
-            throw new IllegalArgumentException("Invalid entity visual state size: " + size);
+            IsaacDisaster.LOGGER.warn("Discarded invalid entity visual state list with size {}", size);
+            return List.of();
         }
 
         List<ResourceLocation> locations = new ArrayList<>(size);

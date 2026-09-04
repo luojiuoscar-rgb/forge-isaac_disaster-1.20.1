@@ -1,12 +1,13 @@
 package net.luojiuoscar.isaac_disaster.registries.attack_type;
 
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
-import net.luojiuoscar.isaac_disaster.attribute.ModAttributes;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.CompositeTrigger;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.SimpleTrigger;
 import net.luojiuoscar.isaac_disaster.helper.GeometryHelper;
+import net.luojiuoscar.isaac_disaster.attribute.ModAttributes;
 import net.luojiuoscar.isaac_disaster.registries.split_module.SplitSequence;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
@@ -15,12 +16,7 @@ import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 /** Creation-time data used to construct one attack object. */
 public class AttackContext {
@@ -48,6 +44,7 @@ public class AttackContext {
     private boolean frozen;
     private final Entity shooter;
     private final LivingEntity owner;
+    private final Set<BlockPos> hitBlockPositions;
 
     private AttackContext(Builder builder) {
         this.owner = Objects.requireNonNull(builder.owner, "owner");
@@ -72,7 +69,7 @@ public class AttackContext {
         this.bulletSpeed = sanitizeSpeed(builder.speed);
         this.splitSequence = builder.splitSequence == null ? new SplitSequence() : builder.splitSequence.copy();
         this.useExactSpawnPosition = builder.useExactSpawnPosition;
-        this.frozen = false;
+        this.hitBlockPositions = immutableBlockPositions(builder.hitBlockPositions);
     }
 
     public static Builder builder(@NotNull LivingEntity owner, @Nullable Entity shooter) {
@@ -82,21 +79,16 @@ public class AttackContext {
     public Builder toBuilder() {
         return Builder.from(this).color(colorRl).visuals(visualIds).trigger(trigger).trajectories(trajectories)
                 .position(pos).mainAxis(mainAxis).damage((double) damage).range(bulletRange)
-                .speed(bulletSpeed).bulletScaleModifier(bulletScaleModifier)
-                .splitSequence(splitSequence).useExactSpawnPosition(useExactSpawnPosition);
+                .speed(bulletSpeed).bulletScaleModifier(bulletScaleModifier).splitSequence(splitSequence)
+                .useExactSpawnPosition(useExactSpawnPosition).hitBlockPositions(hitBlockPositions);
     }
 
     public AttackContext copy() { return new AttackContext(this); }
 
+    public CompositeTrigger getTrigger() { return trigger; }
     public CompositeTrigger copyTrigger() { return trigger.copy(); }
-    public void addSimpleTrigger(SimpleTrigger trigger) {
-        if (!ensureMutable("addSimpleTrigger")) return;
-        this.trigger.add(Objects.requireNonNull(trigger, "trigger"));
-    }
-    public void addSimpleTriggers(List<SimpleTrigger> triggers) {
-        if (!ensureMutable("addSimpleTriggers")) return;
-        this.trigger.addAll(Objects.requireNonNull(triggers, "triggers"));
-    }
+    public void addSimpleTrigger(SimpleTrigger trigger) { if (ensureMutable("addSimpleTrigger")) this.trigger.add(Objects.requireNonNull(trigger, "trigger")); }
+    public void addSimpleTriggers(List<SimpleTrigger> triggers) { if (ensureMutable("addSimpleTriggers")) this.trigger.addAll(Objects.requireNonNull(triggers, "triggers")); }
 
     public Vec3 getPos() { return pos; }
     public void setPos(Vec3 pos) { if (ensureMutable("setPos")) this.pos = Objects.requireNonNull(pos, "pos"); }
@@ -108,32 +100,34 @@ public class AttackContext {
     public ResourceLocation getColorRl() { return colorRl; }
     public void setColorRl(ResourceLocation colorRl) { if (ensureMutable("setColorRl")) this.colorRl = colorRl; }
     public Set<ResourceLocation> getVisualIds() { return visualIds; }
-    public void setVisualIds(Set<ResourceLocation> visualIds) { if (ensureMutable("setVisualIds")) this.visualIds = Set.copyOf(visualIds); }
+    public void setVisualIds(Set<ResourceLocation> visualIds) { if (ensureMutable("setVisualIds")) this.visualIds = visualIds == null ? Set.of() : Set.copyOf(visualIds); }
     public Map<ResourceLocation, Integer> getTrajectories() { return trajectories; }
+    /** Returns a defensive snapshot of block contacts inherited by a child attack. */
+    public Set<BlockPos> getHitBlockPositions() { return hitBlockPositions; }
     public float getDamage() { return damage; }
+    public double getBulletRange() { return bulletRange; }
+    public double getBulletSpeed() { return bulletSpeed; }
     public double getBulletScaleModifier() { return bulletScaleModifier; }
     public double getBulletScale() { return bulletScale; }
     public void setBulletScale(double value, boolean useAsFinalScale) {
-        if (!ensureMutable("setBulletScale")) return;
-        if (useAsFinalScale) {
-            bulletScale = sanitizeFinalBulletScale(value);
-            directBulletScaleOverride = true;
-        } else {
-            bulletScaleModifier = value;
-            directBulletScaleOverride = false;
-            bulletScale = resolveBulletScale(damage, bulletScaleModifier);
+        if (Double.isFinite(value) && value > 0.0D) {
+            if (!ensureMutable("setBulletScale")) return;
+            if (useAsFinalScale) { bulletScale = sanitizeFinalBulletScale(value); directBulletScaleOverride = true; }
+            else { bulletScaleModifier = value; directBulletScaleOverride = false; bulletScale = resolveBulletScale(damage, value); }
         }
     }
-    public double getBulletRange() { return bulletRange; }
-    public double getBulletSpeed() { return bulletSpeed; }
 
+    /** Returns this context's split sequence, which is always initialized. */
+    @NotNull public SplitSequence getSplitSequence() { return splitSequence; }
     public SplitSequence copySplitSequence() { return splitSequence.copy(); }
+    /** Adds split modules while the creation context is still mutable. */
     public void addSplitModule(@NotNull ResourceLocation moduleId, int stacks) {
         if (ensureMutable("addSplitModule")) splitSequence.add(moduleId, stacks);
     }
     public void useExactSpawnPosition() { if (ensureMutable("useExactSpawnPosition")) this.useExactSpawnPosition = true; }
     public boolean usesExactSpawnPosition() { return useExactSpawnPosition; }
     public boolean isFrozen() { return frozen; }
+    /** Freezes this creation context so later trigger preparation cannot mutate it. */
     public void freeze() { frozen = true; }
 
     private boolean ensureMutable(String operation) {
@@ -147,28 +141,20 @@ public class AttackContext {
         return Collections.unmodifiableMap(new HashMap<>(source));
     }
 
+    private static Set<BlockPos> immutableBlockPositions(Set<BlockPos> source) {
+        if (source == null || source.isEmpty()) return Set.of();
+        HashSet<BlockPos> copy = new HashSet<>();
+        for (BlockPos position : source) {
+            if (position != null) copy.add(position.immutable());
+        }
+        return copy.isEmpty() ? Set.of() : Collections.unmodifiableSet(copy);
+    }
+
     private static float resolveDamage(LivingEntity owner, Double requested) {
         if (requested != null && Double.isFinite(requested) && requested >= 0.0) return requested.floatValue();
         AttributeInstance attribute = owner.getAttribute(Attributes.ATTACK_DAMAGE);
         double value = attribute == null ? 1.0 : attribute.getValue();
         return Double.isFinite(value) && value >= 0.0 ? (float) value : 1.0f;
-    }
-
-    private static double resolveBulletScaleModifier(LivingEntity owner, @Nullable Double requested) {
-        if (requested != null) return requested;
-        AttributeInstance attribute = owner.getAttribute(ModAttributes.BULLET_SCALE.get());
-        return attribute == null ? 0.0D : attribute.getValue();
-    }
-
-    private static double resolveBulletScale(double damage, double bulletScaleModifier) {
-        if (!Double.isFinite(damage) || !Double.isFinite(bulletScaleModifier)) return MIN_BULLET_SCALE;
-        double size = Math.sqrt(Math.max(0.0D, damage) / BULLET_SCALE_BASE_DAMAGE)
-                * (1.0D + bulletScaleModifier);
-        return sanitizeFinalBulletScale(size);
-    }
-
-    private static double sanitizeFinalBulletScale(double value) {
-        return Double.isFinite(value) && value >= MIN_BULLET_SCALE ? value : MIN_BULLET_SCALE;
     }
 
     private static double sanitizeRange(double range) {
@@ -178,6 +164,21 @@ public class AttackContext {
 
     private static double sanitizeSpeed(double speed) {
         return !Double.isFinite(speed) || speed <= 0.0 ? DEFAULT_SPEED : speed;
+    }
+
+    private static double resolveBulletScaleModifier(LivingEntity owner, @Nullable Double requested) {
+        AttributeInstance attribute = owner.getAttribute(ModAttributes.BULLET_SCALE.get());
+        return requested != null ? requested : attribute == null ? 0.0D : attribute.getValue();
+    }
+
+    private static double resolveBulletScale(double damage, double modifier) {
+        if (!Double.isFinite(damage) || !Double.isFinite(modifier)) return MIN_BULLET_SCALE;
+        double value = Math.sqrt(Math.max(0.0D, damage) / BULLET_SCALE_BASE_DAMAGE) * (1.0D + modifier);
+        return sanitizeFinalBulletScale(value);
+    }
+
+    private static double sanitizeFinalBulletScale(double value) {
+        return Double.isFinite(value) && value >= MIN_BULLET_SCALE ? value : MIN_BULLET_SCALE;
     }
 
     private static Vec3 normalizeMainAxis(Vec3 direction) {
@@ -197,7 +198,7 @@ public class AttackContext {
         this.owner = source.owner;
         this.shooter = source.shooter;
         this.colorRl = source.colorRl;
-        this.visualIds = source.visualIds;
+        this.visualIds = Set.copyOf(source.visualIds);
         this.trigger = source.trigger.copy();
         this.trajectories = immutableMap(source.trajectories);
         this.pos = source.pos;
@@ -210,6 +211,7 @@ public class AttackContext {
         this.bulletSpeed = source.bulletSpeed;
         this.splitSequence = source.splitSequence.copy();
         this.useExactSpawnPosition = source.useExactSpawnPosition;
+        this.hitBlockPositions = immutableBlockPositions(source.hitBlockPositions);
         this.frozen = source.frozen;
     }
 
@@ -221,19 +223,18 @@ public class AttackContext {
         this.trigger = builder.trigger == null ? new CompositeTrigger() : builder.trigger.copy();
         this.trajectories = immutableMap(builder.trajectories);
         this.pos = Objects.requireNonNull(builder.position, "position");
-        this.mainAxis = builder.direction != null
-                ? normalizeMainAxis(builder.direction)
+        this.mainAxis = builder.direction != null ? normalizeMainAxis(builder.direction)
                 : normalizeMainAxis(Objects.requireNonNull(builder.mainAxis, "mainAxis"));
         this.damage = Objects.requireNonNull(builder.damage, "damage").floatValue();
         this.bulletScaleModifier = builder.bulletScaleModifier == null
-                ? source.bulletScaleModifier
-                : resolveBulletScaleModifier(source.owner, builder.bulletScaleModifier);
+                ? source.bulletScaleModifier : resolveBulletScaleModifier(source.owner, builder.bulletScaleModifier);
         this.bulletScale = resolveBulletScale(damage, bulletScaleModifier);
         this.directBulletScaleOverride = false;
         this.bulletRange = sanitizeRange(builder.range);
         this.bulletSpeed = sanitizeSpeed(builder.speed);
         this.splitSequence = builder.splitSequence == null ? new SplitSequence() : builder.splitSequence.copy();
         this.useExactSpawnPosition = builder.useExactSpawnPosition;
+        this.hitBlockPositions = immutableBlockPositions(builder.hitBlockPositions);
         this.frozen = false;
     }
 
@@ -254,27 +255,34 @@ public class AttackContext {
         private double speed = DEFAULT_SPEED;
         private SplitSequence splitSequence;
         private boolean useExactSpawnPosition;
+        private Set<BlockPos> hitBlockPositions = Set.of();
 
         private Builder(@NotNull LivingEntity owner, @Nullable Entity shooter) {
             this.owner = Objects.requireNonNull(owner, "owner");
             this.shooter = shooter;
         }
 
-        private Builder(AttackContext source) {
-            this.owner = null;
-            this.shooter = null;
-            this.source = source;
-        }
-
-        private static Builder from(AttackContext source) {
-            return new Builder(source);
-        }
+        private Builder(AttackContext source) { this.owner = null; this.shooter = null; this.source = source; }
+        private static Builder from(AttackContext source) { return new Builder(source); }
 
         public Builder color(ResourceLocation colorRl) { this.colorRl = colorRl; return this; }
         public Builder visuals(Set<ResourceLocation> visualIds) { this.visualIds = visualIds == null ? Set.of() : Set.copyOf(visualIds); return this; }
         public Builder trigger(CompositeTrigger trigger) { this.trigger = trigger; return this; }
         public Builder trajectories(Map<ResourceLocation, Integer> trajectories) {
             this.trajectories = trajectories == null ? Map.of() : trajectories; return this;
+        }
+        /** Supplies block contacts inherited by a split child. */
+        public Builder hitBlockPositions(Set<BlockPos> positions) {
+            if (positions == null || positions.isEmpty()) {
+                this.hitBlockPositions = Set.of();
+            } else {
+                java.util.HashSet<BlockPos> copy = new java.util.HashSet<>();
+                for (BlockPos position : positions) {
+                    if (position != null) copy.add(position.immutable());
+                }
+                this.hitBlockPositions = copy.isEmpty() ? Set.of() : Set.copyOf(copy);
+            }
+            return this;
         }
         public Builder position(Vec3 position) { this.position = Objects.requireNonNull(position, "position"); return this; }
         public Builder mainAxis(Vec3 mainAxis) {
@@ -284,10 +292,7 @@ public class AttackContext {
             this.direction = Objects.requireNonNull(direction, "direction"); this.mainAxis = null; return this;
         }
         public Builder damage(@Nullable Double damage) { this.damage = damage; return this; }
-        public Builder bulletScaleModifier(@Nullable Double bulletScaleModifier) {
-            this.bulletScaleModifier = bulletScaleModifier;
-            return this;
-        }
+        public Builder bulletScaleModifier(@Nullable Double modifier) { this.bulletScaleModifier = modifier; return this; }
         public Builder range(double range) { this.range = range; return this; }
         public Builder speed(double speed) { this.speed = speed; return this; }
         public Builder splitSequence(SplitSequence splitSequence) { this.splitSequence = splitSequence; return this; }

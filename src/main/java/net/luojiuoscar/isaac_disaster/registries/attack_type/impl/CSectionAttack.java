@@ -2,8 +2,8 @@ package net.luojiuoscar.isaac_disaster.registries.attack_type.impl;
 
 import net.luojiuoscar.isaac_disaster.attribute.ModAttributes;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerAbilityProvider;
-import net.luojiuoscar.isaac_disaster.entity.custom.FetusBullet;
-import net.luojiuoscar.isaac_disaster.entity.custom.TearBullet;
+import net.luojiuoscar.isaac_disaster.bullet.BulletState;
+import net.luojiuoscar.isaac_disaster.registries.attack_type.BulletSourceType;
 import net.luojiuoscar.isaac_disaster.event.custom.attack.BeforePerformAttackEvent;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.CompositeTrigger;
@@ -61,18 +61,26 @@ public class CSectionAttack extends BulletAttack implements IChargeableAttack {
     }
 
     @Override
-    public TearBullet getBulletObject(AttackContext c){
-        FetusBullet bullet = new FetusBullet(c);
-        bullet.setScale((float) c.getBulletScale());
-        return bullet;
+    protected BulletState createOptimizedState(AttackContext context) {
+        BulletState state = super.createOptimizedState(context);
+        double collisionHeight = context.getBulletScale() * 0.35 * 1.8;
+        return BulletState.from(context)
+                .position(state.position().add(0.0D, (collisionHeight - state.collisionHeight()) * 0.5D, 0.0D))
+                .lifetime(state.lifetime())
+                .collisionWidth(context.getBulletScale() * 0.35 * 0.6)
+                .collisionHeight(collisionHeight)
+                .sourceType(BulletSourceType.FETUS_BULLET).homingRange(6.0).spectral(true).homing(true).piercing(true)
+                .controlRange(64.0D).controlSteer(0.8D)
+                .rememberHitTargets(false).steeringMode(net.luojiuoscar.isaac_disaster.bullet.BulletSteeringMode.DIRECT)
+                .maxSpeedChange(0.25D)
+                .build();
     }
 
     @Override
     public void shoot(AttackContext ctx) {
         super.shoot(ctx);
-
-        spawnBloodParticles((ServerLevel) ctx.getOwner().level(), ctx.getPos(),
-                ctx.getOwner().getLookAngle(), 10, 0.35, 0.35);
+        if (ctx.getOwner() == null || !(ctx.getOwner().level() instanceof ServerLevel level)) return;
+        spawnBloodParticles(level, ctx.getPos(), ctx.getOwner().getLookAngle(), 10, 0.35, 0.35);
     }
 
     private void spawnBloodParticles(ServerLevel level, Vec3 pos, Vec3 direction, int count, double spread, double verticalOffset) {
@@ -122,6 +130,7 @@ public class CSectionAttack extends BulletAttack implements IChargeableAttack {
                             .color(colorRl).visuals(playerAbility.getBulletVisuals())
                             .trigger(new CompositeTrigger()).trajectories(trajectories)
                             .position(eyePos).mainAxis(GeometryHelper.mainAxisFromRotation(player.getXRot(), player.getYRot()))
+                            .damage((double) getDamage(player) * DAMAGE_PERCENTAGE)
                             .range(getRange(player)).speed(getBulletSpeed(player)).build();
                 })
                 .orElse(null);

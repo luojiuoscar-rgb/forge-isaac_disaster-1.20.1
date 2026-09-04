@@ -1,6 +1,5 @@
 package net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.normal;
 
-import net.luojiuoscar.isaac_disaster.entity.custom.TearBullet;
 import net.luojiuoscar.isaac_disaster.event.custom.attack.IsaacAttackHitBlockEvent;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ExecutableEffectContext;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ContextKeys;
@@ -26,32 +25,22 @@ public class BulletBounceOnBlock implements IAbilityEffect {
         Vec3 normal = Vec3.atLowerCornerOf(hit.getDirection().getNormal()).normalize();
         IBulletObject b = event.getBulletObject();
 
-        // ---------------- TearBullet ----------------
-        if (b instanceof TearBullet bullet) {
-            Vec3 motion = bullet.getVelocity();
+        if (b == null) return false;
+        if (b instanceof LaserAttack.LaserProjectile laser && laser.isSpectral()) return true;
 
-            double speed = motion.length();
-            if (speed < 1e-6) return true;
+        Vec3 motion = b.getVelocity();
 
-            Vec3 reflected = motion.subtract(normal.scale(2 * motion.dot(normal)));
-            bullet.pushOutOfBlock(normal);
-            bullet.setVelocity(reflected);
-            bullet.setDeltaMovement(reflected);
+        double speed = motion.length();
+        if (speed < 1e-6) return true;
 
-            // 清空被伤害过的实体
-            bullet.getDamagedEntities().clear();
-        }
-        // ---------------- LaserProjectile ----------------
-        else if (b instanceof LaserAttack.LaserProjectile laser) {
-            if (laser.isSpectral()) return true;
+        Vec3 reflected = motion.subtract(normal.scale(2 * motion.dot(normal)));
+        // BulletManager resolves the optimized state to a non-overlapping center
+        // before dispatching the event. Legacy entities still need this nudge here.
+        b.pushOutOfBlock(normal);
+        b.setVelocity(reflected);
 
-            Vec3 direction = laser.direction;
-
-            Vec3 reflected = direction.subtract(normal.scale(2 * direction.dot(normal)));
-            laser.direction = reflected;
-            laser.position = hit.getLocation().add(reflected.normalize().scale(1.0E-4));
-        }
-
+        // 清空被伤害过的实体
+        b.getDamagedEntities().clear();
 
         event.setCanceled(true);
         return true;

@@ -64,7 +64,7 @@ public final class CricketsBodySplitModule extends SplitModule {
     private List<AttackContext> generateLegacySplit(SplitContext context) {
         AttackContext reference = context.getReferenceContext();
         double angle = Math.toRadians(Objects.requireNonNull(context.getParent().getOwner(), "owner")
-                .getRandom().nextDouble() * 45.0);
+                .getRandom().nextDouble() * 90.0);
         Vec3 direction = GeometryHelper.rotateAroundAxis(reference.getMainAxis(), WORLD_UP, angle);
         reference = reference.toBuilder().mainAxis(direction).build();
 
@@ -83,7 +83,7 @@ public final class CricketsBodySplitModule extends SplitModule {
         AttackContext reference = context.getReferenceContext();
         Vec3 planeNormal = resolveImpactPlaneNormal(context);
         double angle = Math.toRadians(Objects.requireNonNull(context.getParent().getOwner(), "owner")
-                .getRandom().nextDouble() * 45.0);
+                .getRandom().nextDouble() * 90.0);
         Vec3 incomingDirection = reference.getMainAxis();
 
         List<Vec3> directions = buildPlaneAlignedSpread(incomingDirection, planeNormal, getBulletCount(), angle);

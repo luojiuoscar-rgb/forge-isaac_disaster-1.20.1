@@ -16,6 +16,7 @@ import net.luojiuoscar.isaac_disaster.networking.ModMessages;
 import net.luojiuoscar.isaac_disaster.registries.ModRegistries;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.rule.TriggerModuleRules;
 import net.luojiuoscar.isaac_disaster.sound.ModSounds;
+import net.luojiuoscar.isaac_disaster.bullet.BulletRuntime;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
@@ -45,6 +46,7 @@ public class IsaacDisaster
         modEventBus.addListener(this::commonSetup);
         // Register ourselves for server and other game events we are interested in
         MinecraftForge.EVENT_BUS.register(this);
+        MinecraftForge.EVENT_BUS.register(BulletRuntime.INSTANCE);
 
         ModRegistries.register(modEventBus);
 

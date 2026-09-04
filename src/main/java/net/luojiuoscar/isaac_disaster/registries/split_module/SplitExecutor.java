@@ -1,5 +1,6 @@
 package net.luojiuoscar.isaac_disaster.registries.split_module;
 
+import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.event.custom.attack.tear_bullet.BulletSplitEvent;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackContext;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackExecutor;
@@ -25,17 +26,31 @@ public final class SplitExecutor {
      * A cancelled event produces no child attacks.
      */
     public static void execute(@NotNull IBulletObject parent, @NotNull SplitTriggerType triggerType) {
-        if (parent.getOwner() == null) return;
+        executeAt(parent, triggerType, parent.getPosition(), parent.getVelocity());
+    }
+
+    /**
+     * Executes a split with a collision-time snapshot rather than the parent's later mutable state.
+     *
+     * <p>The bullet manager queues child creation until after its active traversal. Capturing this
+     * data preserves legacy ordering when a hit effect, such as bounce, changes the parent before
+     * the queue is drained.</p>
+     */
+    public static void executeAt(@NotNull IBulletObject parent, @NotNull SplitTriggerType triggerType,
+                                 @NotNull Vec3 position, @NotNull Vec3 velocity) {
+        if (parent.getOwner() == null || parent.getAttackContext() == null) {
+            IsaacDisaster.LOGGER.warn("Discarded split request with no owner or attack context");
+            return;
+        }
 
         SplitSequence sequence = parent.getSplitSequence();
         if (sequence == null || sequence.isEmpty()) return;
 
         AttackContext.Builder referenceBuilder = parent.getAttackContext().toBuilder()
-                .position(parent.getPosition())
+                .position(position)
                 .useExactSpawnPosition()
                 .damage((double) parent.getDamage())
                 .range(parent.getRange());
-        Vec3 velocity = parent.getVelocity();
         if (velocity.lengthSqr() > 1.0E-8) {
             referenceBuilder.direction(velocity);
         }

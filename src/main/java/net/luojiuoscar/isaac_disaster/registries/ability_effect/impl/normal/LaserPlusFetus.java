@@ -1,17 +1,19 @@
 package net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.normal;
 
-import net.luojiuoscar.isaac_disaster.entity.custom.FetusBullet;
+import net.luojiuoscar.isaac_disaster.bullet.BulletState;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ContextKeys;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ExecutableEffectContext;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.IAbilityEffect;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackContext;
-import net.luojiuoscar.isaac_disaster.helper.GeometryHelper;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackExecutor;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackOrigin;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackPipelineMode;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackRequest;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.ModAttackTypes;
+import net.luojiuoscar.isaac_disaster.registries.attack_type.IBulletObject;
+import net.luojiuoscar.isaac_disaster.registries.attack_type.BulletSourceType;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.phys.Vec3;
 
 import java.util.List;
 
@@ -22,24 +24,32 @@ public class LaserPlusFetus implements IAbilityEffect {
 
     @Override
     public boolean applyEffect(ExecutableEffectContext context) {
-        if (!(context.get(ContextKeys.BULLET) instanceof FetusBullet bullet)) return true;
+        IBulletObject bullet = context.get(ContextKeys.BULLET);
+        if (bullet == null || bullet.getSourceType() != BulletSourceType.FETUS_BULLET) return true;
         if (!(bullet.getOwner() instanceof Player player)) return true;
 
         int interval = 4; // fixed interval
-
-        if (bullet.tickCount % interval != 0) return true;
+        if (!shouldFireThisTick(bullet, interval)) return true;
+        Vec3 axis = bullet.getVelocity().lengthSqr() > 1.0E-8D ? bullet.getVelocity() : player.getLookAngle();
 
         AttackExecutor.perform(AttackRequest.withContexts(
                 player, ModAttackTypes.LASER.get(), AttackOrigin.BULLET_SECONDARY,
                 secondaryLaserPipelineMode(), List.of(
-                AttackContext.builder(player, bullet)
+                AttackContext.builder(player, player)
                         .color(bullet.getColorId()).trigger(bullet.getTriggers())
-                        .trajectories(bullet.getTrajectories()).position(bullet.getPosition())
-                        .mainAxis(GeometryHelper.mainAxisFromRotation(bullet.getXRot(), bullet.getYRot()))
+                        .position(bullet.getPosition()).mainAxis(axis)
                         .range(ModAttackTypes.LASER.get().getRange(player))
                         .speed(ModAttackTypes.LASER.get().getBulletSpeed(player)).build()
         ), false));
 
         return true;
+    }
+
+    /** Keeps the legacy entity cadence while deriving lightweight-bullet cadence from its stored age. */
+    private static boolean shouldFireThisTick(IBulletObject bullet, int interval) {
+        // BulletTickEvent is emitted before BulletState advances, unlike Entity.tickCount which has
+        // already been incremented by Entity#tick when the legacy event is posted.
+        if (bullet instanceof BulletState state) return (state.age() + 1) % interval == 0;
+        return false;
     }
 }

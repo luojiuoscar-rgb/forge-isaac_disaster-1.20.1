@@ -50,8 +50,9 @@ import org.joml.Vector3f;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
+import java.util.HashSet;
+import java.util.Set;
 
 public class LaserAttack extends AttackType {
     private static final LaserAttackPattern PATTERN = new LaserAttackPattern();
@@ -106,7 +107,7 @@ public class LaserAttack extends AttackType {
         private int attackSequenceIndex;
         private final double range;
         private final SplitTriggerCounts splitTriggerCounts = new SplitTriggerCounts();
-        private BlockPos lastSplitBlockPosition;
+        private final Set<BlockPos> hitBlockPositions = new HashSet<>();
         private BlockHitResult lastBlockHit;
 
         public LaserProjectile(AttackContext attackContext) {
@@ -130,6 +131,7 @@ public class LaserAttack extends AttackType {
             this.attackSequenceIndex = 0;
             this.range = attackContext.getBulletRange();
             this.lastBlockHit = null;
+            this.hitBlockPositions.addAll(attackContext.getHitBlockPositions());
 
             this.prevShooterPos = getShooterWaistPosition();
         }
@@ -143,7 +145,9 @@ public class LaserAttack extends AttackType {
         public void setLastBlockHit(@Nullable BlockHitResult lastBlockHit) { this.lastBlockHit = lastBlockHit; }
 
         @Override
-        public AttackContext getAttackContext() { return attackContext.copy(); }
+        public AttackContext getAttackContext() {
+            return attackContext.toBuilder().hitBlockPositions(hitBlockPositions).build();
+        }
 
         @Override
         public BulletSourceType getSourceType() {
@@ -166,18 +170,14 @@ public class LaserAttack extends AttackType {
             splitTriggerCounts.increment(type);
         }
 
-        /** Records a block split position unless it is inside the previous hit's 3x3x3 area. */
-        public boolean markBlockSplitPosition(BlockPos position) {
-            BlockPos current = Objects.requireNonNull(position, "position");
-            if (lastSplitBlockPosition != null
-                    && Math.abs(lastSplitBlockPosition.getX() - current.getX()) <= 1
-                    && Math.abs(lastSplitBlockPosition.getY() - current.getY()) <= 1
-                    && Math.abs(lastSplitBlockPosition.getZ() - current.getZ()) <= 1) {
-                return false;
-            }
+        /** Returns a read-only snapshot of exact blocks contacted during this laser shot. */
+        @Override
+        public Set<BlockPos> getHitBlockPositions() { return Set.copyOf(hitBlockPositions); }
 
-            lastSplitBlockPosition = current.immutable();
-            return true;
+        /** Records one exact block contact and rejects repeated contacts to that block. */
+        @Override
+        public boolean markBlockHit(@Nullable BlockPos position) {
+            return position != null && hitBlockPositions.add(position.immutable());
         }
 
         @Override
@@ -201,6 +201,34 @@ public class LaserAttack extends AttackType {
         @Override
         public Vec3 getPosition() {
             return this.position;
+        }
+
+        /** Updates the laser collision-center position. */
+        @Override
+        public void setCenter(Vec3 center) {
+            if (center != null) this.position = center;
+        }
+
+        /** Updates the laser position. */
+        @Override
+        public void setPosition(Vec3 position) {
+            if (position != null) this.position = position;
+        }
+
+        /** Updates the laser direction/velocity. */
+        @Override
+        public void setVelocity(Vec3 velocity) {
+            if (velocity != null) this.direction = velocity;
+        }
+
+        @Override
+        public float getCollisionWidth() {
+            return (float) width;
+        }
+
+        @Override
+        public float getCollisionHeight() {
+            return (float) width;
         }
 
         @Nullable
@@ -397,28 +425,42 @@ public class LaserAttack extends AttackType {
         Vec3 nextPos = start.add(displacement);
         spawnInterpolatedParticles(level, start, nextPos, laser.width, context.getColorRl());
 
-        if (!laser.spectral) {
-            BlockHitResult blockHit = findBlockCollision(level, start, nextPos, laser.width, laser.owner);
-            if (blockHit != null) {
-                double hitParameter = ProjectileCollisionHelper.pathParameter(start, nextPos, blockHit.getLocation());
-                laser.position = blockHit.getLocation();
+        BlockHitResult blockHit = findBlockCollision(level, start, nextPos, laser.width, laser.owner);
+        if (blockHit != null) {
+            boolean firstContact = laser.markBlockHit(blockHit.getBlockPos());
+            if (firstContact) {
+                // Spectral lasers do not stop on blocks, but every new block contact still
+                // publishes the same block event and split boundary as a normal laser.
                 laser.setLastBlockHit(blockHit);
-                if (laser.markBlockSplitPosition(blockHit.getBlockPos())) {
-                    laser.recordSplitTrigger(SplitTriggerType.BLOCK);
-                    SplitExecutor.execute(laser, SplitTriggerType.BLOCK);
-                }
+                laser.recordSplitTrigger(SplitTriggerType.BLOCK);
+                // Capture the actual contact center before the deferred split is created.
+                // The split reference context must describe the block boundary, not the
+                // beginning of this laser segment (especially for spectral lasers).
+                laser.setPosition(blockHit.getLocation());
+                SplitExecutor.execute(laser, SplitTriggerType.BLOCK);
                 IsaacAttackHitBlockEvent event = new IsaacAttackHitBlockEvent(
                         laser, laser.owner, getId(), laser.getTriggers(), blockHit);
                 MinecraftForge.EVENT_BUS.post(event);
-                laser.traveled += laser.step * hitParameter;
-                if (!event.isCanceled()) {
-                    laser.traveled = laser.range;
+
+                if (!laser.spectral) {
+                    double hitParameter = ProjectileCollisionHelper.pathParameter(start, nextPos, blockHit.getLocation());
+                    laser.position = blockHit.getLocation();
+                    laser.traveled += laser.step * hitParameter;
+                    if (!event.isCanceled()) {
+                        laser.traveled = laser.range;
+                        return;
+                    }
+                    if (laser.step * (1.0D - hitParameter) > 1.0E-5 && laser.direction.lengthSqr() > 1.0E-8) {
+                        laser.position = laser.position.add(laser.direction.normalize().scale(1.0E-4));
+                    }
+                    laser.tickCount++;
                     return;
                 }
-                if (laser.step * (1.0D - hitParameter) > 1.0E-5 && laser.direction.lengthSqr() > 1.0E-8) {
-                    laser.position = laser.position.add(laser.direction.normalize().scale(1.0E-4));
-                }
-                laser.tickCount++;
+            } else if (!laser.spectral) {
+                // A non-spectral laser cannot normally revisit a block, but a bounced or
+                // redirected path must still stop without publishing a duplicate event.
+                laser.position = blockHit.getLocation();
+                laser.traveled = laser.range;
                 return;
             }
         }

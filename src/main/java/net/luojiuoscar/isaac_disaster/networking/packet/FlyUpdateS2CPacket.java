@@ -3,7 +3,6 @@ package net.luojiuoscar.isaac_disaster.networking.packet;
 import net.luojiuoscar.isaac_disaster.client.ClientDataManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.network.NetworkEvent;
 
