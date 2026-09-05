@@ -1,5 +1,9 @@
 package net.luojiuoscar.isaac_disaster.bullet;
 
+import net.luojiuoscar.isaac_disaster.bullet.core.BulletState;
+import net.luojiuoscar.isaac_disaster.bullet.core.BulletSteeringMode;
+import net.luojiuoscar.isaac_disaster.bullet.server.BulletManager;
+import net.luojiuoscar.isaac_disaster.bullet.tracking.TrackingProfile;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.core.BlockPos;
 import org.junit.jupiter.api.Test;

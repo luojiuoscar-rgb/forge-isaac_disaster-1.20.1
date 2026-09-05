@@ -1,6 +1,6 @@
 package net.luojiuoscar.isaac_disaster.networking.packet.bullet;
 
-import net.luojiuoscar.isaac_disaster.bullet.ClientBulletRuntime;
+import net.luojiuoscar.isaac_disaster.bullet.client.ClientBulletRuntime;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.network.NetworkEvent;

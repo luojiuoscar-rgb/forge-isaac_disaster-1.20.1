@@ -1,7 +1,7 @@
 package net.luojiuoscar.isaac_disaster.commands.bullet;
 
 import com.mojang.brigadier.CommandDispatcher;
-import net.luojiuoscar.isaac_disaster.bullet.BulletRuntime;
+import net.luojiuoscar.isaac_disaster.bullet.server.BulletRuntime;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;

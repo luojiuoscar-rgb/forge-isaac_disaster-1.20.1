@@ -1,8 +1,8 @@
 package net.luojiuoscar.isaac_disaster.registries.attack_type.impl;
 
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
-import net.luojiuoscar.isaac_disaster.bullet.BulletRuntime;
-import net.luojiuoscar.isaac_disaster.bullet.BulletState;
+import net.luojiuoscar.isaac_disaster.bullet.server.BulletRuntime;
+import net.luojiuoscar.isaac_disaster.bullet.core.BulletState;
 import net.luojiuoscar.isaac_disaster.event.custom.attack.tear_bullet.TearBulletShootEvent;
 import net.luojiuoscar.isaac_disaster.registries.attack_pattern.AttackPatternContext;
 import net.luojiuoscar.isaac_disaster.registries.attack_pattern.impl.BulletAttackPattern;

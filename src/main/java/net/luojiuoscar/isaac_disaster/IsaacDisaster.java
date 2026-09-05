@@ -16,7 +16,7 @@ import net.luojiuoscar.isaac_disaster.networking.ModMessages;
 import net.luojiuoscar.isaac_disaster.registries.ModRegistries;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.rule.TriggerModuleRules;
 import net.luojiuoscar.isaac_disaster.sound.ModSounds;
-import net.luojiuoscar.isaac_disaster.bullet.BulletRuntime;
+import net.luojiuoscar.isaac_disaster.bullet.server.BulletRuntime;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;

@@ -1,11 +1,10 @@
 package net.luojiuoscar.isaac_disaster.bullet;
 
+import net.luojiuoscar.isaac_disaster.bullet.collision.SweptCollision;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.core.Direction;
 import org.junit.jupiter.api.Test;
-
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 

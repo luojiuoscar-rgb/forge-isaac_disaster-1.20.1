@@ -1,5 +1,7 @@
-package net.luojiuoscar.isaac_disaster.bullet;
+package net.luojiuoscar.isaac_disaster.bullet.client;
 
+import net.luojiuoscar.isaac_disaster.bullet.core.BulletState;
+import net.luojiuoscar.isaac_disaster.bullet.core.BulletSteeringMode;
 import net.minecraft.world.phys.Vec3;
 import net.luojiuoscar.isaac_disaster.networking.packet.bullet.BulletTrackingBatchS2CPacket;
 import org.junit.jupiter.api.Test;

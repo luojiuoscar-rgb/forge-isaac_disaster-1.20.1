@@ -1,4 +1,4 @@
-package net.luojiuoscar.isaac_disaster.bullet;
+package net.luojiuoscar.isaac_disaster.bullet.client;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.world.phys.Vec3;

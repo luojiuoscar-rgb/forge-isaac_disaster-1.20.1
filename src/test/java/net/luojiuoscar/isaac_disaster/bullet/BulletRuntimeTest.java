@@ -1,5 +1,6 @@
 package net.luojiuoscar.isaac_disaster.bullet;
 
+import net.luojiuoscar.isaac_disaster.bullet.server.BulletRuntime;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertNull;

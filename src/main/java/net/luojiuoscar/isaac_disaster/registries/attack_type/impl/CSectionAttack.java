@@ -1,8 +1,9 @@
 package net.luojiuoscar.isaac_disaster.registries.attack_type.impl;
 
 import net.luojiuoscar.isaac_disaster.attribute.ModAttributes;
+import net.luojiuoscar.isaac_disaster.bullet.core.BulletSteeringMode;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerAbilityProvider;
-import net.luojiuoscar.isaac_disaster.bullet.BulletState;
+import net.luojiuoscar.isaac_disaster.bullet.core.BulletState;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.BulletSourceType;
 import net.luojiuoscar.isaac_disaster.event.custom.attack.BeforePerformAttackEvent;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
@@ -71,7 +72,7 @@ public class CSectionAttack extends BulletAttack implements IChargeableAttack {
                 .collisionHeight(collisionHeight)
                 .sourceType(BulletSourceType.FETUS_BULLET).homingRange(6.0).spectral(true).homing(true).piercing(true)
                 .controlRange(64.0D).controlSteer(0.8D)
-                .rememberHitTargets(false).steeringMode(net.luojiuoscar.isaac_disaster.bullet.BulletSteeringMode.DIRECT)
+                .rememberHitTargets(false).steeringMode(BulletSteeringMode.DIRECT)
                 .maxSpeedChange(0.25D)
                 .build();
     }
