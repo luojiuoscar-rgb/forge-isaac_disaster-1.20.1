@@ -1,5 +1,6 @@
 package net.luojiuoscar.isaac_disaster.registries.attack_type.impl;
 
+import net.luojiuoscar.isaac_disaster.registries.attack_type.ModAttackTypes;
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.bullet.server.BulletRuntime;
 import net.luojiuoscar.isaac_disaster.bullet.core.BulletState;
@@ -8,7 +9,6 @@ import net.luojiuoscar.isaac_disaster.registries.attack_pattern.AttackPatternCon
 import net.luojiuoscar.isaac_disaster.registries.attack_pattern.impl.BulletAttackPattern;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackContext;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackType;
-import net.luojiuoscar.isaac_disaster.registries.attack_type.ModAttackTypes;
 import net.luojiuoscar.isaac_disaster.sound.ModSounds;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
@@ -21,6 +21,7 @@ import net.minecraftforge.common.MinecraftForge;
 import java.util.List;
 
 public class BulletAttack extends AttackType {
+    @Override public ResourceLocation getRootId() { return ModAttackTypes.BULLET.getId(); }
     private static final BulletAttackPattern PATTERN = new BulletAttackPattern();
 
     public BulletAttack(int priorityTier, double priority) {
@@ -78,6 +79,8 @@ public class BulletAttack extends AttackType {
 
     /** Builds the entity-free state used by ordinary and split-created tear attacks. */
     protected BulletState createOptimizedState(AttackContext context) {
+        context = context.bindAttackTypeOrCopy(this);
+        context.freeze();
         LivingEntity owner = context.getOwner();
         Vec3 look = context.getMainAxis();
         double forwardOffset = 0.4 * (owner.getBbWidth() / 0.6);

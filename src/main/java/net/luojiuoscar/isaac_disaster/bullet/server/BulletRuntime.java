@@ -247,13 +247,14 @@ public final class BulletRuntime {
     }
 
     private static BulletSpawnS2CPacket snapshot(ServerLevel level, BulletState state) {
+        net.luojiuoscar.isaac_disaster.bullet.core.TrajectoryEvaluator.initialize(state);
         return new BulletSpawnS2CPacket(INSTANCE.epoch(level), state.slot(), state.generation(), (int) level.getGameTime(), state.position(),
                 state.previousPosition(), state.velocity(), state.acceleration(), state.baseSpeed(), state.age(), state.lifetime(), state.traveled(),
                 state.getRange(), state.getDamage(), state.renderScale(),
                 state.collisionWidth(), state.collisionHeight(), state.color(), state.alpha(), new ArrayList<>(state.visualIds()),
-                state.getSourceType() == net.luojiuoscar.isaac_disaster.registries.attack_type.BulletSourceType.FETUS_BULLET,
+                state.getTypeId(), state.getRootTypeId(),
                 state.ownerUuid(), state.isHoming(), state.isControllable(), state.homingRange(), state.homingSteer(),
-                state.controlRange(), state.controlSteer());
+                 state.controlRange(), state.controlSteer(), state.getTrajectoryRuntime().snapshot());
     }
 
     private static long identity(int slot, int generation) {

@@ -1,17 +1,17 @@
 package net.luojiuoscar.isaac_disaster.item.item;
 
 
+import net.luojiuoscar.isaac_disaster.client.item.IsaacItemClientHooks;
 import net.luojiuoscar.isaac_disaster.manager.ColorManager;
 import net.luojiuoscar.isaac_disaster.registries.ability.IsaacItemAbility;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.registries.RegistryObject;
 import org.jetbrains.annotations.NotNull;
 
@@ -40,36 +40,8 @@ public abstract class IsaacItem extends Item {
     @Override
     public void appendHoverText(@NotNull ItemStack stack, @Nullable Level level, @NotNull List<Component> tooltipComponents, @NotNull TooltipFlag isAdvanced) {
         super.appendHoverText(stack, level, tooltipComponents, isAdvanced);
-
-        // 获取客户端玩家
-        Player player = Minecraft.getInstance().player;
-
-        List<Component> extraDesc = getAbility().getExtraDesc(stack, player);
-
-        if (!extraDesc.isEmpty() && Screen.hasShiftDown()){
-            // 添加解释性文本组件
-            tooltipComponents.addAll(extraDesc);
-        }else{
-            // 添加描述性文本组件
-            tooltipComponents.addAll(getAbility().getDesc(stack, player));
-            tooltipComponents.addAll(getAbility().getSynergyDesc(stack, player));
-
-            // 空行
-            tooltipComponents.add(Component.literal(""));
-
-            // 添加额外信息 (hook)
-            addAdditionalInfo(tooltipComponents, stack);
-            // 添加shift提示
-            if (!extraDesc.isEmpty()){
-                tooltipComponents.add(Component.translatable("item.isaac_disaster.special.require_shift"));
-            }
-            if (hasBeenUsed(stack)){
-                tooltipComponents.add(Component.translatable("item.isaac_disaster.action.consumed")
-                        .withStyle(style -> style.withColor(ColorManager.SYNERGY)));
-            }
-            // 添加稀有度文本组件
-            addRarityComponent(tooltipComponents);
-        }
+        DistExecutor.unsafeRunWhenOn(Dist.CLIENT,
+                () -> () -> IsaacItemClientHooks.appendHoverText(this, stack, tooltipComponents));
     }
     /** 额外信息 */
     public abstract void addAdditionalInfo(List<Component> tooltipComponents, @Nullable ItemStack stack);

@@ -1,5 +1,6 @@
 package net.luojiuoscar.isaac_disaster.bullet;
 
+import net.luojiuoscar.isaac_disaster.registries.attack_type.TestAttackTypes;
 import net.luojiuoscar.isaac_disaster.bullet.core.BulletState;
 import net.luojiuoscar.isaac_disaster.bullet.core.BulletSteeringMode;
 import net.luojiuoscar.isaac_disaster.bullet.server.BulletManager;
@@ -11,6 +12,19 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 class BulletStateTest {
+    @Test
+    void launchFrameUsesFinalSpawnPositionAndVelocity() {
+        Vec3 spawn = new Vec3(3, 5, 7);
+        Vec3 velocity = new Vec3(0, 2, 3);
+        BulletState state = BulletState.builder().position(spawn).velocity(velocity).build();
+        assertEquals(spawn, state.getTrajectoryRuntime().origin());
+        assertEquals(velocity.normalize(), state.getTrajectoryRuntime().launchDirection());
+        state.setPosition(spawn.add(10, 0, 0));
+        state.setVelocity(new Vec3(1, 0, 0));
+        assertEquals(spawn, state.getTrajectoryRuntime().origin());
+        assertEquals(velocity.normalize(), state.getTrajectoryRuntime().launchDirection());
+    }
+
     @Test
     void integratesVelocityAccelerationAndDistance() {
         BulletState state = BulletState.builder()
@@ -147,8 +161,8 @@ class BulletStateTest {
     @Test
     void fetusTrackingProfileUsesACommonProfileWithStrongerSteering() {
         BulletState normal = BulletState.builder().homingRange(6.0D).homingSteer(0.6D).build();
-        BulletState fetus = BulletState.builder().sourceType(
-                net.luojiuoscar.isaac_disaster.registries.attack_type.BulletSourceType.FETUS_BULLET)
+        BulletState fetus = BulletState.builder().attackType(
+                TestAttackTypes.C_SECTION)
                 .homingRange(6.0D).homingSteer(0.6D).build();
 
         assertEquals(0.6D, TrackingProfile.forBullet(normal).steer(), 1.0E-9D);
@@ -159,8 +173,8 @@ class BulletStateTest {
     @Test
     void fetusUsesDirectSteeringAndDoesNotRememberHitTargets() {
         BulletState fetus = BulletState.builder().position(Vec3.ZERO).velocity(new Vec3(1, 0, 0))
-                .baseSpeed(1.0D).sourceType(
-                        net.luojiuoscar.isaac_disaster.registries.attack_type.BulletSourceType.FETUS_BULLET)
+                .baseSpeed(1.0D).attackType(
+                        TestAttackTypes.C_SECTION)
                 .steeringMode(BulletSteeringMode.DIRECT).rememberHitTargets(false).build();
 
         fetus.applyDirectSteering(new Vec3(0, 0, 3), 0.5D);
@@ -173,7 +187,7 @@ class BulletStateTest {
     @Test
     void directTrackingKeepsCoordinateHeadingWhenAuthorityReportsZeroVelocity() {
         BulletState fetus = BulletState.builder().position(Vec3.ZERO).velocity(new Vec3(1, 0, 0))
-                .sourceType(net.luojiuoscar.isaac_disaster.registries.attack_type.BulletSourceType.FETUS_BULLET)
+                .attackType(TestAttackTypes.C_SECTION)
                 .steeringMode(BulletSteeringMode.DIRECT).build();
 
         fetus.applyDirectTrackingSample(new Vec3(0, 1, 0), Vec3.ZERO, false);

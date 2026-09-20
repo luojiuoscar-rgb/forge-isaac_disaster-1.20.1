@@ -1,5 +1,6 @@
 package net.luojiuoscar.isaac_disaster.bullet.client;
 
+import net.luojiuoscar.isaac_disaster.registries.attack_type.ModAttackTypes;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
@@ -67,7 +68,7 @@ public final class BulletClientRenderer {
             poseStack.pushPose();
             Vec3 relative = position.subtract(camera);
             poseStack.translate(relative.x, relative.y, relative.z);
-            if (state.getSourceType() == net.luojiuoscar.isaac_disaster.registries.attack_type.BulletSourceType.FETUS_BULLET) {
+            if (ModAttackTypes.C_SECTION.getId().equals(state.getTypeId())) {
                 usedTypes.add(renderFetus(state, poseStack, buffers));
             } else {
                 usedTypes.add(renderTear(state, poseStack, buffers));

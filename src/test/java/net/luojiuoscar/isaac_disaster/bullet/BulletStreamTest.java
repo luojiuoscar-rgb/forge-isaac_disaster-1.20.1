@@ -1,5 +1,6 @@
 package net.luojiuoscar.isaac_disaster.bullet.client;
 
+import net.luojiuoscar.isaac_disaster.registries.attack_type.TestAttackTypes;
 import net.luojiuoscar.isaac_disaster.bullet.core.BulletState;
 import net.luojiuoscar.isaac_disaster.bullet.core.BulletSteeringMode;
 import net.minecraft.world.phys.Vec3;
@@ -115,8 +116,8 @@ class BulletStreamTest {
         BulletStream stream = new BulletStream();
         stream.acceptEpoch(5);
         BulletState fetus = stream.spawn(4, 1, 3, BulletState.builder().position(Vec3.ZERO)
-                .velocity(new Vec3(1, 0, 0)).homing(true).sourceType(
-                        net.luojiuoscar.isaac_disaster.registries.attack_type.BulletSourceType.FETUS_BULLET)
+                .velocity(new Vec3(1, 0, 0)).homing(true).attackType(
+                        TestAttackTypes.C_SECTION)
                 .steeringMode(BulletSteeringMode.DIRECT).lifetime(20).build());
 
         stream.applyTrackingVelocity(5, 3, List.of(

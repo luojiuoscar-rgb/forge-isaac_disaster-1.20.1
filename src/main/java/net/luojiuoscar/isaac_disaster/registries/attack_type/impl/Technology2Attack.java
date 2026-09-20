@@ -1,5 +1,6 @@
 package net.luojiuoscar.isaac_disaster.registries.attack_type.impl;
 
+import net.luojiuoscar.isaac_disaster.registries.attack_type.ModAttackTypes;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerAbilityProvider;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.CompositeTrigger;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackContext;
@@ -12,7 +13,6 @@ import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
-import java.util.Map;
 
 public class Technology2Attack extends LaserAttack {
     public static final float DAMAGE_PERCENTAGE = 0.1f;
@@ -24,6 +24,8 @@ public class Technology2Attack extends LaserAttack {
     public Technology2Attack(double priority) {
         super(priority);
     }
+
+    @Override public ResourceLocation getId() { return ModAttackTypes.TECHNOLOGY2.getId(); }
 
     @Override
     public void makeSound(LivingEntity entity) {
@@ -39,7 +41,6 @@ public class Technology2Attack extends LaserAttack {
         return player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY)
                 .map(playerAbility -> {
                     ResourceLocation colorRl = playerAbility.getBestBulletColor();
-                    Map<ResourceLocation, Integer> trajectories = playerAbility.getTrajectories();
                     Vec3 eyePos = player.getEyePosition().add(0, player.getBbHeight() * -0.15, 0);
                     // offset
                     Vec3 look = player.getLookAngle();
@@ -47,8 +48,8 @@ public class Technology2Attack extends LaserAttack {
                     Vec3 left = look.cross(up).normalize();
                     eyePos = eyePos.add(left.scale(-0.5));
 
-                    return AttackContext.builder(player, shooter)
-                            .color(colorRl).trigger(new CompositeTrigger()).trajectories(trajectories)
+                    return AttackContext.builder(player, shooter).attackType(this)
+                            .color(colorRl).trigger(new CompositeTrigger())
                             .position(eyePos).mainAxis(GeometryHelper.mainAxisFromRotation(player.getXRot(), player.getYRot()))
                             .range(getRange(player)).speed(getBulletSpeed(player)).build();
                 })

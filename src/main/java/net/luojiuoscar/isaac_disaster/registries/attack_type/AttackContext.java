@@ -6,6 +6,9 @@ import net.luojiuoscar.isaac_disaster.registries.ability_effect.SimpleTrigger;
 import net.luojiuoscar.isaac_disaster.helper.GeometryHelper;
 import net.luojiuoscar.isaac_disaster.attribute.ModAttributes;
 import net.luojiuoscar.isaac_disaster.registries.split_module.SplitSequence;
+import net.luojiuoscar.isaac_disaster.registries.trajectory.TrajectorySpec;
+import net.luojiuoscar.isaac_disaster.registries.trajectory.TrajectorySequence;
+import net.luojiuoscar.isaac_disaster.registries.trajectory.TrajectoryRuntime;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.Entity;
@@ -30,13 +33,12 @@ public class AttackContext {
     private ResourceLocation colorRl;
     private Set<ResourceLocation> visualIds;
     private final CompositeTrigger trigger;
-    private final Map<ResourceLocation, Integer> trajectories;
+    private final TrajectorySequence trajectorySequence;
     private Vec3 pos;
     private Vec3 mainAxis;
     private final float damage;
     private double bulletScaleModifier;
     private double bulletScale;
-    private boolean directBulletScaleOverride;
     private final double bulletRange;
     private final double bulletSpeed;
     private SplitSequence splitSequence;
@@ -45,6 +47,11 @@ public class AttackContext {
     private final Entity shooter;
     private final LivingEntity owner;
     private final Set<BlockPos> hitBlockPositions;
+    /**
+     * Optional immutable parent snapshot used to initialize a child's trajectory runtime.
+     * Live projectiles retain copyConfiguration(), which excludes this consumed snapshot.
+     */
+    private final TrajectoryRuntime.Snapshot inheritedTrajectorySnapshot;
 
     private AttackContext(Builder builder) {
         this.owner = Objects.requireNonNull(builder.owner, "owner");
@@ -52,8 +59,9 @@ public class AttackContext {
         this.colorRl = builder.colorRl;
         this.visualIds = Set.copyOf(builder.visualIds);
         this.trigger = builder.trigger == null ? new CompositeTrigger() : builder.trigger.copy();
-        this.trajectories = immutableMap(builder.trajectories);
+        this.trajectorySequence = builder.trajectorySequence.copy();
         this.pos = builder.position == null ? owner.position() : builder.position;
+        this.attackType = builder.attackType;
         if (builder.direction != null) {
             this.mainAxis = normalizeMainAxis(builder.direction);
         } else {
@@ -64,27 +72,35 @@ public class AttackContext {
         this.damage = resolveDamage(owner, builder.damage);
         this.bulletScaleModifier = resolveBulletScaleModifier(owner, builder.bulletScaleModifier);
         this.bulletScale = resolveBulletScale(damage, bulletScaleModifier);
-        this.directBulletScaleOverride = false;
         this.bulletRange = sanitizeRange(builder.range);
         this.bulletSpeed = sanitizeSpeed(builder.speed);
         this.splitSequence = builder.splitSequence == null ? new SplitSequence() : builder.splitSequence.copy();
         this.useExactSpawnPosition = builder.useExactSpawnPosition;
         this.hitBlockPositions = immutableBlockPositions(builder.hitBlockPositions);
+        this.inheritedTrajectorySnapshot = builder.inheritedTrajectorySnapshot;
     }
 
     public static Builder builder(@NotNull LivingEntity owner, @Nullable Entity shooter) {
         return new Builder(owner, shooter);
     }
 
+    /** Derives a new attack: size is recalculated from its damage and inherited modifier. */
     public Builder toBuilder() {
-        return Builder.from(this).color(colorRl).visuals(visualIds).trigger(trigger).trajectories(trajectories)
-                .position(pos).mainAxis(mainAxis).damage((double) damage).range(bulletRange)
+        return Builder.from(this).color(colorRl).visuals(visualIds).trigger(trigger).trajectorySequence(trajectorySequence)
+                .position(pos).attackType(attackType).mainAxis(mainAxis).damage((double) damage).range(bulletRange)
                 .speed(bulletSpeed).bulletScaleModifier(bulletScaleModifier).splitSequence(splitSequence)
-                .useExactSpawnPosition(useExactSpawnPosition).hitBlockPositions(hitBlockPositions);
+                .useExactSpawnPosition(useExactSpawnPosition).hitBlockPositions(hitBlockPositions)
+                .inheritTrajectorySnapshot(inheritedTrajectorySnapshot);
     }
 
-    public AttackContext copy() { return new AttackContext(this); }
+    public AttackContext copy() { return new AttackContext(this, true); }
 
+    /** Stored by a live projectile after it has consumed the optional inheritance snapshot. */
+    public AttackContext copyConfiguration() { return new AttackContext(this, false); }
+
+    /** Intentionally exposes the mutable trigger collection, including after freeze.
+     * Use copyTrigger() for isolation; freeze guards context setters, not this escape hatch.
+     */
     public CompositeTrigger getTrigger() { return trigger; }
     public CompositeTrigger copyTrigger() { return trigger.copy(); }
     public void addSimpleTrigger(SimpleTrigger trigger) { if (ensureMutable("addSimpleTrigger")) this.trigger.add(Objects.requireNonNull(trigger, "trigger")); }
@@ -101,23 +117,54 @@ public class AttackContext {
     public void setColorRl(ResourceLocation colorRl) { if (ensureMutable("setColorRl")) this.colorRl = colorRl; }
     public Set<ResourceLocation> getVisualIds() { return visualIds; }
     public void setVisualIds(Set<ResourceLocation> visualIds) { if (ensureMutable("setVisualIds")) this.visualIds = visualIds == null ? Set.of() : Set.copyOf(visualIds); }
-    public Map<ResourceLocation, Integer> getTrajectories() { return trajectories; }
+    public TrajectorySequence copyTrajectorySequence() { return trajectorySequence.copy(); }
+    public void addTrajectoryModule(ResourceLocation moduleId, int stacks) {
+        if (ensureMutable("addTrajectoryModule")) trajectorySequence.add(moduleId, stacks);
+    }
+    /** Returns an immutable ordered snapshot of the attached module stacks. */
+    public List<TrajectorySpec> getTrajectorySpecs() {
+        return trajectorySequence.snapshot();
+    }
+    @Nullable public TrajectoryRuntime.Snapshot getInheritedTrajectorySnapshot() { return inheritedTrajectorySnapshot; }
     /** Returns a defensive snapshot of block contacts inherited by a child attack. */
     public Set<BlockPos> getHitBlockPositions() { return hitBlockPositions; }
     public float getDamage() { return damage; }
     public double getBulletRange() { return bulletRange; }
     public double getBulletSpeed() { return bulletSpeed; }
+    /** Definition of the concrete attack, bound before preparation or direct execution. */
+    private AttackType attackType;
+    @Nullable public AttackType getAttackType() { return attackType; }
+    @Nullable public ResourceLocation getTypeId() { return attackType == null ? null : attackType.getId(); }
+    @Nullable public ResourceLocation getRootTypeId() { return attackType == null ? null : attackType.getRootId(); }
+    public boolean isLaserAttack() { return ModAttackTypes.LASER.getId().equals(getRootTypeId()); }
+    public void setAttackType(AttackType type) {
+        if (ensureMutable("setAttackType")) attackType = Objects.requireNonNull(type, "attackType");
+    }
+    /**
+     * Binds the attack definition before preparation or direct execution, preserving finalized size.
+     * Returns this context unchanged when the type already matches, including its frozen state.
+     * Otherwise, updates a mutable context in place, or returns a mutable copy of a frozen context.
+     * Callers must use the returned context. Existing modules are not replaced by this operation.
+     */
+    public AttackContext bindAttackTypeOrCopy(AttackType type) {
+        Objects.requireNonNull(type, "attackType");
+        if (attackType == type) return this;
+        AttackContext boundContext = frozen ? copy() : this;
+        boundContext.attackType = type;
+        boundContext.frozen = false;
+        return boundContext;
+    }
     public double getBulletScaleModifier() { return bulletScaleModifier; }
     public double getBulletScale() { return bulletScale; }
     public void setBulletScale(double value, boolean useAsFinalScale) {
         if (Double.isFinite(value) && value > 0.0D) {
             if (!ensureMutable("setBulletScale")) return;
-            if (useAsFinalScale) { bulletScale = sanitizeFinalBulletScale(value); directBulletScaleOverride = true; }
-            else { bulletScaleModifier = value; directBulletScaleOverride = false; bulletScale = resolveBulletScale(damage, value); }
+            if (useAsFinalScale) { bulletScale = sanitizeFinalBulletScale(value); }
+            else { bulletScaleModifier = value; bulletScale = resolveBulletScale(damage, value); }
         }
     }
 
-    /** Returns this context's split sequence, which is always initialized. */
+    /** Mutable module access, like getTrigger(); runtime consumers must copy this sequence. */
     @NotNull public SplitSequence getSplitSequence() { return splitSequence; }
     public SplitSequence copySplitSequence() { return splitSequence.copy(); }
     /** Adds split modules while the creation context is still mutable. */
@@ -127,18 +174,17 @@ public class AttackContext {
     public void useExactSpawnPosition() { if (ensureMutable("useExactSpawnPosition")) this.useExactSpawnPosition = true; }
     public boolean usesExactSpawnPosition() { return useExactSpawnPosition; }
     public boolean isFrozen() { return frozen; }
-    /** Freezes this creation context so later trigger preparation cannot mutate it. */
-    public void freeze() { frozen = true; }
+    /** Resolves trajectories and locks controlled setters; mutable trigger/split access remains explicit. */
+    public void freeze() {
+        if (frozen) return;
+        trajectorySequence.resolve(getRootTypeId());
+        frozen = true;
+    }
 
     private boolean ensureMutable(String operation) {
         if (!frozen) return true;
         IsaacDisaster.LOGGER.warn("Ignored {} on frozen AttackContext", operation);
         return false;
-    }
-
-    private static Map<ResourceLocation, Integer> immutableMap(Map<ResourceLocation, Integer> source) {
-        if (source == null || source.isEmpty()) return Map.of();
-        return Collections.unmodifiableMap(new HashMap<>(source));
     }
 
     private static Set<BlockPos> immutableBlockPositions(Set<BlockPos> source) {
@@ -167,8 +213,9 @@ public class AttackContext {
     }
 
     private static double resolveBulletScaleModifier(LivingEntity owner, @Nullable Double requested) {
+        if (requested != null) return requested;
         AttributeInstance attribute = owner.getAttribute(ModAttributes.BULLET_SCALE.get());
-        return requested != null ? requested : attribute == null ? 0.0D : attribute.getValue();
+        return attribute == null ? 0.0D : attribute.getValue();
     }
 
     private static double resolveBulletScale(double damage, double modifier) {
@@ -194,25 +241,26 @@ public class AttackContext {
         return "AttackContext{damage=" + damage + ", range=" + bulletRange + ", speed=" + bulletSpeed + '}';
     }
 
-    private AttackContext(AttackContext source) {
+    private AttackContext(AttackContext source, boolean includeInheritance) {
         this.owner = source.owner;
         this.shooter = source.shooter;
         this.colorRl = source.colorRl;
         this.visualIds = Set.copyOf(source.visualIds);
         this.trigger = source.trigger.copy();
-        this.trajectories = immutableMap(source.trajectories);
+        this.trajectorySequence = source.trajectorySequence.copy();
         this.pos = source.pos;
         this.mainAxis = source.mainAxis;
         this.damage = source.damage;
         this.bulletScaleModifier = source.bulletScaleModifier;
         this.bulletScale = source.bulletScale;
-        this.directBulletScaleOverride = source.directBulletScaleOverride;
         this.bulletRange = source.bulletRange;
         this.bulletSpeed = source.bulletSpeed;
         this.splitSequence = source.splitSequence.copy();
         this.useExactSpawnPosition = source.useExactSpawnPosition;
         this.hitBlockPositions = immutableBlockPositions(source.hitBlockPositions);
+        this.inheritedTrajectorySnapshot = includeInheritance ? source.inheritedTrajectorySnapshot : null;
         this.frozen = source.frozen;
+        this.attackType = source.attackType;
     }
 
     private AttackContext(AttackContext source, Builder builder) {
@@ -221,7 +269,7 @@ public class AttackContext {
         this.colorRl = builder.colorRl;
         this.visualIds = Set.copyOf(builder.visualIds);
         this.trigger = builder.trigger == null ? new CompositeTrigger() : builder.trigger.copy();
-        this.trajectories = immutableMap(builder.trajectories);
+        this.trajectorySequence = builder.trajectorySequence.copy();
         this.pos = Objects.requireNonNull(builder.position, "position");
         this.mainAxis = builder.direction != null ? normalizeMainAxis(builder.direction)
                 : normalizeMainAxis(Objects.requireNonNull(builder.mainAxis, "mainAxis"));
@@ -229,13 +277,14 @@ public class AttackContext {
         this.bulletScaleModifier = builder.bulletScaleModifier == null
                 ? source.bulletScaleModifier : resolveBulletScaleModifier(source.owner, builder.bulletScaleModifier);
         this.bulletScale = resolveBulletScale(damage, bulletScaleModifier);
-        this.directBulletScaleOverride = false;
         this.bulletRange = sanitizeRange(builder.range);
         this.bulletSpeed = sanitizeSpeed(builder.speed);
         this.splitSequence = builder.splitSequence == null ? new SplitSequence() : builder.splitSequence.copy();
         this.useExactSpawnPosition = builder.useExactSpawnPosition;
         this.hitBlockPositions = immutableBlockPositions(builder.hitBlockPositions);
+        this.inheritedTrajectorySnapshot = builder.inheritedTrajectorySnapshot;
         this.frozen = false;
+        this.attackType = builder.attackType;
     }
 
     public static final class Builder {
@@ -245,7 +294,7 @@ public class AttackContext {
         private ResourceLocation colorRl;
         private Set<ResourceLocation> visualIds = Set.of();
         private CompositeTrigger trigger;
-        private Map<ResourceLocation, Integer> trajectories = Map.of();
+        private TrajectorySequence trajectorySequence = new TrajectorySequence();
         private Vec3 position;
         private Vec3 mainAxis;
         private Vec3 direction;
@@ -256,6 +305,8 @@ public class AttackContext {
         private SplitSequence splitSequence;
         private boolean useExactSpawnPosition;
         private Set<BlockPos> hitBlockPositions = Set.of();
+        private AttackType attackType;
+        private TrajectoryRuntime.Snapshot inheritedTrajectorySnapshot;
 
         private Builder(@NotNull LivingEntity owner, @Nullable Entity shooter) {
             this.owner = Objects.requireNonNull(owner, "owner");
@@ -268,8 +319,8 @@ public class AttackContext {
         public Builder color(ResourceLocation colorRl) { this.colorRl = colorRl; return this; }
         public Builder visuals(Set<ResourceLocation> visualIds) { this.visualIds = visualIds == null ? Set.of() : Set.copyOf(visualIds); return this; }
         public Builder trigger(CompositeTrigger trigger) { this.trigger = trigger; return this; }
-        public Builder trajectories(Map<ResourceLocation, Integer> trajectories) {
-            this.trajectories = trajectories == null ? Map.of() : trajectories; return this;
+        public Builder trajectorySequence(TrajectorySequence sequence) {
+            this.trajectorySequence = Objects.requireNonNull(sequence, "sequence").copy(); return this;
         }
         /** Supplies block contacts inherited by a split child. */
         public Builder hitBlockPositions(Set<BlockPos> positions) {
@@ -283,6 +334,11 @@ public class AttackContext {
                 this.hitBlockPositions = copy.isEmpty() ? Set.of() : Set.copyOf(copy);
             }
             return this;
+        }
+        public Builder attackType(AttackType value) { this.attackType = value; return this; }
+        /** Supplies a parent runtime snapshot for child initialization; null starts a fresh trajectory. */
+        public Builder inheritTrajectorySnapshot(@Nullable TrajectoryRuntime.Snapshot snapshot) {
+            this.inheritedTrajectorySnapshot = snapshot; return this;
         }
         public Builder position(Vec3 position) { this.position = Objects.requireNonNull(position, "position"); return this; }
         public Builder mainAxis(Vec3 mainAxis) {

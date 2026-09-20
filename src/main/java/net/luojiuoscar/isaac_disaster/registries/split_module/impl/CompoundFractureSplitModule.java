@@ -3,7 +3,6 @@ package net.luojiuoscar.isaac_disaster.registries.split_module.impl;
 import net.luojiuoscar.isaac_disaster.registries.attack_pattern.AttackPatternContext;
 import net.luojiuoscar.isaac_disaster.registries.attack_pattern.impl.HorizontalRandomAttackPattern;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackContext;
-import net.luojiuoscar.isaac_disaster.registries.attack_type.BulletSourceType;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.ModAttackTypes;
 import net.luojiuoscar.isaac_disaster.registries.bullet_visual.ModBulletVisuals;
 import net.luojiuoscar.isaac_disaster.registries.split_module.SplitContext;
@@ -27,8 +26,7 @@ public class CompoundFractureSplitModule extends SplitModule {
 
     @Override
     public boolean canTrigger(SplitContext context) {
-        if (context.getParent().getSourceType() == BulletSourceType.LASER
-                || context.getParent().getSourceType() == BulletSourceType.BRIMSTONE) return false;
+        if (!ModAttackTypes.BULLET.getId().equals(context.getParent().getRootTypeId())) return false;
         if (context.getTriggerType() != SplitTriggerType.ENTITY
                 && context.getTriggerType() != SplitTriggerType.BLOCK) return false;
         return context.getModuleTriggerCount() == 0;

@@ -36,13 +36,11 @@ public class PlayerAbility {
     private double cachedAttackPriority;
     private final LinkedHashMap<ResourceLocation, Integer> bulletColor; // priority-ordered color id : count
     private ResourceLocation bestBulletColor;
-    private final HashMap<ResourceLocation, Integer> trajectories;
     private final Map<ResourceLocation, Integer> bulletVisuals;
 
     public PlayerAbility() {
         attackType = new HashMap<>();
         bulletColor = new LinkedHashMap<>();
-        trajectories = new HashMap<>();
         bulletVisuals = new HashMap<>();
         init();
     }
@@ -64,7 +62,6 @@ public class PlayerAbility {
 
         attackType.clear();
         bulletColor.clear();
-        trajectories.clear();
         bulletVisuals.clear();
     }
 
@@ -85,8 +82,6 @@ public class PlayerAbility {
         this.attackType.putAll(source.attackType);
         this.bulletColor.clear();
         this.bulletColor.putAll(source.bulletColor);
-        this.trajectories.clear();
-        this.trajectories.putAll(source.trajectories);
         this.bulletVisuals.clear();
         this.bulletVisuals.putAll(source.bulletVisuals);
     }
@@ -117,15 +112,6 @@ public class PlayerAbility {
             bulletColorList.add(tag);
         }
         nbt.put("bullet_colors", bulletColorList);
-
-        ListTag trajectoriesList = new ListTag();
-        for (Map.Entry<ResourceLocation, Integer> entry : trajectories.entrySet()) {
-            CompoundTag tag = new CompoundTag();
-            tag.putString("trajectory_id", entry.getKey().toString());
-            tag.putInt("count", entry.getValue());
-            trajectoriesList.add(tag);
-        }
-        nbt.put("trajectories", trajectoriesList);
 
         ListTag visualList = new ListTag();
         for (var entry : bulletVisuals.entrySet()) {
@@ -172,20 +158,6 @@ public class PlayerAbility {
         }
 
         sortBulletColors();
-        trajectories.clear();
-        if (nbt.contains("trajectories", Tag.TAG_LIST)) {
-            ListTag list = nbt.getList("trajectories", Tag.TAG_COMPOUND);
-            for (Tag t : list) {
-                CompoundTag tag = (CompoundTag) t;
-                String trajIdStr = tag.getString("trajectory_id");
-                int count = tag.getInt("count");
-                try {
-                    ResourceLocation rl = ResourceLocation.parse(trajIdStr);
-                    trajectories.put(rl, count);
-                } catch (Exception ignored) {}
-            }
-        }
-
         bulletVisuals.clear();
         if (nbt.contains("bullet_visuals", Tag.TAG_LIST)) {
             for (Tag t : nbt.getList("bullet_visuals", Tag.TAG_COMPOUND)) {
@@ -373,20 +345,5 @@ public class PlayerAbility {
                 .forEach(entry -> sorted.put(entry.getKey(), entry.getValue()));
         bulletColor.clear();
         bulletColor.putAll(sorted);
-    }
-
-
-
-    public Map<ResourceLocation, Integer> getTrajectories() {
-        return new HashMap<>(trajectories);
-    }
-
-    public void addTrajectory(ResourceLocation rl, int count){
-        int c = trajectories.getOrDefault(rl, 0) + count;
-        if (c <= 0) {
-            trajectories.remove(rl);
-            return;
-        }
-        trajectories.put(rl, c);
     }
 }

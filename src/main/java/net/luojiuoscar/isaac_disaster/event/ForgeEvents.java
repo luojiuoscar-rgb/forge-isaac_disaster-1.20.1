@@ -10,6 +10,7 @@ import net.luojiuoscar.isaac_disaster.capability.player.flight.PlayerIsaacFlight
 import net.luojiuoscar.isaac_disaster.commands.familiar.FamiliarCmd;
 import net.luojiuoscar.isaac_disaster.commands.bullet.BulletCountCmd;
 import net.luojiuoscar.isaac_disaster.commands.bullet.BulletClearCmd;
+import net.luojiuoscar.isaac_disaster.commands.bullet.BulletTrajectoryTraceCmd;
 import net.luojiuoscar.isaac_disaster.commands.item.ItemClearCmd;
 import net.luojiuoscar.isaac_disaster.commands.item.ItemGetCmd;
 import net.luojiuoscar.isaac_disaster.commands.item.ItemSpawnCmd;
@@ -343,6 +344,7 @@ public class ForgeEvents {
         // bullet diagnostics
         new BulletCountCmd(event.getDispatcher());
         new BulletClearCmd(event.getDispatcher());
+        new BulletTrajectoryTraceCmd(event.getDispatcher());
 
         // pill
         new PillShuffleCmd(event.getDispatcher());

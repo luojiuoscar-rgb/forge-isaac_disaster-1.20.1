@@ -1,15 +1,15 @@
 package net.luojiuoscar.isaac_disaster.registries.attack_pattern.impl;
 
+import net.luojiuoscar.isaac_disaster.registries.attack_type.TestAttackTypes;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.CompositeTrigger;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackContext;
 import net.luojiuoscar.isaac_disaster.registries.split_module.SplitSequence;
 import net.luojiuoscar.isaac_disaster.helper.GeometryHelper;
-import net.minecraft.resources.ResourceLocation;
+import net.luojiuoscar.isaac_disaster.registries.trajectory.TrajectorySequence;
 import net.minecraft.world.phys.Vec3;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.Map;
 import java.util.Set;
 
 public final class PatternTestSupport {
@@ -33,13 +33,13 @@ public final class PatternTestSupport {
         setObject(unsafe, context, "colorRl", null);
         setObject(unsafe, context, "visualIds", Set.of());
         setObject(unsafe, context, "trigger", new CompositeTrigger());
-        setObject(unsafe, context, "trajectories", Map.<ResourceLocation, Integer>of());
+        setObject(unsafe, context, "trajectorySequence", new TrajectorySequence());
         setObject(unsafe, context, "pos", pos);
         setObject(unsafe, context, "mainAxis", GeometryHelper.mainAxisFromRotation(xRot, yRot));
         setFloat(unsafe, context, "damage", (float) DEFAULT_DAMAGE);
         setDouble(unsafe, context, "bulletScaleModifier", 0.0D);
         setDouble(unsafe, context, "bulletScale", 0.25D);
-        setBoolean(unsafe, context, "directBulletScaleOverride", false);
+        setObject(unsafe, context, "attackType", TestAttackTypes.BULLET);
         setDouble(unsafe, context, "bulletRange", DEFAULT_RANGE);
         setDouble(unsafe, context, "bulletSpeed", DEFAULT_SPEED);
         setObject(unsafe, context, "splitSequence", new SplitSequence());

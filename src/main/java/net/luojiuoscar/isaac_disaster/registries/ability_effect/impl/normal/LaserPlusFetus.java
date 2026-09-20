@@ -11,7 +11,6 @@ import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackPipelineMode;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackRequest;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.ModAttackTypes;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.IBulletObject;
-import net.luojiuoscar.isaac_disaster.registries.attack_type.BulletSourceType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 
@@ -25,7 +24,7 @@ public class LaserPlusFetus implements IAbilityEffect {
     @Override
     public boolean applyEffect(ExecutableEffectContext context) {
         IBulletObject bullet = context.get(ContextKeys.BULLET);
-        if (bullet == null || bullet.getSourceType() != BulletSourceType.FETUS_BULLET) return true;
+        if (bullet == null || !ModAttackTypes.C_SECTION.getId().equals(bullet.getTypeId())) return true;
         if (!(bullet.getOwner() instanceof Player player)) return true;
 
         int interval = 4; // fixed interval

@@ -133,6 +133,7 @@ public final class SplitSequence {
                 if (children.isEmpty()) continue;
 
                 AttackType childType = module.resolveChildAttackType(context);
+                children.replaceAll(child -> child.bindAttackTypeOrCopy(childType));
                 grouped.computeIfAbsent(childType, ignored -> new ArrayList<>()).addAll(children);
             }
 

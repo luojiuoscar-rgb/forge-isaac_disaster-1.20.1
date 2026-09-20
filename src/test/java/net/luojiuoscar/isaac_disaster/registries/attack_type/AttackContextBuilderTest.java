@@ -2,6 +2,7 @@ package net.luojiuoscar.isaac_disaster.registries.attack_type;
 
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.CompositeTrigger;
 import net.luojiuoscar.isaac_disaster.registries.split_module.SplitSequence;
+import net.luojiuoscar.isaac_disaster.registries.trajectory.TrajectorySequence;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.SharedConstants;
 import net.minecraft.world.entity.decoration.ArmorStand;
@@ -11,8 +12,6 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-import java.util.HashMap;
-import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotSame;
@@ -46,18 +45,18 @@ class AttackContextBuilderTest {
     void copiesMutableInputsAndCreatesIndependentSnapshots() {
         ArmorStand owner = owner();
         CompositeTrigger trigger = new CompositeTrigger();
-        Map<ResourceLocation, Integer> trajectories = new HashMap<>();
-        trajectories.put(ResourceLocation.fromNamespaceAndPath("test", "base"), 1);
+        TrajectorySequence trajectories = new TrajectorySequence();
+        trajectories.add(ResourceLocation.fromNamespaceAndPath("test", "base"), 1);
         SplitSequence sequence = new SplitSequence();
 
         AttackContext context = AttackContext.builder(owner, null)
                 .trigger(trigger)
-                .trajectories(trajectories)
+                .trajectorySequence(trajectories)
                 .splitSequence(sequence)
                 .build();
 
-        trajectories.clear();
-        assertEquals(1, context.getTrajectories().size());
+        trajectories.add(ResourceLocation.fromNamespaceAndPath("test", "another"), 1);
+        assertEquals(1, context.getTrajectorySpecs().size());
         assertNotSame(trigger, context.copyTrigger());
         assertNotSame(sequence, context.copySplitSequence());
         assertNotSame(context.copyTrigger(), context.copyTrigger());

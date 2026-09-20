@@ -20,7 +20,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.List;
-import java.util.Map;
 
 public class SadBomb extends BombRelated {
     @Override
@@ -31,12 +30,11 @@ public class SadBomb extends BombRelated {
                     AttackType attack = playerAbility.getCachedAttackType();
 
                     ResourceLocation colorRl = playerAbility.getBestBulletColor();
-                    Map<ResourceLocation, Integer> trajectories = playerAbility.getTrajectories();
 
                     int bulletCount = getBulletCount(bomb.getPower());
 
                     AttackContext ctx = AttackContext.builder(player, bomb)
-                            .color(colorRl).trigger(new CompositeTrigger()).trajectories(trajectories)
+                            .color(colorRl).trigger(new CompositeTrigger())
                             .position(pos).mainAxis(GeometryHelper.mainAxisFromRotation(bomb.getXRot(), bomb.getYRot()))
                             .range(attack.getRange(player)).speed(attack.getBulletSpeed(player)).build();
 

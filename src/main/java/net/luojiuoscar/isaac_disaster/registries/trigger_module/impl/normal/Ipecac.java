@@ -2,6 +2,7 @@ package net.luojiuoscar.isaac_disaster.registries.trigger_module.impl.normal;
 
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.*;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackContext;
+import net.luojiuoscar.isaac_disaster.registries.trajectory.ModTrajectoryModules;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerModule;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerTypes;
 
@@ -25,5 +26,7 @@ public class Ipecac extends TriggerModule {
     @Override
     public void attachToBullet(ExecutableEffectContext context, AttackContext attackContext) {
         attackContext.addSimpleTriggers(bullet_triggers);
+        attackContext.addTrajectoryModule(ModTrajectoryModules.GRAVITY.getId(),
+                context.getOrDefault(ContextKeys.AMPLIFIER, 1.0D).intValue());
     }
 }

@@ -1,11 +1,11 @@
 package net.luojiuoscar.isaac_disaster.networking.packet;
 
-import net.luojiuoscar.isaac_disaster.IsaacDisaster;
-import net.luojiuoscar.isaac_disaster.screen.IsaacItemScreen;
-import net.minecraft.client.Minecraft;
+import net.luojiuoscar.isaac_disaster.client.network.ClientPacketHandlers;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.network.NetworkEvent;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.fml.DistExecutor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -54,16 +54,9 @@ public class OpenIsaacItemScreenS2CPacket {
     public boolean handle(Supplier<NetworkEvent.Context> supplier) {
         NetworkEvent.Context context = supplier.get();
 
-        context.enqueueWork(() -> {
-            Minecraft mc = Minecraft.getInstance();
-
-            if (mc.player != null) {
-
-                IsaacDisaster.LOGGER.info("items: {}, trinkets: {}", passiveItems.size(), trinketItems.size());
-
-                mc.setScreen(new IsaacItemScreen(passiveItems, trinketItems));
-            }
-        });
+        DistExecutor.unsafeRunWhenOn(Dist.CLIENT,
+                () -> () -> context.enqueueWork(() -> ClientPacketHandlers.openIsaacItemScreen(passiveItems, trinketItems)));
+        context.setPacketHandled(true);
 
         return true;
     }

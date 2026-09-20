@@ -1,5 +1,6 @@
 package net.luojiuoscar.isaac_disaster.bullet.tracking;
 
+import net.luojiuoscar.isaac_disaster.registries.attack_type.ModAttackTypes;
 import net.luojiuoscar.isaac_disaster.bullet.core.BulletState;
 import net.luojiuoscar.isaac_disaster.bullet.core.BulletSteeringMode;
 import net.luojiuoscar.isaac_disaster.helper.EntityHelper;
@@ -16,7 +17,7 @@ import net.minecraft.world.phys.Vec3;
 public record TrackingProfile(double range, double steer, double forwardBias, double minHomingSpeed) {
     /** Resolves source-specific tracking strength without changing target geometry. */
     public static TrackingProfile forBullet(BulletState bullet) {
-        if (bullet.getSourceType() == net.luojiuoscar.isaac_disaster.registries.attack_type.BulletSourceType.FETUS_BULLET) {
+        if (ModAttackTypes.C_SECTION.getId().equals(bullet.getTypeId())) {
             return new TrackingProfile(bullet.homingRange(), Math.max(0.85D, bullet.homingSteer()), 0.5D, 0.25D);
         }
         return new TrackingProfile(bullet.homingRange(), bullet.homingSteer(), 0.5D, 0.0D);

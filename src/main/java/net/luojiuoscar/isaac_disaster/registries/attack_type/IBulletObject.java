@@ -5,6 +5,7 @@ import net.luojiuoscar.isaac_disaster.registries.attack_type.util.DamagedEntitie
 import net.luojiuoscar.isaac_disaster.registries.split_module.SplitSequence;
 import net.luojiuoscar.isaac_disaster.registries.split_module.SplitTriggerCounts;
 import net.luojiuoscar.isaac_disaster.registries.split_module.SplitTriggerType;
+import net.luojiuoscar.isaac_disaster.registries.trajectory.TrajectoryRuntime;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.LivingEntity;
@@ -13,7 +14,8 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 
 import javax.annotation.Nullable;
-import java.util.Map;
+import java.util.List;
+import net.luojiuoscar.isaac_disaster.registries.trajectory.TrajectorySpec;
 import java.util.Set;
 
 public interface IBulletObject {
@@ -21,7 +23,9 @@ public interface IBulletObject {
 
     AttackContext getAttackContext();
 
-    BulletSourceType getSourceType();
+    ResourceLocation getTypeId();
+
+    ResourceLocation getRootTypeId();
 
     SplitTriggerCounts getSplitTriggerCounts();
 
@@ -30,6 +34,9 @@ public interface IBulletObject {
     float getDamage();
 
     Vec3 getVelocity();
+
+    /** Returns the current acceleration used by the shared trajectory evaluator. */
+    default Vec3 getAcceleration() { return Vec3.ZERO; }
 
     double getTraveled();
 
@@ -61,7 +68,12 @@ public interface IBulletObject {
 
     ResourceLocation getColorId();
 
-    Map<ResourceLocation, Integer> getTrajectories();
+    /** The stable runtime owned by this projectile, never a transient copy. */
+    TrajectoryRuntime getTrajectoryRuntime();
+
+    default List<TrajectorySpec> getTrajectorySpecs() { return getTrajectoryRuntime().specs(); }
+
+    default int getTrajectoryAge() { return 0; }
 
     CompositeTrigger getTriggers();
 

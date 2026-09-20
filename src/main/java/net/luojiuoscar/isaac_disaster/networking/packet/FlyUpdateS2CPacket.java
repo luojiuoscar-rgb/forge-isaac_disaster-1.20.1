@@ -1,9 +1,9 @@
 package net.luojiuoscar.isaac_disaster.networking.packet;
 
-import net.luojiuoscar.isaac_disaster.client.ClientDataManager;
-import net.minecraft.client.Minecraft;
+import net.luojiuoscar.isaac_disaster.client.network.ClientPacketHandlers;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.world.entity.player.Player;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
@@ -27,13 +27,9 @@ public class FlyUpdateS2CPacket {
 
     public boolean handle(Supplier<NetworkEvent.Context> supplier){
         NetworkEvent.Context context = supplier.get();
-        context.enqueueWork(() -> {
-
-            Player player = Minecraft.getInstance().player;
-            if (player == null) return;
-
-            ClientDataManager.getInstance().setFlyPercentage(units);
-        });
+        DistExecutor.unsafeRunWhenOn(Dist.CLIENT,
+                () -> () -> context.enqueueWork(() -> ClientPacketHandlers.handleFlyUpdate(units)));
+        context.setPacketHandled(true);
         return true;
     }
 

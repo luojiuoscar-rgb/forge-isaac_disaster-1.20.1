@@ -4,6 +4,7 @@ import net.luojiuoscar.isaac_disaster.bullet.client.ClientBulletRuntime;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.network.NetworkEvent;
+import net.luojiuoscar.isaac_disaster.registries.trajectory.TrajectoryRuntime;
 
 import java.util.function.Supplier;
 
@@ -14,14 +15,19 @@ public final class BulletCorrectionS2CPacket {
     private final Vec3 position;
     private final Vec3 velocity;
     private final float blend;
+    private final TrajectoryRuntime.Snapshot trajectorySnapshot;
 
     public BulletCorrectionS2CPacket(int epoch, int slot, int generation, Vec3 position, Vec3 velocity, float blend) {
-        this.epoch = epoch;
-        this.slot = slot;
-        this.generation = generation;
+        this(epoch, slot, generation, position, velocity, blend, null);
+    }
+
+    public BulletCorrectionS2CPacket(int epoch, int slot, int generation, Vec3 position, Vec3 velocity, float blend,
+                                     TrajectoryRuntime.Snapshot trajectorySnapshot) {
+        this.epoch = epoch; this.slot = slot; this.generation = generation;
         this.position = position == null ? Vec3.ZERO : position;
         this.velocity = velocity == null ? Vec3.ZERO : velocity;
         this.blend = blend;
+        this.trajectorySnapshot = trajectorySnapshot;
     }
 
     public BulletCorrectionS2CPacket(int slot, int generation, Vec3 position, Vec3 velocity, float blend) {
@@ -29,7 +35,8 @@ public final class BulletCorrectionS2CPacket {
     }
 
     public BulletCorrectionS2CPacket(FriendlyByteBuf buf) {
-        this(buf.readVarInt(), buf.readVarInt(), buf.readVarInt(), readVec(buf), readVec(buf), buf.readFloat());
+        this(buf.readVarInt(), buf.readVarInt(), buf.readVarInt(), readVec(buf), readVec(buf), buf.readFloat(),
+                buf.readBoolean() ? TrajectoryRuntime.Snapshot.read(buf) : null);
     }
 
     public int epoch() { return epoch; }
@@ -38,6 +45,7 @@ public final class BulletCorrectionS2CPacket {
     public Vec3 position() { return position; }
     public Vec3 velocity() { return velocity; }
     public float blend() { return blend; }
+    public TrajectoryRuntime.Snapshot trajectorySnapshot() { return trajectorySnapshot; }
 
     public void toBytes(FriendlyByteBuf buf) {
         buf.writeVarInt(epoch);
@@ -46,6 +54,8 @@ public final class BulletCorrectionS2CPacket {
         writeVec(buf, position);
         writeVec(buf, velocity);
         buf.writeFloat(blend);
+        buf.writeBoolean(trajectorySnapshot != null);
+        if (trajectorySnapshot != null) trajectorySnapshot.write(buf);
     }
 
     public void handle(Supplier<NetworkEvent.Context> supplier) {
@@ -64,4 +74,5 @@ public final class BulletCorrectionS2CPacket {
         buf.writeDouble(vector.y);
         buf.writeDouble(vector.z);
     }
+
 }

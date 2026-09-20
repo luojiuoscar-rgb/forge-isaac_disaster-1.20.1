@@ -1,10 +1,10 @@
 package net.luojiuoscar.isaac_disaster.registries.attack_type.impl;
 
+import net.luojiuoscar.isaac_disaster.registries.attack_type.ModAttackTypes;
 import net.luojiuoscar.isaac_disaster.attribute.ModAttributes;
 import net.luojiuoscar.isaac_disaster.bullet.core.BulletSteeringMode;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerAbilityProvider;
 import net.luojiuoscar.isaac_disaster.bullet.core.BulletState;
-import net.luojiuoscar.isaac_disaster.registries.attack_type.BulletSourceType;
 import net.luojiuoscar.isaac_disaster.event.custom.attack.BeforePerformAttackEvent;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.CompositeTrigger;
@@ -15,7 +15,6 @@ import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackOrigin;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackPipelineMode;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackRequest;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.IChargeableAttack;
-import net.luojiuoscar.isaac_disaster.registries.attack_type.ModAttackTypes;
 import net.luojiuoscar.isaac_disaster.sound.ModSounds;
 import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.resources.ResourceLocation;
@@ -31,7 +30,6 @@ import net.minecraftforge.common.MinecraftForge;
 import org.joml.Vector3f;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Map;
 
 public class CSectionAttack extends BulletAttack implements IChargeableAttack {
     private static final float DAMAGE_PERCENTAGE = 0.75f;
@@ -63,6 +61,8 @@ public class CSectionAttack extends BulletAttack implements IChargeableAttack {
 
     @Override
     protected BulletState createOptimizedState(AttackContext context) {
+        context = context.bindAttackTypeOrCopy(this);
+        context.freeze();
         BulletState state = super.createOptimizedState(context);
         double collisionHeight = context.getBulletScale() * 0.35 * 1.8;
         return BulletState.from(context)
@@ -70,7 +70,7 @@ public class CSectionAttack extends BulletAttack implements IChargeableAttack {
                 .lifetime(state.lifetime())
                 .collisionWidth(context.getBulletScale() * 0.35 * 0.6)
                 .collisionHeight(collisionHeight)
-                .sourceType(BulletSourceType.FETUS_BULLET).homingRange(6.0).spectral(true).homing(true).piercing(true)
+                .homingRange(6.0).spectral(true).homing(true).piercing(true)
                 .controlRange(64.0D).controlSteer(0.8D)
                 .rememberHitTargets(false).steeringMode(BulletSteeringMode.DIRECT)
                 .maxSpeedChange(0.25D)
@@ -124,12 +124,11 @@ public class CSectionAttack extends BulletAttack implements IChargeableAttack {
         return player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY)
                 .map(playerAbility -> {
                     ResourceLocation colorRl = playerAbility.getBestBulletColor();
-                    Map<ResourceLocation, Integer> trajectories = playerAbility.getTrajectories();
                     Vec3 eyePos = player.position().add(0, player.getBbHeight() * 0.5, 0);
 
-                    return AttackContext.builder(player, shooter)
+                    return AttackContext.builder(player, shooter).attackType(this)
                             .color(colorRl).visuals(playerAbility.getBulletVisuals())
-                            .trigger(new CompositeTrigger()).trajectories(trajectories)
+                            .trigger(new CompositeTrigger())
                             .position(eyePos).mainAxis(GeometryHelper.mainAxisFromRotation(player.getXRot(), player.getYRot()))
                             .damage((double) getDamage(player) * DAMAGE_PERCENTAGE)
                             .range(getRange(player)).speed(getBulletSpeed(player)).build();
