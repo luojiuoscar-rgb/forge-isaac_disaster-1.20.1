@@ -16,9 +16,9 @@ import java.util.Map;
 
 class MyReflectionTrajectoryTest {
     private static final Map<ResourceLocation, TrajectoryModule> MODULES = Map.of(
-            MyReflectionLaserTrajectoryModule.ID, new MyReflectionLaserTrajectoryModule(),
-            MyReflectionBulletTrajectoryModule.ID, new MyReflectionBulletTrajectoryModule(),
-            TinyPlanetLaserTrajectoryModule.ID, new TinyPlanetLaserTrajectoryModule());
+            ModTrajectoryModules.MY_REFLECTION_LASER.getId(), new MyReflectionLaserTrajectoryModule(),
+            ModTrajectoryModules.MY_REFLECTION_BULLET.getId(), new MyReflectionBulletTrajectoryModule(),
+            ModTrajectoryModules.TINY_PLANET_LASER.getId(), new TinyPlanetLaserTrajectoryModule());
 
     private static final class Shot {
         final BulletState bullet;
@@ -39,20 +39,20 @@ class MyReflectionTrajectoryTest {
     }
 
     private static Shot laser(Vec3 axis) {
-        return new Shot(axis, TestAttackTypes.LASER, List.of(new TrajectorySpec(MyReflectionLaserTrajectoryModule.ID, 0)));
+        return new Shot(axis, TestAttackTypes.LASER, List.of(new TrajectorySpec(ModTrajectoryModules.MY_REFLECTION_LASER.getId(), 0)));
     }
 
     @Test void finalFloatingRangeResidueIsChargedEvenAfterPause() {
         Shot shot = laser(new Vec3(1, 0, 0));
         shot.step(MyReflectionLaserTrajectoryModule.PRELUDE);
         shot.bullet.restoreSnapshot(shot.bullet.position(), 0, Math.nextDown(100.0));
-        shot.bullet.getTrajectoryRuntime().states().get(MyReflectionLaserTrajectoryModule.ID).path().suspend();
+        shot.bullet.getTrajectoryRuntime().states().get(ModTrajectoryModules.MY_REFLECTION_LASER.getId()).path().suspend();
         shot.step(0.1);
         assertEquals(100, shot.bullet.traveled(), 0);
     }
 
     @Test void ordinaryRangeReplacesShortLifetimeAndClampsItsFinalStep() {
-        var id = MyReflectionBulletTrajectoryModule.ID;
+        var id = ModTrajectoryModules.MY_REFLECTION_BULLET.getId();
         BulletState bullet = BulletState.builder().velocity(new Vec3(1, 0, 0)).baseSpeed(1)
                 .range(3.25).lifetime(2).trajectorySpecs(List.of(new TrajectorySpec(id, 0))).build();
         for (int i = 0; i < 4; i++) {
@@ -96,8 +96,8 @@ class MyReflectionTrajectoryTest {
     }
 
     @Test void planetPreludeCompletesBeforeReflectionRegardlessOfAttachmentOrder() {
-        TrajectorySpec planet = new TrajectorySpec(TinyPlanetLaserTrajectoryModule.ID, 0);
-        TrajectorySpec reflection = new TrajectorySpec(MyReflectionLaserTrajectoryModule.ID, 0);
+        TrajectorySpec planet = new TrajectorySpec(ModTrajectoryModules.TINY_PLANET_LASER.getId(), 0);
+        TrajectorySpec reflection = new TrajectorySpec(ModTrajectoryModules.MY_REFLECTION_LASER.getId(), 0);
         for (List<TrajectorySpec> specs : List.of(List.of(planet, reflection), List.of(reflection, planet))) {
             Shot shot = new Shot(new Vec3(1, 1, 0), TestAttackTypes.BRIMSTONE, specs);
             double end = new TinyPlanetLaserTrajectoryModule().maximumFreeDistance(0);
@@ -119,7 +119,7 @@ class MyReflectionTrajectoryTest {
     @Test void homingPauseAndNetworkCopyPreservePhaseAndResumeFromCurrentPosition() {
         Shot server = laser(new Vec3(1, 0, 0));
         server.step(6);
-        TrajectoryRuntimeState state = server.bullet.getTrajectoryRuntime().states().get(MyReflectionLaserTrajectoryModule.ID);
+        TrajectoryRuntimeState state = server.bullet.getTrajectoryRuntime().states().get(ModTrajectoryModules.MY_REFLECTION_LASER.getId());
         server.bullet.setVelocity(new Vec3(0, 0.1, 0));
         server.bullet.tickPhysics();
         assertTrue(state.path().suspended());
@@ -129,7 +129,7 @@ class MyReflectionTrajectoryTest {
         FriendlyByteBuf buffer = new FriendlyByteBuf(Unpooled.buffer());
         try {
             state.copy().write(buffer);
-            client.bullet.getTrajectoryRuntime().states().put(MyReflectionLaserTrajectoryModule.ID, TrajectoryRuntimeState.read(buffer));
+            client.bullet.getTrajectoryRuntime().states().put(ModTrajectoryModules.MY_REFLECTION_LASER.getId(), TrajectoryRuntimeState.read(buffer));
         } finally { buffer.release(); }
         client.bullet.setPosition(server.bullet.position());
         client.bullet.setVelocity(server.bullet.velocity());
@@ -142,13 +142,13 @@ class MyReflectionTrajectoryTest {
             assertEquals(server.bullet.position(), client.bullet.position());
         }
         assertTrue(server.bullet.traveled() > 0.1);
-        assertNotSame(state, client.bullet.getTrajectoryRuntime().states().get(MyReflectionLaserTrajectoryModule.ID));
+        assertNotSame(state, client.bullet.getTrajectoryRuntime().states().get(ModTrajectoryModules.MY_REFLECTION_LASER.getId()));
     }
 
     @Test void ordinaryCanTurnFromExactlyOppositeAndKeepsItsSpawnTarget() {
         for (AttackType source : List.of(TestAttackTypes.BULLET, TestAttackTypes.C_SECTION)) {
             Shot shot = new Shot(new Vec3(1, 0, 0), source,
-                    List.of(new TrajectorySpec(MyReflectionBulletTrajectoryModule.ID, 0)));
+                    List.of(new TrajectorySpec(ModTrajectoryModules.MY_REFLECTION_BULLET.getId(), 0)));
             shot.bullet.setPosition(new Vec3(5, 0, 0));
             boolean slowed = false;
             boolean returned = false;
@@ -186,9 +186,9 @@ class MyReflectionTrajectoryTest {
 
     @Test void ownerMovementCannotChangeReflectionAndTurningStaysHorizontal() {
         Shot stationary = new Shot(new Vec3(1, 0, 0), TestAttackTypes.BULLET,
-                List.of(new TrajectorySpec(MyReflectionBulletTrajectoryModule.ID, 0)));
+                List.of(new TrajectorySpec(ModTrajectoryModules.MY_REFLECTION_BULLET.getId(), 0)));
         Shot moving = new Shot(new Vec3(1, 0, 0), TestAttackTypes.BULLET,
-                List.of(new TrajectorySpec(MyReflectionBulletTrajectoryModule.ID, 0)));
+                List.of(new TrajectorySpec(ModTrajectoryModules.MY_REFLECTION_BULLET.getId(), 0)));
         for (int i = 0; i < 100; i++) {
             moving.anchor = new Vec3(i * 3, -20, i);
             stationary.step(0.2); moving.step(0.2);
@@ -199,7 +199,7 @@ class MyReflectionTrajectoryTest {
 
     @Test void horizontalTurnTakesPriorityEvenWhenOriginIsBelowProjectile() {
         Shot shot = new Shot(new Vec3(1, 0, 0), TestAttackTypes.BULLET,
-                List.of(new TrajectorySpec(MyReflectionBulletTrajectoryModule.ID, 0)));
+                List.of(new TrajectorySpec(ModTrajectoryModules.MY_REFLECTION_BULLET.getId(), 0)));
         shot.bullet.setPosition(new Vec3(20, 2, 0));
         shot.step(1);
         assertTrue(shot.bullet.position().y > 1.99);

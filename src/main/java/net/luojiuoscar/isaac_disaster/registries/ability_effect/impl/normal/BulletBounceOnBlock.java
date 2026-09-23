@@ -37,7 +37,7 @@ public class BulletBounceOnBlock implements IAbilityEffect {
         // BulletManager resolves the optimized state to a non-overlapping center
         // before dispatching the event. Legacy entities still need this nudge here.
         b.pushOutOfBlock(normal);
-        b.setVelocity(reflected);
+        b.redirectTrajectory(reflected);
 
         // 清空被伤害过的实体
         b.getDamagedEntities().clear();

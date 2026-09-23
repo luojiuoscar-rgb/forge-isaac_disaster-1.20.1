@@ -50,11 +50,6 @@ public interface IBulletObject {
     @Nullable
     Object getShooter();
 
-    Vec3 getPrevShooterPos();
-
-    double getStartYRot();
-
-    double getStartXRot();
 
     boolean noGravity();
 
@@ -107,6 +102,13 @@ public interface IBulletObject {
 
     /** Replaces the authoritative velocity. */
     void setVelocity(Vec3 velocity);
+
+    /** Redirects both visible velocity and the trajectory primary axis after a bounce or effect. */
+    default void redirectTrajectory(Vec3 velocity) {
+        if (velocity == null) return;
+        setVelocity(velocity);
+        getTrajectoryRuntime().redirect(getPosition(), velocity);
+    }
 
     /** Returns the vertical collision-box size used by contact positioning. */
     default float getCollisionHeight() { return 0.25F; }

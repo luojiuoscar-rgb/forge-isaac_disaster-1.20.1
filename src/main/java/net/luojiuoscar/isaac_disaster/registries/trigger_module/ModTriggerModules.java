@@ -1,6 +1,7 @@
 package net.luojiuoscar.isaac_disaster.registries.trigger_module;
 
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
+import net.luojiuoscar.isaac_disaster.registries.trajectory.ModTrajectoryModules;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.impl.normal.*;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.impl.special.BulletTriggerModule;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.impl.special.HighPriorityPlayerPermanentModule;
@@ -18,6 +19,19 @@ public class ModTriggerModules {
 
     public static final DeferredRegister<TriggerModule> TRIGGER_MODULE_REGISTRY =
             DeferredRegister.create(TRIGGER_MODULE_KEY, IsaacDisaster.MOD_ID);
+
+    public static final RegistryObject<TriggerModule> TINY_PLANET =
+            TRIGGER_MODULE_REGISTRY.register("tiny_planet", () -> new TrajectoryAttachment(ModTrajectoryModules.TINY_PLANET_BULLET.getId(), ModTrajectoryModules.TINY_PLANET_LASER.getId()));
+    public static final RegistryObject<TriggerModule> MY_REFLECTION =
+            TRIGGER_MODULE_REGISTRY.register("my_reflection", () -> new TrajectoryAttachment(ModTrajectoryModules.MY_REFLECTION_BULLET.getId(), ModTrajectoryModules.MY_REFLECTION_LASER.getId()));
+    public static final RegistryObject<TriggerModule> HOOK_WORM =
+            TRIGGER_MODULE_REGISTRY.register("hook_worm", () -> new TrajectoryAttachment(ModTrajectoryModules.HOOK_WORM.getId()));
+    public static final RegistryObject<TriggerModule> WIGGLE_WORM =
+            TRIGGER_MODULE_REGISTRY.register("wiggle_worm", () -> new TrajectoryAttachment(ModTrajectoryModules.WIGGLE_WORM.getId()));
+    public static final RegistryObject<TriggerModule> RING_WORM =
+            TRIGGER_MODULE_REGISTRY.register("ring_worm", () -> new TrajectoryAttachment(ModTrajectoryModules.RING_WORM.getId()));
+    public static final RegistryObject<TriggerModule> OUROBOROS_WORM =
+            TRIGGER_MODULE_REGISTRY.register("ouroboros_worm", () -> new TrajectoryAttachment(ModTrajectoryModules.OUROBOROS_WORM.getId()));
 
 
     public static final RegistryObject<TriggerModule> PIGGY_BANK =

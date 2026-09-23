@@ -43,7 +43,7 @@ public class BulletBounceOnEntity implements IAbilityEffect {
             if (target != null) {
                 Vec3 dir = target.getEyePosition().subtract(bullet.getCenter()).normalize();
                 bullet.setCenter(offsetFromContact(contact, dir));
-                bullet.setVelocity(dir.scale(speed));
+                bullet.redirectTrajectory(dir.scale(speed));
                 event.setCanceled(true);
                 return true;
             }
@@ -62,7 +62,7 @@ public class BulletBounceOnEntity implements IAbilityEffect {
         bullet.getDamagedEntities().clear();
         if (lastHit != null) bullet.getDamagedEntities().add(lastHit);
 
-        bullet.setVelocity(randomDir.scale(speed));
+        bullet.redirectTrajectory(randomDir.scale(speed));
         bullet.setCenter(offsetFromContact(contact, randomDir));
         event.setCanceled(true);
 

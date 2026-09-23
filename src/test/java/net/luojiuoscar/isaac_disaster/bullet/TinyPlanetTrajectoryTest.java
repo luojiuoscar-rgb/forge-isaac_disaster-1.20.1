@@ -91,7 +91,7 @@ class TinyPlanetTrajectoryTest {
             boolean laser = source == TestAttackTypes.LASER
                     || source == TestAttackTypes.BRIMSTONE;
             module = laser ? new TinyPlanetLaserTrajectoryModule() : new TinyPlanetBulletTrajectoryModule();
-            var id = laser ? TinyPlanetLaserTrajectoryModule.ID : TinyPlanetBulletTrajectoryModule.ID;
+            var id = laser ? ModTrajectoryModules.TINY_PLANET_LASER.getId() : ModTrajectoryModules.TINY_PLANET_BULLET.getId();
             bullet = BulletState.builder().attackType(source).position(Vec3.ZERO).velocity(this.axis)
                     .trajectorySpecs(java.util.List.of(new TrajectorySpec(id, amplifier)))
                     .range(200).lifetime(laser ? 100000 : 2).baseSpeed(1).build();

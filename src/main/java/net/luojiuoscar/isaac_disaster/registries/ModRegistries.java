@@ -16,7 +16,8 @@ import net.luojiuoscar.isaac_disaster.registries.familiar.FamiliarEntityType;
 import net.luojiuoscar.isaac_disaster.registries.recursive_module.RecursiveModule;
 import net.luojiuoscar.isaac_disaster.registries.revive_module.ReviveModule;
 import net.luojiuoscar.isaac_disaster.registries.split_module.SplitModule;
-import net.luojiuoscar.isaac_disaster.registries.trajectory.IAttackTrajectory;
+import net.luojiuoscar.isaac_disaster.registries.trajectory.TrajectoryModule;
+import net.luojiuoscar.isaac_disaster.registries.trajectory.rule.TrajectoryRule;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerModule;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.rule.TriggerModuleRule;
 import net.luojiuoscar.isaac_disaster.registries.visual.VisualLayer;
@@ -39,7 +40,9 @@ import static net.luojiuoscar.isaac_disaster.registries.familiar.ModFamiliarEnti
 import static net.luojiuoscar.isaac_disaster.registries.recursive_module.ModRecursiveModules.RECURSIVE_MODULE_REGISTRY;
 import static net.luojiuoscar.isaac_disaster.registries.revive_module.ModReviveModules.REVIVE_MODULE_REGISTRY;
 import static net.luojiuoscar.isaac_disaster.registries.split_module.ModSplitModules.SPLIT_MODULE_REGISTRY;
-import static net.luojiuoscar.isaac_disaster.registries.trajectory.ModAttackTrajectories.ATTACK_TRAJECTORY_REGISTRY;
+import static net.luojiuoscar.isaac_disaster.registries.trajectory.ModTrajectoryModules.TRAJECTORY_MODULE_REGISTRY;
+import static net.luojiuoscar.isaac_disaster.registries.trajectory.rule.ModTrajectoryRules.TRAJECTORY_RULE_KEY;
+import static net.luojiuoscar.isaac_disaster.registries.trajectory.rule.ModTrajectoryRules.TRAJECTORY_RULE_REGISTRY;
 import static net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerModules.TRIGGER_MODULE_REGISTRY;
 import static net.luojiuoscar.isaac_disaster.registries.trigger_module.rule.ModTriggerModuleRules.TRIGGER_MODULE_RULE_REGISTRY;
 import static net.luojiuoscar.isaac_disaster.registries.visual.ModVisualLayers.VISUAL_LAYER_REGISTRY;
@@ -49,9 +52,13 @@ public class ModRegistries {
     public static void register(IEventBus modEventBus) {
         IsaacDisaster.LOGGER.info("Initializing Registries...");
 
-        ATTACK_TRAJECTORY_REGISTRY.makeRegistry(() -> {return new RegistryBuilder<IAttackTrajectory>()
-                    .setName(ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "attack_trajectory"));});
-        ATTACK_TRAJECTORY_REGISTRY.register(modEventBus);
+        TRAJECTORY_MODULE_REGISTRY.makeRegistry(() -> {return new RegistryBuilder<TrajectoryModule>()
+                .setName(ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "trajectory_module"));});
+        TRAJECTORY_MODULE_REGISTRY.register(modEventBus);
+
+        TRAJECTORY_RULE_REGISTRY.makeRegistry(() -> new RegistryBuilder<TrajectoryRule>()
+                .setName(TRAJECTORY_RULE_KEY.location()));
+        TRAJECTORY_RULE_REGISTRY.register(modEventBus);
 
         BULLET_COLOR_REGISTRY.makeRegistry(() -> {return new RegistryBuilder<BulletColor>()
                 .setName(ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "bullet_color"));});

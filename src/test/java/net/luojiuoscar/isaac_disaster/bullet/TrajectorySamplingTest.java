@@ -13,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class TrajectorySamplingTest {
     @Test void laserBudgetCountsEachRemainingPreludeOnceAndHookDoesNotPausePrimary() {
         var b = bullet(TestAttackTypes.LASER, new Vec3(1, 0, 0), "tiny_planet_laser", "my_reflection_laser", "hook_worm");
-        double expected = MODULES.get(TinyPlanetLaserTrajectoryModule.ID).maximumFreeDistance(0)
+        double expected = MODULES.get(ModTrajectoryModules.TINY_PLANET_LASER.getId()).maximumFreeDistance(0)
                 + MyReflectionLaserTrajectoryModule.PRELUDE + 5;
         assertEquals(expected, TrajectoryEvaluator.remainingFreeDistance(b, MODULES::get), 1e-8);
         step(b, 1);
@@ -92,11 +92,11 @@ class TrajectorySamplingTest {
     static final Map<ResourceLocation, TrajectoryModule> MODULES = Map.of(
             id("hook_worm"), new HookWormTrajectoryModule(), id("wiggle_worm"), new WiggleWormTrajectoryModule(),
             id("ring_worm"), new RingWormTrajectoryModule(), id("ouroboros_worm"), new OuroborosWormTrajectoryModule(),
-            GravityTrajectoryModule.ID, new GravityTrajectoryModule(),
-            MyReflectionBulletTrajectoryModule.ID, new MyReflectionBulletTrajectoryModule(),
-            TinyPlanetBulletTrajectoryModule.ID, new TinyPlanetBulletTrajectoryModule(),
-            TinyPlanetLaserTrajectoryModule.ID, new TinyPlanetLaserTrajectoryModule(),
-            MyReflectionLaserTrajectoryModule.ID, new MyReflectionLaserTrajectoryModule());
+            ModTrajectoryModules.GRAVITY.getId(), new GravityTrajectoryModule(),
+            ModTrajectoryModules.MY_REFLECTION_BULLET.getId(), new MyReflectionBulletTrajectoryModule(),
+            ModTrajectoryModules.TINY_PLANET_BULLET.getId(), new TinyPlanetBulletTrajectoryModule(),
+            ModTrajectoryModules.TINY_PLANET_LASER.getId(), new TinyPlanetLaserTrajectoryModule(),
+            ModTrajectoryModules.MY_REFLECTION_LASER.getId(), new MyReflectionLaserTrajectoryModule());
 
     static BulletState bullet(AttackType variant, Vec3 axis, String... modules) {
         return BulletState.builder().attackType(variant).position(Vec3.ZERO).velocity(axis.normalize()).baseSpeed(1)
