@@ -75,9 +75,10 @@ class BulletStateTest {
 
     @Test
     void clientCorrectionIsBlendedInsteadOfSnapping() {
-        BulletState state = BulletState.builder().position(Vec3.ZERO).build();
-        state.applyCorrection(new Vec3(10, 0, 0), Vec3.ZERO, 0.25);
-        assertEquals(2.5, state.position().x, 1e-9);
+    BulletState state = BulletState.builder().position(Vec3.ZERO).build();
+    state.applyCorrection(new Vec3(10, 0, 0), Vec3.ZERO, 0.25);
+    assertEquals(10, state.position().x, 1e-9);
+    assertEquals(2.5, state.previousPosition().x, 1e-9);
     }
 
     @Test

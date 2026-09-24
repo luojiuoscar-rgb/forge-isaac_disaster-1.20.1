@@ -1,6 +1,7 @@
 package net.luojiuoscar.isaac_disaster.registries.trajectory;
 
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
+import net.luojiuoscar.isaac_disaster.registries.trajectory.impl.*;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;

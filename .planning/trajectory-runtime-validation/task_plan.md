@@ -1,5 +1,17 @@
 # Trajectory Redesign Checklist
 
+## Active: review remediation and legacy cleanup (2026-09-21)
+
+- [ ] Make bounce redirects update the trajectory main direction without resetting module phase.
+- [ ] Make client corrections atomically synchronize simulation position, traveled distance and runtime while retaining render interpolation.
+- [ ] Roll back an unaccepted trajectory step before a canceled/redirected collision resumes from the contact point.
+- [ ] Bound offset evaluation before allocating sampled paths; preserve collision precision for accepted work.
+- [ ] Move primary ordering, range-cost merging and default-motion pausing out of concrete ID/class checks.
+- [ ] Reduce module-state snapshot payload and narrow raw mutable runtime access without removing the intentional execution interface.
+- [ ] Replace the global bullet entity-query AABB with local spatial queries and remove disabled telemetry/client/collision hot-path overhead.
+- [ ] Remove confirmed dead trajectory APIs and fields, then run Java 17 JUnit and Forge GameTests.
+
+Behavior constraint: preserve the current seven trajectory formulas and visible paths for normal supported stacks. Extreme work-limit termination must be explicit rather than silently lowering collision precision.
 ## Active: per-projectile TrajectoryRuntime (2026-09-14)
 
 - [x] Remove loose trajectory runtime parameters from AttackContext and IBulletObject.
