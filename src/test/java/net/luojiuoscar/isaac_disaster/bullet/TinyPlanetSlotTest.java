@@ -20,7 +20,7 @@ class TinyPlanetSlotTest {
                 .range(200)
                 .build();
         final TinyPlanetBulletTrajectoryModule module = new TinyPlanetBulletTrajectoryModule();
-        TrajectoryRuntimeState state = new TrajectoryRuntimeState();
+        TinyPlanetBulletTrajectoryModule.State state = module.createState();
 
         Shot(int slot) {
             bullet.assignSlot(slot, 1);
@@ -35,7 +35,7 @@ class TinyPlanetSlotTest {
                         bullet.velocity(),
                         new Vec3(0.1, 0, 0),
                         Vec3.ZERO,
-                        state.path().distance(),
+                        state.distance(),
                         0,
                         1,
                         Vec3.ZERO,
@@ -74,8 +74,8 @@ class TinyPlanetSlotTest {
         client.bullet.setVelocity(server.bullet.velocity());
         FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
         try {
-            server.state.copy().write(buf);
-            client.state = TrajectoryRuntimeState.read(buf);
+            server.module.writeState(buf, server.state.copy());
+            client.state = client.module.readState(buf);
         } finally {
             buf.release();
         }
@@ -84,7 +84,7 @@ class TinyPlanetSlotTest {
             client.step();
             assertEquals(server.bullet.position(), client.bullet.position());
         }
-        client.state.path().suspend();
-        assertFalse(server.state.path().suspended());
+        client.state.suspend();
+        assertFalse(server.state.suspended());
     }
 }

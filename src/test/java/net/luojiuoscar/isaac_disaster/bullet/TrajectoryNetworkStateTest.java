@@ -8,13 +8,15 @@ import net.luojiuoscar.isaac_disaster.bullet.client.ClientBulletRuntime;
 import net.luojiuoscar.isaac_disaster.networking.packet.bullet.BulletCorrectionS2CPacket;
 import net.luojiuoscar.isaac_disaster.networking.packet.bullet.BulletSpawnS2CPacket;
 import net.luojiuoscar.isaac_disaster.registries.trajectory.*;
+import net.luojiuoscar.isaac_disaster.registries.trajectory.impl.GravityTrajectoryModule;
+import net.luojiuoscar.isaac_disaster.registries.trajectory.impl.WiggleWormTrajectoryModule;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.Vec3;
 import org.junit.jupiter.api.Test;
 
 class TrajectoryNetworkStateTest {
-    private static final ResourceLocation ID = ResourceLocation.parse("isaac_disaster:gravity");
+    private static final ResourceLocation ID = ResourceLocation.parse("isaac_disaster:wiggle_worm");
     private static final Vec3 ORIGIN = new Vec3(1, 2, 3);
     private static final Vec3 AXIS = new Vec3(0, 0, 1);
     private static final Vec3 RESIDUAL = new Vec3(0.25, -1.5, 0);
@@ -26,11 +28,9 @@ class TrajectoryNetworkStateTest {
         runtime.distance(8.5);
         runtime.compositionOffset(RESIDUAL);
         runtime.compositionVelocityOffset(VELOCITY_RESIDUAL);
-        var state = new TrajectoryRuntimeState();
+        var state = new WiggleWormTrajectoryModule.State();
         state.phase(1.25);
-        state.stage(2);
-        state.direction(-1);
-        state.triggered(true);
+        state.suspend();
         runtime.states().put(ID, state);
         runtime.kinematics().initialized(true);
         runtime.kinematics().initializeLaunchBasis(new Vec3(1, 1, 0));
@@ -49,11 +49,7 @@ class TrajectoryNetworkStateTest {
         assertEquals(VELOCITY_RESIDUAL, actual.compositionVelocityOffset());
         assertEquals(8.5, actual.distance());
         var state = actual.states().get(ID);
-        assertEquals(1.25, state.phase());
-        assertEquals(2, state.stage());
-        assertEquals(-1, state.direction());
-        assertTrue(state.triggered());
-        assertTrue(state.path().suspended());
+        assertTrue(state instanceof WiggleWormTrajectoryModule.State wiggle && wiggle.phase() == 1.25);
         assertTrue(actual.suspended());
         assertEquals(6.25, actual.kinematics().distance());
         assertEquals(new Vec3(1, -0.2, 0), actual.kinematics().velocity());
@@ -96,7 +92,7 @@ class TrajectoryNetworkStateTest {
                 0,
                 0,
                 source.snapshot());
-        source.states().get(ID).phase(99);
+        ((WiggleWormTrajectoryModule.State) source.states().get(ID)).phase(99);
         var buffer = new FriendlyByteBuf(Unpooled.buffer());
         try {
             packet.toBytes(buffer);
@@ -109,7 +105,7 @@ class TrajectoryNetworkStateTest {
             assertEquals(ResourceLocation.parse("addon:flame"), client.getRootTypeId());
             assertRuntime(client.getTrajectoryRuntime());
             assertEquals(new Vec3(8, 9, 10), client.position());
-            client.getTrajectoryRuntime().states().get(ID).phase(99);
+            ((WiggleWormTrajectoryModule.State) client.getTrajectoryRuntime().states().get(ID)).phase(99);
             client.getTrajectoryRuntime().kinematics().distance(100);
             assertRuntime(decoded.trajectorySnapshot().restore());
         } finally {
@@ -129,7 +125,7 @@ class TrajectoryNetworkStateTest {
         client
             .getTrajectoryRuntime()
             .states()
-            .put(ResourceLocation.parse("test:removed"), new TrajectoryRuntimeState());
+            .put(ResourceLocation.parse("test:removed"), GravityTrajectoryModule.State.INSTANCE);
         var packet =
             new BulletCorrectionS2CPacket(
                 1, 2, 3, new Vec3(10, 0, 0), Vec3.ZERO, 0.5f, runtime().snapshot());
@@ -143,7 +139,7 @@ class TrajectoryNetworkStateTest {
             assertEquals(1, client.getTrajectoryRuntime().states().size());
             assertEquals(10, client.position().x);
             assertEquals(5, client.previousPosition().x);
-            client.getTrajectoryRuntime().states().get(ID).phase(77);
+            ((WiggleWormTrajectoryModule.State) client.getTrajectoryRuntime().states().get(ID)).phase(77);
             assertRuntime(decoded.trajectorySnapshot().restore());
         } finally {
             stream.clear();

@@ -52,7 +52,7 @@ public class ModRegistries {
     public static void register(IEventBus modEventBus) {
         IsaacDisaster.LOGGER.info("Initializing Registries...");
 
-        TRAJECTORY_MODULE_REGISTRY.makeRegistry(() -> {return new RegistryBuilder<TrajectoryModule>()
+        TRAJECTORY_MODULE_REGISTRY.makeRegistry(() -> {return new RegistryBuilder<TrajectoryModule<?>>()
                 .setName(ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "trajectory_module"));});
         TRAJECTORY_MODULE_REGISTRY.register(modEventBus);
 

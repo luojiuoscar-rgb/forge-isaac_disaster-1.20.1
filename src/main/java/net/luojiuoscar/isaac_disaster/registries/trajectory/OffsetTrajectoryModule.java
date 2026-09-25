@@ -3,42 +3,67 @@ package net.luojiuoscar.isaac_disaster.registries.trajectory;
 import net.minecraft.world.phys.Vec3;
 
 /** Shape-only modules run after primary motion and cannot replace its velocity or range cost. */
-public abstract class OffsetTrajectoryModule extends TrajectoryModule {
+public abstract class OffsetTrajectoryModule<S extends TrajectoryState>
+        extends TrajectoryModule<S> {
     @Override
     public final Role role() {
         return Role.OFFSET;
     }
 
     @Override
-    public final TrajectoryMotion apply(TrajectoryContext context) {
+    protected final TrajectoryMotion applyTyped(TrajectoryContext context, S state) {
         throw new IllegalStateException("Offset modules require the shared primary frame");
     }
 
-    public abstract Vec3 offset(
-        TrajectoryKinematics frame, TrajectoryRuntimeState state, int amplifier);
-
-    public void advance(TrajectoryRuntimeState state, double primaryDistance, double movementBudget) {
-        state.phase(state.phase() + primaryDistance);
+    public final Vec3 offset(TrajectoryKinematics frame, TrajectoryState state, int amplifier) {
+        return offsetTyped(frame, castState(state), amplifier);
     }
+
+    protected abstract Vec3 offsetTyped(TrajectoryKinematics frame, S state, int amplifier);
+
+    public final void advance(
+            TrajectoryState state, double primaryDistance, double movementBudget) {
+        advanceTyped(castState(state), primaryDistance, movementBudget);
+    }
+
+    protected void advanceTyped(S state, double primaryDistance, double movementBudget) {}
 
     public double amplitude(int amplifier) {
         return 0;
     }
 
-    /** Whether this shape temporarily owns movement when no primary controller is active. */
-    public boolean pausesDefaultMotion(TrajectoryRuntimeState state, boolean hasPrimary) {
+    public final boolean pausesDefaultMotion(TrajectoryState state, boolean hasPrimary) {
+        return pausesDefaultMotionTyped(castState(state), hasPrimary);
+    }
+
+    protected boolean pausesDefaultMotionTyped(S state, boolean hasPrimary) {
         return false;
     }
 
-    /** Remaining movement in this module before a discontinuous stage boundary. */
-    public double distanceToBoundary(TrajectoryRuntimeState state) {
+    public final double distanceToBoundary(TrajectoryState state) {
+        return distanceToBoundaryTyped(castState(state));
+    }
+
+    protected double distanceToBoundaryTyped(S state) {
         return Double.POSITIVE_INFINITY;
     }
 
-    /** Rate used to consume distanceToBoundary during this evaluator step. */
-    public double boundaryAdvanceRate(
-        TrajectoryRuntimeState state, double primaryRate, double movementRate) {
+    public final double boundaryAdvanceRate(
+            TrajectoryState state, double primaryRate, double movementRate) {
+        return boundaryAdvanceRateTyped(castState(state), primaryRate, movementRate);
+    }
+
+    protected double boundaryAdvanceRateTyped(S state, double primaryRate, double movementRate) {
         return primaryRate;
+    }
+
+    /** Optional discrete stage used to advance across zero-distance boundaries. */
+    public final int stage(TrajectoryState state) {
+        return stageTyped(castState(state));
+    }
+
+    protected int stageTyped(S state) {
+        return 0;
     }
 
     /** Maximum primary-distance increment used for smooth curve sampling. */

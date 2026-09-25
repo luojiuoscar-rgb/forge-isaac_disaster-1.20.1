@@ -4,21 +4,34 @@ package net.luojiuoscar.isaac_disaster.registries.trajectory;
  * Shared base for offset trajectories whose phase advances continuously and is evaluated as an
  * angle.
  */
-public abstract class PeriodicOffsetTrajectoryModule extends OffsetTrajectoryModule {
+public abstract class PeriodicOffsetTrajectoryModule<S extends TrajectoryState>
+        extends OffsetTrajectoryModule<S> {
     protected static final double ENTRY_DISTANCE = 2;
     protected static final double PERIOD = 8;
 
-    /** Smoothly enables the periodic offset during the initial entry distance. */
-    protected final double envelope(TrajectoryRuntimeState state) {
-        return TrajectoryFrame.smootherstep(state.phase() / ENTRY_DISTANCE);
+    protected final double envelope(S state) {
+        return TrajectoryFrame.smootherstep(phase(state) / ENTRY_DISTANCE);
     }
 
-    /** Converts the distance based phase into the current periodic angle. */
-    protected final double angle(TrajectoryRuntimeState state) {
-        return state.phase() * (2 * Math.PI / phasePeriod());
+    protected final double angle(S state) {
+        return phase(state) * (2 * Math.PI / phasePeriod());
     }
 
-    /** Distance travelled by the primary path for one complete cycle. */
+    @Override
+    public double telemetryPhase(TrajectoryState state) {
+        return phase(castState(state));
+    }
+
+    @Override
+    protected void advanceTyped(S state, double primaryDistance, double movementBudget) {
+        setPhase(state, phase(state) + Math.max(0.0D, primaryDistance));
+    }
+
+    /** Module-specific phase, kept out of the shared runtime state. */
+    protected abstract double phase(S state);
+
+    protected abstract void setPhase(S state, double value);
+
     protected double phasePeriod() {
         return PERIOD;
     }

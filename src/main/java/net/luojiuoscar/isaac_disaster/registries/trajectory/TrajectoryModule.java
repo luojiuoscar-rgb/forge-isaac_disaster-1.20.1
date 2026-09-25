@@ -1,9 +1,15 @@
 package net.luojiuoscar.isaac_disaster.registries.trajectory;
 
-import java.util.List;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.IBulletObject;
+import net.minecraft.network.FriendlyByteBuf;
 
-public abstract class TrajectoryModule {
+import java.util.List;
+
+/**
+ * Stateless registry definition for one trajectory. Mutable per-projectile data belongs to the
+ * state instance supplied by {@link TrajectoryRuntime}.
+ */
+public abstract class TrajectoryModule<S extends TrajectoryState> {
     public enum Role {
         PRIMARY,
         OFFSET
@@ -13,18 +19,11 @@ public abstract class TrajectoryModule {
         return Role.PRIMARY;
     }
 
-    /**
-     * Ordering among primary motion modules. Higher values run first; this is a composition order,
-     * not the order in which modules were attached.
-     */
+    /** Higher values run first. */
     public int priority() {
         return 0;
     }
 
-    /**
-     * How this module's reported range cost combines with earlier primary costs. MINIMUM keeps the
-     * least cost in the composed step; REPLACE makes this module's cost authoritative.
-     */
     public enum RangeCostPolicy {
         MINIMUM,
         REPLACE
@@ -34,30 +33,73 @@ public abstract class TrajectoryModule {
         return RangeCostPolicy.MINIMUM;
     }
 
-    /**
-     * Whether this module temporarily prevents later primary modules from taking over while its
-     * current phase is active.
-     */
-    public boolean blocksFollowingPrimary(TrajectoryRuntimeState state, int amplifier) {
+    public abstract S createState();
+
+    protected abstract Class<S> stateClass();
+
+    public abstract void writeState(FriendlyByteBuf buffer, S state);
+
+    public abstract S readState(FriendlyByteBuf buffer);
+
+    public final S castState(TrajectoryState state) {
+        if (state == null) return createState();
+        if (!stateClass().isInstance(state))
+            throw new IllegalStateException(
+                    "Trajectory state " + state.getClass().getName()
+                            + " does not belong to " + getClass().getName());
+        return stateClass().cast(state);
+    }
+
+    public final void writeStateUnchecked(FriendlyByteBuf buffer, TrajectoryState state) {
+        writeState(buffer, castState(state));
+    }
+
+    protected final S state(TrajectoryContext context) {
+        return castState(context.runtimeState);
+    }
+
+    public boolean blocksFollowingPrimary(TrajectoryState state, int amplifier) {
+        return blocksFollowingPrimaryTyped(castState(state), amplifier);
+    }
+
+    protected boolean blocksFollowingPrimaryTyped(S state, int amplifier) {
         return false;
     }
 
-    public boolean freeDistanceCoveredByPrimary(TrajectoryRuntimeState state, boolean hasPrimary) {
+    public boolean freeDistanceCoveredByPrimary(TrajectoryState state, boolean hasPrimary) {
+        return freeDistanceCoveredByPrimaryTyped(castState(state), hasPrimary);
+    }
+
+    protected boolean freeDistanceCoveredByPrimaryTyped(S state, boolean hasPrimary) {
         return false;
+    }
+
+    /** Progress already consumed by this module's free-distance phase. */
+    public double progressDistance(TrajectoryState state) {
+        return 0;
+    }
+
+    /** Read-only diagnostic phase exposed without knowing a concrete state type. */
+    public double telemetryPhase(TrajectoryState state) {
+        return progressDistance(state);
     }
 
     public boolean appliesTo(IBulletObject bullet) {
         return true;
     }
 
-    /** Evaluates a step; mutable memory is confined to the projectile context. */
-    public abstract TrajectoryMotion apply(TrajectoryContext ctx);
-
-    /** Captures immutable launch data before the first network snapshot. */
-    public void initialize(TrajectoryContext context) {
+    public final TrajectoryMotion apply(TrajectoryContext context) {
+        return applyTyped(context, state(context));
     }
 
-    /** Upper bound on travel that can occur without consuming laser range. */
+    protected abstract TrajectoryMotion applyTyped(TrajectoryContext context, S state);
+
+    public final void initialize(TrajectoryContext context) {
+        initializeTyped(context, state(context));
+    }
+
+    protected void initializeTyped(TrajectoryContext context, S state) {}
+
     public double maximumFreeDistance(int amplifier) {
         return 0;
     }

@@ -24,12 +24,13 @@ import net.luojiuoscar.isaac_disaster.registries.attack_type.*;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.impl.LaserAttack;
 import net.luojiuoscar.isaac_disaster.registries.trajectory.ModTrajectoryModules;
 import net.luojiuoscar.isaac_disaster.registries.trajectory.TrajectoryRuntime;
-import net.luojiuoscar.isaac_disaster.registries.trajectory.TrajectoryRuntimeState;
+import net.luojiuoscar.isaac_disaster.registries.trajectory.TrajectoryState;
 import net.luojiuoscar.isaac_disaster.registries.trajectory.TrajectorySpec;
 import net.luojiuoscar.isaac_disaster.registries.trajectory.impl.GravityTrajectoryModule;
 import net.luojiuoscar.isaac_disaster.registries.trajectory.impl.MyReflectionBulletTrajectoryModule;
 import net.luojiuoscar.isaac_disaster.registries.trajectory.impl.MyReflectionLaserTrajectoryModule;
 import net.luojiuoscar.isaac_disaster.registries.trajectory.impl.TinyPlanetTrajectoryModule;
+import net.luojiuoscar.isaac_disaster.registries.trajectory.impl.WiggleWormTrajectoryModule;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerModules;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
@@ -52,7 +53,7 @@ public final class TrajectoryModuleGameTests {
         ResourceLocation a = ExternalTrajectoryRuleRegistration.A;
         ResourceLocation b = ExternalTrajectoryRuleRegistration.B;
         ResourceLocation e = ExternalTrajectoryRuleRegistration.E;
-        TrajectoryRuntimeState oldState = new TrajectoryRuntimeState();
+        WiggleWormTrajectoryModule.State oldState = new WiggleWormTrajectoryModule.State();
         oldState.phase(4);
         TrajectoryRuntime inherited =
             new TrajectoryRuntime(Vec3.ZERO, new Vec3(1, 0, 0), List.of(new TrajectorySpec(a, 0)));
@@ -150,7 +151,7 @@ public final class TrajectoryModuleGameTests {
                     .baseSpeed(1)
                     .range(100)
                     .build();
-            TrajectoryRuntimeState state = new TrajectoryRuntimeState();
+            MyReflectionBulletTrajectoryModule.State state = module.createState();
             module.initialize(
                 new net.luojiuoscar.isaac_disaster.registries.trajectory.TrajectoryContext(
                     bullet,
@@ -200,16 +201,16 @@ public final class TrajectoryModuleGameTests {
                             1,
                             origin.add(0, -50, 0),
                             0,
-                            new TrajectoryRuntimeState()));
+                            module.createState()));
                 helper.assertTrue(
                     fixed.desiredPosition().equals(motion.desiredPosition()),
                     "Other shooter retains spawn target");
             }
             var buffer = new net.minecraft.network.FriendlyByteBuf(io.netty.buffer.Unpooled.buffer());
-            TrajectoryRuntimeState decoded;
+            MyReflectionBulletTrajectoryModule.State decoded;
             try {
-                state.copy().write(buffer);
-                decoded = TrajectoryRuntimeState.read(buffer);
+                module.writeState(buffer, state.copy());
+                decoded = module.readState(buffer);
             } finally {
                 buffer.release();
             }
@@ -286,7 +287,7 @@ public final class TrajectoryModuleGameTests {
             parent.getTrajectoryRuntime().origin().equals(spawn),
             "Laser does not inherit parent origin");
         var mirror = new MyReflectionLaserTrajectoryModule();
-        var mirrorState = new TrajectoryRuntimeState();
+        var mirrorState = mirror.createState();
         mirror.apply(
             new net.luojiuoscar.isaac_disaster.registries.trajectory.TrajectoryContext(
                 parent,
@@ -309,7 +310,7 @@ public final class TrajectoryModuleGameTests {
             "Laser child owns its spawn origin");
         helper.assertTrue(
             parent.getTrajectoryRuntime().origin().equals(spawn), "Parent origin unchanged");
-        double rest = MyReflectionLaserTrajectoryModule.PRELUDE - mirrorState.path().distance();
+        double rest = MyReflectionLaserTrajectoryModule.PRELUDE - mirrorState.distance();
         var result =
             mirror.apply(
                 new net.luojiuoscar.isaac_disaster.registries.trajectory.TrajectoryContext(
@@ -757,7 +758,7 @@ public final class TrajectoryModuleGameTests {
         modules(player).getTriggerModules().add(ModTriggerModules.WIGGLE_WORM.getId(), 2);
         AttackContext parent = prepare(player, AttackContext.builder(player, player).build());
         ResourceLocation id = ModTrajectoryModules.WIGGLE_WORM.getId();
-        TrajectoryRuntimeState runtime = new TrajectoryRuntimeState();
+        WiggleWormTrajectoryModule.State runtime = new WiggleWormTrajectoryModule.State();
         runtime.phase(2.5D);
         TrajectoryRuntime inherited =
             new TrajectoryRuntime(parent.getPos(), parent.getMainAxis(), parent.getTrajectorySpecs());
@@ -766,13 +767,13 @@ public final class TrajectoryModuleGameTests {
         AttackContext child = parent.toBuilder().direction(new Vec3(-1, 0, 0)).build();
         child.addTrajectoryModule(id, 1);
         runtime.phase(99);
-        child.getInheritedTrajectorySnapshot().restore().states().get(id).phase(88);
+        ((WiggleWormTrajectoryModule.State) child.getInheritedTrajectorySnapshot().restore().states().get(id)).phase(88);
         helper.assertTrue(
             parent.getTrajectorySpecs().get(0).amplifier() == 1, "Parent stack isolation");
         helper.assertTrue(
             child.getTrajectorySpecs().get(0).amplifier() == 2, "Child independently adds stacks");
         helper.assertTrue(
-            child.getInheritedTrajectorySnapshot().restore().states().get(id).phase() == 2.5D,
+            ((WiggleWormTrajectoryModule.State) child.getInheritedTrajectorySnapshot().restore().states().get(id)).phase() == 2.5D,
             "Runtime defensive copies");
         CaptureAttack capture = new CaptureAttack();
         AttackPipeline.executeRequest(
@@ -793,9 +794,9 @@ public final class TrajectoryModuleGameTests {
             BulletState bullet = BulletState.from(child.copy().bindAttackTypeOrCopy(source)).build();
             helper.assertTrue(
                 bullet.getTrajectorySpecs().equals(child.getTrajectorySpecs()), "Bullet family snapshot");
-            bullet.getTrajectoryRuntime().states().get(id).phase(7);
+            ((WiggleWormTrajectoryModule.State) bullet.getTrajectoryRuntime().states().get(id)).phase(7);
             helper.assertTrue(
-                child.getInheritedTrajectorySnapshot().restore().states().get(id).phase() == 2.5D,
+                ((WiggleWormTrajectoryModule.State) child.getInheritedTrajectorySnapshot().restore().states().get(id)).phase() == 2.5D,
                 "Bullet runtime isolation");
         }
         LaserAttack.LaserProjectile laser =
@@ -836,13 +837,13 @@ public final class TrajectoryModuleGameTests {
                 projectile.getTrajectoryRuntime().launchDirection().equals(new Vec3(0, 0, -1)),
                 "Uses final prepared axis");
             var id = ModTrajectoryModules.WIGGLE_WORM.getId();
-            projectile.getTrajectoryRuntime().states().put(id, new TrajectoryRuntimeState());
-            projectile.getTrajectoryRuntime().states().get(id).phase(2.5);
+            projectile.getTrajectoryRuntime().putState(id, new WiggleWormTrajectoryModule.State());
+            ((WiggleWormTrajectoryModule.State) projectile.getTrajectoryRuntime().states().get(id)).phase(2.5);
             AttackContext exported = projectile.getAttackContext();
-            projectile.getTrajectoryRuntime().states().get(id).phase(7);
+            ((WiggleWormTrajectoryModule.State) projectile.getTrajectoryRuntime().states().get(id)).phase(7);
             if (projectile instanceof BulletState) {
                 helper.assertTrue(
-                    exported.copy().getInheritedTrajectorySnapshot().restore().states().get(id).phase()
+                    ((WiggleWormTrajectoryModule.State) exported.copy().getInheritedTrajectorySnapshot().restore().states().get(id)).phase()
                         == 2.5,
                     "Exported and copied bullet contexts cannot alias live runtime");
             } else {

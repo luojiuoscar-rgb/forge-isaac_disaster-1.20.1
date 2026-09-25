@@ -14,6 +14,13 @@ import org.junit.jupiter.api.Test;
 
 class TrajectorySamplingTest {
     @Test
+    void unknownPrimaryModuleKeepsBaseMotion() {
+        var bullet = bullet(TestAttackTypes.BULLET, new Vec3(1, 0, 0), "unknown");
+        var motion = TrajectoryEvaluator.evaluate(bullet, new Vec3(1, 0, 0), 1, 1, MODULES::get);
+        assertEquals(new Vec3(1, 0, 0), motion.desiredPosition());
+    }
+
+    @Test
     void laserBudgetCountsEachRemainingPreludeOnceAndHookDoesNotPausePrimary() {
         var b =
             bullet(
@@ -62,11 +69,11 @@ class TrajectorySamplingTest {
             var f = new TrajectoryKinematics();
             f.initializeLaunchBasis(new Vec3(1, 1, 1));
             f.orient(new Vec3(1, 1, 1));
-            var s = new TrajectoryRuntimeState();
+            var s = newOffsetState(module);
             assertEquals(0, module.offset(f, s, 0).length(), 0);
-            s.phase(0.001);
+            setPhase(s, 0.001);
             assertTrue(module.offset(f, s, 2).length() < 1e-7);
-            s.phase(module instanceof WiggleWormTrajectoryModule ? 3 : 2);
+            setPhase(s, module instanceof WiggleWormTrajectoryModule ? 3 : 2);
             assertEquals(module.amplitude(2), module.offset(f, s, 2).length(), 1e-8);
             if (module instanceof OuroborosWormTrajectoryModule)
                 assertEquals(0, module.offset(f, s, 2).dot(f.right()), 1e-8);
@@ -93,15 +100,15 @@ class TrajectorySamplingTest {
             var b = bullet(TestAttackTypes.LASER, new Vec3(1, 1, 0), primary, "ring_worm", "hook_worm");
             for (int i = 0; i < 10; i++) step(b, 0.1);
             assertEquals(0, b.traveled(), 1e-8);
-            assertTrue(b.getTrajectoryRuntime().states().get(id("ring_worm")).phase() > 0.1);
+            assertTrue(phase(b.getTrajectoryRuntime().states().get(id("ring_worm"))) > 0.1);
             for (int repeat = 0; repeat < 3; repeat++) {
-                double phase = b.getTrajectoryRuntime().states().get(id("ring_worm")).phase();
+                double phase = phase(b.getTrajectoryRuntime().states().get(id("ring_worm")));
                 b.setVelocity(new Vec3(0, 0, 0.2));
                 b.tickPhysics();
                 Vec3 start = b.position();
                 step(b, 0.01);
                 assertTrue(b.position().distanceTo(start) < 0.1);
-                assertTrue(b.getTrajectoryRuntime().states().get(id("ring_worm")).phase() >= phase);
+                assertTrue(phase(b.getTrajectoryRuntime().states().get(id("ring_worm"))) >= phase);
             }
             int ticks = 0;
             while (b.traveled() < 40 - 1e-7 && ticks++ < 1000) step(b, 0.1);
@@ -125,6 +132,25 @@ class TrajectorySamplingTest {
 
     static ResourceLocation id(String name) {
         return ResourceLocation.parse("isaac_disaster:" + name);
+    }
+
+    private static TrajectoryState newOffsetState(OffsetTrajectoryModule module) {
+        if (module instanceof WiggleWormTrajectoryModule) return new WiggleWormTrajectoryModule.State();
+        if (module instanceof RingWormTrajectoryModule) return new RingWormTrajectoryModule.State();
+        return new OuroborosWormTrajectoryModule.State();
+    }
+
+    private static double phase(TrajectoryState state) {
+        if (state instanceof WiggleWormTrajectoryModule.State value) return value.phase();
+        if (state instanceof RingWormTrajectoryModule.State value) return value.phase();
+        if (state instanceof OuroborosWormTrajectoryModule.State value) return value.phase();
+        return 0;
+    }
+
+    private static void setPhase(TrajectoryState state, double value) {
+        if (state instanceof WiggleWormTrajectoryModule.State target) target.phase(value);
+        else if (state instanceof RingWormTrajectoryModule.State target) target.phase(value);
+        else if (state instanceof OuroborosWormTrajectoryModule.State target) target.phase(value);
     }
 
     static final Map<ResourceLocation, TrajectoryModule> MODULES =
@@ -232,9 +258,9 @@ class TrajectorySamplingTest {
     void hookPausesOtherWormPhasesOnlyWhenPrimaryIsStationary() {
         var b = bullet(TestAttackTypes.BULLET, new Vec3(1, 0, 0), "hook_worm", "ring_worm");
         step(b, 2);
-        double phase = b.getTrajectoryRuntime().states().get(id("ring_worm")).phase();
+        double phase = phase(b.getTrajectoryRuntime().states().get(id("ring_worm")));
         step(b, 1);
-        assertEquals(phase, b.getTrajectoryRuntime().states().get(id("ring_worm")).phase(), 1e-8);
+        assertEquals(phase, phase(b.getTrajectoryRuntime().states().get(id("ring_worm"))), 1e-8);
         var g = bullet(TestAttackTypes.BULLET, new Vec3(1, 0, 0), "hook_worm", "ring_worm", "gravity");
         step(g, 2);
         double distance = frame(g).distance();
@@ -312,14 +338,14 @@ class TrajectorySamplingTest {
     void trackingResumesFromCurrentPointWithoutResettingPhase() {
         var b = bullet(TestAttackTypes.BULLET, new Vec3(1, 0, 0), "ring_worm");
         step(b, 5);
-        double phase = b.getTrajectoryRuntime().states().get(id("ring_worm")).phase();
+        double phase = phase(b.getTrajectoryRuntime().states().get(id("ring_worm")));
         b.setVelocity(new Vec3(0, 1, 0));
         b.tickPhysics();
         b.setPosition(new Vec3(30, 20, 10));
         Vec3 before = b.position();
         step(b, 0.01);
         assertTrue(b.position().distanceTo(before) < 0.02);
-        assertTrue(b.getTrajectoryRuntime().states().get(id("ring_worm")).phase() > phase);
+        assertTrue(phase(b.getTrajectoryRuntime().states().get(id("ring_worm"))) > phase);
         assertTrue(frame(b).forward().y > 0.99);
     }
 }

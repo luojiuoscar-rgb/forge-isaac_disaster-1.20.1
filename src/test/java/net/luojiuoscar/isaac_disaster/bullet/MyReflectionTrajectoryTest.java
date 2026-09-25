@@ -70,7 +70,6 @@ class MyReflectionTrajectoryTest {
             .getTrajectoryRuntime()
             .states()
             .get(ModTrajectoryModules.MY_REFLECTION_LASER.getId())
-            .path()
             .suspend();
         shot.step(0.1);
         assertEquals(100, shot.bullet.traveled(), 0);
@@ -151,8 +150,8 @@ class MyReflectionTrajectoryTest {
                 shot.step(0.1);
                 var planetState = shot.bullet.getTrajectoryRuntime().states().get(planet.id());
                 var mirrorState = shot.bullet.getTrajectoryRuntime().states().get(reflection.id());
-                if (planetState.path().distance() < end - 1e-8) {
-                    assertTrue(mirrorState == null || mirrorState.path().distance() == 0);
+                if (((TinyPlanetLaserTrajectoryModule.State) planetState).distance() < end - 1e-8) {
+                    assertTrue(mirrorState == null || ((MyReflectionLaserTrajectoryModule.State) mirrorState).distance() == 0);
                     assertEquals(0, shot.bullet.traveled(), 1e-12);
                 }
             }
@@ -163,7 +162,7 @@ class MyReflectionTrajectoryTest {
                     && Double.isFinite(shot.bullet.position().z),
                 "combined laser remains on a finite path after the prelude");
             assertTrue(
-                shot.bullet.getTrajectoryRuntime().states().get(planet.id()).path().distance()
+                ((TinyPlanetLaserTrajectoryModule.State) shot.bullet.getTrajectoryRuntime().states().get(planet.id())).distance()
                     >= end - 1e-8,
                 "planet prelude must be complete before the first charged laser step");
         }
@@ -173,28 +172,28 @@ class MyReflectionTrajectoryTest {
     void homingPauseAndNetworkCopyPreservePhaseAndResumeFromCurrentPosition() {
         Shot server = laser(new Vec3(1, 0, 0));
         server.step(6);
-        TrajectoryRuntimeState state =
-            server
-                .bullet
-                .getTrajectoryRuntime()
-                .states()
-                .get(ModTrajectoryModules.MY_REFLECTION_LASER.getId());
+        MyReflectionLaserTrajectoryModule.State state =
+            (MyReflectionLaserTrajectoryModule.State)
+                server
+                    .bullet
+                    .getTrajectoryRuntime()
+                    .states()
+                    .get(ModTrajectoryModules.MY_REFLECTION_LASER.getId());
         server.bullet.setVelocity(new Vec3(0, 0.1, 0));
         server.bullet.tickPhysics();
-        assertTrue(state.path().suspended());
-        assertEquals(6, state.path().distance(), 1e-10);
+        assertTrue(state.suspended());
+        assertEquals(6, state.distance(), 1e-10);
         assertEquals(0.1, server.bullet.traveled(), 1e-10);
         Shot client = laser(new Vec3(1, 0, 0));
         FriendlyByteBuf buffer = new FriendlyByteBuf(Unpooled.buffer());
         try {
-            state.copy().write(buffer);
+            new MyReflectionLaserTrajectoryModule().writeState(buffer, state.copy());
             client
                 .bullet
                 .getTrajectoryRuntime()
-                .states()
-                .put(
+                .putState(
                     ModTrajectoryModules.MY_REFLECTION_LASER.getId(),
-                    TrajectoryRuntimeState.read(buffer));
+                    new MyReflectionLaserTrajectoryModule().readState(buffer));
         } finally {
             buffer.release();
         }
@@ -273,7 +272,7 @@ class MyReflectionTrajectoryTest {
                         1,
                         new Vec3(5, 0, 10),
                         0,
-                        new TrajectoryRuntimeState()));
+                        new MyReflectionBulletTrajectoryModule.State()));
         assertTrue(motion.desiredVelocity().length() <= 1.00000001);
         assertTrue(motion.desiredVelocity().z > 0.1);
         assertTrue(motion.desiredPosition().z > 0);
@@ -303,7 +302,7 @@ class MyReflectionTrajectoryTest {
                         1,
                         Vec3.ZERO,
                         0,
-                        new TrajectoryRuntimeState()));
+                        new MyReflectionLaserTrajectoryModule.State()));
         assertEquals(0, motion.chargedDistance(0.1), 1e-12);
     }
 

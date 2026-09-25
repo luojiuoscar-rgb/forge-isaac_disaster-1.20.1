@@ -46,7 +46,7 @@ class TinyPlanetTrajectoryTest {
                         1,
                         Vec3.ZERO,
                         0,
-                        new TrajectoryRuntimeState()));
+                        new TinyPlanetBulletTrajectoryModule.State()));
         var laserMotion =
             new TinyPlanetLaserTrajectoryModule()
                 .apply(
@@ -61,7 +61,7 @@ class TinyPlanetTrajectoryTest {
                         1,
                         Vec3.ZERO,
                         0,
-                        new TrajectoryRuntimeState()));
+                        new TinyPlanetLaserTrajectoryModule.State()));
 
         assertEquals(4, bulletMotion.rangeCost(), 1e-8);
         assertEquals(0, laserMotion.rangeCost(), 1e-8);
@@ -77,7 +77,7 @@ class TinyPlanetTrajectoryTest {
                 .lifetime(1000)
                 .attackType(TestAttackTypes.LASER)
                 .build();
-        TrajectoryRuntimeState state = new TrajectoryRuntimeState();
+        TinyPlanetLaserTrajectoryModule.State state = new TinyPlanetLaserTrajectoryModule.State();
         TinyPlanetTrajectoryModule module = new TinyPlanetLaserTrajectoryModule();
         var first =
             module.apply(
@@ -95,7 +95,7 @@ class TinyPlanetTrajectoryTest {
                     state));
         bullet.setPosition(first.desiredPosition());
         bullet.restoreSnapshot(bullet.position(), 0, Math.nextDown(16.0));
-        state.path().suspend();
+        state.suspend();
         var last =
             module.apply(
                 new TrajectoryContext(
@@ -104,7 +104,7 @@ class TinyPlanetTrajectoryTest {
                     bullet.velocity(),
                     new Vec3(0.1, 0, 0),
                     Vec3.ZERO,
-                    state.path().distance(),
+                    state.distance(),
                     0,
                     1,
                     Vec3.ZERO,
@@ -171,7 +171,7 @@ class TinyPlanetTrajectoryTest {
 
     private static final class Simulation {
         final BulletState bullet;
-        final TrajectoryRuntimeState state = new TrajectoryRuntimeState();
+        final TrajectoryState state;
         final TrajectoryModule module;
         final Vec3 axis;
         final int amplifier;
@@ -181,8 +181,8 @@ class TinyPlanetTrajectoryTest {
             this.axis = axis.normalize();
             this.amplifier = amplifier;
             boolean laser = source == TestAttackTypes.LASER || source == TestAttackTypes.BRIMSTONE;
-            module =
-                laser ? new TinyPlanetLaserTrajectoryModule() : new TinyPlanetBulletTrajectoryModule();
+            module = laser ? new TinyPlanetLaserTrajectoryModule() : new TinyPlanetBulletTrajectoryModule();
+            state = laser ? new TinyPlanetLaserTrajectoryModule.State() : new TinyPlanetBulletTrajectoryModule.State();
             var id =
                 laser
                     ? ModTrajectoryModules.TINY_PLANET_LASER.getId()
@@ -208,7 +208,7 @@ class TinyPlanetTrajectoryTest {
                         bullet.velocity(),
                         axis.scale(length),
                         Vec3.ZERO,
-                        state.path().distance(),
+                        module.progressDistance(state),
                         0,
                         1,
                         anchor,
@@ -250,7 +250,7 @@ class TinyPlanetTrajectoryTest {
                 assertEquals(0, entry.distanceTo(sim.bullet.position()), 1e-7);
                 assertEquals(0, sim.bullet.traveled(), 1e-7);
                 sim.step(2.25);
-                assertEquals(freeEnd + 0.25, sim.state.path().distance(), 1e-7);
+                assertEquals(freeEnd + 0.25, ((TinyPlanetTrajectoryModule.State) sim.state).distance(), 1e-7);
                 assertEquals(0.25, sim.bullet.traveled(), 1e-7);
                 assertEquals(1, sim.bullet.velocity().normalize().dot(axis.normalize()), 1e-6);
                 assertEquals(0, sim.bullet.position().cross(axis).length(), 1e-7);
@@ -299,12 +299,12 @@ class TinyPlanetTrajectoryTest {
     void suspensionPreservesPhaseAndResumesFromCurrentPosition() {
         Simulation sim = new Simulation(TestAttackTypes.BULLET, new Vec3(1, 0, 0), 0);
         sim.step(4);
-        double phase = sim.state.path().distance();
-        sim.state.path().suspend();
+        double phase = ((TinyPlanetTrajectoryModule.State) sim.state).distance();
+        sim.state.suspend();
         sim.bullet.setPosition(new Vec3(9, 8, 7));
         sim.bullet.setVelocity(new Vec3(1, 0, 0));
         var resumed = sim.step(0);
-        assertEquals(phase, sim.state.path().distance());
+        assertEquals(phase, ((TinyPlanetTrajectoryModule.State) sim.state).distance());
         assertEquals(new Vec3(9, 8, 7), resumed.desiredPosition());
         sim.step(2);
         assertTrue(sim.bullet.position().distanceTo(new Vec3(9, 8, 7)) <= 2 + 1e-7);
@@ -318,13 +318,13 @@ class TinyPlanetTrajectoryTest {
         sim.step(5);
         var buf = new net.minecraft.network.FriendlyByteBuf(io.netty.buffer.Unpooled.buffer());
         try {
-            sim.state.write(buf);
-            var decoded = TrajectoryRuntimeState.read(buf);
+            ((TinyPlanetTrajectoryModule) sim.module).writeState(buf, sim.state);
+            var decoded = (TrajectoryState) ((TinyPlanetTrajectoryModule) sim.module).readState(buf);
             var copy = decoded.copy();
-            copy.path().suspend();
-            assertFalse(decoded.path().suspended());
-            assertEquals(5, decoded.path().distance());
-            assertEquals(sim.state.phase(), decoded.phase());
+            copy.suspend();
+            assertFalse(decoded instanceof TinyPlanetTrajectoryModule.State state && state.suspended());
+            assertEquals(5, ((TinyPlanetTrajectoryModule.State) decoded).distance());
+            assertEquals(((TinyPlanetTrajectoryModule.State) sim.state).phase(), ((TinyPlanetTrajectoryModule.State) decoded).phase());
         } finally {
             buf.release();
         }
@@ -350,7 +350,7 @@ class TinyPlanetTrajectoryTest {
                 .baseSpeed(1)
                 .range(200)
                 .build();
-        TrajectoryRuntimeState state = new TrajectoryRuntimeState();
+        TinyPlanetBulletTrajectoryModule.State state = new TinyPlanetBulletTrajectoryModule.State();
         TinyPlanetTrajectoryModule module = new TinyPlanetBulletTrajectoryModule();
         for (int i = 0; i < 1000; i++) {
             var motion =
