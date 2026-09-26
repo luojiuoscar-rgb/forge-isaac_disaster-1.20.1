@@ -1,8 +1,10 @@
 package net.luojiuoscar.isaac_disaster.networking.packet.bullet;
 
-import net.luojiuoscar.isaac_disaster.bullet.client.ClientBulletRuntime;
+import net.luojiuoscar.isaac_disaster.client.network.ClientPacketHandlers;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.network.NetworkEvent;
 
 import java.util.List;
@@ -116,7 +118,9 @@ public final class BulletTrackingBatchS2CPacket {
 
     public void handle(Supplier<NetworkEvent.Context> supplier) {
         NetworkEvent.Context context = supplier.get();
-        context.enqueueWork(() -> ClientBulletRuntime.INSTANCE.applyTracking(this));
+        DistExecutor.unsafeRunWhenOn(
+                Dist.CLIENT,
+                () -> () -> context.enqueueWork(() -> ClientPacketHandlers.handleBulletTracking(this)));
         context.setPacketHandled(true);
     }
 

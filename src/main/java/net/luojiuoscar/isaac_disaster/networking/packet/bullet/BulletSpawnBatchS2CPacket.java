@@ -1,7 +1,9 @@
 package net.luojiuoscar.isaac_disaster.networking.packet.bullet;
 
-import net.luojiuoscar.isaac_disaster.bullet.client.ClientBulletRuntime;
+import net.luojiuoscar.isaac_disaster.client.network.ClientPacketHandlers;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.network.NetworkEvent;
 
 import java.util.List;
@@ -26,7 +28,9 @@ public final class BulletSpawnBatchS2CPacket {
 
     public void handle(Supplier<NetworkEvent.Context> supplier) {
         NetworkEvent.Context context = supplier.get();
-        context.enqueueWork(() -> entries.forEach(ClientBulletRuntime.INSTANCE::spawn));
+        DistExecutor.unsafeRunWhenOn(
+                Dist.CLIENT,
+                () -> () -> context.enqueueWork(() -> ClientPacketHandlers.handleBulletSpawnBatch(this)));
         context.setPacketHandled(true);
     }
 }

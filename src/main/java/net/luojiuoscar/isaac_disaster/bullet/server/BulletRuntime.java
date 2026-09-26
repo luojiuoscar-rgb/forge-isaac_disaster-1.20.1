@@ -254,7 +254,8 @@ public final class BulletRuntime {
                 state.collisionWidth(), state.collisionHeight(), state.color(), state.alpha(), new ArrayList<>(state.visualIds()),
                 state.getTypeId(), state.getRootTypeId(),
                 state.ownerUuid(), state.isHoming(), state.isControllable(), state.homingRange(), state.homingSteer(),
-                 state.controlRange(), state.controlSteer(), state.getTrajectoryRuntime().snapshot());
+                 state.controlRange(), state.controlSteer(), state.steeringMode(),
+                 state.getTrajectoryRuntime().snapshot());
     }
 
     private static long identity(int slot, int generation) {

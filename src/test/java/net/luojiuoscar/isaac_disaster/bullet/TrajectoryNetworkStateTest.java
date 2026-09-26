@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import io.netty.buffer.Unpooled;
 import java.util.List;
 import net.luojiuoscar.isaac_disaster.bullet.client.ClientBulletRuntime;
+import net.luojiuoscar.isaac_disaster.bullet.core.BulletSteeringMode;
 import net.luojiuoscar.isaac_disaster.networking.packet.bullet.BulletCorrectionS2CPacket;
 import net.luojiuoscar.isaac_disaster.networking.packet.bullet.BulletSpawnS2CPacket;
 import net.luojiuoscar.isaac_disaster.registries.trajectory.*;
@@ -91,7 +92,8 @@ class TrajectoryNetworkStateTest {
                 0,
                 0,
                 0,
-                source.snapshot());
+                 BulletSteeringMode.DIRECT,
+                 source.snapshot());
         ((WiggleWormTrajectoryModule.State) source.states().get(ID)).phase(99);
         var buffer = new FriendlyByteBuf(Unpooled.buffer());
         try {
@@ -103,6 +105,7 @@ class TrajectoryNetworkStateTest {
             var client = ClientBulletRuntime.INSTANCE.stream().get(7, 3);
             assertEquals(ResourceLocation.parse("addon:blue_flame"), client.getTypeId());
             assertEquals(ResourceLocation.parse("addon:flame"), client.getRootTypeId());
+            assertEquals(BulletSteeringMode.DIRECT, client.steeringMode());
             assertRuntime(client.getTrajectoryRuntime());
             assertEquals(new Vec3(8, 9, 10), client.position());
             ((WiggleWormTrajectoryModule.State) client.getTrajectoryRuntime().states().get(ID)).phase(99);
