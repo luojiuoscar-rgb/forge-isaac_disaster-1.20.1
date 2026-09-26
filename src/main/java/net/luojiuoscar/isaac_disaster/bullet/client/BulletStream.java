@@ -1,21 +1,23 @@
 package net.luojiuoscar.isaac_disaster.bullet.client;
 
-import net.luojiuoscar.isaac_disaster.bullet.tracking.TrackingProfile;
-import net.luojiuoscar.isaac_disaster.bullet.core.BulletState;
-import net.minecraft.world.phys.Vec3;
-import net.luojiuoscar.isaac_disaster.networking.packet.bullet.BulletTrackingBatchS2CPacket;
-
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
+import net.luojiuoscar.isaac_disaster.bullet.core.BulletState;
+import net.luojiuoscar.isaac_disaster.bullet.core.TrajectoryEvaluator;
+import net.luojiuoscar.isaac_disaster.bullet.tracking.TrackingProfile;
+import net.luojiuoscar.isaac_disaster.networking.packet.bullet.BulletTrackingBatchS2CPacket;
+import net.minecraft.world.phys.Vec3;
 
 /** Client-side stream of predicted bullets, independent from Minecraft Entity tracking. */
 public final class BulletStream {
     private static final int TRACKING_REPLAY_DELAY_TICKS = 2;
     private static final long TRACKING_HANDLE_GRACE_TICKS = 80L;
+    private static final int TRACKING_CLEANUP_INTERVAL_TICKS = 20;
     private final Map<Long, BulletState> states = new HashMap<>();
+    private final Map<Integer, Long> slotIdentities = new HashMap<>();
     private final Map<Integer, Integer> latestGenerations = new HashMap<>();
     private final Map<Integer, Vec3> trackingPositions = new HashMap<>();
     private final Map<Integer, Vec3> previousTrackingPositions = new HashMap<>();
@@ -26,6 +28,8 @@ public final class BulletStream {
     private final Map<Long, Vec3> authoritativeVelocities = new HashMap<>();
     private final Map<Long, Integer> authoritativeVelocityTicks = new HashMap<>();
     private final Map<Long, Integer> appliedVelocityCorrectionTicks = new HashMap<>();
+    private final Map<Integer, Integer> trackingHandleReferences = new HashMap<>();
+    private final Map<Long, CorrectionStamp> lastCorrectionStamps = new HashMap<>();
     private long serverTick;
     private int epoch = Integer.MIN_VALUE;
 
@@ -33,14 +37,17 @@ public final class BulletStream {
     public BulletState spawn(int slot, int generation, int startTick, BulletState state) {
         Integer latestGeneration = latestGenerations.get(slot);
         if (latestGeneration != null && generation <= latestGeneration) return null;
-        states.entrySet().removeIf(entry -> {
-            if ((int) entry.getKey().longValue() != slot) return false;
-            long oldIdentity = entry.getKey();
+        Long oldIdentity = slotIdentities.remove(slot);
+        if (oldIdentity != null) {
+            BulletState oldState = states.remove(oldIdentity);
+            if (oldState != null) removeTrackingReference(oldState.trackingHandle());
             removeIdentityMetadata(oldIdentity);
-            return true;
-        });
+        }
         state.assignSlot(slot, generation);
-        states.put(key(slot, generation), state);
+        long identity = key(slot, generation);
+        states.put(identity, state);
+        slotIdentities.put(slot, identity);
+        addTrackingReference(state.trackingHandle());
         latestGenerations.put(slot, generation);
         // Packet state is already a server-time snapshot. Client-local ticks cannot
         // be treated as server ticks because that fast-forwards delayed spawns.
@@ -77,6 +84,7 @@ public final class BulletStream {
     /** Clears predicted entries without changing the stream epoch. */
     private void clearState() {
         states.clear();
+        slotIdentities.clear();
         latestGenerations.clear();
         trackingPositions.clear();
         previousTrackingPositions.clear();
@@ -87,6 +95,8 @@ public final class BulletStream {
         authoritativeVelocities.clear();
         authoritativeVelocityTicks.clear();
         appliedVelocityCorrectionTicks.clear();
+        trackingHandleReferences.clear();
+        lastCorrectionStamps.clear();
         serverTick = 0L;
     }
 
@@ -95,59 +105,105 @@ public final class BulletStream {
         latestGenerations.merge(slot, generation, Math::max);
         long identity = key(slot, generation);
         BulletState removed = states.remove(identity);
+        if (removed != null && slotIdentities.getOrDefault(slot, Long.MIN_VALUE) == identity)
+            slotIdentities.remove(slot);
+        if (removed != null) removeTrackingReference(removed.trackingHandle());
         removeIdentityMetadata(identity);
         return removed != null;
     }
+
     /** Removes an entry using the packed generation/slot identity used by batch packets. */
-    public boolean despawn(long identity) { return despawn((int) identity, (int) (identity >>> 32)); }
+    public boolean despawn(long identity) {
+        return despawn((int) identity, (int) (identity >>> 32));
+    }
 
     /** Predicts one client tick and drops states that reached their lifetime. */
     public void tick() {
         serverTick++;
-        cleanupTrackingHandles();
-        List<Long> dead = new ArrayList<>();
-        for (Map.Entry<Long, BulletState> entry : states.entrySet()) {
+        if (serverTick % TRACKING_CLEANUP_INTERVAL_TICKS == 0) cleanupTrackingHandles();
+        Iterator<Map.Entry<Long, BulletState>> iterator = states.entrySet().iterator();
+        while (iterator.hasNext()) {
+            Map.Entry<Long, BulletState> entry = iterator.next();
             BulletState state = entry.getValue();
+            boolean steeringActive = false;
             if (state.trackingHandle() != 0) {
                 int handle = state.trackingHandle();
-                Vec3 target = interpolatedTrackingPosition(handle, serverTick - TRACKING_REPLAY_DELAY_TICKS);
+                Vec3 target =
+                    interpolatedTrackingPosition(handle, serverTick - TRACKING_REPLAY_DELAY_TICKS);
                 if (target != null) {
                     TrackingProfile profile = TrackingProfile.forBullet(state);
                     Vec3 desired = profile.desiredVelocity(state, target, state.trackingUsesControl());
                     state.setDesiredVelocity(desired);
                     state.applySteering();
+                    steeringActive = true;
                 }
+            }
+            boolean advanced;
+            if (steeringActive) {
+                state.setAcceleration(Vec3.ZERO);
+                advanced = state.tickPhysics();
+            } else if (!state.getTrajectorySpecs().isEmpty()) {
+                // Match the server's immutable launch-axis base.  The current
+                // velocity may already contain trajectory-relative residuals.
+                Vec3 baseVelocity = state.getTrajectoryRuntime().mainDirection().scale(state.baseSpeed());
+                state.getTrajectoryRuntime().beginStep();
+                var motion = TrajectoryEvaluator.evaluate(state, baseVelocity, 0.0D, 1.0D);
+                if (motion.status()
+                    == net.luojiuoscar.isaac_disaster.registries.trajectory.TrajectoryMotion.Status
+                        .WORK_LIMIT) {
+                    state.getTrajectoryRuntime().rollbackStep();
+                    state.kill();
+                    advanced = false;
+                } else {
+                    advanced = state.advanceTrajectory(motion, 1.0D);
+                    state.getTrajectoryRuntime().commitStep();
+                }
+            } else {
+                advanced = state.tickPhysics();
             }
             long identity = entry.getKey();
             Integer authorityTick = authoritativeVelocityTicks.get(identity);
             Integer appliedTick = appliedVelocityCorrectionTicks.get(identity);
-            if (authorityTick != null && (appliedTick == null || authorityTick > appliedTick)) {
+            if (advanced
+                && authorityTick != null
+                && (appliedTick == null || authorityTick > appliedTick)) {
                 state.applyVelocityCorrection(authoritativeVelocities.get(identity));
                 appliedVelocityCorrectionTicks.put(identity, authorityTick);
             }
-            if (!state.tickPhysics()) dead.add(entry.getKey());
-        }
-        for (Long key : dead) {
-            states.remove(key);
-            removeIdentityMetadata(key);
+            if (!advanced) {
+                iterator.remove();
+                int slot = (int) (entry.getKey().longValue());
+                if (slotIdentities.getOrDefault(slot, Long.MIN_VALUE) == entry.getKey())
+                    slotIdentities.remove(slot);
+                removeTrackingReference(state.trackingHandle());
+                removeIdentityMetadata(entry.getKey());
+            }
         }
     }
 
     /** Applies authoritative velocity samples without resolving target entities on the client. */
-    public void applyTrackingVelocity(int packetEpoch, int sampleTick,
-                                      List<BulletTrackingBatchS2CPacket.TargetSample> targets,
-                                      List<BulletTrackingBatchS2CPacket.VelocitySample> samples,
-                                      List<BulletTrackingBatchS2CPacket.Assignment> assignments) {
+    public void applyTrackingVelocity(
+        int packetEpoch,
+        int sampleTick,
+        List<BulletTrackingBatchS2CPacket.TargetSample> targets,
+        List<BulletTrackingBatchS2CPacket.VelocitySample> samples,
+        List<BulletTrackingBatchS2CPacket.Assignment> assignments) {
         if (!acceptEpoch(packetEpoch)) return;
         for (BulletTrackingBatchS2CPacket.Assignment assignment : assignments) {
             BulletState state = get(assignment.slot(), assignment.generation());
             if (state == null) continue;
+            int previousHandle = state.trackingHandle();
+            if (previousHandle != assignment.handle()) {
+                removeTrackingReference(previousHandle);
+                addTrackingReference(assignment.handle());
+            }
             state.setTrackingHandle(assignment.handle());
             state.setSteeringTarget(null, assignment.control());
             if (assignment.handle() != 0) trackingHandleLastSeen.put(assignment.handle(), serverTick);
         }
         for (BulletTrackingBatchS2CPacket.TargetSample target : targets) {
-            if (hasHandleReference(target.handle())) installTrackingPosition(target.handle(), target.position(), sampleTick);
+            if (hasHandleReference(target.handle()))
+                installTrackingPosition(target.handle(), target.position(), sampleTick);
         }
         for (BulletTrackingBatchS2CPacket.VelocitySample sample : samples) {
             long identity = key(sample.slot(), sample.generation());
@@ -196,40 +252,85 @@ public final class BulletStream {
 
     /** Removes target samples no longer referenced by any live client bullet. */
     private void cleanupTrackingHandles() {
-        java.util.Set<Integer> referenced = new java.util.HashSet<>();
-        for (BulletState state : states.values()) {
-            if (state.trackingHandle() != 0) referenced.add(state.trackingHandle());
+        Iterator<Map.Entry<Integer, Long>> iterator = trackingHandleLastSeen.entrySet().iterator();
+        while (iterator.hasNext()) {
+            Map.Entry<Integer, Long> entry = iterator.next();
+            int handle = entry.getKey();
+            if (trackingHandleReferences.containsKey(handle)
+                || serverTick - entry.getValue() <= TRACKING_HANDLE_GRACE_TICKS) continue;
+            iterator.remove();
+            trackingPositions.remove(handle);
+            previousTrackingPositions.remove(handle);
+            previousTrackingSampleTicks.remove(handle);
+            trackingSampleTicks.remove(handle);
         }
-        trackingHandleLastSeen.entrySet().removeIf(entry -> !referenced.contains(entry.getKey())
-                && serverTick - entry.getValue() > TRACKING_HANDLE_GRACE_TICKS);
-        trackingHandleLastSeen.keySet().removeIf(handle -> !trackingPositions.containsKey(handle));
-        trackingPositions.keySet().removeIf(handle -> !trackingHandleLastSeen.containsKey(handle));
-        previousTrackingPositions.keySet().removeIf(handle -> !trackingHandleLastSeen.containsKey(handle));
-        previousTrackingSampleTicks.keySet().removeIf(handle -> !trackingHandleLastSeen.containsKey(handle));
-        trackingSampleTicks.keySet().removeIf(handle -> !trackingHandleLastSeen.containsKey(handle));
     }
 
     private boolean hasHandleReference(int handle) {
-        if (handle == 0) return false;
-        for (BulletState state : states.values()) {
-            if (state.trackingHandle() == handle) return true;
-        }
-        return false;
+        return handle != 0 && trackingHandleReferences.getOrDefault(handle, 0) > 0;
     }
 
     /** Blends sparse authoritative corrections to prevent visible positional snaps. */
-    public boolean correct(int slot, int generation, Vec3 position, Vec3 velocity, double blend) {
+    public boolean correct(
+        int slot,
+        int generation,
+        Vec3 position,
+        Vec3 velocity,
+        double blend,
+        int snapshotAge,
+        double snapshotTraveled,
+        net.luojiuoscar.isaac_disaster.registries.trajectory.TrajectoryRuntime.Snapshot snapshot) {
         BulletState state = states.get(key(slot, generation));
         if (state == null) return false;
+        if (snapshot == null && !state.getTrajectorySpecs().isEmpty()) return false;
+        long identity = key(slot, generation);
+        CorrectionStamp incoming = new CorrectionStamp(snapshotAge, snapshotTraveled);
+        CorrectionStamp previous = lastCorrectionStamps.get(identity);
+        if (previous != null && incoming.compareTo(previous) <= 0) return false;
         state.applyCorrection(position, velocity, blend);
+        state.restoreSnapshot(state.previousPosition(), snapshotAge, snapshotTraveled);
+        if (snapshot != null) state.getTrajectoryRuntime().restore(snapshot);
+        lastCorrectionStamps.put(identity, incoming);
         return true;
     }
 
-    public BulletState get(int slot, int generation) { return states.get(key(slot, generation)); }
-    public int size() { return states.size(); }
-    public long serverTick() { return serverTick; }
-    public int epoch() { return epoch; }
-    public List<BulletState> states() { return List.copyOf(states.values()); }
+    public boolean correct(
+        int slot,
+        int generation,
+        Vec3 position,
+        Vec3 velocity,
+        double blend,
+        net.luojiuoscar.isaac_disaster.registries.trajectory.TrajectoryRuntime.Snapshot snapshot) {
+        BulletState state = states.get(key(slot, generation));
+        return state != null
+            && correct(
+                slot, generation, position, velocity, blend, state.age(), state.traveled(), snapshot);
+    }
+
+    public boolean correct(int slot, int generation, Vec3 position, Vec3 velocity, double blend) {
+        return correct(slot, generation, position, velocity, blend, null);
+    }
+
+    public BulletState get(int slot, int generation) {
+        return states.get(key(slot, generation));
+    }
+
+    public int size() {
+        return states.size();
+    }
+
+    public long serverTick() {
+        return serverTick;
+    }
+
+    public int epoch() {
+        return epoch;
+    }
+
+    public List<BulletState> states() {
+        return List.copyOf(states.values());
+    }
+
     /** Visits active states directly, avoiding a per-frame immutable snapshot allocation. */
     public void forEachState(Consumer<? super BulletState> visitor) {
         if (visitor == null) return;
@@ -239,8 +340,10 @@ public final class BulletStream {
     /** Package-visible diagnostic seam used to verify lifecycle metadata does not leak. */
     int identityMetadataSize() {
         return velocitySampleTicks.size()
-                + authoritativeVelocities.size() + authoritativeVelocityTicks.size()
-                + appliedVelocityCorrectionTicks.size();
+            + authoritativeVelocities.size()
+            + authoritativeVelocityTicks.size()
+            + appliedVelocityCorrectionTicks.size()
+            + lastCorrectionStamps.size();
     }
 
     private void removeIdentityMetadata(long identity) {
@@ -248,6 +351,34 @@ public final class BulletStream {
         authoritativeVelocities.remove(identity);
         authoritativeVelocityTicks.remove(identity);
         appliedVelocityCorrectionTicks.remove(identity);
+        lastCorrectionStamps.remove(identity);
     }
-    private static long key(int slot, int generation) { return ((long) generation << 32) ^ (slot & 0xFFFFFFFFL); }
+
+    private void addTrackingReference(int handle) {
+        if (handle != 0) trackingHandleReferences.merge(handle, 1, Integer::sum);
+    }
+
+    private void removeTrackingReference(int handle) {
+        if (handle == 0) return;
+        trackingHandleReferences.computeIfPresent(
+            handle,
+            (ignored, count) -> count > 1 ? count - 1 : null);
+    }
+
+    private record CorrectionStamp(int age, double traveled) implements Comparable<CorrectionStamp> {
+        private CorrectionStamp {
+            age = Math.max(0, age);
+            traveled = Double.isFinite(traveled) ? Math.max(0.0D, traveled) : 0.0D;
+        }
+
+        @Override
+        public int compareTo(CorrectionStamp other) {
+            int ageOrder = Integer.compare(age, other.age);
+            return ageOrder != 0 ? ageOrder : Double.compare(traveled, other.traveled);
+        }
+    }
+
+    private static long key(int slot, int generation) {
+        return ((long) generation << 32) ^ (slot & 0xFFFFFFFFL);
+    }
 }

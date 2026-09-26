@@ -80,9 +80,7 @@ public final class GravityTrajectoryModule extends TrajectoryModule<GravityTraje
                 ctx.position.add(movement),
                 velocity,
                 acceleration,
-                velocity,
                 ctx.baseVelocity.length(),
-                TrajectoryMotion.ControlMode.INTENT,
                 TrajectoryMotion.CompositionMode.RELATIVE,
                 cost);
     }

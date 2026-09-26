@@ -189,9 +189,7 @@ public final class MyReflectionBulletTrajectoryModule
                 position,
                 velocity,
                 Vec3.ZERO,
-                velocity,
                 dt > 0 ? distance / dt : 0,
-                TrajectoryMotion.ControlMode.INTENT,
                 TrajectoryMotion.CompositionMode.RELATIVE,
                 distance,
                 ctx.composed ? java.util.List.of() : path);

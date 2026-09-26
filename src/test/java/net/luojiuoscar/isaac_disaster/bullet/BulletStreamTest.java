@@ -5,6 +5,8 @@ import net.luojiuoscar.isaac_disaster.bullet.core.BulletState;
 import net.luojiuoscar.isaac_disaster.bullet.core.BulletSteeringMode;
 import net.minecraft.world.phys.Vec3;
 import net.luojiuoscar.isaac_disaster.networking.packet.bullet.BulletTrackingBatchS2CPacket;
+import net.luojiuoscar.isaac_disaster.registries.trajectory.TrajectorySpec;
+import net.minecraft.resources.ResourceLocation;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -25,6 +27,58 @@ class BulletStreamTest {
         assertEquals(0, stream.size());
         stream.correct(2, 7, new Vec3(5, 0, 0), Vec3.ZERO, 1.0);
         assertEquals(Vec3.ZERO, state.position());
+    }
+
+    @Test
+    void correctionWithoutTrajectorySnapshotCannotDesynchronizeModuleState() {
+        BulletStream stream = new BulletStream();
+        BulletState state = stream.spawn(
+            8,
+            1,
+            0,
+            BulletState.builder()
+                .position(Vec3.ZERO)
+                .velocity(new Vec3(1, 0, 0))
+                .trajectorySpecs(List.of(new TrajectorySpec(ResourceLocation.parse("test:orbit"), 0)))
+                .build());
+        var kinematics = state.getTrajectoryRuntime().kinematics();
+        kinematics.initialized(true);
+        kinematics.position(new Vec3(-3, 0, 0));
+        kinematics.velocity(new Vec3(1, 0, 0));
+        kinematics.offset(new Vec3(2, 0, 0));
+
+        assertFalse(stream.correct(
+            8,
+            1,
+            new Vec3(10, 2, 0),
+            new Vec3(0, 0, 1),
+            1.0,
+            4,
+            4.0,
+            null));
+
+        assertEquals(Vec3.ZERO, state.position());
+        assertEquals(new Vec3(-3, 0, 0), kinematics.position());
+        assertEquals(new Vec3(2, 0, 0), kinematics.offset());
+        assertEquals(0, state.age());
+    }
+
+    @Test
+    void olderCorrectionCannotOverwriteNewerPerBulletSnapshot() {
+        BulletStream stream = new BulletStream();
+        BulletState state = stream.spawn(
+            9,
+            1,
+            0,
+            BulletState.builder().position(Vec3.ZERO).velocity(new Vec3(1, 0, 0)).build());
+
+        assertTrue(stream.correct(9, 1, new Vec3(5, 0, 0), Vec3.ZERO, 1.0, 5, 5.0, null));
+        assertFalse(stream.correct(9, 1, new Vec3(2, 0, 0), Vec3.ZERO, 1.0, 4, 4.0, null));
+        assertFalse(stream.correct(9, 1, new Vec3(3, 0, 0), Vec3.ZERO, 1.0, 5, 4.0, null));
+        assertFalse(stream.correct(9, 1, new Vec3(4, 0, 0), Vec3.ZERO, 1.0, 5, 5.0, null));
+        assertEquals(new Vec3(5, 0, 0), state.position());
+        assertEquals(5, state.age());
+        assertEquals(5.0, state.traveled(), 1e-9);
     }
 
     @Test
@@ -155,9 +209,40 @@ class BulletStreamTest {
         stream.applyTrackingVelocity(10, 2, List.of(), List.of(
                 new BulletTrackingBatchS2CPacket.VelocitySample(3, 1, Vec3.ZERO, Vec3.ZERO)), List.of());
 
-        stream.spawn(3, 2, 0, BulletState.builder().homing(true).lifetime(20).build());
+        BulletState current = stream.spawn(3, 2, 0, BulletState.builder().homing(true).lifetime(20).build());
 
         assertEquals(0, stream.identityMetadataSize());
+        assertFalse(stream.despawn(3, 1));
+        assertSame(current, stream.get(3, 2));
+    }
+
+    @Test
+    void sharedTrackingHandleRemainsUsableAfterOneBulletDespawns() {
+        BulletStream stream = new BulletStream();
+        stream.acceptEpoch(12);
+        BulletState survivor = stream.spawn(2, 1, 3, BulletState.builder()
+            .position(Vec3.ZERO)
+            .velocity(new Vec3(1, 0, 0))
+            .homing(true)
+            .steeringMode(BulletSteeringMode.DIRECT)
+            .lifetime(20)
+            .build());
+        stream.spawn(1, 1, 3, BulletState.builder().homing(true).lifetime(20).build());
+        stream.applyTrackingVelocity(12, 3,
+            List.of(new BulletTrackingBatchS2CPacket.TargetSample(7, new Vec3(0, 0, 3))),
+            List.of(),
+            List.of(
+                new BulletTrackingBatchS2CPacket.Assignment(1, 1, 7, false),
+                new BulletTrackingBatchS2CPacket.Assignment(2, 1, 7, false)));
+
+        assertTrue(stream.despawn(1, 1));
+        stream.applyTrackingVelocity(12, 4,
+            List.of(new BulletTrackingBatchS2CPacket.TargetSample(7, new Vec3(0, 0, 4))),
+            List.of(), List.of());
+        stream.tick();
+        stream.tick();
+
+        assertTrue(survivor.position().z > 0.0D);
     }
 
     @Test
