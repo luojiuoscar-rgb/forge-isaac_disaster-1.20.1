@@ -189,7 +189,7 @@ public class TriggerModuleEvents {
 
     @SubscribeEvent
     public static void onBulletEndOfLife(TearBulletEndOfLifeEvent event) {
-        IBulletObject bullet = event.getBullet();
+        IBulletObject bullet = event.getBulletObject();
 
         if (bullet.getOwner() == null) return;
         ExecutableEffectContext context = new ExecutableEffectContext(bullet.getOwner());

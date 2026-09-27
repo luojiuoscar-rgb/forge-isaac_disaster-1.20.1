@@ -4,7 +4,6 @@ import net.luojiuoscar.isaac_disaster.registries.ability.passive.PassiveAbility;
 import net.luojiuoscar.isaac_disaster.manager.EffectManager;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.registries.bullet_color.ModBulletColors;
-import net.luojiuoscar.isaac_disaster.registries.trajectory.ModAttackTrajectories;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerModules;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
@@ -30,7 +29,6 @@ public class Ipecac extends PassiveAbility {
         StatManager.addBulletColor(player, ModBulletColors.IPECAC.getId(), 1);
         StatManager.addTriggerModule(player, ModTriggerModules.IPECAC.getId(), 1);
         StatManager.addTriggerModule(player, ModTriggerModules.FIRING_MODIFIER.getId(), 1);
-        StatManager.addTrajectory(player, ModAttackTrajectories.GRAVITY.getId(), 1);
     }
 
     @Override
@@ -38,7 +36,6 @@ public class Ipecac extends PassiveAbility {
         StatManager.addBulletColor(player, ModBulletColors.IPECAC.getId(), -1);
         StatManager.addTriggerModule(player, ModTriggerModules.IPECAC.getId(), -1);
         StatManager.addTriggerModule(player, ModTriggerModules.FIRING_MODIFIER.getId(), -1);
-        StatManager.addTrajectory(player, ModAttackTrajectories.GRAVITY.getId(), -1);
     }
 
     @Override

@@ -67,20 +67,6 @@ public final class SplitSequence {
         return new SplitSequence(entries);
     }
 
-    /** Returns a copy with the current module's runtime trigger count advanced. */
-    public SplitSequence copyWithIncrementedTriggerCount(@NotNull ResourceLocation moduleId) {
-        SplitSequence copy = copy();
-        for (int i = 0; i < copy.entries.size(); i++) {
-            SplitModuleEntry entry = copy.entries.get(i);
-            if (entry.moduleId.equals(moduleId)) {
-                copy.entries.set(i, new SplitModuleEntry(entry.moduleId, entry.stacks,
-                        entry.priority, entry.triggerCount + 1));
-                break;
-            }
-        }
-        return copy;
-    }
-
     /**
      * Creates a child sequence by asking every registered module whether it inherits this child.
      * Each retained entry preserves its independent runtime data.
@@ -129,10 +115,13 @@ public final class SplitSequence {
             for (SplitContext context : applicable) {
                 SplitModule module = context.getModule();
                 List<AttackContext> children = new ArrayList<>(module.generate(context));
-                module.applyInheritance(context, children);
                 if (children.isEmpty()) continue;
 
+                incrementTriggerCount(context.getModuleId());
+                module.applyInheritance(context.withSequence(this), children);
+
                 AttackType childType = module.resolveChildAttackType(context);
+                children.replaceAll(child -> child.bindAttackTypeOrCopy(childType));
                 grouped.computeIfAbsent(childType, ignored -> new ArrayList<>()).addAll(children);
             }
 
@@ -146,6 +135,36 @@ public final class SplitSequence {
             return List.copyOf(requests);
         }
         return List.of();
+    }
+
+    /** Merges trigger counts resolved on an event copy back into the owning bullet sequence. */
+    void mergeTriggerCountsFrom(@NotNull SplitSequence resolved) {
+        for (int i = 0; i < entries.size(); i++) {
+            SplitModuleEntry current = entries.get(i);
+            for (SplitModuleEntry candidate : resolved.entries) {
+                if (!current.moduleId.equals(candidate.moduleId)) continue;
+                if (candidate.triggerCount <= current.triggerCount) break;
+                entries.set(i, new SplitModuleEntry(
+                        current.moduleId,
+                        current.stacks,
+                        current.priority,
+                        candidate.triggerCount));
+                break;
+            }
+        }
+    }
+
+    private void incrementTriggerCount(@NotNull ResourceLocation moduleId) {
+        for (int i = 0; i < entries.size(); i++) {
+            SplitModuleEntry entry = entries.get(i);
+            if (!entry.moduleId.equals(moduleId)) continue;
+            entries.set(i, new SplitModuleEntry(
+                    entry.moduleId,
+                    entry.stacks,
+                    entry.priority,
+                    entry.triggerCount + 1));
+            return;
+        }
     }
 
     private List<Double> priorities() {

@@ -1,11 +1,9 @@
 package net.luojiuoscar.isaac_disaster.item.item;
 
-import net.luojiuoscar.isaac_disaster.manager.ColorManager;
+import net.luojiuoscar.isaac_disaster.client.item.TrinketClientHooks;
 import net.luojiuoscar.isaac_disaster.registries.ability.trinket.TrinketAbility;
 import net.luojiuoscar.isaac_disaster.registries.ability.trinket.TrinketAbilityContext;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -13,6 +11,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.registries.RegistryObject;
 import org.jetbrains.annotations.NotNull;
 import top.theillusivec4.curios.api.SlotContext;
@@ -95,28 +95,8 @@ public class Trinket extends Item implements IIsaacCuriosItem {
     public final void appendHoverText(@NotNull ItemStack stack, @Nullable Level level, @NotNull List<Component> tooltipComponents, @NotNull TooltipFlag isAdvanced) {
         super.appendHoverText(stack, level, tooltipComponents, isAdvanced);
 
-        TrinketAbility a = getAbility();
-
-        Player player = Minecraft.getInstance().player;
-
-        List<Component> extraDesc = a.getExtraDesc(stack, player);
-
-        if (!extraDesc.isEmpty() && Screen.hasShiftDown()){
-            // 添加解释性文本组件
-            tooltipComponents.addAll(a.getExtraDesc(stack, player));
-        }else{
-            tooltipComponents.addAll(a.getDesc(stack, player));
-            tooltipComponents.addAll(a.getSynergyDesc(stack, player));
-            if (isConsumed(stack)){
-                // 已消耗
-                tooltipComponents.add(Component.translatable("item.isaac_disaster.action.consumed")
-                        .withStyle(style -> style.withColor(ColorManager.SYNERGY)));
-            }
-            // 解释性信息提示
-            if (!extraDesc.isEmpty()){
-                tooltipComponents.add(Component.translatable("item.isaac_disaster.special.require_shift"));
-            }
-        }
+        DistExecutor.unsafeRunWhenOn(Dist.CLIENT,
+                () -> () -> TrinketClientHooks.appendHoverText(this, stack, tooltipComponents));
     }
 
 

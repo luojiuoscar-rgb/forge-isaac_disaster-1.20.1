@@ -427,12 +427,6 @@ public enum StatManager {
         player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY).ifPresent(a -> a.addBulletVisual(id, count));
     }
 
-    public static void addTrajectory(ServerPlayer player, ResourceLocation rl, int count){
-        player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY).ifPresent(
-                playerAbility -> playerAbility.addTrajectory(rl, count)
-        );
-    }
-
     public static void addTriggerModule(LivingEntity entity, ResourceLocation rl, int count){
         IForgeRegistry<TriggerModule> reg =
                 RegistryManager.ACTIVE.getRegistry(ModTriggerModules.TRIGGER_MODULE_KEY);

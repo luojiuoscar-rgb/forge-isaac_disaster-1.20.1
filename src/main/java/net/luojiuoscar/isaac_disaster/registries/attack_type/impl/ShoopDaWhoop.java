@@ -1,5 +1,6 @@
 package net.luojiuoscar.isaac_disaster.registries.attack_type.impl;
 
+import net.luojiuoscar.isaac_disaster.registries.attack_type.ModAttackTypes;
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.helper.ScheduledFuncHelper;
 import net.luojiuoscar.isaac_disaster.helper.GeometryHelper;
@@ -20,6 +21,8 @@ public class ShoopDaWhoop extends BrimstoneAttack{
 
     private static final ResourceLocation SCHEDULE_TYPE =
             ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "shoop_da_whoop");
+
+    @Override public ResourceLocation getId() { return ModAttackTypes.SHOOP_DA_WHOOP.getId(); }
 
     @Override
     public void shoot(AttackContext ctx) {

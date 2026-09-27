@@ -1,7 +1,9 @@
 package net.luojiuoscar.isaac_disaster.networking.packet;
 
-import net.minecraft.client.Minecraft;
+import net.luojiuoscar.isaac_disaster.client.network.ClientPacketHandlers;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
@@ -18,11 +20,9 @@ public class RefreshScaleS2CPacket {
 
     public boolean handle(Supplier<NetworkEvent.Context> supplier) {
         NetworkEvent.Context context = supplier.get();
-        context.enqueueWork(() -> {
-            if (Minecraft.getInstance().player != null) {
-                Minecraft.getInstance().player.refreshDimensions();
-            }
-        });
+        DistExecutor.unsafeRunWhenOn(Dist.CLIENT,
+                () -> () -> context.enqueueWork(ClientPacketHandlers::refreshPlayerDimensions));
+        context.setPacketHandled(true);
         return true;
     }
 }

@@ -1,8 +1,6 @@
 package net.luojiuoscar.isaac_disaster.entity;
 
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
-import net.luojiuoscar.isaac_disaster.entity.custom.FetusBullet;
-import net.luojiuoscar.isaac_disaster.entity.custom.TearBullet;
 import net.luojiuoscar.isaac_disaster.entity.custom.LemonEffectCloud;
 import net.luojiuoscar.isaac_disaster.entity.familiar.MomKnifeEntity;
 import net.luojiuoscar.isaac_disaster.entity.tnt.GigaBomb;
@@ -36,28 +34,11 @@ public class ModEntities {
                     .build("giga_bomb")
     );
 
-    public static final RegistryObject<EntityType<TearBullet>> TEAR_BULLET =
-            MOD_ENTITIES.register("tear_bullet",
-                    () -> EntityType.Builder.<TearBullet>of(TearBullet::new, MobCategory.MISC)
-                            .sized(0.25f, 0.25f) // 小一点的碰撞箱
-                            .clientTrackingRange(64) // 客户端追踪距离
-                            .updateInterval(2) // 同步tick
-                            .build("tear_bullet")
-            );
-
     public static final RegistryObject<EntityType<LemonEffectCloud>> SELECTIVE_EFFECT_CLOUD =
             MOD_ENTITIES.register("selective_effect_cloud",
                     () -> EntityType.Builder.<LemonEffectCloud>of(LemonEffectCloud::new, MobCategory.MISC)
                             .sized(6.0F, 0.5F) // 大概大小
                             .build("selective_effect_cloud"));
-
-    public static final RegistryObject<EntityType<FetusBullet>> FETUS_BULLET =
-            MOD_ENTITIES.register("fetus_bullet",
-                    () -> EntityType.Builder.<FetusBullet>of(FetusBullet::new, MobCategory.MISC)
-                            .sized(0.5f, 0.5f) // 小一点的碰撞箱
-                            .clientTrackingRange(64) // 客户端追踪距离
-                            .updateInterval(2) // 同步tick
-                            .build("fetus_bullet"));
 
     public static final RegistryObject<EntityType<MomKnifeEntity>> MOM_KNIFE =
             MOD_ENTITIES.register("mom_knife",

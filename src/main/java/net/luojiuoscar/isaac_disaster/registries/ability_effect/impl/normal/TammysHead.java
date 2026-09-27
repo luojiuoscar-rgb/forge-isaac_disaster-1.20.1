@@ -21,7 +21,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.List;
-import java.util.Map;
 
 public class TammysHead implements IAbilityEffect {
     private final static ResourceLocation SCHEDULE_TYPE =
@@ -43,12 +42,11 @@ public class TammysHead implements IAbilityEffect {
                     AttackType attack = playerAbility.getCachedAttackType();
 
                     ResourceLocation colorRl = playerAbility.getBestBulletColor();
-                    Map<ResourceLocation, Integer> trajectories = playerAbility.getTrajectories();
                     Vec3 eyePos = player.getEyePosition().add(0, player.getBbHeight() * -0.15, 0);
 
                     int bulletCount = 12;
                     AttackContext ctx = AttackContext.builder(player, player)
-                            .color(colorRl).trigger(new CompositeTrigger()).trajectories(trajectories)
+                            .color(colorRl).trigger(new CompositeTrigger())
                             .position(eyePos).mainAxis(GeometryHelper.mainAxisFromRotation(player.getXRot(), player.getYRot()))
                             .range(attack.getRange(player)).speed(attack.getBulletSpeed(player)).build();
 

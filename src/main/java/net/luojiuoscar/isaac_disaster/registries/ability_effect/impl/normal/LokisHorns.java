@@ -20,7 +20,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.List;
-import java.util.Map;
 
 public class LokisHorns implements IAbilityEffect {
     @Override
@@ -37,11 +36,10 @@ public class LokisHorns implements IAbilityEffect {
                     AttackType attack = playerAbility.getCachedAttackType();
 
                     ResourceLocation colorRl = playerAbility.getBestBulletColor();
-                    Map<ResourceLocation, Integer> trajectories = playerAbility.getTrajectories();
                     Vec3 eyePos = player.getEyePosition().add(0, player.getBbHeight() * -0.15, 0);
 
                     AttackContext baseCtx = AttackContext.builder(player, player)
-                            .color(colorRl).trigger(new CompositeTrigger()).trajectories(trajectories)
+                            .color(colorRl).trigger(new CompositeTrigger())
                             .position(eyePos).mainAxis(GeometryHelper.mainAxisFromRotation(player.getXRot(), player.getYRot()))
                             .range(attack.getRange(player)).speed(attack.getBulletSpeed(player)).build();
 

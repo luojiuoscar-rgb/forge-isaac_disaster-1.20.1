@@ -2,6 +2,7 @@ package net.luojiuoscar.isaac_disaster.renderer.visual;
 
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.VertexFormat;
+import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.minecraft.client.renderer.RenderStateShard;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
@@ -22,7 +23,7 @@ public final class ProjectileRenderTypes {
 
     private static RenderType createTranslucent(ResourceLocation texture) {
         return RenderType.create(
-                "isaac_disaster_projectile_translucent",
+                IsaacDisaster.MOD_ID + "_projectile_translucent",
                 DefaultVertexFormat.NEW_ENTITY,
                 VertexFormat.Mode.QUADS,
                 256,

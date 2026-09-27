@@ -4,16 +4,18 @@ import com.mojang.logging.LogUtils;
 import net.luojiuoscar.isaac_disaster.attribute.ModAttributes;
 import net.luojiuoscar.isaac_disaster.block.ModBlockEntities;
 import net.luojiuoscar.isaac_disaster.block.ModBlocks;
+import net.luojiuoscar.isaac_disaster.bullet.server.BulletRuntime;
 import net.luojiuoscar.isaac_disaster.client.config.IsaacConfigScreenRegistration;
 import net.luojiuoscar.isaac_disaster.commands.gamerule.ModGameRules;
 import net.luojiuoscar.isaac_disaster.effect.ModEffects;
 import net.luojiuoscar.isaac_disaster.entity.ModEntities;
-import net.luojiuoscar.isaac_disaster.item.*;
 import net.luojiuoscar.isaac_disaster.helper.IsaacItemRegistryHelper;
+import net.luojiuoscar.isaac_disaster.item.*;
 import net.luojiuoscar.isaac_disaster.loot.ModLootModifiers;
 import net.luojiuoscar.isaac_disaster.loot.ModLootTypes;
 import net.luojiuoscar.isaac_disaster.networking.ModMessages;
 import net.luojiuoscar.isaac_disaster.registries.ModRegistries;
+import net.luojiuoscar.isaac_disaster.registries.trajectory.rule.TrajectoryRules;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.rule.TriggerModuleRules;
 import net.luojiuoscar.isaac_disaster.sound.ModSounds;
 import net.minecraftforge.api.distmarker.Dist;
@@ -45,6 +47,7 @@ public class IsaacDisaster
         modEventBus.addListener(this::commonSetup);
         // Register ourselves for server and other game events we are interested in
         MinecraftForge.EVENT_BUS.register(this);
+        MinecraftForge.EVENT_BUS.register(BulletRuntime.INSTANCE);
 
         ModRegistries.register(modEventBus);
 
@@ -85,6 +88,7 @@ public class IsaacDisaster
         event.enqueueWork(() -> {
             IsaacItemRegistryHelper.rebuildIdMappings();
             TriggerModuleRules.rebuildCache();
+            TrajectoryRules.rebuildCache();
         });
     }
 

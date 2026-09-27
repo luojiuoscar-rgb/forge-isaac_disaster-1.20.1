@@ -1,6 +1,6 @@
 package net.luojiuoscar.isaac_disaster.networking.packet;
 
-import net.minecraft.client.Minecraft;
+import net.luojiuoscar.isaac_disaster.client.network.ClientPacketHandlers;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleType;
 import net.minecraft.network.FriendlyByteBuf;
@@ -10,6 +10,8 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.network.NetworkEvent;
 import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.fml.DistExecutor;
 
 import java.util.function.Supplier;
 
@@ -75,29 +77,9 @@ public class ReviveEntityEventS2CPacket {
 
     public boolean handle(Supplier<NetworkEvent.Context> supplier) {
         NetworkEvent.Context context = supplier.get();
-        context.enqueueWork(() -> {
-            Minecraft minecraft = Minecraft.getInstance();
-            if (minecraft.level == null) {
-                return;
-            }
-
-            Entity entity = minecraft.level.getEntity(entityId);
-            if (entity == null) {
-                return;
-            }
-
-            if (particle != null) {
-                minecraft.particleEngine.createTrackingEmitter(entity, particle, 30);
-            }
-            if (sound != null) {
-                minecraft.level.playLocalSound(x, y, z,
-                        sound, entity.getSoundSource(), 1.0F, 1.0F, false);
-            }
-
-            if (minecraft.player == entity) {
-                minecraft.gameRenderer.displayItemActivation(displayItem);
-            }
-        });
+        DistExecutor.unsafeRunWhenOn(Dist.CLIENT,
+                () -> () -> context.enqueueWork(() -> ClientPacketHandlers.handleReviveEvent(
+                        entityId, x, y, z, sound, particle, displayItem)));
         context.setPacketHandled(true);
         return true;
     }

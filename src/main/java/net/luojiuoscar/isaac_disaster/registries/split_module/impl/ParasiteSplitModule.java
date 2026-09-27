@@ -4,7 +4,6 @@ import net.luojiuoscar.isaac_disaster.registries.attack_pattern.AttackPatternCon
 import net.luojiuoscar.isaac_disaster.registries.attack_pattern.impl.ParasitePattern;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackContext;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackType;
-import net.luojiuoscar.isaac_disaster.registries.attack_type.BulletSourceType;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.ModAttackTypes;
 import net.luojiuoscar.isaac_disaster.registries.split_module.SplitContext;
 import net.luojiuoscar.isaac_disaster.registries.split_module.SplitModule;
@@ -25,8 +24,7 @@ public final class ParasiteSplitModule extends SplitModule {
     public boolean canTrigger(SplitContext context) {
         SplitTriggerType type = context.getTriggerType();
         if (type == SplitTriggerType.END_OF_LIFE) return false;
-        if ((context.getParent().getSourceType() == BulletSourceType.LASER
-                || context.getParent().getSourceType() == BulletSourceType.BRIMSTONE)
+        if ((ModAttackTypes.LASER.getId().equals(context.getParent().getRootTypeId()))
                 && context.getModuleTriggerCount() > 0) return false;
         if (type == SplitTriggerType.BLOCK && context.getTriggerCounts().getBlockHits() != 1) return false;
 
@@ -60,8 +58,7 @@ public final class ParasiteSplitModule extends SplitModule {
 
     @Override
     public boolean shouldInherit(SplitContext context, AttackContext childContext) {
-        if (context.getParent().getSourceType() == BulletSourceType.LASER
-                || context.getParent().getSourceType() == BulletSourceType.BRIMSTONE) return false;
+        if (ModAttackTypes.LASER.getId().equals(context.getParent().getRootTypeId())) return false;
         return childContext.getDamage() >= 1.0F;
     }
 
@@ -77,11 +74,9 @@ public final class ParasiteSplitModule extends SplitModule {
 
     @Override
     public AttackType resolveChildAttackType(SplitContext context) {
-        if (context.getParent().getSourceType() == BulletSourceType.BRIMSTONE) {
-            return ModAttackTypes.BRIMSTONE.get();
-        }
-        if (context.getParent().getSourceType() == BulletSourceType.LASER) {
-            return ModAttackTypes.LASER.get();
+        if (ModAttackTypes.LASER.getId().equals(context.getParent().getRootTypeId())) {
+            AttackType parentType = context.getReferenceContext().getAttackType();
+            if (parentType != null) return parentType;
         }
         return super.resolveChildAttackType(context);
     }

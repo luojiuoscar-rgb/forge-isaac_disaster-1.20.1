@@ -2,6 +2,11 @@ package net.luojiuoscar.isaac_disaster.networking;
 
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.networking.packet.*;
+import net.luojiuoscar.isaac_disaster.networking.packet.bullet.*;
+import net.luojiuoscar.isaac_disaster.networking.packet.ClearPassiveItemC2SPacket;
+import net.luojiuoscar.isaac_disaster.networking.packet.ChargeBarUpdateS2CPacket;
+import net.luojiuoscar.isaac_disaster.networking.packet.EntityVisualStateS2CPacket;
+import net.luojiuoscar.isaac_disaster.networking.packet.FlyUpdateS2CPacket;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
@@ -142,6 +147,34 @@ public class ModMessages {
                 .encoder(ReviveEntityEventS2CPacket::toBytes)
                 .consumerNetworkThread(ReviveEntityEventS2CPacket::handle)
                 .add();
+
+        net.messageBuilder(BulletSpawnS2CPacket.class, id(), NetworkDirection.PLAY_TO_CLIENT)
+                .decoder(BulletSpawnS2CPacket::new).encoder(BulletSpawnS2CPacket::toBytes)
+                .consumerNetworkThread(BulletSpawnS2CPacket::handle).add();
+
+        net.messageBuilder(BulletSpawnBatchS2CPacket.class, id(), NetworkDirection.PLAY_TO_CLIENT)
+                .decoder(BulletSpawnBatchS2CPacket::new).encoder(BulletSpawnBatchS2CPacket::toBytes)
+                .consumerNetworkThread(BulletSpawnBatchS2CPacket::handle).add();
+
+        net.messageBuilder(BulletCorrectionS2CPacket.class, id(), NetworkDirection.PLAY_TO_CLIENT)
+                .decoder(BulletCorrectionS2CPacket::new).encoder(BulletCorrectionS2CPacket::toBytes)
+                .consumerNetworkThread(BulletCorrectionS2CPacket::handle).add();
+
+        net.messageBuilder(BulletCorrectionBatchS2CPacket.class, id(), NetworkDirection.PLAY_TO_CLIENT)
+                .decoder(BulletCorrectionBatchS2CPacket::new).encoder(BulletCorrectionBatchS2CPacket::toBytes)
+                .consumerNetworkThread(BulletCorrectionBatchS2CPacket::handle).add();
+
+        net.messageBuilder(BulletDespawnBatchS2CPacket.class, id(), NetworkDirection.PLAY_TO_CLIENT)
+                .decoder(BulletDespawnBatchS2CPacket::new).encoder(BulletDespawnBatchS2CPacket::toBytes)
+                .consumerNetworkThread(BulletDespawnBatchS2CPacket::handle).add();
+
+        net.messageBuilder(BulletTrackingBatchS2CPacket.class, id(), NetworkDirection.PLAY_TO_CLIENT)
+                .decoder(BulletTrackingBatchS2CPacket::new).encoder(BulletTrackingBatchS2CPacket::toBytes)
+                .consumerNetworkThread(BulletTrackingBatchS2CPacket::handle).add();
+
+        net.messageBuilder(BulletShatterS2CPacket.class, id(), NetworkDirection.PLAY_TO_CLIENT)
+                .decoder(BulletShatterS2CPacket::new).encoder(BulletShatterS2CPacket::toBytes)
+                .consumerNetworkThread(BulletShatterS2CPacket::handle).add();
 
     }
 

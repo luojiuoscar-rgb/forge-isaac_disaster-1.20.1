@@ -4,7 +4,6 @@ import net.luojiuoscar.isaac_disaster.registries.attack_pattern.AttackPatternCon
 import net.luojiuoscar.isaac_disaster.registries.attack_pattern.impl.RingAttackPattern;
 import net.luojiuoscar.isaac_disaster.helper.GeometryHelper;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackContext;
-import net.luojiuoscar.isaac_disaster.registries.attack_type.BulletSourceType;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.ModAttackTypes;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.impl.BrimstoneAttack;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.impl.LaserAttack;
@@ -35,14 +34,13 @@ public final class CricketsBodySplitModule extends SplitModule {
             return isAllowedBrimstoneSequence(context);
         }
         if (type != SplitTriggerType.BLOCK) return false;
-        return (context.getParent().getSourceType() == BulletSourceType.LASER
-                || context.getParent().getSourceType() == BulletSourceType.BRIMSTONE)
+        return (ModAttackTypes.LASER.getId().equals(context.getParent().getRootTypeId()))
                 && context.getTriggerCounts().getBlockHits() == 1
                 && isAllowedBrimstoneSequence(context);
     }
 
     private boolean isAllowedBrimstoneSequence(SplitContext context) {
-        if (context.getParent().getSourceType() != BulletSourceType.BRIMSTONE) return true;
+        if (!(context.getReferenceContext().getAttackType() instanceof BrimstoneAttack)) return true;
         if (!(context.getParent() instanceof LaserAttack.LaserProjectile laser)) return false;
         int index = laser.getAttackSequenceIndex();
         return index > 0 && index % 3 == 0;
@@ -64,7 +62,7 @@ public final class CricketsBodySplitModule extends SplitModule {
     private List<AttackContext> generateLegacySplit(SplitContext context) {
         AttackContext reference = context.getReferenceContext();
         double angle = Math.toRadians(Objects.requireNonNull(context.getParent().getOwner(), "owner")
-                .getRandom().nextDouble() * 45.0);
+                .getRandom().nextDouble() * 90.0);
         Vec3 direction = GeometryHelper.rotateAroundAxis(reference.getMainAxis(), WORLD_UP, angle);
         reference = reference.toBuilder().mainAxis(direction).build();
 
@@ -83,7 +81,7 @@ public final class CricketsBodySplitModule extends SplitModule {
         AttackContext reference = context.getReferenceContext();
         Vec3 planeNormal = resolveImpactPlaneNormal(context);
         double angle = Math.toRadians(Objects.requireNonNull(context.getParent().getOwner(), "owner")
-                .getRandom().nextDouble() * 45.0);
+                .getRandom().nextDouble() * 90.0);
         Vec3 incomingDirection = reference.getMainAxis();
 
         List<Vec3> directions = buildPlaneAlignedSpread(incomingDirection, planeNormal, getBulletCount(), angle);

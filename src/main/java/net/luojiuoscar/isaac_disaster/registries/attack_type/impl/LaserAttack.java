@@ -1,17 +1,23 @@
 package net.luojiuoscar.isaac_disaster.registries.attack_type.impl;
 
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import net.luojiuoscar.isaac_disaster.bullet.core.TrajectoryEvaluator;
 import net.luojiuoscar.isaac_disaster.event.custom.attack.IsaacAttackAfterHitEvent;
-import net.luojiuoscar.isaac_disaster.helper.GeometryHelper;
 import net.luojiuoscar.isaac_disaster.event.custom.attack.IsaacAttackBeforeHitEntityEvent;
 import net.luojiuoscar.isaac_disaster.event.custom.attack.IsaacAttackHitBlockEvent;
 import net.luojiuoscar.isaac_disaster.helper.EntityHelper;
+import net.luojiuoscar.isaac_disaster.helper.GeometryHelper;
+import net.luojiuoscar.isaac_disaster.helper.ProjectileCollisionHelper;
 import net.luojiuoscar.isaac_disaster.manager.ModDamageType;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.CompositeTrigger;
 import net.luojiuoscar.isaac_disaster.registries.attack_pattern.AttackPatternContext;
 import net.luojiuoscar.isaac_disaster.registries.attack_pattern.impl.LaserAttackPattern;
-import net.luojiuoscar.isaac_disaster.registries.ability_effect.CompositeTrigger;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackContext;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackType;
-import net.luojiuoscar.isaac_disaster.registries.attack_type.BulletSourceType;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.IBulletObject;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.ModAttackTypes;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.util.DamagedEntities;
@@ -21,9 +27,8 @@ import net.luojiuoscar.isaac_disaster.registries.split_module.SplitExecutor;
 import net.luojiuoscar.isaac_disaster.registries.split_module.SplitSequence;
 import net.luojiuoscar.isaac_disaster.registries.split_module.SplitTriggerCounts;
 import net.luojiuoscar.isaac_disaster.registries.split_module.SplitTriggerType;
-import net.luojiuoscar.isaac_disaster.registries.trajectory.IAttackTrajectory;
-import net.luojiuoscar.isaac_disaster.registries.trajectory.ModAttackTrajectories;
-import net.luojiuoscar.isaac_disaster.registries.trajectory.TrajectoryContext;
+import net.luojiuoscar.isaac_disaster.registries.trajectory.TrajectoryMotion;
+import net.luojiuoscar.isaac_disaster.registries.trajectory.TrajectoryRuntime;
 import net.luojiuoscar.isaac_disaster.sound.ModSounds;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -36,25 +41,20 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
-import net.luojiuoscar.isaac_disaster.helper.ProjectileCollisionHelper;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.registries.IForgeRegistry;
 import net.minecraftforge.registries.RegistryManager;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-
 public class LaserAttack extends AttackType {
     private static final LaserAttackPattern PATTERN = new LaserAttackPattern();
+    /** Hard upper bound for one synchronous laser attack. */
+    private static final int MAX_LASER_STEPS = 4_096;
 
     public LaserAttack(int priorityTier, double priority) {
         super(priorityTier, priority);
@@ -69,16 +69,23 @@ public class LaserAttack extends AttackType {
         return ModAttackTypes.LASER.getId();
     }
 
+    /** All laser-derived attack definitions share the laser trajectory family. */
+    @Override
+    public ResourceLocation getRootId() {
+        return ModAttackTypes.LASER.getId();
+    }
+
     @Override
     public void makeSound(LivingEntity entity) {
-        entity.level().playSound(
+        entity
+            .level()
+            .playSound(
                 null,
                 entity.blockPosition(),
                 ModSounds.LASER_SHOT.get(),
                 SoundSource.PLAYERS,
                 0.6f,
-                1.0f
-        );
+                1.0f);
     }
 
     // ================= LaserProjectile 封装 =================
@@ -94,20 +101,18 @@ public class LaserAttack extends AttackType {
         private final DamagedEntities damagedEntities = new DamagedEntities();
         public final LivingEntity owner;
         public final Entity shooter;
-        private Vec3 prevShooterPos = null;
         public boolean isCurrentlyHoming;
         public int tickCount;
         public LivingEntity homingTarget;
-        public double yRotAngle;
-        public double xRotAngle;
         private final AttackContext attackContext;
         private final CompositeTrigger triggers;
         private final SplitSequence splitSequence;
         private int attackSequenceIndex;
         private final double range;
         private final SplitTriggerCounts splitTriggerCounts = new SplitTriggerCounts();
-        private BlockPos lastSplitBlockPosition;
+        private final Set<BlockPos> hitBlockPositions = new HashSet<>();
         private BlockHitResult lastBlockHit;
+        private final TrajectoryRuntime trajectoryRuntime;
 
         public LaserProjectile(AttackContext attackContext) {
             this.owner = attackContext.getOwner();
@@ -121,67 +126,117 @@ public class LaserAttack extends AttackType {
             this.isCurrentlyHoming = false;
             this.tickCount = 0;
             this.homingTarget = null;
-            GeometryHelper.Rotation rotation = GeometryHelper.rotationFromMainAxis(attackContext.getMainAxis());
-            this.yRotAngle = owner.getYRot() - rotation.yRot();
-            this.xRotAngle = owner.getXRot() - rotation.xRot();
             this.attackContext = attackContext.copy();
             this.triggers = attackContext.copyTrigger();
             this.splitSequence = attackContext.copySplitSequence();
             this.attackSequenceIndex = 0;
             this.range = attackContext.getBulletRange();
             this.lastBlockHit = null;
+            this.hitBlockPositions.addAll(attackContext.getHitBlockPositions());
 
-            this.prevShooterPos = getShooterWaistPosition();
+            this.trajectoryRuntime =
+                TrajectoryRuntime.forSpawn(
+                    this.position,
+                    this.direction,
+                    attackContext.getTrajectorySpecs(),
+                    this.shooter,
+                    attackContext.getInheritedTrajectorySnapshot());
         }
 
-        public void setWidth(double width) { this.width = width; }
-        public void setStep(double step) { this.step = step; }
-        public void setHoming(boolean homing) { this.homing = homing; }
-        public void setSpectral(boolean spectral) { this.spectral = spectral; }
-        public void setAttackSequenceIndex(int attackSequenceIndex) { this.attackSequenceIndex = attackSequenceIndex; }
-        @Override
-        public void setLastBlockHit(@Nullable BlockHitResult lastBlockHit) { this.lastBlockHit = lastBlockHit; }
-
-        @Override
-        public AttackContext getAttackContext() { return attackContext.copy(); }
-
-        @Override
-        public BulletSourceType getSourceType() {
-            return attackSequenceIndex > 0 ? BulletSourceType.BRIMSTONE : BulletSourceType.LASER;
+        public void setWidth(double width) {
+            this.width = width;
         }
 
-        public int getAttackSequenceIndex() { return attackSequenceIndex; }
+        public void setStep(double step) {
+            this.step = step;
+        }
+
+        public void setHoming(boolean homing) {
+            this.homing = homing;
+        }
+
+        public void setSpectral(boolean spectral) {
+            this.spectral = spectral;
+        }
+
+        public void setAttackSequenceIndex(int attackSequenceIndex) {
+            this.attackSequenceIndex = attackSequenceIndex;
+        }
+
+        @Override
+        public void setLastBlockHit(@Nullable BlockHitResult lastBlockHit) {
+            this.lastBlockHit = lastBlockHit;
+        }
+
+        @Override
+        public AttackContext getAttackContext() {
+            return attackContext.toBuilder()
+                    .hitBlockPositions(hitBlockPositions)
+                    .inheritTrajectorySnapshot(trajectoryRuntime.snapshot())
+                    .build();
+        }
+
+        @Override
+        public ResourceLocation getTypeId() {
+            return attackContext.getTypeId();
+        }
+
+        @Override
+        public ResourceLocation getRootTypeId() {
+            return attackContext.getRootTypeId();
+        }
+
+        @Override
+        public TrajectoryRuntime getTrajectoryRuntime() {
+            return trajectoryRuntime;
+        }
+
+        @Override
+        public int getTrajectoryAge() {
+            return tickCount;
+        }
+
+        public int getAttackSequenceIndex() {
+            return attackSequenceIndex;
+        }
+
         @Nullable
         @Override
-        public BlockHitResult getLastBlockHit() { return lastBlockHit; }
+        public BlockHitResult getLastBlockHit() {
+            return lastBlockHit;
+        }
 
         @Override
-        public SplitSequence getSplitSequence() { return splitSequence; }
+        public SplitSequence getSplitSequence() {
+            return splitSequence;
+        }
 
         @Override
-        public SplitTriggerCounts getSplitTriggerCounts() { return splitTriggerCounts.copy(); }
+        public SplitTriggerCounts getSplitTriggerCounts() {
+            return splitTriggerCounts.copy();
+        }
 
         @Override
         public void recordSplitTrigger(SplitTriggerType type) {
             splitTriggerCounts.increment(type);
         }
 
-        /** Records a block split position unless it is inside the previous hit's 3x3x3 area. */
-        public boolean markBlockSplitPosition(BlockPos position) {
-            BlockPos current = Objects.requireNonNull(position, "position");
-            if (lastSplitBlockPosition != null
-                    && Math.abs(lastSplitBlockPosition.getX() - current.getX()) <= 1
-                    && Math.abs(lastSplitBlockPosition.getY() - current.getY()) <= 1
-                    && Math.abs(lastSplitBlockPosition.getZ() - current.getZ()) <= 1) {
-                return false;
-            }
+        /** Returns a read-only snapshot of exact blocks contacted during this laser shot. */
+        @Override
+        public Set<BlockPos> getHitBlockPositions() {
+            return Set.copyOf(hitBlockPositions);
+        }
 
-            lastSplitBlockPosition = current.immutable();
-            return true;
+        /** Records one exact block contact and rejects repeated contacts to that block. */
+        @Override
+        public boolean markBlockHit(@Nullable BlockPos position) {
+            return position != null && hitBlockPositions.add(position.immutable());
         }
 
         @Override
-        public float getDamage() { return this.damage; }
+        public float getDamage() {
+            return this.damage;
+        }
 
         @Override
         public Vec3 getVelocity() {
@@ -203,6 +258,34 @@ public class LaserAttack extends AttackType {
             return this.position;
         }
 
+        /** Updates the laser collision-center position. */
+        @Override
+        public void setCenter(Vec3 center) {
+            if (center != null) this.position = center;
+        }
+
+        /** Updates the laser position. */
+        @Override
+        public void setPosition(Vec3 position) {
+            if (position != null) this.position = position;
+        }
+
+        /** Updates the laser direction/velocity. */
+        @Override
+        public void setVelocity(Vec3 velocity) {
+            if (velocity != null) this.direction = velocity;
+        }
+
+        @Override
+        public float getCollisionWidth() {
+            return (float) width;
+        }
+
+        @Override
+        public float getCollisionHeight() {
+            return (float) width;
+        }
+
         @Nullable
         @Override
         public LivingEntity getOwner() {
@@ -216,35 +299,7 @@ public class LaserAttack extends AttackType {
         }
 
         @Override
-        public Vec3 getPrevShooterPos() {
-            if (shooter != null){
-                prevShooterPos = getShooterWaistPosition();
-            }
-
-            return prevShooterPos;
-        }
-
-        private Vec3 getShooterWaistPosition() {
-            AABB box = shooter.getBoundingBox();
-            return new Vec3(
-                    (box.minX + box.maxX) * 0.5,
-                    box.minY + box.getYsize() * 0.6,
-                    (box.minZ + box.maxZ) * 0.5
-            );
-        }
-
-        @Override
-        public double getStartYRot() {
-            return this.yRotAngle;
-        }
-
-        @Override
-        public double getStartXRot() {
-            return this.xRotAngle;
-        }
-
-        @Override
-        public boolean noGravity(){
+        public boolean noGravity() {
             return true;
         }
 
@@ -274,11 +329,6 @@ public class LaserAttack extends AttackType {
         }
 
         @Override
-        public Map<ResourceLocation, Integer> getTrajectories() {
-            return attackContext.getTrajectories();
-        }
-
-        @Override
         public CompositeTrigger getTriggers() {
             return triggers;
         }
@@ -297,12 +347,11 @@ public class LaserAttack extends AttackType {
         return PATTERN.generate(new AttackPatternContext(ctx, bulletCount));
     }
 
-
     @Override
     public void performAttack(List<AttackContext> ctxList) {
-       for (AttackContext ctx : ctxList){
-           shoot(ctx);
-       }
+        for (AttackContext ctx : ctxList) {
+            shoot(ctx);
+        }
     }
 
     // ================== shotLaser ==================
@@ -326,10 +375,12 @@ public class LaserAttack extends AttackType {
         laser.setSpectral(isSpectral(entity));
         laser.setAttackSequenceIndex(attackSequenceIndex);
 
-        while (laser.traveled < laser.range) {
+        int steps = 0;
+        while (laser.traveled < laser.range && steps < MAX_LASER_STEPS) {
+            steps++;
             stepLaser(laser, level, ctx);
         }
-
+        if (laser.traveled < laser.range) laser.traveled = laser.range;
     }
 
     // ================== stepLaser ==================
@@ -338,14 +389,16 @@ public class LaserAttack extends AttackType {
         laser.isCurrentlyHoming = false;
         if (laser.homing) {
             // 低频搜索目标（每 10 tick）
-            if (laser.tickCount % 10 == 0 || laser.homingTarget == null || !laser.homingTarget.isAlive()) {
-                laser.homingTarget = EntityHelper.findNearestTrackingTarget(
+            if (laser.tickCount % 10 == 0
+                || laser.homingTarget == null
+                || !laser.homingTarget.isAlive()) {
+                laser.homingTarget =
+                    EntityHelper.findNearestTrackingTarget(
                         level,
                         laser.owner,
                         laser.position,
                         8.0,
-                        e -> !laser.damagedEntities.contains(e.getUUID())
-                );
+                        e -> !laser.damagedEntities.contains(e.getUUID()));
             }
 
             // 高频平滑转向
@@ -356,82 +409,91 @@ public class LaserAttack extends AttackType {
             }
         }
 
+        if (laser.isCurrentlyHoming) laser.getTrajectoryRuntime().suspend();
         // --------- Trajectories ---------
-        Vec3 totalPositionOffset = Vec3.ZERO;
-        Vec3 totalVelocityOffset = Vec3.ZERO;
-        IForgeRegistry<IAttackTrajectory> trajectoryIForgeRegistry =
-                RegistryManager.ACTIVE.getRegistry(ModAttackTrajectories.ATTACK_TRAJECTORY_KEY);
-
-        if (!laser.isCurrentlyHoming && trajectoryIForgeRegistry != null) {
-            for (Map.Entry<ResourceLocation, Integer> entry : context.getTrajectories().entrySet()) {
-                ResourceLocation trajId = entry.getKey();
-                int amplifier = entry.getValue() - 1;
-
-                IAttackTrajectory traj = trajectoryIForgeRegistry.getValue(trajId);
-                if (traj == null) continue;
-
-                TrajectoryContext ctx = new TrajectoryContext(laser, laser.step, amplifier,
-                        laser.getPrevShooterPos());
-
-                var result = traj.getResult(ctx);
-                totalPositionOffset = totalPositionOffset.add(result.positionOffset());
-                totalVelocityOffset = totalVelocityOffset.add(result.velocityOffset());
-
-                // ---- 应用旋转到方向 ----
-                // yRot 绕世界上方向旋转
-                Vec3 up = new Vec3(0, 1, 0);
-                laser.direction = GeometryHelper.rotateAroundAxis(laser.direction, up, result.yRot());
-
-                // xRot 绕局部右方向旋转（如果 xRot 不为0）
-                Vec3 right = laser.direction.cross(up).normalize();
-                laser.direction = GeometryHelper.rotateAroundAxis(laser.direction, right, result.xRot());
+        TrajectoryMotion trajectoryMotion = null;
+        if (!laser.isCurrentlyHoming && !laser.getTrajectorySpecs().isEmpty()) {
+            laser.getTrajectoryRuntime().updateAnchor(laser.shooter);
+            laser.getTrajectoryRuntime().beginStep();
+            trajectoryMotion =
+                TrajectoryEvaluator.evaluate(laser, laser.direction.scale(laser.step), laser.step, 1.0D);
+            if (trajectoryMotion.status() == TrajectoryMotion.Status.WORK_LIMIT) {
+                laser.getTrajectoryRuntime().rollbackStep();
+                laser.traveled = laser.range;
+                return;
+            }
+            if (trajectoryMotion.desiredVelocity() != null
+                && trajectoryMotion.desiredVelocity().lengthSqr() > 1.0E-8D) {
+                laser.direction = trajectoryMotion.desiredVelocity().normalize();
             }
         }
 
         // --------- 更新方向 ---------
-        laser.direction = laser.direction.add(totalVelocityOffset);
         if (laser.direction.lengthSqr() > 1e-6) laser.direction = laser.direction.normalize();
 
         Vec3 start = laser.position;
-        Vec3 displacement = laser.direction.scale(laser.step).add(totalPositionOffset);
-        Vec3 nextPos = start.add(displacement);
+        Vec3 nextPos =
+            trajectoryMotion != null && trajectoryMotion.desiredPosition() != null
+                ? trajectoryMotion.desiredPosition()
+                : start.add(laser.direction.scale(laser.step));
         spawnInterpolatedParticles(level, start, nextPos, laser.width, context.getColorRl());
 
-        if (!laser.spectral) {
-            BlockHitResult blockHit = findBlockCollision(level, start, nextPos, laser.width, laser.owner);
-            if (blockHit != null) {
-                double hitParameter = ProjectileCollisionHelper.pathParameter(start, nextPos, blockHit.getLocation());
-                laser.position = blockHit.getLocation();
+        BlockHitResult blockHit = findBlockCollision(level, start, nextPos, laser.width, laser.owner);
+        if (blockHit != null) {
+            boolean firstContact = laser.markBlockHit(blockHit.getBlockPos());
+            if (firstContact) {
+                // Spectral lasers do not stop on blocks, but every new block contact still
+                // publishes the same block event and split boundary as a normal laser.
                 laser.setLastBlockHit(blockHit);
-                if (laser.markBlockSplitPosition(blockHit.getBlockPos())) {
-                    laser.recordSplitTrigger(SplitTriggerType.BLOCK);
-                    SplitExecutor.execute(laser, SplitTriggerType.BLOCK);
-                }
-                IsaacAttackHitBlockEvent event = new IsaacAttackHitBlockEvent(
+                laser.recordSplitTrigger(SplitTriggerType.BLOCK);
+                // Capture the actual contact center before the deferred split is created.
+                // The split reference context must describe the block boundary, not the
+                // beginning of this laser segment (especially for spectral lasers).
+                laser.setPosition(blockHit.getLocation());
+                SplitExecutor.execute(laser, SplitTriggerType.BLOCK);
+                IsaacAttackHitBlockEvent event =
+                    new IsaacAttackHitBlockEvent(
                         laser, laser.owner, getId(), laser.getTriggers(), blockHit);
                 MinecraftForge.EVENT_BUS.post(event);
-                laser.traveled += laser.step * hitParameter;
-                if (!event.isCanceled()) {
-                    laser.traveled = laser.range;
+
+                if (!laser.spectral) {
+                    double hitParameter =
+                        ProjectileCollisionHelper.pathParameter(start, nextPos, blockHit.getLocation());
+                    laser.position = blockHit.getLocation();
+                    laser.traveled += laser.step * hitParameter;
+                    if (!event.isCanceled()) {
+                        laser.traveled = laser.range;
+                        return;
+                    }
+                    if (laser.step * (1.0D - hitParameter) > 1.0E-5 && laser.direction.lengthSqr() > 1.0E-8) {
+                        laser.position = laser.position.add(laser.direction.normalize().scale(1.0E-4));
+                    }
+                    laser.tickCount++;
                     return;
                 }
-                if (laser.step * (1.0D - hitParameter) > 1.0E-5 && laser.direction.lengthSqr() > 1.0E-8) {
-                    laser.position = laser.position.add(laser.direction.normalize().scale(1.0E-4));
-                }
-                laser.tickCount++;
+            } else if (!laser.spectral) {
+                // A non-spectral laser cannot normally revisit a block, but a bounced or
+                // redirected path must still stop without publishing a duplicate event.
+                laser.position = blockHit.getLocation();
+                laser.traveled = laser.range;
                 return;
             }
         }
 
         handleEntityCollision(laser, level, start, nextPos, laser.width, laser.getTriggers());
         laser.position = nextPos;
-        laser.traveled += laser.step;
+        laser.traveled +=
+            trajectoryMotion == null ? laser.step : trajectoryMotion.chargedDistance(laser.step);
+        if (trajectoryMotion != null)
+            laser.getTrajectoryRuntime().advance(trajectoryMotion.progressRate());
+        if (trajectoryMotion != null) laser.getTrajectoryRuntime().commitStep();
         laser.tickCount++;
     }
 
     // ================== Collision & Damage ==================
     @Nullable
-    private BlockHitResult findBlockCollision(ServerLevel level, Vec3 start, Vec3 end, double width, Entity source) {
+    private BlockHitResult findBlockCollision(
+        ServerLevel level, Vec3 start, Vec3 end, double width, Entity source) {
         AABB swept = createCollisionBox(start, width).expandTowards(end.subtract(start));
         BlockPos min = BlockPos.containing(swept.minX, swept.minY, swept.minZ);
         BlockPos max = BlockPos.containing(swept.maxX, swept.maxY, swept.maxZ);
@@ -451,11 +513,12 @@ public class LaserAttack extends AttackType {
                     double dx = Math.min(Math.abs(hit.x - expanded.minX), Math.abs(hit.x - expanded.maxX));
                     double dy = Math.min(Math.abs(hit.y - expanded.minY), Math.abs(hit.y - expanded.maxY));
                     double dz = Math.min(Math.abs(hit.z - expanded.minZ), Math.abs(hit.z - expanded.maxZ));
-                    Direction direction = dx <= dy && dx <= dz
+                    Direction direction =
+                        dx <= dy && dx <= dz
                             ? (motion.x > 0 ? Direction.WEST : Direction.EAST)
                             : dy <= dz
-                            ? (motion.y > 0 ? Direction.DOWN : Direction.UP)
-                            : (motion.z > 0 ? Direction.NORTH : Direction.SOUTH);
+                                ? (motion.y > 0 ? Direction.DOWN : Direction.UP)
+                                : (motion.z > 0 ? Direction.NORTH : Direction.SOUTH);
                     nearest = new BlockHitResult(hit, direction, pos.immutable(), false);
                 }
             }
@@ -463,33 +526,45 @@ public class LaserAttack extends AttackType {
         return nearest;
     }
 
-    protected void handleEntityCollision(LaserProjectile laser, ServerLevel level, Vec3 start, Vec3 end, double width,
-                                         CompositeTrigger triggers) {
+    protected void handleEntityCollision(
+        LaserProjectile laser,
+        ServerLevel level,
+        Vec3 start,
+        Vec3 end,
+        double width,
+        CompositeTrigger triggers) {
         AABB box = createCollisionBox(start, width).expandTowards(end.subtract(start));
-        List<LivingEntity> entities = level.getEntitiesOfClass(LivingEntity.class, box,
-                e -> e != laser.owner
+        List<LivingEntity> entities =
+            level.getEntitiesOfClass(
+                LivingEntity.class,
+                box,
+                e ->
+                    e != laser.owner
                         && e.isAlive()
                         && !EntityHelper.isFriendly(e, laser.owner)
-                        && !laser.damagedEntities.contains(e.getUUID())
-        );
+                        && !laser.damagedEntities.contains(e.getUUID()));
 
         Map<LivingEntity, Vec3> hitPositions = new java.util.HashMap<>();
         Vec3 half = new Vec3(width * 0.5, width * 0.5, width * 0.5);
-        entities.removeIf(target -> {
-            Optional<Vec3> hit = ProjectileCollisionHelper.clipExpandedTarget(start, end, target.getBoundingBox(), half);
-            if (hit.isEmpty()) return true;
-            hitPositions.put(target, hit.get());
-            return false;
-        });
-        entities.sort(java.util.Comparator.comparingDouble(target ->
-                ProjectileCollisionHelper.pathParameter(start, end, hitPositions.get(target))));
+        entities.removeIf(
+            target -> {
+                Optional<Vec3> hit =
+                    ProjectileCollisionHelper.clipExpandedTarget(
+                        start, end, target.getBoundingBox(), half);
+                if (hit.isEmpty()) return true;
+                hitPositions.put(target, hit.get());
+                return false;
+            });
+        entities.sort(
+            java.util.Comparator.comparingDouble(
+                target ->
+                    ProjectileCollisionHelper.pathParameter(start, end, hitPositions.get(target))));
         for (LivingEntity target : entities) {
-            EntityHitResult hitResult = new EntityHitResult(target,
-                    hitPositions.get(target));
+            EntityHitResult hitResult = new EntityHitResult(target, hitPositions.get(target));
 
-            IsaacAttackBeforeHitEntityEvent beforeHit = new IsaacAttackBeforeHitEntityEvent(
-                    laser, laser.owner, getId(), triggers, hitResult, laser.damage
-            );
+            IsaacAttackBeforeHitEntityEvent beforeHit =
+                new IsaacAttackBeforeHitEntityEvent(
+                    laser, laser.owner, getId(), triggers, hitResult, laser.damage);
 
             if (!MinecraftForge.EVENT_BUS.post(beforeHit)) {
                 double actualDamage = beforeHit.getDamage();
@@ -500,9 +575,15 @@ public class LaserAttack extends AttackType {
                 SplitExecutor.executeEntityHit(laser);
                 laser.homingTarget = null; // 清空当前追踪目标，开始追踪下一个目标
 
-                IsaacAttackAfterHitEvent afterHit = new IsaacAttackAfterHitEvent(
-                        laser, laser.owner, ModAttackTypes.LASER.getId(), triggers, hitResult, actualDamage, target.getHealth()
-                );
+                IsaacAttackAfterHitEvent afterHit =
+                    new IsaacAttackAfterHitEvent(
+                        laser,
+                        laser.owner,
+                        ModAttackTypes.LASER.getId(),
+                        triggers,
+                        hitResult,
+                        actualDamage,
+                        target.getHealth());
                 MinecraftForge.EVENT_BUS.post(afterHit);
             }
         }
@@ -512,23 +593,17 @@ public class LaserAttack extends AttackType {
         return target.hurt(getDamageSource(source), damage);
     }
 
-    protected DamageSource getDamageSource(LivingEntity source){
+    protected DamageSource getDamageSource(LivingEntity source) {
         if (!(source.level() instanceof ServerLevel level)) return source.damageSources().generic();
-        var damageTypeHolder = level.registryAccess()
+        var damageTypeHolder =
+            level
+                .registryAccess()
                 .registryOrThrow(Registries.DAMAGE_TYPE)
                 .getHolderOrThrow(ModDamageType.LASER);
         return new DamageSource(damageTypeHolder, source, source);
     }
 
     // ================== Utils ==================
-    private Vec3 getDirectionFromRotation(float xRot, float yRot) {
-        float f = (float) Math.cos(-yRot * ((float) Math.PI / 180F) - (float) Math.PI);
-        float f1 = (float) Math.sin(-yRot * ((float) Math.PI / 180F) - (float) Math.PI);
-        float f2 = (float) -Math.cos(-xRot * ((float) Math.PI / 180F));
-        float f3 = (float) Math.sin(-xRot * ((float) Math.PI / 180F));
-        return new Vec3((f1 * f2), f3, (f * f2)).normalize();
-    }
-
     private Vec3 turnTowards(Vec3 current, Vec3 target, double maxAngleRad) {
         double dot = current.dot(target);
         dot = Math.max(-1.0, Math.min(1.0, dot));
@@ -550,8 +625,10 @@ public class LaserAttack extends AttackType {
         return GeometryHelper.rotateAroundAxis(current, axis, rotateAngle);
     }
 
-    private void spawnInterpolatedParticles(ServerLevel level, Vec3 from, Vec3 to, double width, ResourceLocation colorRl) {
-        IForgeRegistry<BulletColor> registry = RegistryManager.ACTIVE.getRegistry(ModBulletColors.BULLET_COLOR_KEY);
+    private void spawnInterpolatedParticles(
+        ServerLevel level, Vec3 from, Vec3 to, double width, ResourceLocation colorRl) {
+        IForgeRegistry<BulletColor> registry =
+            RegistryManager.ACTIVE.getRegistry(ModBulletColors.BULLET_COLOR_KEY);
 
         BulletColor c = registry != null ? registry.getValue(colorRl) : ModBulletColors.BASE.get();
         c = c == null ? ModBulletColors.BASE.get() : c;
@@ -574,9 +651,7 @@ public class LaserAttack extends AttackType {
 
     private AABB createCollisionBox(Vec3 pos, double width) {
         return new AABB(
-                pos.subtract(width / 2, width / 2, width / 2),
-                pos.add(width / 2, width / 2, width / 2)
-        );
+            pos.subtract(width / 2, width / 2, width / 2), pos.add(width / 2, width / 2, width / 2));
     }
 
     protected double getWidth(AttackContext context) {

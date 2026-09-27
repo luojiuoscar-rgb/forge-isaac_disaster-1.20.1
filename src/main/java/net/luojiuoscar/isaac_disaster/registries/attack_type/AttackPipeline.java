@@ -65,7 +65,7 @@ public final class AttackPipeline {
                                                    @NotNull List<AttackContext> contexts) {
         List<AttackContext> preparedContexts = new ArrayList<>();
         for (int i = 0; i < contexts.size(); i++) {
-            AttackContext attackContext = contexts.get(i);
+            AttackContext attackContext = contexts.get(i).bindAttackTypeOrCopy(request.getAttackType());
             AttackContextPrepareEvent prepareEvent =
                     new AttackContextPrepareEvent(request, plan, attackContext, i);
             MinecraftForge.EVENT_BUS.post(prepareEvent);
@@ -84,7 +84,8 @@ public final class AttackPipeline {
 
     /** Executes already-prepared contexts directly without publishing pipeline events. */
     private static boolean executeExecuteOnly(@NotNull AttackRequest request) {
-        List<AttackContext> contexts = request.getProvidedContexts();
+        List<AttackContext> contexts = request.getProvidedContexts().stream()
+                .map(context -> context.bindAttackTypeOrCopy(request.getAttackType())).toList();
         contexts.forEach(AttackContext::freeze);
         request.getAttackType().performAttack(contexts);
         if (request.shouldPlaySound()) {

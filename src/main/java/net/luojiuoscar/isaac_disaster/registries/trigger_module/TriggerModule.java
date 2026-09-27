@@ -12,7 +12,7 @@ public abstract class TriggerModule {
     private final CompositeTrigger trigger;
 
     public TriggerModule(CompositeTrigger trigger){
-        this.trigger = trigger;
+        this.trigger = trigger == null ? new CompositeTrigger() : trigger.copy();
     }
 
     public void attachToBullet(ExecutableEffectContext context, AttackContext attackContext){}

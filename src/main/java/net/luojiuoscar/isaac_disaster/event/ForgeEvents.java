@@ -8,6 +8,9 @@ import net.luojiuoscar.isaac_disaster.capability.entity.ExtraDataProvider;
 import net.luojiuoscar.isaac_disaster.capability.player.*;
 import net.luojiuoscar.isaac_disaster.capability.player.flight.PlayerIsaacFlightProvider;
 import net.luojiuoscar.isaac_disaster.commands.familiar.FamiliarCmd;
+import net.luojiuoscar.isaac_disaster.commands.bullet.BulletCountCmd;
+import net.luojiuoscar.isaac_disaster.commands.bullet.BulletClearCmd;
+import net.luojiuoscar.isaac_disaster.commands.bullet.BulletTrajectoryTraceCmd;
 import net.luojiuoscar.isaac_disaster.commands.item.ItemClearCmd;
 import net.luojiuoscar.isaac_disaster.commands.item.ItemGetCmd;
 import net.luojiuoscar.isaac_disaster.commands.item.ItemSpawnCmd;
@@ -19,7 +22,6 @@ import net.luojiuoscar.isaac_disaster.commands.revive.ReviveModuleCmd;
 import net.luojiuoscar.isaac_disaster.commands.trinket.TrinketClearSwallowedCmd;
 import net.luojiuoscar.isaac_disaster.commands.trinket.TrinketSetEnchanted;
 import net.luojiuoscar.isaac_disaster.effect.ModEffects;
-import net.luojiuoscar.isaac_disaster.entity.custom.TearBullet;
 import net.luojiuoscar.isaac_disaster.helper.CuriosHelper;
 import net.luojiuoscar.isaac_disaster.item.ModItems;
 import net.luojiuoscar.isaac_disaster.item.item.IsaacItem;
@@ -339,6 +341,11 @@ public class ForgeEvents {
 
     @SubscribeEvent
     public static void onCommandRegister(RegisterCommandsEvent event){
+        // bullet diagnostics
+        new BulletCountCmd(event.getDispatcher());
+        new BulletClearCmd(event.getDispatcher());
+        new BulletTrajectoryTraceCmd(event.getDispatcher());
+
         // pill
         new PillShuffleCmd(event.getDispatcher());
         new PillTriggerByEffectCmd(event.getDispatcher());
@@ -397,9 +404,7 @@ public class ForgeEvents {
         LivingEntity victim = event.getEntity();
         DamageSource source = event.getSource();
         if (source.is(ModDamageType.TEAR)) {
-            Vec3 direction = source.getDirectEntity() instanceof TearBullet bullet
-                    ? bullet.getVelocity() : Vec3.ZERO;
-            PENDING_KNOCKBACK_RESPONSE.put(victim.getUUID(), new PendingKnockbackResponse(true, direction));
+            PENDING_KNOCKBACK_RESPONSE.putIfAbsent(victim.getUUID(), new PendingKnockbackResponse(true, Vec3.ZERO));
         } else if (source.is(ModDamageType.LASER)) {
             PENDING_KNOCKBACK_RESPONSE.put(victim.getUUID(), new PendingKnockbackResponse(false, Vec3.ZERO));
         }
@@ -414,6 +419,17 @@ public class ForgeEvents {
 
     private static final Map<UUID, PendingKnockbackResponse> PENDING_KNOCKBACK_RESPONSE = new HashMap<>();
     private record PendingKnockbackResponse(boolean tear, Vec3 direction) {
+    }
+
+    /**
+     * Registers a lightweight tear's velocity before it applies the ordinary TEAR damage source.
+     *
+     * <p>Optimized bullets deliberately have no direct Minecraft entity, so this preserves the
+     * existing tear knockback response without fabricating an entity just for damage attribution.</p>
+     */
+    public static void registerOptimizedTearKnockback(LivingEntity victim, Vec3 velocity) {
+        if (victim == null || velocity == null) return;
+        PENDING_KNOCKBACK_RESPONSE.put(victim.getUUID(), new PendingKnockbackResponse(true, velocity));
     }
 
     @SubscribeEvent

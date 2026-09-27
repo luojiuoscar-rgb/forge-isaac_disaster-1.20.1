@@ -46,6 +46,9 @@ public abstract class AttackType {
 
     public abstract ResourceLocation getId();
 
+    /** Root behavior family. A new root defaults to its own registered ID. */
+    public ResourceLocation getRootId() { return getId(); }
+
     public abstract List<AttackContext> getAttackContexts(ServerPlayer player, int bulletCount);
     public abstract void performAttack(List<AttackContext> ctxList);
     public abstract void makeSound(LivingEntity entity);
@@ -67,13 +70,12 @@ public abstract class AttackType {
         return player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY)
                 .map(playerAbility -> {
                     ResourceLocation colorRl = playerAbility.getBestBulletColor();
-                    Map<ResourceLocation, Integer> trajectories = playerAbility.getTrajectories();
                     Vec3 eyePos = player.getEyePosition().add(0, player.getBbHeight() * -0.15, 0);
 
                     return AttackContext.builder(player, shooter)
                             .color(colorRl).visuals(playerAbility.getBulletVisuals())
-                            .trigger(new CompositeTrigger()).trajectories(trajectories)
-                            .position(eyePos).mainAxis(GeometryHelper.mainAxisFromRotation(player.getXRot(), player.getYRot()))
+                            .trigger(new CompositeTrigger())
+                            .position(eyePos).attackType(this).mainAxis(GeometryHelper.mainAxisFromRotation(player.getXRot(), player.getYRot()))
                             .range(getRange(player)).speed(getBulletSpeed(player)).build();
                 })
                 .orElse(null);
