@@ -168,7 +168,13 @@ public final class BulletStream {
                 && authorityTick != null
                 && (appliedTick == null || authorityTick > appliedTick)) {
                 state.applyVelocityCorrection(authoritativeVelocities.get(identity));
-                appliedVelocityCorrectionTicks.put(identity, authorityTick);
+                if (!state.isAlive()) {
+                    // Temporary safety net for a rare stalled-projectile failure. Remove or revise
+                    // this guard once the underlying source of invalid low-speed states is known.
+                    advanced = false;
+                } else {
+                    appliedVelocityCorrectionTicks.put(identity, authorityTick);
+                }
             }
             if (!advanced) {
                 iterator.remove();
@@ -288,6 +294,12 @@ public final class BulletStream {
         CorrectionStamp previous = lastCorrectionStamps.get(identity);
         if (previous != null && incoming.compareTo(previous) <= 0) return false;
         state.applyCorrection(position, velocity, blend);
+        // Temporary safety net for a rare stalled-projectile failure. Remove or revise this guard
+        // once the underlying source of invalid low-speed states is identified.
+        if (!state.isAlive()) {
+            despawn(slot, generation);
+            return false;
+        }
         state.restoreSnapshot(state.previousPosition(), snapshotAge, snapshotTraveled);
         if (snapshot != null) state.getTrajectoryRuntime().restore(snapshot);
         lastCorrectionStamps.put(identity, incoming);

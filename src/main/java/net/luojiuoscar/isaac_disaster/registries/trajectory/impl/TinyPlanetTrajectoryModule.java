@@ -251,8 +251,8 @@ public abstract class TinyPlanetTrajectoryModule<S extends TinyPlanetTrajectoryM
         Vec3 anchor = ctx.trajectoryPos;
         if (!state.initialized()) {
             state.launchAxis(ctx.bulletObject.getTrajectoryRuntime().launchDirection());
-            state.launchOffset(ctx.position.subtract(anchor));
-            state.launchOrigin(ctx.position);
+            state.launchOffset(ctx.input.position().subtract(anchor));
+            state.launchOrigin(ctx.input.position());
             if (ctx.bulletObject.getShooter() instanceof Entity shooter)
                 state.height(shooter.getBbHeight());
             state.heightRatio(heightRatio(state.launchAxis()));
@@ -299,10 +299,10 @@ public abstract class TinyPlanetTrajectoryModule<S extends TinyPlanetTrajectoryM
         Vec3 p0 = point(state, anchor, radius, true, before);
         if (state.suspended()) {
             state.recoveryStart(before);
-            state.recoveryOffset(ctx.position.subtract(p0));
-            double speed = ctx.baseVelocity.length();
+            state.recoveryOffset(ctx.input.position().subtract(p0));
+            double speed = ctx.input.baseVelocity().length();
             state.recoveryTangent(
-                    (speed > 1e-9 ? ctx.velocity.scale(1 / speed) : state.launchAxis())
+                    (speed > 1e-9 ? ctx.input.velocity().scale(1 / speed) : state.launchAxis())
                             .subtract(tangent(state, anchor, radius, true, before)));
             state.resume();
         }
@@ -313,7 +313,7 @@ public abstract class TinyPlanetTrajectoryModule<S extends TinyPlanetTrajectoryM
                                 recovery(state, after + 1e-4)
                                         .subtract(recovery(state, Math.max(before, after - 1e-4)))
                                         .scale(1 / (after + 1e-4 - Math.max(before, after - 1e-4))))
-                        .scale(ctx.baseVelocity.length());
+                        .scale(ctx.input.baseVelocity().length());
         state.distance(after);
         state.phase(Math.max(0, after - LAUNCH_DISTANCE - ENTRY_DISTANCE) / radius);
         state.stage(
@@ -334,7 +334,7 @@ public abstract class TinyPlanetTrajectoryModule<S extends TinyPlanetTrajectoryM
                 next,
                 velocity,
                 Vec3.ZERO,
-                ctx.baseVelocity.length(),
+                ctx.input.baseVelocity().length(),
                 TrajectoryMotion.CompositionMode.PRIMARY,
                 charge,
                 path,
@@ -351,12 +351,12 @@ public abstract class TinyPlanetTrajectoryModule<S extends TinyPlanetTrajectoryM
         if (state.suspended()) {
             state.recoveryStart(before);
             state.recoveryTangent(
-                    ctx.velocity.lengthSqr() > 1e-12
-                            ? ctx.velocity.scale(1 / ctx.velocity.length())
+            ctx.input.velocity().lengthSqr() > 1e-12
+                            ? ctx.input.velocity().scale(1 / ctx.input.velocity().length())
                             : state.launchAxis());
             state.resume();
         }
-        Vec3 position = ctx.position;
+        Vec3 position = ctx.input.position();
         Vec3 lastMovement = Vec3.ZERO;
         java.util.List<Vec3> path = new java.util.ArrayList<>();
         int segments = Math.max(1, (int) Math.ceil(increment / 0.05));
@@ -392,13 +392,13 @@ public abstract class TinyPlanetTrajectoryModule<S extends TinyPlanetTrajectoryM
         state.advance(increment);
         state.stage(state.distance() < LAUNCH_DISTANCE + ENTRY_DISTANCE ? 0 : 1);
         if (increment > 0) state.phase(Math.atan2(position.z - center.z, position.x - center.x));
-        double dt = Math.max(0, ctx.deltaTicks);
+        double dt = Math.max(0, ctx.input.deltaTicks());
         Vec3 velocity = dt > 0 ? lastMovement.scale(segments / dt) : Vec3.ZERO;
         return new TrajectoryMotion(
                 position,
                 velocity,
                 Vec3.ZERO,
-                ctx.baseVelocity.length(),
+                ctx.input.baseVelocity().length(),
                 TrajectoryMotion.CompositionMode.PRIMARY,
                 increment,
                 path);

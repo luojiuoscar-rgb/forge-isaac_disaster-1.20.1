@@ -263,13 +263,12 @@ class MyReflectionTrajectoryTest {
                 .apply(
                     new TrajectoryContext(
                         bullet,
-                        bullet.position(),
-                        bullet.velocity(),
-                        bullet.velocity(),
-                        Vec3.ZERO,
-                        0,
-                        0,
-                        1,
+                        new TrajectoryContext.Input(
+                            bullet.position(),
+                            bullet.velocity(),
+                            bullet.velocity(),
+                            Vec3.ZERO,
+                            1),
                         new Vec3(5, 0, 10),
                         0,
                         new MyReflectionBulletTrajectoryModule.State()));
@@ -293,13 +292,12 @@ class MyReflectionTrajectoryTest {
                 .apply(
                     new TrajectoryContext(
                         bullet,
-                        Vec3.ZERO,
-                        bullet.velocity(),
-                        new Vec3(0.1, 0, 0),
-                        Vec3.ZERO,
-                        0,
-                        0,
-                        1,
+                        new TrajectoryContext.Input(
+                            Vec3.ZERO,
+                            bullet.velocity(),
+                            new Vec3(0.1, 0, 0),
+                            Vec3.ZERO,
+                            1),
                         Vec3.ZERO,
                         0,
                         new MyReflectionLaserTrajectoryModule.State()));

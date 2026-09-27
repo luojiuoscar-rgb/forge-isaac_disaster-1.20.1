@@ -75,15 +75,15 @@ class BulletStateTest {
 
     @Test
     void clientCorrectionIsBlendedInsteadOfSnapping() {
-    BulletState state = BulletState.builder().position(Vec3.ZERO).build();
-    state.applyCorrection(new Vec3(10, 0, 0), Vec3.ZERO, 0.25);
+    BulletState state = BulletState.builder().position(Vec3.ZERO).velocity(new Vec3(0.1, 0, 0)).build();
+    state.applyCorrection(new Vec3(10, 0, 0), new Vec3(0.1, 0, 0), 0.25);
     assertEquals(10, state.position().x, 1e-9);
     assertEquals(2.5, state.previousPosition().x, 1e-9);
     }
 
     @Test
     void fetusHitCooldownKeepsTheTargetBlockedForSixTicks() {
-        BulletState state = BulletState.builder().lifetime(10).build();
+        BulletState state = BulletState.builder().velocity(new Vec3(0.1, 0, 0)).lifetime(10).build();
         state.setHitCooldownTicks(6);
 
         for (int tick = 0; tick < 5; tick++) state.tickPhysics();
@@ -91,6 +91,34 @@ class BulletStateTest {
         assertEquals(1, state.hitCooldownTicks());
         state.tickPhysics();
         assertEquals(0, state.hitCooldownTicks());
+    }
+
+    @Test
+    void temporaryLowSpeedGuardRejectsInvalidVelocitiesButKeepsTheBoundary() {
+        BulletState state = BulletState.builder().velocity(new Vec3(1, 0, 0)).build();
+
+        state.setVelocity(new Vec3(BulletState.MIN_VALID_SPEED, 0, 0));
+        assertTrue(state.isAlive());
+
+        state.setVelocity(new Vec3(BulletState.MIN_VALID_SPEED - 1.0E-6D, 0, 0));
+        assertFalse(state.isAlive());
+
+        BulletState nonFinite = BulletState.builder().velocity(new Vec3(1, 0, 0)).build();
+        nonFinite.setVelocity(new Vec3(Double.NaN, 0, 0));
+        assertFalse(nonFinite.isAlive());
+    }
+
+    @Test
+    void temporaryLowSpeedGuardRemovesInvalidStatesFromTheServerManager() {
+        BulletManager manager = new BulletManager();
+        BulletState state = manager.spawn(
+            BulletState.builder().velocity(new Vec3(BulletState.MIN_VALID_SPEED - 1.0E-6D, 0, 0)).build());
+
+        manager.tick();
+
+        assertFalse(state.isAlive());
+        assertEquals(0, manager.activeCount());
+        assertEquals(1, manager.drainDespawns().size());
     }
 
     @Test

@@ -113,6 +113,7 @@ public abstract class TrajectoryModule<S extends TrajectoryState> {
     }
 
     protected final double stepDistance(TrajectoryContext context) {
-        return context.baseVelocity.length() * Math.max(0, context.deltaTicks);
+        return context.input.baseVelocity().length()
+                * Math.max(0, context.input.deltaTicks());
     }
 }

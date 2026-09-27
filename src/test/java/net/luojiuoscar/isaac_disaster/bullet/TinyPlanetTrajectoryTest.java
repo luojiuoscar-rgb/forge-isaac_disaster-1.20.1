@@ -37,13 +37,12 @@ class TinyPlanetTrajectoryTest {
                 .apply(
                     new TrajectoryContext(
                         laserVariant,
-                        Vec3.ZERO,
-                        laserVariant.velocity(),
-                        new Vec3(4, 0, 0),
-                        Vec3.ZERO,
-                        0,
-                        0,
-                        1,
+                        new TrajectoryContext.Input(
+                            Vec3.ZERO,
+                            laserVariant.velocity(),
+                            new Vec3(4, 0, 0),
+                            Vec3.ZERO,
+                            1),
                         Vec3.ZERO,
                         0,
                         new TinyPlanetBulletTrajectoryModule.State()));
@@ -52,13 +51,12 @@ class TinyPlanetTrajectoryTest {
                 .apply(
                     new TrajectoryContext(
                         tearVariant,
-                        Vec3.ZERO,
-                        tearVariant.velocity(),
-                        new Vec3(4, 0, 0),
-                        Vec3.ZERO,
-                        0,
-                        0,
-                        1,
+                        new TrajectoryContext.Input(
+                            Vec3.ZERO,
+                            tearVariant.velocity(),
+                            new Vec3(4, 0, 0),
+                            Vec3.ZERO,
+                            1),
                         Vec3.ZERO,
                         0,
                         new TinyPlanetLaserTrajectoryModule.State()));
@@ -83,13 +81,12 @@ class TinyPlanetTrajectoryTest {
             module.apply(
                 new TrajectoryContext(
                     bullet,
-                    Vec3.ZERO,
-                    bullet.velocity(),
-                    new Vec3(39, 0, 0),
-                    Vec3.ZERO,
-                    0,
-                    0,
-                    1,
+                    new TrajectoryContext.Input(
+                        Vec3.ZERO,
+                        bullet.velocity(),
+                        new Vec3(39, 0, 0),
+                        Vec3.ZERO,
+                        1),
                     Vec3.ZERO,
                     0,
                     state));
@@ -100,13 +97,12 @@ class TinyPlanetTrajectoryTest {
             module.apply(
                 new TrajectoryContext(
                     bullet,
-                    bullet.position(),
-                    bullet.velocity(),
-                    new Vec3(0.1, 0, 0),
-                    Vec3.ZERO,
-                    state.distance(),
-                    0,
-                    1,
+                    new TrajectoryContext.Input(
+                        bullet.position(),
+                        bullet.velocity(),
+                        new Vec3(0.1, 0, 0),
+                        Vec3.ZERO,
+                        1),
                     Vec3.ZERO,
                     0,
                     state));
@@ -204,17 +200,18 @@ class TinyPlanetTrajectoryTest {
                 module.apply(
                     new TrajectoryContext(
                         bullet,
-                        bullet.position(),
-                        bullet.velocity(),
-                        axis.scale(length),
-                        Vec3.ZERO,
-                        module.progressDistance(state),
-                        0,
-                        1,
+                        new TrajectoryContext.Input(
+                            bullet.position(),
+                            bullet.velocity(),
+                            axis.scale(length),
+                            Vec3.ZERO,
+                            1),
                         anchor,
                         amplifier,
                         state));
-            bullet.advanceTrajectory(result, 1);
+            // A zero-length probe only reads the module's current position; it is not a runtime
+            // movement tick and must not trigger the temporary stalled-projectile guard.
+            if (length != 0) bullet.advanceTrajectory(result, 1);
             return result;
         }
     }
@@ -318,7 +315,7 @@ class TinyPlanetTrajectoryTest {
         sim.step(5);
         var buf = new net.minecraft.network.FriendlyByteBuf(io.netty.buffer.Unpooled.buffer());
         try {
-            ((TinyPlanetTrajectoryModule) sim.module).writeState(buf, sim.state);
+            sim.module.writeStateUnchecked(buf, sim.state);
             var decoded = (TrajectoryState) ((TinyPlanetTrajectoryModule) sim.module).readState(buf);
             var copy = decoded.copy();
             copy.suspend();
@@ -357,13 +354,12 @@ class TinyPlanetTrajectoryTest {
                 module.apply(
                     new TrajectoryContext(
                         bullet,
-                        bullet.position(),
-                        bullet.velocity(),
-                        new Vec3(0.1, 0, 0),
-                        Vec3.ZERO,
-                        i * 0.1,
-                        i,
-                        1,
+                        new TrajectoryContext.Input(
+                            bullet.position(),
+                            bullet.velocity(),
+                            new Vec3(0.1, 0, 0),
+                            Vec3.ZERO,
+                            1),
                         Vec3.ZERO,
                         0,
                         state));

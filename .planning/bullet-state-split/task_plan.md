@@ -6,7 +6,7 @@
 
 ## Current Phase
 
-Phase 1 complete; Phase 2 pending.
+Phase 2 complete; Phase 3 pending.
 
 ## Phases
 
@@ -21,11 +21,11 @@ Phase 1 complete; Phase 2 pending.
 
 ### Phase 2: Base motion state
 
-- [ ] Map every position, velocity, acceleration, age, lifetime, traveled, range and alive access.
-- [ ] Introduce a private `BulletMotionState` (name may be refined after call-graph review).
-- [ ] Move only base-motion arithmetic and lifecycle counters; keep orchestration in `BulletState`.
-- [ ] Preserve range-limited versus lifetime-limited termination and collision truncation semantics.
-- [ ] Run focused movement, trajectory and collision tests before proceeding.
+- [x] Map every position, velocity, acceleration, age, lifetime, traveled, range and alive access.
+- [x] Introduce package-private `BulletMotionState` for base kinematics and lifecycle counters.
+- [x] Move only base-motion arithmetic and lifecycle counters; keep orchestration in `BulletState`.
+- [x] Preserve range-limited versus lifetime-limited termination and collision truncation semantics.
+- [x] Run focused movement, trajectory and collision tests before proceeding.
 
 ### Phase 3: Trigger and split state
 

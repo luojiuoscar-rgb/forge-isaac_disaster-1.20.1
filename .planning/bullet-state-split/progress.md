@@ -21,4 +21,23 @@
 
 ### Phase 2: Base motion state
 
-- Not started.
+- Completed the base-motion extraction in `BulletMotionState`.
+- Moved position history, velocity/acceleration, base speed, age/lifetime, traveled distance, range, alive state, low-speed validation, ordinary/trajectory advancement, snapshot restoration and correction handling.
+- Kept `BulletState` responsible for trajectory suspension, cooldown ordering, dynamic range-mode selection, trajectory runtime advancement, charged-distance replacement, and the public `IBulletObject` facade.
+- Kept `slot`/`generation` in `BulletState` because they belong to `BulletManager` identity management.
+- Java 23 `compileJava` passed.
+- Java 17 focused tests passed: `BulletStateTest`, `BulletStreamTest`, `TrajectorySamplingTest`, `TrajectoryNetworkStateTest`, `TinyPlanetTrajectoryTest`, `MyReflectionTrajectoryTest` and `GravityTrajectoryTest`.
+- Java 17 full JUnit suite passed after the extraction.
+- `git diff --check` passed; line-ending notices are pre-existing workspace formatting warnings.
+- No staging operations were performed.
+
+### Phase 3: Trigger and split state
+
+- Pending.
+
+## 2026-09-26: trajectory context input consolidation
+
+- Removed the unused `age` and `trajectoryDistance` fields from `TrajectoryContext`.
+- Added immutable `TrajectoryContext.Input` for position, current velocity, base velocity, acceleration and step duration.
+- Updated the evaluator, trajectory modules and focused tests to use the grouped input without changing trajectory output semantics.
+- Verification: Java 23 `compileJava test` passed; `git diff --check` reported no whitespace errors, only existing line-ending warnings.

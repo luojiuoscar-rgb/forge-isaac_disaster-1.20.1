@@ -72,13 +72,47 @@ class BulletStreamTest {
             0,
             BulletState.builder().position(Vec3.ZERO).velocity(new Vec3(1, 0, 0)).build());
 
-        assertTrue(stream.correct(9, 1, new Vec3(5, 0, 0), Vec3.ZERO, 1.0, 5, 5.0, null));
+        assertTrue(stream.correct(9, 1, new Vec3(5, 0, 0), new Vec3(0.1, 0, 0), 1.0, 5, 5.0, null));
         assertFalse(stream.correct(9, 1, new Vec3(2, 0, 0), Vec3.ZERO, 1.0, 4, 4.0, null));
         assertFalse(stream.correct(9, 1, new Vec3(3, 0, 0), Vec3.ZERO, 1.0, 5, 4.0, null));
         assertFalse(stream.correct(9, 1, new Vec3(4, 0, 0), Vec3.ZERO, 1.0, 5, 5.0, null));
         assertEquals(new Vec3(5, 0, 0), state.position());
         assertEquals(5, state.age());
         assertEquals(5.0, state.traveled(), 1e-9);
+    }
+
+    @Test
+    void temporaryLowSpeedGuardRemovesClientStateFromAnInvalidCorrection() {
+        BulletStream stream = new BulletStream();
+        stream.spawn(10, 1, 0, BulletState.builder().velocity(new Vec3(1, 0, 0)).build());
+
+        assertFalse(stream.correct(
+            10,
+            1,
+            Vec3.ZERO,
+            new Vec3(BulletState.MIN_VALID_SPEED - 1.0E-6D, 0, 0),
+            1.0,
+            1,
+            1.0,
+            null));
+        assertEquals(0, stream.size());
+    }
+
+    @Test
+    void temporaryLowSpeedGuardRemovesClientStateDuringPrediction() {
+        BulletStream stream = new BulletStream();
+        stream.spawn(
+            11,
+            1,
+            0,
+            BulletState.builder()
+                .velocity(new Vec3(BulletState.MIN_VALID_SPEED - 1.0E-6D, 0, 0))
+                .lifetime(20)
+                .build());
+
+        stream.tick();
+
+        assertEquals(0, stream.size());
     }
 
     @Test

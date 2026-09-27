@@ -81,6 +81,12 @@ public final class ClientBulletRuntime {
                     .build());
 
         if (state == null) return;
+        // Temporary safety net for a rare stalled-projectile failure. Remove or revise this guard
+        // once the underlying source of invalid low-speed states is identified.
+        if (!state.validateRuntimeVelocity()) {
+            stream.despawn(packet.slot(), packet.generation());
+            return;
+        }
         state.restoreSnapshot(packet.previousPosition(), packet.age(), packet.traveled());
     }
 

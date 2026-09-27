@@ -31,13 +31,12 @@ class TinyPlanetSlotTest {
                 module.apply(
                     new TrajectoryContext(
                         bullet,
-                        bullet.position(),
-                        bullet.velocity(),
-                        new Vec3(0.1, 0, 0),
-                        Vec3.ZERO,
-                        state.distance(),
-                        0,
-                        1,
+                        new TrajectoryContext.Input(
+                            bullet.position(),
+                            bullet.velocity(),
+                            new Vec3(0.1, 0, 0),
+                            Vec3.ZERO,
+                            1),
                         Vec3.ZERO,
                         0,
                         state));

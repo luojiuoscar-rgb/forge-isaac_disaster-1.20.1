@@ -61,9 +61,9 @@ public final class GravityTrajectoryModule extends TrajectoryModule<GravityTraje
     @Override
     protected TrajectoryMotion applyTyped(TrajectoryContext ctx, State state) {
         if (ctx.frame.laser() || ctx.bulletObject.noGravity()) return null;
-        double dt = Math.max(0, ctx.deltaTicks);
+        double dt = Math.max(0, ctx.input.deltaTicks());
         Vec3 acceleration = new Vec3(0, -ACCELERATION, 0);
-        Vec3 velocity = ctx.velocity.add(acceleration.scale(dt));
+        Vec3 velocity = ctx.input.velocity().add(acceleration.scale(dt));
         Vec3 movement = velocity.scale(dt);
         double cost = movement.length();
         if (!ctx.composed) {
@@ -77,10 +77,10 @@ public final class GravityTrajectoryModule extends TrajectoryModule<GravityTraje
 
         state.resume();
         return new TrajectoryMotion(
-                ctx.position.add(movement),
+                ctx.input.position().add(movement),
                 velocity,
                 acceleration,
-                ctx.baseVelocity.length(),
+                ctx.input.baseVelocity().length(),
                 TrajectoryMotion.CompositionMode.RELATIVE,
                 cost);
     }

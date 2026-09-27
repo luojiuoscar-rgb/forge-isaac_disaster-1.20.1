@@ -279,10 +279,10 @@ public final class MyReflectionLaserTrajectoryModule
         double increment = Math.min(stepDistance(ctx), remaining + Math.max(0, freeEnd - before));
         if (state.suspended()) {
             state.recoveryStart(before);
-            state.recoveryOffset(ctx.position.subtract(point(state, before)));
+            state.recoveryOffset(ctx.input.position().subtract(point(state, before)));
             Vec3 heading =
-                    ctx.velocity.lengthSqr() > 1e-12
-                            ? ctx.velocity.normalize()
+                    ctx.input.velocity().lengthSqr() > 1e-12
+                            ? ctx.input.velocity().normalize()
                             : state.launchAxis();
             state.recoveryTangent(heading.subtract(tangent(state, before)));
             state.resume();
@@ -292,7 +292,7 @@ public final class MyReflectionLaserTrajectoryModule
         Vec3 velocity =
                 tangent(state, after)
                         .add(recoveryDerivative(state, after))
-                        .scale(ctx.baseVelocity.length());
+                        .scale(ctx.input.baseVelocity().length());
         var path = new ArrayList<Vec3>();
         var pathCosts = new ArrayList<Double>();
         int count = Math.max(1, (int) Math.ceil(increment / 0.1));
@@ -309,7 +309,7 @@ public final class MyReflectionLaserTrajectoryModule
                 next,
                 velocity,
                 Vec3.ZERO,
-                increment / Math.max(1e-12, ctx.deltaTicks),
+                increment / Math.max(1e-12, ctx.input.deltaTicks()),
                 TrajectoryMotion.CompositionMode.PRIMARY,
                 charge,
                 path,

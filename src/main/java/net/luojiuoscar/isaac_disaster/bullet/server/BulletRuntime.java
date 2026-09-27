@@ -103,6 +103,9 @@ public final class BulletRuntime {
             IsaacDisaster.LOGGER.warn("Discarded optimized bullet with invalid level or state");
             return null;
         }
+        // Temporary safety net for a rare stalled-projectile failure. Remove or revise this guard
+        // once the underlying source of invalid low-speed states is identified.
+        if (!state.validateRuntimeVelocity()) return null;
         BulletState spawned = manager(level).spawn(state);
         return spawned;
     }

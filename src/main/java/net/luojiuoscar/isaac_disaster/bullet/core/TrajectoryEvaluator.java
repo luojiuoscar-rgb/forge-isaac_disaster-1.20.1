@@ -76,13 +76,12 @@ public final class TrajectoryEvaluator {
             module.initialize(
                 new TrajectoryContext(
                     bullet,
-                    bullet.getPosition(),
-                    bullet.getVelocity(),
-                    bullet.getVelocity(),
-                    bullet.getAcceleration(),
-                    bullet.getTrajectoryRuntime().distance(),
-                    bullet.getTrajectoryAge(),
-                    0,
+                    new TrajectoryContext.Input(
+                        bullet.getPosition(),
+                        bullet.getVelocity(),
+                        bullet.getVelocity(),
+                        bullet.getAcceleration(),
+                        0),
                     bullet.getTrajectoryRuntime().anchor(),
                     spec.amplifier(),
                     state));
@@ -277,13 +276,12 @@ public final class TrajectoryEvaluator {
             TrajectoryContext context =
                 new TrajectoryContext(
                     bullet,
-                    framePosition,
-                    velocity,
-                    baseVelocity,
-                    acceleration,
-                    primaryClock,
-                    bullet.getTrajectoryAge(),
-                    deltaTicks,
+                    new TrajectoryContext.Input(
+                        framePosition,
+                        velocity,
+                        baseVelocity,
+                        acceleration,
+                        deltaTicks),
                     anchor,
                     spec.amplifier(),
                     state,

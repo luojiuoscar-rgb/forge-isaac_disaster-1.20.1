@@ -170,7 +170,10 @@ public class LaserAttack extends AttackType {
 
         @Override
         public AttackContext getAttackContext() {
-            return attackContext.toBuilder().hitBlockPositions(hitBlockPositions).build();
+            return attackContext.toBuilder()
+                    .hitBlockPositions(hitBlockPositions)
+                    .inheritTrajectorySnapshot(trajectoryRuntime.snapshot())
+                    .build();
         }
 
         @Override

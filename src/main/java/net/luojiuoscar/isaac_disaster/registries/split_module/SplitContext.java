@@ -24,16 +24,27 @@ public final class SplitContext {
     public SplitContext(@NotNull BulletSplitEvent event, @NotNull ResourceLocation moduleId,
                         @NotNull SplitModule module,
                         int stacks, int moduleTriggerCount) {
+        this(event, moduleId, module, stacks, moduleTriggerCount, event.getSplitSequence());
+    }
+
+    private SplitContext(@NotNull BulletSplitEvent event, @NotNull ResourceLocation moduleId,
+                         @NotNull SplitModule module,
+                         int stacks, int moduleTriggerCount,
+                         @NotNull SplitSequence sequence) {
         this.event = Objects.requireNonNull(event, "event");
         this.parent = event.getParent();
         this.referenceContext = event.getReferenceContext();
-        this.sequence = event.getSplitSequence();
+        this.sequence = Objects.requireNonNull(sequence, "sequence").copy();
         this.triggerType = event.getTriggerType();
         this.triggerCounts = parent.getSplitTriggerCounts().copy();
         this.module = Objects.requireNonNull(module, "module");
         this.moduleId = Objects.requireNonNull(moduleId, "moduleId");
         this.stacks = stacks;
         this.moduleTriggerCount = moduleTriggerCount;
+    }
+
+    SplitContext withSequence(@NotNull SplitSequence sequence) {
+        return new SplitContext(event, moduleId, module, stacks, moduleTriggerCount, sequence);
     }
 
     public @NotNull BulletSplitEvent getEvent() { return event; }

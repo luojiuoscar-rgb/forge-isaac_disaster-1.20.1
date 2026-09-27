@@ -4,12 +4,15 @@ import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.event.custom.attack.tear_bullet.BulletSplitEvent;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackContext;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackExecutor;
+import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackRequest;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.IBulletObject;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.impl.BrimstoneAttack;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.impl.LaserAttack;
 import net.minecraftforge.common.MinecraftForge;
 import org.jetbrains.annotations.NotNull;
 import net.minecraft.world.phys.Vec3;
+
+import java.util.List;
 
 /** Publishes and executes one split boundary for a runtime bullet object. */
 public final class SplitExecutor {
@@ -38,7 +41,8 @@ public final class SplitExecutor {
      */
     public static void executeAt(@NotNull IBulletObject parent, @NotNull SplitTriggerType triggerType,
                                  @NotNull Vec3 position, @NotNull Vec3 velocity) {
-        if (parent.getOwner() == null || parent.getAttackContext() == null) {
+        AttackContext parentContext = parent.getAttackContext();
+        if (parent.getOwner() == null || parentContext == null) {
             IsaacDisaster.LOGGER.warn("Discarded split request with no owner or attack context");
             return;
         }
@@ -46,7 +50,7 @@ public final class SplitExecutor {
         SplitSequence sequence = parent.getSplitSequence();
         if (sequence == null || sequence.isEmpty()) return;
 
-        AttackContext.Builder referenceBuilder = parent.getAttackContext().toBuilder()
+        AttackContext.Builder referenceBuilder = parentContext.toBuilder()
                 .position(position)
                 .useExactSpawnPosition()
                 .damage((double) parent.getDamage())
@@ -58,7 +62,10 @@ public final class SplitExecutor {
         BulletSplitEvent event = new BulletSplitEvent(parent, sequence, referenceContext, triggerType);
         if (MinecraftForge.EVENT_BUS.post(event)) return;
 
-        for (var request : event.getSplitSequence().createChildRequests(event)) {
+        SplitSequence resolvedSequence = event.getSplitSequence();
+        List<AttackRequest> requests = resolvedSequence.createChildRequests(event);
+        sequence.mergeTriggerCountsFrom(resolvedSequence);
+        for (var request : requests) {
             if (request.getAttackType() instanceof BrimstoneAttack brimstone
                 && parent instanceof LaserAttack.LaserProjectile laser) {
                 for (AttackContext childContext : request.getProvidedContexts()) {

@@ -152,12 +152,12 @@ public final class MyReflectionBulletTrajectoryModule
                             ? owner.position()
                             : ctx.trajectoryPos.add(0, -state.height() * 0.6, 0);
         }
-        double speed = ctx.baseVelocity.length();
+        double speed = ctx.input.baseVelocity().length();
         double remaining =
                 Math.max(0, ctx.bulletObject.getRange() - ctx.bulletObject.getTraveled());
-        double dt = Math.max(0, ctx.deltaTicks);
-        Vec3 velocity = ctx.velocity;
-        Vec3 position = ctx.position;
+        double dt = Math.max(0, ctx.input.deltaTicks());
+        Vec3 velocity = ctx.input.velocity();
+        Vec3 position = ctx.input.position();
         int count = Math.max(1, (int) Math.ceil(dt / 0.1));
         var path = new ArrayList<Vec3>();
         double distance = 0;

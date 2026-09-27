@@ -19,6 +19,10 @@ import net.luojiuoscar.isaac_disaster.registries.trajectory.TrajectorySpec;
 import java.util.Set;
 
 public interface IBulletObject {
+    /**
+     * Returns the live split sequence owned by this projectile. Split execution advances module
+     * trigger counts on this sequence after a successful split; callers must not retain it.
+     */
     SplitSequence getSplitSequence();
 
     AttackContext getAttackContext();
@@ -70,6 +74,10 @@ public interface IBulletObject {
 
     default int getTrajectoryAge() { return 0; }
 
+    /**
+     * Returns the live trigger collection for runtime event extensions. Callers that only need to
+     * inspect or transfer triggers should use {@link CompositeTrigger#copy()}.
+     */
     CompositeTrigger getTriggers();
 
     @Nullable
