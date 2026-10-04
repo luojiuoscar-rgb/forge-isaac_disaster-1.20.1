@@ -3,6 +3,7 @@ package net.luojiuoscar.isaac_disaster.registries.split_module;
 import net.luojiuoscar.isaac_disaster.registries.attack_pattern.AttackPattern;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackType;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackContext;
+import net.minecraft.resources.ResourceLocation;
 import java.util.List;
 import java.util.Objects;
 
@@ -29,6 +30,12 @@ public abstract class SplitModule {
      * Runtime inheritance is evaluated by {@link SplitSequence} for every entry.
      */
     public boolean shouldInherit(SplitContext context, AttackContext childContext) {
+        return true;
+    }
+
+    /** Returns whether this module allows a child module to be copied to its generated bullets. */
+    public boolean shouldInheritChildModule(SplitContext context, ResourceLocation childModuleId,
+                                            AttackContext childContext) {
         return true;
     }
 

@@ -18,12 +18,12 @@ public class SacredHeart extends PassiveAbility {
 
     @Override
     public void handleFirstObtain(ServerPlayer player, @Nullable ItemStack stack) {
+        StatManager.MAX_HEALTH.apply(player, 1);
         player.setHealth(player.getMaxHealth());
     }
 
     @Override
     public void handleObtain(ServerPlayer player, @Nullable ItemStack stack) {
-        StatManager.MAX_HEALTH.apply(player, 1);
         StatManager.DAMAGE.apply(player, 1);
         StatManager.DAMAGE_MULTIPLY_BASE.apply(player, 1.3);
         StatManager.BULLET_SPEED.apply(player, 1);
@@ -39,7 +39,6 @@ public class SacredHeart extends PassiveAbility {
 
     @Override
     public void handleRemove(ServerPlayer player, @Nullable ItemStack stack) {
-        StatManager.MAX_HEALTH.apply(player, -1);
         StatManager.DAMAGE.apply(player, -1);
         StatManager.DAMAGE_MULTIPLY_BASE.apply(player, -1.3);
         StatManager.BULLET_SPEED.apply(player, -1);

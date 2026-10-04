@@ -18,17 +18,16 @@ public class TheBody extends PassiveAbility {
 
     @Override
     public void handleFirstObtain(ServerPlayer player, @Nullable ItemStack stack) {
+        StatManager.MAX_HEALTH.apply(player, 3);
         StatManager.healHealth(player, 3);
     }
 
     @Override
     public void handleObtain(ServerPlayer player, @Nullable ItemStack stack) {
-        StatManager.MAX_HEALTH.apply(player, 3);
     }
 
     @Override
     public void handleRemove(ServerPlayer player, @Nullable ItemStack stack) {
-        StatManager.MAX_HEALTH.apply(player, -3);
     }
 
     @Override

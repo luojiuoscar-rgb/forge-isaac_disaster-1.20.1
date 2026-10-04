@@ -27,6 +27,7 @@ public class Supper extends PassiveAbility {
 
     @Override
     public void handleFirstObtain(ServerPlayer player, @Nullable ItemStack stack) {
+        StatManager.MAX_HEALTH.apply(player, 1);
         StatManager.healHealth(player, 1.0f);
         if (PlayerHelper.hasItem(ModPassiveItems.BINGE_EATER.getId(), (ServerPlayer) player) && stack != null){
             player.addEffect(new MobEffectInstance(MobEffects.DAMAGE_BOOST, 600, 1));
@@ -35,7 +36,6 @@ public class Supper extends PassiveAbility {
 
     @Override
     public void handleObtain(ServerPlayer player, @Nullable ItemStack stack) {
-        StatManager.MAX_HEALTH.apply(player, 1);
 
         if (PlayerHelper.hasItem(ModPassiveItems.BINGE_EATER.getId(), player) && stack != null){
             FoodPassiveItem.setBingeEater(stack, true);
@@ -45,7 +45,6 @@ public class Supper extends PassiveAbility {
 
     @Override
     public void handleRemove(ServerPlayer player, @Nullable ItemStack stack) {
-        StatManager.MAX_HEALTH.apply(player, -1);
 
         if (PlayerHelper.hasItem(ModPassiveItems.BINGE_EATER.getId(), player) && stack != null){
             FoodPassiveItem.setBingeEater(stack, true);

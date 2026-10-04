@@ -18,12 +18,12 @@ public class BlueCap extends PassiveAbility {
 
     @Override
     public void handleFirstObtain(ServerPlayer player, @Nullable ItemStack stack) {
+        StatManager.MAX_HEALTH.apply(player, 1);
         StatManager.healHealth(player, 1);
     }
 
     @Override
     public void handleObtain(ServerPlayer player, @Nullable ItemStack stack) {
-        StatManager.MAX_HEALTH.apply(player, 1);
         StatManager.TEARS.apply(player, 1);
         StatManager.ATTACK_SPEED.apply(player, 0.1);
         StatManager.BLOCK_BREAKING.apply(player, 1);
@@ -33,7 +33,6 @@ public class BlueCap extends PassiveAbility {
 
     @Override
     public void handleRemove(ServerPlayer player, @Nullable ItemStack stack) {
-        StatManager.MAX_HEALTH.apply(player, -1);
         StatManager.TEARS.apply(player, -1);
         StatManager.ATTACK_SPEED.apply(player, -0.1);
         StatManager.BLOCK_BREAKING.apply(player, -1);

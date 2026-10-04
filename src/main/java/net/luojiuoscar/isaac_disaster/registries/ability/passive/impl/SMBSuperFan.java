@@ -17,12 +17,12 @@ public class SMBSuperFan extends PassiveAbility {
 
     @Override
     public void handleFirstObtain(ServerPlayer player, @Nullable ItemStack stack) {
+        StatManager.MAX_HEALTH.apply(player, 1);
         player.setHealth(player.getMaxHealth());
     }
 
     @Override
     public void handleObtain(ServerPlayer player, @Nullable ItemStack stack) {
-        StatManager.MAX_HEALTH.apply(player, 1);
         StatManager.MOVEMENT_SPEED.apply(player, 1);
         StatManager.DAMAGE.apply(player, 0.3);
         StatManager.TEARS.apply(player, 0.3);
@@ -31,7 +31,6 @@ public class SMBSuperFan extends PassiveAbility {
 
     @Override
     public void handleRemove(ServerPlayer player, @Nullable ItemStack stack) {
-        StatManager.MAX_HEALTH.apply(player, -1);
         StatManager.MOVEMENT_SPEED.apply(player, -1);
         StatManager.DAMAGE.apply(player, -0.3);
         StatManager.TEARS.apply(player, -0.3);

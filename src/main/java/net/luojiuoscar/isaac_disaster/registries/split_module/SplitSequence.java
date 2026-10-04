@@ -84,7 +84,8 @@ public final class SplitSequence {
 
             SplitContext entryContext = new SplitContext(
                     context.getEvent(), entry.moduleId, module, entry.stacks, entry.triggerCount);
-            if (module.shouldInherit(entryContext, childContext)) {
+            if (context.getModule().shouldInheritChildModule(context, entry.moduleId, childContext)
+                    && module.shouldInherit(entryContext, childContext)) {
                 childEntries.add(entry);
             }
         }

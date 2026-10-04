@@ -25,12 +25,12 @@ public class MagicMushroom extends PassiveAbility {
 
     @Override
     public void handleFirstObtain(ServerPlayer player, @Nullable ItemStack stack) {
+        StatManager.MAX_HEALTH.apply(player, 1);
         player.setHealth(player.getMaxHealth());
     }
 
     @Override
     public void handleObtain(ServerPlayer player, @Nullable ItemStack stack) {
-        StatManager.MAX_HEALTH.apply(player, 1);
         StatManager.SCALE.apply(player, 2.5);
         StatManager.MOVEMENT_SPEED.apply(player, 1.5);
         StatManager.DAMAGE.apply(player, 0.25);
@@ -43,7 +43,6 @@ public class MagicMushroom extends PassiveAbility {
 
     @Override
     public void handleRemove(ServerPlayer player, @Nullable ItemStack stack) {
-        StatManager.MAX_HEALTH.apply(player, -1);
         StatManager.SCALE.apply(player, -2.5);
         StatManager.MOVEMENT_SPEED.apply(player, -1.5);
         StatManager.DAMAGE.apply(player, -0.25);
