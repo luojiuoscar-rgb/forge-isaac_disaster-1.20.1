@@ -55,6 +55,9 @@ public class LaserAttack extends AttackType {
     private static final LaserAttackPattern PATTERN = new LaserAttackPattern();
     /** Hard upper bound for one synchronous laser attack. */
     private static final int MAX_LASER_STEPS = 4_096;
+    private static final double BASE_LASER_WIDTH = 0.25D;
+    private static final double BASE_HOMING_TURN = 0.25D;
+    private static final double MAX_HOMING_COLLISION_ANGLE = 0.5D;
 
     public LaserAttack(int priorityTier, double priority) {
         super(priorityTier, priority);
@@ -386,9 +389,12 @@ public class LaserAttack extends AttackType {
     // ================== stepLaser ==================
     protected void stepLaser(LaserProjectile laser, ServerLevel level, AttackContext context) {
         // --------- Homing ---------
+        Vec3 previousDirection = laser.direction.lengthSqr() > 1.0E-8D
+            ? laser.direction.normalize() : context.getMainAxis().normalize();
+        laser.direction = previousDirection;
         laser.isCurrentlyHoming = false;
         if (laser.homing) {
-            // 低频搜索目标（每 10 tick）
+            // Search again every ten steering steps.
             if (laser.tickCount % 10 == 0
                 || laser.homingTarget == null
                 || !laser.homingTarget.isAlive()) {
@@ -403,8 +409,11 @@ public class LaserAttack extends AttackType {
 
             // 高频平滑转向
             if (laser.homingTarget != null && laser.homingTarget.isAlive()) {
-                Vec3 toTarget = laser.homingTarget.getEyePosition().subtract(laser.position).normalize();
-                laser.direction = turnTowards(laser.direction, toTarget, 0.25);
+                Vec3 toTarget = laser.homingTarget.getEyePosition().subtract(laser.position);
+                if (toTarget.lengthSqr() > 1.0E-8D) {
+                    double maxTurn = BASE_HOMING_TURN * Math.max(1.0D, laser.width / BASE_LASER_WIDTH);
+                    laser.direction = turnTowards(laser.direction, toTarget.normalize(), maxTurn);
+                }
                 laser.isCurrentlyHoming = true;
             }
         }
@@ -432,13 +441,58 @@ public class LaserAttack extends AttackType {
         if (laser.direction.lengthSqr() > 1e-6) laser.direction = laser.direction.normalize();
 
         Vec3 start = laser.position;
-        Vec3 nextPos =
-            trajectoryMotion != null && trajectoryMotion.desiredPosition() != null
-                ? trajectoryMotion.desiredPosition()
-                : start.add(laser.direction.scale(laser.step));
-        spawnInterpolatedParticles(level, start, nextPos, laser.width, context.getColorRl());
+        HomingArc homingArc = laser.isCurrentlyHoming
+            ? HomingArc.between(start, previousDirection, laser.direction, laser.step) : null;
+        Vec3 nextPos;
+        if (homingArc != null) {
+            nextPos = homingArc.positionAt(1.0D);
+        } else if (trajectoryMotion != null && trajectoryMotion.desiredPosition() != null) {
+            nextPos = trajectoryMotion.desiredPosition();
+        } else {
+            nextPos = start.add(laser.direction.scale(laser.step));
+        }
+        spawnInterpolatedParticles(level, start, nextPos, laser.width, context.getColorRl(), homingArc);
 
-        BlockHitResult blockHit = findBlockCollision(level, start, nextPos, laser.width, laser.owner);
+        int segments = homingArc == null ? 1 : homingArc.collisionSegments();
+        double segmentLength = laser.step / segments;
+        double chargedDistance = trajectoryMotion == null
+            ? laser.step : trajectoryMotion.chargedDistance(laser.step);
+        Vec3 finalDirection = laser.direction;
+        for (int i = 0; i < segments; i++) {
+            Vec3 segmentStart = laser.position;
+            Vec3 segmentEnd = homingArc == null ? nextPos
+                : homingArc.positionAt((i + 1.0D) / segments);
+            Vec3 segmentDirection = homingArc == null ? laser.direction
+                : segmentEnd.subtract(segmentStart).normalize();
+            laser.direction = segmentDirection;
+            SegmentResult result = traceLaserSegment(laser, level, segmentStart, segmentEnd,
+                segmentLength, chargedDistance / segments);
+            if (result == SegmentResult.STOPPED) {
+                if (trajectoryMotion != null) laser.getTrajectoryRuntime().rollbackStep();
+                return;
+            }
+            if (result == SegmentResult.INTERRUPTED) {
+                if (trajectoryMotion != null) laser.getTrajectoryRuntime().rollbackStep();
+                laser.tickCount++;
+                return;
+            }
+            if (!laser.direction.equals(segmentDirection)) {
+                if (trajectoryMotion != null) laser.getTrajectoryRuntime().rollbackStep();
+                laser.tickCount++;
+                return;
+            }
+        }
+        laser.direction = finalDirection;
+        if (trajectoryMotion != null) {
+            laser.getTrajectoryRuntime().advance(trajectoryMotion.progressRate());
+            laser.getTrajectoryRuntime().commitStep();
+        }
+        laser.tickCount++;
+    }
+
+    private SegmentResult traceLaserSegment(LaserProjectile laser, ServerLevel level, Vec3 start, Vec3 end,
+                                            double segmentLength, double chargedDistance) {
+        BlockHitResult blockHit = findBlockCollision(level, start, end, laser.width, laser.owner);
         if (blockHit != null) {
             boolean firstContact = laser.markBlockHit(blockHit.getBlockPos());
             if (firstContact) {
@@ -458,37 +512,37 @@ public class LaserAttack extends AttackType {
 
                 if (!laser.spectral) {
                     double hitParameter =
-                        ProjectileCollisionHelper.pathParameter(start, nextPos, blockHit.getLocation());
-                    laser.position = blockHit.getLocation();
-                    laser.traveled += laser.step * hitParameter;
+                        ProjectileCollisionHelper.pathParameter(start, end, blockHit.getLocation());
+                    laser.traveled += segmentLength * hitParameter;
                     if (!event.isCanceled()) {
                         laser.traveled = laser.range;
-                        return;
+                        return SegmentResult.STOPPED;
                     }
-                    if (laser.step * (1.0D - hitParameter) > 1.0E-5 && laser.direction.lengthSqr() > 1.0E-8) {
-                        laser.position = laser.position.add(laser.direction.normalize().scale(1.0E-4));
+                    if (laser.position.equals(blockHit.getLocation())) {
+                        Vec3 outgoing = laser.direction;
+                        if (segmentLength * (1.0D - hitParameter) > 1.0E-5
+                            && outgoing.lengthSqr() > 1.0E-8D) {
+                            laser.position = laser.position.add(outgoing.normalize().scale(1.0E-4D));
+                        }
                     }
-                    laser.tickCount++;
-                    return;
+                    return SegmentResult.INTERRUPTED;
                 }
             } else if (!laser.spectral) {
                 // A non-spectral laser cannot normally revisit a block, but a bounced or
                 // redirected path must still stop without publishing a duplicate event.
                 laser.position = blockHit.getLocation();
                 laser.traveled = laser.range;
-                return;
+                return SegmentResult.STOPPED;
             }
         }
 
-        handleEntityCollision(laser, level, start, nextPos, laser.width, laser.getTriggers());
-        laser.position = nextPos;
-        laser.traveled +=
-            trajectoryMotion == null ? laser.step : trajectoryMotion.chargedDistance(laser.step);
-        if (trajectoryMotion != null)
-            laser.getTrajectoryRuntime().advance(trajectoryMotion.progressRate());
-        if (trajectoryMotion != null) laser.getTrajectoryRuntime().commitStep();
-        laser.tickCount++;
+        handleEntityCollision(laser, level, start, end, laser.width, laser.getTriggers());
+        laser.position = end;
+        laser.traveled += chargedDistance;
+        return SegmentResult.COMPLETE;
     }
+
+    private enum SegmentResult { COMPLETE, INTERRUPTED, STOPPED }
 
     // ================== Collision & Damage ==================
     @Nullable
@@ -572,7 +626,9 @@ public class LaserAttack extends AttackType {
                     continue;
                 }
                 laser.damagedEntities.add(target.getUUID());
-                SplitExecutor.executeEntityHit(laser);
+                laser.recordSplitTrigger(SplitTriggerType.ENTITY);
+                SplitExecutor.executeAt(laser, SplitTriggerType.ENTITY,
+                    hitPositions.get(target), laser.direction);
                 laser.homingTarget = null; // 清空当前追踪目标，开始追踪下一个目标
 
                 IsaacAttackAfterHitEvent afterHit =
@@ -609,24 +665,44 @@ public class LaserAttack extends AttackType {
         dot = Math.max(-1.0, Math.min(1.0, dot));
 
         double angle = Math.acos(dot);
-        if (angle < 1e-5) return target;
+        if (angle <= maxAngleRad) return target;
 
-        double rotateAngle = Math.min(maxAngleRad, angle);
-
-        // 旋转轴 = current × target
         Vec3 axis = current.cross(target);
+        if (axis.lengthSqr() < 1.0E-12D) {
+            axis = current.cross(new Vec3(0.0D, 1.0D, 0.0D));
+            if (axis.lengthSqr() < 1.0E-12D) {
+                axis = current.cross(new Vec3(1.0D, 0.0D, 0.0D));
+            }
+        }
+        return GeometryHelper.rotateAroundAxis(current, axis.normalize(), maxAngleRad);
+    }
 
-        if (axis.lengthSqr() < 1e-6) {
-            return target; // 共线情况
+    /** Keeps the visible curve continuous; collision chords approximate it within the beam width. */
+    private record HomingArc(Vec3 start, Vec3 forward, Vec3 side, double angle, double length) {
+        @Nullable
+        static HomingArc between(Vec3 start, Vec3 fromDirection, Vec3 toDirection, double length) {
+            double dot = Math.max(-1.0D, Math.min(1.0D, fromDirection.dot(toDirection)));
+            double angle = Math.acos(dot);
+            if (angle < 1.0E-5D) return null;
+            Vec3 axis = fromDirection.cross(toDirection);
+            if (axis.lengthSqr() < 1.0E-12D) return null;
+            return new HomingArc(start, fromDirection, axis.normalize().cross(fromDirection), angle, length);
         }
 
-        axis = axis.normalize();
+        Vec3 positionAt(double fraction) {
+            double radians = angle * fraction;
+            return start.add(forward.scale(length * Math.sin(radians) / angle))
+                .add(side.scale(length * (1.0D - Math.cos(radians)) / angle));
+        }
 
-        return GeometryHelper.rotateAroundAxis(current, axis, rotateAngle);
+        int collisionSegments() {
+            return Math.max(1, (int) Math.ceil(angle / MAX_HOMING_COLLISION_ANGLE));
+        }
     }
 
     private void spawnInterpolatedParticles(
-        ServerLevel level, Vec3 from, Vec3 to, double width, ResourceLocation colorRl) {
+        ServerLevel level, Vec3 from, Vec3 to, double width, ResourceLocation colorRl,
+        @Nullable HomingArc homingArc) {
         IForgeRegistry<BulletColor> registry =
             RegistryManager.ACTIVE.getRegistry(ModBulletColors.BULLET_COLOR_KEY);
 
@@ -637,12 +713,12 @@ public class LaserAttack extends AttackType {
         if (c == ModBulletColors.BASE.get()) color = new Vector3f(1f, 0f, 0f);
 
         Vec3 delta = to.subtract(from);
-        double distance = delta.length();
-        int steps = (int) Math.ceil(distance / 0.2);
+        double distance = homingArc == null ? delta.length() : homingArc.length();
+        int steps = Math.max(1, (int) Math.ceil(distance / 0.2));
 
         for (int i = 0; i <= steps; i++) {
             double t = (double) i / steps;
-            Vec3 pos = from.add(delta.scale(t));
+            Vec3 pos = homingArc == null ? from.add(delta.scale(t)) : homingArc.positionAt(t);
             float particleSize = (float) Math.max(0.01D, Math.min(4.0D, width));
             DustParticleOptions dust = new DustParticleOptions(color, particleSize);
             level.sendParticles(dust, pos.x, pos.y, pos.z, 1, 0, 0, 0, 0);
@@ -655,7 +731,7 @@ public class LaserAttack extends AttackType {
     }
 
     protected double getWidth(AttackContext context) {
-        return laserWidth(context.getBulletScale(), 0.25D);
+        return laserWidth(context.getBulletScale(), BASE_LASER_WIDTH);
     }
 
     protected static double laserWidth(double bulletScale, double baseWidth) {

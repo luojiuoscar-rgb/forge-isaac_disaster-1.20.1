@@ -5,8 +5,6 @@ import net.luojiuoscar.isaac_disaster.registries.attack_pattern.impl.RingAttackP
 import net.luojiuoscar.isaac_disaster.helper.GeometryHelper;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackContext;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.ModAttackTypes;
-import net.luojiuoscar.isaac_disaster.registries.attack_type.impl.BrimstoneAttack;
-import net.luojiuoscar.isaac_disaster.registries.attack_type.impl.LaserAttack;
 import net.luojiuoscar.isaac_disaster.registries.split_module.SplitContext;
 import net.luojiuoscar.isaac_disaster.registries.split_module.SplitModule;
 import net.luojiuoscar.isaac_disaster.registries.split_module.SplitModulePriority;
@@ -31,19 +29,16 @@ public final class CricketsBodySplitModule extends SplitModule {
     public boolean canTrigger(SplitContext context) {
         SplitTriggerType type = context.getTriggerType();
         if (type == SplitTriggerType.ENTITY || type == SplitTriggerType.END_OF_LIFE) {
-            return isAllowedBrimstoneSequence(context);
+            return isAllowedSequence(context);
         }
         if (type != SplitTriggerType.BLOCK) return false;
         return (ModAttackTypes.LASER.getId().equals(context.getParent().getRootTypeId()))
                 && context.getTriggerCounts().getBlockHits() == 1
-                && isAllowedBrimstoneSequence(context);
+                && isAllowedSequence(context);
     }
 
-    private boolean isAllowedBrimstoneSequence(SplitContext context) {
-        if (!(context.getReferenceContext().getAttackType() instanceof BrimstoneAttack)) return true;
-        if (!(context.getParent() instanceof LaserAttack.LaserProjectile laser)) return false;
-        int index = laser.getAttackSequenceIndex();
-        return index > 0 && index % 3 == 0;
+    private boolean isAllowedSequence(SplitContext context) {
+        return context.getParent().getAttackSequenceIndex() % 4 == 0;
     }
 
     @Override

@@ -31,6 +31,12 @@ public interface IBulletObject {
 
     ResourceLocation getRootTypeId();
 
+    /**
+     * Returns this attack's position in a multi-projectile sequence. Ordinary projectiles use zero;
+     * sequence-aware attacks, such as Brimstone, may expose their actual position.
+     */
+    default int getAttackSequenceIndex() { return 0; }
+
     SplitTriggerCounts getSplitTriggerCounts();
 
     void recordSplitTrigger(SplitTriggerType type);
