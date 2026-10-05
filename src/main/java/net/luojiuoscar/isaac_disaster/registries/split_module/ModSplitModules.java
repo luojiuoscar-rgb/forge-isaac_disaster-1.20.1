@@ -6,6 +6,7 @@ import net.luojiuoscar.isaac_disaster.registries.split_module.impl.CricketsBodyS
 import net.luojiuoscar.isaac_disaster.registries.split_module.impl.CompoundFractureSplitModule;
 import net.luojiuoscar.isaac_disaster.registries.split_module.impl.EnhancedCompoundFractureSplitModule;
 import net.luojiuoscar.isaac_disaster.registries.split_module.impl.HaemolacriaSplitModule;
+import net.luojiuoscar.isaac_disaster.registries.split_module.impl.HaemolacriaBrimstoneSplitModule;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -29,5 +30,7 @@ public final class ModSplitModules {
             SPLIT_MODULE_REGISTRY.register("compound_fracture_enhanced", EnhancedCompoundFractureSplitModule::new);
     public static final RegistryObject<SplitModule> HAEMOLACRIA =
             SPLIT_MODULE_REGISTRY.register("haemolacria", HaemolacriaSplitModule::new);
+    public static final RegistryObject<SplitModule> HAEMOLACRIA_BRIMSTONE =
+            SPLIT_MODULE_REGISTRY.register("haemolacria_brimstone", HaemolacriaBrimstoneSplitModule::new);
 
 }

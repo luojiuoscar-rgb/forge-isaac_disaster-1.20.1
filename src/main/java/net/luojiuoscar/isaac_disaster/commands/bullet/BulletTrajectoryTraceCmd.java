@@ -102,7 +102,7 @@ public final class BulletTrajectoryTraceCmd {
                     .position(player.getEyePosition().add(player.getLookAngle().scale(0.75D)))
                     .direction(player.getLookAngle()).damage(1.0D).speed(speed).range(range)
                     .color(ModBulletColors.BASE.getId())
-                    .useExactSpawnPosition().build();
+                    .useFixedLaunchTransform().build();
             trajectoryConfig.forEach(context::addTrajectoryModule);
             context.freeze();
             if (kind.equals("tear") || kind.equals("fetus")) {

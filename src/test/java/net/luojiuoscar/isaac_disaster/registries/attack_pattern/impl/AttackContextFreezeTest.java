@@ -17,12 +17,12 @@ class AttackContextFreezeTest {
 
         context.setPos(new Vec3(4.0, 5.0, 6.0));
         context.setMainAxis(new Vec3(1.0, 0.0, 0.0));
-        context.useExactSpawnPosition();
+        context.useFixedLaunchTransform();
 
         assertTrue(context.isFrozen());
         assertEquals(new Vec3(1.0, 2.0, 3.0), context.getPos());
         assertEquals(axis, context.getMainAxis());
-        assertFalse(context.usesExactSpawnPosition());
+        assertFalse(context.usesFixedLaunchTransform());
     }
 
 }

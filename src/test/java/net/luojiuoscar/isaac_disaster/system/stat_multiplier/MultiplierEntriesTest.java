@@ -188,45 +188,6 @@ class MultiplierEntriesTest {
     }
 
     @Test
-    void oldEntriesWithoutUuidCleanUpTheirSavedPerCopyModifiers() {
-        MultiplierEntries entries = new MultiplierEntries();
-        ListTag saved = new ListTag();
-        CompoundTag old = new CompoundTag();
-        old.putString("id", BLOOD_RANGE.id().toString());
-        old.putString("source", BLOOD.toString());
-        old.putString("attribute", ATTRIBUTE.toString());
-        old.putDouble("amount", -0.2);
-        old.putString("operation", "MULTIPLY_TOTAL");
-        old.putInt("stacks", 2);
-        saved.add(old);
-        entries.load(saved);
-        AttributeInstance attribute = attribute();
-        for (int i = 0; i < 2; i++) {
-            attribute.addPermanentModifier(new AttributeModifier(
-                    MultiplierEntry.legacyModifierId(BLOOD_RANGE.id(), i), BLOOD_RANGE.id().toString(),
-                    -0.2, AttributeModifier.Operation.MULTIPLY_TOTAL));
-        }
-
-        entries.reconcile(ignored -> attribute, false, new MultiplierRules());
-        assertEquals(1, attribute.getModifiers().size());
-        assertNull(attribute.getModifier(MultiplierEntry.legacyModifierId(BLOOD_RANGE.id(), 1)));
-        assertEquals(8.0, attribute.getValue(), 1.0E-12);
-        assertTrue(entries.save().getCompound(0).hasUUID("uuid"));
-
-        old.putInt("stacks", Integer.MAX_VALUE);
-        MultiplierEntries largeSave = new MultiplierEntries();
-        largeSave.load(saved);
-        assertEquals(Integer.MAX_VALUE, largeSave.snapshot().get(BLOOD_RANGE.id()).stacks());
-        AttributeInstance oneSavedModifier = attribute();
-        oneSavedModifier.addPermanentModifier(new AttributeModifier(
-                MultiplierEntry.legacyModifierId(BLOOD_RANGE.id(), 0), BLOOD_RANGE.id().toString(),
-                -0.2, AttributeModifier.Operation.MULTIPLY_TOTAL));
-        largeSave.reconcile(ignored -> oneSavedModifier, false, new MultiplierRules());
-        assertEquals(1, oneSavedModifier.getModifiers().size());
-        assertEquals(8.0, oneSavedModifier.getValue(), 1.0E-12);
-    }
-
-    @Test
     void invalidDefinitionsAndSavedDataDoNotReplaceExistingState() {
         MultiplierEntries entries = new MultiplierEntries();
         entries.add(BLOOD_RANGE, 1);

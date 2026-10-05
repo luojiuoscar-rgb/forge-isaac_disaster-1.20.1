@@ -54,7 +54,6 @@ public final class IsaacConfigCatalog {
                 doubleEntry("block_breaking_speed_bonus", IsaacConfigCategory.PLAYER_STATS, Config.BLOCK_BREAKING_SPEED_BONUS, 5.0),
                 doubleEntry("bullet_scale_bonus", IsaacConfigCategory.PLAYER_STATS, Config.BULLET_SCALE_BONUS, 0.1),
                 doubleEntry("attack_knockback_bonus", IsaacConfigCategory.PLAYER_STATS, Config.ATTACK_KNOCKBACK_BONUS, 0.5),
-                doubleEntry("damage_multiplier_base_bonus", IsaacConfigCategory.PLAYER_STATS, Config.DAMAGE_MULTIPLIER_BASE, 1.0),
                 doubleEntry("nearby_range", IsaacConfigCategory.PLAYER_STATS, Config.NEARBY_RANGE, 12.0),
                 doubleEntry("basic_time_interval", IsaacConfigCategory.PLAYER_STATS, Config.BASIC_TIME_INTERVAL, 10.0)
         ));
@@ -88,7 +87,9 @@ public final class IsaacConfigCatalog {
                 booleanEntry("auto_use_passive_item", IsaacConfigCategory.MISC,
                         Config.AUTO_USE_PASSIVE_ITEM, false),
                 booleanEntry("time_stop_exclude_friendly", IsaacConfigCategory.MISC,
-                        Config.TIME_STOP_EXCLUDE_FRIENDLY, false)
+                        Config.TIME_STOP_EXCLUDE_FRIENDLY, false),
+                booleanEntry("allow_same_multiplier_entry_stacking", IsaacConfigCategory.MISC,
+                        Config.ALLOW_SAME_MULTIPLIER_ENTRY_STACKING, false)
         ));
 
         entries.addAll(Arrays.asList(

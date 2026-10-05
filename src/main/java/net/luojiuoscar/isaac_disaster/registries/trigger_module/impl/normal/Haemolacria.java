@@ -20,6 +20,7 @@ public final class Haemolacria extends TriggerModule {
         if (!ModAttackTypes.BULLET.getId().equals(attackContext.getRootTypeId())) return;
         attackContext.addTrajectoryModule(ModTrajectoryModules.GRAVITY.getId(), 1);
         attackContext.addSplitModule(ModSplitModules.HAEMOLACRIA.getId(), 1);
+        attackContext.addSplitModule(ModSplitModules.HAEMOLACRIA_BRIMSTONE.getId(), 1);
         attackContext.setBulletScale(attackContext.getBulletScale() * 1.71, true);
     }
 }

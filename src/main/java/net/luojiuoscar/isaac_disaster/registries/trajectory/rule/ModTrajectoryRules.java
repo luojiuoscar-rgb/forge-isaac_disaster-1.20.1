@@ -34,4 +34,16 @@ public final class ModTrajectoryRules {
                             ModAttackTypes.BULLET.getId(),
                             100));
 
+    public static final RegistryObject<TrajectoryRule>
+            TINY_PLANET_OVERRIDES_GRAVITY =
+            TRAJECTORY_RULE_REGISTRY.register(
+                    "tiny_planet_overrides_gravity",
+                    () -> TrajectoryRule.replace(
+                            Set.of(
+                                    ModTrajectoryModules.TINY_PLANET_BULLET.getId(),
+                                    ModTrajectoryModules.GRAVITY.getId()),
+                            ModTrajectoryModules.TINY_PLANET_BULLET.getId(),
+                            ModAttackTypes.BULLET.getId(),
+                            100));
+
 }

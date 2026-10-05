@@ -22,9 +22,6 @@ public final class MultiplierEntries {
     private record AppliedModifier(ResourceLocation attributeId, ResourceLocation entryId) {
     }
 
-    private record LegacyEntry(ResourceLocation attributeId, int stacks) {
-    }
-
     public record EntryStack(MultiplierEntry entry, int stacks) {
         public EntryStack {
             if (entry == null) {
@@ -40,7 +37,6 @@ public final class MultiplierEntries {
 
     private final Map<ResourceLocation, EntryStack> entries = new LinkedHashMap<>();
     private final Map<UUID, AppliedModifier> applied = new HashMap<>();
-    private final Map<ResourceLocation, LegacyEntry> legacyEntries = new HashMap<>();
 
     public Map<ResourceLocation, EntryStack> snapshot() {
         return Map.copyOf(entries);
@@ -127,16 +123,6 @@ public final class MultiplierEntries {
                     candidate.getValue().entryId());
         }
         applied.clear();
-        for (Map.Entry<ResourceLocation, LegacyEntry> legacy : legacyEntries.entrySet()) {
-            AttributeInstance instance = attributes.apply(legacy.getValue().attributeId());
-            if (instance == null) continue;
-            // The old format applied contiguous copy indices, at most one per current modifier.
-            int candidates = Math.min(legacy.getValue().stacks(), instance.getModifiers().size());
-            for (int i = 0; i < candidates; i++) {
-                removeOwned(instance, MultiplierEntry.legacyModifierId(legacy.getKey(), i), legacy.getKey());
-            }
-        }
-        legacyEntries.clear();
         for (EntryStack stack : entries.values()) {
             MultiplierEntry entry = stack.entry();
             AttributeInstance instance = attributes.apply(entry.attributeId());
@@ -184,8 +170,6 @@ public final class MultiplierEntries {
         entries.clear();
         entries.putAll(source.entries);
         applied.clear();
-        legacyEntries.clear();
-        legacyEntries.putAll(source.legacyEntries);
     }
 
     public ListTag save() {
@@ -208,7 +192,6 @@ public final class MultiplierEntries {
     public void load(ListTag list) {
         entries.clear();
         applied.clear();
-        legacyEntries.clear();
         if (list == null) {
             IsaacDisaster.LOGGER.warn("Missing multiplier entry data; using an empty collection");
             return;
@@ -226,20 +209,16 @@ public final class MultiplierEntries {
                     continue;
                 }
                 ResourceLocation id = ResourceLocation.parse(tag.getString("id"));
-                boolean legacy = !tag.contains("uuid");
-                if (!legacy && !tag.hasUUID("uuid")) {
+                if (!tag.hasUUID("uuid")) {
                     IsaacDisaster.LOGGER.warn("Ignored multiplier entry {} with invalid UUID", id);
                     continue;
                 }
-                UUID uuid = legacy ? MultiplierEntry.legacyModifierId(id, 0) : tag.getUUID("uuid");
+                UUID uuid = tag.getUUID("uuid");
                 MultiplierEntry entry = new MultiplierEntry(id, uuid,
                         ResourceLocation.parse(tag.getString("source")),
                         ResourceLocation.parse(tag.getString("attribute")), tag.getDouble("amount"),
                         AttributeModifier.Operation.valueOf(tag.getString("operation")));
                 add(entry, tag.getInt("stacks"));
-                if (legacy && entries.containsKey(id) && entries.get(id).entry().equals(entry)) {
-                    legacyEntries.put(id, new LegacyEntry(entry.attributeId(), entries.get(id).stacks()));
-                }
             } catch (RuntimeException error) {
                 IsaacDisaster.LOGGER.warn("Ignored invalid multiplier entry in player data: {}", error.getMessage());
             }

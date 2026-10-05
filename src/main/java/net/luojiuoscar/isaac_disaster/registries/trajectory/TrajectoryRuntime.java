@@ -229,7 +229,11 @@ public final class TrajectoryRuntime {
     public void updateAnchor(@Nullable Entity shooter) {
         if (shooter == null) return;
         anchorEntityId = shooter.getId();
-        anchor(shooter.position().add(0, shooter.getBbHeight() * 0.6, 0));
+        Vec3 anchorPosition = shooter.position().add(0, shooter.getBbHeight() * 0.6, 0);
+        if (specs.stream().anyMatch(spec -> ModTrajectoryModules.TINY_PLANET_BULLET.getId().equals(spec.id()))) {
+            anchorPosition = anchorPosition.add(Vec3.directionFromRotation(0, shooter.getYRot()).scale(2));
+        }
+        anchor(anchorPosition);
     }
 
     public Snapshot snapshot() {

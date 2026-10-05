@@ -66,7 +66,6 @@ public class Config
 
     // 其他可配置项目
     public static ForgeConfigSpec.IntValue PASSIVE_ITEM_LIMIT;
-    public static ForgeConfigSpec.DoubleValue DAMAGE_MULTIPLIER_BASE;
     public static ForgeConfigSpec.DoubleValue NEARBY_RANGE;
     public static ForgeConfigSpec.DoubleValue BASIC_TIME_INTERVAL;
     public static ForgeConfigSpec.DoubleValue HOLY_SHIELD_STRENGTH;
@@ -189,11 +188,6 @@ public class Config
         ATTACK_KNOCKBACK_BONUS = BUILDER
                 .comment("Base value of attack knockback increment")
                 .defineInRange("attack_knockback_bonus", 0.5, 0.0, 99999.0);
-
-        // 伤害倍率提升  默认1
-        DAMAGE_MULTIPLIER_BASE = BUILDER
-                .comment("Base value of damage multiplier base increment")
-                .defineInRange("damage_multiplier_base_bonus", 1.0, 0.0, 99999.0);
 
         // 周围（定义周围的范围）  默认12
         NEARBY_RANGE = BUILDER

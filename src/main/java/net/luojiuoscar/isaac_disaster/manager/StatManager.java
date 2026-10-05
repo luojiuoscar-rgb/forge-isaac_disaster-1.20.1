@@ -72,21 +72,6 @@ public enum StatManager {
     },
     DAMAGE("damage", Attributes.ATTACK_DAMAGE, 0, true,
             () -> Config.DAMAGE_BONUS.get(), null, null),
-    DAMAGE_MULTIPLY_BASE("damage_multiply_base", Attributes.ATTACK_DAMAGE, 1, false,
-            () -> Config.DAMAGE_MULTIPLIER_BASE.get(), -0.9, null) {
-        @Override
-        public Component description(double value, Style style){
-            // 四舍五入到两位小数
-            double rounded = Math.round(value * 100);
-            String formatted = String.format("%.1f", rounded) + "%";
-
-            if (value > 0){ // 正数+
-                formatted = "+" + formatted;
-            }
-            return Component.translatable("attribute." + IsaacDisaster.MOD_ID + "." + getKey())
-                    .append(formatted).withStyle(style);
-        }
-    },
     LUCK("luck", Attributes.LUCK, 0, true,
             () -> Config.LUCK_BONUS.get(), null, null),
     SCALE("scale", ModAttributes.SCALE.get(), 0, false,
@@ -273,6 +258,15 @@ public enum StatManager {
     }
 
     /* ---------------------- 通用修改方法 ---------------------- */
+    public static MultiplierEntry createMultiplierEntry(String item, String stat, Attribute attribute, double amount,
+                                                        AttributeModifier.Operation operation) {
+        String key = item + "_" + stat;
+        ResourceLocation source = ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, item);
+        ResourceLocation id = ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "multiplier/" + key);
+        UUID uuid = UUID.nameUUIDFromBytes((IsaacDisaster.MOD_ID + ":" + key).getBytes(StandardCharsets.UTF_8));
+        return MultiplierEntry.of(id, uuid, source, attribute, amount, operation);
+    }
+
     public static void addMultiplier(ServerPlayer player, MultiplierEntry entry, int count) {
         if (player == null || entry == null || entry.attributeId() == null) {
             IsaacDisaster.LOGGER.warn("Ignoring multiplier addition with missing player, entry or attribute");

@@ -79,7 +79,7 @@ public class TheBookOfBelial extends ActiveAbility {
         description.addAll(ModSetAbilities.BOOK.get().getExtraDesc());
 
         description.add(Component.translatable("effect.isaac_disaster.power_of_belial").append(": ")
-                .append(StatManager.DAMAGE_MULTIPLY_BASE.description(0.5)));
+                .append(Component.translatable("item.isaac_disaster.action.damage_multiplier", "+50")));
 
         return description;
     }

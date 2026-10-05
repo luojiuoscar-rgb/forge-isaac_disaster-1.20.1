@@ -54,7 +54,7 @@ public class FiringModifierShotDelay implements IExecutableEffect {
         }
 
         if (haemolacria) {
-            delay *= 2;
+            delay = delay * 2 + 11;
         }
 
         return delay;

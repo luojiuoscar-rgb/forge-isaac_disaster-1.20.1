@@ -43,7 +43,10 @@ public class BrimstoneAttack extends LaserAttack implements IChargeableAttack {
     // ================== handleAttack ==================
     @Override
     public void shoot(AttackContext baseContext) {
+        boolean fixedLaunchTransform = baseContext.usesFixedLaunchTransform();
         boolean controllable = isControllable(baseContext.getOwner());
+        Vec3 fixedSpawnPosition = fixedLaunchTransform ? baseContext.getPos() : null;
+        Vec3 fixedMainAxis = fixedLaunchTransform ? baseContext.getMainAxis() : null;
         AtomicInteger sequenceIndex = new AtomicInteger();
         ScheduledFuncHelper.scheduleForPlayer(baseContext.getOwner().getUUID(),
                 SCHEDULE_TYPE, 1,1, SHOT_COUNT, false, () -> {
@@ -51,9 +54,13 @@ public class BrimstoneAttack extends LaserAttack implements IChargeableAttack {
 
             AttackContext shotContext = baseContext.toBuilder().build();
             Entity shooter = shotContext.getShooter();
-            Vec3 spawnPosition = resolveSpawnPosition(shooter);
-            refreshBrimstoneShotContext(shotContext, spawnPosition, GeometryHelper.mainAxisFromRotation(shooter.getXRot(), shooter.getYRot()),
-                    controllable);
+            if (fixedLaunchTransform) {
+                refreshBrimstoneShotContext(shotContext, fixedSpawnPosition, fixedMainAxis, true);
+            } else {
+                Vec3 spawnPosition = resolveSpawnPosition(shooter);
+                refreshBrimstoneShotContext(shotContext, spawnPosition,
+                        GeometryHelper.mainAxisFromRotation(shooter.getXRot(), shooter.getYRot()), controllable);
+            }
             shotContext.freeze();
             shootSingle(shotContext, currentSequenceIndex);
         });

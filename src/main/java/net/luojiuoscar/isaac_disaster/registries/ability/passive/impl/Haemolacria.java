@@ -1,25 +1,31 @@
 package net.luojiuoscar.isaac_disaster.registries.ability.passive.impl;
 
 import net.luojiuoscar.isaac_disaster.attribute.ModAttributes;
-import net.luojiuoscar.isaac_disaster.capability.player.PlayerIsaacItemsProvider;
-import net.luojiuoscar.isaac_disaster.item.ModPassiveItems;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
+import net.luojiuoscar.isaac_disaster.system.stat_multiplier.MultiplierEntry;
 import net.luojiuoscar.isaac_disaster.registries.ability.passive.PassiveAbility;
+import net.luojiuoscar.isaac_disaster.registries.attack_type.ModAttackTypes;
 import net.luojiuoscar.isaac_disaster.registries.bullet_color.ModBulletColors;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerModules;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
-import java.nio.charset.StandardCharsets;
 import java.util.List;
-import java.util.UUID;
 
 public final class Haemolacria extends PassiveAbility {
-    private static final UUID RANGE_MODIFIER = UUID.nameUUIDFromBytes(
-            "isaac_disaster:haemolacria_range".getBytes(StandardCharsets.UTF_8));
+    public static final class Multipliers {
+        public static final MultiplierEntry DAMAGE = StatManager.createMultiplierEntry(
+                "haemolacria", "damage", Attributes.ATTACK_DAMAGE, 0.5,
+                AttributeModifier.Operation.MULTIPLY_BASE);
+        public static final MultiplierEntry RANGE = StatManager.createMultiplierEntry(
+                "haemolacria", "range", ModAttributes.BULLET_RANGE.get(), -0.2,
+                AttributeModifier.Operation.MULTIPLY_TOTAL);
+    }
 
     public Haemolacria(int id, int level) {
         super(id, level);
@@ -32,37 +38,32 @@ public final class Haemolacria extends PassiveAbility {
     @Override
     public void handleObtain(ServerPlayer player, @Nullable ItemStack stack) {
         StatManager.DAMAGE.apply(player, 1);
-        player.getCapability(PlayerIsaacItemsProvider.PLAYER_ISAAC_ITEMS).ifPresent(items -> {
-            if (items.getItemCountFromAll(ModPassiveItems.HAEMOLACRIA.getId()) != 0) return;
-            StatManager.DAMAGE_MULTIPLY_BASE.apply(player, 0.5);
-            StatManager.setModifier(player, RANGE_MODIFIER, ModAttributes.BULLET_RANGE.get(), -0.2,
-                    null, null, 2);
-            StatManager.addTriggerModule(player, ModTriggerModules.FIRING_MODIFIER.getId(), 1);
-            StatManager.addTriggerModule(player, ModTriggerModules.HAEMOLACRIA.getId(), 1);
-            StatManager.addBulletColor(player, ModBulletColors.BLOOD_TEAR.getId(), 1);
-        });
+        StatManager.addAttackType(player, ModAttackTypes.HAEMOLACRIA.getId(), 1);
+        StatManager.addMultiplier(player, Multipliers.DAMAGE, 1);
+        StatManager.addMultiplier(player, Multipliers.RANGE, 1);
+        StatManager.addTriggerModule(player, ModTriggerModules.FIRING_MODIFIER.getId(), 1);
+        StatManager.addTriggerModule(player, ModTriggerModules.HAEMOLACRIA.getId(), 1);
+        StatManager.addBulletColor(player, ModBulletColors.BLOOD_TEAR.getId(), 1);
     }
 
     @Override
     public void handleRemove(ServerPlayer player, @Nullable ItemStack stack) {
         StatManager.DAMAGE.apply(player, -1);
-        player.getCapability(PlayerIsaacItemsProvider.PLAYER_ISAAC_ITEMS).ifPresent(items -> {
-            if (items.getItemCountFromAll(ModPassiveItems.HAEMOLACRIA.getId()) != 0) return;
-            StatManager.DAMAGE_MULTIPLY_BASE.apply(player, -0.5);
-            StatManager.removeModifier(player, player.getAttribute(ModAttributes.BULLET_RANGE.get()), RANGE_MODIFIER);
-            StatManager.addTriggerModule(player, ModTriggerModules.FIRING_MODIFIER.getId(), -1);
-            StatManager.addTriggerModule(player, ModTriggerModules.HAEMOLACRIA.getId(), -1);
-            StatManager.addBulletColor(player, ModBulletColors.BLOOD_TEAR.getId(), -1);
-        });
+        StatManager.addAttackType(player, ModAttackTypes.HAEMOLACRIA.getId(), -1);
+        StatManager.removeMultiplier(player, Multipliers.DAMAGE.id(), 1);
+        StatManager.removeMultiplier(player, Multipliers.RANGE.id(), 1);
+        StatManager.addTriggerModule(player, ModTriggerModules.FIRING_MODIFIER.getId(), -1);
+        StatManager.addTriggerModule(player, ModTriggerModules.HAEMOLACRIA.getId(), -1);
+        StatManager.addBulletColor(player, ModBulletColors.BLOOD_TEAR.getId(), -1);
     }
 
     @Override
     public List<Component> getDesc(@Nullable ItemStack stack, Player player) {
         return List.of(
                 StatManager.DAMAGE.description(1),
-                StatManager.DAMAGE_MULTIPLY_BASE.description(0.5),
-                Component.translatable("item.isaac_disaster.haemolacria.lore.1"),
-                Component.translatable("item.isaac_disaster.haemolacria.lore.2"),
+                Component.translatable("item.isaac_disaster.action.damage_multiplier", "+50"),
+                Component.translatable("item.isaac_disaster.action.bullet_scale_multiplier", "+71"),
+                Component.translatable("item.isaac_disaster.action.range_multiplier", "-20"),
                 Component.translatable("item.isaac_disaster.haemolacria.lore.3"),
                 Component.translatable("item.isaac_disaster.haemolacria.lore.4"),
                 Component.translatable("item.isaac_disaster.haemolacria.lore.5")

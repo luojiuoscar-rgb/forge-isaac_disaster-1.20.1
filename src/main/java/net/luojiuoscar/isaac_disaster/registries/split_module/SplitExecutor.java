@@ -52,7 +52,7 @@ public final class SplitExecutor {
 
         AttackContext.Builder referenceBuilder = parentContext.toBuilder()
                 .position(position)
-                .useExactSpawnPosition()
+                .useFixedLaunchTransform()
                 .damage((double) parent.getDamage())
                 .range(parent.getRange());
         if (velocity.lengthSqr() > 1.0E-8) {
@@ -72,6 +72,9 @@ public final class SplitExecutor {
                     childContext = childContext.bindAttackTypeOrCopy(request.getAttackType());
                     childContext.freeze();
                     brimstone.shootSingle(childContext, laser.getAttackSequenceIndex());
+                }
+                if (request.shouldPlaySound()) {
+                    request.getAttackType().makeSound(parent.getOwner());
                 }
                 continue;
             }

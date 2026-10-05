@@ -6,7 +6,6 @@ import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraftforge.registries.ForgeRegistries;
 
-import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
 /** Immutable parameters for one source-owned attribute multiplier. */
@@ -23,8 +22,4 @@ public record MultiplierEntry(ResourceLocation id, UUID uuid, ResourceLocation s
         return new MultiplierEntry(id, uuid, sourceId, attributeId, amount, operation);
     }
 
-    static UUID legacyModifierId(ResourceLocation id, int copyIndex) {
-        String key = "isaac_disaster:multiplier/" + id + "/" + copyIndex;
-        return UUID.nameUUIDFromBytes(key.getBytes(StandardCharsets.UTF_8));
-    }
 }
