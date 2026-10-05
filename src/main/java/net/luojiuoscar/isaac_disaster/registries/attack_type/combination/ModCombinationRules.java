@@ -41,4 +41,12 @@ public class ModCombinationRules {
                             ModAttackTypes.C_SECTION,
                             AttackPrio.C_SECTION_LASER_COMBO.getTier(),
                             AttackPrio.C_SECTION_LASER_COMBO.getPriority()));
+
+    public static final RegistryObject<AttackCombinationRule> HAEMOLACRIA_C_SECTION =
+            ATTACK_COMBINATION_RULE_REGISTRY.register(
+                    "haemolacria_c_section", () -> new AttackCombinationRule(
+                            Set.of(ModAttackTypes.HAEMOLACRIA, ModAttackTypes.C_SECTION),
+                            ModAttackTypes.C_SECTION,
+                            AttackPrio.HAEMOLACRIA_C_SECTION_COMBO.getTier(),
+                            AttackPrio.HAEMOLACRIA_C_SECTION_COMBO.getPriority()));
 }

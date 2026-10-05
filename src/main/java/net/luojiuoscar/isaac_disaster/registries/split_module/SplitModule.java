@@ -44,6 +44,11 @@ public abstract class SplitModule {
         return childAttackType;
     }
 
+    /** Whether one sound plays for the child attack request produced by this module. */
+    public boolean shouldPlayChildSound(SplitContext context) {
+        return false;
+    }
+
     public AttackPattern getPattern() { return pattern; }
     public AttackType getChildAttackType() { return childAttackType; }
     public abstract double getPriority();

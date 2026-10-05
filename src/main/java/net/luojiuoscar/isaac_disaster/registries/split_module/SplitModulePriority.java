@@ -4,7 +4,9 @@ package net.luojiuoscar.isaac_disaster.registries.split_module;
 public enum SplitModulePriority {
     THE_PARASITE(0.0),
     COMPOUND_FRACTURE(0.0),
-    CRICKETS_BODY(0.0);
+    CRICKETS_BODY(0.0),
+    HAEMOLACRIA(1.0),
+    HAEMOLACRIA_BRIMSTONE(1.0);
 
     private final double priority;
 

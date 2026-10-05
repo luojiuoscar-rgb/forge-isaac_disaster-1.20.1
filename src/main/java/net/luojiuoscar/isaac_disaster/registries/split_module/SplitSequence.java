@@ -113,6 +113,7 @@ public final class SplitSequence {
             if (applicable.isEmpty()) continue;
 
             Map<AttackType, List<AttackContext>> grouped = new LinkedHashMap<>();
+            Map<AttackType, Boolean> playSound = new LinkedHashMap<>();
             for (SplitContext context : applicable) {
                 SplitModule module = context.getModule();
                 List<AttackContext> children = new ArrayList<>(module.generate(context));
@@ -124,6 +125,7 @@ public final class SplitSequence {
                 AttackType childType = module.resolveChildAttackType(context);
                 children.replaceAll(child -> child.bindAttackTypeOrCopy(childType));
                 grouped.computeIfAbsent(childType, ignored -> new ArrayList<>()).addAll(children);
+                playSound.merge(childType, module.shouldPlayChildSound(context), Boolean::logicalOr);
             }
 
             List<AttackRequest> requests = new ArrayList<>();
@@ -131,7 +133,8 @@ public final class SplitSequence {
                 if (group.getValue().isEmpty()) continue;
                 requests.add(AttackRequest.withContexts(
                         event.getParent().getOwner(), group.getKey(), AttackOrigin.SPLIT_CHILD,
-                        AttackPipelineMode.EXECUTE_ONLY, group.getValue(), false));
+                        AttackPipelineMode.EXECUTE_ONLY, group.getValue(),
+                        Boolean.TRUE.equals(playSound.get(group.getKey()))));
             }
             return List.copyOf(requests);
         }

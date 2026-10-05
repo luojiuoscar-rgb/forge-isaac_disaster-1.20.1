@@ -607,4 +607,8 @@ public class ModPassiveItems {
     public static final RegistryObject<Item> COMPOUND_FRACTURE = ITEMS.register("compound_fracture",
             () -> new PassiveItem(new Item.Properties(), ModPassiveAbilities.COMPOUND_FRACTURE));
     static {ItemListManager.PASSIVE_ITEM_LIST.add(COMPOUND_FRACTURE);}
+
+    public static final RegistryObject<Item> HAEMOLACRIA = ITEMS.register("haemolacria",
+            () -> new PassiveItem(new Item.Properties(), ModPassiveAbilities.HAEMOLACRIA));
+    static {ItemListManager.PASSIVE_ITEM_LIST.add(HAEMOLACRIA);}
 }

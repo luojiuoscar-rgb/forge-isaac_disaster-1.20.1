@@ -84,7 +84,7 @@ public class BulletAttack extends AttackType {
         LivingEntity owner = context.getOwner();
         Vec3 look = context.getMainAxis();
         double forwardOffset = 0.4 * (owner.getBbWidth() / 0.6);
-        Vec3 position = context.usesExactSpawnPosition() ? context.getPos() : context.getPos().add(look.scale(forwardOffset));
+        Vec3 position = context.usesFixedLaunchTransform() ? context.getPos() : context.getPos().add(look.scale(forwardOffset));
         int lifetime = (int) Math.min(Math.max(1, context.getBulletRange() / context.getBulletSpeed()), 200);
         double scale = context.getBulletScale();
         double collisionHeight = scale * 0.2D;

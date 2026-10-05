@@ -1,10 +1,13 @@
 package net.luojiuoscar.isaac_disaster.registries.ability.passive.impl;
 
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
+import net.luojiuoscar.isaac_disaster.system.stat_multiplier.MultiplierEntry;
 import net.luojiuoscar.isaac_disaster.registries.ability.passive.PassiveAbility;
 import net.luojiuoscar.isaac_disaster.registries.bullet_color.ModBulletColors;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
@@ -12,6 +15,11 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 public class SacredHeart extends PassiveAbility {
+    public static final class Multipliers {
+        public static final MultiplierEntry DAMAGE = StatManager.createMultiplierEntry(
+                "sacred_heart", "damage", Attributes.ATTACK_DAMAGE, 1.3, AttributeModifier.Operation.MULTIPLY_BASE);
+    }
+
     public SacredHeart(int id, int level) {
         super(id, level);
     }
@@ -25,7 +33,7 @@ public class SacredHeart extends PassiveAbility {
     @Override
     public void handleObtain(ServerPlayer player, @Nullable ItemStack stack) {
         StatManager.DAMAGE.apply(player, 1);
-        StatManager.DAMAGE_MULTIPLY_BASE.apply(player, 1.3);
+        StatManager.addMultiplier(player, Multipliers.DAMAGE, 1);
         StatManager.BULLET_SPEED.apply(player, 1);
         StatManager.RANGE.apply(player, 1.5);
         StatManager.TEARS.apply(player, -0.6);
@@ -40,7 +48,7 @@ public class SacredHeart extends PassiveAbility {
     @Override
     public void handleRemove(ServerPlayer player, @Nullable ItemStack stack) {
         StatManager.DAMAGE.apply(player, -1);
-        StatManager.DAMAGE_MULTIPLY_BASE.apply(player, -1.3);
+        StatManager.removeMultiplier(player, Multipliers.DAMAGE.id(), 1);
         StatManager.BULLET_SPEED.apply(player, -1);
         StatManager.RANGE.apply(player, -1.5);
         StatManager.TEARS.apply(player, 0.6);
@@ -57,7 +65,7 @@ public class SacredHeart extends PassiveAbility {
         return List.of(
                 StatManager.MAX_HEALTH.description(1),
                 StatManager.DAMAGE.description(1),
-                StatManager.DAMAGE_MULTIPLY_BASE.description(1.3),
+                Component.translatable("item.isaac_disaster.action.damage_multiplier", "+130"),
                 StatManager.BULLET_SPEED.description(1),
                 StatManager.RANGE.description(1.5),
                 StatManager.TEARS.description(-0.6),

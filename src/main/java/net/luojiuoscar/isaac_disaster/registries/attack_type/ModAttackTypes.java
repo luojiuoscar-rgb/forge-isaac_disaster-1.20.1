@@ -19,6 +19,10 @@ public class ModAttackTypes {
             ATTACK_TYPE_REGISTER.register("bullet", () -> new BulletAttack(
                     AttackPrio.BULLET.getTier(), AttackPrio.BULLET.getPriority()));
 
+    public static final RegistryObject<AttackType> HAEMOLACRIA =
+            ATTACK_TYPE_REGISTER.register("haemolacria", () -> new HaemolacriaAttack(
+                    AttackPrio.HAEMOLACRIA.getTier(), AttackPrio.HAEMOLACRIA.getPriority()));
+
     public static final RegistryObject<AttackType> LASER =
             ATTACK_TYPE_REGISTER.register("laser", () -> new LaserAttack(
                     AttackPrio.LASER.getTier(), AttackPrio.LASER.getPriority()));

@@ -42,7 +42,7 @@ public class AttackContext {
     private final double bulletRange;
     private final double bulletSpeed;
     private SplitSequence splitSequence;
-    private boolean useExactSpawnPosition;
+    private boolean useFixedLaunchTransform;
     private boolean frozen;
     private final Entity shooter;
     private final LivingEntity owner;
@@ -75,7 +75,7 @@ public class AttackContext {
         this.bulletRange = sanitizeRange(builder.range);
         this.bulletSpeed = sanitizeSpeed(builder.speed);
         this.splitSequence = builder.splitSequence == null ? new SplitSequence() : builder.splitSequence.copy();
-        this.useExactSpawnPosition = builder.useExactSpawnPosition;
+        this.useFixedLaunchTransform = builder.useFixedLaunchTransform;
         this.hitBlockPositions = immutableBlockPositions(builder.hitBlockPositions);
         this.inheritedTrajectorySnapshot = builder.inheritedTrajectorySnapshot;
     }
@@ -89,7 +89,7 @@ public class AttackContext {
         return Builder.from(this).color(colorRl).visuals(visualIds).trigger(trigger).trajectorySequence(trajectorySequence)
                 .position(pos).attackType(attackType).mainAxis(mainAxis).damage((double) damage).range(bulletRange)
                 .speed(bulletSpeed).bulletScaleModifier(bulletScaleModifier).splitSequence(splitSequence)
-                .useExactSpawnPosition(useExactSpawnPosition).hitBlockPositions(hitBlockPositions)
+                .useFixedLaunchTransform(useFixedLaunchTransform).hitBlockPositions(hitBlockPositions)
                 .inheritTrajectorySnapshot(inheritedTrajectorySnapshot);
     }
 
@@ -171,8 +171,11 @@ public class AttackContext {
     public void addSplitModule(@NotNull ResourceLocation moduleId, int stacks) {
         if (ensureMutable("addSplitModule")) splitSequence.add(moduleId, stacks);
     }
-    public void useExactSpawnPosition() { if (ensureMutable("useExactSpawnPosition")) this.useExactSpawnPosition = true; }
-    public boolean usesExactSpawnPosition() { return useExactSpawnPosition; }
+    public void useFixedLaunchTransform() {
+        if (ensureMutable("useFixedLaunchTransform")) this.useFixedLaunchTransform = true;
+    }
+
+    public boolean usesFixedLaunchTransform() { return useFixedLaunchTransform; }
     public boolean isFrozen() { return frozen; }
     /** Resolves trajectories and locks controlled setters; mutable trigger/split access remains explicit. */
     public void freeze() {
@@ -256,7 +259,7 @@ public class AttackContext {
         this.bulletRange = source.bulletRange;
         this.bulletSpeed = source.bulletSpeed;
         this.splitSequence = source.splitSequence.copy();
-        this.useExactSpawnPosition = source.useExactSpawnPosition;
+        this.useFixedLaunchTransform = source.useFixedLaunchTransform;
         this.hitBlockPositions = immutableBlockPositions(source.hitBlockPositions);
         this.inheritedTrajectorySnapshot = includeInheritance ? source.inheritedTrajectorySnapshot : null;
         this.frozen = source.frozen;
@@ -280,7 +283,7 @@ public class AttackContext {
         this.bulletRange = sanitizeRange(builder.range);
         this.bulletSpeed = sanitizeSpeed(builder.speed);
         this.splitSequence = builder.splitSequence == null ? new SplitSequence() : builder.splitSequence.copy();
-        this.useExactSpawnPosition = builder.useExactSpawnPosition;
+        this.useFixedLaunchTransform = builder.useFixedLaunchTransform;
         this.hitBlockPositions = immutableBlockPositions(builder.hitBlockPositions);
         this.inheritedTrajectorySnapshot = builder.inheritedTrajectorySnapshot;
         this.frozen = false;
@@ -303,7 +306,7 @@ public class AttackContext {
         private double range = DEFAULT_RANGE;
         private double speed = DEFAULT_SPEED;
         private SplitSequence splitSequence;
-        private boolean useExactSpawnPosition;
+        private boolean useFixedLaunchTransform;
         private Set<BlockPos> hitBlockPositions = Set.of();
         private AttackType attackType;
         private TrajectoryRuntime.Snapshot inheritedTrajectorySnapshot;
@@ -352,8 +355,8 @@ public class AttackContext {
         public Builder range(double range) { this.range = range; return this; }
         public Builder speed(double speed) { this.speed = speed; return this; }
         public Builder splitSequence(SplitSequence splitSequence) { this.splitSequence = splitSequence; return this; }
-        public Builder useExactSpawnPosition() { this.useExactSpawnPosition = true; return this; }
-        private Builder useExactSpawnPosition(boolean value) { this.useExactSpawnPosition = value; return this; }
+        public Builder useFixedLaunchTransform() { this.useFixedLaunchTransform = true; return this; }
+        private Builder useFixedLaunchTransform(boolean value) { this.useFixedLaunchTransform = value; return this; }
         public AttackContext build() { return source == null ? new AttackContext(this) : new AttackContext(source, this); }
     }
 }

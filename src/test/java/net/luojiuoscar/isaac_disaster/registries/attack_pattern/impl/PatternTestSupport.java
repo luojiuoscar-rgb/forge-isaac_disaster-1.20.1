@@ -43,7 +43,7 @@ public final class PatternTestSupport {
         setDouble(unsafe, context, "bulletRange", DEFAULT_RANGE);
         setDouble(unsafe, context, "bulletSpeed", DEFAULT_SPEED);
         setObject(unsafe, context, "splitSequence", new SplitSequence());
-        setBoolean(unsafe, context, "useExactSpawnPosition", false);
+        setBoolean(unsafe, context, "useFixedLaunchTransform", false);
         setObject(unsafe, context, "shooter", new Object());
         setObject(unsafe, context, "owner", new Object());
         return context;

@@ -5,6 +5,8 @@ import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.networking.ModMessages;
 import net.luojiuoscar.isaac_disaster.networking.packet.FlyUpdateS2CPacket;
+import net.luojiuoscar.isaac_disaster.system.stat_multiplier.MultiplierEntries;
+import net.luojiuoscar.isaac_disaster.system.stat_multiplier.MultiplierRules;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
@@ -102,6 +104,8 @@ public class PlayerStatModifier {
 
     /** ← 原来是 Set，现在换成 Map 存 StatInstance **/
     private final Map<UUID, StatInstance> playerModifiers;
+    private final MultiplierEntries multiplierEntries = new MultiplierEntries();
+    private final MultiplierRules multiplierRules = new MultiplierRules();
 
     private double flyTimeCurrent;
 
@@ -112,6 +116,8 @@ public class PlayerStatModifier {
 
     public void init(){
         playerModifiers.clear();
+        multiplierEntries.load(new ListTag());
+        multiplierRules.load(new ListTag());
 
         flyTimeCurrent = 0;
     }
@@ -130,6 +136,14 @@ public class PlayerStatModifier {
 
     public double getFlyTimeCurrent(){
         return flyTimeCurrent;
+    }
+
+    public MultiplierEntries getMultiplierEntries() {
+        return multiplierEntries;
+    }
+
+    public MultiplierRules getMultiplierRules() {
+        return multiplierRules;
     }
 
     /** 存在则修改，不存在则创建，不会覆盖 */
@@ -191,11 +205,14 @@ public class PlayerStatModifier {
 
     public void copyFrom(PlayerStatModifier source, Player player) {
         this.playerModifiers.clear();
+        this.multiplierEntries.copyFrom(source.multiplierEntries);
+        this.multiplierRules.copyFrom(source.multiplierRules);
         this.flyTimeCurrent = source.flyTimeCurrent;
 
         if (player instanceof ServerPlayer){
             ServerPlayer serverPlayer = (ServerPlayer) player;
             refreshAllModifiers(serverPlayer, source.playerModifiers);
+            StatManager.refreshMultipliers(serverPlayer);
         }
     }
 
@@ -219,6 +236,8 @@ public class PlayerStatModifier {
             listTag.add(tag);
         }
         nbt.put("player_modifiers", listTag);
+        nbt.put("multiplier_entries", multiplierEntries.save());
+        nbt.put("multiplier_rules", multiplierRules.save());
         nbt.putDouble("fly_time_current", flyTimeCurrent);
     }
 
@@ -227,6 +246,10 @@ public class PlayerStatModifier {
         this.flyTimeCurrent = nbt.getDouble("fly_time_current");
 
         this.playerModifiers.clear();
+        this.multiplierEntries.load(nbt.contains("multiplier_entries", Tag.TAG_LIST)
+                ? nbt.getList("multiplier_entries", Tag.TAG_COMPOUND) : new ListTag());
+        this.multiplierRules.load(nbt.contains("multiplier_rules", Tag.TAG_LIST)
+                ? nbt.getList("multiplier_rules", Tag.TAG_COMPOUND) : new ListTag());
         if (nbt.contains("player_modifiers", Tag.TAG_LIST)) {
 
             ListTag listTag = nbt.getList("player_modifiers", Tag.TAG_COMPOUND);
