@@ -1,5 +1,6 @@
 package net.luojiuoscar.isaac_disaster;
 
+import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraftforge.common.ForgeConfigSpec;
@@ -7,6 +8,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.config.ModConfigEvent;
 import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.server.ServerLifecycleHooks;
 
 import java.util.List;
 import java.util.Set;
@@ -80,6 +82,7 @@ public class Config
     public static ForgeConfigSpec.BooleanValue PLAYERS_SHARE_ITEM_POOLS;
     public static ForgeConfigSpec.BooleanValue AUTO_USE_PASSIVE_ITEM;
     public static ForgeConfigSpec.BooleanValue TIME_STOP_EXCLUDE_FRIENDLY;
+    public static ForgeConfigSpec.BooleanValue ALLOW_SAME_MULTIPLIER_ENTRY_STACKING;
 
     // 临时
     public static ForgeConfigSpec.BooleanValue ENABLE_WANDERING_TRADER_SHOP;
@@ -276,6 +279,10 @@ public class Config
                 .comment("Whether time stop excludes entities friendly to at least one time stop source.")
                 .define("time_stop_exclude_friendly", false);
 
+        ALLOW_SAME_MULTIPLIER_ENTRY_STACKING = BUILDER
+                .comment("Allow each copy of a source-owned multiplier entry to apply independently.")
+                .define("allow_same_multiplier_entry_stacking", false);
+
         BUILDER.pop();
     }
     static {
@@ -347,6 +354,11 @@ public class Config
     @SubscribeEvent
     static void onLoad(final ModConfigEvent event)
     {
+        if (event.getConfig().getSpec() == SPEC) {
+            var server = ServerLifecycleHooks.getCurrentServer();
+            if (server != null) server.execute(() -> server.getPlayerList().getPlayers()
+                    .forEach(StatManager::refreshMultipliers));
+        }
         logDirtBlock = LOG_DIRT_BLOCK.get();
         magicNumber = MAGIC_NUMBER.get();
         magicNumberIntroduction = MAGIC_NUMBER_INTRODUCTION.get();

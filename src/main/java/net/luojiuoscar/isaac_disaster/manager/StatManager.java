@@ -13,6 +13,8 @@ import net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerModule
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerModule;
 import net.luojiuoscar.isaac_disaster.system.ScaleUtils;
 import net.luojiuoscar.isaac_disaster.system.flight.IsaacFlightController;
+import net.luojiuoscar.isaac_disaster.system.stat_multiplier.MultiplierEntry;
+import net.luojiuoscar.isaac_disaster.system.stat_multiplier.MultiplierRules;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
@@ -26,6 +28,7 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.common.ForgeMod;
 import net.minecraftforge.registries.IForgeRegistry;
+import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryManager;
 import org.jetbrains.annotations.Nullable;
 
@@ -270,6 +273,64 @@ public enum StatManager {
     }
 
     /* ---------------------- 通用修改方法 ---------------------- */
+    public static void addMultiplier(ServerPlayer player, MultiplierEntry entry, int count) {
+        if (player == null || entry == null || entry.attributeId() == null) {
+            IsaacDisaster.LOGGER.warn("Ignoring multiplier addition with missing player, entry or attribute");
+            return;
+        }
+        Attribute attribute = ForgeRegistries.ATTRIBUTES.getValue(entry.attributeId());
+        if (attribute == null || player.getAttribute(attribute) == null) {
+            IsaacDisaster.LOGGER.warn("Ignoring multiplier entry {}: player has no attribute {}",
+                    entry.id(), entry.attributeId());
+            return;
+        }
+        player.getCapability(PlayerStatModifierProvider.PLAYER_STAT_MODIFIER).resolve().ifPresentOrElse(modifiers -> {
+            modifiers.getMultiplierEntries().add(entry, count);
+            refreshMultipliers(player);
+        }, () -> IsaacDisaster.LOGGER.warn("Ignoring multiplier entry {}: player capability is unavailable", entry.id()));
+    }
+
+    public static void removeMultiplier(ServerPlayer player, ResourceLocation entryId, int count) {
+        if (player == null) {
+            IsaacDisaster.LOGGER.warn("Ignoring multiplier removal without a player");
+            return;
+        }
+        player.getCapability(PlayerStatModifierProvider.PLAYER_STAT_MODIFIER).resolve().ifPresentOrElse(modifiers -> {
+            modifiers.getMultiplierEntries().remove(entryId, count);
+            refreshMultipliers(player);
+        }, () -> IsaacDisaster.LOGGER.warn("Ignoring multiplier removal {}: player capability is unavailable", entryId));
+    }
+    public static void addMultiplierRule(ServerPlayer player, MultiplierRules.RuleEntry rule, int count) {
+        if (player == null) {
+            IsaacDisaster.LOGGER.warn("Ignoring multiplier rule addition without a player");
+            return;
+        }
+        player.getCapability(PlayerStatModifierProvider.PLAYER_STAT_MODIFIER).resolve().ifPresentOrElse(modifiers -> {
+            modifiers.getMultiplierRules().add(rule, count);
+            refreshMultipliers(player);
+        }, () -> IsaacDisaster.LOGGER.warn("Ignoring multiplier rule {}: player capability is unavailable", rule));
+    }
+
+    public static void removeMultiplierRule(ServerPlayer player, ResourceLocation ruleId, int count) {
+        if (player == null) {
+            IsaacDisaster.LOGGER.warn("Ignoring multiplier rule removal without a player");
+            return;
+        }
+        player.getCapability(PlayerStatModifierProvider.PLAYER_STAT_MODIFIER).resolve().ifPresentOrElse(modifiers -> {
+            modifiers.getMultiplierRules().remove(ruleId, count);
+            refreshMultipliers(player);
+        }, () -> IsaacDisaster.LOGGER.warn("Ignoring multiplier rule removal {}: player capability is unavailable", ruleId));
+    }
+
+    public static void refreshMultipliers(ServerPlayer player) {
+        if (player == null) {
+            IsaacDisaster.LOGGER.warn("Ignoring multiplier refresh without a player");
+            return;
+        }
+        player.getCapability(PlayerStatModifierProvider.PLAYER_STAT_MODIFIER).ifPresent(modifiers ->
+                modifiers.getMultiplierEntries().reconcile(player,
+                        Config.ALLOW_SAME_MULTIPLIER_ENTRY_STACKING.get(), modifiers.getMultiplierRules()));
+    }
 
     public static void removeModifier(ServerPlayer player, @Nullable AttributeInstance attribute, UUID uuid) {
         if (attribute == null) return;

@@ -29,14 +29,16 @@ public class FiringModifierShotDelay implements IExecutableEffect {
                     playerIsaacItems.getItemCountFromAll(ModPassiveItems.THE_INNER_EYE.getId()) > 0,
                     playerIsaacItems.getItemCountFromAll(ModPassiveItems.MUTANT_SPIDER.getId()) > 0,
                     playerIsaacItems.getItemCountFromAll(ModPassiveItems.PERFECT_VISION.getId()) > 0,
-                    playerIsaacItems.getItemCountFromAll(ModPassiveItems.IPECAC.getId()) > 0);
+                    playerIsaacItems.getItemCountFromAll(ModPassiveItems.IPECAC.getId()) > 0,
+                    playerIsaacItems.getItemCountFromAll(ModPassiveItems.HAEMOLACRIA.getId()) > 0);
 
             event.setDelay(delay);
         });
     }
 
-    private static double computeShotDelay(double originalDelay, boolean polyphemus, boolean innerEye,
-                                           boolean mutantSpider, boolean perfectVision, boolean ipecac) {
+    static double computeShotDelay(double originalDelay, boolean polyphemus, boolean innerEye,
+                                           boolean mutantSpider, boolean perfectVision, boolean ipecac,
+                                           boolean haemolacria) {
         double delay = originalDelay;
 
         if (polyphemus || innerEye || mutantSpider) {
@@ -49,6 +51,10 @@ public class FiringModifierShotDelay implements IExecutableEffect {
 
         if (perfectVision && delay > originalDelay) {
             delay = originalDelay;
+        }
+
+        if (haemolacria) {
+            delay *= 2;
         }
 
         return delay;

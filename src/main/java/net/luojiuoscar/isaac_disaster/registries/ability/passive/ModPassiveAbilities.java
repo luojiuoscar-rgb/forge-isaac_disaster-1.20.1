@@ -603,4 +603,8 @@ public class ModPassiveAbilities {
     public static final RegistryObject<PassiveAbility> COMPOUND_FRACTURE =
             PASSIVE_ABILITY_REGISTRY.register("compound_fracture",
                     () -> new CompoundFracture(ItemId.COMPOUND_FRACTURE.getId(), ItemId.COMPOUND_FRACTURE.getLevel()));
+
+    public static final RegistryObject<PassiveAbility> HAEMOLACRIA =
+            PASSIVE_ABILITY_REGISTRY.register("haemolacria",
+                    () -> new Haemolacria(ItemId.HAEMOLACRIA.getId(), ItemId.HAEMOLACRIA.getLevel()));
 }

@@ -547,6 +547,12 @@
   "item.isaac_disaster.dead_cat.lore.2": "获得9条额外生命",
   "item.isaac_disaster.guppys_collar": "嗝屁猫的项圈",
   "item.isaac_disaster.guppys_collar.lore.1": "死亡时有50%概率复活",
+  "item.isaac_disaster.haemolacria": "泪血症",
+  "item.isaac_disaster.haemolacria.lore.1": "主血泪尺寸变为171%",
+  "item.isaac_disaster.haemolacria.lore.2": "射程变为80%",
+  "item.isaac_disaster.haemolacria.lore.3": "射击间隔增大",
+  "item.isaac_disaster.haemolacria.lore.4": "命中或落地时爆出6至11颗小血泪",
+  "item.isaac_disaster.haemolacria.lore.5": "小血泪造成主弹50%至83.33%伤害",
   "item end": "",
 
 
