@@ -13,6 +13,7 @@ import net.luojiuoscar.isaac_disaster.event.custom.misc.GetShotDelayEvent;
 import net.luojiuoscar.isaac_disaster.item.ModItems;
 import net.luojiuoscar.isaac_disaster.item.item.ActiveItem;
 import net.luojiuoscar.isaac_disaster.item.pickup.special.IsaacHead;
+import net.luojiuoscar.isaac_disaster.manager.DefaultAttributeManager;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.manager.data.BlockData;
 import net.luojiuoscar.isaac_disaster.manager.id.ItemId;
@@ -443,6 +444,8 @@ public class PlayerHelper {
             }
         }
 
+        DefaultAttributeManager.remove(player);
+
         // 重置cap
         player.getCapability(PlayerIsaacItemsProvider.PLAYER_ISAAC_ITEMS).ifPresent(PlayerIsaacItems::init);
         player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY).ifPresent(PlayerAbility::init);
@@ -673,4 +676,3 @@ public class PlayerHelper {
         return stack.getItem() instanceof IsaacHead;
     }
 }
-

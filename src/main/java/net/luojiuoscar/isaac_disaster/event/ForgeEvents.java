@@ -27,6 +27,7 @@ import net.luojiuoscar.isaac_disaster.item.ModItems;
 import net.luojiuoscar.isaac_disaster.item.item.IsaacItem;
 import net.luojiuoscar.isaac_disaster.item.pickup.special.IsaacHead;
 import net.luojiuoscar.isaac_disaster.manager.EffectManager;
+import net.luojiuoscar.isaac_disaster.manager.DefaultAttributeManager;
 import net.luojiuoscar.isaac_disaster.manager.ModDamageType;
 import net.luojiuoscar.isaac_disaster.manager.PillEffectManager;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
@@ -105,6 +106,7 @@ public class ForgeEvents {
     public static void onPlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
         if (!(event.getEntity() instanceof ServerPlayer player)) return;
         CuriosHelper.syncAllIsaacCurios(player);
+        DefaultAttributeManager.apply(player);
         StatManager.refreshMultipliers(player);
         player.getCapability(PlayerIsaacItemsProvider.PLAYER_ISAAC_ITEMS)
                 .ifPresent(PlayerIsaacItems::refreshItemCountCache);
@@ -126,6 +128,7 @@ public class ForgeEvents {
     public static void onPlayerRespawn(PlayerEvent.PlayerRespawnEvent event) {
         if (!(event.getEntity() instanceof ServerPlayer player)) return;
         CuriosHelper.syncAllIsaacCurios(player);
+        DefaultAttributeManager.apply(player);
         StatManager.refreshMultipliers(player);
         player.getCapability(PlayerIsaacItemsProvider.PLAYER_ISAAC_ITEMS)
                 .ifPresent(PlayerIsaacItems::refreshItemCountCache);
