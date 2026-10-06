@@ -22,10 +22,7 @@ import net.luojiuoscar.isaac_disaster.registries.ability.trinket.impl.WiggleWorm
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ModExecutableEffects;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.*;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.impl.LaserAttack;
-import net.luojiuoscar.isaac_disaster.registries.trajectory.ModTrajectoryModules;
-import net.luojiuoscar.isaac_disaster.registries.trajectory.TrajectoryRuntime;
-import net.luojiuoscar.isaac_disaster.registries.trajectory.TrajectoryState;
-import net.luojiuoscar.isaac_disaster.registries.trajectory.TrajectorySpec;
+import net.luojiuoscar.isaac_disaster.registries.trajectory.*;
 import net.luojiuoscar.isaac_disaster.registries.trajectory.impl.GravityTrajectoryModule;
 import net.luojiuoscar.isaac_disaster.registries.trajectory.impl.MyReflectionBulletTrajectoryModule;
 import net.luojiuoscar.isaac_disaster.registries.trajectory.impl.MyReflectionLaserTrajectoryModule;
@@ -153,15 +150,10 @@ public final class TrajectoryModuleGameTests {
                     .build();
             MyReflectionBulletTrajectoryModule.State state = module.createState();
             module.initialize(
-                new net.luojiuoscar.isaac_disaster.registries.trajectory.TrajectoryContext(
+                new TrajectoryContext(
                     bullet,
-                    origin,
-                    bullet.velocity(),
-                    bullet.velocity(),
-                    Vec3.ZERO,
-                    0,
-                    0,
-                    0,
+                    new TrajectoryContext.Input(
+                        origin, bullet.velocity(), bullet.velocity(), Vec3.ZERO, 0),
                     origin,
                     0,
                     state));
@@ -171,13 +163,12 @@ public final class TrajectoryModuleGameTests {
                 module.apply(
                     new net.luojiuoscar.isaac_disaster.registries.trajectory.TrajectoryContext(
                         bullet,
-                        bullet.position(),
-                        bullet.velocity(),
-                        bullet.velocity(),
-                        Vec3.ZERO,
-                        0,
-                        0,
-                        1,
+                        new TrajectoryContext.Input(
+                            bullet.position(),
+                            bullet.velocity(),
+                            bullet.velocity(),
+                            Vec3.ZERO,
+                            1),
                         owner.position().add(0, owner.getBbHeight() * 0.6, 0),
                         0,
                         state));
@@ -192,13 +183,12 @@ public final class TrajectoryModuleGameTests {
                     module.apply(
                         new net.luojiuoscar.isaac_disaster.registries.trajectory.TrajectoryContext(
                             reference,
-                            reference.position(),
-                            reference.velocity(),
-                            reference.velocity(),
-                            Vec3.ZERO,
-                            0,
-                            0,
-                            1,
+                            new TrajectoryContext.Input(
+                                reference.position(),
+                                reference.velocity(),
+                                reference.velocity(),
+                                Vec3.ZERO,
+                                1),
                             origin.add(0, -50, 0),
                             0,
                             module.createState()));
@@ -227,13 +217,12 @@ public final class TrajectoryModuleGameTests {
                 module.apply(
                     new net.luojiuoscar.isaac_disaster.registries.trajectory.TrajectoryContext(
                         bullet,
-                        bullet.position(),
-                        bullet.velocity(),
-                        bullet.velocity(),
-                        Vec3.ZERO,
-                        0,
-                        0,
-                        1,
+                        new net.luojiuoscar.isaac_disaster.registries.trajectory.TrajectoryContext.Input(
+                            bullet.position(),
+                            bullet.velocity(),
+                            bullet.velocity(),
+                            Vec3.ZERO,
+                            1),
                         anchor,
                         0,
                         state));
@@ -241,13 +230,12 @@ public final class TrajectoryModuleGameTests {
                 module.apply(
                     new net.luojiuoscar.isaac_disaster.registries.trajectory.TrajectoryContext(
                         client,
-                        client.position(),
-                        client.velocity(),
-                        client.velocity(),
-                        Vec3.ZERO,
-                        0,
-                        0,
-                        1,
+                        new net.luojiuoscar.isaac_disaster.registries.trajectory.TrajectoryContext.Input(
+                            client.position(),
+                            client.velocity(),
+                            client.velocity(),
+                            Vec3.ZERO,
+                            1),
                         anchor,
                         0,
                         decoded));
@@ -291,13 +279,12 @@ public final class TrajectoryModuleGameTests {
         mirror.apply(
             new net.luojiuoscar.isaac_disaster.registries.trajectory.TrajectoryContext(
                 parent,
-                spawn,
-                new Vec3(1, 0, 0),
-                new Vec3(1, 0, 0),
-                Vec3.ZERO,
-                0,
-                0,
-                1,
+                new net.luojiuoscar.isaac_disaster.registries.trajectory.TrajectoryContext.Input(
+                    spawn,
+                    new Vec3(1, 0, 0),
+                    new Vec3(1, 0, 0),
+                    Vec3.ZERO,
+                    1),
                 Vec3.ZERO,
                 0,
                 mirrorState));
@@ -315,13 +302,12 @@ public final class TrajectoryModuleGameTests {
             mirror.apply(
                 new net.luojiuoscar.isaac_disaster.registries.trajectory.TrajectoryContext(
                     child,
-                    childSpawn,
-                    new Vec3(1, 0, 0),
-                    new Vec3(rest, 0, 0),
-                    Vec3.ZERO,
-                    0,
-                    0,
-                    1,
+                    new net.luojiuoscar.isaac_disaster.registries.trajectory.TrajectoryContext.Input(
+                        childSpawn,
+                        new Vec3(1, 0, 0),
+                        new Vec3(rest, 0, 0),
+                        Vec3.ZERO,
+                        1),
                     Vec3.ZERO,
                     0,
                     mirrorState.copy()));

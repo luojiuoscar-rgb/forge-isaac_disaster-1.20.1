@@ -1,10 +1,20 @@
 package net.luojiuoscar.isaac_disaster.registries.attack_type.impl;
 
 import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.HashMap;
+import java.util.function.IntUnaryOperator;
+import net.luojiuoscar.isaac_disaster.bullet.collision.LaserCollisionBatch;
+import net.luojiuoscar.isaac_disaster.bullet.collision.SweptCollision;
+import net.luojiuoscar.isaac_disaster.bullet.collision.VoxelDda;
+import net.luojiuoscar.isaac_disaster.networking.ModMessages;
+import net.luojiuoscar.isaac_disaster.networking.packet.laser.LaserBeamBatchS2CPacket;
 import net.luojiuoscar.isaac_disaster.bullet.core.TrajectoryEvaluator;
 import net.luojiuoscar.isaac_disaster.event.custom.attack.IsaacAttackAfterHitEvent;
 import net.luojiuoscar.isaac_disaster.event.custom.attack.IsaacAttackBeforeHitEntityEvent;
@@ -58,6 +68,11 @@ public class LaserAttack extends AttackType {
     private static final double BASE_LASER_WIDTH = 0.25D;
     private static final double BASE_HOMING_TURN = 0.25D;
     private static final double MAX_HOMING_COLLISION_ANGLE = 0.5D;
+    private final ThreadLocal<Map<ServerLevel, LaserCollisionBatch>> activeCollisionBatches =
+        new ThreadLocal<>();
+    private final ThreadLocal<VisualBatchState> activeVisualBatch = new ThreadLocal<>();
+    private static final ThreadLocal<Integer> STRAIGHT_PATH_DEPTH =
+        ThreadLocal.withInitial(() -> 0);
 
     public LaserAttack(int priorityTier, double priority) {
         super(priorityTier, priority);
@@ -352,9 +367,59 @@ public class LaserAttack extends AttackType {
 
     @Override
     public void performAttack(List<AttackContext> ctxList) {
-        for (AttackContext ctx : ctxList) {
-            shoot(ctx);
+        performLaserBatch(ctxList, ignored -> 0);
+    }
+
+    /** Executes a group of already prepared laser contexts under one shared collision batch. */
+    protected final void performLaserBatch(
+        List<AttackContext> ctxList, IntUnaryOperator sequenceIndexProvider) {
+        if (ctxList == null || ctxList.isEmpty()) return;
+        if (STRAIGHT_PATH_DEPTH.get() > 0) {
+            for (int index = 0; index < ctxList.size(); index++) {
+                AttackContext ctx = ctxList.get(index);
+                if (ctx != null) shootSingleLaser(ctx, sequenceIndexProvider.applyAsInt(index));
+            }
+            return;
         }
+
+        Map<ServerLevel, LaserCollisionBatch> batches = new IdentityHashMap<>();
+        for (AttackContext ctx : ctxList) {
+            if (ctx == null || !isStraightPathCandidate(ctx)) continue;
+            if (!(ctx.getOwner().level() instanceof ServerLevel level)) continue;
+            Vec3 direction = ctx.getMainAxis();
+            if (direction.lengthSqr() <= 1.0E-8D) continue;
+            LaserCollisionBatch batch = batches.computeIfAbsent(level, ignored -> new LaserCollisionBatch());
+            Vec3 start = ctx.getPos();
+            Vec3 end = start.add(direction.normalize().scale(ctx.getBulletRange()));
+            batch.addSweep(start, end, getWidth(ctx));
+        }
+        for (Map.Entry<ServerLevel, LaserCollisionBatch> entry : batches.entrySet()) {
+            entry.getValue().rebuild(entry.getKey());
+        }
+        Map<ServerLevel, LaserCollisionBatch> previousBatches = activeCollisionBatches.get();
+        VisualBatchState previousVisualBatch = activeVisualBatch.get();
+        VisualBatchState visualBatch = previousVisualBatch == null
+            ? new VisualBatchState() : previousVisualBatch;
+        activeCollisionBatches.set(batches);
+        activeVisualBatch.set(visualBatch);
+        try {
+            for (int index = 0; index < ctxList.size(); index++) {
+                AttackContext ctx = ctxList.get(index);
+                if (ctx != null) shootSingleLaser(ctx, sequenceIndexProvider.applyAsInt(index));
+            }
+        } finally {
+            if (previousVisualBatch == null) visualBatch.flush();
+            if (previousBatches == null) activeCollisionBatches.remove();
+            else activeCollisionBatches.set(previousBatches);
+            if (previousVisualBatch == null) activeVisualBatch.remove();
+            else activeVisualBatch.set(previousVisualBatch);
+        }
+    }
+
+    private boolean isStraightPathCandidate(AttackContext context) {
+        return !isHoming(context.getOwner())
+            && context.getTrajectorySpecs().isEmpty()
+            && context.getMainAxis().lengthSqr() > 1.0E-8D;
     }
 
     // ================== shotLaser ==================
@@ -378,12 +443,346 @@ public class LaserAttack extends AttackType {
         laser.setSpectral(isSpectral(entity));
         laser.setAttackSequenceIndex(attackSequenceIndex);
 
+        // Child lasers created during a split share the outer traversal's thread-local state.
+        // They must use the compatibility path instead of rebuilding or consuming the parent's
+        // straight-path batch recursively.
+        if (STRAIGHT_PATH_DEPTH.get() > 0) {
+            runSegmentedLaser(laser, level, ctx);
+            return;
+        }
+
+        LaserCollisionBatch batch = activeBatch(level);
+        if (batch == null && isStraightPathCandidate(ctx)) {
+            batch = new LaserCollisionBatch();
+            batch.addSweep(laser.position,
+                laser.position.add(laser.direction.normalize().scale(laser.range)), width);
+            batch.rebuild(level);
+        }
+
+        if (batch != null && canUseStraightPath(laser)) {
+            VisualBatchState previousVisualBatch = activeVisualBatch.get();
+            VisualBatchState visualBatch = previousVisualBatch == null
+                ? new VisualBatchState() : previousVisualBatch;
+            activeVisualBatch.set(visualBatch);
+            try {
+                shootStraightLaser(laser, level, ctx, batch);
+            } finally {
+                if (previousVisualBatch == null) visualBatch.flush();
+                if (previousVisualBatch == null) activeVisualBatch.remove();
+                else activeVisualBatch.set(previousVisualBatch);
+            }
+            return;
+        }
+
+        runSegmentedLaser(laser, level, ctx);
+    }
+
+    private LaserCollisionBatch activeBatch(ServerLevel level) {
+        Map<ServerLevel, LaserCollisionBatch> batches = activeCollisionBatches.get();
+        return batches == null ? null : batches.get(level);
+    }
+
+    private boolean canUseStraightPath(LaserProjectile laser) {
+        return !laser.homing
+            && laser.getTrajectorySpecs().isEmpty()
+            && laser.direction.lengthSqr() > 1.0E-8D;
+    }
+
+    private void runSegmentedLaser(LaserProjectile laser, ServerLevel level, AttackContext context) {
         int steps = 0;
         while (laser.traveled < laser.range && steps < MAX_LASER_STEPS) {
             steps++;
-            stepLaser(laser, level, ctx);
+            stepLaser(laser, level, context);
         }
         if (laser.traveled < laser.range) laser.traveled = laser.range;
+    }
+
+    /**
+     * Resolves a straight laser with one block traversal and one shared entity broad-phase query.
+     * Collision events still run in the legacy coarse-segment order so block callbacks remain
+     * ahead of entity callbacks within the same segment.
+     */
+    private void shootStraightLaser(
+        LaserProjectile laser, ServerLevel level, AttackContext context, LaserCollisionBatch batch) {
+        int segmentCount = Math.max(1, (int) Math.ceil(laser.range / laser.step));
+        Vec3 start = laser.position;
+        Vec3 direction = laser.direction.normalize();
+        Vec3 end = start.add(direction.scale(laser.range));
+        Map<Integer, StraightBlockHit> blocks = indexBlockContacts(
+            level, start, end, laser.width, laser.range, laser.step, segmentCount);
+        Map<Integer, List<StraightEntityHit>> entities = indexEntityContacts(
+            laser, batch, start, end, laser.range, laser.step, segmentCount);
+
+        int previousDepth = STRAIGHT_PATH_DEPTH.get();
+        STRAIGHT_PATH_DEPTH.set(previousDepth + 1);
+        try {
+            double distance = 0.0D;
+            for (int segment = 0; segment < segmentCount; segment++) {
+                double nextDistance = Math.min(laser.range, distance + laser.step);
+                Vec3 segmentStart = start.add(direction.scale(distance));
+                Vec3 segmentEnd = start.add(direction.scale(nextDistance));
+                laser.position = segmentStart;
+                laser.direction = direction;
+
+                StraightBlockHit block = blocks.get(segment);
+                if (block != null) {
+                    boolean firstBlockContact =
+                        !laser.getHitBlockPositions().contains(block.hit().getBlockPos());
+                    net.minecraft.world.level.block.state.BlockState beforeState =
+                        level.getBlockState(block.hit().getBlockPos());
+                    Vec3 beforeDirection = laser.direction;
+                    SegmentResult result = handleStraightBlockContact(
+                        laser, segmentStart, segmentEnd, block.hit());
+                    boolean blockMutated = !sameVector(beforeDirection, laser.direction)
+                        || !sameVector(block.hit().getLocation(), laser.position)
+                        || !beforeState.equals(level.getBlockState(block.hit().getBlockPos()));
+                    if (result == SegmentResult.STOPPED && !blockMutated) {
+                        queueStraightVisual(laser.owner, start, block.hit().getLocation(),
+                            laser.width, context.getColorRl());
+                        return;
+                    }
+                    if (result == SegmentResult.INTERRUPTED || blockMutated
+                        || (firstBlockContact && laser.spectral)) {
+                        queueStraightVisual(laser.owner, start, block.hit().getLocation(),
+                            laser.width, context.getColorRl());
+                        continueFromStraightContact(
+                            laser, level, context, batch,
+                            block.hit().getLocation(), block.parameter(), null);
+                        return;
+                    }
+                }
+
+                List<StraightEntityHit> segmentEntities = entities.get(segment);
+                if (segmentEntities != null) {
+                    Vec3 half = new Vec3(laser.width * 0.5D, laser.width * 0.5D, laser.width * 0.5D);
+                    for (StraightEntityHit indexed : segmentEntities) {
+                        LivingEntity target = indexed.target();
+                        if (target == laser.owner
+                            || !target.isAlive()
+                            || EntityHelper.isFriendly(target, laser.owner)
+                            || laser.damagedEntities.contains(target.getUUID())) continue;
+                        Optional<Vec3> currentHit = ProjectileCollisionHelper.clipExpandedTarget(
+                            segmentStart, segmentEnd, target.getBoundingBox(), half);
+                        if (currentHit.isEmpty()) continue;
+
+                        Vec3 beforePosition = laser.position;
+                        handleEntityHit(laser, target, currentHit.get(), laser.getTriggers());
+                        double currentParameter = ProjectileCollisionHelper.pathParameter(
+                            start, end, currentHit.get());
+                        queueStraightVisual(laser.owner, start, currentHit.get(),
+                            laser.width, context.getColorRl());
+                        // Entity callbacks may spawn, remove, move, or resize entities that were
+                        // outside the original broad-phase snapshot. Resume from the contact so
+                        // the remaining path observes the current world state.
+                        continueFromStraightContact(
+                            laser, level, context, batch,
+                            currentHit.get(), currentParameter, beforePosition);
+                        return;
+                    }
+                }
+
+                laser.position = segmentEnd;
+                laser.traveled = nextDistance;
+                distance = nextDistance;
+            }
+            laser.position = end;
+            laser.direction = direction;
+            laser.traveled = laser.range;
+            laser.tickCount += segmentCount;
+            queueStraightVisual(laser.owner, start, end, laser.width, context.getColorRl());
+        } finally {
+            STRAIGHT_PATH_DEPTH.set(previousDepth);
+        }
+    }
+
+    private void continueFromStraightContact(
+        LaserProjectile laser,
+        ServerLevel level,
+        AttackContext context,
+        LaserCollisionBatch batch,
+        Vec3 contactPosition,
+        double parameter,
+        @Nullable Vec3 unchangedPosition) {
+        // Entity callbacks are allowed to move the laser explicitly. If they only changed the
+        // direction, the old segment start would otherwise be paired with the new traveled value;
+        // advance from the actual contact point in that case. Block callbacks already position the
+        // laser before dispatch and pass null so their epsilon/bounce adjustments are preserved.
+        boolean positionUnchanged = unchangedPosition != null && sameVector(unchangedPosition, laser.position);
+        if (positionUnchanged) {
+            laser.position = contactPosition;
+        }
+        laser.traveled = Math.max(0.0D, Math.min(laser.range, parameter * laser.range));
+        if (positionUnchanged && laser.direction.lengthSqr() > 1.0E-8D
+            && laser.range - laser.traveled > 1.0E-5D) {
+            Vec3 outgoing = laser.direction.normalize();
+            laser.position = laser.position.add(outgoing.scale(1.0E-4D));
+            laser.traveled = Math.min(laser.range, laser.traveled + 1.0E-4D);
+        }
+        if (batch != null && laser.direction.lengthSqr() > 1.0E-8D) {
+            Vec3 remainingStart = laser.position;
+            Vec3 remainingEnd = remainingStart.add(
+                laser.direction.normalize().scale(Math.max(0.0D, laser.range - laser.traveled)));
+            batch.addSweep(LaserCollisionBatch.remainingSweepBounds(
+                remainingStart, remainingEnd, laser.width));
+            batch.rebuild(level);
+        }
+        laser.tickCount += Math.max(0, (int) Math.floor(laser.traveled / Math.max(0.5D, laser.step)));
+        runSegmentedLaser(laser, level, context);
+    }
+
+    private static boolean sameVector(Vec3 left, Vec3 right) {
+        return left != null && right != null && left.distanceToSqr(right) <= 1.0E-12D;
+    }
+
+    /** AABB.contains is strict in this Minecraft version; collision clips land on its boundary. */
+    private static boolean containsInclusive(AABB box, Vec3 point) {
+        double epsilon = 1.0E-7D;
+        return point.x >= box.minX - epsilon && point.x <= box.maxX + epsilon
+            && point.y >= box.minY - epsilon && point.y <= box.maxY + epsilon
+            && point.z >= box.minZ - epsilon && point.z <= box.maxZ + epsilon;
+    }
+
+    private Map<Integer, StraightBlockHit> indexBlockContacts(
+        ServerLevel level,
+        Vec3 start,
+        Vec3 end,
+        double width,
+        double range,
+        double step,
+        int segmentCount) {
+        Map<Integer, StraightBlockHit> nearest = new HashMap<>();
+        Set<BlockPos> tested = new HashSet<>();
+        int padding = Math.max(0, (int) Math.ceil(width * 0.5D));
+        double half = width * 0.5D;
+        VoxelDda.traverse(start, end, (x, y, z, ignored) -> {
+            for (int offsetX = -padding; offsetX <= padding; offsetX++) {
+                for (int offsetY = -padding; offsetY <= padding; offsetY++) {
+                    for (int offsetZ = -padding; offsetZ <= padding; offsetZ++) {
+                        BlockPos pos = new BlockPos(x + offsetX, y + offsetY, z + offsetZ);
+                        if (!tested.add(pos) || !level.hasChunkAt(pos)) continue;
+                        var state = level.getBlockState(pos);
+                        if (state.isAir()) continue;
+                        for (AABB part : state.getCollisionShape(level, pos).toAabbs()) {
+                            SweptCollision.SegmentHit sweep = SweptCollision.segmentAabbDetailed(
+                                start, end, part.move(pos).inflate(half, half, half));
+                            if (!sweep.hit() || sweep.outwardFace() == null) continue;
+                            int segment = segmentFor(sweep.parameter(), range, step, segmentCount);
+                            Vec3 hitPosition = start.lerp(end, sweep.parameter());
+                            StraightBlockHit candidate = new StraightBlockHit(
+                                new BlockHitResult(hitPosition, sweep.outwardFace(), pos.immutable(), false),
+                                sweep.parameter(), segment);
+                            StraightBlockHit previous = nearest.get(segment);
+                            if (previous == null || candidate.parameter() < previous.parameter()) {
+                                nearest.put(segment, candidate);
+                            }
+                        }
+                    }
+                }
+            }
+            return false;
+        });
+        return nearest;
+    }
+
+    private Map<Integer, List<StraightEntityHit>> indexEntityContacts(
+        LaserProjectile laser,
+        LaserCollisionBatch batch,
+        Vec3 start,
+        Vec3 end,
+        double range,
+        double step,
+        int segmentCount) {
+        List<LivingEntity> candidates = new ArrayList<>();
+        batch.query(start, end, laser.width, candidates);
+        Vec3 half = new Vec3(laser.width * 0.5D, laser.width * 0.5D, laser.width * 0.5D);
+        Map<Integer, List<StraightEntityHit>> indexed = new HashMap<>();
+        for (LivingEntity target : candidates) {
+            if (!target.isAlive()) continue;
+            Optional<Vec3> hit = ProjectileCollisionHelper.clipExpandedTarget(
+                start, end, target.getBoundingBox(), half);
+            if (hit.isEmpty()) continue;
+            double parameter = ProjectileCollisionHelper.pathParameter(start, end, hit.get());
+            int segment = segmentFor(parameter, range, step, segmentCount);
+            indexed.computeIfAbsent(segment, ignored -> new ArrayList<>())
+                .add(new StraightEntityHit(target, hit.get(), parameter, segment));
+        }
+        Comparator<StraightEntityHit> order = Comparator
+            .comparingDouble(StraightEntityHit::parameter)
+            .thenComparingInt(hit -> hit.target().getId());
+        indexed.values().forEach(list -> list.sort(order));
+        return indexed;
+    }
+
+    private static int segmentFor(double parameter, double range, double step, int segmentCount) {
+        int segment = (int) Math.floor(parameter * range / step + 1.0E-9D);
+        return Math.max(0, Math.min(segmentCount - 1, segment));
+    }
+
+    private SegmentResult handleStraightBlockContact(
+        LaserProjectile laser, Vec3 start, Vec3 end, BlockHitResult blockHit) {
+        boolean firstContact = laser.markBlockHit(blockHit.getBlockPos());
+        if (firstContact) {
+            laser.setLastBlockHit(blockHit);
+            laser.recordSplitTrigger(SplitTriggerType.BLOCK);
+            laser.setPosition(blockHit.getLocation());
+            SplitExecutor.execute(laser, SplitTriggerType.BLOCK);
+            IsaacAttackHitBlockEvent event = new IsaacAttackHitBlockEvent(
+                laser, laser.owner, getId(), laser.getTriggers(), blockHit);
+            MinecraftForge.EVENT_BUS.post(event);
+            if (!laser.spectral) {
+                double parameter = ProjectileCollisionHelper.pathParameter(start, end, blockHit.getLocation());
+                laser.traveled = Math.min(laser.range, laser.traveled + (end.distanceTo(start) * parameter));
+                if (!event.isCanceled()) {
+                    laser.traveled = laser.range;
+                    return SegmentResult.STOPPED;
+                }
+                if (laser.position.equals(blockHit.getLocation())
+                    && end.distanceTo(start) * (1.0D - parameter) > 1.0E-5D
+                    && laser.direction.lengthSqr() > 1.0E-8D) {
+                    laser.position = laser.position.add(laser.direction.normalize().scale(1.0E-4D));
+                }
+                return SegmentResult.INTERRUPTED;
+            }
+        } else if (!laser.spectral) {
+            laser.position = blockHit.getLocation();
+            laser.traveled = laser.range;
+            return SegmentResult.STOPPED;
+        }
+        return SegmentResult.COMPLETE;
+    }
+
+    private void handleEntityHit(
+        LaserProjectile laser, LivingEntity target, Vec3 hitPosition, net.luojiuoscar.isaac_disaster.registries.ability_effect.CompositeTrigger triggers) {
+        EntityHitResult hitResult = new EntityHitResult(target, hitPosition);
+        IsaacAttackBeforeHitEntityEvent beforeHit = new IsaacAttackBeforeHitEntityEvent(
+            laser, laser.owner, getId(), triggers, hitResult, laser.damage);
+        if (MinecraftForge.EVENT_BUS.post(beforeHit)) return;
+        if (!target.isAlive()
+            || EntityHelper.isFriendly(target, laser.owner)
+            || !containsInclusive(
+                target.getBoundingBox().inflate(laser.width * 0.5D), hitPosition)) return;
+        float actualDamage = (float) beforeHit.getDamage();
+        if (!applyDamage(laser.owner, target, actualDamage)) return;
+        laser.damagedEntities.add(target.getUUID());
+        laser.recordSplitTrigger(SplitTriggerType.ENTITY);
+        SplitExecutor.executeAt(laser, SplitTriggerType.ENTITY, hitPosition, laser.direction);
+        laser.homingTarget = null;
+        IsaacAttackAfterHitEvent afterHit = new IsaacAttackAfterHitEvent(
+            laser,
+            laser.owner,
+            ModAttackTypes.LASER.getId(),
+            triggers,
+            hitResult,
+            actualDamage,
+            target.getHealth());
+        MinecraftForge.EVENT_BUS.post(afterHit);
+    }
+
+    private record StraightBlockHit(BlockHitResult hit, double parameter, int segment) {
+    }
+
+    private record StraightEntityHit(
+        LivingEntity target, Vec3 hitPosition, double parameter, int segment) {
     }
 
     // ================== stepLaser ==================
@@ -620,7 +1019,10 @@ public class LaserAttack extends AttackType {
                 new IsaacAttackBeforeHitEntityEvent(
                     laser, laser.owner, getId(), triggers, hitResult, laser.damage);
 
-            if (!MinecraftForge.EVENT_BUS.post(beforeHit)) {
+            if (!MinecraftForge.EVENT_BUS.post(beforeHit)
+                && target.isAlive()
+                && !EntityHelper.isFriendly(target, laser.owner)
+                && containsInclusive(target.getBoundingBox().inflate(width * 0.5D), hitPositions.get(target))) {
                 double actualDamage = beforeHit.getDamage();
                 if (!applyDamage(laser.owner, target, (float) actualDamage)) {
                     continue;
@@ -697,6 +1099,87 @@ public class LaserAttack extends AttackType {
 
         int collisionSegments() {
             return Math.max(1, (int) Math.ceil(angle / MAX_HOMING_COLLISION_ANGLE));
+        }
+    }
+
+    private void queueStraightVisual(
+        LivingEntity owner, Vec3 start, Vec3 end, double width, ResourceLocation colorRl) {
+        VisualBatchState batch = activeVisualBatch.get();
+        if (batch == null) {
+            batch = new VisualBatchState();
+            activeVisualBatch.set(batch);
+            try {
+                batch.add(owner, start, end, width, resolveLaserColor(colorRl));
+            } finally {
+                batch.flush();
+                activeVisualBatch.remove();
+            }
+            return;
+        }
+        batch.add(owner, start, end, width, resolveLaserColor(colorRl));
+    }
+
+    private int resolveLaserColor(ResourceLocation colorRl) {
+        IForgeRegistry<BulletColor> registry =
+            RegistryManager.ACTIVE.getRegistry(ModBulletColors.BULLET_COLOR_KEY);
+        BulletColor color = colorRl == null || registry == null
+            ? ModBulletColors.BASE.get() : registry.getValue(colorRl);
+        color = color == null ? ModBulletColors.BASE.get() : color;
+        Vector3f rgb = color == ModBulletColors.BASE.get()
+            ? new Vector3f(1.0F, 0.0F, 0.0F)
+            : BulletColor.getVec3fColorById(color.color());
+        return channel(rgb.x) << 16 | channel(rgb.y) << 8 | channel(rgb.z);
+    }
+
+    private static int channel(float value) {
+        return Math.max(0, Math.min(255, Math.round(value * 255.0F)));
+    }
+
+    private static final class VisualBatchState {
+        private static final double VISUAL_TRACKING_RADIUS = 32.0D;
+        private final Map<LivingEntity, List<LaserBeamBatchS2CPacket.Beam>> entries =
+            new IdentityHashMap<>();
+
+        void add(LivingEntity owner, Vec3 start, Vec3 end, double width, int color) {
+            if (owner == null || !(owner.level() instanceof ServerLevel)) return;
+            entries.computeIfAbsent(owner, ignored -> new ArrayList<>())
+                .add(new LaserBeamBatchS2CPacket.Beam(start, end, (float) width, color));
+        }
+
+        void flush() {
+            Map<ServerPlayer, List<LaserBeamBatchS2CPacket.Beam>> recipients =
+                new IdentityHashMap<>();
+            for (Map.Entry<LivingEntity, List<LaserBeamBatchS2CPacket.Beam>> entry : entries.entrySet()) {
+                List<LaserBeamBatchS2CPacket.Beam> beams = entry.getValue();
+                if (beams.isEmpty() || !(entry.getKey().level() instanceof ServerLevel level)) continue;
+                for (ServerPlayer player : level.players()) {
+                    List<LaserBeamBatchS2CPacket.Beam> visible = new ArrayList<>();
+                    for (LaserBeamBatchS2CPacket.Beam beam : beams) {
+                        if (distanceToSegmentSqr(player.position(), beam.start(), beam.end())
+                            <= VISUAL_TRACKING_RADIUS * VISUAL_TRACKING_RADIUS) {
+                            visible.add(beam);
+                        }
+                    }
+                    if (!visible.isEmpty()) {
+                        recipients.computeIfAbsent(player, ignored -> new ArrayList<>()).addAll(visible);
+                    }
+                }
+            }
+            for (Map.Entry<ServerPlayer, List<LaserBeamBatchS2CPacket.Beam>> entry : recipients.entrySet()) {
+                if (!entry.getValue().isEmpty()) {
+                    ModMessages.sentToPlayer(new LaserBeamBatchS2CPacket(entry.getValue()), entry.getKey());
+                }
+            }
+            entries.clear();
+        }
+
+        private static double distanceToSegmentSqr(Vec3 point, Vec3 start, Vec3 end) {
+            Vec3 delta = end.subtract(start);
+            double lengthSqr = delta.lengthSqr();
+            if (lengthSqr <= 1.0E-12D) return point.distanceToSqr(start);
+            double fraction = point.subtract(start).dot(delta) / lengthSqr;
+            fraction = Math.max(0.0D, Math.min(1.0D, fraction));
+            return point.distanceToSqr(start.add(delta.scale(fraction)));
         }
     }
 

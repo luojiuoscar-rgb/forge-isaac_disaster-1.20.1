@@ -11,12 +11,16 @@ import net.luojiuoscar.isaac_disaster.networking.packet.bullet.BulletShatterS2CP
 import net.luojiuoscar.isaac_disaster.networking.packet.bullet.BulletSpawnBatchS2CPacket;
 import net.luojiuoscar.isaac_disaster.networking.packet.bullet.BulletSpawnS2CPacket;
 import net.luojiuoscar.isaac_disaster.networking.packet.bullet.BulletTrackingBatchS2CPacket;
+import net.luojiuoscar.isaac_disaster.networking.packet.laser.LaserBeamBatchS2CPacket;
 import net.luojiuoscar.isaac_disaster.screen.IsaacItemScreen;
 import net.minecraft.client.Minecraft;
+import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.phys.Vec3;
+import org.joml.Vector3f;
 
 /** Client-only handlers for S2C packets whose common codecs must load on a dedicated server. */
 public final class ClientPacketHandlers {
@@ -79,6 +83,28 @@ public final class ClientPacketHandlers {
 
     public static void handleBulletShatter(BulletShatterS2CPacket packet) {
         ClientBulletRuntime.INSTANCE.applyShatter(packet);
+    }
+
+    /** Expands one server-side line segment into sparse local dust particles. */
+    public static void handleLaserBeamBatch(LaserBeamBatchS2CPacket packet) {
+        Minecraft minecraft = Minecraft.getInstance();
+        if (minecraft.level == null) return;
+        for (LaserBeamBatchS2CPacket.Beam beam : packet.entries()) {
+            Vec3 delta = beam.end().subtract(beam.start());
+            double distance = delta.length();
+            int samples = Math.max(1, Math.min(160, (int) Math.ceil(distance / 0.45D)));
+            Vector3f color = new Vector3f(
+                    ((beam.color() >> 16) & 0xFF) / 255.0F,
+                    ((beam.color() >> 8) & 0xFF) / 255.0F,
+                    (beam.color() & 0xFF) / 255.0F);
+            DustParticleOptions dust = new DustParticleOptions(color,
+                    Math.max(0.01F, Math.min(4.0F, beam.width())));
+            for (int i = 0; i <= samples; i++) {
+                double fraction = (double) i / samples;
+                Vec3 position = beam.start().lerp(beam.end(), fraction);
+                minecraft.level.addParticle(dust, position.x, position.y, position.z, 0, 0, 0);
+            }
+        }
     }
 
     public static void handleBulletTracking(BulletTrackingBatchS2CPacket packet) {

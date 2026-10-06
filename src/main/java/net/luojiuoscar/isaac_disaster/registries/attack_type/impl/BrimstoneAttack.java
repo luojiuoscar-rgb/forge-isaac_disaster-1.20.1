@@ -20,6 +20,11 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.MinecraftForge;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 public class BrimstoneAttack extends LaserAttack implements IChargeableAttack {
     private static final float DAMAGE_PERCENTAGE = 0.6f;
@@ -41,17 +46,72 @@ public class BrimstoneAttack extends LaserAttack implements IChargeableAttack {
     }
 
     // ================== handleAttack ==================
+    /** Brimstone schedules its 13 shots, grouping contexts that share an owner. */
+    @Override
+    public void performAttack(List<AttackContext> contexts) {
+        if (contexts == null || contexts.isEmpty()) return;
+
+        Map<UUID, List<AttackContext>> contextsByOwner = new LinkedHashMap<>();
+        for (AttackContext context : contexts) {
+            if (context == null) continue;
+            contextsByOwner.computeIfAbsent(context.getOwner().getUUID(), ignored -> new ArrayList<>())
+                    .add(context);
+        }
+        for (List<AttackContext> ownerContexts : contextsByOwner.values()) {
+            scheduleShots(ownerContexts);
+        }
+    }
+
     @Override
     public void shoot(AttackContext baseContext) {
+        if (baseContext == null) return;
+        scheduleShots(List.of(baseContext));
+    }
+
+    private void scheduleShots(List<AttackContext> baseContexts) {
+        if (baseContexts.isEmpty()) return;
+        AttackContext firstContext = baseContexts.get(0);
+        List<ShotPlan> shotPlans = baseContexts.stream()
+                .map(this::createShotPlan)
+                .toList();
+        AtomicInteger sequenceIndex = new AtomicInteger();
+        ScheduledFuncHelper.scheduleForPlayer(firstContext.getOwner().getUUID(),
+                SCHEDULE_TYPE, 1, 1, SHOT_COUNT, false, () -> {
+            int currentSequenceIndex = sequenceIndex.incrementAndGet();
+            List<AttackContext> shotContexts = new ArrayList<>(shotPlans.size());
+            for (ShotPlan shotPlan : shotPlans) {
+                shotContexts.add(shotPlan.createContext());
+            }
+            performLaserBatch(shotContexts, ignored -> currentSequenceIndex);
+        });
+    }
+
+    private ShotPlan createShotPlan(AttackContext baseContext) {
         boolean fixedLaunchTransform = baseContext.usesFixedLaunchTransform();
         boolean controllable = isControllable(baseContext.getOwner());
         Vec3 fixedSpawnPosition = fixedLaunchTransform ? baseContext.getPos() : null;
         Vec3 fixedMainAxis = fixedLaunchTransform ? baseContext.getMainAxis() : null;
-        AtomicInteger sequenceIndex = new AtomicInteger();
-        ScheduledFuncHelper.scheduleForPlayer(baseContext.getOwner().getUUID(),
-                SCHEDULE_TYPE, 1,1, SHOT_COUNT, false, () -> {
-            int currentSequenceIndex = sequenceIndex.incrementAndGet();
+        return new ShotPlan(baseContext, fixedLaunchTransform, controllable,
+                fixedSpawnPosition, fixedMainAxis);
+    }
 
+    private static final class ShotPlan {
+        private final AttackContext baseContext;
+        private final boolean fixedLaunchTransform;
+        private final boolean controllable;
+        private final Vec3 fixedSpawnPosition;
+        private final Vec3 fixedMainAxis;
+
+        private ShotPlan(AttackContext baseContext, boolean fixedLaunchTransform, boolean controllable,
+                         Vec3 fixedSpawnPosition, Vec3 fixedMainAxis) {
+            this.baseContext = baseContext;
+            this.fixedLaunchTransform = fixedLaunchTransform;
+            this.controllable = controllable;
+            this.fixedSpawnPosition = fixedSpawnPosition;
+            this.fixedMainAxis = fixedMainAxis;
+        }
+
+        private AttackContext createContext() {
             AttackContext shotContext = baseContext.toBuilder().build();
             Entity shooter = shotContext.getShooter();
             if (fixedLaunchTransform) {
@@ -62,8 +122,8 @@ public class BrimstoneAttack extends LaserAttack implements IChargeableAttack {
                         GeometryHelper.mainAxisFromRotation(shooter.getXRot(), shooter.getYRot()), controllable);
             }
             shotContext.freeze();
-            shootSingle(shotContext, currentSequenceIndex);
-        });
+            return shotContext;
+        }
     }
 
     /** Fires one Brimstone laser using the caller-provided runtime sequence identity. */

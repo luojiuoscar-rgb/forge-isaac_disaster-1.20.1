@@ -3,6 +3,7 @@ package net.luojiuoscar.isaac_disaster.networking;
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.networking.packet.*;
 import net.luojiuoscar.isaac_disaster.networking.packet.bullet.*;
+import net.luojiuoscar.isaac_disaster.networking.packet.laser.LaserBeamBatchS2CPacket;
 import net.luojiuoscar.isaac_disaster.networking.packet.ClearPassiveItemC2SPacket;
 import net.luojiuoscar.isaac_disaster.networking.packet.ChargeBarUpdateS2CPacket;
 import net.luojiuoscar.isaac_disaster.networking.packet.EntityVisualStateS2CPacket;
@@ -175,6 +176,10 @@ public class ModMessages {
         net.messageBuilder(BulletShatterS2CPacket.class, id(), NetworkDirection.PLAY_TO_CLIENT)
                 .decoder(BulletShatterS2CPacket::new).encoder(BulletShatterS2CPacket::toBytes)
                 .consumerNetworkThread(BulletShatterS2CPacket::handle).add();
+
+        net.messageBuilder(LaserBeamBatchS2CPacket.class, id(), NetworkDirection.PLAY_TO_CLIENT)
+                .decoder(LaserBeamBatchS2CPacket::new).encoder(LaserBeamBatchS2CPacket::toBytes)
+                .consumerNetworkThread(LaserBeamBatchS2CPacket::handle).add();
 
     }
 
