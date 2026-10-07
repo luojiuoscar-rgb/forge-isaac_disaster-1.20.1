@@ -7,6 +7,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
 import net.luojiuoscar.isaac_disaster.block.ModBlocks;
 import net.luojiuoscar.isaac_disaster.block.block_entity.PedestalBlockEntity;
+import net.luojiuoscar.isaac_disaster.block.block_entity.PedestalPrice;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.SharedSuggestionProvider;
@@ -61,7 +62,7 @@ public class ItemSpawnCmd {
                                                                         ))
 
                                                                         .then(Commands.literal("life")
-                                                                                .then(Commands.argument("value", IntegerArgumentType.integer())
+                                                                                .then(Commands.argument("value", IntegerArgumentType.integer(0))
                                                                                         .executes(ctx -> spawn(
                                                                                                 ctx,
                                                                                                 true,
@@ -70,7 +71,7 @@ public class ItemSpawnCmd {
                                                                                         ))))
 
                                                                         .then(Commands.literal("money")
-                                                                                .then(Commands.argument("value", IntegerArgumentType.integer())
+                                                                                .then(Commands.argument("value", IntegerArgumentType.integer(0))
                                                                                         .executes(ctx -> spawn(
                                                                                                 ctx,
                                                                                                 true,
@@ -105,8 +106,13 @@ public class ItemSpawnCmd {
             return 0;
         }
 
-        // 基础设置 关闭decoration
-        pedestal.setDecoration(false);
+        pedestal.clearContent();
+        pedestal.clearLinkedPedestals();
+        pedestal.setLocked(false);
+        pedestal.setAutoUseOnAcquire(true);
+        pedestal.setBreakPolicy(PedestalBlockEntity.BreakPolicy.DISCARD_CONTENT);
+        // Configure a generated pedestal.
+        pedestal.setContentSource(PedestalBlockEntity.ContentSource.LOOT_TABLE);
 
         // 设置 loot table
         pedestal.setItemLootTable(id.toString());
@@ -114,15 +120,12 @@ public class ItemSpawnCmd {
         // cost 逻辑
         if (cost) {
             if (useLife) {
-                pedestal.setLifeCost(value);
-                pedestal.setMoneyCost(0);
+                pedestal.setPrice(PedestalPrice.life(value));
             } else {
-                pedestal.setMoneyCost(value);
-                pedestal.setLifeCost(0);
+                pedestal.setPrice(PedestalPrice.money(value));
             }
         } else {
-            pedestal.setLifeCost(0);
-            pedestal.setMoneyCost(0);
+            pedestal.setPrice(PedestalPrice.free());
         }
 
         // 同步更新

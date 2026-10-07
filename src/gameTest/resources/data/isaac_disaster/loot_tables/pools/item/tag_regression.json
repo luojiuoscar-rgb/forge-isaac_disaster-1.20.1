@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:chest",
+  "pools": [{
+    "rolls": 1,
+    "entries": [
+      {"type":"minecraft:tag","name":"isaac_disaster:active_items","expand":true,"weight":0},
+      {"type":"minecraft:tag","name":"isaac_disaster:passive_items","expand":true,"weight":7,
+       "functions":[{"function":"minecraft:set_nbt","tag":"{pool_regression:1b}"}]},
+      {"type":"minecraft:tag","name":"isaac_disaster:active_items","expand":true,"weight":1000,
+       "conditions":[{"condition":"minecraft:random_chance","chance":0}]},
+      {"type":"minecraft:item","name":"isaac_disaster:dessert","weight":1000,
+       "conditions":[{"condition":"minecraft:random_chance","chance":0}]}
+    ]
+  }]
+}

@@ -17,12 +17,15 @@ public class D6 implements IAbilityEffect {
         if (!(context.getEntity() instanceof Player player)) return false;
         if (!(player.level() instanceof ServerLevel serverLevel)) return true;
 
-        Set<BlockPos> posList = BlockData.get(serverLevel).getAllItemBlocks();
+        BlockData data = BlockData.get(serverLevel);
+        data.reconcileLoaded(serverLevel);
+        Set<BlockPos> posList = data.getAllItemBlocks();
         Vec3 playerPos = player.position();
 
         final double MAX_DISTANCE = 10.0;
 
         for (BlockPos pos : posList) {
+            if (!serverLevel.hasChunkAt(pos)) continue;
             // distance
             Vec3 blockCenter = Vec3.atCenterOf(pos);
             double distanceSq = playerPos.distanceToSqr(blockCenter);

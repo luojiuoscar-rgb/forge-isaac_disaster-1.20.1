@@ -1,6 +1,8 @@
 package net.luojiuoscar.isaac_disaster.loot.modifier;
 
 import com.mojang.serialization.Codec;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
@@ -19,10 +21,16 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.storage.loot.LootContext;
+import net.minecraft.world.level.storage.loot.Deserializers;
 import net.minecraft.world.level.storage.loot.LootPool;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.entries.LootItem;
 import net.minecraft.world.level.storage.loot.entries.LootPoolEntryContainer;
+import net.minecraft.world.level.storage.loot.entries.LootPoolEntryType;
+import net.minecraft.world.level.storage.loot.entries.LootPoolEntries;
+import net.minecraft.world.level.storage.loot.entries.LootPoolSingletonContainer;
+import net.minecraft.world.level.storage.loot.entries.TagEntry;
+import net.minecraft.world.level.storage.loot.functions.LootItemFunction;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
 import net.minecraftforge.common.loot.IGlobalLootModifier;
@@ -33,8 +41,10 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.function.Consumer;
 
 public class ItemPoolLootModifier extends LootModifier {
+    private static final Gson LOOT_GSON = Deserializers.createLootTableSerializer().create();
     private static final EnumSet<LootGenerationMode> SUPPORTED_MODES =
             EnumSet.of(LootGenerationMode.NATURAL_DROP, LootGenerationMode.SPAWN_DROP);
 
@@ -63,48 +73,53 @@ public class ItemPoolLootModifier extends LootModifier {
         // 获取原表
         LootTable originalTable = lootContext.getLevel().getServer().getLootData().getLootTable(tableId);
 
-        // 新的临时 entries
-        List<LootPoolEntryContainer.Builder<?>> newEntries = new ArrayList<>();
-
-        LootPool pool = originalTable.pools.get(0);// 假设只有一个 pool
-        if (pool == null) return objectArrayList;
-
-        // 遍历原 pool entries
-        for (LootPoolEntryContainer entry : pool.entries) {
-            if (entry instanceof LootItem lootItem) {
-                // LootItem 直接保留
-                ItemStack[] tempStack = new ItemStack[1];
-                lootItem.createItemStack(s -> tempStack[0] = s, lootContext);
-                Item item = tempStack[0].getItem();
-                ResourceLocation itemId = ForgeRegistries.ITEMS.getKey(item);
-                if (item instanceof IsaacItem && itemId != null && !PoolHelper.isRemoved(player, tableId, itemId)) {
-                    newEntries.add(LootItem.lootTableItem(item));
-                }
-            } else {
-                try {
-                    // 展开 tag，将 tag 中的所有物品加入
-                    String path = tableId.getPath(); // e.g., pools/item/passive_items
-                    String tagName = path.substring(path.lastIndexOf('/') + 1); // passive_items
-                    TagKey<Item> tagKey = TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath(tableId.getNamespace(), tagName));
-
-                    lootContext.getLevel().registryAccess().registryOrThrow(Registries.ITEM).getTag(tagKey).ifPresent(tagItems -> {
-                        for (Holder<Item> holder : tagItems) {
-                            Item item = holder.value();
-                            ResourceLocation itemId = ForgeRegistries.ITEMS.getKey(item);
-                            if (item instanceof IsaacItem && itemId != null && !PoolHelper.isRemoved(player, tableId, itemId)) {
-                                newEntries.add(LootItem.lootTableItem(item));
-                            }
+        if (originalTable.pools.isEmpty()) return objectArrayList;
+        LootPool pool = originalTable.pools.get(0); // Item pools currently contain one pool.
+        List<LootPoolEntryContainer> newEntries = new ArrayList<>();
+        try {
+            for (LootPoolEntryContainer entry : pool.entries) {
+                JsonObject data = LOOT_GSON.toJsonTree(entry, LootPoolEntryContainer.class).getAsJsonObject();
+                if (entry instanceof LootItem) {
+                    ResourceLocation itemId = ResourceLocation.parse(data.get("name").getAsString());
+                    if (isAvailable(player, tableId, ForgeRegistries.ITEMS.getValue(itemId))) {
+                        newEntries.add(entry); // Retain conditions, weight, quality, and functions.
+                    }
+                } else if (entry instanceof TagEntry) {
+                    TagKey<Item> tag = TagKey.create(Registries.ITEM,
+                            ResourceLocation.parse(data.get("name").getAsString()));
+                    List<Item> items = new ArrayList<>();
+                    lootContext.getLevel().registryAccess().registryOrThrow(Registries.ITEM)
+                            .getTag(tag).ifPresent(holders -> {
+                                for (Holder<Item> holder : holders) {
+                                    if (isAvailable(player, tableId, holder.value())) items.add(holder.value());
+                                }
+                            });
+                    if (data.get("expand").getAsBoolean()) {
+                        for (Item item : items) {
+                            JsonObject itemData = data.deepCopy();
+                            itemData.addProperty("type", "minecraft:item");
+                            itemData.addProperty("name", ForgeRegistries.ITEMS.getKey(item).toString());
+                            itemData.remove("expand");
+                            newEntries.add(LOOT_GSON.fromJson(itemData, LootPoolEntryContainer.class));
                         }
-                    });
-                }catch (Exception e){}
+                    } else if (!items.isEmpty()) {
+                        newEntries.add(new FilteredTagEntry(data, items));
+                    }
+                } else {
+                    // Do not reinterpret other entry types as tags inferred from the table name.
+                    newEntries.add(entry);
+                }
             }
+        } catch (RuntimeException e) {
+            IsaacDisaster.LOGGER.warn("Could not rebuild item pool {}; retaining original loot", tableId, e);
+            return objectArrayList;
         }
 
         // 加入玩家 addition
         for (ResourceLocation addItemId : PoolHelper.getAddition(player, tableId)) {
             Item addItem = ForgeRegistries.ITEMS.getValue(addItemId);
             if (addItem == null) continue;
-            newEntries.add(LootItem.lootTableItem(addItem));
+            newEntries.add(LootItem.lootTableItem(addItem).build());
         }
 
         // 构建临时 pool
@@ -112,8 +127,21 @@ public class ItemPoolLootModifier extends LootModifier {
         if (newEntries.isEmpty()) {
             poolBuilder.add(LootItem.lootTableItem(ModPassiveItems.BREAKFAST.get()));
         }else{
-            for (LootPoolEntryContainer.Builder<?> builder : newEntries) {
-                poolBuilder.add(builder);
+            for (LootPoolEntryContainer entry : newEntries) {
+                poolBuilder.add(entryBuilder(entry));
+            }
+        }
+        // Preserve the original pool settings as well as the entry settings.
+        JsonObject poolData = LOOT_GSON.toJsonTree(pool, LootPool.class).getAsJsonObject();
+        poolBuilder.setRolls(pool.getRolls()).setBonusRolls(pool.getBonusRolls());
+        if (poolData.has("conditions")) {
+            for (LootItemCondition condition : LOOT_GSON.fromJson(poolData.get("conditions"), LootItemCondition[].class)) {
+                poolBuilder.when(() -> condition);
+            }
+        }
+        if (poolData.has("functions")) {
+            for (LootItemFunction function : LOOT_GSON.fromJson(poolData.get("functions"), LootItemFunction[].class)) {
+                poolBuilder.apply(() -> function);
             }
         }
 
@@ -127,6 +155,50 @@ public class ItemPoolLootModifier extends LootModifier {
         tempPool.addRandomItems(result::add, lootContext);
 
         return result;
+    }
+
+    private static boolean isAvailable(ServerPlayer player, ResourceLocation tableId, Item item) {
+        ResourceLocation id = item == null ? null : ForgeRegistries.ITEMS.getKey(item);
+        return item instanceof IsaacItem && id != null && !PoolHelper.isRemoved(player, tableId, id);
+    }
+
+    private static LootPoolEntryContainer.Builder<?> entryBuilder(LootPoolEntryContainer entry) {
+        return new ExistingEntryBuilder(entry);
+    }
+
+    private static final class ExistingEntryBuilder extends LootPoolEntryContainer.Builder<ExistingEntryBuilder> {
+        private final LootPoolEntryContainer entry;
+
+        private ExistingEntryBuilder(LootPoolEntryContainer entry) { this.entry = entry; }
+
+        @Override
+        protected ExistingEntryBuilder getThis() { return this; }
+
+        @Override
+        public LootPoolEntryContainer build() { return entry; }
+    }
+
+    /** A non-expanded tag selects once and emits every remaining member. */
+    private static final class FilteredTagEntry extends LootPoolSingletonContainer {
+        private final List<Item> items;
+
+        private FilteredTagEntry(JsonObject data, List<Item> items) {
+            super(data.has("weight") ? data.get("weight").getAsInt() : 1,
+                    data.has("quality") ? data.get("quality").getAsInt() : 0,
+                    data.has("conditions") ? LOOT_GSON.fromJson(data.get("conditions"), LootItemCondition[].class)
+                            : new LootItemCondition[0],
+                    data.has("functions") ? LOOT_GSON.fromJson(data.get("functions"), LootItemFunction[].class)
+                            : new LootItemFunction[0]);
+            this.items = List.copyOf(items);
+        }
+
+        @Override
+        public LootPoolEntryType getType() { return LootPoolEntries.TAG; }
+
+        @Override
+        protected void createItemStack(Consumer<ItemStack> consumer, LootContext context) {
+            for (Item item : items) consumer.accept(new ItemStack(item));
+        }
     }
 
 

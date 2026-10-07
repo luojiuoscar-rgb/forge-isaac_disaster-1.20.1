@@ -120,16 +120,18 @@ disablePlaceholder: bool
 可设置属性：
 
 ```
-isDecoration [bool]
+contentSource [String: MANUAL / LOOT_TABLE]
 ```
 
-是否为装饰性底座（装饰性底座无实际功能效果）
+内容来源。`MANUAL` 支持放入一个物品和空手拿取；`LOOT_TABLE` 根据道具池生成内容。手持物品点击已有内容的底座不会交换物品。
 
 ```
 itemLootTable [String]
 ```
 
-绑定的道具池
+绑定的道具池。NBT 配置生成型底座时同时设置 `contentSource:"LOOT_TABLE"`。成功生成后 `generated` 为 true；失败保留配置并允许重试。领取后保持已生成状态，避免重新生成。
+
+`isaac_disaster:pools/item/default` 从 `active_items` 与 `passive_items` 两个标签抽取。道具池过滤按各 entry 的实际标签执行，保留权重、条件及物品函数；移除后没有候选且没有额外添加物品时，兜底生成 Breakfast。
 
 ```
 locked [bool]
@@ -138,17 +140,39 @@ locked [bool]
 是否上锁（可使用钥匙解锁）
 
 ```
-lifeCost [int]
+priceType [String: FREE / LIFE / MONEY]
+priceAmount [int >= 0]
 ```
 
-生命消耗（单位数）
-优先级高于金钱消耗
+领取条件：免费、消耗生命单位或消耗金钱。只能有一种价格；金额为 0 表示免费。创造模式免支付。
+
+价格类型为空、金额为负数或免费价格包含非零金额时，会记录警告并回退到 `FREE/0`。无效的 NBT 枚举也记录警告并使用默认值。
 
 ```
-moneyCost [int]
+breakPolicy [String: DROP_CONTENT / DISCARD_CONTENT]
 ```
 
-金钱消耗
+破坏时掉落或丢弃展示物品，与内容来源、价格和联动独立。上锁时不掉落内容。
+
+`autoUseOnAcquire [bool]` 控制领取后是否尝试自动使用，还需全局 `auto_use_passive_item` 配置开启。缺省为 false；`/isd item spawn` 显式开启。此设置与内容来源独立。
+
+缺省配置为 `MANUAL`、`FREE/0`、`DROP_CONTENT`、未上锁、不自动使用。NBT 只读取当前格式；旧字段 `isDecoration`、`lifeCost`、`moneyCost` 不再生效。
+
+可通过 `/give` 的 `BlockEntityTag` 获得配置好的方块物品，放置时由原版 `BlockItem` 加载配置。以下指令分别为免费生成型底座、生命商店、金钱商店和手动展示底座（枚举名称区分大小写）：
+
+```mcfunction
+/give @s isaac_disaster:pedestal{BlockEntityTag:{contentSource:"LOOT_TABLE",itemLootTable:"isaac_disaster:pools/item/default",priceType:"FREE",priceAmount:0,breakPolicy:"DISCARD_CONTENT",autoUseOnAcquire:1b}} 1
+
+/give @s isaac_disaster:pedestal{BlockEntityTag:{contentSource:"LOOT_TABLE",itemLootTable:"isaac_disaster:pools/item/default",priceType:"LIFE",priceAmount:2,breakPolicy:"DISCARD_CONTENT",autoUseOnAcquire:1b}} 1
+
+/give @s isaac_disaster:pedestal{BlockEntityTag:{contentSource:"LOOT_TABLE",itemLootTable:"isaac_disaster:pools/item/default",priceType:"MONEY",priceAmount:15,breakPolicy:"DISCARD_CONTENT",autoUseOnAcquire:1b}} 1
+
+/give @s isaac_disaster:pedestal{BlockEntityTag:{contentSource:"MANUAL",priceType:"FREE",priceAmount:0,breakPolicy:"DROP_CONTENT",autoUseOnAcquire:0b}} 1
+```
+
+生成型底座的物品在放置后生成，需要附近有非创造、非旁观模式玩家，且 `disablePlaceholder` 游戏规则未开启。`/give` 得到的方块物品本身尚未进行抽取。生命价格的数字使用模组的生命单位。
+
+也可以使用 `/isd item spawn <道具池> <坐标> [cost life|money <非负金额>]` 配置生成型底座。
 
 ---
 

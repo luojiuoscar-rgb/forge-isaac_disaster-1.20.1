@@ -3,6 +3,7 @@ package net.luojiuoscar.isaac_disaster.block.renderer;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import net.luojiuoscar.isaac_disaster.block.block_entity.PedestalBlockEntity;
+import net.luojiuoscar.isaac_disaster.block.block_entity.PedestalPrice;
 import net.luojiuoscar.isaac_disaster.block.custom.PedestalBlock;
 import net.luojiuoscar.isaac_disaster.helper.LevelHelper;
 import net.luojiuoscar.isaac_disaster.item.ModItems;
@@ -46,8 +47,7 @@ public class PedestalRenderer implements BlockEntityRenderer<PedestalBlockEntity
         renderItem(stack, poseStack, pedestal.getRenderingRotation(), level, buffer,
                 pedestal.getBlockPos(), 0.75f, 0.6f);
         // ======= shop =======
-        // 生命成本优先
-        if (!pedestal.isDecoration() && (pedestal.getLifeCost() != 0 || pedestal.getMoneyCost() != 0)){
+        if (!pedestal.getPrice().isFree()) {
             poseStack.pushPose();
 
             // 获取方块朝向
@@ -69,23 +69,23 @@ public class PedestalRenderer implements BlockEntityRenderer<PedestalBlockEntity
 
             String cost = "";
 
-            if (pedestal.getLifeCost() != 0) {
+            if (pedestal.getPrice().type() == PedestalPrice.Type.LIFE) {
                 ItemStack heartStack = new ItemStack(ModItems.RED_HEART.get());
 
                 itemRenderer.renderStatic(heartStack, ItemDisplayContext.FIXED,
                         getLightLevel(level, pedestal.getBlockPos()), OverlayTexture.NO_OVERLAY,
                         poseStack, buffer, level, 1);
 
-                cost = String.valueOf(pedestal.getLifeCost() * StatManager.MAX_HEALTH.getBonus());
+                cost = String.valueOf(pedestal.getPrice().amount() * StatManager.MAX_HEALTH.getBonus());
 
-            } else { // 金钱成本仅在 liftCost == 0 时生效
+            } else {
                 ItemStack coinStack = LevelHelper.getMoney(1).get(0);
 
                 itemRenderer.renderStatic(coinStack, ItemDisplayContext.FIXED,
                         getLightLevel(level, pedestal.getBlockPos()), OverlayTexture.NO_OVERLAY,
                         poseStack, buffer, level, 0);
 
-                cost = String.valueOf(pedestal.getMoneyCost());
+                cost = String.valueOf(pedestal.getPrice().amount());
             }
             // 渲染数字
             double xOffset = -0.5;

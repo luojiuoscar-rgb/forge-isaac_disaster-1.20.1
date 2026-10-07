@@ -1,6 +1,7 @@
 package net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.normal;
 
 import net.luojiuoscar.isaac_disaster.block.block_entity.PedestalBlockEntity;
+import net.luojiuoscar.isaac_disaster.block.block_entity.PedestalPrice;
 import net.luojiuoscar.isaac_disaster.helper.LevelHelper;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.manager.data.BlockData;
@@ -28,21 +29,22 @@ public class CreditCard implements IAbilityEffect {
         // 免费底座道具
         if (!(player.level() instanceof ServerLevel serverLevel)) return true;
 
-        Set<BlockPos> posList = BlockData.get(serverLevel).getAllItemBlocks();
+        BlockData data = BlockData.get(serverLevel);
+        data.reconcileLoaded(serverLevel);
+        Set<BlockPos> posList = data.getAllItemBlocks();
         Vec3 playerPos = player.position();
 
         double radius = StatManager.getNearbyRange();
 
         for (BlockPos pos : posList) {
+            if (!serverLevel.hasChunkAt(pos)) continue;
             // distance
             Vec3 blockCenter = Vec3.atCenterOf(pos);
             double distanceSq = playerPos.distanceToSqr(blockCenter);
             if (distanceSq > radius * radius) continue;
 
             if (serverLevel.getBlockEntity(pos) instanceof PedestalBlockEntity be) {
-                be.setLifeCost(0);
-                be.setMoneyCost(0);
-                be.setChanged();
+                be.setPrice(PedestalPrice.free());
             }
         }
 

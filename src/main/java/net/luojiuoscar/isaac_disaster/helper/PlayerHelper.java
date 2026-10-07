@@ -618,11 +618,13 @@ public class PlayerHelper {
     public static void copyNearestPedestal(ServerPlayer player, boolean linked) {
         ServerLevel level = (ServerLevel) player.level();
         BlockData data = BlockData.get(level);
+        data.reconcileLoaded(level);
         Set<BlockPos> pedestals = data.getAllPedestals();
         if (pedestals.isEmpty()) return;
 
         BlockPos playerPos = player.blockPosition();
         pedestals.stream()
+                .filter(level::hasChunkAt)
                 .min(Comparator.comparingDouble(pos -> pos.distSqr(playerPos)))
                 .ifPresent(nearest -> copyPedestalAt(level, nearest, linked));
     }
@@ -634,6 +636,7 @@ public class PlayerHelper {
         for (int dx : new int[]{-1, 0, 1}) {
             for (int dz : new int[]{-1, 0, 1}) {
                 BlockPos newPos = sourcePos.offset(dx, 0, dz);
+                if (!level.hasChunkAt(newPos)) continue;
                 if (!level.getBlockState(newPos).getCollisionShape(level, newPos).isEmpty()) continue;
 
                 level.setBlock(newPos, ModBlocks.PEDESTAL_BLOCK.get().defaultBlockState(), 3);
