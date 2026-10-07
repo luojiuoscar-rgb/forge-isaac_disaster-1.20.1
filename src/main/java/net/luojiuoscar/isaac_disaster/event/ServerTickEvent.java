@@ -16,7 +16,8 @@ import net.luojiuoscar.isaac_disaster.helper.ScheduledFuncHelper;
 import net.luojiuoscar.isaac_disaster.item.item.ActiveItem;
 import net.luojiuoscar.isaac_disaster.item.pickup.special.IsaacHead;
 import net.luojiuoscar.isaac_disaster.networking.ModMessages;
-import net.luojiuoscar.isaac_disaster.networking.packet.ChargeBarUpdateS2CPacket;
+import net.luojiuoscar.isaac_disaster.networking.ChargeBarSync;
+import net.luojiuoscar.isaac_disaster.registries.charge_bar.ModChargeBars;
 import net.luojiuoscar.isaac_disaster.networking.packet.RefreshScaleS2CPacket;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.data.AbilityEffectTokenBucket;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackType;
@@ -149,12 +150,14 @@ public class ServerTickEvent {
                     }
 
                     float progress = playerAbility.getChargeAmount() / maxCharge;
-                    progress = Math.min(progress, 1f);
+                    progress = Math.max(0f, Math.min(progress, 1f));
 
-                    // if current charge amount is not equal to pre-charge amount
-                    if (playerAbility.getChargeAmount() != playerAbility.getPreChargeAmount()){
-                        playerAbility.setPreChargeAmount(playerAbility.getChargeAmount());
-                        ModMessages.sentToPlayer(new ChargeBarUpdateS2CPacket(progress), player);
+                    // The normalized progress may also change when the maximum charge changes.
+                    if (Float.compare(progress, playerAbility.getPreChargeProgress()) != 0){
+                        if (ChargeBarSync.syncToPlayer(ModChargeBars.ATTACK_CHARGE.getId(),
+                                progress > 0f, progress, player)) {
+                            playerAbility.setPreChargeProgress(progress);
+                        }
                     }
                 }
         );

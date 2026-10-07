@@ -1,135 +1,83 @@
 package net.luojiuoscar.isaac_disaster.registries;
 
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
-import net.luojiuoscar.isaac_disaster.registries.ability.active.ActiveAbility;
-import net.luojiuoscar.isaac_disaster.registries.ability.passive.PassiveAbility;
-import net.luojiuoscar.isaac_disaster.registries.ability.pickup.PickupAbility;
-import net.luojiuoscar.isaac_disaster.registries.ability.set.SetAbility;
-import net.luojiuoscar.isaac_disaster.registries.ability.trinket.TrinketAbility;
-import net.luojiuoscar.isaac_disaster.registries.ability_effect.IExecutableEffect;
-import net.luojiuoscar.isaac_disaster.registries.attack_pattern.AttackPattern;
-import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackType;
-import net.luojiuoscar.isaac_disaster.registries.attack_type.combination.AttackCombinationRule;
-import net.luojiuoscar.isaac_disaster.registries.bullet_color.BulletColor;
-import net.luojiuoscar.isaac_disaster.registries.bullet_visual.BulletVisual;
-import net.luojiuoscar.isaac_disaster.registries.familiar.FamiliarEntityType;
-import net.luojiuoscar.isaac_disaster.registries.recursive_module.RecursiveModule;
-import net.luojiuoscar.isaac_disaster.registries.revive_module.ReviveModule;
-import net.luojiuoscar.isaac_disaster.registries.split_module.SplitModule;
-import net.luojiuoscar.isaac_disaster.registries.trajectory.TrajectoryModule;
-import net.luojiuoscar.isaac_disaster.registries.trajectory.rule.TrajectoryRule;
-import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerModule;
-import net.luojiuoscar.isaac_disaster.registries.trigger_module.rule.TriggerModuleRule;
-import net.luojiuoscar.isaac_disaster.registries.visual.VisualLayer;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.ModExecutableEffects;
+import net.luojiuoscar.isaac_disaster.registries.ability.active.ModActiveAbilities;
+import net.luojiuoscar.isaac_disaster.registries.ability.passive.ModPassiveAbilities;
+import net.luojiuoscar.isaac_disaster.registries.ability.pickup.ModPickupAbilities;
+import net.luojiuoscar.isaac_disaster.registries.ability.set.ModSetAbilities;
+import net.luojiuoscar.isaac_disaster.registries.ability.trinket.ModTrinketAbilities;
+import net.luojiuoscar.isaac_disaster.registries.attack_pattern.ModAttackPatterns;
+import net.luojiuoscar.isaac_disaster.registries.attack_type.combination.ModCombinationRules;
+import net.luojiuoscar.isaac_disaster.registries.attack_type.ModAttackTypes;
+import net.luojiuoscar.isaac_disaster.registries.bullet_color.ModBulletColors;
+import net.luojiuoscar.isaac_disaster.registries.bullet_visual.ModBulletVisuals;
+import net.luojiuoscar.isaac_disaster.registries.charge_bar.ModChargeBars;
+import net.luojiuoscar.isaac_disaster.registries.familiar.ModFamiliarEntities;
+import net.luojiuoscar.isaac_disaster.registries.recursive_module.ModRecursiveModules;
+import net.luojiuoscar.isaac_disaster.registries.revive_module.ModReviveModules;
+import net.luojiuoscar.isaac_disaster.registries.split_module.ModSplitModules;
+import net.luojiuoscar.isaac_disaster.registries.trajectory.ModTrajectoryModules;
+import net.luojiuoscar.isaac_disaster.registries.trajectory.rule.ModTrajectoryRules;
+import net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerModules;
+import net.luojiuoscar.isaac_disaster.registries.trigger_module.rule.ModTriggerModuleRules;
+import net.luojiuoscar.isaac_disaster.registries.visual.ModVisualLayers;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.RegistryBuilder;
-
-import static net.luojiuoscar.isaac_disaster.registries.ability.active.ModActiveAbilities.ACTIVE_ABILITY_REGISTRY;
-import static net.luojiuoscar.isaac_disaster.registries.ability.passive.ModPassiveAbilities.PASSIVE_ABILITY_REGISTRY;
-import static net.luojiuoscar.isaac_disaster.registries.ability.pickup.ModPickupAbilities.PICKUP_ABILITY_REGISTRY;
-import static net.luojiuoscar.isaac_disaster.registries.ability.set.ModSetAbilities.SET_ABILITY_REGISTRY;
-import static net.luojiuoscar.isaac_disaster.registries.ability.trinket.ModTrinketAbilities.TRINKET_ABILITY_REGISTRY;
-import static net.luojiuoscar.isaac_disaster.registries.ability_effect.ModExecutableEffects.EXECUTABLE_EFFECT_REGISTRY;
-import static net.luojiuoscar.isaac_disaster.registries.attack_pattern.ModAttackPatterns.ATTACK_PATTERN_REGISTRY;
-import static net.luojiuoscar.isaac_disaster.registries.attack_type.ModAttackTypes.ATTACK_TYPE_REGISTER;
-import static net.luojiuoscar.isaac_disaster.registries.attack_type.combination.ModCombinationRules.ATTACK_COMBINATION_RULE_REGISTRY;
-import static net.luojiuoscar.isaac_disaster.registries.bullet_color.ModBulletColors.BULLET_COLOR_REGISTRY;
-import static net.luojiuoscar.isaac_disaster.registries.bullet_visual.ModBulletVisuals.BULLET_VISUAL_REGISTRY;
-import static net.luojiuoscar.isaac_disaster.registries.familiar.ModFamiliarEntities.FAMILIAR_ENTITY_REGISTRY;
-import static net.luojiuoscar.isaac_disaster.registries.recursive_module.ModRecursiveModules.RECURSIVE_MODULE_REGISTRY;
-import static net.luojiuoscar.isaac_disaster.registries.revive_module.ModReviveModules.REVIVE_MODULE_REGISTRY;
-import static net.luojiuoscar.isaac_disaster.registries.split_module.ModSplitModules.SPLIT_MODULE_REGISTRY;
-import static net.luojiuoscar.isaac_disaster.registries.trajectory.ModTrajectoryModules.TRAJECTORY_MODULE_REGISTRY;
-import static net.luojiuoscar.isaac_disaster.registries.trajectory.rule.ModTrajectoryRules.TRAJECTORY_RULE_KEY;
-import static net.luojiuoscar.isaac_disaster.registries.trajectory.rule.ModTrajectoryRules.TRAJECTORY_RULE_REGISTRY;
-import static net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerModules.TRIGGER_MODULE_REGISTRY;
-import static net.luojiuoscar.isaac_disaster.registries.trigger_module.rule.ModTriggerModuleRules.TRIGGER_MODULE_RULE_REGISTRY;
-import static net.luojiuoscar.isaac_disaster.registries.visual.ModVisualLayers.VISUAL_LAYER_REGISTRY;
-
 
 public class ModRegistries {
     public static void register(IEventBus modEventBus) {
         IsaacDisaster.LOGGER.info("Initializing Registries...");
 
-        TRAJECTORY_MODULE_REGISTRY.makeRegistry(() -> {return new RegistryBuilder<TrajectoryModule<?>>()
-                .setName(ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "trajectory_module"));});
-        TRAJECTORY_MODULE_REGISTRY.register(modEventBus);
+        registerRegistry(ModChargeBars.CHARGE_BAR_REGISTRY,
+                ModChargeBars.CHARGE_BAR_KEY.location(), modEventBus);
 
-        TRAJECTORY_RULE_REGISTRY.makeRegistry(() -> new RegistryBuilder<TrajectoryRule>()
-                .setName(TRAJECTORY_RULE_KEY.location()));
-        TRAJECTORY_RULE_REGISTRY.register(modEventBus);
+        registerRegistry(ModTrajectoryModules.TRAJECTORY_MODULE_REGISTRY, ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "trajectory_module"), modEventBus);
 
-        BULLET_COLOR_REGISTRY.makeRegistry(() -> {return new RegistryBuilder<BulletColor>()
-                .setName(ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "bullet_color"));});
-        BULLET_COLOR_REGISTRY.register(modEventBus);
+        registerRegistry(ModTrajectoryRules.TRAJECTORY_RULE_REGISTRY, ModTrajectoryRules.TRAJECTORY_RULE_KEY.location(), modEventBus);
 
-        BULLET_VISUAL_REGISTRY.makeRegistry(() -> new RegistryBuilder<BulletVisual>()
-                .setName(ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "bullet_visual")));
-        BULLET_VISUAL_REGISTRY.register(modEventBus);
+        registerRegistry(ModBulletColors.BULLET_COLOR_REGISTRY, ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "bullet_color"), modEventBus);
 
-        TRIGGER_MODULE_REGISTRY.makeRegistry(() -> {return new RegistryBuilder<TriggerModule>()
-                .setName(ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "trigger_module"));});
-        TRIGGER_MODULE_REGISTRY.register(modEventBus);
+        registerRegistry(ModBulletVisuals.BULLET_VISUAL_REGISTRY, ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "bullet_visual"), modEventBus);
 
-        TRIGGER_MODULE_RULE_REGISTRY.makeRegistry(() -> new RegistryBuilder<TriggerModuleRule>()
-                .setName(ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "trigger_module_rule")));
-        TRIGGER_MODULE_RULE_REGISTRY.register(modEventBus);
+        registerRegistry(ModTriggerModules.TRIGGER_MODULE_REGISTRY, ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "trigger_module"), modEventBus);
 
-        VISUAL_LAYER_REGISTRY.makeRegistry(() -> new RegistryBuilder<VisualLayer>()
-                .setName(ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "visual_layer")));
-        VISUAL_LAYER_REGISTRY.register(modEventBus);
+        registerRegistry(ModTriggerModuleRules.TRIGGER_MODULE_RULE_REGISTRY, ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "trigger_module_rule"), modEventBus);
 
-        RECURSIVE_MODULE_REGISTRY.makeRegistry(() -> {return new RegistryBuilder<RecursiveModule>()
-                .setName(ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "recursive_module"));});
-        RECURSIVE_MODULE_REGISTRY.register(modEventBus);
+        registerRegistry(ModVisualLayers.VISUAL_LAYER_REGISTRY, ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "visual_layer"), modEventBus);
 
-        REVIVE_MODULE_REGISTRY.makeRegistry(() -> new RegistryBuilder<ReviveModule>()
-                .setName(ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "revive_module")));
-        REVIVE_MODULE_REGISTRY.register(modEventBus);
+        registerRegistry(ModRecursiveModules.RECURSIVE_MODULE_REGISTRY, ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "recursive_module"), modEventBus);
 
-        SPLIT_MODULE_REGISTRY.makeRegistry(() -> new RegistryBuilder<SplitModule>()
-                .setName(ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "split_module")));
-        SPLIT_MODULE_REGISTRY.register(modEventBus);
+        registerRegistry(ModReviveModules.REVIVE_MODULE_REGISTRY, ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "revive_module"), modEventBus);
 
-        PASSIVE_ABILITY_REGISTRY.makeRegistry(() -> {return new RegistryBuilder<PassiveAbility>()
-                .setName(ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "passive_ability"));});
-        PASSIVE_ABILITY_REGISTRY.register(modEventBus);
+        registerRegistry(ModSplitModules.SPLIT_MODULE_REGISTRY, ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "split_module"), modEventBus);
 
-        ACTIVE_ABILITY_REGISTRY.makeRegistry(() -> {return new RegistryBuilder<ActiveAbility>()
-                .setName(ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "active_ability"));});
-        ACTIVE_ABILITY_REGISTRY.register(modEventBus);
+        registerRegistry(ModPassiveAbilities.PASSIVE_ABILITY_REGISTRY, ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "passive_ability"), modEventBus);
 
-        TRINKET_ABILITY_REGISTRY.makeRegistry(() -> {return new RegistryBuilder<TrinketAbility>()
-                .setName(ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "trinket_ability"));});
-        TRINKET_ABILITY_REGISTRY.register(modEventBus);
+        registerRegistry(ModActiveAbilities.ACTIVE_ABILITY_REGISTRY, ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "active_ability"), modEventBus);
 
-        SET_ABILITY_REGISTRY.makeRegistry(() -> {return new RegistryBuilder<SetAbility>()
-                .setName(ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "set_ability"));});
-        SET_ABILITY_REGISTRY.register(modEventBus);
+        registerRegistry(ModTrinketAbilities.TRINKET_ABILITY_REGISTRY, ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "trinket_ability"), modEventBus);
 
-        PICKUP_ABILITY_REGISTRY.makeRegistry(() -> {return new RegistryBuilder<PickupAbility>()
-                .setName(ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "pickup_ability"));});
-        PICKUP_ABILITY_REGISTRY.register(modEventBus);
+        registerRegistry(ModSetAbilities.SET_ABILITY_REGISTRY, ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "set_ability"), modEventBus);
 
-        ATTACK_TYPE_REGISTER.makeRegistry(() -> {return new RegistryBuilder<AttackType>()
-                .setName(ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "attack_type"));});
-        ATTACK_TYPE_REGISTER.register(modEventBus);
+        registerRegistry(ModPickupAbilities.PICKUP_ABILITY_REGISTRY, ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "pickup_ability"), modEventBus);
 
-        ATTACK_PATTERN_REGISTRY.makeRegistry(() -> new RegistryBuilder<AttackPattern>()
-                .setName(ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "attack_pattern")));
-        ATTACK_PATTERN_REGISTRY.register(modEventBus);
+        registerRegistry(ModAttackTypes.ATTACK_TYPE_REGISTER, ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "attack_type"), modEventBus);
 
-        ATTACK_COMBINATION_RULE_REGISTRY.makeRegistry(() -> {return new RegistryBuilder<AttackCombinationRule>()
-                .setName(ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "attack_combination_rule"));});
-        ATTACK_COMBINATION_RULE_REGISTRY.register(modEventBus);
+        registerRegistry(ModAttackPatterns.ATTACK_PATTERN_REGISTRY, ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "attack_pattern"), modEventBus);
 
-        FAMILIAR_ENTITY_REGISTRY.makeRegistry(() -> new RegistryBuilder<FamiliarEntityType>()
-                .setName(ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "familiar_entity")));
-        FAMILIAR_ENTITY_REGISTRY.register(modEventBus);
+        registerRegistry(ModCombinationRules.ATTACK_COMBINATION_RULE_REGISTRY, ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "attack_combination_rule"), modEventBus);
 
-        EXECUTABLE_EFFECT_REGISTRY.makeRegistry(() -> {return new RegistryBuilder<IExecutableEffect>()
-                .setName(ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "executable_effect"));});
-        EXECUTABLE_EFFECT_REGISTRY.register(modEventBus);
+        registerRegistry(ModFamiliarEntities.FAMILIAR_ENTITY_REGISTRY, ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "familiar_entity"), modEventBus);
+
+        registerRegistry(ModExecutableEffects.EXECUTABLE_EFFECT_REGISTRY, ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "executable_effect"), modEventBus);
+    }
+
+    private static <T> void registerRegistry(DeferredRegister<T> registry, ResourceLocation name,
+                                            IEventBus modEventBus) {
+        registry.makeRegistry(() -> new RegistryBuilder<T>().setName(name));
+        registry.register(modEventBus);
     }
 }

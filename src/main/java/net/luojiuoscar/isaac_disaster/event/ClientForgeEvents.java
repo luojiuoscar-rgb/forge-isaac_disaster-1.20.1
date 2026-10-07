@@ -10,10 +10,10 @@ import net.luojiuoscar.isaac_disaster.system.ScaleUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
 import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.client.event.RenderLivingEvent;
 import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
@@ -25,12 +25,10 @@ public class ClientForgeEvents {
      * 玩家登出时清除客户端数据
      */
     @SubscribeEvent
-    public static void onPlayerLoggedOut(PlayerEvent.PlayerLoggedOutEvent event) {
-        // 只处理本地玩家的登出事件
-        if (event.getEntity() == Minecraft.getInstance().player) {
-            ClientDataManager.getInstance().init();
-            IsaacFlightClientController.resetRuntimeInput();
-        }
+    public static void onPlayerLoggedOut(ClientPlayerNetworkEvent.LoggingOut event) {
+        // 此事件只针对本地客户端断线，即使 LocalPlayer 已被清除也需要重置缓存。
+        ClientDataManager.getInstance().init();
+        IsaacFlightClientController.resetRuntimeInput();
     }
 
     /**

@@ -1,0 +1,66 @@
+# Progress
+
+## 2026-10-07
+- 用户纠正上一轮误解：需要圆形充能本身，不只是多个直条围成圆圈。
+- 已读取 planning-with-files 与 systematic-debugging 技能，检查当前变更、注册类型、Overlay、布局和测试。
+- 确认根因是水平纹理 + 横向裁切，以及 40 GUI 单位直条导致的大布局半径。
+- 创建本工作目录；下一步先补充圆环形状和紧凑布局测试，再修正生产实现。
+- session-catchup 初次使用 python 命令失败（PATH 无 Python）；已定位 bundled Python 路径。
+- bundled Python 的 session-catchup 已运行，无需额外恢复；上轮 docs/charge-bars.md 已移至本目录 registration-notes.md（待按圆环实现更新）。
+- 已补充透明中心、角度填充、充满/空环、进度单调性及紧凑布局测试，开始验证预期失败。
+- 首次 Gradle 在重建 mapped Forge JAR 时遇到 Windows 文件占用，尚未执行到新增测试；将改用独立 build 目录验证，不终止用户 Minecraft。
+- 独立目录 baseline 编译成功，新增测试因缺少圆环几何/新类型构造/紧凑布局接口按预期编译失败（red）。
+- 已将类型定义简化为优先级、尺寸和三种 ARGB 颜色；新增纯 Java 圆环几何，并将 Overlay 改为逐像素按角度绘制。
+- 已将默认大小设为 12，间隔 2，最小布局半径 16；保留最高优先级、显隐和同步来源。
+- 独立目录执行 compileJava、11 项定向 JUnit、runData：BUILD SUCCESSFUL（1m49s），全部测试 0 失败，数据生成写入 0 文件。
+- 已用生产几何/布局生成 build/charge-ring-validation/reports/charge-bars/preview.png 并检查环形填充、空心中心和位置；调整预览版面，避免第 9 槽与标题重叠。
+- Git 暂存区删除同步被沙箱拒绝，后续单独请求自动审批；没有权限升级或终止进程。
+- 精确删除同步经自动审批成功，docs/charge-bars.md 已不在工作区和暂存区；接入说明已重写为圆环实现。
+- 首次 javap 使用不存在的隔离 Forge JAR 路径失败，改用实际 build/fg_cache 路径后成功。
+- 渲染缓冲检查发现 fill 会逐次刷新 unmanaged 输出，已将全部圆环像素放入 drawManaged 合批；针对最终生产变更重新运行编译与 11 项测试。
+- 最终合批版本 compileJava + 11 项定向 JUnit：BUILD SUCCESSFUL（58s），0 失败。runData 在本轮此前通过；合批仅影响客户端渲染，不改变注册项。
+- 最终预览已查看，圆环和标题无重叠；git diff --check 通过；docs/charge-bars.md 工作区和暂存区均不存在。
+- 所有计划阶段 complete。限制：尚未运行 Minecraft 客户端确认游戏内画面；预览是放大的生产算法结果。
+- 新请求：用户要求 PNG 黑白灰底图 + 代码绿色充能，注册时提供素材路径与充能颜色。新增 Phase 5/6，继续本目录记录。
+- 补充 PNG 灰度/透明/环带对齐测试，更新布局测试为路径与颜色参数。
+- 首次 red 验证仍受原 build/fg_cache 的文件占用影响；检查 ForgeGradle 字节码确认缓存根是硬编码，改用完整构建输入快照隔离 projectDir。
+- 独立项目快照 compileJava 成功，新测试因缺少 PNG + color 类型构造按预期编译失败（red）。
+- 已完成四参数类型、PNG 底图 blit + FILLED 像素覆盖；生成真实 12×12 charge_ring_base.png（描边 #181818、轨道 #D8D8D8、中心透明）。
+- 已更新预览工具为读取实际 PNG 并覆盖生产代码环带，检查 0/25/50/75/100% 的黑白灰 + 绿色组合预览。
+- 完成构建输入快照刷新，正在运行最终编译、12 项定向测试及 runData。
+- 最终 project snapshot 编译、12 项定向 JUnit（0 失败）、runData：BUILD SUCCESSFUL（1m38s）；runData 写入 0 生成文件。
+- 关键 Java、PNG 与新增测试的 SHA256 与验证快照一致；git diff --check 通过。PNG 与组合预览已检查，接入说明更新为底图路径 + fillColor 参数。
+- Phase 5/6 complete。所有项目记录仍在本目录。限制仍为未执行 Minecraft 实机视觉验证。
+- 收尾 diff 检查最初发现日志输出自带行尾空格（源码无问题）；规范化本目录日志行尾后，git diff --check 正式通过。
+- 新请求：降低白底亮度并让蓄满后持续闪白；新增 Phase 7，继续使用本目录。
+- 新增 3 项动画测试；隔离快照编译在缺少 ChargeRingAnimation 时按预期失败。
+- 已将真实 PNG 轨道改为 #808080，新增时间驱动的满充循环闪白，并接入所有注册圆环；未满立即恢复原色。
+- 更新预览工具，生成 flash-preview.png，已查看 0/25/50/75% 和满充原色/白色阶段；布局与尺寸保持原样。
+- 已刷新验证快照，正在执行 compileJava 与所有充能条定向测试。
+- 验证完成：compileJava + 15 项定向 JUnit 全通过（1m15s），0 失败；PNG、Overlay、新动画与新测试 SHA256 和快照一致。
+- Phase 7 complete；git diff --check 通过，预览已检查。尚未执行游戏内视觉验证。
+- 新请求：统一全部充能条尺寸，检查旧客户端 getter 与 PlayerAbility 原始/历史蓄力字段。
+- 核实调用：getChargeProgress 无调用；preChargeAmount 只写不读；chargeAmount 有多个攻击消费者，preChargeProgress 用于同步比较。
+- 已移除可变尺寸接口，以 ChargeRingGeometry.SIZE=12 统一几何、布局和绘制；更新注册、测试与预览工具的调用。
+- 已删除 getChargeProgress 与 preChargeAmount 的字段/访问器/同步写入；保留真实攻击蓄力、归一化同步值和仍被调用的 setChargeProgress。
+- 已更新本目录接入说明，正在隔离项目快照运行 compileJava 和充能条定向测试。
+- 首次编译通过，但旧动画测试仍按 500ms 周期检查，当前工作区/快照已有 400ms 周期，导致 1 项失败；保持当前生产代码，修正测试及接入说明/预览文案为 400/200ms，再验证。
+- 最终 compileJava + 15 项定向 JUnit 全通过（1m20s），0 失败/错误；快照 hash 检查通过，更新后的 fixed-size-preview.png 已生成。
+- Phase 8 complete；git diff --check 通过。所有项目记录继续保存在本目录，未执行实机画面验证。
+- 新请求：充能条错误输入从抛异常改为日志并跳过。核实主动抛出点、null 底图/ID 校验及网络发送路径。
+- 新增 5 项回归测试：负索引、空底图、空客户端 ID、空 ID 包发送和损坏包解码；开始隔离快照 red 验证。
+- red 验证确认新增 5 项按预期失败，原有 8 项 ChargeBar 测试通过。
+- 已改为日志并跳过：类型与排序、无效位置、客户端空 ID、无效同步包发送/编码/处理和损坏包解码；有效条目逻辑与有效包格式保持原样。
+- 已刷新验证快照，正在 compileJava + 全部充能条定向测试。
+- 最终 compileJava + 20 项定向 JUnit 全通过（2m21s），0 失败/错误；本次 9 个生产/测试文件 hash 和快照一致。
+- Phase 9 complete；git diff --check 通过。未执行 Minecraft 实机/联机验证，项目记录仍全部在本目录。
+- 用户要求使用项目统一日志入口。核实 IsaacDisaster.LOGGER 自身由 LogUtils.getLogger() 创建；独立 LogUtils Logger 能正常输出，但本轮统一四个新增使用处到 IsaacDisaster.LOGGER，并移除重复 Logger 字段/import。
+- Phase 10 complete：compileJava + 20 项定向测试全部通过（2m10s），四个类 hash 与快照一致；测试 XML 已实际记录 IsaacDisaster 来源的 WARN 输出，git diff --check 通过。
+- 按用户要求清理本目录：删除 11 个临时构建/测试日志、Java 预览工具、PowerShell 验证脚本和 Gradle 初始化脚本，共 14 个辅助文件。
+- 保留 task_plan.md、findings.md、progress.md、registration-notes.md；更新接入说明，后续辅助文件不再写入项目记忆目录。生产代码/素材不变。
+- 新请求：充能包按其他通信包方式实现；ModRegistries 静态字段 import 改为类名限定并减少 import。
+- 已参考实体状态同步/数据包；新增 ChargeBarSync，移除 ModMessages 中充能包专属分支，并将客户端入队方式与参考包一致。
+- 已将 21 个注册表统一为所属类字段 + 泛型初始化函数，核对名称与顺序不变；通信测试 red 阶段因新类型缺失按预期失败。
+- 更新接入说明，正在隔离项目运行 compileJava、20 项相关测试与 runData。辅助日志仅放 build。
+- 最终 compileJava + 20 项相关 JUnit + runData 全通过（3m10s），数据生成写入 0 文件；6 项生产/测试文件 hash 与快照一致，git diff --check 通过。
+- Phase 11 complete；本目录仍只包含四个 Markdown 项目记录。未执行游戏内联机验证。

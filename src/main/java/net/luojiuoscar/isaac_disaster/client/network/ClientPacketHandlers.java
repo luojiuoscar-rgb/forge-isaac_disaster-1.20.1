@@ -14,6 +14,7 @@ import net.luojiuoscar.isaac_disaster.networking.packet.bullet.BulletTrackingBat
 import net.luojiuoscar.isaac_disaster.networking.packet.laser.LaserBeamBatchS2CPacket;
 import net.luojiuoscar.isaac_disaster.screen.IsaacItemScreen;
 import net.minecraft.client.Minecraft;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.sounds.SoundEvent;
@@ -83,6 +84,12 @@ public final class ClientPacketHandlers {
 
     public static void handleBulletShatter(BulletShatterS2CPacket packet) {
         ClientBulletRuntime.INSTANCE.applyShatter(packet);
+    }
+
+    public static void handleChargeUpdate(ResourceLocation id, boolean visible, float progress) {
+        if (Minecraft.getInstance().player != null) {
+            ClientDataManager.getInstance().updateChargeBar(id, visible, progress);
+        }
     }
 
     /** Expands one server-side line segment into sparse local dust particles. */

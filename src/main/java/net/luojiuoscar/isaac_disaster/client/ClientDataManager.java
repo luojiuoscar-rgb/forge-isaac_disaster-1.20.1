@@ -1,6 +1,8 @@
 package net.luojiuoscar.isaac_disaster.client;
 
+import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.manager.PillEffectManager;
+import net.luojiuoscar.isaac_disaster.registries.charge_bar.ModChargeBars;
 import net.minecraft.resources.ResourceLocation;
 
 import java.util.ArrayList;
@@ -31,7 +33,7 @@ public class ClientDataManager {
     private int flyUnits;
     private int pillQuality;
 
-    private float chargeProgress;
+    private final Map<ResourceLocation, Float> chargeBars = new HashMap<>();
 
     public void init() {
         itemCountMap.clear();
@@ -42,7 +44,7 @@ public class ClientDataManager {
         reviveHudIcons.clear();
         pillQuality = 0;
         flyUnits = 0;
-        chargeProgress = 0;
+        chargeBars.clear();
     }
 
     public static ClientDataManager getInstance() {
@@ -91,8 +93,9 @@ public class ClientDataManager {
         return pillQuality;
     }
 
-    public float getChargeProgress() {
-        return chargeProgress;
+    /** Visible indicators only; zero progress may still be visible. */
+    public Map<ResourceLocation, Float> getChargeBars() {
+        return Map.copyOf(chargeBars);
     }
 
     public Double getRockBottomHistory(ResourceLocation key) {
@@ -104,7 +107,19 @@ public class ClientDataManager {
     }
 
     public void setChargeProgress(float chargeProgress) {
-        this.chargeProgress = chargeProgress;
+        updateChargeBar(ModChargeBars.ATTACK_CHARGE.getId(), chargeProgress > 0, chargeProgress);
+    }
+
+    public void updateChargeBar(ResourceLocation id, boolean visible, float progress) {
+        if (id == null) {
+            IsaacDisaster.LOGGER.warn("Skipping charge bar update with no registry ID");
+            return;
+        }
+        if (!visible || !Float.isFinite(progress)) {
+            chargeBars.remove(id);
+        } else {
+            chargeBars.put(id, Math.max(0f, Math.min(1f, progress)));
+        }
     }
 
     /**

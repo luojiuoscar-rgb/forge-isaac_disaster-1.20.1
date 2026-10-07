@@ -26,8 +26,8 @@ public class PlayerAbility {
     private int controllable;
 
     private int extraTrinketSlotCounts;
-    private int chargeAmount;
-    private int preChargeAmount;
+    private int chargeAmount; // Current attack charge, accumulated/consumed by chargeable attacks.
+    private float preChargeProgress; // Last normalized progress sent to the client.
 
     private final Map<ResourceLocation, Integer> attackType;
     private ResourceLocation bestAttackType;
@@ -53,6 +53,7 @@ public class PlayerAbility {
         controllable = 0;
         extraTrinketSlotCounts = 0;
         chargeAmount = 0;
+        preChargeProgress = Float.NaN;
 
         bestBulletColor = ModBulletColors.BASE.getId();
         bestAttackType = ModAttackTypes.BULLET.getId();
@@ -228,12 +229,12 @@ public class PlayerAbility {
         this.chargeAmount = chargeAmount;
     }
 
-    public int getPreChargeAmount() {
-        return preChargeAmount;
+    public float getPreChargeProgress() {
+        return preChargeProgress;
     }
 
-    public void setPreChargeAmount(int preChargeAmount) {
-        this.preChargeAmount = preChargeAmount;
+    public void setPreChargeProgress(float preChargeProgress) {
+        this.preChargeProgress = preChargeProgress;
     }
 
     public Map<ResourceLocation, Integer> getBulletTypeMap() {
