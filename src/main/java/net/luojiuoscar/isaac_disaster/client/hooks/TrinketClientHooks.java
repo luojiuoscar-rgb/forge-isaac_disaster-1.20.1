@@ -1,4 +1,4 @@
-package net.luojiuoscar.isaac_disaster.client.item;
+package net.luojiuoscar.isaac_disaster.client.hooks;
 
 import net.luojiuoscar.isaac_disaster.item.item.Trinket;
 import net.luojiuoscar.isaac_disaster.manager.ColorManager;

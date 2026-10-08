@@ -1,7 +1,7 @@
 package net.luojiuoscar.isaac_disaster.item.item;
 
 
-import net.luojiuoscar.isaac_disaster.client.item.IsaacItemClientHooks;
+import net.luojiuoscar.isaac_disaster.client.hooks.IsaacItemClientHooks;
 import net.luojiuoscar.isaac_disaster.manager.ColorManager;
 import net.luojiuoscar.isaac_disaster.registries.ability.IsaacItemAbility;
 import net.minecraft.network.chat.Component;

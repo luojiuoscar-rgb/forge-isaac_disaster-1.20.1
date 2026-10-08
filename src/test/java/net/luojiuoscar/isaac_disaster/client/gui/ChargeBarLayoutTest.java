@@ -1,6 +1,9 @@
-package net.luojiuoscar.isaac_disaster.client.hud;
+package net.luojiuoscar.isaac_disaster.client.gui;
 
 import java.util.List;
+
+import net.luojiuoscar.isaac_disaster.client.gui.charge_bar.ChargeBarLayout;
+import net.luojiuoscar.isaac_disaster.client.gui.charge_bar.ChargeRingGeometry;
 import net.luojiuoscar.isaac_disaster.registries.charge_bar.ChargeBarType;
 import net.minecraft.resources.ResourceLocation;
 import org.junit.jupiter.api.Test;

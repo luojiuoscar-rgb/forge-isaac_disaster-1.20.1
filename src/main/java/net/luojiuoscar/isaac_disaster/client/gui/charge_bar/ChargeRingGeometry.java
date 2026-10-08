@@ -1,4 +1,4 @@
-package net.luojiuoscar.isaac_disaster.client.hud;
+package net.luojiuoscar.isaac_disaster.client.gui.charge_bar;
 
 import java.util.ArrayList;
 import java.util.List;

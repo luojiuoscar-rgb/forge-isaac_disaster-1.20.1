@@ -1,6 +1,8 @@
-package net.luojiuoscar.isaac_disaster.client.hud;
+package net.luojiuoscar.isaac_disaster.client.gui;
 
 import javax.imageio.ImageIO;
+
+import net.luojiuoscar.isaac_disaster.client.gui.charge_bar.ChargeRingGeometry;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 

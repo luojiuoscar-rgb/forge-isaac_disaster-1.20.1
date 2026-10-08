@@ -1,4 +1,4 @@
-package net.luojiuoscar.isaac_disaster.client.hud;
+package net.luojiuoscar.isaac_disaster.client.gui.charge_bar;
 
 /** Time-based full-charge flash; callers supply a monotonic clock in milliseconds. */
 public final class ChargeRingAnimation {

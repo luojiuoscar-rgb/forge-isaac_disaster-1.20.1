@@ -1,5 +1,6 @@
-package net.luojiuoscar.isaac_disaster.client.hud;
+package net.luojiuoscar.isaac_disaster.client.gui;
 
+import net.luojiuoscar.isaac_disaster.client.gui.charge_bar.ChargeRingAnimation;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 

@@ -1,4 +1,4 @@
-package net.luojiuoscar.isaac_disaster.client.hud;
+package net.luojiuoscar.isaac_disaster.client.gui.hud;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
