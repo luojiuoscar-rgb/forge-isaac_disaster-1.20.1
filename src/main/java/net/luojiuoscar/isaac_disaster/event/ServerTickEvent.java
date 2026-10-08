@@ -17,6 +17,7 @@ import net.luojiuoscar.isaac_disaster.item.item.ActiveItem;
 import net.luojiuoscar.isaac_disaster.item.pickup.special.IsaacHead;
 import net.luojiuoscar.isaac_disaster.networking.ModMessages;
 import net.luojiuoscar.isaac_disaster.networking.ChargeBarSync;
+import net.luojiuoscar.isaac_disaster.networking.AttributeIndicatorSync;
 import net.luojiuoscar.isaac_disaster.registries.charge_bar.ModChargeBars;
 import net.luojiuoscar.isaac_disaster.networking.packet.RefreshScaleS2CPacket;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.data.AbilityEffectTokenBucket;
@@ -82,6 +83,7 @@ public class ServerTickEvent {
         IsaacHeadAttack(player);
         recursiveModuleTick(player);
         refreshScaleIfChanged(player);
+        AttributeIndicatorSync.tick(player);
 
         if (player.tickCount % 3 == 0) {
             updateClientCharge(player);

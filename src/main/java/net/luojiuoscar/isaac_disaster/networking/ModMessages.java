@@ -181,6 +181,10 @@ public class ModMessages {
                 .decoder(LaserBeamBatchS2CPacket::new).encoder(LaserBeamBatchS2CPacket::toBytes)
                 .consumerNetworkThread(LaserBeamBatchS2CPacket::handle).add();
 
+        net.messageBuilder(AttributeIndicatorSyncS2CPacket.class, id(), NetworkDirection.PLAY_TO_CLIENT)
+                .decoder(AttributeIndicatorSyncS2CPacket::new).encoder(AttributeIndicatorSyncS2CPacket::toBytes)
+                .consumerNetworkThread(AttributeIndicatorSyncS2CPacket::handle).add();
+
     }
 
     public static <MSG> void sendToServer(MSG message){

@@ -2,6 +2,7 @@ package net.luojiuoscar.isaac_disaster.event;
 
 import net.luojiuoscar.isaac_disaster.client.ClientDataManager;
 import net.luojiuoscar.isaac_disaster.client.ModKeyMappings;
+import net.luojiuoscar.isaac_disaster.client.gui.attribute_indicator.AttributeIndicatorHudOverlay;
 import net.luojiuoscar.isaac_disaster.client.flight.IsaacFlightClientController;
 import net.luojiuoscar.isaac_disaster.networking.ModMessages;
 import net.luojiuoscar.isaac_disaster.networking.packet.OpenIsaacItemScreenC2SPacket;
@@ -28,6 +29,7 @@ public class ClientForgeEvents {
     public static void onPlayerLoggedOut(ClientPlayerNetworkEvent.LoggingOut event) {
         // 此事件只针对本地客户端断线，即使 LocalPlayer 已被清除也需要重置缓存。
         ClientDataManager.getInstance().init();
+        AttributeIndicatorHudOverlay.clear();
         IsaacFlightClientController.resetRuntimeInput();
     }
 

@@ -3,6 +3,8 @@ package net.luojiuoscar.isaac_disaster.client.network;
 import java.util.List;
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.client.ClientDataManager;
+import net.luojiuoscar.isaac_disaster.client.gui.attribute_indicator.AttributeIndicatorHudOverlay;
+import net.luojiuoscar.isaac_disaster.system.attribute_indicator.AttributeSnapshot;
 import net.luojiuoscar.isaac_disaster.bullet.client.ClientBulletRuntime;
 import net.luojiuoscar.isaac_disaster.networking.packet.bullet.BulletCorrectionBatchS2CPacket;
 import net.luojiuoscar.isaac_disaster.networking.packet.bullet.BulletCorrectionS2CPacket;
@@ -31,6 +33,12 @@ public final class ClientPacketHandlers {
     public static void handleFlyUpdate(int units) {
         if (Minecraft.getInstance().player != null) {
             ClientDataManager.getInstance().setFlyPercentage(units);
+        }
+    }
+
+    public static void handleAttributeIndicatorUpdate(AttributeSnapshot snapshot, boolean baseline) {
+        if (Minecraft.getInstance().player != null) {
+            AttributeIndicatorHudOverlay.update(snapshot, baseline);
         }
     }
 
