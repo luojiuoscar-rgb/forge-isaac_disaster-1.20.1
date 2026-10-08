@@ -2,7 +2,6 @@ package net.luojiuoscar.isaac_disaster.client;
 
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.manager.PillEffectManager;
-import net.luojiuoscar.isaac_disaster.registries.charge_bar.ModChargeBars;
 import net.minecraft.resources.ResourceLocation;
 
 import java.util.ArrayList;
@@ -104,10 +103,6 @@ public class ClientDataManager {
 
     public List<ResourceLocation> getReviveHudIcons() {
         return List.copyOf(reviveHudIcons);
-    }
-
-    public void setChargeProgress(float chargeProgress) {
-        updateChargeBar(ModChargeBars.ATTACK_CHARGE.getId(), chargeProgress > 0, chargeProgress);
     }
 
     public void updateChargeBar(ResourceLocation id, boolean visible, float progress) {

@@ -34,7 +34,7 @@ public class SacredHeart extends PassiveAbility {
     public void handleObtain(ServerPlayer player, @Nullable ItemStack stack) {
         StatManager.DAMAGE.apply(player, 1);
         StatManager.addMultiplier(player, Multipliers.DAMAGE, 1);
-        StatManager.BULLET_SPEED.apply(player, 1);
+        StatManager.BULLET_SPEED.apply(player, -1);
         StatManager.RANGE.apply(player, 1.5);
         StatManager.TEARS.apply(player, -0.6);
         StatManager.addHoming(player, 1);
@@ -49,7 +49,7 @@ public class SacredHeart extends PassiveAbility {
     public void handleRemove(ServerPlayer player, @Nullable ItemStack stack) {
         StatManager.DAMAGE.apply(player, -1);
         StatManager.removeMultiplier(player, Multipliers.DAMAGE.id(), 1);
-        StatManager.BULLET_SPEED.apply(player, -1);
+        StatManager.BULLET_SPEED.apply(player, 1);
         StatManager.RANGE.apply(player, -1.5);
         StatManager.TEARS.apply(player, 0.6);
         StatManager.addHoming(player, -1);
@@ -66,7 +66,7 @@ public class SacredHeart extends PassiveAbility {
                 StatManager.MAX_HEALTH.description(1),
                 StatManager.DAMAGE.description(1),
                 Component.translatable("item.isaac_disaster.action.damage_multiplier", "+130"),
-                StatManager.BULLET_SPEED.description(1),
+                StatManager.BULLET_SPEED.description(-1),
                 StatManager.RANGE.description(1.5),
                 StatManager.TEARS.description(-0.6),
                 StatManager.BLOCK_BREAKING.description(1),

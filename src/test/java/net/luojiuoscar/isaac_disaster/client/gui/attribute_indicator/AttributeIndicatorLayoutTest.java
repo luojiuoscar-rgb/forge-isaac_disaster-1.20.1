@@ -6,6 +6,43 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class AttributeIndicatorLayoutTest {
     @Test
+    void defaultPlacementPreservesColumnsAndIntegerCenteredRows() {
+        var placement = AttributeIndicatorLayout.place(320, 241, 36, 6, 0, 1.0);
+        assertEquals(6, placement.left());
+        assertEquals(60, placement.top());
+        assertEquals(120, placement.height());
+        assertEquals(64, placement.width());
+    }
+
+    @Test
+    void marginsOffsetsAndScaleUseGuiCoordinates() {
+        var down = AttributeIndicatorLayout.place(400, 300, 32, 18, 25, 1.5);
+        assertEquals(18, down.left());
+        assertEquals(85, down.top());
+        assertEquals(90, down.width());
+        assertEquals(180, down.height());
+        var up = AttributeIndicatorLayout.place(400, 300, 32, 18, -25, 0.5);
+        assertEquals(95, up.top());
+        assertEquals(60, up.height());
+    }
+
+    @Test
+    void clampsUsingActualTextWidthAndScaledHeight() {
+        var bottomRight = AttributeIndicatorLayout.place(320, 240, 80, 4096, 4096, 1.5);
+        assertEquals(158, bottomRight.left());
+        assertEquals(60, bottomRight.top());
+        var top = AttributeIndicatorLayout.place(320, 240, 80, 6, -4096, 1.5);
+        assertEquals(0, top.top());
+        var oversized = AttributeIndicatorLayout.place(150, 100, 80, 6, 4096, 3.0);
+        assertEquals(0, oversized.left());
+        assertEquals(0, oversized.top());
+        assertEquals(3.0, oversized.scale());
+        var onlyTooTall = AttributeIndicatorLayout.place(320, 100, 20, 14, 30, 1.0);
+        assertEquals(14, onlyTooTall.left());
+        assertEquals(0, onlyTooTall.top());
+    }
+
+    @Test
     void sixRowsAreCenteredOnScaledGuiHeightWithFixedColumns() {
         assertEquals(120, AttributeIndicatorLayout.HEIGHT);
         assertEquals(6, AttributeIndicatorLayout.ARROW_X);

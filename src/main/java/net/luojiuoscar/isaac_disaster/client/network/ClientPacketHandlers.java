@@ -42,12 +42,6 @@ public final class ClientPacketHandlers {
         }
     }
 
-    public static void handleChargeUpdate(float progress) {
-        if (Minecraft.getInstance().player != null) {
-            ClientDataManager.getInstance().setChargeProgress(progress);
-        }
-    }
-
     public static void openIsaacItemScreen(
         List<ItemStack> passiveItems, List<ItemStack> trinketItems) {
         Minecraft minecraft = Minecraft.getInstance();

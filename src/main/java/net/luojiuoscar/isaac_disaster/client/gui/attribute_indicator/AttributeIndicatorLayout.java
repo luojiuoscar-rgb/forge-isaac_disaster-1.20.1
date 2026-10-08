@@ -20,4 +20,23 @@ public final class AttributeIndicatorLayout {
     public static int rowY(int screenHeight, int row) {
         return top(screenHeight) + row * ROW_HEIGHT;
     }
+
+    /** Bounds include the arrow reserve and the widest currently displayed value. */
+    public static Placement place(int screenWidth, int screenHeight, int textWidth,
+                                  int leftMargin, int verticalOffset, double scale) {
+        double width = (VALUE_X - ARROW_X + textWidth) * scale;
+        double height = HEIGHT * scale;
+        double left = width > screenWidth ? 0 : clamp(leftMargin, 0, screenWidth - width);
+        // Keep the existing integer-centered default origin on odd GUI heights.
+        double centeredTop = Math.floor((screenHeight - height) / 2.0);
+        double top = height > screenHeight ? 0 : clamp(centeredTop + verticalOffset, 0, screenHeight - height);
+        return new Placement(left, top, width, height, scale);
+    }
+
+    private static double clamp(double value, double min, double max) {
+        return Math.max(min, Math.min(max, value));
+    }
+
+    public record Placement(double left, double top, double width, double height, double scale) {
+    }
 }

@@ -2,7 +2,6 @@ package net.luojiuoscar.isaac_disaster.networking.packet;
 
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.client.network.ClientPacketHandlers;
-import net.luojiuoscar.isaac_disaster.registries.charge_bar.ModChargeBars;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
@@ -15,10 +14,6 @@ public class ChargeBarUpdateS2CPacket {
     private final ResourceLocation id;
     private final boolean visible;
     private final float progress;
-
-    public ChargeBarUpdateS2CPacket(float progress){
-        this(ModChargeBars.ATTACK_CHARGE.getId(), progress > 0f, progress);
-    }
 
     public ChargeBarUpdateS2CPacket(ResourceLocation id, boolean visible, float progress) {
         this.id = id;

@@ -6,6 +6,7 @@ import net.luojiuoscar.isaac_disaster.block.ModBlockEntities;
 import net.luojiuoscar.isaac_disaster.block.ModBlocks;
 import net.luojiuoscar.isaac_disaster.bullet.server.BulletRuntime;
 import net.luojiuoscar.isaac_disaster.client.config.IsaacConfigScreenRegistration;
+import net.luojiuoscar.isaac_disaster.config.IsaacClientConfig;
 import net.luojiuoscar.isaac_disaster.commands.gamerule.ModGameRules;
 import net.luojiuoscar.isaac_disaster.effect.ModEffects;
 import net.luojiuoscar.isaac_disaster.entity.ModEntities;
@@ -79,6 +80,7 @@ public class IsaacDisaster
         modEventBus.addListener(this::addCreative);
         // Register our mod's ForgeConfigSpec so that Forge can create and load the config file for us
         context.registerConfig(ModConfig.Type.COMMON, Config.SPEC);
+        context.registerConfig(ModConfig.Type.CLIENT, IsaacClientConfig.SPEC);
         DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> IsaacConfigScreenRegistration.register(context));
     }
 

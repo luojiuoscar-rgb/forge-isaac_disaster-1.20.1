@@ -2,6 +2,7 @@ package net.luojiuoscar.isaac_disaster.client.config;
 
 import net.luojiuoscar.isaac_disaster.Config;
 import net.luojiuoscar.isaac_disaster.config.IsaacConfigDefaults;
+import net.luojiuoscar.isaac_disaster.config.IsaacClientConfig;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -32,6 +33,17 @@ public final class IsaacConfigCatalog {
 
     private static List<IsaacConfigEntry<?>> createEntries() {
         List<IsaacConfigEntry<?>> entries = new ArrayList<>();
+
+        entries.addAll(List.of(
+                booleanEntry("attribute_indicator_enabled", IsaacConfigCategory.ATTRIBUTE_INDICATOR,
+                        IsaacClientConfig.ATTRIBUTE_INDICATOR_ENABLED, true),
+                intEntry("attribute_indicator_left_margin", IsaacConfigCategory.ATTRIBUTE_INDICATOR,
+                        IsaacClientConfig.ATTRIBUTE_INDICATOR_LEFT_MARGIN, 6),
+                intEntry("attribute_indicator_vertical_offset", IsaacConfigCategory.ATTRIBUTE_INDICATOR,
+                        IsaacClientConfig.ATTRIBUTE_INDICATOR_VERTICAL_OFFSET, 0),
+                new IsaacConfigEntry<>("attribute_indicator_scale", IsaacConfigCategory.ATTRIBUTE_INDICATOR,
+                        IsaacClientConfig.ATTRIBUTE_INDICATOR_SCALE, IsaacConfigEntryType.DOUBLE, 1.0, false)
+        ));
 
         entries.addAll(Arrays.asList(
                 doubleEntry("default_max_health", IsaacConfigCategory.PLAYER_STATS, Config.DEFAULT_MAX_HEALTH,

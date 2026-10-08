@@ -1,7 +1,7 @@
 package net.luojiuoscar.isaac_disaster.client.screen.config;
 
-import net.luojiuoscar.isaac_disaster.client.config.IsaacConfigCatalog;
-import net.luojiuoscar.isaac_disaster.client.config.IsaacConfigCategory;
+import net.luojiuoscar.isaac_disaster.client.config.IsaacConfigDomain;
+import net.luojiuoscar.isaac_disaster.client.config.IsaacConfigScreenRegistration;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
@@ -22,6 +22,10 @@ public class IsaacConfigRootScreen extends Screen {
     @Override
     protected void init() {
         clearWidgets();
+        if (IsaacConfigScreenRegistration.isWorldLoaded(minecraft)) {
+            minecraft.setScreen(new IsaacConfigDomainScreen(parent, IsaacConfigDomain.CLIENT));
+            return;
+        }
 
         int buttonWidth = 220;
         int buttonHeight = 20;
@@ -29,12 +33,10 @@ public class IsaacConfigRootScreen extends Screen {
         int centerX = this.width / 2;
 
         int index = 0;
-        for (IsaacConfigCategory category : IsaacConfigCategory.values()) {
-            if (IsaacConfigCatalog.entriesFor(category).isEmpty()) continue;
-
+        for (IsaacConfigDomain domain : IsaacConfigDomain.values()) {
             int y = startY + index * 26;
-            addRenderableWidget(Button.builder(category.title(),
-                            button -> minecraft.setScreen(new IsaacConfigCategoryScreen(this, category)))
+            addRenderableWidget(Button.builder(domain.title(),
+                            button -> minecraft.setScreen(new IsaacConfigDomainScreen(this, domain)))
                     .bounds(centerX - buttonWidth / 2, y, buttonWidth, buttonHeight)
                     .build());
             index++;
@@ -51,9 +53,15 @@ public class IsaacConfigRootScreen extends Screen {
         renderBackground(guiGraphics);
         guiGraphics.drawCenteredString(this.font, this.title, this.width / 2, 20, 0xFFFFFF);
         guiGraphics.drawCenteredString(this.font,
-                Component.translatable("config.isaac_disaster.subtitle"),
+                Component.translatable("config.isaac_disaster.domain_selection"),
                 this.width / 2, 34, 0xA0A0A0);
         super.render(guiGraphics, mouseX, mouseY, partialTick);
+    }
+
+    @Override
+    public void tick() {
+        super.tick();
+        if (IsaacConfigScreenRegistration.isWorldLoaded(minecraft)) init();
     }
 
     @Override

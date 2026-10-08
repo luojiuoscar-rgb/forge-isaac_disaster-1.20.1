@@ -1,7 +1,7 @@
 package net.luojiuoscar.isaac_disaster.client.config;
 
 import net.luojiuoscar.isaac_disaster.client.screen.config.IsaacConfigRootScreen;
-import net.luojiuoscar.isaac_disaster.client.screen.config.IsaacConfigUnavailableScreen;
+import net.luojiuoscar.isaac_disaster.client.screen.config.IsaacConfigDomainScreen;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraftforge.client.ConfigScreenHandler;
@@ -25,12 +25,17 @@ public final class IsaacConfigScreenRegistration {
     }
 
     /**
-     * Opens the editable config screen only before a world is loaded.
+     * Opens local client categories directly while connected to a world.
      */
     private static Screen createConfigScreen(Minecraft minecraft, Screen parent) {
-        if (minecraft.level != null || minecraft.player != null) {
-            return new IsaacConfigUnavailableScreen(parent);
+        if (isWorldLoaded(minecraft)) {
+            return new IsaacConfigDomainScreen(parent, IsaacConfigDomain.CLIENT);
         }
         return new IsaacConfigRootScreen(parent);
+    }
+
+    public static boolean isWorldLoaded(Minecraft minecraft) {
+        return minecraft.level != null || minecraft.player != null || minecraft.getConnection() != null
+                || minecraft.getSingleplayerServer() != null;
     }
 }

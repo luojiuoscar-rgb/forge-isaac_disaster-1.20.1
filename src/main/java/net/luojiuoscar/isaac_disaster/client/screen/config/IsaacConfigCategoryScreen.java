@@ -1,10 +1,12 @@
 package net.luojiuoscar.isaac_disaster.client.screen.config;
 
-import net.luojiuoscar.isaac_disaster.Config;
+import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.client.config.IsaacConfigCatalog;
 import net.luojiuoscar.isaac_disaster.client.config.IsaacConfigCategory;
 import net.luojiuoscar.isaac_disaster.client.config.IsaacConfigEntry;
 import net.luojiuoscar.isaac_disaster.client.config.IsaacConfigEntryType;
+import net.luojiuoscar.isaac_disaster.client.config.IsaacConfigSave;
+import net.luojiuoscar.isaac_disaster.client.config.IsaacConfigScreenRegistration;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
@@ -24,7 +26,7 @@ import java.util.Map;
  * Paged editor screen for one Isaac Disaster config category.
  */
 public class IsaacConfigCategoryScreen extends Screen {
-    private static final int ENTRIES_PER_PAGE = 7;
+    private static final int MAX_ENTRIES_PER_PAGE = 7;
 
     private final Screen parent;
     private final IsaacConfigCategory category;
@@ -33,6 +35,7 @@ public class IsaacConfigCategoryScreen extends Screen {
     private final Map<IsaacConfigEntry<?>, String> pendingValues = new LinkedHashMap<>();
 
     private EditBox searchBox;
+    private Button resetPageButton;
     private String searchQuery = "";
     private int searchCursorPosition;
     private boolean searchRefreshPending;
@@ -53,13 +56,16 @@ public class IsaacConfigCategoryScreen extends Screen {
     protected void init() {
         clearWidgets();
         rowStates.clear();
+        if (!category.domain().isAccessible(IsaacConfigScreenRegistration.isWorldLoaded(minecraft))) {
+            onClose();
+            return;
+        }
 
         List<IsaacConfigEntry<?>> visibleEntries = visibleEntries();
         int maxPage = maxPage();
         if (page > maxPage) page = maxPage;
 
-        int left = Math.max(24, this.width / 2 - 180);
-        int valueX = this.width / 2 + 30;
+        int valueX = valueX();
         int rowY = 78;
         int rowHeight = 28;
 
@@ -70,8 +76,8 @@ public class IsaacConfigCategoryScreen extends Screen {
         searchBox.setResponder(this::onSearchChanged);
         addRenderableWidget(searchBox);
 
-        int start = page * ENTRIES_PER_PAGE;
-        int end = Math.min(visibleEntries.size(), start + ENTRIES_PER_PAGE);
+        int start = page * entriesPerPage();
+        int end = Math.min(visibleEntries.size(), start + entriesPerPage());
         for (int i = start; i < end; i++) {
             IsaacConfigEntry<?> entry = visibleEntries.get(i);
             int y = rowY + (i - start) * rowHeight;
@@ -99,10 +105,11 @@ public class IsaacConfigCategoryScreen extends Screen {
                 .bounds(this.width / 2 - 154, this.height - 28, 98, 20)
                 .build());
 
-        addRenderableWidget(Button.builder(Component.translatable("config.isaac_disaster.reset_page"),
+        resetPageButton = addRenderableWidget(Button.builder(Component.translatable("config.isaac_disaster.reset_page"),
                         button -> resetVisibleEntries())
                 .bounds(this.width / 2 - 49, this.height - 28, 98, 20)
-                .build()).active = hasNonDefaultVisibleEntry();
+                .build());
+        resetPageButton.active = hasNonDefaultVisibleEntry();
 
         addRenderableWidget(Button.builder(Component.translatable("gui.back"),
                         button -> minecraft.setScreen(parent))
@@ -136,6 +143,7 @@ public class IsaacConfigCategoryScreen extends Screen {
         box.setResponder(value -> {
             pendingValues.put(entry, value);
             resetButton.active = !entry.isDefaultText(value);
+            updateResetPageState();
         });
         resetButton.active = !entry.isDefaultText(pendingValue(entry));
         addRenderableWidget(resetButton);
@@ -161,6 +169,7 @@ public class IsaacConfigCategoryScreen extends Screen {
                             pendingValues.put(entry, String.valueOf(newValue));
                             toggleButton.setMessage(booleanLabel(newValue));
                             resetButton.active = !entry.isDefaultText(pendingValue(entry));
+                            updateResetPageState();
                         })
                 .bounds(valueX, y, 132, 20)
                 .build();
@@ -187,44 +196,48 @@ public class IsaacConfigCategoryScreen extends Screen {
                 .anyMatch(state -> !state.entry().isDefaultText(pendingValue(state.entry())));
     }
 
+    private void updateResetPageState() {
+        if (resetPageButton != null) resetPageButton.active = hasNonDefaultVisibleEntry();
+    }
+
     /**
      * Validates all pending values, writes them to the Forge config spec, and saves the file.
      */
     private void save() {
+        if (!category.domain().isAccessible(IsaacConfigScreenRegistration.isWorldLoaded(minecraft))) {
+            onClose();
+            return;
+        }
         for (IsaacConfigEntry<?> entry : entries) {
             if (!entry.isValidText(pendingValue(entry))) {
                 clearSearch();
-                page = entries.indexOf(entry) / ENTRIES_PER_PAGE;
+                page = entries.indexOf(entry) / entriesPerPage();
                 status = Component.translatable("config.isaac_disaster.status.invalid", entry.title());
                 refreshWidgets();
                 return;
             }
         }
 
-        Map<IsaacConfigEntry<?>, String> previousValues = new LinkedHashMap<>();
-        for (IsaacConfigEntry<?> entry : entries) {
-            previousValues.put(entry, entry.currentAsString());
+        try {
+            IsaacConfigSave.save(category, pendingValues, IsaacConfigScreenRegistration.isWorldLoaded(minecraft));
+            status = Component.translatable("config.isaac_disaster.status.saved");
+        } catch (RuntimeException exception) {
+            IsaacDisaster.LOGGER.error("Failed to save {} config category", category.id(), exception);
+            status = Component.translatable("config.isaac_disaster.status.save_failed");
         }
-
-        for (IsaacConfigEntry<?> entry : entries) {
-            try {
-                entry.setFromString(pendingValue(entry));
-            } catch (RuntimeException exception) {
-                restorePreviousValues(previousValues);
-                clearSearch();
-                page = entries.indexOf(entry) / ENTRIES_PER_PAGE;
-                status = Component.translatable("config.isaac_disaster.status.invalid_value", entry.title());
-                refreshWidgets();
-                return;
-            }
-        }
-
-        Config.save();
-        status = Component.translatable("config.isaac_disaster.status.saved");
     }
 
     private int maxPage() {
-        return Math.max(0, (visibleEntries().size() - 1) / ENTRIES_PER_PAGE);
+        return Math.max(0, (visibleEntries().size() - 1) / entriesPerPage());
+    }
+
+    private int entriesPerPage() {
+        // Leave space below the last 20-pixel editor for the status and footer buttons.
+        return Math.max(1, Math.min(MAX_ENTRIES_PER_PAGE, (this.height - 146) / 28));
+    }
+
+    private int valueX() {
+        return Math.min(this.width / 2 + 30, this.width - 204);
     }
 
     private void refreshWidgets() {
@@ -269,15 +282,6 @@ public class IsaacConfigCategoryScreen extends Screen {
         return Component.translatable("config.isaac_disaster.boolean." + value);
     }
 
-    /**
-     * Restores in-memory config values after a failed save while keeping the user's pending input visible.
-     */
-    private void restorePreviousValues(Map<IsaacConfigEntry<?>, String> previousValues) {
-        for (Map.Entry<IsaacConfigEntry<?>, String> previousValue : previousValues.entrySet()) {
-            previousValue.getKey().setFromString(previousValue.getValue());
-        }
-    }
-
     @Override
     public void render(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
         renderBackground(guiGraphics);
@@ -287,14 +291,16 @@ public class IsaacConfigCategoryScreen extends Screen {
                 this.width / 2, 60, 0xA0A0A0);
 
         List<IsaacConfigEntry<?>> visibleEntries = visibleEntries();
-        int start = page * ENTRIES_PER_PAGE;
-        int end = Math.min(visibleEntries.size(), start + ENTRIES_PER_PAGE);
+        int start = page * entriesPerPage();
+        int end = Math.min(visibleEntries.size(), start + entriesPerPage());
         int left = Math.max(24, this.width / 2 - 180);
         int rowY = 84;
         for (int i = start; i < end; i++) {
             IsaacConfigEntry<?> entry = visibleEntries.get(i);
             int y = rowY + (i - start) * 28;
-            guiGraphics.drawString(this.font, entry.title(), left, y, 0xFFFFFF, false);
+            String label = this.font.plainSubstrByWidth(entry.title().getString(),
+                    Math.max(0, valueX() - left - 8));
+            guiGraphics.drawString(this.font, label, left, y, 0xFFFFFF, false);
         }
 
         if (visibleEntries.isEmpty()) {
@@ -309,6 +315,10 @@ public class IsaacConfigCategoryScreen extends Screen {
     @Override
     public void tick() {
         super.tick();
+        if (!category.domain().isAccessible(IsaacConfigScreenRegistration.isWorldLoaded(minecraft))) {
+            onClose();
+            return;
+        }
         if (!searchRefreshPending) return;
 
         searchRefreshPending = false;

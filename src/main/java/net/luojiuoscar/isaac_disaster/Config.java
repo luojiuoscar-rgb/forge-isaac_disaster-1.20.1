@@ -448,17 +448,20 @@ public class Config
         SPEC.save();
     }
 
+    public static ForgeConfigSpec spec() {
+        return SPEC;
+    }
+
     @SubscribeEvent
     static void onLoad(final ModConfigEvent event)
     {
-        if (event.getConfig().getSpec() == SPEC) {
-            var server = ServerLifecycleHooks.getCurrentServer();
-            if (server != null) server.execute(() -> server.getPlayerList().getPlayers()
-                    .forEach(player -> {
-                        DefaultAttributeManager.apply(player);
-                        StatManager.refreshMultipliers(player);
-                    }));
-        }
+        if (event.getConfig().getSpec() != SPEC) return;
+        var server = ServerLifecycleHooks.getCurrentServer();
+        if (server != null) server.execute(() -> server.getPlayerList().getPlayers()
+                .forEach(player -> {
+                    DefaultAttributeManager.apply(player);
+                    StatManager.refreshMultipliers(player);
+                }));
         logDirtBlock = LOG_DIRT_BLOCK.get();
         magicNumber = MAGIC_NUMBER.get();
         magicNumberIntroduction = MAGIC_NUMBER_INTRODUCTION.get();

@@ -57,13 +57,24 @@ public record IsaacConfigEntry<T>(
      */
     @SuppressWarnings("unchecked")
     public void setFromString(String text) {
+        value.set((T) parseValidated(text));
+    }
+
+    private Object parseValidated(String text) {
         Object parsed = switch (type) {
             case BOOLEAN -> parseBooleanStrict(text);
             case INTEGER -> Integer.parseInt(text.trim());
             case DOUBLE -> Double.parseDouble(text.trim());
             case STRING -> text;
         };
-        value.set((T) parsed);
+        if (parsed instanceof Double number && !Double.isFinite(number)) {
+            throw new IllegalArgumentException("Expected a finite number");
+        }
+        ForgeConfigSpec.ValueSpec valueSpec = category.domain().spec().getSpec().get(value.getPath());
+        if (valueSpec == null || !valueSpec.test(parsed)) {
+            throw new IllegalArgumentException("Value is outside its config spec");
+        }
+        return parsed;
     }
 
     /**
@@ -71,14 +82,7 @@ public record IsaacConfigEntry<T>(
      */
     public boolean isValidText(String text) {
         try {
-            switch (type) {
-                case BOOLEAN -> parseBooleanStrict(text);
-                case INTEGER -> Integer.parseInt(text.trim());
-                case DOUBLE -> Double.parseDouble(text.trim());
-                case STRING -> {
-                    return true;
-                }
-            }
+            parseValidated(text);
             return true;
         } catch (RuntimeException ignored) {
             return false;
