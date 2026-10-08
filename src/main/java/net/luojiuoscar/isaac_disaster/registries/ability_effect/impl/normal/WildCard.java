@@ -21,7 +21,7 @@ public class WildCard implements IAbilityEffect {
         if (!(context.getEntity() instanceof ServerPlayer player)) return false;
 
         IForgeRegistry<IExecutableEffect> pillRegistry =
-                RegistryManager.ACTIVE.getRegistry(ModExecutableEffects.EXECUTABLE_EFFECT);
+                RegistryManager.ACTIVE.getRegistry(ModExecutableEffects.EXECUTABLE_EFFECT_KEY);
         IForgeRegistry<PickupAbility> pickupRegistry =
                 RegistryManager.ACTIVE.getRegistry(ModPickupAbilities.PICKUP_ABILITY_KEY);
         IForgeRegistry<ActiveAbility> activeRegistry =

@@ -31,48 +31,27 @@ public class ModRegistries {
     public static void register(IEventBus modEventBus) {
         IsaacDisaster.LOGGER.info("Initializing Registries...");
 
-        registerRegistry(ModChargeBars.CHARGE_BAR_REGISTRY,
-                ModChargeBars.CHARGE_BAR_KEY.location(), modEventBus);
-
-        registerRegistry(ModTrajectoryModules.TRAJECTORY_MODULE_REGISTRY, ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "trajectory_module"), modEventBus);
-
+        registerRegistry(ModChargeBars.CHARGE_BAR_REGISTRY, ModChargeBars.CHARGE_BAR_KEY.location(), modEventBus);
+        registerRegistry(ModTrajectoryModules.TRAJECTORY_MODULE_REGISTRY, ModTrajectoryModules.TRAJECTORY_MODULE_KEY.location(), modEventBus);
         registerRegistry(ModTrajectoryRules.TRAJECTORY_RULE_REGISTRY, ModTrajectoryRules.TRAJECTORY_RULE_KEY.location(), modEventBus);
-
-        registerRegistry(ModBulletColors.BULLET_COLOR_REGISTRY, ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "bullet_color"), modEventBus);
-
-        registerRegistry(ModBulletVisuals.BULLET_VISUAL_REGISTRY, ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "bullet_visual"), modEventBus);
-
-        registerRegistry(ModTriggerModules.TRIGGER_MODULE_REGISTRY, ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "trigger_module"), modEventBus);
-
-        registerRegistry(ModTriggerModuleRules.TRIGGER_MODULE_RULE_REGISTRY, ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "trigger_module_rule"), modEventBus);
-
-        registerRegistry(ModVisualLayers.VISUAL_LAYER_REGISTRY, ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "visual_layer"), modEventBus);
-
-        registerRegistry(ModRecursiveModules.RECURSIVE_MODULE_REGISTRY, ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "recursive_module"), modEventBus);
-
-        registerRegistry(ModReviveModules.REVIVE_MODULE_REGISTRY, ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "revive_module"), modEventBus);
-
-        registerRegistry(ModSplitModules.SPLIT_MODULE_REGISTRY, ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "split_module"), modEventBus);
-
-        registerRegistry(ModPassiveAbilities.PASSIVE_ABILITY_REGISTRY, ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "passive_ability"), modEventBus);
-
-        registerRegistry(ModActiveAbilities.ACTIVE_ABILITY_REGISTRY, ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "active_ability"), modEventBus);
-
-        registerRegistry(ModTrinketAbilities.TRINKET_ABILITY_REGISTRY, ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "trinket_ability"), modEventBus);
-
-        registerRegistry(ModSetAbilities.SET_ABILITY_REGISTRY, ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "set_ability"), modEventBus);
-
-        registerRegistry(ModPickupAbilities.PICKUP_ABILITY_REGISTRY, ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "pickup_ability"), modEventBus);
-
-        registerRegistry(ModAttackTypes.ATTACK_TYPE_REGISTER, ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "attack_type"), modEventBus);
-
-        registerRegistry(ModAttackPatterns.ATTACK_PATTERN_REGISTRY, ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "attack_pattern"), modEventBus);
-
-        registerRegistry(ModCombinationRules.ATTACK_COMBINATION_RULE_REGISTRY, ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "attack_combination_rule"), modEventBus);
-
-        registerRegistry(ModFamiliarEntities.FAMILIAR_ENTITY_REGISTRY, ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "familiar_entity"), modEventBus);
-
-        registerRegistry(ModExecutableEffects.EXECUTABLE_EFFECT_REGISTRY, ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "executable_effect"), modEventBus);
+        registerRegistry(ModBulletColors.BULLET_COLOR_REGISTRY, ModBulletColors.BULLET_COLOR_KEY.location(), modEventBus);
+        registerRegistry(ModBulletVisuals.BULLET_VISUAL_REGISTRY, ModBulletVisuals.BULLET_VISUAL_KEY.location(), modEventBus);
+        registerRegistry(ModTriggerModules.TRIGGER_MODULE_REGISTRY, ModTriggerModules.TRIGGER_MODULE_KEY.location(), modEventBus);
+        registerRegistry(ModTriggerModuleRules.TRIGGER_MODULE_RULE_REGISTRY, ModTriggerModuleRules.TRIGGER_MODULE_RULE_KEY.location(), modEventBus);
+        registerRegistry(ModVisualLayers.VISUAL_LAYER_REGISTRY, ModVisualLayers.VISUAL_LAYER_KEY.location(), modEventBus);
+        registerRegistry(ModRecursiveModules.RECURSIVE_MODULE_REGISTRY, ModRecursiveModules.RECURSIVE_MODULE_KEY.location(), modEventBus);
+        registerRegistry(ModReviveModules.REVIVE_MODULE_REGISTRY, ModRecursiveModules.RECURSIVE_MODULE_KEY.location(), modEventBus);
+        registerRegistry(ModSplitModules.SPLIT_MODULE_REGISTRY, ModSplitModules.SPLIT_MODULE_KEY.location(), modEventBus);
+        registerRegistry(ModPassiveAbilities.PASSIVE_ABILITY_REGISTRY, ModPassiveAbilities.PASSIVE_ABILITY_KEY.location(), modEventBus);
+        registerRegistry(ModActiveAbilities.ACTIVE_ABILITY_REGISTRY, ModActiveAbilities.ACTIVE_ABILITY_KEY.location(), modEventBus);
+        registerRegistry(ModTrinketAbilities.TRINKET_ABILITY_REGISTRY, ModTrinketAbilities.TRINKET_ABILITY_KEY.location(), modEventBus);
+        registerRegistry(ModSetAbilities.SET_ABILITY_REGISTRY, ModSetAbilities.SET_ABILITY_KEY.location(), modEventBus);
+        registerRegistry(ModPickupAbilities.PICKUP_ABILITY_REGISTRY, ModPickupAbilities.PICKUP_ABILITY_KEY.location(), modEventBus);
+        registerRegistry(ModAttackTypes.ATTACK_TYPE_REGISTER, ModAttackTypes.ATTACK_TYPE_KEY.location(), modEventBus);
+        registerRegistry(ModAttackPatterns.ATTACK_PATTERN_REGISTRY, ModAttackPatterns.ATTACK_PATTERN_KEY.location(), modEventBus);
+        registerRegistry(ModCombinationRules.ATTACK_COMBINATION_RULE_REGISTRY, ModCombinationRules.ATTACK_COMBINATION_RULE_KEY.location(), modEventBus);
+        registerRegistry(ModFamiliarEntities.FAMILIAR_ENTITY_REGISTRY, ModFamiliarEntities.FAMILIAR_ENTITY_KEY.location(), modEventBus);
+        registerRegistry(ModExecutableEffects.EXECUTABLE_EFFECT_REGISTRY, ModExecutableEffects.EXECUTABLE_EFFECT_KEY.location(), modEventBus);
     }
 
     private static <T> void registerRegistry(DeferredRegister<T> registry, ResourceLocation name,

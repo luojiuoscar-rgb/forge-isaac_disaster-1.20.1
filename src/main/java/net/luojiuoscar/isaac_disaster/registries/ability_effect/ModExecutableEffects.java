@@ -8,7 +8,6 @@ import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.item.ModItems;
 import net.luojiuoscar.isaac_disaster.manager.ModLootTables;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
-import net.luojiuoscar.isaac_disaster.manager.id.ItemId;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.general.*;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.bomb.*;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.normal.*;
@@ -31,11 +30,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ModExecutableEffects {
-    public static final ResourceKey<Registry<IExecutableEffect>> EXECUTABLE_EFFECT =
+    public static final ResourceKey<Registry<IExecutableEffect>> EXECUTABLE_EFFECT_KEY =
             ResourceKey.createRegistryKey(ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "executable_effect"));
 
     public static final DeferredRegister<IExecutableEffect> EXECUTABLE_EFFECT_REGISTRY =
-            DeferredRegister.create(EXECUTABLE_EFFECT, IsaacDisaster.MOD_ID);
+            DeferredRegister.create(EXECUTABLE_EFFECT_KEY, IsaacDisaster.MOD_ID);
 
     //<editor-fold desc="ability effects">
     public static final RegistryObject<IExecutableEffect> HEAL =

@@ -40,7 +40,7 @@ public class PillEffectManager {
     /** 获取全部 PillEffect 注册对象 */
     private List<RegistryObject<IExecutableEffect>> getAllPillEffects() {
         IForgeRegistry<IExecutableEffect> reg =
-                RegistryManager.ACTIVE.getRegistry(ModExecutableEffects.EXECUTABLE_EFFECT);
+                RegistryManager.ACTIVE.getRegistry(ModExecutableEffects.EXECUTABLE_EFFECT_KEY);
 
         // 筛选出 PillEffect 类型
         var effects = reg.getEntries().stream()

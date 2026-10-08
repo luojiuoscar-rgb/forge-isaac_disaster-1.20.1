@@ -49,7 +49,7 @@ public class EchoChamber extends PassiveAbility {
     public static void onTriggered(ServerPlayer player){
 
         IForgeRegistry<IExecutableEffect> pillRegistry =
-                RegistryManager.ACTIVE.getRegistry(ModExecutableEffects.EXECUTABLE_EFFECT);
+                RegistryManager.ACTIVE.getRegistry(ModExecutableEffects.EXECUTABLE_EFFECT_KEY);
         IForgeRegistry<PickupAbility> pickupRegistry =
                 RegistryManager.ACTIVE.getRegistry(ModPickupAbilities.PICKUP_ABILITY_KEY);
 
