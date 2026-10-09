@@ -14,6 +14,8 @@ import net.luojiuoscar.isaac_disaster.networking.packet.bullet.BulletSpawnBatchS
 import net.luojiuoscar.isaac_disaster.networking.packet.bullet.BulletSpawnS2CPacket;
 import net.luojiuoscar.isaac_disaster.networking.packet.bullet.BulletTrackingBatchS2CPacket;
 import net.luojiuoscar.isaac_disaster.networking.packet.laser.LaserBeamBatchS2CPacket;
+import net.luojiuoscar.isaac_disaster.networking.packet.laser.RevelationBeamS2CPacket;
+import net.luojiuoscar.isaac_disaster.client.laser.RevelationBeamRenderer;
 import net.luojiuoscar.isaac_disaster.screen.IsaacItemScreen;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
@@ -118,6 +120,10 @@ public final class ClientPacketHandlers {
 
     public static void handleBulletTracking(BulletTrackingBatchS2CPacket packet) {
         ClientBulletRuntime.INSTANCE.applyTracking(packet);
+    }
+
+    public static void handleRevelationBeam(RevelationBeamS2CPacket packet) {
+        RevelationBeamRenderer.update(packet);
     }
 
     public static void handleReviveEvent(

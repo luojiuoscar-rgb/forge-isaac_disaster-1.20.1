@@ -8,6 +8,8 @@ import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.helper.ScheduledFuncHelper;
 import net.luojiuoscar.isaac_disaster.item.ModPassiveItems;
 import net.luojiuoscar.isaac_disaster.networking.ChargeBarSync;
+import net.luojiuoscar.isaac_disaster.networking.ModMessages;
+import net.luojiuoscar.isaac_disaster.networking.packet.laser.RevelationBeamS2CPacket;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackContext;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackExecutor;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackOrigin;
@@ -27,6 +29,7 @@ import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import java.util.UUID;
 
 public class RevelationAttack extends LaserAttack {
     private static final int CHARGE_TICKS = 47;
@@ -46,6 +49,7 @@ public class RevelationAttack extends LaserAttack {
     }
 
     private static final class Beam {
+        private final UUID visualId = UUID.randomUUID();
         private final ServerPlayer player;
         private final ServerLevel level;
         private final AttackContext snapshot;
@@ -53,6 +57,7 @@ public class RevelationAttack extends LaserAttack {
         private Vec3 position;
         private Vec3 direction;
         private boolean followingPlayer = true;
+        private int pulses;
 
         private Beam(ServerPlayer player, AttackContext snapshot, boolean controllable) {
             this.player = player;
@@ -70,7 +75,7 @@ public class RevelationAttack extends LaserAttack {
                 followingPlayer = false;
                 return;
             }
-            position = spawnPosition(player);
+            position = getBeamOrigin(player, 1.0F);
             if (controllable) {
                 direction = GeometryHelper.mainAxisFromRotation(player.getXRot(), player.getYRot());
             }
@@ -157,7 +162,29 @@ public class RevelationAttack extends LaserAttack {
                             .position(beam.position).mainAxis(beam.direction).build();
                     shot.setBulletScale(beam.snapshot.getBulletScale(), true);
                     performBeamPulse(beam.level, shot);
+                    syncBeam(beam);
+                    beam.pulses++;
                 });
+    }
+
+    private void syncBeam(Beam beam) {
+        Vec3 end = beam.position.add(beam.direction.normalize().scale(beam.snapshot.getBulletRange()));
+        RevelationBeamS2CPacket packet = new RevelationBeamS2CPacket(
+                beam.visualId, beam.player.getUUID(), beam.player.getId(), beam.level.dimension().location(),
+                beam.position, beam.direction, (float) beam.snapshot.getBulletRange(),
+                (float) getWidth(beam.snapshot), beam.pulses + 1 == HIT_COUNT,
+                beam.followingPlayer, beam.controllable);
+        Vec3 delta = end.subtract(beam.position);
+        double lengthSqr = delta.lengthSqr();
+        for (ServerPlayer viewer : beam.level.players()) {
+            double fraction = lengthSqr == 0 ? 0 : Math.max(0, Math.min(1,
+                    viewer.position().subtract(beam.position).dot(delta) / lengthSqr));
+            // Close visuals for previous viewers even if they have since left the viewing radius.
+            if (packet.finished()
+                    || viewer.position().distanceToSqr(beam.position.add(delta.scale(fraction))) <= 32 * 32) {
+                ModMessages.sentToPlayer(packet, viewer);
+            }
+        }
     }
 
     @Override
@@ -165,7 +192,7 @@ public class RevelationAttack extends LaserAttack {
         // A fresh base context deliberately carries no player projectile modules or visuals.
         return AttackContext.builder(player, shooter).attackType(this)
                 .color(ModBulletColors.REVELATION.getId())
-                .position(spawnPosition(player))
+                .position(getBeamOrigin(player, 1.0F))
                 .mainAxis(GeometryHelper.mainAxisFromRotation(player.getXRot(), player.getYRot()))
                 .range(getRange(player)).build();
     }
@@ -180,8 +207,9 @@ public class RevelationAttack extends LaserAttack {
         return AttackContext.MAX_RANGE;
     }
 
-    private static Vec3 spawnPosition(ServerPlayer player) {
-        return player.getEyePosition().add(0, player.getBbHeight() * -0.15, 0);
+    /** Shared collision and render origin, kept below the eyes for the entity's current pose. */
+    public static Vec3 getBeamOrigin(Entity entity, float partialTick) {
+        return entity.getEyePosition(partialTick).add(0, entity.getBbHeight() * -0.45D, 0);
     }
 
     private void performBeamPulse(ServerLevel level, AttackContext context) {
@@ -206,6 +234,17 @@ public class RevelationAttack extends LaserAttack {
     @Override
     protected double getWidth(AttackContext context) {
         return laserWidth(context.getBulletScale(), 1.0D);
+    }
+
+    @Override
+    protected boolean usesCollisionBatch() {
+        // Independent single-beam pulses need one world query, not a shared spatial index.
+        return false;
+    }
+
+    @Override
+    protected boolean usesParticleVisuals() {
+        return false;
     }
 
     @Override

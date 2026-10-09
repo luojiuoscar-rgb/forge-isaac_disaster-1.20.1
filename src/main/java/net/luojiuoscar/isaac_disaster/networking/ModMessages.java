@@ -4,6 +4,7 @@ import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.networking.packet.*;
 import net.luojiuoscar.isaac_disaster.networking.packet.bullet.*;
 import net.luojiuoscar.isaac_disaster.networking.packet.laser.LaserBeamBatchS2CPacket;
+import net.luojiuoscar.isaac_disaster.networking.packet.laser.RevelationBeamS2CPacket;
 import net.luojiuoscar.isaac_disaster.networking.packet.ClearPassiveItemC2SPacket;
 import net.luojiuoscar.isaac_disaster.networking.packet.ChargeBarUpdateS2CPacket;
 import net.luojiuoscar.isaac_disaster.networking.packet.EntityVisualStateS2CPacket;
@@ -184,6 +185,10 @@ public class ModMessages {
         net.messageBuilder(AttributeIndicatorSyncS2CPacket.class, id(), NetworkDirection.PLAY_TO_CLIENT)
                 .decoder(AttributeIndicatorSyncS2CPacket::new).encoder(AttributeIndicatorSyncS2CPacket::toBytes)
                 .consumerNetworkThread(AttributeIndicatorSyncS2CPacket::handle).add();
+
+        net.messageBuilder(RevelationBeamS2CPacket.class, id(), NetworkDirection.PLAY_TO_CLIENT)
+                .decoder(RevelationBeamS2CPacket::new).encoder(RevelationBeamS2CPacket::toBytes)
+                .consumerNetworkThread(RevelationBeamS2CPacket::handle).add();
 
     }
 

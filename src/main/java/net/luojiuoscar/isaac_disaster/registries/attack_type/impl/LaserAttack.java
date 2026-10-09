@@ -374,7 +374,7 @@ public class LaserAttack extends AttackType {
     protected final void performLaserBatch(
         List<AttackContext> ctxList, IntUnaryOperator sequenceIndexProvider) {
         if (ctxList == null || ctxList.isEmpty()) return;
-        if (STRAIGHT_PATH_DEPTH.get() > 0) {
+        if (STRAIGHT_PATH_DEPTH.get() > 0 || !usesCollisionBatch()) {
             for (int index = 0; index < ctxList.size(); index++) {
                 AttackContext ctx = ctxList.get(index);
                 if (ctx != null) shootSingleLaser(ctx, sequenceIndexProvider.applyAsInt(index));
@@ -454,14 +454,14 @@ public class LaserAttack extends AttackType {
         }
 
         LaserCollisionBatch batch = activeBatch(level);
-        if (batch == null && isStraightPathCandidate(ctx)) {
+        if (batch == null && usesCollisionBatch() && isStraightPathCandidate(ctx)) {
             batch = new LaserCollisionBatch();
             batch.addSweep(laser.position,
                 laser.position.add(laser.direction.normalize().scale(laser.range)), width);
             batch.rebuild(level);
         }
 
-        if (batch != null && canUseStraightPath(laser)) {
+        if (canUseStraightPath(laser) && (batch != null || !usesCollisionBatch())) {
             VisualBatchState previousVisualBatch = activeVisualBatch.get();
             VisualBatchState visualBatch = previousVisualBatch == null
                 ? new VisualBatchState() : previousVisualBatch;
@@ -484,6 +484,10 @@ public class LaserAttack extends AttackType {
         return batches == null ? null : batches.get(level);
     }
 
+    protected boolean usesCollisionBatch() {
+        return true;
+    }
+
     private boolean canUseStraightPath(LaserProjectile laser) {
         return !laser.homing
             && laser.getTrajectorySpecs().isEmpty()
@@ -500,12 +504,12 @@ public class LaserAttack extends AttackType {
     }
 
     /**
-     * Resolves a straight laser with one block traversal and one shared entity broad-phase query.
+     * Resolves a straight laser with one block traversal and one entity broad-phase query.
      * Collision events still run in the legacy coarse-segment order so block callbacks remain
      * ahead of entity callbacks within the same segment.
      */
     private void shootStraightLaser(
-        LaserProjectile laser, ServerLevel level, AttackContext context, LaserCollisionBatch batch) {
+        LaserProjectile laser, ServerLevel level, AttackContext context, @Nullable LaserCollisionBatch batch) {
         int segmentCount = Math.max(1, (int) Math.ceil(laser.range / laser.step));
         Vec3 start = laser.position;
         Vec3 direction = laser.direction.normalize();
@@ -513,7 +517,7 @@ public class LaserAttack extends AttackType {
         Map<Integer, StraightBlockHit> blocks = indexBlockContacts(
             level, start, end, laser.width, laser.range, laser.step, segmentCount);
         Map<Integer, List<StraightEntityHit>> entities = indexEntityContacts(
-            laser, batch, start, end, laser.range, laser.step, segmentCount);
+            laser, level, batch, start, end, laser.range, laser.step, segmentCount);
 
         int previousDepth = STRAIGHT_PATH_DEPTH.get();
         STRAIGHT_PATH_DEPTH.set(previousDepth + 1);
@@ -601,7 +605,7 @@ public class LaserAttack extends AttackType {
         LaserProjectile laser,
         ServerLevel level,
         AttackContext context,
-        LaserCollisionBatch batch,
+        @Nullable LaserCollisionBatch batch,
         Vec3 contactPosition,
         double parameter,
         @Nullable Vec3 unchangedPosition) {
@@ -688,14 +692,21 @@ public class LaserAttack extends AttackType {
 
     private Map<Integer, List<StraightEntityHit>> indexEntityContacts(
         LaserProjectile laser,
-        LaserCollisionBatch batch,
+        ServerLevel level,
+        @Nullable LaserCollisionBatch batch,
         Vec3 start,
         Vec3 end,
         double range,
         double step,
         int segmentCount) {
-        List<LivingEntity> candidates = new ArrayList<>();
-        batch.query(start, end, laser.width, candidates);
+        List<LivingEntity> candidates;
+        if (batch == null) {
+            candidates = level.getEntitiesOfClass(LivingEntity.class,
+                LaserCollisionBatch.sweptBounds(start, end, laser.width), LivingEntity::isAlive);
+        } else {
+            candidates = new ArrayList<>();
+            batch.query(start, end, laser.width, candidates);
+        }
         Vec3 half = new Vec3(laser.width * 0.5D, laser.width * 0.5D, laser.width * 0.5D);
         Map<Integer, List<StraightEntityHit>> indexed = new HashMap<>();
         for (LivingEntity target : candidates) {
@@ -1112,6 +1123,7 @@ public class LaserAttack extends AttackType {
 
     private void queueStraightVisual(
         LivingEntity owner, Vec3 start, Vec3 end, double width, ResourceLocation colorRl) {
+        if (!usesParticleVisuals()) return;
         VisualBatchState batch = activeVisualBatch.get();
         if (batch == null) {
             batch = new VisualBatchState();
@@ -1195,6 +1207,7 @@ public class LaserAttack extends AttackType {
     private void spawnInterpolatedParticles(
         ServerLevel level, Vec3 from, Vec3 to, double width, ResourceLocation colorRl,
         @Nullable HomingArc homingArc) {
+        if (!usesParticleVisuals()) return;
         IForgeRegistry<BulletColor> registry =
             RegistryManager.ACTIVE.getRegistry(ModBulletColors.BULLET_COLOR_KEY);
 
@@ -1215,6 +1228,10 @@ public class LaserAttack extends AttackType {
             DustParticleOptions dust = new DustParticleOptions(color, particleSize);
             level.sendParticles(dust, pos.x, pos.y, pos.z, 1, 0, 0, 0, 0);
         }
+    }
+
+    protected boolean usesParticleVisuals() {
+        return true;
     }
 
     private AABB createCollisionBox(Vec3 pos, double width) {

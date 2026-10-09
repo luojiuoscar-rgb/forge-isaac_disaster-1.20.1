@@ -128,6 +128,34 @@
 - 更新当前行为与射程属性变化的验收预期；此次不涉及说明文字／贴图变化。
 - Microsoft Java 17.0.11 执行 `runData --offline --no-daemon`：`BUILD SUCCESSFUL in 1m 36s`，11 tasks（4 executed、7 up-to-date），全部 provider 完成（318 ms），日志无 ERROR／Exception。固定射程及上下文路径静态检查、差异格式检查通过；实际游戏验收未执行。
 
+## 2026-10-09：实心光柱首版（Phase 14）
+
+- 用户批准上一轮调研方案的首版制作。新增客户端光束 Renderer 和专用 S2C 包，独立 UUID、有限寿命、原维度及跟随／可控状态。
+- Attack 仍通过原有限 Schedule 执行 15 次伤害，仅同步视觉状态；客户端每帧跟随有效玩家，其他情况插值服务端快照，并在退出／卸载时清理。
+- 几何为 12 边白色封闭内核、带顶点透明度渐变的淡金色光晕及起点光环；轻微光晕波动。POSITION_COLOR shader 不依赖环境光，无新增贴图或 Bloom。
+- 第一人称仅调整可见起点，碰撞与 64 格射程不变。两个 Laser 粒子入口通过默认开启钩子控制，终末天启关闭。
+- 只读 javap 核对 Forge 1.20.1 的 RenderStateShard 与 Entity 客户端插值方法。
+- Microsoft Java 17.0.11 的 `runData --offline --no-daemon`：`BUILD SUCCESSFUL in 1m 46s`，11 tasks（4 executed、7 up-to-date），全部 provider 完成（720 ms）；日志无 ERROR／Exception。仅运行 runData 及其自动依赖。
+- 静态核对两条粒子入口、默认开启／终末天启关闭、47 tick 蓄力／2 tick 间隔／15 次／64 格／无 Attack 监听或任务取消、独立 ID／有限寿命／维度检查／深度测试及差异格式，均通过。新增网络包编码解码顺序已核对，追加注册不改变既有包 ID。
+- 实际客户端、光影组合和多人游戏验收未运行；首版亮度、第一人称裁剪与平滑表现需按 verification.md 的新增场景验收。
+
+## 2026-10-09：降低发射起点（Phase 15）
+
+- 对用户报告的遮挡按当前代码核对：旧 0.27 格眼睛偏移小于 0.5 格基础内核半径。
+- 统一专用起点方法，偏移改为当前身高 45%，站姿再降低约 0.54 格；服务端释放和跟随、客户端插值均调用同一方法。
+- Microsoft Java 17.0.11 的 `runData --offline --no-daemon`：`BUILD SUCCESSFUL in 1m 57s`，11 tasks（4 executed、7 up-to-date），全部 provider 完成（592 ms），日志无 ERROR／Exception。两个服务端入口与客户端共同起点、旧偏移已移除、差异格式静态核对通过。仅执行 runData 及其自动依赖。
+- 第一／第三人称、蹲下和游泳姿态的实际遮挡待游戏验收。
+
+## 2026-10-09：光柱优化（Phase 16）
+
+- 用户授权简化寿命同步、视锥裁剪与增强光晕，并考虑专用直线碰撞；保留已确认无遮挡的起点与 32 格范围。
+- 已恢复实时源码与当前未提交改动，继续在 `.planning/revelation` 记录，不新增临时图标、日志或历史子项目。
+- 已完成源码修改：包的结束标记与末次同步、独立客户端计时与超时、视锥裁剪／缓存／光晕增强、单束查询覆盖钩子。
+- Microsoft Java 17.0.11 的 `runData --offline --no-daemon`：`BUILD SUCCESSFUL in 1m 53s`，11 tasks（4 executed、7 up-to-date），provider 532 ms。检查本次 `run-data/logs/latest.log`（19:42:24）无 ERROR／Exception，生成模型纹理路径正确；只有已有 API／Gradle 弃用及启动环境警告。
+- 差异格式、包编码解码顺序、末次标记、世界切换清理、47 tick／2 tick／15 次／64 格、无主攻击候选或 Attack 事件监听变更、默认批次开启／终末天启关闭与空批次回退静态核对通过。确认 Forge 渲染事件提供 `getFrustum`，裁剪包围盒覆盖最大光晕。
+- 没有单独执行 compile／build／测试／客户端任务；runData 自动依赖按 Gradle 原配置执行。没有新增临时图标脚本、预览或独立运行日志。实际光晕、多束、网络抖动和性能改善待游戏验收。
+- 路径搜索误设了 `bullet/projectile/LaserProjectile.java`；用 `rg --files` 的类名子串重新定位，避免依赖 Windows 反斜杠结尾正则。
+
 ## Error Log
 
 | 问题 | 处理 |

@@ -2,6 +2,7 @@
 
 ## 当前修正规则（覆盖下文初版生命周期与白色 HUD 规格）
 
+- 最新光柱优化已完成：末次伤害包标记结束，独立客户端 tick 插值及超时清理，视锥裁剪／圆周渐变缓存／增强光晕，终末天启直接查询扫掠 AABB 并复用现有快速直线碰撞。`runData` 通过（1m 53s），详见下文光柱性能修正；本轮实际客户端／多人／性能验收未执行。
 - 最新公共生命周期要求已实施：各栏实际蓄力值按 ID 归入玩家能力，共用死亡／退出／换维度清理，无需注册获取函数；终末天启直接通过 Schedule 发射，光束自身回调检查是否还能跟随玩家。Schedule 统一停服清理静态任务表，避免同一 JVM 重开世界残留。最新 `runData` 通过（1m 48s），实际游戏未验收。
 - `AttackType` 派生类继续管理累计／释放／光束执行行为，独立 Controller 已删除。最新公共生命周期要求将实际蓄力与同步缓存归入玩家能力；光束状态只由 Schedule 闭包持有，攻击类没有事件监听。实际游戏未回归。
 - 最新要求：有可控泪弹时支持视角控制；沿用硫磺火的释放时快照方式，记录可控状态，存活且仍在发射维度时按当前视角更新，脱离后保存最后方向。无可控时继续固定释放方向。
@@ -70,12 +71,14 @@
 | [RevelationAttack.java](../../src/main/java/net/luojiuoscar/isaac_disaster/registries/attack_type/impl/RevelationAttack.java) | 输入蓄力、HUD、直接 Schedule 发射、可控方向及基础激光执行；无独立 Controller、无事件监听 |
 | [PlayerAbility.java](../../src/main/java/net/luojiuoscar/isaac_disaster/capability/player/PlayerAbility.java)、[ChargeBarSync.java](../../src/main/java/net/luojiuoscar/isaac_disaster/networking/ChargeBarSync.java) | 按栏 ID 的共用蓄力、同步缓存与一次性清理；不保存或克隆运行时蓄力 |
 | [ChargeBarEvents.java](../../src/main/java/net/luojiuoscar/isaac_disaster/event/ChargeBarEvents.java) | 死亡、退出、换维度时统一清空所有栏状态，无 ID 枚举或清理回调注册 |
-| [ScheduledFuncHelper.java](../../src/main/java/net/luojiuoscar/isaac_disaster/helper/ScheduledFuncHelper.java) | 指定首个执行 tick 与共用停服任务清理；原 Schedule 入口保持原行为 |
+| [ScheduledFuncHelper.java](../../src/main/java/net/luojiuoscar/isaac_disaster/helper/ScheduledFuncHelper.java) | 相对 tick 调度与共用停服清理；绝对 firstTick 参数已移除 |
 | [Seraphim.java](../../src/main/java/net/luojiuoscar/isaac_disaster/registries/ability/set/impl/Seraphim.java) | 三件门槛、无效果的天使套装 |
 | `manager/id/ItemId.java`、`manager/id/SetId.java` | 末尾追加道具与套装身份 |
 | `item/ModPassiveItems.java`、`registries/ability/passive/ModPassiveAbilities.java` | 道具、能力和数据生成列表注册 |
 | `registries/attack_type/ModAttackTypes.java`、`registries/bullet_color/ModBulletColors.java`、`registries/charge_bar/ModChargeBars.java` | 独立攻击、白色光束和金色十字栏注册 |
 | [LaserAttack.java](../../src/main/java/net/luojiuoscar/isaac_disaster/registries/attack_type/impl/LaserAttack.java) | 统一碰撞、伤害与视觉世界入口，支持固定发射维度 |
+| [RevelationBeamRenderer.java](../../src/main/java/net/luojiuoscar/isaac_disaster/client/laser/RevelationBeamRenderer.java) | 客户端有限光柱、结束淡出、视锥裁剪与光晕 |
+| [RevelationBeamS2CPacket.java](../../src/main/java/net/luojiuoscar/isaac_disaster/networking/packet/laser/RevelationBeamS2CPacket.java) | 独立 UUID、位置／方向／尺寸／跟随状态和末次伤害结束标记 |
 | `client/gui/charge_bar/ChargeBarHudOverlay.java`、`registries/charge_bar/ChargeBarType.java` | Overlay 对全部栏统一过滤持头与正进度，不枚举 ID；类型仅记录样式与优先级，已撤销上轮谓词扩展 |
 | `sound/ModSounds.java`、[sounds.json](../../src/main/resources/assets/isaac_disaster/sounds.json) | 发射音效注册 |
 | [revelation_shot.ogg](../../src/main/resources/assets/isaac_disaster/sounds/revelation_shot.ogg) | 用户提供的原音效，释放时播放一次 |
@@ -125,6 +128,36 @@
 - 终末天启使用全局有限任务 `schedule(SCHEDULE_TYPE, HIT_INTERVAL, HIT_INTERVAL - 1, HIT_COUNT, false, callback)`；首发等待一次调度执行，之后每 2 tick 一次，共 15 次。允许同 tick END 首发。
 - `LaserAttack.performAttack`／`shoot` 执行当前一次激光，提供碰撞、绘制、命中去重及全额伤害；`BrimstoneAttack` 重写这些方法，安排 13 次、每 tick 一次的玩家任务，并将伤害乘 0.6。
 - `BrimstoneAttack` 还实现主攻击蓄力接口、射速相关蓄力及再按键取消。终末天启复用底层激光执行，不继承这些硫磺火规则，避免每个终末天启判定再次安排 13 次发射。
+
+## 实心光柱首版设计（用户已批准尝试）
+
+- 复用世界渲染事件和共享顶点缓冲模式，新增仅客户端的光束绘制；不生成 Minecraft 实体。
+- 独立光束 UUID，使用专用同步包明确样式；不按白色或玩家 UUID 判断同一束，支持重叠发射。
+- 每次原 Schedule 判定后同步快照和剩余寿命；客户端有玩家实体时平滑跟随，无实体时插值快照，脱离玩家后留在原位置。
+- 白色封闭多棱柱内核、淡金渐变光晕、轻微能量波动；全亮几何无需新增贴图或屏幕 Bloom。视觉短暂淡入淡出不影响碰撞宽度和伤害。
+- Laser 增加默认开启的粒子绘制钩子，仅终末天启关闭，覆盖直线批量和分段回退两条粒子路径。
+- 维度检查、有限寿命、客户端世界卸载／退出清理，避免残留；其他维度的客户端不展示原维度光束。
+- 本轮不改道具说明／图标／音效；不引入外部模组依赖或复制最终棱镜未核实的源码。
+
+## 降低起点修正
+
+- 用户游戏反馈首版严重遮挡视野。旧起点眼睛下方 `0.15 × 身高`，站姿约 0.27 格，低于基础内核半径 0.5 格，摄像机接近／进入光柱截面。
+- 改为眼睛下方 `0.45 × 身高`（站姿约 0.81 格），相较原版再下移约 0.54 格。
+- `RevelationAttack.getBeamOrigin(Entity, float)` 统一释放快照、每次服务端移动锚点及客户端插值跟随；服务端使用 partialTick=1，客户端使用当前帧值。
+- 客户端已有第一人称可见起点裁剪保留；不同姿态采用当前包围盒高度，射程／伤害／宽度／方向规则不变。
+- 普通激光及硫磺火起点不受该专用方法影响；实际遮挡改善需游戏验收。
+
+## 光柱性能修正（2026-10-09）
+
+- 用户已游戏确认起点不遮挡视野，并接受 32 格联机可见范围；这两项保持。
+- `LaserAttack` 已有整条直线扫描，但首次墙体／实体接触后保守回退分段路径；终末天启单束调用仍独立重建 `EntityGrid`。
+- 客户端每包重设相对结束时间会受抖动和游戏时间校正影响。采用最后一次伤害包的 `finished` 标记，独立客户端 tick 插值／超时，避免引入服务端时钟估计模块。
+- 光晕加强仅调整视觉，视锥包围盒必须覆盖光晕最大半径；加法混合不需要面排序。缓存圆周与固定渐变，保留正常墙体深度遮挡。
+- 已实现：`finished` 替代包的 `remainingTicks`，最后一次伤害后通知原维度玩家；客户端忽略未知 UUID 的结束包。收到结束后 2 tick 淡出，重复结束包不延长寿命；活动状态在最后一次更新后 100 个客户端 tick 无包时超时清理。TCP 同一通道有序，不新增序号／时钟估计／额外结束任务。
+- 客户端独立 tick 不受世界时间同步跳变影响，单人暂停时停止计时。100 tick 仅为异常断联兜底，不保证超过约 5 秒的网络停顿仍连续显示；正常结束由服务端末次伤害包决定。
+- 绘制：世界坐标 AABB 加最大光晕半径 2.6 倍裁剪；复用帧列表和单位矩阵，缓存圆周及 16 带渐变，保留 12 边内核和 8 轴向分段。光晕基准半径 2.1→2.5 倍，强度第一人称 0.12→0.18、其他 0.20→0.32，源环外半径 1.6→1.8 倍、透明度 0.25→0.35；不增加顶点数。
+- 碰撞：新增默认 true 的 `LaserAttack.usesCollisionBatch()`，仅终末天启覆盖 false。跳过批次及 EntityGrid 构建，单次直线扫描直接查询扫掠 AABB 的活体目标，再复用原裁剪、命中顺序、去重和伤害事件。命中回退路径仍保留，但无网格时不重建索引；普通激光／硫磺火保持批次模式。
+- 当前 PATH 无 Python；沿用会话、Git 差异与已有工作文件恢复，不重复尝试不可用的 catchup 脚本。
 
 ## Technical Decisions
 
