@@ -1,7 +1,11 @@
 package net.luojiuoscar.isaac_disaster.helper;
 
+import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraftforge.event.server.ServerStoppingEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
 
 import java.util.*;
 
@@ -9,6 +13,7 @@ import java.util.*;
  * 任务调度器
  * 支持全局任务和按玩家独立任务
  */
+@Mod.EventBusSubscriber(modid = IsaacDisaster.MOD_ID)
 public class ScheduledFuncHelper {
     private ScheduledFuncHelper() {
     }
@@ -189,5 +194,14 @@ public class ScheduledFuncHelper {
             }
         }
         PENDING_REMOVE.clear();
+    }
+
+    @SubscribeEvent
+    public static void onServerStopping(ServerStoppingEvent event) {
+        TASKS.clear();
+        PLAYER_TASK_INDEX.clear();
+        PENDING_ADD.clear();
+        PENDING_REMOVE.clear();
+        NEXT_TASK_ID = 1;
     }
 }

@@ -6,7 +6,8 @@ public enum SetId {
     FUN_GUY,
     BOOK,
     MOM,
-    CAT;
+    CAT,
+    SERAPHIM;
 
 
     private final int id;

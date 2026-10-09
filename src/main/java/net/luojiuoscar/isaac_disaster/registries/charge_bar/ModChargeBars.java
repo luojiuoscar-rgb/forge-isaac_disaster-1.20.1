@@ -19,4 +19,9 @@ public final class ModChargeBars {
             "attack_charge", () -> new ChargeBarType(Integer.MAX_VALUE,
                     ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID,
                             "textures/hud/charge/charge_ring_base.png"), 0xFF7DE000));
+
+    public static final RegistryObject<ChargeBarType> REVELATION = CHARGE_BAR_REGISTRY.register(
+            "revelation", () -> new ChargeBarType(Integer.MAX_VALUE - 1,
+                    ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID,
+                            "textures/hud/charge/revelation_charge_base.png"), 0xFFFFD75A));
 }

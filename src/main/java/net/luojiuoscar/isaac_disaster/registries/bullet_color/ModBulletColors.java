@@ -19,6 +19,9 @@ public class ModBulletColors {
     public static final RegistryObject<BulletColor> BASE =
             BULLET_COLOR_REGISTRY.register("base", () -> new BulletColor(0xE7C5E0, 1.0f, 0));
 
+    public static final RegistryObject<BulletColor> REVELATION =
+            BULLET_COLOR_REGISTRY.register("revelation", () -> new BulletColor(0xFFFFFF, 1.0f, 0));
+
     public static final RegistryObject<BulletColor> SPOON_BENDER =
             BULLET_COLOR_REGISTRY.register("spoon_bender", () -> new BulletColor(0x7A33C0, 1.0f, 1));
 

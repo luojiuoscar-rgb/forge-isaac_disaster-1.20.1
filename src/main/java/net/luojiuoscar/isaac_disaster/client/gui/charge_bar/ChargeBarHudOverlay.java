@@ -18,18 +18,20 @@ public class ChargeBarHudOverlay {
                 var minecraft = Minecraft.getInstance();
                 var player = minecraft.player;
                 if (player == null || minecraft.options.hideGui) return;
+                if (!(player.getMainHandItem().getItem() instanceof IsaacHead)
+                        && !(player.getOffhandItem().getItem() instanceof IsaacHead)) return;
                 IForgeRegistry<ChargeBarType> registry = RegistryManager.ACTIVE.getRegistry(
                         ModChargeBars.CHARGE_BAR_KEY.location());
                 if (registry == null) return;
 
-                boolean holdingIsaacHead = player.getMainHandItem().getItem() instanceof IsaacHead
-                        || player.getOffhandItem().getItem() instanceof IsaacHead;
                 var entries = new ArrayList<ChargeBarLayout.Entry>();
                 ClientDataManager.getInstance().getChargeBars().forEach((id, progress) -> {
-                    if (id.equals(ModChargeBars.ATTACK_CHARGE.getId()) && !holdingIsaacHead) return;
+                    if (!(progress > 0f)) return;
                     if (!registry.containsKey(id)) return;
                     ChargeBarType type = registry.getValue(id);
-                    if (type != null) entries.add(new ChargeBarLayout.Entry(id, type, progress));
+                    if (type != null) {
+                        entries.add(new ChargeBarLayout.Entry(id, type, progress));
+                    }
                 });
                 var sorted = ChargeBarLayout.sorted(entries);
                 if (sorted.isEmpty()) return;

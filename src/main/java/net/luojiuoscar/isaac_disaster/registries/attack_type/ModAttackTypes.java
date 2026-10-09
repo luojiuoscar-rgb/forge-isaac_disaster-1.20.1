@@ -47,6 +47,10 @@ public class ModAttackTypes {
             ATTACK_TYPE_REGISTER.register("technology2", () -> new Technology2Attack(
                     AttackPrio.LASER.getTier(), AttackPrio.LASER.getPriority()));
 
+    public static final RegistryObject<RevelationAttack> REVELATION =
+            ATTACK_TYPE_REGISTER.register("revelation", () -> new RevelationAttack(
+                    AttackPrio.LASER.getTier(), AttackPrio.LASER.getPriority()));
+
     public static final RegistryObject<AttackType> SHOOP_DA_WHOOP =
             ATTACK_TYPE_REGISTER.register("shoop_da_whoop", () -> new ShoopDaWhoop(
                     AttackPrio.BRIMSTONE.getTier(), AttackPrio.BRIMSTONE.getPriority()));

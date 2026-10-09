@@ -18,7 +18,8 @@
         {"type": "minecraft:item", "name": "isaac_disaster:stigmata"},
         {"type": "minecraft:item", "name": "isaac_disaster:sacred_heart"},
         {"type": "minecraft:item", "name": "isaac_disaster:holy_grail"},
-        {"type": "minecraft:item", "name": "isaac_disaster:jesus_juice"}
+        {"type": "minecraft:item", "name": "isaac_disaster:jesus_juice"},
+        {"type": "minecraft:item", "name": "isaac_disaster:revelation"}
       ]
     }
   ]

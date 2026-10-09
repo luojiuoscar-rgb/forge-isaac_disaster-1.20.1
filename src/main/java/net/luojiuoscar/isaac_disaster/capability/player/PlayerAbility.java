@@ -7,6 +7,7 @@ import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackSelector;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.ModAttackTypes;
 import net.luojiuoscar.isaac_disaster.registries.bullet_color.BulletColor;
 import net.luojiuoscar.isaac_disaster.registries.bullet_color.ModBulletColors;
+import net.luojiuoscar.isaac_disaster.registries.charge_bar.ModChargeBars;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
@@ -26,7 +27,8 @@ public class PlayerAbility {
     private int controllable;
 
     private int extraTrinketSlotCounts;
-    private int chargeAmount; // Current attack charge, accumulated/consumed by chargeable attacks.
+    private final Map<ResourceLocation, Integer> chargeAmounts = new HashMap<>();
+    private final Map<ResourceLocation, Float> chargeBarProgress = new HashMap<>();
     private float preChargeProgress; // Last normalized progress sent to the client.
 
     private final Map<ResourceLocation, Integer> attackType;
@@ -52,8 +54,7 @@ public class PlayerAbility {
         spectral = 0;
         controllable = 0;
         extraTrinketSlotCounts = 0;
-        chargeAmount = 0;
-        preChargeProgress = Float.NaN;
+        clearChargeStates();
 
         bestBulletColor = ModBulletColors.BASE.getId();
         bestAttackType = ModAttackTypes.BULLET.getId();
@@ -85,6 +86,7 @@ public class PlayerAbility {
         this.bulletColor.putAll(source.bulletColor);
         this.bulletVisuals.clear();
         this.bulletVisuals.putAll(source.bulletVisuals);
+        clearChargeStates();
     }
 
     public void saveNBTData(CompoundTag nbt) {
@@ -222,11 +224,48 @@ public class PlayerAbility {
     }
 
     public int getChargeAmount() {
-        return chargeAmount;
+        return getChargeAmount(ModChargeBars.ATTACK_CHARGE.getId());
     }
 
     public void setChargeAmount(int chargeAmount) {
-        this.chargeAmount = chargeAmount;
+        setChargeAmount(ModChargeBars.ATTACK_CHARGE.getId(), chargeAmount);
+    }
+
+    public int getChargeAmount(ResourceLocation id) {
+        return chargeAmounts.getOrDefault(id, 0);
+    }
+
+    public void setChargeAmount(ResourceLocation id, int amount) {
+        chargeAmounts.put(Objects.requireNonNull(id, "charge bar ID"), amount);
+    }
+
+    public boolean hasChargeAmount(ResourceLocation id) {
+        return chargeAmounts.containsKey(id);
+    }
+
+    public void clearChargeAmount(ResourceLocation id) {
+        chargeAmounts.remove(id);
+    }
+
+    public Float getChargeBarProgress(ResourceLocation id) {
+        return chargeBarProgress.get(id);
+    }
+
+    public void setChargeBarProgress(ResourceLocation id, Float progress) {
+        if (progress == null) chargeBarProgress.remove(id);
+        else chargeBarProgress.put(id, progress);
+    }
+
+    public Set<ResourceLocation> getVisibleChargeBarIds() {
+        return Set.copyOf(chargeBarProgress.keySet());
+    }
+
+    /** Runtime charge is shared by bar ID and is deliberately neither saved nor copied. */
+    public void clearChargeStates() {
+        chargeAmounts.clear();
+        chargeBarProgress.clear();
+        holdRightClick = false;
+        preChargeProgress = Float.NaN;
     }
 
     public float getPreChargeProgress() {

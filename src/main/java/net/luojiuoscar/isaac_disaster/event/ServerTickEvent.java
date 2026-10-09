@@ -27,6 +27,7 @@ import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackOrigin;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackPipelineMode;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackRequest;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.IChargeableAttack;
+import net.luojiuoscar.isaac_disaster.registries.attack_type.ModAttackTypes;
 import net.luojiuoscar.isaac_disaster.system.ScaleUtils;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
@@ -194,6 +195,8 @@ public class ServerTickEvent {
     }
 
     private static void IsaacHeadAttack(ServerPlayer player){
+        // 临时接入终末天启独立蓄力，后续需重构 TODO
+        ModAttackTypes.REVELATION.get().onTick(player);
         player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY).ifPresent(
                 playerAbility -> {
                     ItemStack stack = null;

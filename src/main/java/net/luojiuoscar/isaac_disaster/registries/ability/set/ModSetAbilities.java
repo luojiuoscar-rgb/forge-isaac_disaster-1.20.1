@@ -34,4 +34,7 @@ public class ModSetAbilities {
     public static final RegistryObject<SetAbility> CAT =
             SET_ABILITY_REGISTRY.register("cat", () -> new Cat(SetId.CAT.getId()));
 
+    public static final RegistryObject<SetAbility> SERAPHIM =
+            SET_ABILITY_REGISTRY.register("seraphim", () -> new Seraphim(SetId.SERAPHIM.getId()));
+
 }

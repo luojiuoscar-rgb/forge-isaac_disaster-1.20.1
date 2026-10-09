@@ -1049,6 +1049,11 @@
       "isaac_disaster:laser_shot"
     ]
   },
+  "revelation_shot": {
+    "sounds": [
+      "isaac_disaster:revelation_shot"
+    ]
+  },
   "brimstone_shot.normal": {
     "sounds": [
       "isaac_disaster:brimstone_normal"

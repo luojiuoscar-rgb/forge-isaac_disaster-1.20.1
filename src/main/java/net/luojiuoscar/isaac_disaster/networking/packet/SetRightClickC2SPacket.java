@@ -35,6 +35,8 @@ public class SetRightClickC2SPacket {
 
             player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY).ifPresent(
                     playerAbility -> {
+                        // TODO
+                        if (playerAbility.isHoldingRightClick() == isRightClick) return;
                         playerAbility.setHoldRightClick(isRightClick);
                         MinecraftForge.EVENT_BUS.post(new PlayerRightClickEvent(player, isRightClick, !isRightClick));
                     });

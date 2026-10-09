@@ -180,7 +180,8 @@ public enum ItemId {
     THE_PARASITE(2),
     CRICKETS_BODY(3),
     COMPOUND_FRACTURE(2),
-    HAEMOLACRIA(4);
+    HAEMOLACRIA(4),
+    REVELATION(4);
 
 
 

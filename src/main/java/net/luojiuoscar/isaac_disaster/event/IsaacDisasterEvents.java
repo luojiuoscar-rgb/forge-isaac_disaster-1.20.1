@@ -126,6 +126,10 @@ public class IsaacDisasterEvents {
     @SubscribeEvent
     public static void onPlayerRightClick(PlayerRightClickEvent event){
         ServerPlayer player = event.getPlayer();
+        // 临时接入终末天启按下/释放，后续需重构 TODO
+        if (event.isOnPressed()) ModAttackTypes.REVELATION.get().onPressed(player);
+        else if (event.isOnReleased()) ModAttackTypes.REVELATION.get().onReleased(player);
+
         if (player.hasEffect(ModEffects.LACRIMAL_HYPOSECRETION.get())) return;
 
         AttackType attack = player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY)

@@ -385,7 +385,8 @@ public class LaserAttack extends AttackType {
         Map<ServerLevel, LaserCollisionBatch> batches = new IdentityHashMap<>();
         for (AttackContext ctx : ctxList) {
             if (ctx == null || !isStraightPathCandidate(ctx)) continue;
-            if (!(ctx.getOwner().level() instanceof ServerLevel level)) continue;
+            ServerLevel level = getLaserLevel(ctx.getOwner());
+            if (level == null) continue;
             Vec3 direction = ctx.getMainAxis();
             if (direction.lengthSqr() <= 1.0E-8D) continue;
             LaserCollisionBatch batch = batches.computeIfAbsent(level, ignored -> new LaserCollisionBatch());
@@ -430,7 +431,8 @@ public class LaserAttack extends AttackType {
 
     protected void shootSingleLaser(AttackContext ctx, int attackSequenceIndex) {
         LivingEntity entity = ctx.getOwner();
-        if (!(entity.level() instanceof ServerLevel level)) return;
+        ServerLevel level = getLaserLevel(entity);
+        if (level == null) return;
 
         Vec3 direction = ctx.getMainAxis();
         double width = getWidth(ctx);
@@ -1052,13 +1054,19 @@ public class LaserAttack extends AttackType {
     }
 
     protected DamageSource getDamageSource(LivingEntity source) {
-        if (!(source.level() instanceof ServerLevel level)) return source.damageSources().generic();
+        ServerLevel level = getLaserLevel(source);
+        if (level == null) return source.damageSources().generic();
         var damageTypeHolder =
             level
                 .registryAccess()
                 .registryOrThrow(Registries.DAMAGE_TYPE)
                 .getHolderOrThrow(ModDamageType.LASER);
         return new DamageSource(damageTypeHolder, source, source);
+    }
+
+    /** Resolves the world for collision, damage and visuals; persistent beams may pin it at release. */
+    protected @Nullable ServerLevel getLaserLevel(@Nullable LivingEntity owner) {
+        return owner != null && owner.level() instanceof ServerLevel level ? level : null;
     }
 
     // ================== Utils ==================
@@ -1109,14 +1117,14 @@ public class LaserAttack extends AttackType {
             batch = new VisualBatchState();
             activeVisualBatch.set(batch);
             try {
-                batch.add(owner, start, end, width, resolveLaserColor(colorRl));
+                batch.add(getLaserLevel(owner), start, end, width, resolveLaserColor(colorRl));
             } finally {
                 batch.flush();
                 activeVisualBatch.remove();
             }
             return;
         }
-        batch.add(owner, start, end, width, resolveLaserColor(colorRl));
+        batch.add(getLaserLevel(owner), start, end, width, resolveLaserColor(colorRl));
     }
 
     private int resolveLaserColor(ResourceLocation colorRl) {
@@ -1137,21 +1145,22 @@ public class LaserAttack extends AttackType {
 
     private static final class VisualBatchState {
         private static final double VISUAL_TRACKING_RADIUS = 32.0D;
-        private final Map<LivingEntity, List<LaserBeamBatchS2CPacket.Beam>> entries =
+        private final Map<ServerLevel, List<LaserBeamBatchS2CPacket.Beam>> entries =
             new IdentityHashMap<>();
 
-        void add(LivingEntity owner, Vec3 start, Vec3 end, double width, int color) {
-            if (owner == null || !(owner.level() instanceof ServerLevel)) return;
-            entries.computeIfAbsent(owner, ignored -> new ArrayList<>())
+        void add(@Nullable ServerLevel level, Vec3 start, Vec3 end, double width, int color) {
+            if (level == null) return;
+            entries.computeIfAbsent(level, ignored -> new ArrayList<>())
                 .add(new LaserBeamBatchS2CPacket.Beam(start, end, (float) width, color));
         }
 
         void flush() {
             Map<ServerPlayer, List<LaserBeamBatchS2CPacket.Beam>> recipients =
                 new IdentityHashMap<>();
-            for (Map.Entry<LivingEntity, List<LaserBeamBatchS2CPacket.Beam>> entry : entries.entrySet()) {
+            for (Map.Entry<ServerLevel, List<LaserBeamBatchS2CPacket.Beam>> entry : entries.entrySet()) {
                 List<LaserBeamBatchS2CPacket.Beam> beams = entry.getValue();
-                if (beams.isEmpty() || !(entry.getKey().level() instanceof ServerLevel level)) continue;
+                if (beams.isEmpty()) continue;
+                ServerLevel level = entry.getKey();
                 for (ServerPlayer player : level.players()) {
                     List<LaserBeamBatchS2CPacket.Beam> visible = new ArrayList<>();
                     for (LaserBeamBatchS2CPacket.Beam beam : beams) {

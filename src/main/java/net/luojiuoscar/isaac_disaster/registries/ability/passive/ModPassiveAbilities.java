@@ -607,4 +607,8 @@ public class ModPassiveAbilities {
     public static final RegistryObject<PassiveAbility> HAEMOLACRIA =
             PASSIVE_ABILITY_REGISTRY.register("haemolacria",
                     () -> new Haemolacria(ItemId.HAEMOLACRIA.getId(), ItemId.HAEMOLACRIA.getLevel()));
+
+    public static final RegistryObject<PassiveAbility> REVELATION =
+            PASSIVE_ABILITY_REGISTRY.register("revelation",
+                    () -> new Revelation(ItemId.REVELATION.getId(), ItemId.REVELATION.getLevel()));
 }
