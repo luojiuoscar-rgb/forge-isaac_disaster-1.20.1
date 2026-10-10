@@ -6,6 +6,7 @@ import net.luojiuoscar.isaac_disaster.capability.player.PlayerAbilityProvider;
 import net.luojiuoscar.isaac_disaster.event.custom.misc.GetShotDelayEvent;
 import net.luojiuoscar.isaac_disaster.event.custom.misc.IsaacGetBulletCountEvent;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.CompositeTrigger;
+import net.luojiuoscar.isaac_disaster.registries.attack_type.tags.IChargeableAttack;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -17,11 +18,9 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.MinecraftForge;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
-import java.util.Map;
 
 public abstract class AttackType {
     private final int priorityTier;
@@ -50,10 +49,31 @@ public abstract class AttackType {
     public ResourceLocation getRootId() { return getId(); }
 
     public abstract List<AttackContext> getAttackContexts(ServerPlayer player, int bulletCount);
+    /** Starts this type's complete attack; delegating types intentionally do nothing. */
     public abstract void performAttack(List<AttackContext> ctxList);
     public abstract void makeSound(LivingEntity entity);
     public abstract void shoot(AttackContext ctx);
     public void onTick(ServerPlayer player){}
+
+    public final void tickAttack(ServerPlayer player) {
+        if (this instanceof IChargeableAttack charge && !charge.isChargeEligible(player)) {
+            charge.clearCharge(player);
+            return;
+        }
+        onTick(player);
+        if (this instanceof IChargeableAttack charge) charge.syncCharge(player);
+    }
+
+    public final void handleChargeInput(ServerPlayer player, boolean pressed) {
+        if (!(this instanceof IChargeableAttack charge)) return;
+        if (!charge.isChargeEligible(player)) {
+            charge.clearCharge(player);
+            return;
+        }
+        if (pressed) charge.onPressed(player);
+        else charge.onReleased(player);
+        charge.syncCharge(player);
+    }
 
     /**
      * Returns whether this attack type should participate in current attack selection.
@@ -186,28 +206,5 @@ public abstract class AttackType {
         return Math.max(delay, 0);
     }
 
-    /** 获取攻击方式列表中第n个具有更低优先级的攻击方式 */
-    protected AttackType pickLowerAttackType(Map<ResourceLocation, Integer> attackType, int index) {
-        return AttackSelector.pickLowerAttackType(this, attackType, index);
-    }
-
-    /**
-     * Picks a lower-priority attack type with player state available for active checks.
-     */
-    protected AttackType pickLowerAttackType(ServerPlayer player, Map<ResourceLocation, Integer> attackType, int index) {
-        AttackSelectionContext context = new AttackSelectionContext(attackType, player);
-        return player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY)
-                .map(playerAbility -> {
-                    if (getId().equals(playerAbility.getBestAttackType())) {
-                        return AttackSelector.pickLowerAttackType(
-                                playerAbility.getCachedAttackPriorityTier(),
-                                playerAbility.getCachedAttackPriority(),
-                                context,
-                                index);
-                    }
-                    return AttackSelector.pickLowerAttackType(this, context, index);
-                })
-                .orElseGet(() -> AttackSelector.pickLowerAttackType(this, context, index));
-    }
 
 }

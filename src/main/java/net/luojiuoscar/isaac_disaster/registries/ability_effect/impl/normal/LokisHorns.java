@@ -33,7 +33,7 @@ public class LokisHorns implements IAbilityEffect {
     private void shoot(Player player, ExecutableEffectContext context){
         player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY).ifPresent(
                 playerAbility -> {
-                    AttackType attack = playerAbility.getCachedAttackType();
+                    AttackType attack = playerAbility.getAttackSelection().baseAttack();
 
                     ResourceLocation colorRl = playerAbility.getBestBulletColor();
                     Vec3 eyePos = player.getEyePosition().add(0, player.getBbHeight() * -0.15, 0);

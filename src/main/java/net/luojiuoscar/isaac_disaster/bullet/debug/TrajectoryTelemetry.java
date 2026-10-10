@@ -15,7 +15,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.bullet.core.BulletState;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.IBulletObject;
-import net.luojiuoscar.isaac_disaster.registries.attack_type.impl.LaserAttack;
+import net.luojiuoscar.isaac_disaster.registries.attack_type.impl.AbstractLaserAttack;
 import net.luojiuoscar.isaac_disaster.registries.trajectory.TrajectoryMotion;
 import net.luojiuoscar.isaac_disaster.registries.trajectory.TrajectorySpec;
 import net.minecraft.world.phys.Vec3;
@@ -26,7 +26,7 @@ import net.minecraft.world.phys.Vec3;
  */
 public final class TrajectoryTelemetry {
     private static final AtomicLong LASER_IDS = new AtomicLong();
-    private static final Map<LaserAttack.LaserProjectile, Long> LASER_IDENTITIES =
+    private static final Map<AbstractLaserAttack.LaserProjectile, Long> LASER_IDENTITIES =
         new WeakHashMap<>();
     private static BufferedWriter writer;
     private static String runName;
@@ -98,7 +98,7 @@ public final class TrajectoryTelemetry {
 
     /** Records one laser segment after its path and collision handling. */
     public static void recordLaser(
-        LaserAttack.LaserProjectile laser,
+        AbstractLaserAttack.LaserProjectile laser,
         Vec3 plannedEnd,
         Vec3 start,
         TrajectoryMotion motion,
@@ -122,7 +122,7 @@ public final class TrajectoryTelemetry {
             laser.getTrajectorySpecs());
     }
 
-    private static synchronized long laserIdentity(LaserAttack.LaserProjectile laser) {
+    private static synchronized long laserIdentity(AbstractLaserAttack.LaserProjectile laser) {
         return LASER_IDENTITIES.computeIfAbsent(laser, ignored -> LASER_IDS.incrementAndGet());
     }
 

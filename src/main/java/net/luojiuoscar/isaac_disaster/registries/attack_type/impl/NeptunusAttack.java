@@ -10,8 +10,8 @@ import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackOrigin;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackPipelineMode;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackRequest;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackType;
-import net.luojiuoscar.isaac_disaster.registries.attack_type.DelegatingAttackType;
-import net.luojiuoscar.isaac_disaster.registries.attack_type.IChargeableAttack;
+import net.luojiuoscar.isaac_disaster.registries.attack_type.tags.DelegatingAttackType;
+import net.luojiuoscar.isaac_disaster.registries.attack_type.tags.IChargeableAttack;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
@@ -60,7 +60,7 @@ public class NeptunusAttack extends AttackType implements IChargeableAttack, Del
         player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY).ifPresent(playerAbility -> {
 
             double shotDelay = Math.max(1, getShotDelay(player));
-            int chargeAmount = playerAbility.getChargeAmount();
+            int chargeAmount = playerAbility.getChargeAmount(getChargeBarId());
 
             boolean streamMode = shotDelay <= 1;
 
@@ -71,7 +71,7 @@ public class NeptunusAttack extends AttackType implements IChargeableAttack, Del
                         && !player.getCooldowns().isOnCooldown(ModItems.ISAAC_HEAD.get())) {
 
                     AttackType attack =
-                            pickLowerAttackType(player, playerAbility.getAttackTypes(), 0);
+                            playerAbility.getAttackSelection().baseAttack();
 
                     BeforePerformAttackEvent event =
                             new BeforePerformAttackEvent(player, this);
@@ -96,7 +96,7 @@ public class NeptunusAttack extends AttackType implements IChargeableAttack, Del
                     && !player.getCooldowns().isOnCooldown(ModItems.ISAAC_HEAD.get())) {
 
                 AttackType attack =
-                        pickLowerAttackType(player, playerAbility.getAttackTypes(), 0);
+                        playerAbility.getAttackSelection().baseAttack();
 
                 BeforePerformAttackEvent event =
                         new BeforePerformAttackEvent(player, this);
@@ -113,18 +113,18 @@ public class NeptunusAttack extends AttackType implements IChargeableAttack, Del
                 int coolDownTick = getCoolDownTicks(shotDelay, chargeAmount);
 
                 player.getCooldowns().addCooldown(ModItems.ISAAC_HEAD.get(), coolDownTick);
-                playerAbility.setChargeAmount(chargeAmount - coolDownTick);
+                playerAbility.setChargeAmount(getChargeBarId(), chargeAmount - coolDownTick);
             }
 
             // 充能逻辑
             else if (chargeAmount < totalCharge
                     && !playerAbility.isHoldingRightClick()) {
 
-                playerAbility.setChargeAmount(chargeAmount + 1);
+                addCharge(player, 1);
             }
 
             else if (chargeAmount > totalCharge) {
-                playerAbility.setChargeAmount(totalCharge);
+                playerAbility.setChargeAmount(getChargeBarId(), totalCharge);
             }
         });
     }
@@ -159,5 +159,12 @@ public class NeptunusAttack extends AttackType implements IChargeableAttack, Del
 
     @Override
     public void onReleased(ServerPlayer player) {
+    }
+
+    @Override
+    public int getChargePerTick(ServerPlayer player) {
+        if (getShotDelay(player) <= 1) return 0;
+        return player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY)
+                .map(ability -> ability.isHoldingRightClick() ? 0 : 1).orElse(0);
     }
 }

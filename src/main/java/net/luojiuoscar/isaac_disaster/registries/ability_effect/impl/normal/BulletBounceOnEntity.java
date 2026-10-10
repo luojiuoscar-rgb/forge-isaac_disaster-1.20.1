@@ -74,10 +74,4 @@ public class BulletBounceOnEntity implements IAbilityEffect {
         return contact.add(direction.lengthSqr() > 1.0E-12D ? direction.normalize().scale(1.0E-4D) : Vec3.ZERO);
     }
 
-    /** Retains the legacy bottom-coordinate calculation for compatibility tests and entity callers. */
-    @Deprecated
-    static Vec3 positionFromCenter(Vec3 center, double bbHeight, Vec3 direction) {
-        return offsetFromContact(center, direction).subtract(0.0D, bbHeight * 0.5D, 0.0D);
-    }
-
 }

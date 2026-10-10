@@ -1,6 +1,7 @@
 package net.luojiuoscar.isaac_disaster.client.gui.charge_bar;
 
 import java.util.ArrayList;
+import java.util.List;
 import net.luojiuoscar.isaac_disaster.client.ClientDataManager;
 import net.luojiuoscar.isaac_disaster.item.pickup.special.IsaacHead;
 import net.luojiuoscar.isaac_disaster.registries.charge_bar.ChargeBarType;
@@ -13,6 +14,8 @@ import net.minecraftforge.registries.IForgeRegistry;
 import net.minecraftforge.registries.RegistryManager;
 
 public class ChargeBarHudOverlay {
+    private static final int APPROACH_ALPHA = 128;
+
     public static final IGuiOverlay HUD_CHARGE_BAR =
             (forgeGui, graphics, partialTick, screenWidth, screenHeight) -> {
                 var minecraft = Minecraft.getInstance();
@@ -25,7 +28,7 @@ public class ChargeBarHudOverlay {
                 if (registry == null) return;
 
                 var entries = new ArrayList<ChargeBarLayout.Entry>();
-                ClientDataManager.getInstance().getChargeBars().forEach((id, progress) -> {
+                ClientDataManager.getInstance().getChargeBars(partialTick).forEach((id, progress) -> {
                     if (!(progress > 0f)) return;
                     if (!registry.containsKey(id)) return;
                     ChargeBarType type = registry.getValue(id);
@@ -36,19 +39,38 @@ public class ChargeBarHudOverlay {
                 var sorted = ChargeBarLayout.sorted(entries);
                 if (sorted.isEmpty()) return;
                 long timeMillis = Util.getMillis();
+                // Finish every white ring before any icon, including neighboring indicators.
+                graphics.drawManaged(() -> renderIndicators(graphics, sorted,
+                        screenWidth, screenHeight, timeMillis, true));
                 // GuiGraphics.fill flushes unmanaged draws; batch all ring pixels together.
-                graphics.drawManaged(() -> {
-                    for (int index = 0; index < sorted.size(); index++) {
-                        var entry = sorted.get(index);
-                        var type = entry.type();
-                        var position = ChargeBarLayout.position(index);
-                        if (position == null) continue;
-                        int x = (int) Math.round(screenWidth / 2.0 + position.x() - ChargeRingGeometry.SIZE / 2.0);
-                        int y = (int) Math.round(screenHeight / 2.0 + position.y() - ChargeRingGeometry.SIZE / 2.0);
-                        renderRing(graphics, type, entry.progress(), x, y, timeMillis);
-                    }
-                });
+                graphics.drawManaged(() -> renderIndicators(graphics, sorted,
+                        screenWidth, screenHeight, timeMillis, false));
             };
+
+    private static void renderIndicators(GuiGraphics graphics, List<ChargeBarLayout.Entry> entries,
+            int screenWidth, int screenHeight, long timeMillis, boolean approachOnly) {
+        int size = ChargeRingGeometry.SIZE;
+        for (int index = 0; index < entries.size(); index++) {
+            var entry = entries.get(index);
+            var position = ChargeBarLayout.position(index);
+            if (position == null) continue;
+            int x = (int) Math.round(screenWidth / 2.0 + position.x() - size / 2.0);
+            int y = (int) Math.round(screenHeight / 2.0 + position.y() - size / 2.0);
+            if (approachOnly) {
+                renderApproachRing(graphics, entry.progress(), x + size / 2, y + size / 2);
+            } else {
+                renderRing(graphics, entry.type(), entry.progress(), x, y, timeMillis);
+            }
+        }
+    }
+
+    private static void renderApproachRing(GuiGraphics graphics, float progress, int centerX, int centerY) {
+        int color = (APPROACH_ALPHA << 24) | 0xFFFFFF;
+        for (var span : ChargeRingGeometry.rasterizeApproach(progress)) {
+            graphics.fill(centerX + span.x(), centerY + span.y(),
+                    centerX + span.x() + span.width(), centerY + span.y() + 1, color);
+        }
+    }
 
     private static void renderRing(GuiGraphics graphics, ChargeBarType type, float progress,
             int x, int y, long timeMillis) {

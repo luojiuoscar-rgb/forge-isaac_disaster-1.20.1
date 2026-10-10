@@ -2,6 +2,8 @@ package net.luojiuoscar.isaac_disaster.client;
 
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.manager.PillEffectManager;
+import net.luojiuoscar.isaac_disaster.client.gui.charge_bar.ChargeBarPrediction;
+import net.luojiuoscar.isaac_disaster.networking.packet.ChargeBarUpdateS2CPacket.Action;
 import net.minecraft.resources.ResourceLocation;
 
 import java.util.ArrayList;
@@ -32,7 +34,8 @@ public class ClientDataManager {
     private int flyUnits;
     private int pillQuality;
 
-    private final Map<ResourceLocation, Float> chargeBars = new HashMap<>();
+    private final Map<ResourceLocation, ChargeBarPrediction> chargeBars = new HashMap<>();
+    private long chargeTicks;
 
     public void init() {
         itemCountMap.clear();
@@ -43,7 +46,7 @@ public class ClientDataManager {
         reviveHudIcons.clear();
         pillQuality = 0;
         flyUnits = 0;
-        chargeBars.clear();
+        clearChargeBars();
     }
 
     public static ClientDataManager getInstance() {
@@ -92,9 +95,21 @@ public class ClientDataManager {
         return pillQuality;
     }
 
-    /** Visible indicators only; zero progress may still be visible. */
-    public Map<ResourceLocation, Float> getChargeBars() {
-        return Map.copyOf(chargeBars);
+    /** The HUD filters zero progress; all indicators share this frame's display clock. */
+    public Map<ResourceLocation, Float> getChargeBars(float partialTick) {
+        double now = chargeTicks + partialTick;
+        var snapshot = new HashMap<ResourceLocation, Float>();
+        chargeBars.forEach((id, state) -> snapshot.put(id, state.sample(now)));
+        return Map.copyOf(snapshot);
+    }
+
+    public void tickChargeBars() {
+        chargeTicks++;
+    }
+
+    public void clearChargeBars() {
+        chargeBars.clear();
+        chargeTicks = 0;
     }
 
     public Double getRockBottomHistory(ResourceLocation key) {
@@ -105,15 +120,17 @@ public class ClientDataManager {
         return List.copyOf(reviveHudIcons);
     }
 
-    public void updateChargeBar(ResourceLocation id, boolean visible, float progress) {
+    public void updateChargeBar(ResourceLocation id, Action action, boolean visible,
+            float progress, float rate, float partialTick) {
         if (id == null) {
             IsaacDisaster.LOGGER.warn("Skipping charge bar update with no registry ID");
             return;
         }
-        if (!visible || !Float.isFinite(progress)) {
+        if (!visible || action == null || !Float.isFinite(progress) || !Float.isFinite(rate) || rate < 0) {
             chargeBars.remove(id);
         } else {
-            chargeBars.put(id, Math.max(0f, Math.min(1f, progress)));
+            chargeBars.computeIfAbsent(id, ignored -> new ChargeBarPrediction())
+                    .update(action, progress, rate, chargeTicks + partialTick);
         }
     }
 

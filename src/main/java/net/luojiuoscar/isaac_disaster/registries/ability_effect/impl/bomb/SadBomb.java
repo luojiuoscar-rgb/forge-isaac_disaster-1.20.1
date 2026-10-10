@@ -27,7 +27,7 @@ public class SadBomb extends BombRelated {
                                    Level level, Vec3 pos, IsaacBomb bomb) {
         player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY).ifPresent(
                 playerAbility -> {
-                    AttackType attack = playerAbility.getCachedAttackType();
+                    AttackType attack = playerAbility.getAttackSelection().baseAttack();
 
                     ResourceLocation colorRl = playerAbility.getBestBulletColor();
 

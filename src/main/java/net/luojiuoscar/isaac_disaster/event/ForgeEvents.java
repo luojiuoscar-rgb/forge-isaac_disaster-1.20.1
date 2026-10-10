@@ -116,7 +116,7 @@ public class ForgeEvents {
 
         // update cached attack type
         player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY).ifPresent(
-                playerAbility -> playerAbility.updateBestAttackType(player));
+                playerAbility -> playerAbility.updateAttackSelection(player));
         IsaacFlightEvents.sendState(player);
 
         // 添加永久模块
@@ -132,6 +132,8 @@ public class ForgeEvents {
         StatManager.refreshMultipliers(player);
         player.getCapability(PlayerIsaacItemsProvider.PLAYER_ISAAC_ITEMS)
                 .ifPresent(PlayerIsaacItems::refreshItemCountCache);
+        player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY).ifPresent(
+                ability -> ability.updateAttackSelection(player));
         syncAllDataToClient(player);
     }
 
@@ -270,7 +272,7 @@ public class ForgeEvents {
             // ability
             event.getOriginal().getCapability(PlayerAbilityProvider.PLAYER_ABILITY).ifPresent(oldStore -> {
                 event.getEntity().getCapability(PlayerAbilityProvider.PLAYER_ABILITY).ifPresent(newStore -> {
-                    newStore.copyFrom(oldStore);
+                    newStore.copyFrom(oldStore, newPlayer);
                 });
             });
             // item Pools

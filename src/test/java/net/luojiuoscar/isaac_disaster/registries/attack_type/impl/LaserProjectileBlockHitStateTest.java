@@ -16,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 class LaserProjectileBlockHitStateTest {
     @Test
     void storesTheFullLastBlockHitResult() throws Exception {
-        LaserAttack.LaserProjectile projectile = allocateProjectile();
+        AbstractLaserAttack.LaserProjectile projectile = allocateProjectile();
 
         assertNull(projectile.getLastBlockHit());
 
@@ -26,19 +26,19 @@ class LaserProjectileBlockHitStateTest {
         assertSame(hit, projectile.getLastBlockHit());
     }
 
-    private static LaserAttack.LaserProjectile allocateProjectile() throws Exception {
+    private static AbstractLaserAttack.LaserProjectile allocateProjectile() throws Exception {
         var unsafeClass = Class.forName("sun.misc.Unsafe");
         Field theUnsafe = unsafeClass.getDeclaredField("theUnsafe");
         theUnsafe.setAccessible(true);
         Object unsafe = theUnsafe.get(null);
         Method allocateInstance = unsafeClass.getMethod("allocateInstance", Class.class);
-        LaserAttack.LaserProjectile projectile =
-                (LaserAttack.LaserProjectile) allocateInstance.invoke(unsafe, LaserAttack.LaserProjectile.class);
+        AbstractLaserAttack.LaserProjectile projectile =
+                (AbstractLaserAttack.LaserProjectile) allocateInstance.invoke(unsafe, AbstractLaserAttack.LaserProjectile.class);
 
-        Field attackSequenceIndex = LaserAttack.LaserProjectile.class.getDeclaredField("attackSequenceIndex");
+        Field attackSequenceIndex = AbstractLaserAttack.LaserProjectile.class.getDeclaredField("attackSequenceIndex");
         attackSequenceIndex.setAccessible(true);
         attackSequenceIndex.setInt(projectile, 0);
-        Field lastBlockHit = LaserAttack.LaserProjectile.class.getDeclaredField("lastBlockHit");
+        Field lastBlockHit = AbstractLaserAttack.LaserProjectile.class.getDeclaredField("lastBlockHit");
         lastBlockHit.setAccessible(true);
         lastBlockHit.set(projectile, null);
         return projectile;

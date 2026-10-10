@@ -2,12 +2,8 @@ package net.luojiuoscar.isaac_disaster.registries.attack_type.impl;
 
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerAbilityProvider;
-import net.luojiuoscar.isaac_disaster.effect.ModEffects;
 import net.luojiuoscar.isaac_disaster.helper.GeometryHelper;
-import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.helper.ScheduledFuncHelper;
-import net.luojiuoscar.isaac_disaster.item.ModPassiveItems;
-import net.luojiuoscar.isaac_disaster.networking.ChargeBarSync;
 import net.luojiuoscar.isaac_disaster.networking.ModMessages;
 import net.luojiuoscar.isaac_disaster.networking.packet.laser.RevelationBeamS2CPacket;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackContext;
@@ -16,6 +12,8 @@ import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackOrigin;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackPipelineMode;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackRequest;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.ModAttackTypes;
+import net.luojiuoscar.isaac_disaster.registries.attack_type.tags.AdditionalAttackType;
+import net.luojiuoscar.isaac_disaster.registries.attack_type.tags.IChargeableAttack;
 import net.luojiuoscar.isaac_disaster.registries.bullet_color.ModBulletColors;
 import net.luojiuoscar.isaac_disaster.registries.charge_bar.ModChargeBars;
 import net.luojiuoscar.isaac_disaster.sound.ModSounds;
@@ -25,13 +23,15 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
+import org.joml.Vector3f;
 
 import java.util.List;
 import java.util.UUID;
 
-public class RevelationAttack extends LaserAttack {
+public class RevelationAttack extends AbstractLaserAttack implements IChargeableAttack, AdditionalAttackType {
     private static final int CHARGE_TICKS = 47;
     private static final int HIT_INTERVAL = 2;
     private static final int HIT_COUNT = 15;
@@ -82,75 +82,44 @@ public class RevelationAttack extends LaserAttack {
         }
     }
 
-    private boolean isEligible(ServerPlayer player) {
-        return player.isAlive() && !player.isRemoved() && !player.isSpectator()
-                && PlayerHelper.isHoldingIsaacHead(player)
-                && PlayerHelper.hasItem(ModPassiveItems.REVELATION.getId(), player)
-                && !player.hasEffect(ModEffects.LACRIMAL_HYPOSECRETION.get())
-                && player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY).isPresent();
+    @Override
+    public ResourceLocation getChargeBarId() {
+        return ModChargeBars.REVELATION.getId();
     }
 
-    public void onPressed(ServerPlayer player) {
-        if (!isEligible(player)) {
-            clearCharge(player);
-            return;
-        }
-        player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY).ifPresent(
-                ability -> ability.setChargeAmount(ModChargeBars.REVELATION.getId(), 0));
-        syncCharge(player, false, 0f);
+    @Override
+    public int getTotalCharge(Player player) {
+        return CHARGE_TICKS;
     }
 
+    @Override
     public void onReleased(ServerPlayer player) {
-        if (!isEligible(player)) {
-            clearCharge(player);
-            return;
+        try {
+            player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY).ifPresent(ability -> {
+                if (ability.getChargeAmount(getChargeBarId()) < CHARGE_TICKS) return;
+                AttackExecutor.perform(AttackRequest.withContexts(player, this, AttackOrigin.ABILITY_EXTRA,
+                        AttackPipelineMode.EXECUTE_ONLY, List.of(createAttackContext(player, player)), true));
+            });
+        } finally {
+            IChargeableAttack.super.onReleased(player);
         }
-        player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY).ifPresent(ability -> {
-            ResourceLocation id = ModChargeBars.REVELATION.getId();
-            boolean charging = ability.hasChargeAmount(id);
-            int charge = ability.getChargeAmount(id);
-            clearCharge(player);
-            if (charging && charge >= CHARGE_TICKS) startBeam(player);
-        });
     }
 
     @Override
     public void onTick(ServerPlayer player) {
-        if (!isEligible(player)) {
-            clearCharge(player);
-            return;
-        }
         player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY).ifPresent(ability -> {
-            ResourceLocation id = ModChargeBars.REVELATION.getId();
-            if (!ability.hasChargeAmount(id) || !ability.isHoldingRightClick()) {
-                clearCharge(player);
-                return;
-            }
-            int charge = Math.min(CHARGE_TICKS, ability.getChargeAmount(id) + 1);
-            ability.setChargeAmount(id, charge);
-            syncCharge(player, true, (float) charge / CHARGE_TICKS);
+            if (ability.isHoldingRightClick()) addCharge(player, 1);
         });
     }
 
-    public void onItemRemoved(ServerPlayer player) {
-        if (!PlayerHelper.hasItem(ModPassiveItems.REVELATION.getId(), player)) clearCharge(player);
-    }
-
-    private void clearCharge(ServerPlayer player) {
-        player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY).ifPresent(
-                ability -> ability.clearChargeAmount(ModChargeBars.REVELATION.getId()));
-        syncCharge(player, false, 0f);
-    }
-
-    private void syncCharge(ServerPlayer player, boolean visible, float progress) {
-        ChargeBarSync.syncToPlayer(ModChargeBars.REVELATION.getId(), visible, progress, player);
-    }
-
-    private void startBeam(ServerPlayer player) {
-        AttackContext snapshot = createAttackContext(player, player);
-        snapshot.freeze();
-        scheduleBeam(new Beam(player, snapshot, isControllable(player)));
-        makeSound(player);
+    @Override
+    public void performAttack(List<AttackContext> contexts) {
+        if (contexts == null) return;
+        for (AttackContext context : contexts) {
+            if (context == null || !(context.getOwner() instanceof ServerPlayer player)) continue;
+            context.freeze();
+            scheduleBeam(new Beam(player, context, isControllable(player)));
+        }
     }
 
     private void scheduleBeam(Beam beam) {
@@ -216,9 +185,8 @@ public class RevelationAttack extends LaserAttack {
         ServerLevel previousLevel = beamLevel.get();
         beamLevel.set(level);
         try {
-            AttackExecutor.perform(AttackRequest.withContexts(context.getOwner(), this,
-                    AttackOrigin.ABILITY_EXTRA, AttackPipelineMode.EXECUTE_ONLY,
-                    List.of(context), false));
+            context.freeze();
+            performLaserBatch(List.of(context), ignored -> 0);
         } finally {
             if (previousLevel == null) beamLevel.remove();
             else beamLevel.set(previousLevel);
@@ -237,8 +205,13 @@ public class RevelationAttack extends LaserAttack {
     }
 
     @Override
+    protected Vector3f getDefaultLaserColor() {
+        return new Vector3f(1.0F, 1.0F, 1.0F);
+    }
+
+    @Override
     protected boolean usesCollisionBatch() {
-        // Independent single-beam pulses need one world query, not a shared spatial index.
+        // Single-beam pulses need one world query, not a shared spatial index.
         return false;
     }
 

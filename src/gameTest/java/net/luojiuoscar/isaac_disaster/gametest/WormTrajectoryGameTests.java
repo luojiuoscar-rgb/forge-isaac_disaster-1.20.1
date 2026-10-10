@@ -8,6 +8,7 @@ import net.luojiuoscar.isaac_disaster.bullet.server.BulletManager;
 import net.luojiuoscar.isaac_disaster.capability.entity.EffectModulesProvider;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.*;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.impl.LaserAttack;
+import net.luojiuoscar.isaac_disaster.registries.attack_type.impl.AbstractLaserAttack;
 import net.luojiuoscar.isaac_disaster.registries.trajectory.*;
 import net.luojiuoscar.isaac_disaster.registries.trajectory.impl.HookWormTrajectoryModule;
 import net.luojiuoscar.isaac_disaster.registries.trajectory.impl.OuroborosWormTrajectoryModule;
@@ -117,7 +118,7 @@ public final class WormTrajectoryGameTests {
             var c = context(p, variant);
             for (var id : worms()) c.addTrajectoryModule(id, 1);
             c.freeze();
-            var laser = new LaserAttack.LaserProjectile(c);
+            var laser = new AbstractLaserAttack.LaserProjectile(c);
             laser.setStep(0.1);
             laser.setSpectral(true);
             laser.damage = 0;
@@ -137,7 +138,7 @@ public final class WormTrajectoryGameTests {
                 var c = context(p, ModAttackTypes.LASER.get());
                 c.addTrajectoryModule(id, 1);
                 c.freeze();
-                var laser = new LaserAttack.LaserProjectile(c);
+                var laser = new AbstractLaserAttack.LaserProjectile(c);
                 laser.setStep(0.1);
                 laser.setWidth(0.1);
                 laser.damage = 0;

@@ -12,8 +12,8 @@ import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackOrigin;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackPipelineMode;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackRequest;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackType;
-import net.luojiuoscar.isaac_disaster.registries.attack_type.DelegatingAttackType;
-import net.luojiuoscar.isaac_disaster.registries.attack_type.IChargeableAttack;
+import net.luojiuoscar.isaac_disaster.registries.attack_type.tags.DelegatingAttackType;
+import net.luojiuoscar.isaac_disaster.registries.attack_type.tags.IChargeableAttack;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
@@ -61,57 +61,36 @@ public class CursedEyeAttack extends AttackType implements IChargeableAttack, De
 
     @Override
     public void onTick(ServerPlayer player){
-        player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY).ifPresent(
-                playerAbility -> {
-                    if (playerAbility.isHoldingRightClick() &&
-                            playerAbility.getChargeAmount() < getTotalCharge(player)){
-
-                        playerAbility.setChargeAmount(playerAbility.getChargeAmount() + 1);
-                    }
-                }
-        );
-    }
-
-    @Override
-    public void onPressed(ServerPlayer player) {
-
+        player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY).ifPresent(ability -> {
+            if (ability.isHoldingRightClick()) addCharge(player, 1);
+        });
     }
 
     @Override
     public void onReleased(ServerPlayer player) {
-        player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY).ifPresent(
-                playerAbility -> {
-                    if (playerAbility.getChargeAmount() >= getShotDelay(player)
-                            && PlayerHelper.isHoldingIsaacHead(player)){
+        try {
+            player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY).ifPresent(ability -> {
+                if (ability.getChargeAmount(getChargeBarId()) < getShotDelay(player)
+                        || !PlayerHelper.isHoldingIsaacHead(player)) return;
 
-                        AttackType attack = pickLowerAttackType(player, playerAbility.getAttackTypes(), 0);
+                AttackType attack = ability.getAttackSelection().baseAttack();
+                BeforePerformAttackEvent event = new BeforePerformAttackEvent(player, this);
+                MinecraftForge.EVENT_BUS.post(event);
+                if (event.isCanceled()) return;
 
-                        BeforePerformAttackEvent event = new BeforePerformAttackEvent(player, this);
-                        MinecraftForge.EVENT_BUS.post(event);
-                        if (event.isCanceled()) return;
-
-                        double shotDelay = getShotDelay(player);
-
-                        int count;
-                        if (shotDelay < 1){
-                            count = 6;
-                        }else {
-                            count = (int) (playerAbility.getChargeAmount() / getShotDelay(player));
-                        }
-
-                        // attack
-                        ScheduledFuncHelper.scheduleForPlayer(player.getUUID(), SCHEDULE_TYPE,
-                                1,1, count, false, () -> {
-
+                double shotDelay = getShotDelay(player);
+                int count = shotDelay < 1 ? 6 : (int) (ability.getChargeAmount(getChargeBarId()) / getShotDelay(player));
+                ScheduledFuncHelper.scheduleForPlayer(player.getUUID(), SCHEDULE_TYPE,
+                        1, 1, count, false, () -> {
                             AttackExecutor.perform(AttackRequest.generated(
                                     player, attack, AttackOrigin.PLAYER_PRIMARY,
                                     AttackPipelineMode.PLAN_PREPARE_AND_EXECUTE, false));
                             attack.makeSound(player);
                         });
-                    }
-                    playerAbility.setChargeAmount(0);
-                }
-        );
+            });
+        } finally {
+            IChargeableAttack.super.onReleased(player);
+        }
     }
 
     @Override

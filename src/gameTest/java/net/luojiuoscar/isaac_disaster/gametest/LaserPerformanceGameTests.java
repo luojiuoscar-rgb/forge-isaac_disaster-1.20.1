@@ -6,6 +6,7 @@ import net.luojiuoscar.isaac_disaster.bullet.core.BulletState;
 import net.luojiuoscar.isaac_disaster.bullet.server.BulletManager;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.*;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.impl.LaserAttack;
+import net.luojiuoscar.isaac_disaster.registries.attack_type.impl.AbstractLaserAttack;
 import net.luojiuoscar.isaac_disaster.registries.trajectory.ModTrajectoryModules;
 import net.minecraft.core.BlockPos;
 import net.minecraft.gametest.framework.*;
@@ -38,7 +39,7 @@ public final class LaserPerformanceGameTests {
         try {
             for (int tick = 0; tick < 4; tick++) {
                 for (int shot = 0; shot < 8; shot++) {
-                    var laser = new LaserAttack.LaserProjectile(ctx);
+                    var laser = new AbstractLaserAttack.LaserProjectile(ctx);
                     laser.setStep(0.1); laser.setWidth(0.25); laser.setSpectral(true); laser.damage = 0;
                     totalSteps += new Probe().run(laser, h, ctx);
                     h.assertTrue(laser.traveled >= laser.getRange(), "Burst laser finishes its range");
@@ -60,12 +61,12 @@ public final class LaserPerformanceGameTests {
         var player = FakePlayerFactory.get(h.getLevel(), new GameProfile(UUID.randomUUID(), "laser-end"));
         var ctx = AttackContext.builder(player, player).position(h.absolutePos(BlockPos.ZERO).getCenter().add(0, 100, 0))
                 .mainAxis(new Vec3(1, 0, 0)).attackType(ModAttackTypes.LASER.get()).range(16).build();
-        var laser = new LaserAttack.LaserProjectile(ctx);
+        var laser = new AbstractLaserAttack.LaserProjectile(ctx);
         laser.setStep(0.1); laser.traveled = Math.nextDown(16.0);
         int residueSteps = new Probe().run(laser, h, ctx);
         h.assertTrue(laser.traveled >= laser.getRange() && residueSteps <= 2,
                 "Terminal residue finishes with a bounded final step");
-        var straight = new LaserAttack.LaserProjectile(ctx);
+        var straight = new AbstractLaserAttack.LaserProjectile(ctx);
         straight.setStep(0.1); straight.setWidth(0.1); straight.setSpectral(true);
         int straightSteps = new Probe().run(straight, h, ctx);
         h.assertTrue(straight.traveled >= straight.getRange() && straightSteps < 1000,

@@ -56,4 +56,34 @@ class ChargeRingGeometryTest {
         return pixels.stream().filter(pixel -> pixel.x() == x && pixel.y() == y)
                 .findFirst().orElseThrow().part();
     }
+
+    @Test
+    void approachingPixelRingHidesAtTheBoundariesAndUsesFineRadiusSteps() {
+        assertTrue(ChargeRingGeometry.rasterizeApproach(0f).isEmpty());
+        assertTrue(ChargeRingGeometry.rasterizeApproach(1f).isEmpty());
+        assertTrue(ChargeRingGeometry.rasterizeApproach(Float.NaN).isEmpty());
+        var shapes = new java.util.HashSet<List<ChargeRingGeometry.Span>>();
+        for (int step = 1; step < 64; step++) {
+            var spans = ChargeRingGeometry.rasterizeApproach(step / 64f);
+            assertFalse(spans.isEmpty());
+            assertTrue(spans.stream().allMatch(span -> span.width() > 0));
+            shapes.add(spans);
+        }
+        assertTrue(shapes.size() > 10, "Subpixel radius steps must avoid only four large jumps");
+        double early = averageRadius(ChargeRingGeometry.rasterizeApproach(0.01f));
+        double late = averageRadius(ChargeRingGeometry.rasterizeApproach(0.99f));
+        assertTrue(early > late + 3);
+    }
+
+    private double averageRadius(List<ChargeRingGeometry.Span> spans) {
+        double total = 0;
+        int count = 0;
+        for (var span : spans) {
+            for (int x = span.x(); x < span.x() + span.width(); x++) {
+                total += Math.hypot(x + 0.5, span.y() + 0.5);
+                count++;
+            }
+        }
+        return total / count;
+    }
 }

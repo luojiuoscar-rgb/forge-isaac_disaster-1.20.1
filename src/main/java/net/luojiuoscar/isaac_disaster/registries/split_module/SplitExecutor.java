@@ -7,7 +7,7 @@ import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackExecutor;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackRequest;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.IBulletObject;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.impl.BrimstoneAttack;
-import net.luojiuoscar.isaac_disaster.registries.attack_type.impl.LaserAttack;
+import net.luojiuoscar.isaac_disaster.registries.attack_type.impl.AbstractLaserAttack;
 import net.minecraftforge.common.MinecraftForge;
 import org.jetbrains.annotations.NotNull;
 import net.minecraft.world.phys.Vec3;
@@ -67,7 +67,7 @@ public final class SplitExecutor {
         sequence.mergeTriggerCountsFrom(resolvedSequence);
         for (var request : requests) {
             if (request.getAttackType() instanceof BrimstoneAttack brimstone
-                && parent instanceof LaserAttack.LaserProjectile laser) {
+                && parent instanceof AbstractLaserAttack.LaserProjectile laser) {
                 for (AttackContext childContext : request.getProvidedContexts()) {
                     childContext = childContext.bindAttackTypeOrCopy(request.getAttackType());
                     childContext.freeze();

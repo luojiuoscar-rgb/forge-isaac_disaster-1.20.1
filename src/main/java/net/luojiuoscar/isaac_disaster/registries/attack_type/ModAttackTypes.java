@@ -54,6 +54,4 @@ public class ModAttackTypes {
     public static final RegistryObject<AttackType> SHOOP_DA_WHOOP =
             ATTACK_TYPE_REGISTER.register("shoop_da_whoop", () -> new ShoopDaWhoop(
                     AttackPrio.BRIMSTONE.getTier(), AttackPrio.BRIMSTONE.getPriority()));
-
-
 }

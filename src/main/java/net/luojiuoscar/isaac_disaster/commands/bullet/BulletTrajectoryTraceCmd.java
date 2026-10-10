@@ -12,7 +12,6 @@ import net.luojiuoscar.isaac_disaster.bullet.server.BulletRuntime;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackContext;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.ModAttackTypes;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.impl.BrimstoneAttack;
-import net.luojiuoscar.isaac_disaster.registries.attack_type.impl.LaserAttack;
 import net.luojiuoscar.isaac_disaster.registries.bullet_color.ModBulletColors;
 import net.luojiuoscar.isaac_disaster.registries.trajectory.ModTrajectoryModules;
 import net.minecraft.commands.CommandSourceStack;

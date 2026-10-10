@@ -1,14 +1,22 @@
 package net.luojiuoscar.isaac_disaster.registries.attack_type;
 
-import net.minecraft.resources.ResourceLocation;
+import java.util.List;
+import java.util.Objects;
 
-/**
- * Immutable result of choosing the player's current attack type.
- *
- * <p>The stored priority is the selected candidate priority, not necessarily the base priority of
- * the resulting attack type. Combination rules can therefore make a delegating attack search for a
- * lower attack from the combination's position in the priority order.</p>
- */
-public record AttackSelection(ResourceLocation attackTypeId, AttackType attackType,
-                              int priorityTier, double priority) {
+/** Immutable primary/base selection and the additional attacks currently participating for a player. */
+public record AttackSelection(AttackCandidate mainCandidate, AttackCandidate baseCandidate,
+                              List<AttackType> additionalAttacks) {
+    public AttackSelection {
+        Objects.requireNonNull(mainCandidate, "main candidate");
+        Objects.requireNonNull(baseCandidate, "base candidate");
+        additionalAttacks = List.copyOf(additionalAttacks);
+    }
+
+    public AttackType mainAttack() {
+        return mainCandidate.attackType();
+    }
+
+    public AttackType baseAttack() {
+        return baseCandidate.attackType();
+    }
 }

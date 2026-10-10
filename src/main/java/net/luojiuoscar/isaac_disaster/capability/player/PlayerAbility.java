@@ -1,13 +1,14 @@
 package net.luojiuoscar.isaac_disaster.capability.player;
 
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackType;
+import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackSelection;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackSelectionContext;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackSelector;
-import net.luojiuoscar.isaac_disaster.registries.attack_type.ModAttackTypes;
+import net.luojiuoscar.isaac_disaster.registries.attack_type.tags.IChargeableAttack;
 import net.luojiuoscar.isaac_disaster.registries.bullet_color.BulletColor;
 import net.luojiuoscar.isaac_disaster.registries.bullet_color.ModBulletColors;
-import net.luojiuoscar.isaac_disaster.registries.charge_bar.ModChargeBars;
+import net.luojiuoscar.isaac_disaster.networking.ChargeBarSync;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
@@ -28,14 +29,10 @@ public class PlayerAbility {
 
     private int extraTrinketSlotCounts;
     private final Map<ResourceLocation, Integer> chargeAmounts = new HashMap<>();
-    private final Map<ResourceLocation, Float> chargeBarProgress = new HashMap<>();
-    private float preChargeProgress; // Last normalized progress sent to the client.
+    private final Map<ResourceLocation, ChargeBarSync.State> chargeBarStates = new HashMap<>();
 
     private final Map<ResourceLocation, Integer> attackType;
-    private ResourceLocation bestAttackType;
-    private AttackType cachedAttackType;
-    private int cachedAttackPriorityTier;
-    private double cachedAttackPriority;
+    private AttackSelection attackSelection;
     private final LinkedHashMap<ResourceLocation, Integer> bulletColor; // priority-ordered color id : count
     private ResourceLocation bestBulletColor;
     private final Map<ResourceLocation, Integer> bulletVisuals;
@@ -57,28 +54,20 @@ public class PlayerAbility {
         clearChargeStates();
 
         bestBulletColor = ModBulletColors.BASE.getId();
-        bestAttackType = ModAttackTypes.BULLET.getId();
-        cachedAttackType = ModAttackTypes.BULLET.get();
-        cachedAttackPriorityTier = cachedAttackType.getPriorityTier();
-        cachedAttackPriority = cachedAttackType.getPriority();
 
         attackType.clear();
         bulletColor.clear();
         bulletVisuals.clear();
+        attackSelection = AttackSelector.select(attackType);
     }
 
-    public void copyFrom(PlayerAbility source) {
-        this.holdRightClick = source.holdRightClick;
+    public void copyFrom(PlayerAbility source, ServerPlayer player) {
         this.piercing = source.piercing;
         this.homing = source.homing;
         this.spectral = source.spectral;
         this.controllable = source.controllable;
         this.extraTrinketSlotCounts = source.extraTrinketSlotCounts;
         this.bestBulletColor = source.bestBulletColor;
-        this.bestAttackType = source.bestAttackType;
-        this.cachedAttackType = source.cachedAttackType;
-        this.cachedAttackPriorityTier = source.cachedAttackPriorityTier;
-        this.cachedAttackPriority = source.cachedAttackPriority;
 
         this.attackType.clear();
         this.attackType.putAll(source.attackType);
@@ -87,6 +76,7 @@ public class PlayerAbility {
         this.bulletVisuals.clear();
         this.bulletVisuals.putAll(source.bulletVisuals);
         clearChargeStates();
+        attackSelection = AttackSelector.select(new AttackSelectionContext(attackType, player));
     }
 
     public void saveNBTData(CompoundTag nbt) {
@@ -96,7 +86,6 @@ public class PlayerAbility {
         nbt.putInt("controllable", controllable);
         nbt.putInt("trinket_slot_counts", extraTrinketSlotCounts);
         nbt.putString("best_bullet_color", bestBulletColor.toString());
-        nbt.putString("best_attack_type", bestAttackType.toString());
 
         ListTag bulletTypeList = new ListTag();
         for (Map.Entry<ResourceLocation, Integer> entry : attackType.entrySet()) {
@@ -133,7 +122,6 @@ public class PlayerAbility {
         this.controllable = nbt.getInt("controllable");
         this.extraTrinketSlotCounts = nbt.getInt("trinket_slot_counts");
         this.bestBulletColor = ResourceLocation.parse(nbt.getString("best_bullet_color"));
-        this.bestAttackType = ResourceLocation.parse(nbt.getString("best_attack_type"));
 
         attackType.clear();
         if (nbt.contains("bullet_types", Tag.TAG_LIST)) {
@@ -173,6 +161,8 @@ public class PlayerAbility {
             }
         }
 
+        clearChargeStates();
+        attackSelection = AttackSelector.select(attackType);
     }
 
     public boolean isHoldingRightClick() {
@@ -223,14 +213,6 @@ public class PlayerAbility {
         this.extraTrinketSlotCounts = amount;
     }
 
-    public int getChargeAmount() {
-        return getChargeAmount(ModChargeBars.ATTACK_CHARGE.getId());
-    }
-
-    public void setChargeAmount(int chargeAmount) {
-        setChargeAmount(ModChargeBars.ATTACK_CHARGE.getId(), chargeAmount);
-    }
-
     public int getChargeAmount(ResourceLocation id) {
         return chargeAmounts.getOrDefault(id, 0);
     }
@@ -247,62 +229,45 @@ public class PlayerAbility {
         chargeAmounts.remove(id);
     }
 
-    public Float getChargeBarProgress(ResourceLocation id) {
-        return chargeBarProgress.get(id);
+    public ChargeBarSync.State getChargeBarState(ResourceLocation id) {
+        return chargeBarStates.get(id);
     }
 
-    public void setChargeBarProgress(ResourceLocation id, Float progress) {
-        if (progress == null) chargeBarProgress.remove(id);
-        else chargeBarProgress.put(id, progress);
+    public void setChargeBarState(ResourceLocation id, ChargeBarSync.State state) {
+        if (state == null) chargeBarStates.remove(id);
+        else chargeBarStates.put(id, state);
     }
 
     public Set<ResourceLocation> getVisibleChargeBarIds() {
-        return Set.copyOf(chargeBarProgress.keySet());
+        return Set.copyOf(chargeBarStates.keySet());
     }
 
     /** Runtime charge is shared by bar ID and is deliberately neither saved nor copied. */
     public void clearChargeStates() {
         chargeAmounts.clear();
-        chargeBarProgress.clear();
+        chargeBarStates.clear();
         holdRightClick = false;
-        preChargeProgress = Float.NaN;
     }
 
-    public float getPreChargeProgress() {
-        return preChargeProgress;
+    public AttackSelection getAttackSelection() {
+        return attackSelection;
     }
 
-    public void setPreChargeProgress(float preChargeProgress) {
-        this.preChargeProgress = preChargeProgress;
+    public void tickAttacks(ServerPlayer player) {
+        AttackSelection selection = attackSelection;
+        AttackType main = selection.mainAttack();
+        if (main instanceof IChargeableAttack || PlayerHelper.isHoldingIsaacHead(player)) {
+            main.tickAttack(player);
+        }
+        for (AttackType additional : selection.additionalAttacks()) additional.tickAttack(player);
     }
 
-    public Map<ResourceLocation, Integer> getBulletTypeMap() {
-        return new HashMap<>(attackType);
-    }
-
-    public AttackType getCachedAttackType() {
-        return cachedAttackType;
-    }
-
-    /**
-     * Returns the tier of the selected attack candidate currently cached for this player.
-     *
-     * <p>This can differ from {@link AttackType#getPriorityTier()} when a combination rule selected
-     * an existing attack type as its result.</p>
-     */
-    public int getCachedAttackPriorityTier() {
-        return cachedAttackPriorityTier;
-    }
-
-    /**
-     * Returns the priority value of the selected attack candidate currently cached for this player.
-     */
-    public double getCachedAttackPriority() {
-        return cachedAttackPriority;
-    }
-
-    public void addAttackType(ResourceLocation id, int count) {
-        addAttackType(id, count, null);
+    public void handleAttackInput(ServerPlayer player, boolean pressed) {
+        AttackSelection selection = attackSelection;
+        selection.mainAttack().handleChargeInput(player, pressed);
+        for (AttackType additional : selection.additionalAttacks()) {
+            additional.handleChargeInput(player, pressed);
+        }
     }
 
     public void addAttackType(ResourceLocation id, int count, ServerPlayer player) {
@@ -312,29 +277,32 @@ public class PlayerAbility {
         }else{
             attackType.put(id, r);
         }
-        updateBestAttackType(player);
+        updateAttackSelection(player);
     }
 
-    public void updateBestAttackType() {
-        updateBestAttackType(null);
+    public void updateAttackSelection(ServerPlayer player) {
+        replaceAttackSelection(AttackSelector.select(new AttackSelectionContext(attackType, player)), player);
     }
 
-    public void updateBestAttackType(ServerPlayer player) {
-        AttackSelection selection = AttackSelector.select(new AttackSelectionContext(attackType, player));
-        this.bestAttackType = selection.attackTypeId();
-        this.cachedAttackType = selection.attackType();
-        this.cachedAttackPriorityTier = selection.priorityTier();
-        this.cachedAttackPriority = selection.priority();
+    private void replaceAttackSelection(AttackSelection selection, ServerPlayer player) {
+        AttackSelection previous = attackSelection;
+        if (previous.mainAttack() != selection.mainAttack()
+                && previous.mainAttack() instanceof IChargeableAttack charge) {
+            charge.clearCharge(player);
+        }
+        for (AttackType oldAdditional : previous.additionalAttacks()) {
+            if (!selection.additionalAttacks().contains(oldAdditional)
+                    && oldAdditional instanceof IChargeableAttack charge) {
+                charge.clearCharge(player);
+            }
+        }
+        attackSelection = selection;
     }
-
 
     public Map<ResourceLocation, Integer> getAttackTypes() {
-        return attackType;
+        return Map.copyOf(attackType);
     }
 
-    public ResourceLocation getBestAttackType(){
-        return bestAttackType;
-    }
 
     public Map<ResourceLocation, Integer> getBulletColor(){
         return new LinkedHashMap<>(bulletColor);

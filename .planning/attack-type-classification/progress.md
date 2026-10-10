@@ -1,0 +1,40 @@
+# 实施记录
+- 2026-10-10残留清理：已复核调用与领域职责，保留hasChargeAmount/调度查询/AttackContext接口；开始删除旧签名并统一显式栏ID。
+- 已删除旧客户端更新/包构造签名，合并重复攻击Map接口为不可变快照，移除copyFrom无效赋值和空TODO；删除旧弹跳兼容方法与只验证该旧契约的两个测试。
+- 四种主蓄力攻击及诅咒眼效果已迁移显式栏ID，测试改用新更新/构造接口。脚本首次读取因Windows默认GBK失败（未写入），改显式UTF-8；随后迁移计数断言预期9实际8，攻击文件已完成迁移，测试文件尚未写入，按实际8次调用单独完成测试迁移。
+- 静态检查通过：旧充能签名/默认栏重载/旧弹跳方法/重复Map访问无残留，五种蓄力攻击均显式用自身栏ID；hasChargeAmount保留。工作区及暂存区diff --check通过。
+- 新增现有PlayerAttackDispatchTest中的不可变快照测试，验证外部不能修改内部计数且快照不跟随内部变更；未运行测试。准备运行一次runData。
+- 已仅运行一次runData --offline --no-daemon，Microsoft Java17.0.11，退出码0、BUILD SUCCESSFUL in 38s；其自动compileJava依赖完成，保留现有SoulStateEffect弃用警告。providers257ms、written0，最新日志无ERROR/Exception，资源无差异，工作区/暂存区diff --check通过。
+- 本轮清理完成，未运行JUnit/GameTest、测试源码编译、客户端或游戏/视觉验收；未新增兼容接口、Controller或测试专用生产入口。
+- 已读取批准计划、当前源代码和技能。工作区存在上一轮蓄力/HUD修改，全部保留。
+- 已创建本子项目记录；开始抽象实现与接口拆分。
+- 验证结果见末尾记录。
+- 已完成分类/抽象拆分、结果缓存、所有生产消费者和玩家生命周期迁移。
+- Technology2/Revelation通过拥有计数参与附加列表，旧Technology2模块/效果与IndependentCharge已移除。
+- Revelation完整攻击由performAttack调度，脉冲保留beamLevel作用域和底层碰撞，不再进入流水线。
+- 新增AttackSelectionTest/PlayerAttackDispatchTest源码，涵盖优先级、组合、分类错误、附加去重及清理隔离；未执行。
+- 已迁移LaserProjectile引用和相关反射/家族判断测试，保留调试/分裂的单次执行。
+- 静态旧符号搜索无残留，diff --check初步通过。准备运行runData。
+- 编辑工具一次重试造成Technology2重复方法/import，已按当前内容去重；两处探索路径错误已通过文件搜索/放弃无关读取纠正。
+- 已仅运行一次runData --offline --no-daemon：退出码0，BUILD SUCCESSFUL in 2m，Microsoft Java17.0.11；providers644ms，written0。
+- run-data/logs/latest.log无ERROR/Exception，资源差异为空；工作区和缓存区diff --check通过。
+- 两个抽象父类与原版共用实现静态比较一致；旧符号搜索无残留。
+- 全部实施阶段完成。未运行JUnit/GameTest、测试源码编译或客户端；人工游戏/视觉清单仍待验收。
+
+## 2026-10-10：抽象类语义复核
+- 已读取技能和所有具体攻击的相关覆盖方法。无AGENTS.md发现；保留当前暂存/工作区修改。
+- 首次session-catchup调用因PATH无python失败；已定位Codex内置Python，以绝对路径重试。
+- 已确定迁移范围并记录findings，开始移动具体攻击策略；本轮不改数值、资源和攻击调度。
+- 已移回阵型、完整攻击策略、普通泪弹状态、普通激光音效/宽度，并使Technology2显式提供完整攻击和宽度。进一步将默认视觉颜色移至各具体激光类型；底层RGB解析共用。
+- 静态检查通过：抽象父类无makeSound/getAttackContexts/performAttack实现，无阵型/音效依赖；状态构建与宽度/默认颜色只保留抽象约定。直接继承抽象激光的三类均提供具体策略，分类不变。
+- 已与索引中的迁移前方法比较，getAttackContexts、普通泪弹createOptimizedState、普通激光performAttack的方法体一致。
+- 新增现有LaserAttackWidthTest中的Technology2/Revelation宽度案例；按约定只修改测试源码，不编译或执行测试。工作区及暂存区diff --check通过。
+- 首次runData启动前失败：Gradle默认定位C:\.gradle，无法创建wrapper锁目录，未运行任何Gradle任务。改用现有C:\Users\16136\.gradle缓存重试；Microsoft Java17已确认。
+- 一次静态搜索误用Shell花括号文件扩展，PowerShell解析失败；已改为rg文件过滤器重跑，搜索及两个diff --check均通过。
+- runData重试已进入任务，Microsoft Java17.0.11；其自动compileJava依赖完成，仅有现有SoulStateEffect弃用警告，数据生成进行中。
+- runData完成：退出码0，BUILD SUCCESSFUL in 1m 34s；providers316ms，written0。最新日志无ERROR/Exception，资源差异为空，工作区及暂存区diff --check通过。
+- 抽象类语义复核完成。本轮修改6个生产类、1个现有测试源码以及本子项目3个记录文件；保留现有BulletAttack音效修改及其他暂存/工作区内容。未执行JUnit/GameTest、客户端或游戏/视觉验收。
+- 日志核对首次输出遇到Windows GBK无法打印替换字符；错误计数已为0，改用纯ASCII统计重跑确认ERROR/Exception为0、providers316ms、written0。此为核对输出编码问题，未重跑runData。
+- 开始CSection充能需求变化修复；已确认外层门槛是根因。经测试环境检查，改为静态边界核对，不新增复刻实现的单测或仅为测试暴露方法。
+- 已删除外层未满条件，内部将总需求缓存为局部值并使用long计算下一tick充能。静态核对：20/15与20/20均发射，14/15仍当tick发射，13/15仍增加充能；按住、持头、事件取消/清零路径不变。diff --check通过，runData进行中。
+- CSection修复验证完成：仅运行一次runData --offline --no-daemon，Microsoft Java17.0.11，退出0，BUILD SUCCESSFUL in 2m7s；providers445ms，written0，日志无ERROR/Exception，资源差异为空，diff --check通过。未运行JUnit/GameTest、客户端或游戏验收；未调整暂存完整性及其他审查建议。

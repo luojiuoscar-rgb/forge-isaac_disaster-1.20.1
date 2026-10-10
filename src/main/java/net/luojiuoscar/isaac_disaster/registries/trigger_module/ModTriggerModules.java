@@ -89,8 +89,6 @@ public class ModTriggerModules {
         TRIGGER_MODULE_REGISTRY.register("c_section", CSection::new);
     public static final RegistryObject<TriggerModule> CURSED_EYE =
         TRIGGER_MODULE_REGISTRY.register("cursed_eye", CursedEye::new);
-    public static final RegistryObject<TriggerModule> TECHNOLOGY2 =
-        TRIGGER_MODULE_REGISTRY.register("technology2", Technology2::new);
     public static final RegistryObject<TriggerModule> TERRA =
         TRIGGER_MODULE_REGISTRY.register("terra", Terra::new);
     public static final RegistryObject<TriggerModule> THE_VIRUS =

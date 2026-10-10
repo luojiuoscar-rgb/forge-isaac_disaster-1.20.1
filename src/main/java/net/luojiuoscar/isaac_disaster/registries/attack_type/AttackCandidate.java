@@ -13,16 +13,16 @@ import java.util.Objects;
 public final class AttackCandidate {
     private final ResourceLocation attackTypeId;
     private final AttackType attackType;
-    private final ResourceLocation ruleId;
+    private final ResourceLocation rl;
     private final int requiredAttackCount;
     private final int priorityTier;
     private final double priority;
 
     public AttackCandidate(ResourceLocation attackTypeId, AttackType attackType,
-                           ResourceLocation ruleId, int requiredAttackCount, int priorityTier, double priority) {
+                           ResourceLocation rl, int requiredAttackCount, int priorityTier, double priority) {
         this.attackTypeId = Objects.requireNonNull(attackTypeId);
         this.attackType = Objects.requireNonNull(attackType);
-        this.ruleId = ruleId == null ? attackTypeId : ruleId;
+        this.rl = rl == null ? attackTypeId : rl;
         this.requiredAttackCount = Math.max(1, requiredAttackCount);
         this.priorityTier = priorityTier;
         this.priority = priority;
@@ -37,7 +37,7 @@ public final class AttackCandidate {
     }
 
     public ResourceLocation ruleId() {
-        return ruleId;
+        return rl;
     }
 
     public int requiredAttackCount() {

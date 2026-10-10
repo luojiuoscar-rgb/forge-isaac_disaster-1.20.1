@@ -14,7 +14,7 @@ import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackExecutor;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackOrigin;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackPipelineMode;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackRequest;
-import net.luojiuoscar.isaac_disaster.registries.attack_type.IChargeableAttack;
+import net.luojiuoscar.isaac_disaster.registries.attack_type.tags.IChargeableAttack;
 import net.luojiuoscar.isaac_disaster.sound.ModSounds;
 import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.resources.ResourceLocation;
@@ -140,13 +140,13 @@ public class CSectionAttack extends BulletAttack implements IChargeableAttack {
     public void onTick(ServerPlayer player) {
         player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY).ifPresent(
                 playerAbility -> {
-                    int charge = playerAbility.getChargeAmount();
+                    int charge = playerAbility.getChargeAmount(getChargeBarId());
 
-                    if (playerAbility.isHoldingRightClick() && charge < getTotalCharge(player)
+                    if (playerAbility.isHoldingRightClick()
                             && PlayerHelper.isHoldingIsaacHead(player)){
-
-                        if (charge + 1 >= getTotalCharge(player)){
-                            playerAbility.setChargeAmount(0);
+                        int totalCharge = getTotalCharge(player);
+                        if ((long) charge + 1 >= totalCharge){
+                            playerAbility.setChargeAmount(getChargeBarId(), 0);
 
                             BeforePerformAttackEvent event = new BeforePerformAttackEvent(player, this);
                             MinecraftForge.EVENT_BUS.post(event);
@@ -158,25 +158,13 @@ public class CSectionAttack extends BulletAttack implements IChargeableAttack {
                             makeSound(player);
 
                         }else{
-                            playerAbility.setChargeAmount(charge + 1);
+                            addCharge(player, 1);
                         }
                     }
                 }
         );
     }
     // =================== Chargeable ===================
-    @Override
-    public void onPressed(ServerPlayer player) {
-
-    }
-
-    @Override
-    public void onReleased(ServerPlayer player) {
-        player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY).ifPresent(
-                playerAbility -> playerAbility.setChargeAmount(0)
-        );
-    }
-
     @Override
     public int getTotalCharge(Player player) {
         return (int) (6 * getShotDelay(player) + 4) / 3;

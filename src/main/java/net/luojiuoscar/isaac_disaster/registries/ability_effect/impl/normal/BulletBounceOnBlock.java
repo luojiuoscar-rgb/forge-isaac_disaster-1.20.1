@@ -7,7 +7,7 @@ import net.luojiuoscar.isaac_disaster.registries.ability_effect.IAbilityEffect;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerTypes;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerType;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.IBulletObject;
-import net.luojiuoscar.isaac_disaster.registries.attack_type.impl.LaserAttack;
+import net.luojiuoscar.isaac_disaster.registries.attack_type.impl.AbstractLaserAttack;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 
@@ -26,7 +26,7 @@ public class BulletBounceOnBlock implements IAbilityEffect {
         IBulletObject b = event.getBulletObject();
 
         if (b == null) return false;
-        if (b instanceof LaserAttack.LaserProjectile laser && laser.isSpectral()) return true;
+        if (b instanceof AbstractLaserAttack.LaserProjectile laser && laser.isSpectral()) return true;
 
         Vec3 motion = b.getVelocity();
 

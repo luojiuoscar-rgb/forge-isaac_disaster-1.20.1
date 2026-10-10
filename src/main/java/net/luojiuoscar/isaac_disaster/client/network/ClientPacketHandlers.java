@@ -6,6 +6,7 @@ import net.luojiuoscar.isaac_disaster.client.ClientDataManager;
 import net.luojiuoscar.isaac_disaster.client.gui.attribute_indicator.AttributeIndicatorHudOverlay;
 import net.luojiuoscar.isaac_disaster.system.attribute_indicator.AttributeSnapshot;
 import net.luojiuoscar.isaac_disaster.bullet.client.ClientBulletRuntime;
+import net.luojiuoscar.isaac_disaster.networking.packet.ChargeBarUpdateS2CPacket;
 import net.luojiuoscar.isaac_disaster.networking.packet.bullet.BulletCorrectionBatchS2CPacket;
 import net.luojiuoscar.isaac_disaster.networking.packet.bullet.BulletCorrectionS2CPacket;
 import net.luojiuoscar.isaac_disaster.networking.packet.bullet.BulletDespawnBatchS2CPacket;
@@ -90,9 +91,12 @@ public final class ClientPacketHandlers {
         ClientBulletRuntime.INSTANCE.applyShatter(packet);
     }
 
-    public static void handleChargeUpdate(ResourceLocation id, boolean visible, float progress) {
-        if (Minecraft.getInstance().player != null) {
-            ClientDataManager.getInstance().updateChargeBar(id, visible, progress);
+    public static void handleChargeUpdate(ResourceLocation id,
+            ChargeBarUpdateS2CPacket.Action action,
+            boolean visible, float progress, float rate) {
+        var minecraft = Minecraft.getInstance();
+        if (minecraft.player != null && minecraft.player.isAlive()) {
+            ClientDataManager.getInstance().updateChargeBar(id, action, visible, progress, rate, minecraft.getFrameTime());
         }
     }
 

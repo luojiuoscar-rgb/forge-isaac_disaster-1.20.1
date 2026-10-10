@@ -15,12 +15,18 @@ import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
 import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.client.event.RenderLivingEvent;
 import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.event.level.LevelEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
 @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
 public class ClientForgeEvents {
     private static float lastLocalPlayerScale = 1.0F;
+
+    @SubscribeEvent
+    public static void onLevelUnload(LevelEvent.Unload event) {
+        if (event.getLevel().isClientSide()) ClientDataManager.getInstance().clearChargeBars();
+    }
 
     /**
      * 玩家登出时清除客户端数据
@@ -51,10 +57,14 @@ public class ClientForgeEvents {
 
         Player player = mc.player;
         if (player == null) {
+            ClientDataManager.getInstance().clearChargeBars();
             lastLocalPlayerScale = 1.0F;
             IsaacFlightClientController.resetRuntimeInput();
             return;
         }
+
+        if (!player.isAlive()) ClientDataManager.getInstance().clearChargeBars();
+        else if (!mc.isPaused()) ClientDataManager.getInstance().tickChargeBars();
 
         float scale = ScaleUtils.getScale(player);
         if (Math.abs(scale - lastLocalPlayerScale) > 0.0001F) {

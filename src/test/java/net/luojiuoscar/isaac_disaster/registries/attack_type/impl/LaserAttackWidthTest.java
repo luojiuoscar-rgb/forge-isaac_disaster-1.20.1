@@ -4,7 +4,6 @@ import net.luojiuoscar.isaac_disaster.registries.attack_pattern.impl.PatternTest
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackContext;
 import org.junit.jupiter.api.Test;
 
-import java.lang.reflect.Method;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -14,6 +13,20 @@ class LaserAttackWidthTest {
     @Test
     void normalLaserAppliesTheQuarterWidthCalibration() throws Exception {
         assertEquals(0.5, getWidth(new LaserAttack(0.0), frozenContextWithFinalScale(4.0)), EPSILON);
+    }
+
+    @Test
+    void technology2KeepsItsOwnQuarterWidthCalibration() throws Exception {
+        Technology2Attack attack = new Technology2Attack(0.0);
+        assertEquals(0.25, getWidth(attack, frozenContextWithFinalScale(1.0)), EPSILON);
+        assertEquals(0.5, getWidth(attack, frozenContextWithFinalScale(4.0)), EPSILON);
+    }
+
+    @Test
+    void revelationKeepsItsOwnUnitWidthCalibration() throws Exception {
+        RevelationAttack attack = new RevelationAttack(0, 0.0);
+        assertEquals(1.0, getWidth(attack, frozenContextWithFinalScale(1.0)), EPSILON);
+        assertEquals(2.0, getWidth(attack, frozenContextWithFinalScale(4.0)), EPSILON);
     }
 
     @Test
@@ -30,9 +43,7 @@ class LaserAttackWidthTest {
         return context;
     }
 
-    private static double getWidth(LaserAttack attack, AttackContext context) throws Exception {
-        Method method = attack.getClass().getDeclaredMethod("getWidth", AttackContext.class);
-        method.setAccessible(true);
-        return (double) method.invoke(attack, context);
+    private static double getWidth(AbstractLaserAttack attack, AttackContext context) {
+        return attack.getWidth(context);
     }
 }

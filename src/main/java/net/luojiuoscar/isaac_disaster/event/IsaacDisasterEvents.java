@@ -3,7 +3,6 @@ package net.luojiuoscar.isaac_disaster.event;
 import net.luojiuoscar.isaac_disaster.item.ModPassiveItems;
 import net.luojiuoscar.isaac_disaster.item.ModTrinkets;
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
-import net.luojiuoscar.isaac_disaster.capability.player.PlayerAbility;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerAbilityProvider;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerIsaacItemsProvider;
 import net.luojiuoscar.isaac_disaster.effect.ModEffects;
@@ -20,9 +19,6 @@ import net.luojiuoscar.isaac_disaster.registries.ability.passive.impl.BingeEater
 import net.luojiuoscar.isaac_disaster.registries.ability.passive.impl.EchoChamber;
 import net.luojiuoscar.isaac_disaster.registries.ability.passive.impl.GlitchedCrown;
 import net.luojiuoscar.isaac_disaster.registries.ability.set.ModSetAbilities;
-import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackType;
-import net.luojiuoscar.isaac_disaster.registries.attack_type.IChargeableAttack;
-import net.luojiuoscar.isaac_disaster.registries.attack_type.ModAttackTypes;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -126,24 +122,9 @@ public class IsaacDisasterEvents {
     @SubscribeEvent
     public static void onPlayerRightClick(PlayerRightClickEvent event){
         ServerPlayer player = event.getPlayer();
-        // 临时接入终末天启按下/释放，后续需重构 TODO
-        if (event.isOnPressed()) ModAttackTypes.REVELATION.get().onPressed(player);
-        else if (event.isOnReleased()) ModAttackTypes.REVELATION.get().onReleased(player);
-
-        if (player.hasEffect(ModEffects.LACRIMAL_HYPOSECRETION.get())) return;
-
-        AttackType attack = player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY)
-                .map(PlayerAbility::getCachedAttackType)
-                .orElse(ModAttackTypes.BULLET.get());
-
-        if (attack instanceof IChargeableAttack a){
-            if (event.isOnPressed()){
-                a.onPressed(player);
-            }
-
-            else if(event.isOnReleased()){
-                a.onReleased(player);
-            }
-        }
+        if (!event.isOnPressed() && !event.isOnReleased()) return;
+        player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY).ifPresent(ability -> {
+            ability.handleAttackInput(player, event.isOnPressed());
+        });
     }
 }

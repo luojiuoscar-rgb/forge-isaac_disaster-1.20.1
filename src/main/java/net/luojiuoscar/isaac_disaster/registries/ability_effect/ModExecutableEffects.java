@@ -81,8 +81,6 @@ public class ModExecutableEffects {
             EXECUTABLE_EFFECT_REGISTRY.register("random_harmful_potion", RandomHarmfulPotion::new);
     public static final RegistryObject<IExecutableEffect> BREAK_BLOCK_AND_DROP =
             EXECUTABLE_EFFECT_REGISTRY.register("break_block_and_drop", BreakBlockAndDrop::new);
-    public static final RegistryObject<IExecutableEffect> SHOOT_LASER =
-            EXECUTABLE_EFFECT_REGISTRY.register("shoot_laser", ShootLaser::new);
     public static final RegistryObject<IExecutableEffect> SWALLOWED_PENNY =
             EXECUTABLE_EFFECT_REGISTRY.register("swallowed_penny", SwallowedPenny::new);
     public static final RegistryObject<IExecutableEffect> PIGGY_BANK =

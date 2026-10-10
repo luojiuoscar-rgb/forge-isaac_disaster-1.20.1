@@ -22,6 +22,7 @@ import net.luojiuoscar.isaac_disaster.registries.ability.trinket.impl.WiggleWorm
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ModExecutableEffects;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.*;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.impl.LaserAttack;
+import net.luojiuoscar.isaac_disaster.registries.attack_type.impl.AbstractLaserAttack;
 import net.luojiuoscar.isaac_disaster.registries.trajectory.*;
 import net.luojiuoscar.isaac_disaster.registries.trajectory.impl.GravityTrajectoryModule;
 import net.luojiuoscar.isaac_disaster.registries.trajectory.impl.MyReflectionBulletTrajectoryModule;
@@ -268,8 +269,8 @@ public final class TrajectoryModuleGameTests {
         helper.assertTrue(
             fetus.getTrajectoryRuntime().origin().equals(fetus.position()),
             "Fetus origin includes its own center offset");
-        LaserAttack.LaserProjectile parent =
-            new LaserAttack.LaserProjectile(
+        AbstractLaserAttack.LaserProjectile parent =
+            new AbstractLaserAttack.LaserProjectile(
                 context.copy().bindAttackTypeOrCopy(ModAttackTypes.LASER.get()));
         helper.assertTrue(
             parent.getTrajectoryRuntime().origin().equals(spawn),
@@ -289,8 +290,8 @@ public final class TrajectoryModuleGameTests {
                 0,
                 mirrorState));
         Vec3 childSpawn = spawn.add(6, 3, 1);
-        LaserAttack.LaserProjectile child =
-            new LaserAttack.LaserProjectile(
+        AbstractLaserAttack.LaserProjectile child =
+            new AbstractLaserAttack.LaserProjectile(
                 parent.getAttackContext().toBuilder().position(childSpawn).build());
         helper.assertTrue(
             child.getTrajectoryRuntime().origin().equals(childSpawn),
@@ -315,8 +316,8 @@ public final class TrajectoryModuleGameTests {
             result.desiredPosition().distanceTo(childSpawn) < 1e-7,
             "Copied laser Reflection returns to child origin");
         for (var type : List.of(ModAttackTypes.LASER.get(), ModAttackTypes.BRIMSTONE.get())) {
-            LaserAttack.LaserProjectile typed =
-                new LaserAttack.LaserProjectile(context.toBuilder().attackType(type).build());
+            AbstractLaserAttack.LaserProjectile typed =
+                new AbstractLaserAttack.LaserProjectile(context.toBuilder().attackType(type).build());
             typed.setAttackSequenceIndex(type == ModAttackTypes.LASER.get() ? 5 : 0);
             helper.assertTrue(
                 typed.getTypeId().equals(type.getId()),
@@ -416,7 +417,7 @@ public final class TrajectoryModuleGameTests {
             .getLevel()
             .setBlockAndUpdate(wall, net.minecraft.world.level.block.Blocks.STONE.defaultBlockState());
         try {
-            LaserAttack.LaserProjectile laser = new LaserAttack.LaserProjectile(context);
+            AbstractLaserAttack.LaserProjectile laser = new AbstractLaserAttack.LaserProjectile(context);
             laser.setStep(0.1);
             laser.setWidth(0.1);
             laser.damage = 0;
@@ -481,7 +482,7 @@ public final class TrajectoryModuleGameTests {
                     context.bindAttackTypeOrCopy(type),
                     0));
             ResourceLocation expected =
-                type instanceof LaserAttack
+                type instanceof AbstractLaserAttack
                     ? ModTrajectoryModules.MY_REFLECTION_LASER.getId()
                     : ModTrajectoryModules.MY_REFLECTION_BULLET.getId();
             helper.assertTrue(context.getAttackType() == type, "Source type available at prepare");
@@ -534,7 +535,7 @@ public final class TrajectoryModuleGameTests {
                         context.addTrajectoryModule(ModTrajectoryModules.RING_WORM.getId(), 1);
                         context.addTrajectoryModule(ModTrajectoryModules.OUROBOROS_WORM.getId(), 1);
                     }
-                    LaserAttack.LaserProjectile laser = new LaserAttack.LaserProjectile(context);
+                    AbstractLaserAttack.LaserProjectile laser = new AbstractLaserAttack.LaserProjectile(context);
                     laser.setAttackSequenceIndex(brimstone ? 1 : 0);
                     laser.setStep(0.1);
                     laser.setWidth(0.1);
@@ -785,8 +786,8 @@ public final class TrajectoryModuleGameTests {
                 ((WiggleWormTrajectoryModule.State) child.getInheritedTrajectorySnapshot().restore().states().get(id)).phase() == 2.5D,
                 "Bullet runtime isolation");
         }
-        LaserAttack.LaserProjectile laser =
-            new LaserAttack.LaserProjectile(
+        AbstractLaserAttack.LaserProjectile laser =
+            new AbstractLaserAttack.LaserProjectile(
                 child.copy().bindAttackTypeOrCopy(ModAttackTypes.LASER.get()));
         helper.assertTrue(
             laser.getTrajectorySpecs().equals(child.getTrajectorySpecs()), "Laser family snapshot");
@@ -815,7 +816,7 @@ public final class TrajectoryModuleGameTests {
         for (IBulletObject projectile :
             List.of(
                 BulletState.from(changed).build(),
-                new LaserAttack.LaserProjectile(
+                new AbstractLaserAttack.LaserProjectile(
                     changed.copy().bindAttackTypeOrCopy(ModAttackTypes.LASER.get())))) {
             helper.assertTrue(
                 projectile.getTrajectoryRuntime().origin().equals(spawn), "Uses final spawn position");

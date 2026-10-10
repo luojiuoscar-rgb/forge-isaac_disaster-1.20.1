@@ -6,7 +6,7 @@ import net.luojiuoscar.isaac_disaster.capability.entity.EffectModulesProvider;
 import net.luojiuoscar.isaac_disaster.event.custom.attack.AttackContextPrepareEvent;
 import net.luojiuoscar.isaac_disaster.event.custom.attack.tear_bullet.BulletSplitEvent;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.*;
-import net.luojiuoscar.isaac_disaster.registries.attack_type.impl.LaserAttack;
+import net.luojiuoscar.isaac_disaster.registries.attack_type.impl.AbstractLaserAttack;
 import net.luojiuoscar.isaac_disaster.registries.split_module.*;
 import net.luojiuoscar.isaac_disaster.registries.trajectory.ModTrajectoryModules;
 import net.luojiuoscar.isaac_disaster.registries.trajectory.TrajectorySpec;
@@ -108,7 +108,7 @@ public final class AttackIdentityGameTests {
     public static void parasiteRetainsExternalLaserAndCricketRetypesChildren(GameTestHelper helper) {
         var player = player(helper);
         var parentContext = AttackContext.builder(player, player).attackType(Types.ICE).damage(8.0).build();
-        var parent = new LaserAttack.LaserProjectile(parentContext);
+        var parent = new AbstractLaserAttack.LaserProjectile(parentContext);
         var sequence = new SplitSequence();
         sequence.add(ModSplitModules.PARASITE.getId(), 1);
         var event = new BulletSplitEvent(parent, sequence, parent.getAttackContext(), SplitTriggerType.ENTITY);

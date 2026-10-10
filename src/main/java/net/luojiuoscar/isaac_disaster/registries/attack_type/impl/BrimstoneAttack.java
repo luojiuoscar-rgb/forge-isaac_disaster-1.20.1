@@ -9,6 +9,7 @@ import net.luojiuoscar.isaac_disaster.helper.GeometryHelper;
 import net.luojiuoscar.isaac_disaster.helper.ScheduledFuncHelper;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.*;
+import net.luojiuoscar.isaac_disaster.registries.attack_type.tags.IChargeableAttack;
 import net.luojiuoscar.isaac_disaster.sound.ModSounds;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
@@ -179,42 +180,37 @@ public class BrimstoneAttack extends LaserAttack implements IChargeableAttack {
     // =================== Chargeable ===================
     @Override
     public void onTick(ServerPlayer player) {
-        player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY).ifPresent(
-                playerAbility -> {
-                    if (playerAbility.isHoldingRightClick()
-                            && playerAbility.getChargeAmount() < getTotalCharge(player)){
-                        playerAbility.setChargeAmount(playerAbility.getChargeAmount() + 1);
-                    }
-                }
-        );
+        player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY).ifPresent(ability -> {
+            if (ability.isHoldingRightClick()) addCharge(player, 1);
+        });
     }
 
-        @Override
-        public void onPressed(ServerPlayer player) {
-            // 清除当前玩家域的schedule
-            ScheduledFuncHelper.clearByType(SCHEDULE_TYPE, player.getUUID());
+    @Override
+    public void onPressed(ServerPlayer player) {
+        IChargeableAttack.super.onPressed(player);
+        // 清除当前玩家域的schedule
+        ScheduledFuncHelper.clearByType(SCHEDULE_TYPE, player.getUUID());
+    }
+
+    @Override
+    public void onReleased(ServerPlayer player) {
+        try {
+            player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY).ifPresent(ability -> {
+                if (ability.getChargeAmount(getChargeBarId()) < getTotalCharge(player)
+                        || !PlayerHelper.isHoldingIsaacHead(player)) return;
+
+                BeforePerformAttackEvent event = new BeforePerformAttackEvent(player, this);
+                MinecraftForge.EVENT_BUS.post(event);
+                if (event.isCanceled()) return;
+
+                AttackExecutor.perform(AttackRequest.generated(
+                        player, this, AttackOrigin.PLAYER_PRIMARY,
+                        AttackPipelineMode.PLAN_PREPARE_AND_EXECUTE, false));
+                makeSound(player);
+            });
+        } finally {
+            IChargeableAttack.super.onReleased(player);
         }
-
-        @Override
-        public void onReleased(ServerPlayer player) {
-            player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY).ifPresent(
-                playerAbility -> {
-                    if (playerAbility.getChargeAmount() >= getTotalCharge(player)
-                            && PlayerHelper.isHoldingIsaacHead(player)){
-
-                        BeforePerformAttackEvent event = new BeforePerformAttackEvent(player, this);
-                        MinecraftForge.EVENT_BUS.post(event);
-                        if (event.isCanceled()) return;
-
-                        // attack
-                        AttackExecutor.perform(AttackRequest.generated(
-                                player, this, AttackOrigin.PLAYER_PRIMARY,
-                                AttackPipelineMode.PLAN_PREPARE_AND_EXECUTE, false));
-                        makeSound(player);
-                    }
-                    playerAbility.setChargeAmount(0);
-                }
-        );
     }
 
     @Override
