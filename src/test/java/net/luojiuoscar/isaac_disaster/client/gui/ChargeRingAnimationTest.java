@@ -8,6 +8,29 @@ class ChargeRingAnimationTest {
     private static final int GREEN = 0xFF7DE000;
 
     @Test
+    void distanceControlsOpacityAndKeepsTheRingOutsideTheIcon() {
+        assertEquals(26, ChargeRingAnimation.alphaAtDistance(4));
+        assertEquals(115, ChargeRingAnimation.alphaAtDistance(2));
+        assertEquals(204, ChargeRingAnimation.alphaAtDistance(0));
+        assertEquals(10.25, ChargeRingAnimation.radiusAtDistance(4), 0.00001);
+        assertEquals(6.25, ChargeRingAnimation.radiusAtDistance(0), 0.00001);
+        assertEquals(204, ChargeRingAnimation.alphaAtDistance(-1));
+        assertEquals(26, ChargeRingAnimation.alphaAtDistance(5));
+        assertEquals(26, ChargeRingAnimation.alphaAtDistance(Double.NaN));
+    }
+
+    @Test
+    void completionMovesOutwardQuicklyAndReachesTheStartingDistance() {
+        assertEquals(0, ChargeRingAnimation.completionDistance(0), 0.00001);
+        assertEquals(3, ChargeRingAnimation.completionDistance(1.8), 0.00001);
+        assertEquals(4, ChargeRingAnimation.completionDistance(3.6), 0.00001);
+        assertEquals(4, ChargeRingAnimation.completionDistance(10), 0.00001);
+        assertEquals(0, ChargeRingAnimation.completionDistance(-1), 0.00001);
+        assertEquals(70, ChargeRingAnimation.alphaAtDistance(
+                ChargeRingAnimation.completionDistance(1.8)));
+    }
+
+    @Test
     void fullChargeRepeatsWhiteAndRegisteredColorWhileKeepingAlpha() {
         for (long cycle : new long[] { 0, 400, 40_000, 4_000_000 }) {
             assertEquals(0xFFFFFFFF, ChargeRingAnimation.fillColor(1f, GREEN, cycle));

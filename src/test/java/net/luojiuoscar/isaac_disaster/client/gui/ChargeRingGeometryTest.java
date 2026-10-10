@@ -8,6 +8,21 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class ChargeRingGeometryTest {
     @Test
+    void distanceSamplingIncludesContactAndTheFarthestRing() {
+        var near = ChargeRingGeometry.rasterizeDistance(0);
+        var far = ChargeRingGeometry.rasterizeDistance(4);
+        assertFalse(near.isEmpty());
+        assertFalse(far.isEmpty());
+        assertTrue(averageRadius(far) > averageRadius(near) + 3);
+        assertEquals(ChargeRingGeometry.rasterizeApproach(0.5f),
+                ChargeRingGeometry.rasterizeDistance(2));
+        assertEquals(near, ChargeRingGeometry.rasterizeDistance(-1));
+        assertEquals(far, ChargeRingGeometry.rasterizeDistance(5));
+        assertTrue(ChargeRingGeometry.rasterizeDistance(Double.NaN).isEmpty());
+        assertTrue(ChargeRingGeometry.rasterizeDistance(Double.POSITIVE_INFINITY).isEmpty());
+    }
+
+    @Test
     void leavesTheCenterAndCornersTransparentAtEveryChargeLevel() {
         for (float progress : new float[] { 0f, 0.25f, 0.5f, 0.75f, 1f }) {
             var pixels = ChargeRingGeometry.rasterize(progress);

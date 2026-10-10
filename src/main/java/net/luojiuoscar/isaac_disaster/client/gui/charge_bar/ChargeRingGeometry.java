@@ -22,7 +22,14 @@ public final class ChargeRingGeometry {
     /** Pixel coordinates remain integers while radius advances in fine subpixel steps. */
     public static List<Span> rasterizeApproach(float progress) {
         if (!Float.isFinite(progress) || progress <= 0f || progress >= 1f) return List.of();
-        return APPROACH_RINGS.get(Math.round(progress * APPROACH_STEPS));
+        return rasterizeDistance(ChargeRingAnimation.approachDistance(progress));
+    }
+
+    /** Includes both endpoint shapes so a completed ring can expand from contact. */
+    public static List<Span> rasterizeDistance(double distance) {
+        if (!Double.isFinite(distance)) return List.of();
+        double normalized = Math.max(0, Math.min(1, distance / ChargeRingAnimation.APPROACH_DISTANCE));
+        return APPROACH_RINGS.get((int) Math.round((1 - normalized) * APPROACH_STEPS));
     }
 
     private static List<List<Span>> createApproachRings() {

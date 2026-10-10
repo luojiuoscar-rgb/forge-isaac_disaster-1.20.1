@@ -3,6 +3,7 @@ package net.luojiuoscar.isaac_disaster.client;
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.manager.PillEffectManager;
 import net.luojiuoscar.isaac_disaster.client.gui.charge_bar.ChargeBarPrediction;
+import net.luojiuoscar.isaac_disaster.client.gui.charge_bar.ChargeRingAnimation;
 import net.luojiuoscar.isaac_disaster.networking.packet.ChargeBarUpdateS2CPacket.Action;
 import net.minecraft.resources.ResourceLocation;
 
@@ -100,6 +101,14 @@ public class ClientDataManager {
         double now = chargeTicks + partialTick;
         var snapshot = new HashMap<ResourceLocation, Float>();
         chargeBars.forEach((id, state) -> snapshot.put(id, state.sample(now)));
+        return Map.copyOf(snapshot);
+    }
+
+    /** Both HUD render passes consume the same immutable, frame-interpolated visuals. */
+    public Map<ResourceLocation, ChargeRingAnimation.Visual> getChargeBarVisuals(float partialTick) {
+        double now = chargeTicks + partialTick;
+        var snapshot = new HashMap<ResourceLocation, ChargeRingAnimation.Visual>();
+        chargeBars.forEach((id, state) -> snapshot.put(id, state.sampleVisual(now)));
         return Map.copyOf(snapshot);
     }
 

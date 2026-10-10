@@ -7,6 +7,60 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class ChargeBarPredictionTest {
     @Test
+    void approachUsesPredictedProgressButCompletionWaitsForConfirmation() {
+        var state = new ChargeBarPrediction();
+        state.update(Action.START, 0f, 0.1f, 0);
+        assertFalse(state.sampleVisual(0).ringVisible());
+        assertEquals(2, state.sampleVisual(5).ringDistance(), 0.00001);
+        assertTrue(state.sampleVisual(100).ringVisible());
+        assertTrue(state.sampleVisual(100).progress() < 1f);
+        state.update(Action.END, 1f, 0f, 100);
+        assertTrue(state.sampleVisual(100).ringVisible());
+        assertEquals(0, state.sampleVisual(100).ringDistance(), 0.00001);
+        assertEquals(3, state.sampleVisual(101.8).ringDistance(), 0.00001);
+        assertFalse(state.sampleVisual(103.6).ringVisible());
+        assertEquals(1f, state.sampleVisual(103.6).progress());
+    }
+
+    @Test
+    void repeatedFullUpdatesDoNotRestartCompletion() {
+        var state = new ChargeBarPrediction();
+        state.update(Action.END, 1f, 0f, 10);
+        state.update(Action.END, 1f, 0f, 11);
+        assertEquals(3, state.sampleVisual(11.8).ringDistance(), 0.00001);
+        assertFalse(state.sampleVisual(14).ringVisible());
+        state.update(Action.END, 1f, 0f, 15);
+        assertFalse(state.sampleVisual(15).ringVisible());
+    }
+
+    @Test
+    void resetCancelsCompletionAndAllowsTheNextRoundToComplete() {
+        var state = new ChargeBarPrediction();
+        state.update(Action.END, 1f, 0f, 10);
+        state.update(Action.START, 0f, 0.1f, 11);
+        assertFalse(state.sampleVisual(11).ringVisible());
+        assertEquals(3.6, state.sampleVisual(12).ringDistance(), 0.00001);
+        state.update(Action.END, 1f, 0f, 21);
+        assertEquals(0, state.sampleVisual(21).ringDistance(), 0.00001);
+        assertTrue(state.sampleVisual(21).ringVisible());
+        state.update(Action.END, 0f, 0f, 22);
+        assertFalse(state.sampleVisual(22).ringVisible());
+    }
+
+    @Test
+    void independentCompletionClocksAndRepeatedSamplesDoNotAdvanceTime() {
+        var first = new ChargeBarPrediction();
+        var second = new ChargeBarPrediction();
+        first.update(Action.END, 1f, 0f, 10);
+        second.update(Action.END, 1f, 0f, 12);
+        var paused = first.sampleVisual(11.8);
+        assertEquals(paused, first.sampleVisual(11.8));
+        assertFalse(first.sampleVisual(14).ringVisible());
+        assertTrue(second.sampleVisual(14).ringVisible());
+        assertEquals(0, second.sampleVisual(12).ringDistance(), 0.00001);
+    }
+
+    @Test
     void advancesBetweenPacketsAndWaitsForAuthoritativeFullCharge() {
         var state = new ChargeBarPrediction();
         state.update(Action.START, 0f, 1f / 47, 0);

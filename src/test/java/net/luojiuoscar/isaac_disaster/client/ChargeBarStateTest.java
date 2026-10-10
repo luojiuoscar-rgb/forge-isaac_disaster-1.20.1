@@ -7,6 +7,35 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class ChargeBarStateTest {
     @Test
+    void visualSnapshotsFollowTheSharedClockAndHideOrClearCancelsCompletion() {
+        var data = ClientDataManager.getInstance();
+        data.init();
+        var a = ResourceLocation.fromNamespaceAndPath("test", "visual_a");
+        var b = ResourceLocation.fromNamespaceAndPath("test", "visual_b");
+        try {
+            data.updateChargeBar(a, Action.END, true, 1f, 0f, 0f);
+            data.updateChargeBar(b, Action.START, true, 0.5f, 0.1f, 0f);
+            var snapshot = data.getChargeBarVisuals(0f);
+            assertTrue(snapshot.get(a).ringVisible());
+            assertEquals(0, snapshot.get(a).ringDistance(), 0.00001);
+            data.tickChargeBars();
+            assertEquals(3, data.getChargeBarVisuals(0.8f).get(a).ringDistance(), 0.00001);
+            assertEquals(1.28, data.getChargeBarVisuals(0.8f).get(b).ringDistance(), 0.00001);
+            assertEquals(0, snapshot.get(a).ringDistance(), 0.00001);
+            data.updateChargeBar(a, Action.END, false, 0f, 0f, 0f);
+            assertFalse(data.getChargeBarVisuals(0f).containsKey(a));
+            assertTrue(data.getChargeBarVisuals(0f).containsKey(b));
+            data.clearChargeBars();
+            assertTrue(data.getChargeBarVisuals(0f).isEmpty());
+            data.updateChargeBar(a, Action.END, true, 1f, 0f, 0f);
+            assertEquals(0, data.getChargeBarVisuals(0f).get(a).ringDistance(), 0.00001);
+            assertTrue(data.getChargeBarVisuals(0f).get(a).ringVisible());
+        } finally {
+            data.init();
+        }
+    }
+
+    @Test
     void nullIdDoesNotPoisonTheVisibleStateSnapshot() {
         var data = ClientDataManager.getInstance();
         data.init();
