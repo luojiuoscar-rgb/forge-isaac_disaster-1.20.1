@@ -8,6 +8,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -39,6 +40,83 @@ class AttackSelectionTest {
                 candidate(delegate, 0, 10, 1)));
         assertSame(laser, selection.mainAttack());
         assertSame(laser, selection.baseAttack());
+    }
+
+    @Test
+    void brimstoneOverridesEitherDelegateAndTheirCombination() {
+        Basic brimstone = new Basic("brimstone", 0);
+        Delegate eye = new Delegate("cursed_eye", 0);
+        Delegate neptunus = new Delegate("neptunus", 0);
+        AttackCandidate beam = candidate(brimstone, AttackPrio.BRIMSTONE, 1);
+        AttackCandidate curse = candidate(eye, AttackPrio.CURSED_EYE, 1);
+        AttackCandidate reserve = candidate(neptunus, AttackPrio.NEPTUNUS, 1);
+        AttackCandidate beamOverride = candidate(brimstone, AttackPrio.BRIMSTONE_CURSED_EYE_COMBO, 2);
+        AttackCandidate reserveCombo = candidate(neptunus, AttackPrio.NEPTUNUS_CURSED_EYE_COMBO, 2);
+        AttackCandidate reserveLaserCombo = candidate(neptunus, AttackPrio.NEPTUNUS_LASER_COMBO, 2);
+        Basic laser = new Basic("laser", 0);
+
+        for (List<AttackCandidate> candidates : List.of(
+                List.of(beam, reserve),
+                List.of(beam, curse, beamOverride),
+                List.of(beam, curse, reserve, beamOverride, reserveCombo),
+                List.of(beam, curse, reserve, beamOverride, reserveCombo, reserveLaserCombo,
+                        candidate(laser, AttackPrio.LASER, 1)))) {
+            AttackSelection selection = select(candidates);
+            assertSame(brimstone, selection.mainAttack());
+            assertSame(brimstone, selection.baseAttack());
+        }
+    }
+
+    @Test
+    void cSectionOverridesCursedEyeIncludingExistingDelegateAndLaserCombinations() {
+        Basic fetus = new Basic("c_section", 0);
+        Basic laser = new Basic("laser", 0);
+        Delegate eye = new Delegate("cursed_eye", 0);
+        Delegate neptunus = new Delegate("neptunus", 0);
+        AttackCandidate section = candidate(fetus, AttackPrio.C_SECTION, 1);
+        AttackCandidate curse = candidate(eye, AttackPrio.CURSED_EYE, 1);
+        AttackCandidate override = candidate(fetus, AttackPrio.C_SECTION_CURSED_EYE_COMBO, 2);
+        AttackCandidate reserve = candidate(neptunus, AttackPrio.NEPTUNUS, 1);
+        AttackCandidate reserveCombo = candidate(neptunus, AttackPrio.NEPTUNUS_CURSED_EYE_COMBO, 2);
+
+        for (List<AttackCandidate> candidates : List.of(
+                List.of(section, curse, override),
+                List.of(section, curse, override, reserve, reserveCombo),
+                List.of(section, curse, override, reserve, reserveCombo,
+                        candidate(laser, AttackPrio.LASER, 1),
+                        candidate(fetus, AttackPrio.C_SECTION_LASER_COMBO, 2),
+                        candidate(neptunus, AttackPrio.NEPTUNUS_LASER_COMBO, 2)))) {
+            AttackSelection selection = select(candidates);
+            assertSame(fetus, selection.mainAttack());
+            assertSame(fetus, selection.baseAttack());
+        }
+    }
+
+    @Test
+    void brimstoneOverrideWinsAgainstCSectionOverrideButPreservesTheHaemolacriaCombination() {
+        Basic brimstone = new Basic("brimstone", 0);
+        Basic fetus = new Basic("c_section", 0);
+        Delegate eye = new Delegate("cursed_eye", 0);
+        Delegate neptunus = new Delegate("neptunus", 0);
+        List<AttackCandidate> candidates = List.of(
+                candidate(brimstone, AttackPrio.BRIMSTONE, 1),
+                candidate(fetus, AttackPrio.C_SECTION, 1),
+                candidate(eye, AttackPrio.CURSED_EYE, 1),
+                candidate(neptunus, AttackPrio.NEPTUNUS, 1),
+                candidate(neptunus, AttackPrio.NEPTUNUS_CURSED_EYE_COMBO, 2),
+                candidate(brimstone, AttackPrio.BRIMSTONE_CURSED_EYE_COMBO, 2),
+                candidate(fetus, AttackPrio.C_SECTION_CURSED_EYE_COMBO, 2));
+        AttackSelection selection = select(candidates);
+        assertSame(brimstone, selection.mainAttack());
+        assertSame(brimstone, selection.baseAttack());
+
+        Basic haemolacria = new Basic("haemolacria", 0);
+        List<AttackCandidate> withHaemolacria = new ArrayList<>(candidates);
+        withHaemolacria.add(candidate(haemolacria, AttackPrio.HAEMOLACRIA, 1));
+        withHaemolacria.add(candidate(fetus, AttackPrio.HAEMOLACRIA_C_SECTION_COMBO, 2));
+        selection = select(withHaemolacria);
+        assertSame(fetus, selection.mainAttack());
+        assertSame(fetus, selection.baseAttack());
     }
 
     @Test
@@ -96,6 +174,10 @@ class AttackSelectionTest {
 
     private static AttackCandidate candidate(AttackType attack, int tier, double priority, int required) {
         return new AttackCandidate(attack.getId(), attack, attack.getId(), required, tier, priority);
+    }
+
+    private static AttackCandidate candidate(AttackType attack, AttackPrio priority, int required) {
+        return candidate(attack, priority.getTier(), priority.getPriority(), required);
     }
 
     private static class Stub extends AttackType {

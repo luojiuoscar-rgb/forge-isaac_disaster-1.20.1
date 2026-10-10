@@ -1,0 +1,22 @@
+# 实施记录
+
+- 2026-10-10：读取当前技能和源码，确认用户已授权直接实施覆盖关系；沿用已批准重构的验证规则。
+- 创建独立子项目规划，保留全部历史记录与用户技能修改。
+- 采用现有组合注册机制，准备新增两条规则及针对实际 AttackPrio 的选择测试。
+- 已新增两条覆盖规则和两个对应优先级，普通优先级未变。
+- 测试源码新增 3 个案例，检查 9 组候选集合：成对、海王星诅咒眼组合、激光组合、两条覆盖同时存在和原血泪剖腹产组合。
+- git diff --check 通过；开始使用 Microsoft Java17 和已有 Gradle 缓存执行唯一一次 runData。
+- 首次 wrapper 启动被沙箱拒绝写入用户 Gradle 缓存锁文件，runData 尚未执行；申请缓存访问权限后继续。
+- 授权后 runData 成功（退出码0，55s），Java17.0.11，providers248ms、written0，最新日志无 ERROR/Exception，资源无差异。
+- 从实际注册源码解析六条组合规则，静态核对十组拥有集合，所有覆盖结果符合预期；剖腹产海王星仍选剖腹产，行为未修改。
+- 工作区和暂存区 diff --check 通过。仅运行数据生成，未运行 JUnit/GameTest、客户端或游戏验收；保留已有技能修改。
+- 按 tier/priority 升序重排 AttackPrio；没有修改任何已有枚举值或注册引用，新增组合优先级位于 C_SECTION 之后。
+- 已开始实现剖腹产+海王星组合：新增独立注册攻击、组合规则和继承 CSection 的自动充能/发射行为；保持 CSection 的弹体、声音、事件和特殊运行路径。
+- 组合攻击已完成：`CSectionNeptunusAttack` 继承 `CSectionAttack`，新增注册 ID、优先级和组合规则；CSection 特殊追踪、命中冷却、渲染及 LaserPlusFetus 路径支持该 ID。
+- 静态核对通过：AttackPrio 严格升序、组合继承和自动 hooks 存在；runData 成功（Java17.0.11，1m33s，providers346ms、written0），日志无 ERROR/Exception，资源无差异，diff --check 通过。
+- 未运行 JUnit/GameTest、客户端或游戏验收。
+- 根据复核移除 `isCSectionType`；组合实例的 `getId()` 直接返回 C_SECTION，使其在运行时就是剖腹产身份，注册键只负责组合候选选择。
+- 身份调整验证通过：无 `isCSectionType` 残留，C Section 运行判断恢复原逻辑；runData 成功（Java17.0.11，43s，providers277ms、written0），日志无 ERROR/Exception，资源无差异，diff --check 通过。
+- 重排后的唯一一次 runData 成功（Java17.0.11，55s，providers285ms、written0）；日志无 ERROR/Exception，生成资源无差异，diff --check 通过。
+- 顺序核对脚本第一次因 PowerShell `-join` 比较写法误报，未涉及源码；改用字符串比较后确认枚举顺序严格匹配 tier/priority 降序。
+- 2026-10-10：完成海王星覆盖血泪：`NEPTUNUS_HAEMOLACRIA` 注册要求两者，返回 Neptunus；静态检查通过。

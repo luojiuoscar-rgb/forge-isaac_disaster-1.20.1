@@ -70,6 +70,7 @@ public class CSectionAttack extends BulletAttack implements IChargeableAttack {
                 .lifetime(state.lifetime())
                 .collisionWidth(context.getBulletScale() * 0.35 * 0.6)
                 .collisionHeight(collisionHeight)
+                .noGravity(true)
                 .homingRange(6.0).spectral(true).homing(true).piercing(true)
                 .controlRange(64.0D).controlSteer(0.8D)
                 .rememberHitTargets(false).steeringMode(BulletSteeringMode.DIRECT)
@@ -138,11 +139,16 @@ public class CSectionAttack extends BulletAttack implements IChargeableAttack {
 
     @Override
     public void onTick(ServerPlayer player) {
+        tickChargeAndFire(player, true);
+    }
+
+    /** Performs the C Section charge/fire cycle; subclasses may change only its input gate. */
+    protected final void tickChargeAndFire(ServerPlayer player, boolean requireRightClick) {
         player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY).ifPresent(
                 playerAbility -> {
                     int charge = playerAbility.getChargeAmount(getChargeBarId());
 
-                    if (playerAbility.isHoldingRightClick()
+                    if ((!requireRightClick || playerAbility.isHoldingRightClick())
                             && PlayerHelper.isHoldingIsaacHead(player)){
                         int totalCharge = getTotalCharge(player);
                         if ((long) charge + 1 >= totalCharge){
@@ -164,10 +170,15 @@ public class CSectionAttack extends BulletAttack implements IChargeableAttack {
                 }
         );
     }
+
     // =================== Chargeable ===================
     @Override
     public int getTotalCharge(Player player) {
-        return (int) (6 * getShotDelay(player) + 4) / 3;
+        // Wiki: (ceil(3 * tear delay) + 1) / 30 seconds, capped at 15 fetuses/s.
+        // A normal Isaac interval includes one extra 1/30-second step.
+        double tearDelay = Math.max(0.0, getShotDelay(player) * 30.0 / 20.0 - 1.0);
+        double chargeSteps = Math.ceil(tearDelay * 3.0) + 1.0;
+        return Math.max(2, (int) Math.ceil(chargeSteps * 20.0 / 30.0));
     }
 
     @Override

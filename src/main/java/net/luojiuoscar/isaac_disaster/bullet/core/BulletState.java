@@ -42,6 +42,7 @@ public final class BulletState implements IBulletObject {
     private final BulletTrajectoryState trajectoryState;
     private float damage;
     private final BulletProfile profile;
+    private final boolean noGravity;
     private boolean spectral;
     private boolean piercing;
     private final BulletTrackingState trackingState;
@@ -71,6 +72,7 @@ public final class BulletState implements IBulletObject {
             b.alpha,
             b.colorId,
             b.visualIds);
+        this.noGravity = b.noGravity;
         AttackContext attackContext =
             b.attackContext == null ? null : b.attackContext.copyConfiguration();
         List<TrajectorySpec> specs =
@@ -635,7 +637,7 @@ public final class BulletState implements IBulletObject {
 
     @Override
     public boolean noGravity() {
-        return false;
+        return noGravity;
     }
 
     @Override
@@ -727,6 +729,7 @@ public final class BulletState implements IBulletObject {
         private SplitSequence splitSequence;
         private CompositeTrigger triggers = new CompositeTrigger();
         private Set<BlockPos> hitBlockPositions = Set.of();
+        private boolean noGravity;
         private boolean spectral, piercing, homing, controllable;
         private boolean rememberHitTargets = true;
         private BulletSteeringMode steeringMode = BulletSteeringMode.LIMITED;
@@ -867,6 +870,11 @@ public final class BulletState implements IBulletObject {
 
         public Builder piercing(boolean v) {
             piercing = v;
+            return this;
+        }
+
+        public Builder noGravity(boolean v) {
+            noGravity = v;
             return this;
         }
 

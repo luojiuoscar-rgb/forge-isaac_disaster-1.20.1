@@ -18,7 +18,6 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.common.MinecraftForge;
 
-import java.util.Arrays;
 import java.util.List;
 
 public class NeptunusAttack extends AttackType implements IChargeableAttack, DelegatingAttackType {
@@ -50,8 +49,11 @@ public class NeptunusAttack extends AttackType implements IChargeableAttack, Del
     @Override
     public void shoot(AttackContext ctx) {}
 
-    private static final double[] COEFFS =
-            {1.0,0.9,0.8,0.7,0.6,0.55,0.5,0.45,0.4,0.35,0.3,0.25,0.25,0.25,0.25};
+    private static final double[] RELEASE_DELAY_FACTORS =
+            {1.0, 0.9, 0.8, 0.7, 0.6, 0.55, 0.5, 0.45, 0.4, 0.35, 0.3, 0.25, 0.25, 0.25, 0.25};
+    private static final double[] CUMULATIVE_CHARGE_FACTORS = cumulativeFactors();
+    private static final double TOTAL_CHARGE_FACTOR =
+            CUMULATIVE_CHARGE_FACTORS[CUMULATIVE_CHARGE_FACTORS.length - 1];
 
 
     @Override
@@ -133,24 +135,31 @@ public class NeptunusAttack extends AttackType implements IChargeableAttack, Del
 
         shotDelay = Math.max(1, shotDelay);
 
-        double accumulated = 0;
-
-        for (int i = 0; i < COEFFS.length; i++) {
-
-            accumulated += shotDelay * COEFFS[i];
-
-            if (chargeAmount <= accumulated) {
-                return Math.max(1, (int)(shotDelay * COEFFS[i]));
+        double normalizedCharge = Math.max(0, chargeAmount) / shotDelay;
+        for (int i = 0; i < RELEASE_DELAY_FACTORS.length; i++) {
+            if (normalizedCharge <= CUMULATIVE_CHARGE_FACTORS[i]) {
+                return Math.max(1, (int) (shotDelay * RELEASE_DELAY_FACTORS[i]));
             }
         }
 
-        return Math.max(1, (int)(shotDelay * COEFFS[COEFFS.length - 1]));
+        return Math.max(1,
+                (int) (shotDelay * RELEASE_DELAY_FACTORS[RELEASE_DELAY_FACTORS.length - 1]));
     }
 
     @Override
     public int getTotalCharge(Player player) {
         double shotDelay = Math.max(1, getShotDelay(player));
-        return (int) (shotDelay * Arrays.stream(COEFFS).sum());
+        return (int) (shotDelay * TOTAL_CHARGE_FACTOR);
+    }
+
+    private static double[] cumulativeFactors() {
+        double[] cumulative = new double[RELEASE_DELAY_FACTORS.length];
+        double total = 0;
+        for (int i = 0; i < RELEASE_DELAY_FACTORS.length; i++) {
+            total += RELEASE_DELAY_FACTORS[i];
+            cumulative[i] = total;
+        }
+        return cumulative;
     }
 
     @Override

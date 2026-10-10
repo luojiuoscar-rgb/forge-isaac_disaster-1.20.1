@@ -1,13 +1,11 @@
 package net.luojiuoscar.isaac_disaster.registries.attack_type.impl;
 
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
-import net.luojiuoscar.isaac_disaster.attribute.ModAttributes;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerAbilityProvider;
 import net.luojiuoscar.isaac_disaster.event.custom.attack.BeforePerformAttackEvent;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.helper.GeometryHelper;
 import net.luojiuoscar.isaac_disaster.helper.ScheduledFuncHelper;
-import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.*;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.tags.IChargeableAttack;
 import net.luojiuoscar.isaac_disaster.sound.ModSounds;
@@ -16,7 +14,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.MinecraftForge;
@@ -215,14 +212,7 @@ public class BrimstoneAttack extends LaserAttack implements IChargeableAttack {
 
     @Override
     public int getTotalCharge(Player player) {
-        return (int) getShotDelay(player) * 3;
-    }
-
-    @Override
-    protected double getTears(Player player) {
-        AttributeInstance instance = player.getAttribute(ModAttributes.TEARS.get());
-        if (instance == null) return StatManager.TEARS.getBonus() * -2;
-
-        return  Math.max(instance.getValue() + (StatManager.TEARS.getBonus() * -2),-7);
+        // Repentance divides fire rate by three, without an additional tears penalty.
+        return Math.max(1, (int) Math.ceil(getShotDelay(player) * 3.0));
     }
 }

@@ -34,6 +34,38 @@ public class ModCombinationRules {
                             AttackPrio.NEPTUNUS_LASER_COMBO.getTier(),
                             AttackPrio.NEPTUNUS_LASER_COMBO.getPriority()));
 
+    public static final RegistryObject<AttackCombinationRule> NEPTUNUS_HAEMOLACRIA =
+            ATTACK_COMBINATION_RULE_REGISTRY.register(
+                    "neptunus_haemolacria", () -> new AttackCombinationRule(
+                            Set.of(ModAttackTypes.NEPTUNUS, ModAttackTypes.HAEMOLACRIA),
+                            ModAttackTypes.NEPTUNUS,
+                            AttackPrio.NEPTUNUS_HAEMOLACRIA_COMBO.getTier(),
+                            AttackPrio.NEPTUNUS_HAEMOLACRIA_COMBO.getPriority()));
+
+    public static final RegistryObject<AttackCombinationRule> BRIMSTONE_CURSED_EYE =
+            ATTACK_COMBINATION_RULE_REGISTRY.register(
+                    "brimstone_cursed_eye", () -> new AttackCombinationRule(
+                            Set.of(ModAttackTypes.BRIMSTONE, ModAttackTypes.CURSED_EYE),
+                            ModAttackTypes.BRIMSTONE,
+                            AttackPrio.BRIMSTONE_CURSED_EYE_COMBO.getTier(),
+                            AttackPrio.BRIMSTONE_CURSED_EYE_COMBO.getPriority()));
+
+    public static final RegistryObject<AttackCombinationRule> C_SECTION_CURSED_EYE =
+            ATTACK_COMBINATION_RULE_REGISTRY.register(
+                    "c_section_cursed_eye", () -> new AttackCombinationRule(
+                            Set.of(ModAttackTypes.C_SECTION, ModAttackTypes.CURSED_EYE),
+                            ModAttackTypes.C_SECTION,
+                            AttackPrio.C_SECTION_CURSED_EYE_COMBO.getTier(),
+                            AttackPrio.C_SECTION_CURSED_EYE_COMBO.getPriority()));
+
+    public static final RegistryObject<AttackCombinationRule> C_SECTION_NEPTUNUS =
+            ATTACK_COMBINATION_RULE_REGISTRY.register(
+                    "c_section_neptunus", () -> new AttackCombinationRule(
+                            Set.of(ModAttackTypes.C_SECTION, ModAttackTypes.NEPTUNUS),
+                            ModAttackTypes.C_SECTION_NEPTUNUS,
+                            AttackPrio.C_SECTION_NEPTUNUS_COMBO.getTier(),
+                            AttackPrio.C_SECTION_NEPTUNUS_COMBO.getPriority()));
+
     public static final RegistryObject<AttackCombinationRule> C_SECTION_LASER =
             ATTACK_COMBINATION_RULE_REGISTRY.register(
                     "c_section_laser", () -> new AttackCombinationRule(

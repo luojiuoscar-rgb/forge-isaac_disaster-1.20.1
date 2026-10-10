@@ -59,7 +59,7 @@ Ensures in the future item could be generated from pool without removing it from
 # CREDITS
 I would like to thank the following contributors for their invaluable help and support:
 
-- [@半只橘猫](https://github.com/cutvmh307): Provided preset loot tables for item pools.
+- [@半只橘猫](https://github.com/cutvmh307): Provided preset loot tables for item pools and item documentation for datapack version.
 
 
 

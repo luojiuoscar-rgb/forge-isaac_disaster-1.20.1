@@ -80,6 +80,31 @@ class GravityTrajectoryTest {
     }
 
     @Test
+    void trackingAndControllableBulletsIgnoreGravity() {
+        for (boolean homing : List.of(false, true)) {
+            for (boolean controllable : List.of(false, true)) {
+                if (!homing && !controllable) continue;
+                BulletState b = BulletState.builder()
+                    .position(Vec3.ZERO)
+                    .velocity(new Vec3(1, 0, 0))
+                    .baseSpeed(1)
+                    .range(40)
+                    .homing(homing)
+                    .controllable(controllable)
+                    .attackType(TestAttackTypes.BULLET)
+                    .trajectorySpecs(List.of(new TrajectorySpec(
+                        ModTrajectoryModules.GRAVITY.getId(), 0)))
+                    .build();
+
+                TrajectoryMotion motion = step(b);
+                assertEquals(new Vec3(1, 0, 0), b.velocity());
+                assertEquals(new Vec3(1, 0, 0), b.position());
+                assertEquals(1, motion.rangeCost(), 1e-10);
+            }
+        }
+    }
+
+    @Test
     void reflectionAndGravityDoNotAdvanceTwiceAndIgnoreAttachmentOrder() {
         BulletState a =
             bullet(
