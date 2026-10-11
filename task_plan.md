@@ -5,6 +5,11 @@
 No project-wide implementation plan is active. Feature work belongs in
 `.planning/<task-id>/`.
 
+Gameplay design recorded on 2026-10-11:
+[Isaac Hunger Games](.planning/isaac-hunger-games/task_plan.md).
+Requirements and discussion are saved; map editing and implementation have not
+started. The initial arena has void underneath and no indestructible floor.
+
 ## Project Rules
 
 - Target Forge `1.20.1`, Forge `47.4.9`, and the repository's configured Java

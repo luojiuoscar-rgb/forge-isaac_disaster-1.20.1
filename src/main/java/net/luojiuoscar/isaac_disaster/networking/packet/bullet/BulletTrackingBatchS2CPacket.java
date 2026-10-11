@@ -22,6 +22,11 @@ public final class BulletTrackingBatchS2CPacket {
 
         public int handle() { return handle; }
         public Vec3 position() { return position; }
+
+        public void toBytes(FriendlyByteBuf buf) {
+            buf.writeVarInt(handle);
+            writeVec(buf, position);
+        }
     }
 
     public static final class Assignment {
@@ -41,6 +46,13 @@ public final class BulletTrackingBatchS2CPacket {
         public int generation() { return generation; }
         public int handle() { return handle; }
         public boolean control() { return control; }
+
+        public void toBytes(FriendlyByteBuf buf) {
+            buf.writeVarInt(slot);
+            buf.writeVarInt(generation);
+            buf.writeVarInt(handle);
+            buf.writeBoolean(control);
+        }
     }
 
     public static final class VelocitySample {
@@ -60,6 +72,13 @@ public final class BulletTrackingBatchS2CPacket {
         public int generation() { return generation; }
         public Vec3 velocity() { return velocity; }
         public Vec3 acceleration() { return acceleration; }
+
+        public void toBytes(FriendlyByteBuf buf) {
+            buf.writeVarInt(slot);
+            buf.writeVarInt(generation);
+            writeVec(buf, velocity);
+            writeVec(buf, acceleration);
+        }
     }
 
     private final int epoch;
@@ -98,22 +117,9 @@ public final class BulletTrackingBatchS2CPacket {
     public void toBytes(FriendlyByteBuf buf) {
         buf.writeVarInt(epoch);
         buf.writeVarInt(sampleTick);
-        buf.writeCollection(targets, (value, sample) -> {
-            value.writeVarInt(sample.handle());
-            writeVec(value, sample.position());
-        });
-        buf.writeCollection(assignments, (value, assignment) -> {
-            value.writeVarInt(assignment.slot());
-            value.writeVarInt(assignment.generation());
-            value.writeVarInt(assignment.handle());
-            value.writeBoolean(assignment.control());
-        });
-        buf.writeCollection(velocitySamples, (value, sample) -> {
-            value.writeVarInt(sample.slot());
-            value.writeVarInt(sample.generation());
-            writeVec(value, sample.velocity());
-            writeVec(value, sample.acceleration());
-        });
+        buf.writeCollection(targets, (value, sample) -> sample.toBytes(value));
+        buf.writeCollection(assignments, (value, assignment) -> assignment.toBytes(value));
+        buf.writeCollection(velocitySamples, (value, sample) -> sample.toBytes(value));
     }
 
     public void handle(Supplier<NetworkEvent.Context> supplier) {

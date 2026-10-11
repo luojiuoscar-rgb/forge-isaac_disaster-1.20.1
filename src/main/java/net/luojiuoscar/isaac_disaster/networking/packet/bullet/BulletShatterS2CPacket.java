@@ -39,6 +39,16 @@ public final class BulletShatterS2CPacket {
         public float alpha() { return alpha; }
         public List<ResourceLocation> visualIds() { return visualIds; }
         public boolean fetus() { return fetus; }
+
+        public void toBytes(FriendlyByteBuf buf) {
+            writeVec(buf, position);
+            writeVec(buf, velocity);
+            buf.writeDouble(scale);
+            buf.writeInt(color);
+            buf.writeFloat(alpha);
+            buf.writeCollection(visualIds, FriendlyByteBuf::writeResourceLocation);
+            buf.writeBoolean(fetus);
+        }
     }
 
     private final int epoch;
@@ -59,15 +69,7 @@ public final class BulletShatterS2CPacket {
 
     public void toBytes(FriendlyByteBuf buf) {
         buf.writeVarInt(epoch);
-        buf.writeCollection(entries, (value, entry) -> {
-            writeVec(value, entry.position());
-            writeVec(value, entry.velocity());
-            value.writeDouble(entry.scale());
-            value.writeInt(entry.color());
-            value.writeFloat(entry.alpha());
-            value.writeCollection(entry.visualIds(), FriendlyByteBuf::writeResourceLocation);
-            value.writeBoolean(entry.fetus());
-        });
+        buf.writeCollection(entries, (value, entry) -> entry.toBytes(value));
     }
 
     public void handle(Supplier<NetworkEvent.Context> supplier) {

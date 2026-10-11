@@ -85,6 +85,7 @@ public class Config
     public static ForgeConfigSpec.DoubleValue BULLET_SCALE_BONUS;
 
     // 其他可配置项目
+    public static ForgeConfigSpec.IntValue MAX_ACTIVE_BULLETS;
     public static ForgeConfigSpec.IntValue PASSIVE_ITEM_LIMIT;
     public static ForgeConfigSpec.DoubleValue NEARBY_RANGE;
     public static ForgeConfigSpec.DoubleValue BASIC_TIME_INTERVAL;
@@ -336,6 +337,10 @@ public class Config
     }
     static {
         BUILDER.push("Misc");
+        MAX_ACTIVE_BULLETS = BUILDER
+                .comment("Maximum active optimized bullets across all server dimensions. New bullets are discarded at the limit.")
+                .defineInRange("max_active_bullets", IsaacConfigDefaults.MAX_ACTIVE_BULLETS, 1, Integer.MAX_VALUE);
+
         // 可携带的道具总数  默认999
         PASSIVE_ITEM_LIMIT = BUILDER
                 .comment("How many passive items a player can carry in the extra backpack.")

@@ -1,6 +1,7 @@
 package net.luojiuoscar.isaac_disaster.bullet.server;
 
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
+import net.luojiuoscar.isaac_disaster.Config;
 import net.luojiuoscar.isaac_disaster.bullet.core.BulletState;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackContext;
 import net.minecraftforge.event.TickEvent;
@@ -60,6 +61,11 @@ public final class BulletRuntime {
         return count;
     }
 
+    /** All dimensions share capacity; rejected bullets are never queued for later. */
+    public boolean canSpawn(ServerLevel level) {
+        return activeCount(level.getServer()) < Config.MAX_ACTIVE_BULLETS.get();
+    }
+
     /** Removes optimized bullets from all loaded dimensions and notifies every affected client stream. */
     public int clearAll(MinecraftServer server) {
         if (server == null) return 0;
@@ -92,6 +98,7 @@ public final class BulletRuntime {
             IsaacDisaster.LOGGER.warn("Discarded optimized bullet created outside a server level");
             return null;
         }
+        if (!canSpawn(level)) return null;
         double speed = Math.max(0.1D, context.getBulletSpeed());
         int lifetime = (int) Math.min(Math.max(1.0D, context.getBulletRange() / speed), 200.0D);
         return spawn(level, BulletState.from(context).lifetime(lifetime).build());
@@ -103,6 +110,7 @@ public final class BulletRuntime {
             IsaacDisaster.LOGGER.warn("Discarded optimized bullet with invalid level or state");
             return null;
         }
+        if (!canSpawn(level)) return null;
         // Temporary safety net for a rare stalled-projectile failure. Remove or revise this guard
         // once the underlying source of invalid low-speed states is identified.
         if (!state.validateRuntimeVelocity()) return null;

@@ -50,6 +50,7 @@ public final class IsaacConfigDefaults {
     public static final double HOLY_SHIELD_STRENGTH = 3.0;
     public static final double MONEY_IS_POWER_STRENGTH = 0.007;
 
+    public static final int MAX_ACTIVE_BULLETS = 20_000;
     public static final int PASSIVE_ITEM_LIMIT = 999;
     public static final boolean EXTRA_PASSIVE_ITEM_BACKPACK = false;
     public static final boolean ALLOW_CURIO_UNEQUIP = true;

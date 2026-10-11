@@ -21,8 +21,8 @@ public final class BulletCountCmd {
                                             () -> Component.literal("Active optimized bullets: " + count),
                                             false
                                     );
-                                    // Keep the command successful even when the server currently has zero bullets.
-                                    return 1;
+                                    // execute store result needs the measured count, including zero.
+                                    return count;
                                 }))));
     }
 }

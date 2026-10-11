@@ -32,6 +32,7 @@ public abstract class AbstractBulletAttack extends AttackType {
     public void shoot(AttackContext ctx) {
         LivingEntity owner = ctx.getOwner();
         if (owner == null || owner.level().isClientSide()) return;
+        if (owner.level() instanceof ServerLevel level && !BulletRuntime.INSTANCE.canSpawn(level)) return;
 
         BulletState optimized = createOptimizedState(ctx);
         if (optimized != null && owner.level() instanceof ServerLevel level) {

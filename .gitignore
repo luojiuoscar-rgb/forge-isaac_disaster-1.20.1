@@ -29,3 +29,6 @@ forge*changelog.txt
 
 # Runtime logs
 /logs/
+
+# Temporary files
+/temp/

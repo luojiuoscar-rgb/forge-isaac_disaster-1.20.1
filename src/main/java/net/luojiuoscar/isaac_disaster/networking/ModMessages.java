@@ -197,15 +197,15 @@ public class ModMessages {
     }
 
     public static <MSG> void sentToPlayer(MSG message, ServerPlayer player){
-        INSTANCE.send(PacketDistributor.PLAYER.with(() -> player), message);
+        PacketBatching.forEach(message, part -> INSTANCE.send(PacketDistributor.PLAYER.with(() -> player), part));
     }
 
     public static <MSG> void sendToTracking(MSG message, Entity entity) {
-        INSTANCE.send(PacketDistributor.TRACKING_ENTITY.with(() -> entity), message);
+        PacketBatching.forEach(message, part -> INSTANCE.send(PacketDistributor.TRACKING_ENTITY.with(() -> entity), part));
     }
 
     public static <MSG> void sendToTrackingAndSelf(MSG message, Entity entity) {
-        INSTANCE.send(PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> entity), message);
+        PacketBatching.forEach(message, part -> INSTANCE.send(PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> entity), part));
     }
 
 }

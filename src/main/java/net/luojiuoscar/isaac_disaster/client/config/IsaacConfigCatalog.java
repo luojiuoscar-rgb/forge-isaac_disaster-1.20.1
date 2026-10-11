@@ -142,6 +142,8 @@ public final class IsaacConfigCatalog {
         ));
 
         entries.addAll(Arrays.asList(
+                intEntry("max_active_bullets", IsaacConfigCategory.MISC, Config.MAX_ACTIVE_BULLETS,
+                        IsaacConfigDefaults.MAX_ACTIVE_BULLETS),
                 intEntry("passive_item_limit", IsaacConfigCategory.MISC, Config.PASSIVE_ITEM_LIMIT,
                         IsaacConfigDefaults.PASSIVE_ITEM_LIMIT),
                 booleanEntry("extra_passive_item_backpack", IsaacConfigCategory.MISC,

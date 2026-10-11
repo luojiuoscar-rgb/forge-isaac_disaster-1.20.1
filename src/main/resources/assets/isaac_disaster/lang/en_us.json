@@ -1035,6 +1035,8 @@
   "config.isaac_disaster.entry.money_is_power_strength": "金钱等于力量强度",
   "config.isaac_disaster.entry.money_is_power_strength.desc": "每点金钱提供的伤害增量",
 
+  "config.isaac_disaster.entry.max_active_bullets": "服务器泪弹数量上限",
+  "config.isaac_disaster.entry.max_active_bullets.desc": "所有维度共享的存活泪弹上限；达到上限后丢弃新增泪弹，数量下降后恢复生成",
   "config.isaac_disaster.entry.passive_item_limit": "被动道具上限",
   "config.isaac_disaster.entry.passive_item_limit.desc": "额外背包可携带的被动道具数量上限",
   "config.isaac_disaster.entry.extra_passive_item_backpack": "额外被动道具背包",
