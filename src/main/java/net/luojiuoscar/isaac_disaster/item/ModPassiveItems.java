@@ -619,4 +619,7 @@ public class ModPassiveItems {
     public static final RegistryObject<Item> MONSTROS_LUNG = ITEMS.register("monstros_lung",
             () -> new PassiveItem(new Item.Properties(), ModPassiveAbilities.MONSTROS_LUNG));
     static {ItemListManager.PASSIVE_ITEM_LIST.add(MONSTROS_LUNG);}
+    public static final RegistryObject<Item> LEAD_PENCIL = ITEMS.register("lead_pencil",
+            () -> new PassiveItem(new Item.Properties(), ModPassiveAbilities.LEAD_PENCIL));
+    static {ItemListManager.PASSIVE_ITEM_LIST.add(LEAD_PENCIL);}
 }

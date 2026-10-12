@@ -4,7 +4,7 @@ import net.luojiuoscar.isaac_disaster.event.custom.attack.AttackPlanEvent;
 import net.luojiuoscar.isaac_disaster.helper.GeometryHelper;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ContextKeys;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ExecutableEffectContext;
-import net.luojiuoscar.isaac_disaster.registries.ability_effect.IExecutableEffect;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.IAbilityEffect;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackContext;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackOrigin;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.ModAttackTypes;
@@ -16,21 +16,21 @@ import net.minecraft.world.phys.Vec3;
 import java.util.ArrayList;
 import java.util.List;
 
-public final class BrimstonePlusMonstrosLung implements IExecutableEffect {
+public final class BrimstonePlusMonstrosLung implements IAbilityEffect {
     @Override
     public TriggerType getRequiredTriggerType() {
         return ModTriggerTypes.ATTACK_PLAN;
     }
 
     @Override
-    public void apply(ExecutableEffectContext context) {
-        if (!(context.getEntity() instanceof ServerPlayer player)) return;
-        if (!(context.get(ContextKeys.EVENT) instanceof AttackPlanEvent event)) return;
+    public boolean applyEffect(ExecutableEffectContext context) {
+        if (!(context.getEntity() instanceof ServerPlayer player)) return false;
+        if (!(context.get(ContextKeys.EVENT) instanceof AttackPlanEvent event)) return false;
         if (event.getOrigin() != AttackOrigin.PLAYER_PRIMARY
-                || !ModAttackTypes.BRIMSTONE.getId().equals(event.getAttackType().getId())) return;
+                || !ModAttackTypes.BRIMSTONE.getId().equals(event.getAttackType().getId())) return true;
 
         AttackContext reference = event.getAttackType().createAttackContext(player, player);
-        if (reference == null) return;
+        if (reference == null) return false;
         Vec3 axis = reference.getMainAxis();
         Vec3 lateral = GeometryHelper.lateralAxis(axis);
         int count = 3 + player.getRandom().nextInt(3);
@@ -42,5 +42,6 @@ public final class BrimstonePlusMonstrosLung implements IExecutableEffect {
             extraContexts.add(reference.toBuilder().mainAxis(direction).useFixedLaunchTransform().build());
         }
         event.appendExtraContexts(extraContexts);
+        return true;
     }
 }

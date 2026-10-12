@@ -3,6 +3,7 @@
     {
       "rolls": 1,
       "entries": [
+        {"type": "minecraft:item", "name": "isaac_disaster:lead_pencil"},
         {"type": "minecraft:item", "name": "isaac_disaster:midnight_snack"},
         {"type": "minecraft:item", "name": "isaac_disaster:glass_eye"},
         {"type": "minecraft:item", "name": "isaac_disaster:wire_coat_hanger"},

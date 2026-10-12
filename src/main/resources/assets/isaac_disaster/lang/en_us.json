@@ -560,6 +560,9 @@
   "item.isaac_disaster.monstros_lung": "萌死戳的肺",
   "item.isaac_disaster.monstros_lung.lore.1": "蓄力散射14颗血泪",
   "item.isaac_disaster.monstros_lung.lore.2": "每颗造成100%伤害",
+  "item.isaac_disaster.lead_pencil": "铅笔",
+  "item.isaac_disaster.lead_pencil.lore.1": "每发射15次，散射12颗血泪",
+  "item.isaac_disaster.lead_pencil.lore.2": "泪弹有50%概率变红",
   "item end": "",
 
 

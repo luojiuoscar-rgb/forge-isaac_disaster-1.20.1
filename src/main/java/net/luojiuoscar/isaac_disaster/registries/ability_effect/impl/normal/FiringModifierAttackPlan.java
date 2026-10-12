@@ -4,10 +4,9 @@ import net.luojiuoscar.isaac_disaster.item.ModPassiveItems;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerIsaacItemsProvider;
 import net.luojiuoscar.isaac_disaster.effect.ModEffects;
 import net.luojiuoscar.isaac_disaster.event.custom.attack.AttackPlanEvent;
-import net.luojiuoscar.isaac_disaster.manager.id.ItemId;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ContextKeys;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ExecutableEffectContext;
-import net.luojiuoscar.isaac_disaster.registries.ability_effect.IExecutableEffect;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.IAbilityEffect;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackOrigin;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerTypes;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerType;
@@ -16,20 +15,20 @@ import net.minecraft.world.effect.MobEffectInstance;
 
 import java.util.Objects;
 
-public class FiringModifierAttackPlan implements IExecutableEffect {
+public class FiringModifierAttackPlan implements IAbilityEffect {
     @Override
     public TriggerType getRequiredTriggerType() {
         return ModTriggerTypes.ATTACK_PLAN;
     }
 
     @Override
-    public void apply(ExecutableEffectContext context) {
-        if (!(context.getEntity() instanceof ServerPlayer player)) return;
-        if (!(context.get(ContextKeys.EVENT) instanceof AttackPlanEvent event)) return;
-        if (event.getOrigin() != AttackOrigin.PLAYER_PRIMARY) return;
+    public boolean applyEffect(ExecutableEffectContext context) {
+        if (!(context.getEntity() instanceof ServerPlayer player)) return false;
+        if (!(context.get(ContextKeys.EVENT) instanceof AttackPlanEvent event)) return false;
+        if (event.getOrigin() != AttackOrigin.PLAYER_PRIMARY) return true;
 
         MobEffectInstance wiz = player.getEffect(ModEffects.THE_WIZ.get());
-        player.getCapability(PlayerIsaacItemsProvider.PLAYER_ISAAC_ITEMS).ifPresent(playerIsaacItems -> {
+        return player.getCapability(PlayerIsaacItemsProvider.PLAYER_ISAAC_ITEMS).map(playerIsaacItems -> {
             int baseCount = event.getBaseContexts().size();
             int innerEyeCount = playerIsaacItems.getItemCountFromAll(ModPassiveItems.THE_INNER_EYE.getId());
             int mutantSpiderCount = playerIsaacItems.getItemCountFromAll(ModPassiveItems.MUTANT_SPIDER.getId());
@@ -44,7 +43,8 @@ public class FiringModifierAttackPlan implements IExecutableEffect {
             event.replaceBaseContexts(event.getAttackType().getAttackContexts(player, count).stream()
                     .filter(Objects::nonNull)
                     .toList());
-        });
+            return true;
+        }).orElse(false);
     }
 
     private static int computeBulletCount(int baseCount, int innerEyeCount,

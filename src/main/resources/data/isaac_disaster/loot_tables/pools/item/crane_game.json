@@ -3,6 +3,7 @@
     {
       "rolls": 1,
       "entries": [
+        {"type": "minecraft:item", "name": "isaac_disaster:lead_pencil"},
         {"type": "minecraft:item", "name": "isaac_disaster:crickets_head"},
         {"type": "minecraft:item", "name": "isaac_disaster:glass_eye"},
         {"type": "minecraft:item", "name": "isaac_disaster:the_battery"},

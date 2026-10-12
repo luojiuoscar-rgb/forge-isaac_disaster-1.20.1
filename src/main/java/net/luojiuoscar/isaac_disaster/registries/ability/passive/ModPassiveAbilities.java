@@ -615,4 +615,7 @@ public class ModPassiveAbilities {
     public static final RegistryObject<PassiveAbility> MONSTROS_LUNG =
             PASSIVE_ABILITY_REGISTRY.register("monstros_lung",
                     () -> new MonstrosLung(ItemId.MONSTROS_LUNG.getId(), ItemId.MONSTROS_LUNG.getLevel()));
+    public static final RegistryObject<PassiveAbility> LEAD_PENCIL =
+            PASSIVE_ABILITY_REGISTRY.register("lead_pencil",
+                    () -> new LeadPencil(ItemId.LEAD_PENCIL.getId(), ItemId.LEAD_PENCIL.getLevel()));
 }

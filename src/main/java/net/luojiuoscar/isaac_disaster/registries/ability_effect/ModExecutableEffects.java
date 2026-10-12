@@ -99,6 +99,10 @@ public class ModExecutableEffects {
             EXECUTABLE_EFFECT_REGISTRY.register("firing_modifier_shot_delay", FiringModifierShotDelay::new);
     public static final RegistryObject<IExecutableEffect> BRIMSTONE_PLUS_MONSTROS_LUNG =
             EXECUTABLE_EFFECT_REGISTRY.register("brimstone_plus_monstros_lung", BrimstonePlusMonstrosLung::new);
+    public static final RegistryObject<IExecutableEffect> LEAD_PENCIL_BURST =
+            EXECUTABLE_EFFECT_REGISTRY.register("lead_pencil_burst", LeadPencilBurst::new);
+    public static final RegistryObject<IExecutableEffect> LEAD_PENCIL_SHOT_COUNTER =
+            EXECUTABLE_EFFECT_REGISTRY.register("lead_pencil_shot_counter", LeadPencilShotCounter::new);
     public static final RegistryObject<IExecutableEffect> HABIT =
             EXECUTABLE_EFFECT_REGISTRY.register("habit", Habit::new);
     public static final RegistryObject<IExecutableEffect> CURSE_OF_THE_TOWER =

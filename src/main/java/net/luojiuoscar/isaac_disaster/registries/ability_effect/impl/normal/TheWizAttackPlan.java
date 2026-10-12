@@ -4,7 +4,7 @@ import net.luojiuoscar.isaac_disaster.effect.ModEffects;
 import net.luojiuoscar.isaac_disaster.event.custom.attack.AttackPlanEvent;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ContextKeys;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ExecutableEffectContext;
-import net.luojiuoscar.isaac_disaster.registries.ability_effect.IExecutableEffect;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.IAbilityEffect;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackContext;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackType;
 import net.luojiuoscar.isaac_disaster.registries.attack_pattern.impl.WizAttackPattern;
@@ -16,25 +16,26 @@ import net.minecraft.world.effect.MobEffectInstance;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TheWizAttackPlan implements IExecutableEffect {
+public class TheWizAttackPlan implements IAbilityEffect {
     @Override
     public TriggerType getRequiredTriggerType() {
         return ModTriggerTypes.ATTACK_PLAN;
     }
 
     @Override
-    public void apply(ExecutableEffectContext context) {
-        if (!(context.getEntity() instanceof ServerPlayer player)) return;
-        if (!(context.get(ContextKeys.EVENT) instanceof AttackPlanEvent event)) return;
+    public boolean applyEffect(ExecutableEffectContext context) {
+        if (!(context.getEntity() instanceof ServerPlayer player)) return false;
+        if (!(context.get(ContextKeys.EVENT) instanceof AttackPlanEvent event)) return false;
 
         MobEffectInstance effect = player.getEffect(ModEffects.THE_WIZ.get());
-        if (effect == null) return;
+        if (effect == null) return true;
 
         if (effect.getAmplifier() > 0) {
             replaceWithDualSpread(event, player);
         } else {
             rotateBaseContexts(event, player);
         }
+        return true;
     }
 
     private static void replaceWithDualSpread(AttackPlanEvent event, ServerPlayer player) {

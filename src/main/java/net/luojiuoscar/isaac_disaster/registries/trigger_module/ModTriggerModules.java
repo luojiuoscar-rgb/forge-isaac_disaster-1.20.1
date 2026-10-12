@@ -171,4 +171,6 @@ public class ModTriggerModules {
         TRIGGER_MODULE_REGISTRY.register("haemolacria", Haemolacria::new);
     public static final RegistryObject<TriggerModule> BRIMSTONE_MONSTROS_LUNG =
         TRIGGER_MODULE_REGISTRY.register("brimstone_monstros_lung", BrimstoneMonstrosLung::new);
+    public static final RegistryObject<TriggerModule> LEAD_PENCIL =
+        TRIGGER_MODULE_REGISTRY.register("lead_pencil", LeadPencil::new);
 }

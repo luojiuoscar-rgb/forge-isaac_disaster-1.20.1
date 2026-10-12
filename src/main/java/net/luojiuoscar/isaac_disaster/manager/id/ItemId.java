@@ -182,7 +182,8 @@ public enum ItemId {
     COMPOUND_FRACTURE(2),
     HAEMOLACRIA(4),
     REVELATION(4),
-    MONSTROS_LUNG(2);
+    MONSTROS_LUNG(2),
+    LEAD_PENCIL(3);
 
 
 
