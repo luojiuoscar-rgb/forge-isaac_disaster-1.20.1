@@ -93,7 +93,7 @@ class AttackSelectionTest {
     }
 
     @Test
-    void brimstoneOverrideWinsAgainstCSectionOverrideButPreservesTheHaemolacriaCombination() {
+    void brimstoneCursedEyeOverrideAlsoWinsAgainstTheHaemolacriaCSectionCombination() {
         Basic brimstone = new Basic("brimstone", 0);
         Basic fetus = new Basic("c_section", 0);
         Delegate eye = new Delegate("cursed_eye", 0);
@@ -115,8 +115,28 @@ class AttackSelectionTest {
         withHaemolacria.add(candidate(haemolacria, AttackPrio.HAEMOLACRIA, 1));
         withHaemolacria.add(candidate(fetus, AttackPrio.HAEMOLACRIA_C_SECTION_COMBO, 2));
         selection = select(withHaemolacria);
+        assertSame(brimstone, selection.mainAttack());
+        assertSame(brimstone, selection.baseAttack());
+    }
+
+    @Test
+    void brimstoneHaemolacriaCSectionCombinationOverridesThePair() {
+        Basic brimstone = new Basic("brimstone", 0);
+        Basic haemolacria = new Basic("haemolacria", 0);
+        Basic fetus = new Basic("c_section", 0);
+        List<AttackCandidate> candidates = new ArrayList<>(List.of(
+                candidate(brimstone, AttackPrio.BRIMSTONE, 1),
+                candidate(haemolacria, AttackPrio.HAEMOLACRIA, 1),
+                candidate(fetus, AttackPrio.C_SECTION, 1),
+                candidate(fetus, AttackPrio.HAEMOLACRIA_C_SECTION_COMBO, 2)));
+        AttackSelection selection = select(candidates);
         assertSame(fetus, selection.mainAttack());
         assertSame(fetus, selection.baseAttack());
+
+        candidates.add(candidate(brimstone, AttackPrio.BRIMSTONE_HAEMOLACRIA_C_SECTION_COMBO, 3));
+        selection = select(candidates);
+        assertSame(brimstone, selection.mainAttack());
+        assertSame(brimstone, selection.baseAttack());
     }
 
     @Test

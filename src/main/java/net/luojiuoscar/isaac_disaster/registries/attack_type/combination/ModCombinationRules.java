@@ -58,14 +58,6 @@ public class ModCombinationRules {
                             AttackPrio.C_SECTION_CURSED_EYE_COMBO.getTier(),
                             AttackPrio.C_SECTION_CURSED_EYE_COMBO.getPriority()));
 
-    public static final RegistryObject<AttackCombinationRule> C_SECTION_NEPTUNUS =
-            ATTACK_COMBINATION_RULE_REGISTRY.register(
-                    "c_section_neptunus", () -> new AttackCombinationRule(
-                            Set.of(ModAttackTypes.C_SECTION, ModAttackTypes.NEPTUNUS),
-                            ModAttackTypes.C_SECTION_NEPTUNUS,
-                            AttackPrio.C_SECTION_NEPTUNUS_COMBO.getTier(),
-                            AttackPrio.C_SECTION_NEPTUNUS_COMBO.getPriority()));
-
     public static final RegistryObject<AttackCombinationRule> C_SECTION_LASER =
             ATTACK_COMBINATION_RULE_REGISTRY.register(
                     "c_section_laser", () -> new AttackCombinationRule(
@@ -81,4 +73,28 @@ public class ModCombinationRules {
                             ModAttackTypes.C_SECTION,
                             AttackPrio.HAEMOLACRIA_C_SECTION_COMBO.getTier(),
                             AttackPrio.HAEMOLACRIA_C_SECTION_COMBO.getPriority()));
+
+    public static final RegistryObject<AttackCombinationRule> BRIMSTONE_HAEMOLACRIA_C_SECTION =
+            ATTACK_COMBINATION_RULE_REGISTRY.register(
+                    "brimstone_haemolacria_c_section", () -> new AttackCombinationRule(
+                            Set.of(ModAttackTypes.BRIMSTONE, ModAttackTypes.HAEMOLACRIA, ModAttackTypes.C_SECTION),
+                            ModAttackTypes.BRIMSTONE,
+                            AttackPrio.BRIMSTONE_HAEMOLACRIA_C_SECTION_COMBO.getTier(),
+                            AttackPrio.BRIMSTONE_HAEMOLACRIA_C_SECTION_COMBO.getPriority()));
+
+    public static final RegistryObject<AttackCombinationRule> BRIMSTONE_MONSTROS_LUNG =
+            ATTACK_COMBINATION_RULE_REGISTRY.register(
+                    "brimstone_monstros_lung", () -> new AttackCombinationRule(
+                            Set.of(ModAttackTypes.BRIMSTONE, ModAttackTypes.MONSTROS_LUNG),
+                            ModAttackTypes.BRIMSTONE,
+                            AttackPrio.BRIMSTONE_MONSTROS_LUNG_COMBO.getTier(),
+                            AttackPrio.BRIMSTONE_MONSTROS_LUNG_COMBO.getPriority()));
+
+    public static final RegistryObject<AttackCombinationRule> C_SECTION_MONSTROS_LUNG =
+            ATTACK_COMBINATION_RULE_REGISTRY.register(
+                    "c_section_monstros_lung", () -> new AttackCombinationRule(
+                            Set.of(ModAttackTypes.C_SECTION, ModAttackTypes.MONSTROS_LUNG),
+                            ModAttackTypes.C_SECTION,
+                            AttackPrio.C_SECTION_MONSTROS_LUNG_COMBO.getTier(),
+                            AttackPrio.C_SECTION_MONSTROS_LUNG_COMBO.getPriority()));
 }

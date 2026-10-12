@@ -35,10 +35,6 @@ public class ModAttackTypes {
             ATTACK_TYPE_REGISTER.register("c_section", () -> new CSectionAttack(
                     AttackPrio.C_SECTION.getTier(), AttackPrio.C_SECTION.getPriority()));
 
-    public static final RegistryObject<AttackType> C_SECTION_NEPTUNUS =
-            ATTACK_TYPE_REGISTER.register("c_section_neptunus", () -> new CSectionNeptunusAttack(
-                    AttackPrio.C_SECTION_NEPTUNUS_COMBO.getTier(), AttackPrio.C_SECTION_NEPTUNUS_COMBO.getPriority()));
-
     public static final RegistryObject<AttackType> CURSED_EYE =
             ATTACK_TYPE_REGISTER.register("cursed_eye", () -> new CursedEyeAttack(
                     AttackPrio.CURSED_EYE.getTier(), AttackPrio.CURSED_EYE.getPriority()));
@@ -58,4 +54,8 @@ public class ModAttackTypes {
     public static final RegistryObject<AttackType> SHOOP_DA_WHOOP =
             ATTACK_TYPE_REGISTER.register("shoop_da_whoop", () -> new ShoopDaWhoop(
                     AttackPrio.BRIMSTONE.getTier(), AttackPrio.BRIMSTONE.getPriority()));
+
+    public static final RegistryObject<AttackType> MONSTROS_LUNG =
+            ATTACK_TYPE_REGISTER.register("monstros_lung", () -> new MonstrosLungAttack(
+                    AttackPrio.MONSTROS_LUNG.getTier(), AttackPrio.MONSTROS_LUNG.getPriority()));
 }

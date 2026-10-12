@@ -13,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class IsaacConfigDefaultsTest {
     @AfterEach
     void unload() {
-        Config.SPEC.setConfig(null);
+        Config.spec().setConfig(null);
         IsaacClientConfig.SPEC.setConfig(null);
     }
 
@@ -21,7 +21,7 @@ class IsaacConfigDefaultsTest {
     void newConfigsStartWithTheSameValuesAsEveryResetButton() {
         CommentedConfig common = CommentedConfig.inMemory();
         common.set("items", List.of());
-        Config.SPEC.setConfig(common);
+        Config.spec().setConfig(common);
         IsaacClientConfig.SPEC.setConfig(CommentedConfig.inMemory());
         for (IsaacConfigEntry<?> entry : IsaacConfigCatalog.entries()) {
             assertEquals(entry.defaultValue(), entry.value().get(), entry.id());
@@ -34,7 +34,7 @@ class IsaacConfigDefaultsTest {
         common.set("items", List.of());
         common.set(Config.DEFAULT_BULLET_RANGE.getPath(), 24.0);
         common.set(Config.RANGE_BONUS.getPath(), 5.0);
-        Config.SPEC.setConfig(common);
+        Config.spec().setConfig(common);
         assertEquals(24.0, Config.DEFAULT_BULLET_RANGE.get());
         assertEquals(5.0, Config.RANGE_BONUS.get());
     }

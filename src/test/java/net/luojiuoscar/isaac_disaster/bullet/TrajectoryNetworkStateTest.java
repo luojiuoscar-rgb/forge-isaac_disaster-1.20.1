@@ -15,6 +15,8 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.Vec3;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 class TrajectoryNetworkStateTest {
     private static final ResourceLocation ID = ResourceLocation.parse("isaac_disaster:wiggle_worm");
@@ -58,8 +60,9 @@ class TrajectoryNetworkStateTest {
             0, actual.kinematics().launchForward().distanceTo(new Vec3(1, 1, 0).normalize()), 1e-12);
     }
 
-    @Test
-    void spawnRoundTripRestoresWholeRuntimeWithoutAliasing() {
+    @ParameterizedTest
+    @ValueSource(booleans = {false, true})
+    void spawnRoundTripRestoresWholeRuntimeWithoutAliasing(boolean noGravity) {
         var source = runtime();
         var packet =
             new BulletSpawnS2CPacket(
@@ -93,16 +96,18 @@ class TrajectoryNetworkStateTest {
                 0,
                 0,
                  BulletSteeringMode.DIRECT,
-                 source.snapshot());
+                 source.snapshot(), noGravity);
         ((WiggleWormTrajectoryModule.State) source.states().get(ID)).phase(99);
         var buffer = new FriendlyByteBuf(Unpooled.buffer());
         try {
             packet.toBytes(buffer);
             var decoded = new BulletSpawnS2CPacket(buffer);
             assertEquals(0, buffer.readableBytes());
+            assertEquals(noGravity, decoded.noGravity());
             assertRuntime(decoded.trajectorySnapshot().restore());
             ClientBulletRuntime.INSTANCE.spawn(decoded);
             var client = ClientBulletRuntime.INSTANCE.stream().get(7, 3);
+            assertEquals(noGravity, client.noGravity());
             assertEquals(ResourceLocation.parse("addon:blue_flame"), client.getTypeId());
             assertEquals(ResourceLocation.parse("addon:flame"), client.getRootTypeId());
             assertEquals(BulletSteeringMode.DIRECT, client.steeringMode());

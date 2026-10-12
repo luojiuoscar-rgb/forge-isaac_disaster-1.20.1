@@ -7,21 +7,25 @@ package net.luojiuoscar.isaac_disaster.registries.attack_type;
  * attack types. This enum is only a readable list of presets for this mod.</p>
  */
 public enum AttackPrio {
+    // 按 tier 升序排列，同 tier 内按 priority 升序排列，越往下优先级越高。
     BULLET(0, 0),
     NEPTUNUS(0, 100),
     C_SECTION(0, 200),
-    C_SECTION_NEPTUNUS_COMBO(0, 300),
     LASER(100, 0),
-    NEPTUNUS_LASER_COMBO(100, 50),
-    C_SECTION_LASER_COMBO(100, 100),
+    NEPTUNUS_LASER_COMBO(100, 1),
+    C_SECTION_LASER_COMBO(100, 2),
     BRIMSTONE(100, 200),
     HAEMOLACRIA(100, 300),
-    NEPTUNUS_HAEMOLACRIA_COMBO(100, 400),
+    NEPTUNUS_HAEMOLACRIA_COMBO(100, 301),
+    HAEMOLACRIA_C_SECTION_COMBO(100, 302),
+    BRIMSTONE_HAEMOLACRIA_C_SECTION_COMBO(100, 303),
     CURSED_EYE(200, 0),
     NEPTUNUS_CURSED_EYE_COMBO(200, 1),
-    C_SECTION_CURSED_EYE_COMBO(200, 100),
-    BRIMSTONE_CURSED_EYE_COMBO(200, 200),
-    HAEMOLACRIA_C_SECTION_COMBO(300, 0);
+    C_SECTION_CURSED_EYE_COMBO(200, 2),
+    BRIMSTONE_CURSED_EYE_COMBO(200, 3),
+    MONSTROS_LUNG(200, 300),
+    C_SECTION_MONSTROS_LUNG_COMBO(200, 301),
+    BRIMSTONE_MONSTROS_LUNG_COMBO(200, 302);
 
     private final int tier;
     private final double priority;

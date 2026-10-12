@@ -611,4 +611,8 @@ public class ModPassiveAbilities {
     public static final RegistryObject<PassiveAbility> REVELATION =
             PASSIVE_ABILITY_REGISTRY.register("revelation",
                     () -> new Revelation(ItemId.REVELATION.getId(), ItemId.REVELATION.getLevel()));
+
+    public static final RegistryObject<PassiveAbility> MONSTROS_LUNG =
+            PASSIVE_ABILITY_REGISTRY.register("monstros_lung",
+                    () -> new MonstrosLung(ItemId.MONSTROS_LUNG.getId(), ItemId.MONSTROS_LUNG.getLevel()));
 }

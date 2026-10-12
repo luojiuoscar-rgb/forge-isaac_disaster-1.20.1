@@ -266,7 +266,7 @@ public final class BulletRuntime {
                 state.getTypeId(), state.getRootTypeId(),
                 state.ownerUuid(), state.isHoming(), state.isControllable(), state.homingRange(), state.homingSteer(),
                  state.controlRange(), state.controlSteer(), state.steeringMode(),
-                 state.getTrajectoryRuntime().snapshot());
+                 state.getTrajectoryRuntime().snapshot(), state.noGravity());
     }
 
     private static long identity(int slot, int generation) {

@@ -181,7 +181,8 @@ public enum ItemId {
     CRICKETS_BODY(3),
     COMPOUND_FRACTURE(2),
     HAEMOLACRIA(4),
-    REVELATION(4);
+    REVELATION(4),
+    MONSTROS_LUNG(2);
 
 
 

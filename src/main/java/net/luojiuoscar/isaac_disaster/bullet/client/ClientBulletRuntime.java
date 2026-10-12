@@ -73,6 +73,7 @@ public final class ClientBulletRuntime {
                     .steeringMode(packet.steeringMode())
                     .homing(packet.homing())
                     .controllable(packet.controllable())
+                    .noGravity(packet.noGravity())
                     .homingRange(packet.homingRange())
                     .homingSteer(packet.homingSteer())
                     .controlRange(packet.controlRange())

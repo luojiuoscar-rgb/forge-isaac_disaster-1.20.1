@@ -7,6 +7,7 @@ import net.luojiuoscar.isaac_disaster.capability.player.PlayerAbilityProvider;
 import net.luojiuoscar.isaac_disaster.bullet.core.BulletState;
 import net.luojiuoscar.isaac_disaster.event.custom.attack.BeforePerformAttackEvent;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
+import net.luojiuoscar.isaac_disaster.item.ModPassiveItems;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.CompositeTrigger;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackContext;
 import net.luojiuoscar.isaac_disaster.helper.GeometryHelper;
@@ -139,16 +140,11 @@ public class CSectionAttack extends BulletAttack implements IChargeableAttack {
 
     @Override
     public void onTick(ServerPlayer player) {
-        tickChargeAndFire(player, true);
-    }
-
-    /** Performs the C Section charge/fire cycle; subclasses may change only its input gate. */
-    protected final void tickChargeAndFire(ServerPlayer player, boolean requireRightClick) {
         player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY).ifPresent(
                 playerAbility -> {
                     int charge = playerAbility.getChargeAmount(getChargeBarId());
 
-                    if ((!requireRightClick || playerAbility.isHoldingRightClick())
+                    if ((hasNeptunus(player) || playerAbility.isHoldingRightClick())
                             && PlayerHelper.isHoldingIsaacHead(player)){
                         int totalCharge = getTotalCharge(player);
                         if ((long) charge + 1 >= totalCharge){
@@ -169,6 +165,25 @@ public class CSectionAttack extends BulletAttack implements IChargeableAttack {
                     }
                 }
         );
+    }
+
+    @Override
+    public void onPressed(ServerPlayer player) {
+        if (!hasNeptunus(player)) IChargeableAttack.super.onPressed(player);
+    }
+
+    @Override
+    public void onReleased(ServerPlayer player) {
+        if (!hasNeptunus(player)) IChargeableAttack.super.onReleased(player);
+    }
+
+    @Override
+    public int getChargePerTick(ServerPlayer player) {
+        return hasNeptunus(player) ? 1 : IChargeableAttack.super.getChargePerTick(player);
+    }
+
+    private boolean hasNeptunus(ServerPlayer player) {
+        return PlayerHelper.hasItem(ModPassiveItems.NEPTUNUS.getId(), player);
     }
 
     // =================== Chargeable ===================

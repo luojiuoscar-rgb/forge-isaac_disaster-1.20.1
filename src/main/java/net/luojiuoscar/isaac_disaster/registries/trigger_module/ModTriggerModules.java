@@ -169,4 +169,6 @@ public class ModTriggerModules {
         TRIGGER_MODULE_REGISTRY.register("compound_fracture", CompoundFracture::new);
     public static final RegistryObject<TriggerModule> HAEMOLACRIA =
         TRIGGER_MODULE_REGISTRY.register("haemolacria", Haemolacria::new);
+    public static final RegistryObject<TriggerModule> BRIMSTONE_MONSTROS_LUNG =
+        TRIGGER_MODULE_REGISTRY.register("brimstone_monstros_lung", BrimstoneMonstrosLung::new);
 }

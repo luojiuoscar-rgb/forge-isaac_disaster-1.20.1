@@ -615,4 +615,8 @@ public class ModPassiveItems {
     public static final RegistryObject<Item> REVELATION = ITEMS.register("revelation",
             () -> new PassiveItem(new Item.Properties(), ModPassiveAbilities.REVELATION));
     static {ItemListManager.PASSIVE_ITEM_LIST.add(REVELATION);}
+
+    public static final RegistryObject<Item> MONSTROS_LUNG = ITEMS.register("monstros_lung",
+            () -> new PassiveItem(new Item.Properties(), ModPassiveAbilities.MONSTROS_LUNG));
+    static {ItemListManager.PASSIVE_ITEM_LIST.add(MONSTROS_LUNG);}
 }
