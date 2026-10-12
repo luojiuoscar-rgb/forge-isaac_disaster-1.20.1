@@ -239,7 +239,7 @@ public class Config
                 .comment("Base value of scale increment")
                 .defineInRange("scale_bonus", IsaacConfigDefaults.SCALE_BONUS, 0.0, 99999.0);
 
-        // 射程  默认0.1
+        // 射程增量默认3.0
         RANGE_BONUS = BUILDER
                 .comment("Base value of range increment")
                 .defineInRange("range_bonus", IsaacConfigDefaults.RANGE_BONUS, 0.0, 99999.0);

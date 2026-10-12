@@ -1,6 +1,7 @@
 package net.luojiuoscar.isaac_disaster.attribute;
 
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
+import net.luojiuoscar.isaac_disaster.config.IsaacConfigDefaults;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.RangedAttribute;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -17,37 +18,37 @@ public class ModAttributes {
         MOD_ATTRIBUTE.register(bus);
     }
     public static final RegistryObject<Attribute> SCALE = MOD_ATTRIBUTE.register("scale",
-            () -> new RangedAttribute("attribute.name.generic.scale", 1.0D, 0.2D, 8.0D).setSyncable(true));
+            () -> new RangedAttribute("attribute.name.generic.scale", IsaacConfigDefaults.DEFAULT_SCALE, 0.2D, 8.0D).setSyncable(true));
 
     public static final RegistryObject<Attribute> BULLET_SPEED = MOD_ATTRIBUTE.register("bullet_speed",
-            () -> new RangedAttribute("attribute.isaac_disaster.bullet_speed", 1.0D, -1024.0D, 1024.0D).setSyncable(true));
+            () -> new RangedAttribute("attribute.isaac_disaster.bullet_speed", IsaacConfigDefaults.DEFAULT_BULLET_SPEED, -1024.0D, 1024.0D).setSyncable(true));
 
     public static final RegistryObject<Attribute> BULLET_RANGE = MOD_ATTRIBUTE.register("bullet_range",
-            () -> new RangedAttribute("attribute.isaac_disaster.bullet_range", 18.0D, -1024.0D, 1024.0D).setSyncable(true));
+            () -> new RangedAttribute("attribute.isaac_disaster.bullet_range", IsaacConfigDefaults.DEFAULT_BULLET_RANGE, -1024.0D, 1024.0D).setSyncable(true));
 
     public static final RegistryObject<Attribute> TEARS = MOD_ATTRIBUTE.register("tears",
-            () -> new RangedAttribute("attribute.isaac_disaster.tears", 0.0D, -1024.0D, 1024.0D).setSyncable(true));
+            () -> new RangedAttribute("attribute.isaac_disaster.tears", IsaacConfigDefaults.DEFAULT_TEARS, -1024.0D, 1024.0D).setSyncable(true));
 
     public static final RegistryObject<Attribute> TEARS_CORRECTION = MOD_ATTRIBUTE.register("tears_correction",
-            () -> new RangedAttribute("attribute.isaac_disaster.tears_correction", 0.0D, -1024.0D, 1024.0D).setSyncable(true));
+            () -> new RangedAttribute("attribute.isaac_disaster.tears_correction", IsaacConfigDefaults.DEFAULT_TEARS_CORRECTION, -1024.0D, 1024.0D).setSyncable(true));
 
     public static final RegistryObject<Attribute> BLOCK_BREAKING_SPEED = MOD_ATTRIBUTE.register("block_breaking_speed",
-            () -> new RangedAttribute("attribute.isaac_disaster.block_breaking_speed", 0.0D, -1024.0D, 1024D).setSyncable(true));
+            () -> new RangedAttribute("attribute.isaac_disaster.block_breaking_speed", IsaacConfigDefaults.DEFAULT_BLOCK_BREAKING_SPEED, -1024.0D, 1024D).setSyncable(true));
 
     public static final RegistryObject<Attribute> BULLET_SCALE = MOD_ATTRIBUTE.register("bullet_scale",
-            () -> new RangedAttribute("attribute.isaac_disaster.bullet_scale", 0.0D, -1024.0D, 1024D).setSyncable(true));
+            () -> new RangedAttribute("attribute.isaac_disaster.bullet_scale", IsaacConfigDefaults.DEFAULT_BULLET_SCALE, -1024.0D, 1024D).setSyncable(true));
 
     public static final RegistryObject<Attribute> BULLET_COUNT = MOD_ATTRIBUTE.register("bullet_count",
-            () -> new RangedAttribute("attribute.isaac_disaster.bullet_count", 1.0D, 1.0D, 1024D).setSyncable(true));
+            () -> new RangedAttribute("attribute.isaac_disaster.bullet_count", IsaacConfigDefaults.DEFAULT_BULLET_COUNT, 1.0D, 1024D).setSyncable(true));
 
     public static final RegistryObject<Attribute> COLLISION_DAMAGE = MOD_ATTRIBUTE.register("collision_damage",
             () -> new RangedAttribute("attribute.isaac_disaster.collision_damage", 0.0D, 0.0D, 1024D).setSyncable(true));
 
     public static final RegistryObject<Attribute> PILL_QUALITY = MOD_ATTRIBUTE.register("pill_quality",
-            () -> new RangedAttribute("attribute.isaac_disaster.pill_quality", 0.0D, -1024.0D, 1024D).setSyncable(true));
+            () -> new RangedAttribute("attribute.isaac_disaster.pill_quality", IsaacConfigDefaults.DEFAULT_PILL_QUALITY, -1024.0D, 1024D).setSyncable(true));
 
     public static final RegistryObject<Attribute> FLY_TIME = MOD_ATTRIBUTE.register("fly_time",
-            () -> new RangedAttribute("attribute.isaac_disaster.fly_time", 0.0D, 0.0D, 1024D).setSyncable(true));
+            () -> new RangedAttribute("attribute.isaac_disaster.fly_time", IsaacConfigDefaults.DEFAULT_FLY_TIME, 0.0D, 1024D).setSyncable(true));
 
     public static final RegistryObject<Attribute> DEVIL_CHANCE = MOD_ATTRIBUTE.register("devil_chance",
             () -> new RangedAttribute("attribute.isaac_disaster.devil_chance", 0.0D, 0.0D, 1D).setSyncable(true));

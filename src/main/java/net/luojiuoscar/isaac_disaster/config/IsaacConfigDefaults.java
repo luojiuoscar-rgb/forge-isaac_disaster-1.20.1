@@ -31,7 +31,7 @@ public final class IsaacConfigDefaults {
     public static final double FLIGHT_SPEED_MULTIPLIER = 2.0;
     public static final double FLIGHT_ABSOLUTE_SPEED_CAP = 1.0;
     public static final double SCALE_BONUS = 0.1;
-    public static final double RANGE_BONUS = 3;
+    public static final double RANGE_BONUS = 3.0;
     public static final double ENTITY_REACH_BONUS = 0.5;
     public static final double BLOCK_REACH_BONUS = 1.0;
     public static final double BULLET_SPEED_BONUS = 0.2;
