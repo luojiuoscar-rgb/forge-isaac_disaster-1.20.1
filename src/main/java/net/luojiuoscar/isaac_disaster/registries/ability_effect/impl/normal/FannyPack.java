@@ -14,7 +14,7 @@ public class FannyPack implements IAbilityEffect {
         LivingEntity entity = context.getEntity();
         Vec3 pos = context.getOrDefault(ContextKeys.TARGET_POSITION, entity.position());
 
-        LootHelper.spawnLootAtPos(entity, pos, ModLootTables.FANNY_PACK);
+        LootHelper.spawnLootAtPos(entity, pos, ModLootTables.FANNY_PACK, Math.max(0, context.getOrDefault(ContextKeys.LOOT_COUNT, 1)));
         return true;
     }
 }

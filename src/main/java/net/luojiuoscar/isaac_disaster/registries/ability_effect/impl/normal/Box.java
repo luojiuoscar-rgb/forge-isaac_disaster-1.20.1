@@ -14,13 +14,13 @@ public class Box implements IAbilityEffect {
         LivingEntity entity = context.getEntity();
         Vec3 pos = context.getOrDefault(ContextKeys.TARGET_POSITION, entity.position());
 
-        LootHelper.spawnLootAtPos(entity, pos, ModLootTables.RANDOM_HEARTS);
-        LootHelper.spawnLootAtPos(entity, pos, ModLootTables.RANDOM_COINS);
-        LootHelper.spawnLootAtPos(entity, pos, ModLootTables.RANDOM_BOMBS);
-        LootHelper.spawnLootAtPos(entity, pos, ModLootTables.RANDOM_KEYS);
-        LootHelper.spawnLootAtPos(entity, pos, ModLootTables.RANDOM_CARDS);
-        LootHelper.spawnLootAtPos(entity, pos, ModLootTables.RANDOM_PILLS);
-        LootHelper.spawnLootAtPos(entity, pos, ModLootTables.RANDOM_TRINKETS);
+        LootHelper.spawnLootAtPos(entity, pos, ModLootTables.RANDOM_HEARTS, Math.max(0, context.getOrDefault(ContextKeys.LOOT_COUNT, 1)));
+        LootHelper.spawnLootAtPos(entity, pos, ModLootTables.RANDOM_COINS, Math.max(0, context.getOrDefault(ContextKeys.LOOT_COUNT, 1)));
+        LootHelper.spawnLootAtPos(entity, pos, ModLootTables.RANDOM_BOMBS, Math.max(0, context.getOrDefault(ContextKeys.LOOT_COUNT, 1)));
+        LootHelper.spawnLootAtPos(entity, pos, ModLootTables.RANDOM_KEYS, Math.max(0, context.getOrDefault(ContextKeys.LOOT_COUNT, 1)));
+        LootHelper.spawnLootAtPos(entity, pos, ModLootTables.RANDOM_CARDS, Math.max(0, context.getOrDefault(ContextKeys.LOOT_COUNT, 1)));
+        LootHelper.spawnLootAtPos(entity, pos, ModLootTables.RANDOM_PILLS, Math.max(0, context.getOrDefault(ContextKeys.LOOT_COUNT, 1)));
+        LootHelper.spawnLootAtPos(entity, pos, ModLootTables.RANDOM_TRINKETS, Math.max(0, context.getOrDefault(ContextKeys.LOOT_COUNT, 1)));
 
         return true;
     }

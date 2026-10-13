@@ -306,17 +306,6 @@ public class TriggerModuleEvents {
         dispatch(context, ModTriggerTypes.TNT_SPAWNED);
     }
 
-    @SubscribeEvent
-    public static void onGetShotDelay(GetShotDelayEvent event) {
-        if (event.isCanceled()) return;
-        if (!(event.getPlayer() instanceof ServerPlayer player)) return;
-
-        ExecutableEffectContext context = new ExecutableEffectContext(player);
-        context.set(ContextKeys.EVENT, event);
-        context.set(ContextKeys.TARGET_POSITION, player.position());
-        dispatch(context, ModTriggerTypes.GET_SHOT_DELAY);
-    }
-
     /** 在产生爆炸的时候，根据炸弹自身的TriggerModule来触发对应效果 */
     @SubscribeEvent
     public static void onExplosion(ExplosionEvent.Detonate event) {

@@ -8,11 +8,9 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.phys.Vec3;
 
-import java.util.ArrayList;
-import java.util.List;
 
 /**
- * double: random count from a to b
+ * Spawn the specified item through loot generation using LOOT_COUNT.
  */
 public class GiveItemViaLoot implements IAbilityEffect {
     @Override
@@ -22,14 +20,8 @@ public class GiveItemViaLoot implements IAbilityEffect {
         Item item = context.get(ContextKeys.ITEM);
         if (item == null) return false;
 
-        List<Double> nums = context.getOrDefault(ContextKeys.DOUBLE, List.of());
-        nums = new ArrayList<>(nums);
-        if (nums.size() < 2){
-            nums = List.of(1., 2.);
-        }
-
-        LootHelper.spawnItemViaLoot(entity, pos, item, entity.getRandom().nextInt(
-                nums.get(0).intValue(), nums.get(1).intValue()));
+        int lootCount = Math.max(0, context.getOrDefault(ContextKeys.LOOT_COUNT, 1));
+        LootHelper.spawnItemViaLoot(entity, pos, item, lootCount);
         return true;
     }
 }

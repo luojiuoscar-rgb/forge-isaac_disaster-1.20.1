@@ -46,8 +46,8 @@ public class MyReflection extends PassiveAbility {
 
     @Override
     public void handleRemove(ServerPlayer player, @Nullable ItemStack stack) {
-        StatManager.removeMultiplier(player, Multipliers.RANGE.id(), 1);
-        StatManager.removeMultiplier(player, Multipliers.BULLET_SPEED.id(), 1);
+        StatManager.removeMultiplier(player, Multipliers.RANGE, 1);
+        StatManager.removeMultiplier(player, Multipliers.BULLET_SPEED, 1);
 
         StatManager.RANGE.apply(player, -1.5);
         StatManager.DAMAGE.apply(player, -1.5);

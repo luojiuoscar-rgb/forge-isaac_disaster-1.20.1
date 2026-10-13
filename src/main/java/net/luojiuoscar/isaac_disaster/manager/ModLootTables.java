@@ -97,6 +97,6 @@ public class ModLootTables {
     public static final ResourceLocation FANNY_PACK =
             ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "pickups/fanny_pack");
 
-
-
+    public static final ResourceLocation BOOK_OF_SIN_PICKUPS =
+            ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "pickups/book_of_sin");
 }

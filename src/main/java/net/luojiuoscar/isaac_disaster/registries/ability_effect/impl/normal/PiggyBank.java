@@ -13,7 +13,8 @@ public class PiggyBank implements IAbilityEffect {
         LivingEntity entity = context.getEntity();
 
         LootHelper.spawnLootAtPos(entity, context.getOrDefault(ContextKeys.TARGET_POSITION, entity.position()),
-                ModLootTables.RANDOM_COINS, entity.getRandom().nextInt(1,4));
+                ModLootTables.RANDOM_COINS, Math.max(0, context.has(ContextKeys.LOOT_COUNT) ? context.get(ContextKeys.LOOT_COUNT)
+                        : entity.getRandom().nextInt(1, 4)));
 
         return true;
     }

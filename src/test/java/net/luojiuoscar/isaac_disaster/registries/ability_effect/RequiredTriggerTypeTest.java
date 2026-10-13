@@ -3,7 +3,6 @@ package net.luojiuoscar.isaac_disaster.registries.ability_effect;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.normal.BulletBounceOnBlock;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.normal.Callus;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.normal.FiringModifierAttackPlan;
-import net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.normal.FiringModifierShotDelay;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.normal.LaserPlusBrimstone;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.normal.RandomHarmfulPotion;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.revive.SimpleReviveEffect;
@@ -28,8 +27,6 @@ class RequiredTriggerTypeTest {
                 new Callus().getRequiredTriggerType());
         assertSame(ModTriggerTypes.ATTACK_PLAN,
                 new FiringModifierAttackPlan().getRequiredTriggerType());
-        assertSame(ModTriggerTypes.GET_SHOT_DELAY,
-                new FiringModifierShotDelay().getRequiredTriggerType());
         assertSame(ModTriggerTypes.BULLET_HIT_ENTITY_BEFORE,
                 new LaserPlusBrimstone().getRequiredTriggerType());
         assertSame(ModTriggerTypes.HIT_ENTITY_RESTRICTED,

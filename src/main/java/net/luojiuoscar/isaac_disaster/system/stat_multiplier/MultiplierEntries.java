@@ -11,8 +11,11 @@ import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraftforge.registries.ForgeRegistries;
 
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.function.Function;
@@ -35,10 +38,10 @@ public final class MultiplierEntries {
         }
     }
 
-    private final Map<ResourceLocation, EntryStack> entries = new LinkedHashMap<>();
+    private final Map<MultiplierEntry.Key, EntryStack> entries = new LinkedHashMap<>();
     private final Map<UUID, AppliedModifier> applied = new HashMap<>();
 
-    public Map<ResourceLocation, EntryStack> snapshot() {
+    public Map<MultiplierEntry.Key, EntryStack> snapshot() {
         return Map.copyOf(entries);
     }
 
@@ -63,14 +66,19 @@ public final class MultiplierEntries {
                     entry.id(), entry.attributeId());
             return;
         }
-        EntryStack current = entries.get(entry.id());
+        EntryStack current = entries.get(entry.key());
         if (current != null && !current.entry().equals(entry)) {
             IsaacDisaster.LOGGER.warn("Ignoring conflicting multiplier entry {}", entry.id());
             return;
         }
-        if (current == null && entries.values().stream().anyMatch(candidate ->
-                candidate.entry().uuid().equals(entry.uuid()))) {
-            IsaacDisaster.LOGGER.warn("Ignoring multiplier entry {} with duplicate UUID {}", entry.id(), entry.uuid());
+        if (entries.values().stream().anyMatch(candidate -> {
+            MultiplierEntry existing = candidate.entry();
+            return existing.id().equals(entry.id())
+                    ? !existing.uuid().equals(entry.uuid()) || !existing.attributeId().equals(entry.attributeId())
+                            || existing.operation() != entry.operation()
+                    : existing.uuid().equals(entry.uuid());
+        })) {
+            IsaacDisaster.LOGGER.warn("Ignoring incompatible multiplier group definition {}", entry.id());
             return;
         }
         long stacks = (long) (current == null ? 0 : current.stacks()) + count;
@@ -78,26 +86,26 @@ public final class MultiplierEntries {
             IsaacDisaster.LOGGER.warn("Ignoring multiplier entry {} because stack count would overflow", entry.id());
             return;
         }
-        entries.put(entry.id(), new EntryStack(entry, (int) stacks));
+        entries.put(entry.key(), new EntryStack(entry, (int) stacks));
     }
 
-    public void remove(ResourceLocation id, int count) {
-        if (id == null || count <= 0) {
-            IsaacDisaster.LOGGER.warn("Ignoring multiplier removal with id {} and count {}", id, count);
+    public void remove(MultiplierEntry.Key key, int count) {
+        if (key == null || count <= 0) {
+            IsaacDisaster.LOGGER.warn("Ignoring multiplier removal with key {} and count {}", key, count);
             return;
         }
-        EntryStack current = entries.get(id);
+        EntryStack current = entries.get(key);
         if (current == null) {
-            IsaacDisaster.LOGGER.warn("Ignoring removal of missing multiplier entry {}", id);
+            IsaacDisaster.LOGGER.warn("Ignoring removal of missing multiplier source {}", key);
             return;
         }
         if (current.stacks() < count) {
             IsaacDisaster.LOGGER.warn("Multiplier entry {} removal underflow: held {}, requested {}; using 0",
-                    id, current.stacks(), count);
+                    key, current.stacks(), count);
         }
         int remaining = Math.max(0, current.stacks() - count);
-        if (remaining == 0) entries.remove(id);
-        else entries.put(id, new EntryStack(current.entry(), remaining));
+        if (remaining == 0) entries.remove(key);
+        else entries.put(key, new EntryStack(current.entry(), remaining));
     }
 
     public void reconcile(ServerPlayer player, boolean allowStacking,
@@ -123,8 +131,12 @@ public final class MultiplierEntries {
                     candidate.getValue().entryId());
         }
         applied.clear();
+        Map<ResourceLocation, List<EntryStack>> groups = new LinkedHashMap<>();
         for (EntryStack stack : entries.values()) {
-            MultiplierEntry entry = stack.entry();
+            groups.computeIfAbsent(stack.entry().id(), ignored -> new ArrayList<>()).add(stack);
+        }
+        for (List<EntryStack> group : groups.values()) {
+            MultiplierEntry entry = group.get(0).entry();
             AttributeInstance instance = attributes.apply(entry.attributeId());
             if (instance == null) {
                 IsaacDisaster.LOGGER.warn("Player has no attribute for multiplier entry {}: {}", entry.id(), entry.attributeId());
@@ -132,7 +144,7 @@ public final class MultiplierEntries {
             }
             if (!removeOwned(instance, entry.uuid(), entry.id())) continue;
             if (rules.suppressed(entry.id())) continue;
-            double amount = effectiveAmount(stack, allowStacking);
+            double amount = effectiveAmount(group, allowStacking);
             if (!Double.isFinite(amount)) {
                 IsaacDisaster.LOGGER.warn("Multiplier entry {} has a non-finite effective amount", entry.id());
                 continue;
@@ -143,11 +155,22 @@ public final class MultiplierEntries {
         }
     }
 
-    static double effectiveAmount(EntryStack stack, boolean allowStacking) {
-        if (!allowStacking) return stack.entry().amount();
-        double amount = stack.entry().amount();
-        return stack.entry().operation() == AttributeModifier.Operation.MULTIPLY_BASE
-                ? amount * stack.stacks() : Math.pow(1.0D + amount, stack.stacks()) - 1.0D;
+    /** Without stacking, the strongest held source wins; stacking combines every source and copy. */
+    static double effectiveAmount(List<EntryStack> group, boolean allowStacking) {
+        if (!allowStacking) {
+            return group.stream().max(Comparator
+                    .comparingDouble((EntryStack stack) -> Math.abs(stack.entry().amount()))
+                    .thenComparing(stack -> stack.entry().sourceId().toString()))
+                    .orElseThrow().entry().amount();
+        }
+        if (group.get(0).entry().operation() == AttributeModifier.Operation.MULTIPLY_BASE) {
+            return group.stream().mapToDouble(stack -> stack.entry().amount() * stack.stacks()).sum();
+        }
+        double factor = 1.0D;
+        for (EntryStack stack : group) {
+            factor *= Math.pow(1.0D + stack.entry().amount(), stack.stacks());
+        }
+        return factor - 1.0D;
     }
 
     private static boolean removeOwned(AttributeInstance instance, UUID uuid, ResourceLocation entryId) {

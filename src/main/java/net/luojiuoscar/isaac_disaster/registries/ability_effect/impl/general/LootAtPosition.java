@@ -26,7 +26,7 @@ public class LootAtPosition implements IAbilityEffect {
 
         // 空参数 无源掉落
         LootParams params = new LootParams.Builder(level).create(LootContextParamSets.EMPTY);
-        LootHelper.spawnLootAtPos(level, pos, loot, params);
+        LootHelper.spawnLootAtPos(level, pos, loot, params, Math.max(0, context.getOrDefault(ContextKeys.LOOT_COUNT, 1)));
 
         return true;
     }

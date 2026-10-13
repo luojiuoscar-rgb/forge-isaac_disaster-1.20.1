@@ -68,7 +68,7 @@ public class MidnightSnack extends PassiveAbility {
                     Component.translatable("item.isaac_disaster.binge_eater"),
                     List.of(
                             StatManager.LUCK.description(1),
-                            StatManager.TEARS_CORRECTION.description(1),
+                            StatManager.FIRE_RATE.description(1),
                             StatManager.MOVEMENT_SPEED.description(-0.15)
                     )
             ));
@@ -79,13 +79,13 @@ public class MidnightSnack extends PassiveAbility {
 
     public void onFoodObtainEffect(Player player, @Nullable ItemStack stack) {
         StatManager.LUCK.apply(player, 1);
-        StatManager.TEARS_CORRECTION.apply(player, 1);
+        StatManager.FIRE_RATE.apply(player, 1);
         StatManager.MOVEMENT_SPEED.apply(player, -0.15);
     }
 
     public void onFoodRemoveEffect(Player player, @Nullable ItemStack stack) {
         StatManager.LUCK.apply(player, -1);
-        StatManager.TEARS_CORRECTION.apply(player, -1);
+        StatManager.FIRE_RATE.apply(player, -1);
         StatManager.MOVEMENT_SPEED.apply(player, 0.15);
     }
 }

@@ -1,0 +1,37 @@
+{
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:loot_table",
+          "name": "isaac_disaster:pickups/random/coins"
+        },
+        {
+          "type": "minecraft:loot_table",
+          "name": "isaac_disaster:pickups/book_of_sin_hearts"
+        },
+        {
+          "type": "minecraft:item",
+          "name": "isaac_disaster:bomb"
+        },
+        {
+          "type": "minecraft:item",
+          "name": "isaac_disaster:key"
+        },
+        {
+          "type": "minecraft:loot_table",
+          "name": "isaac_disaster:pickups/book_of_sin_batteries"
+        },
+        {
+          "type": "minecraft:loot_table",
+          "name": "isaac_disaster:pickups/random/pills"
+        },
+        {
+          "type": "minecraft:loot_table",
+          "name": "isaac_disaster:pickups/random/cards"
+        }
+      ]
+    }
+  ]
+}

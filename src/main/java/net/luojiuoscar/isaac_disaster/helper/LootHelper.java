@@ -55,6 +55,13 @@ public class LootHelper {
         spawnLootAtPos(level, pos, tableId, params, LootGenerationMode.SPAWN_DROP);
     }
 
+    public static void spawnLootAtPos(ServerLevel level, Vec3 pos, ResourceLocation tableId,
+                                      LootParams params, int lootCount) {
+        for (int i = 0; i < lootCount; i++) {
+            spawnLootAtPos(level, pos, tableId, params);
+        }
+    }
+
     /**
      * Spawns loot items at a position while marking why this table roll is happening.
      */
@@ -112,6 +119,15 @@ public class LootHelper {
                                           LootParams params, LootGenerationMode mode) {
         LootTable table = level.getServer().getLootData().getLootTable(tableId);
         return LootGenerationContext.supply(mode, () -> new ArrayList<>(table.getRandomItems(params)));
+    }
+
+    public static List<ItemStack> getLoot(ServerLevel level, ResourceLocation tableId,
+                                          LootParams params, LootGenerationMode mode, int lootCount) {
+        List<ItemStack> loot = new ArrayList<>();
+        for (int i = 0; i < lootCount; i++) {
+            loot.addAll(getLoot(level, tableId, params, mode));
+        }
+        return loot;
     }
 
     /**

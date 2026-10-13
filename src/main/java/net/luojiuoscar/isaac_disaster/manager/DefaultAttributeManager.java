@@ -68,9 +68,9 @@ public final class DefaultAttributeManager {
                     () -> Config.DEFAULT_TEARS.get()
             ),
             new DefaultAttributeSpec(
-                    "default_tears_correction",
-                    ModAttributes.TEARS_CORRECTION.get(),
-                    () -> Config.DEFAULT_TEARS_CORRECTION.get()
+                    "default_fire_rate_addition",
+                    ModAttributes.FIRE_RATE.get(),
+                    () -> Config.DEFAULT_FIRE_RATE_ADDITION.get()
             ),
             new DefaultAttributeSpec(
                     "default_bullet_speed",

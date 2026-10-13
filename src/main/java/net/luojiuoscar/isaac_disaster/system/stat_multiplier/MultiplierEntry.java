@@ -11,6 +11,17 @@ import java.util.UUID;
 /** Immutable parameters for one source-owned attribute multiplier. */
 public record MultiplierEntry(ResourceLocation id, UUID uuid, ResourceLocation sourceId,
                               ResourceLocation attributeId, double amount, AttributeModifier.Operation operation) {
+    public static final ResourceLocation FIRING_PENALTY_ID =
+            ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "multiplier/firing_penalty");
+    public static final ResourceLocation DAMAGE_BOOST_ID =
+            ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "multiplier/damage_boost");
+
+    public record Key(ResourceLocation id, ResourceLocation sourceId) {
+    }
+
+    public Key key() {
+        return new Key(id, sourceId);
+    }
 
     public static MultiplierEntry of(ResourceLocation id, UUID uuid, ResourceLocation sourceId, Attribute attribute,
                                      double amount, AttributeModifier.Operation operation) {

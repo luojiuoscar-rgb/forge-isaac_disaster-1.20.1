@@ -11,14 +11,14 @@ import net.minecraft.world.phys.Vec3;
 public class Justice implements IAbilityEffect {
     @Override
     public boolean applyEffect(ExecutableEffectContext context) {
-        int amplifier = context.getOrDefault(ContextKeys.AMPLIFIER ,1.).intValue();
+        int lootCount = Math.max(0, context.getOrDefault(ContextKeys.LOOT_COUNT, 1));
         LivingEntity entity = context.getEntity();
         Vec3 pos = context.getOrDefault(ContextKeys.TARGET_POSITION, entity.position());
 
-        LootHelper.spawnLootAtPos(entity, pos, ModLootTables.RANDOM_COINS, amplifier);
-        LootHelper.spawnLootAtPos(entity, pos, ModLootTables.RANDOM_HEARTS, amplifier);
-        LootHelper.spawnLootAtPos(entity, pos, ModLootTables.RANDOM_BOMBS, amplifier);
-        LootHelper.spawnLootAtPos(entity, pos, ModLootTables.RANDOM_KEYS, amplifier);
+        LootHelper.spawnLootAtPos(entity, pos, ModLootTables.RANDOM_COINS, lootCount);
+        LootHelper.spawnLootAtPos(entity, pos, ModLootTables.RANDOM_HEARTS, lootCount);
+        LootHelper.spawnLootAtPos(entity, pos, ModLootTables.RANDOM_BOMBS, lootCount);
+        LootHelper.spawnLootAtPos(entity, pos, ModLootTables.RANDOM_KEYS, lootCount);
         return false;
     }
 }

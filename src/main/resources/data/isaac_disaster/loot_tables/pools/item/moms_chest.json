@@ -3,6 +3,8 @@
     {
       "rolls": 1,
       "entries": [
+        {"type": "minecraft:item", "name": "isaac_disaster:moms_bottle_of_pills"},
+        {"type": "minecraft:item", "name": "isaac_disaster:moms_bra"},
         {"type": "minecraft:item", "name": "isaac_disaster:moms_coin_purse"},
         {"type": "minecraft:item", "name": "isaac_disaster:moms_key"},
         {"type": "minecraft:item", "name": "isaac_disaster:moms_eyeshadow"},

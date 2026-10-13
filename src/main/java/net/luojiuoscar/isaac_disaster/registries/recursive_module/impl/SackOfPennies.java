@@ -1,5 +1,6 @@
 package net.luojiuoscar.isaac_disaster.registries.recursive_module.impl;
 
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.ContextKeys;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.CompositeTrigger;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ModExecutableEffects;
@@ -13,7 +14,11 @@ import java.util.List;
 
 public class SackOfPennies extends RecursiveModule {
     private static final CompositeTrigger TRIGGER = new CompositeTrigger(List.of(
-            new SimpleTrigger(ModTriggerTypes.EMTPY, ModExecutableEffects.LOOT_MONEY)
+            new SimpleTrigger(ModTriggerTypes.EMTPY, ModExecutableEffects.LOOT_MONEY,
+                    ctx -> {
+                        ctx.set(ContextKeys.LOOT_COUNT, ctx.getOrDefault(ContextKeys.AMPLIFIER, 1.).intValue());
+                        return true;
+                    })
     ));
 
     public SackOfPennies() {

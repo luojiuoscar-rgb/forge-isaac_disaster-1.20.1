@@ -23,7 +23,7 @@ public class Pisces extends PassiveAbility {
     @Override
     public void handleObtain(ServerPlayer player, @Nullable ItemStack stack) {
         StatManager.addPiercing(player, 1);
-        StatManager.TEARS_CORRECTION.apply(player, 1);
+        StatManager.FIRE_RATE.apply(player, 1);
         StatManager.BULLET_SCALE.apply(player, 2);
         StatManager.ATTACK_KNOCKBACK.apply(player, 1);
     }
@@ -31,7 +31,7 @@ public class Pisces extends PassiveAbility {
     @Override
     public void handleRemove(ServerPlayer player, @Nullable ItemStack stack) {
         StatManager.addPiercing(player, -1);
-        StatManager.TEARS_CORRECTION.apply(player, -1);
+        StatManager.FIRE_RATE.apply(player, -1);
         StatManager.BULLET_SCALE.apply(player, -2);
         StatManager.ATTACK_KNOCKBACK.apply(player, -1);
     }
@@ -40,7 +40,7 @@ public class Pisces extends PassiveAbility {
     public List<Component> getDesc(@Nullable ItemStack stack, Player player) {
         return List.of(
                 Component.translatable("item.isaac_disaster.attribute.piercing_bullet"),
-                StatManager.TEARS_CORRECTION.description(1),
+                StatManager.FIRE_RATE.description(1),
                 Component.translatable("attribute.isaac_disaster.bullet_scale_up"),
                 StatManager.ATTACK_KNOCKBACK.description(1)
         );

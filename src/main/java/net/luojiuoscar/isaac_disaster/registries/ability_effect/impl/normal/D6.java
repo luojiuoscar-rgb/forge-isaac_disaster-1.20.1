@@ -10,12 +10,21 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.Set;
+import java.util.function.BiConsumer;
 
 public class D6 implements IAbilityEffect {
     @Override
     public boolean applyEffect(ExecutableEffectContext context) {
         if (!(context.getEntity() instanceof Player player)) return false;
         if (!(player.level() instanceof ServerLevel serverLevel)) return true;
+
+        forEachNearbyDisplay(player, (pos, display) -> display.itemRollFromPlayer(player));
+        return true;
+    }
+
+    /** Visits the loaded display containers in D6's existing ten-block range. */
+    static void forEachNearbyDisplay(Player player, BiConsumer<BlockPos, ItemDisplayContainerBlockEntity> action) {
+        if (!(player.level() instanceof ServerLevel serverLevel)) return;
 
         BlockData data = BlockData.get(serverLevel);
         data.reconcileLoaded(serverLevel);
@@ -32,9 +41,8 @@ public class D6 implements IAbilityEffect {
             if (distanceSq > MAX_DISTANCE * MAX_DISTANCE) continue;
 
             if (serverLevel.getBlockEntity(pos) instanceof ItemDisplayContainerBlockEntity be) {
-                be.itemRollFromPlayer(player);
+                action.accept(pos, be);
             }
         }
-        return true;
     }
 }

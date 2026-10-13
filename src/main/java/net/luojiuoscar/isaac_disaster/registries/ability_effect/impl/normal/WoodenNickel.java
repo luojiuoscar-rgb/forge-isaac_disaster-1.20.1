@@ -12,7 +12,7 @@ public class WoodenNickel implements IAbilityEffect {
     public boolean applyEffect(ExecutableEffectContext context) {
         LivingEntity entity = context.getEntity();
 
-        for (int i = 0; i < context.getOrDefault(ContextKeys.AMPLIFIER, 1.).intValue(); i++){
+        for (int i = 0; i < Math.max(0, context.getOrDefault(ContextKeys.LOOT_COUNT, 1)); i++){
             if (Math.random() < 0.6 && !entity.level().isClientSide){
                 LootHelper.spawnLootAtPos(
                         entity,

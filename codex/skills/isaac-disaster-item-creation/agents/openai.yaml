@@ -1,4 +1,4 @@
 interface:
-  display_name: "Isaac Disaster Passive Item Creation"
-  short_description: "Create and modify Isaac Disaster passive items."
-  default_prompt: "Use $isaac-disaster-item-creation to add a passive item to this mod."
+  display_name: "Isaac Disaster Item Creation"
+  short_description: "Create and modify Isaac Disaster passive or active items."
+  default_prompt: "Use $isaac-disaster-item-creation to add or modify a passive or active item in this mod."

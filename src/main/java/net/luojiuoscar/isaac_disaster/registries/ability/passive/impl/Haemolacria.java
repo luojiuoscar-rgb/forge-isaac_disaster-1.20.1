@@ -22,6 +22,10 @@ import java.util.List;
 
 public class Haemolacria extends PassiveAbility {
     public static final class Multipliers {
+        public static final MultiplierEntry FIRE_RATE = StatManager.createMultiplierEntry(
+                "haemolacria", "fire_rate", ModAttributes.FIRE_RATE.get(), -0.6D,
+                AttributeModifier.Operation.MULTIPLY_TOTAL);
+
         public static final MultiplierEntry DAMAGE = StatManager.createMultiplierEntry(
                 "haemolacria", "damage", Attributes.ATTACK_DAMAGE, 0.5,
                 AttributeModifier.Operation.MULTIPLY_BASE);
@@ -46,24 +50,24 @@ public class Haemolacria extends PassiveAbility {
 
     @Override
     public void handleObtain(ServerPlayer player, @Nullable ItemStack stack) {
+        StatManager.addMultiplier(player, Multipliers.FIRE_RATE, 1);
         StatManager.DAMAGE.apply(player, 1);
         StatManager.addAttackType(player, ModAttackTypes.HAEMOLACRIA.getId(), 1);
         StatManager.addMultiplier(player, Multipliers.DAMAGE, 1);
         StatManager.addMultiplier(player, Multipliers.RANGE, 1);
         StatManager.addMultiplierRule(player, Rules.SUPPRESS_CRICKETS_BODY_RANGE, 1);
-        StatManager.addTriggerModule(player, ModTriggerModules.FIRING_MODIFIER.getId(), 1);
         StatManager.addTriggerModule(player, ModTriggerModules.HAEMOLACRIA.getId(), 1);
         StatManager.addBulletColor(player, ModBulletColors.BLOOD_TEAR.getId(), 1);
     }
 
     @Override
     public void handleRemove(ServerPlayer player, @Nullable ItemStack stack) {
+        StatManager.removeMultiplier(player, Multipliers.FIRE_RATE, 1);
         StatManager.DAMAGE.apply(player, -1);
         StatManager.addAttackType(player, ModAttackTypes.HAEMOLACRIA.getId(), -1);
-        StatManager.removeMultiplier(player, Multipliers.DAMAGE.id(), 1);
-        StatManager.removeMultiplier(player, Multipliers.RANGE.id(), 1);
+        StatManager.removeMultiplier(player, Multipliers.DAMAGE, 1);
+        StatManager.removeMultiplier(player, Multipliers.RANGE, 1);
         StatManager.removeMultiplierRule(player, Rules.SUPPRESS_CRICKETS_BODY_RANGE.id(), 1);
-        StatManager.addTriggerModule(player, ModTriggerModules.FIRING_MODIFIER.getId(), -1);
         StatManager.addTriggerModule(player, ModTriggerModules.HAEMOLACRIA.getId(), -1);
         StatManager.addBulletColor(player, ModBulletColors.BLOOD_TEAR.getId(), -1);
     }

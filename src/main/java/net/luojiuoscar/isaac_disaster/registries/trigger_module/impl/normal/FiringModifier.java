@@ -11,8 +11,7 @@ import java.util.List;
 
 public class FiringModifier extends TriggerModule {
     private static final CompositeTrigger TRIGGER = new CompositeTrigger(List.of(
-            new SimpleTrigger(ModTriggerTypes.ATTACK_PLAN, ModExecutableEffects.FIRING_MODIFIER_ATTACK_PLAN),
-            new SimpleTrigger(ModTriggerTypes.GET_SHOT_DELAY, ModExecutableEffects.FIRING_MODIFIER_SHOT_DELAY)
+            new SimpleTrigger(ModTriggerTypes.ATTACK_PLAN, ModExecutableEffects.FIRING_MODIFIER_ATTACK_PLAN)
     ));
 
     public FiringModifier() {

@@ -183,7 +183,15 @@ public enum ItemId {
     HAEMOLACRIA(4),
     REVELATION(4),
     MONSTROS_LUNG(2),
-    LEAD_PENCIL(3);
+    LEAD_PENCIL(3),
+    MOMS_BRA(1),
+    DECK_OF_CARDS(2),
+    THE_BOOK_OF_SIN(2),
+    MOMS_BOTTLE_OF_PILLS(1),
+    MAGIC_FINGERS(1),
+    D8(2),
+    KIDNEY_BEAN(1),
+    ETERNAL_D6(3);
 
 
 

@@ -13,7 +13,7 @@ public class AncientRecall implements IAbilityEffect {
     public boolean applyEffect(ExecutableEffectContext context) {
         LivingEntity entity = context.getEntity();
         Vec3 pos = context.getOrDefault(ContextKeys.TARGET_POSITION, entity.position());
-        LootHelper.spawnLootAtPos(entity, pos, ModLootTables.RANDOM_CARDS, 3);
+        LootHelper.spawnLootAtPos(entity, pos, ModLootTables.RANDOM_CARDS, Math.max(0, context.getOrDefault(ContextKeys.LOOT_COUNT, 3)));
         return true;
     }
 }

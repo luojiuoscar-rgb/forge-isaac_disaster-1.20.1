@@ -29,8 +29,8 @@ public class ModAttributes {
     public static final RegistryObject<Attribute> TEARS = MOD_ATTRIBUTE.register("tears",
             () -> new RangedAttribute("attribute.isaac_disaster.tears", IsaacConfigDefaults.DEFAULT_TEARS, -1024.0D, 1024.0D).setSyncable(true));
 
-    public static final RegistryObject<Attribute> TEARS_CORRECTION = MOD_ATTRIBUTE.register("tears_correction",
-            () -> new RangedAttribute("attribute.isaac_disaster.tears_correction", IsaacConfigDefaults.DEFAULT_TEARS_CORRECTION, -1024.0D, 1024.0D).setSyncable(true));
+    public static final RegistryObject<Attribute> FIRE_RATE = MOD_ATTRIBUTE.register("fire_rate",
+            () -> new RangedAttribute("attribute.isaac_disaster.fire_rate", IsaacConfigDefaults.DEFAULT_FIRE_RATE_ADDITION, 0.0D, 1024.0D).setSyncable(true));
 
     public static final RegistryObject<Attribute> BLOCK_BREAKING_SPEED = MOD_ATTRIBUTE.register("block_breaking_speed",
             () -> new RangedAttribute("attribute.isaac_disaster.block_breaking_speed", IsaacConfigDefaults.DEFAULT_BLOCK_BREAKING_SPEED, -1024.0D, 1024D).setSyncable(true));

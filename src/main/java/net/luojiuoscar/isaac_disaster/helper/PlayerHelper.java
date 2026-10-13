@@ -9,7 +9,6 @@ import net.luojiuoscar.isaac_disaster.block.block_entity.PedestalBlockEntity;
 import net.luojiuoscar.isaac_disaster.capability.player.*;
 import net.luojiuoscar.isaac_disaster.entity.tnt.BombData;
 import net.luojiuoscar.isaac_disaster.entity.tnt.IsaacBomb;
-import net.luojiuoscar.isaac_disaster.event.custom.misc.GetShotDelayEvent;
 import net.luojiuoscar.isaac_disaster.item.ModItems;
 import net.luojiuoscar.isaac_disaster.item.item.ActiveItem;
 import net.luojiuoscar.isaac_disaster.item.pickup.special.IsaacHead;
@@ -279,7 +278,7 @@ public class PlayerHelper {
         Item tier3Coin = getItemFromConfig(Config.COIN_TIER_3_ID.get());
 
         int total = countMoney(player);
-        if (total < amount) {
+        if (amount <= 0 || total < amount) {
             return false;
         }
 
@@ -290,20 +289,21 @@ public class PlayerHelper {
 
         for (ItemStack stack : all) {
             Item item = stack.getItem();
-            if (item == tier1Coin || item == tier2Coin || item == tier3Coin) {
+            if ((item == tier1Coin && value1 > 0) || (item == tier2Coin && value2 > 0)
+                    || (item == tier3Coin && value3 > 0)) {
                 stack.shrink(stack.getCount());
             }
         }
 
         int remain = total - amount;
 
-        int tier3Count = remain / value3;
-        remain %= value3;
+        int tier3Count = value3 > 0 ? remain / value3 : 0;
+        if (value3 > 0) remain %= value3;
 
-        int tier2Count = remain / value2;
-        remain %= value2;
+        int tier2Count = value2 > 0 ? remain / value2 : 0;
+        if (value2 > 0) remain %= value2;
 
-        int tier1Count = remain / value1;
+        int tier1Count = value1 > 0 ? remain / value1 : 0;
 
         giveItem(player, tier3Coin, tier3Count);
         giveItem(player, tier2Coin, tier2Count);
@@ -370,16 +370,6 @@ public class PlayerHelper {
 
         return  Math.max(instance.getValue(),-7);
     }
-    public static double getTearsCorrection(Player player) {
-        AttributeInstance instance = player.getAttribute(ModAttributes.TEARS_CORRECTION.get());
-        MobEffectInstance effect = player.getEffect(MobEffects.DIG_SPEED);
-
-        double value = 0;
-        value += effect != null ? effect.getAmplifier() + 1 : 0;
-        value += instance != null ? instance.getValue() : 0;
-
-        return  value;
-    }
     public static float getExtraBulletScale(Player player){
         // 额外子弹大小因子
         AttributeInstance extraBulletScale = player.getAttribute((ModAttributes.BULLET_SCALE.get()));
@@ -389,33 +379,38 @@ public class PlayerHelper {
     }
 
     // 衍生
-    public static double getShotDelay(Player player) {
-        double tears = getTears(player);
+    /** Converts Tears to base shots per second before FireRate modifiers. */
+    public static double tearsToFireRate(double tears) {
+        tears = Math.max(tears, -7.0D);
         double delay;
-
-        if (tears < -(10.0/13.0)){
-            delay = (11 - 4*tears);
-        }else if(tears >= -(10.0/13.0) && tears < 0){
-            delay = (11 - 4*Math.sqrt(1.3*tears+1) - 4*tears);
-        }else if(tears >= 0 && tears < (165.0/104.0)){
-            delay = (11 - 4*Math.sqrt(1.3*tears+1));
-        }else{
-            delay =  4;
+        if (tears < -10.0D / 13.0D) {
+            delay = 11.0D - 4.0D * tears;
+        } else if (tears < 0.0D) {
+            delay = 11.0D - 4.0D * Math.sqrt(1.3D * tears + 1.0D) - 4.0D * tears;
+        } else if (tears < 165.0D / 104.0D) {
+            delay = 11.0D - 4.0D * Math.sqrt(1.3D * tears + 1.0D);
+        } else {
+            delay = 4.0D;
         }
-        delay -= getTearsCorrection(player);
+        return 20.0D / delay;
+    }
 
-        GetShotDelayEvent event = new GetShotDelayEvent(player, delay);
-        MinecraftForge.EVENT_BUS.post(event);
-
-        if (!event.isCanceled()){
-            delay = event.getDelay();
+    /** Refreshes the Tears-derived base without changing FireRate modifiers. */
+    public static void refreshFireRateBaseValue(Player player) {
+        AttributeInstance fireRate = player.getAttribute(ModAttributes.FIRE_RATE.get());
+        AttributeInstance tears = player.getAttribute(ModAttributes.TEARS.get());
+        if (fireRate != null && tears != null) {
+            fireRate.setBaseValue(tearsToFireRate(tears.getValue()));
         }
+    }
 
-        return Math.max(delay, 0);
+    public static double getShotDelay(Player player) {
+        return 20.0D / getFireRate(player);
     }
 
     public static double getFireRate(Player player) {
-        return 20 / getShotDelay(player);
+        AttributeInstance instance = player.getAttribute(ModAttributes.FIRE_RATE.get());
+        return instance == null ? 0.0D : instance.getValue();
     }
 
     // 属性
@@ -449,7 +444,14 @@ public class PlayerHelper {
         // 重置cap
         player.getCapability(PlayerIsaacItemsProvider.PLAYER_ISAAC_ITEMS).ifPresent(PlayerIsaacItems::init);
         player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY).ifPresent(PlayerAbility::init);
-        player.getCapability(PlayerStatModifierProvider.PLAYER_STAT_MODIFIER).ifPresent(PlayerStatModifier::init);
+        player.getCapability(PlayerStatModifierProvider.PLAYER_STAT_MODIFIER).ifPresent(modifiers -> {
+            // Active rerolls retain multipliers independently of passive item removal.
+            for (var entry : modifiers.getMultiplierEntries().snapshot().values()) {
+                modifiers.getMultiplierEntries().remove(entry.entry().key(), entry.stacks());
+            }
+            StatManager.refreshMultipliers(player);
+            modifiers.init();
+        });
 
     }
 

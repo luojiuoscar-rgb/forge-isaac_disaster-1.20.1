@@ -1,5 +1,6 @@
 package net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.normal;
 
+import net.luojiuoscar.isaac_disaster.helper.LootHelper;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.luojiuoscar.isaac_disaster.event.custom.misc.GeneralLootModifyEvent;
 import net.luojiuoscar.isaac_disaster.loot.LootGenerationContext;
@@ -47,20 +48,15 @@ public class MomsKey implements IAbilityEffect {
         if (!(event.getEntity() instanceof ServerPlayer player)) return true;
 
         ResourceLocation lootId = lootContext.getQueriedLootTableId();
-        // get lootManager
-        var server = player.server;
-        var lootManager = server.getLootData();
-        var lootTable = lootManager.getLootTable(lootId);
-
         LootParams.Builder paramsBuilder = new LootParams.Builder(level)
                 .withParameter(LootContextParams.ORIGIN, pos)
                 .withParameter(LootContextParams.THIS_ENTITY, player)
                 .withLuck((float) getLuck(player));
         LootParams params = paramsBuilder.create(LootContextParamSets.EMPTY);
 
-        ObjectArrayList<ItemStack> newLoot = LootGenerationContext.supply(
-                LootGenerationMode.REPLACEMENT_ROLL,
-                () -> lootTable.getRandomItems(params));
+        ObjectArrayList<ItemStack> newLoot = new ObjectArrayList<>(LootHelper.getLoot(
+                level, lootId, params, LootGenerationMode.REPLACEMENT_ROLL,
+                Math.max(0, context.getOrDefault(ContextKeys.LOOT_COUNT, 1))));
 
         newLoot.addAll(objectArrayList);
 

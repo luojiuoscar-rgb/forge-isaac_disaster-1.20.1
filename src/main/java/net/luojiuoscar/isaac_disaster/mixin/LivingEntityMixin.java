@@ -2,6 +2,7 @@ package net.luojiuoscar.isaac_disaster.mixin;
 
 import net.luojiuoscar.isaac_disaster.accessor.AttributeMapOwnerAccess;
 import net.luojiuoscar.isaac_disaster.accessor.LivingEntityFreezeAccess;
+import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.system.freeze.EntityFreezeRules;
 import net.luojiuoscar.isaac_disaster.system.ScaleUtils;
 import net.minecraft.core.BlockPos;
@@ -11,6 +12,7 @@ import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.state.BlockState;
@@ -35,6 +37,9 @@ public abstract class LivingEntityMixin implements LivingEntityFreezeAccess {
                                                    CallbackInfo ci) {
         LivingEntity self = (LivingEntity) (Object) this;
         ((AttributeMapOwnerAccess) (Object) self.getAttributes()).isaacDisaster$setOwner(self);
+        if (self instanceof Player player) {
+            PlayerHelper.refreshFireRateBaseValue(player);
+        }
     }
 
     @Inject(method = "defineSynchedData", at = @At("TAIL"))

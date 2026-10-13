@@ -28,7 +28,7 @@ public class TransformEntityToLoot implements IAbilityEffect {
             e.discard();
         }
 
-        LootHelper.spawnLootAtPos(context.getEntity(), pos, loot);
+        LootHelper.spawnLootAtPos(context.getEntity(), pos, loot, Math.max(0, context.getOrDefault(ContextKeys.LOOT_COUNT, 1)));
 
         return true;
     }

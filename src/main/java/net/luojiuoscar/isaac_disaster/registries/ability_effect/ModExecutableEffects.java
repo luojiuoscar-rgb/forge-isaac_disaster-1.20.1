@@ -95,8 +95,6 @@ public class ModExecutableEffects {
             EXECUTABLE_EFFECT_REGISTRY.register("ipecac", Ipecac::new);
     public static final RegistryObject<IExecutableEffect> FIRING_MODIFIER_ATTACK_PLAN =
             EXECUTABLE_EFFECT_REGISTRY.register("firing_modifier_attack_plan", FiringModifierAttackPlan::new);
-    public static final RegistryObject<IExecutableEffect> FIRING_MODIFIER_SHOT_DELAY =
-            EXECUTABLE_EFFECT_REGISTRY.register("firing_modifier_shot_delay", FiringModifierShotDelay::new);
     public static final RegistryObject<IExecutableEffect> BRIMSTONE_PLUS_MONSTROS_LUNG =
             EXECUTABLE_EFFECT_REGISTRY.register("brimstone_plus_monstros_lung", BrimstonePlusMonstrosLung::new);
     public static final RegistryObject<IExecutableEffect> LEAD_PENCIL_BURST =
@@ -606,7 +604,7 @@ public class ModExecutableEffects {
             EXECUTABLE_EFFECT_REGISTRY.register("queen_of_heart", () -> new AbilityEffectEntry(
                     GIVE_ITEM_VIA_LOOT, ctx -> {
                 ctx.set(ContextKeys.ITEM, ModItems.RED_HEART.get());
-                ctx.set(ContextKeys.DOUBLE, List.of(1., 21.));
+                ctx.set(ContextKeys.LOOT_COUNT, ctx.getEntity().getRandom().nextInt(1, 21));
             }));
     public static final RegistryObject<IExecutableEffect> REVERSE_TAROTS_BACK =
             EXECUTABLE_EFFECT_REGISTRY.register("reverse_tarots_back", () -> new AbilityEffectEntry(
@@ -695,7 +693,7 @@ public class ModExecutableEffects {
                 double a = amplifier + 1.;
                 double b = amplifier + 2.;
 
-                ctx.set(ContextKeys.DOUBLE, List.of(a, b));
+                ctx.set(ContextKeys.LOOT_COUNT, ctx.getEntity().getRandom().nextInt((int) a, (int) b));
             }));
     public static final RegistryObject<IExecutableEffect> THE_HIEROPHANT_R =
             EXECUTABLE_EFFECT_REGISTRY.register("the_hierophant_r", () -> new AbilityEffectEntry(
@@ -705,7 +703,7 @@ public class ModExecutableEffects {
                 double a = amplifier + 1.;
                 double b = amplifier + 2.;
 
-                ctx.set(ContextKeys.DOUBLE, List.of(a, b));
+                ctx.set(ContextKeys.LOOT_COUNT, ctx.getEntity().getRandom().nextInt((int) a, (int) b));
             }));
     public static final RegistryObject<IExecutableEffect> THE_LOVERS =
             EXECUTABLE_EFFECT_REGISTRY.register("the_lovers", () -> new AbilityEffectEntry(
@@ -715,7 +713,7 @@ public class ModExecutableEffects {
                 double a = amplifier + 1.;
                 double b = amplifier + 2.;
 
-                ctx.set(ContextKeys.DOUBLE, List.of(a, b));
+                ctx.set(ContextKeys.LOOT_COUNT, ctx.getEntity().getRandom().nextInt((int) a, (int) b));
             }));
     public static final RegistryObject<IExecutableEffect> THE_MAGICIAN =
             EXECUTABLE_EFFECT_REGISTRY.register("the_magician", () -> new AbilityEffectEntry(
@@ -871,7 +869,7 @@ public class ModExecutableEffects {
                         }
 
                         double amplifier = ctx.getOrDefault(ContextKeys.AMPLIFIER, 1.);
-                        ctx.set(ContextKeys.DOUBLE, List.of(amplifier, amplifier + 1));
+                        ctx.set(ContextKeys.LOOT_COUNT, ctx.getEntity().getRandom().nextInt((int) amplifier, (int) amplifier + 1));
                     })
             );
     public static final RegistryObject<IExecutableEffect> STEAM_SALE =
@@ -960,6 +958,65 @@ public class ModExecutableEffects {
                     )))
             );
 
+
+
+    public static final RegistryObject<IExecutableEffect> MOMS_BRA =
+            EXECUTABLE_EFFECT_REGISTRY.register("moms_bra", () -> new AbilityEffectEntry(
+                    APPLY_EFFECT_TO_NEARBY, ctx -> {
+                ctx.set(ContextKeys.EXECUTABLE_EFFECT, POTIONS.get());
+                ctx.set(ContextKeys.BOOLEAN, List.of(true));
+                ctx.set(ContextKeys.POTIONS, List.of(new PotionProfile(ModEffects.PETRIFIED.get(), 80, 0, 0, 0, true)));
+            }));
+
+    public static final RegistryObject<IExecutableEffect> DECK_OF_CARDS =
+            EXECUTABLE_EFFECT_REGISTRY.register("deck_of_cards", () -> new AbilityEffectEntry(
+                    GENERATE_LOOT, ctx -> {
+                ctx.set(ContextKeys.RESOURCE_LOCATIONS, List.of(ModLootTables.RANDOM_CARDS));
+                ctx.set(ContextKeys.LOOT_COUNT, ctx.getOrDefault(ContextKeys.AMPLIFIER, 1.).intValue());
+            }));
+
+    public static final RegistryObject<IExecutableEffect> THE_BOOK_OF_SIN =
+            EXECUTABLE_EFFECT_REGISTRY.register("the_book_of_sin", () -> new AbilityEffectEntry(
+                    GENERATE_LOOT, ctx -> {
+                ctx.set(ContextKeys.RESOURCE_LOCATIONS, List.of(ModLootTables.BOOK_OF_SIN_PICKUPS));
+                ctx.set(ContextKeys.LOOT_COUNT, ctx.getOrDefault(ContextKeys.AMPLIFIER, 1.).intValue());
+            }));
+
+    public static final RegistryObject<IExecutableEffect> MOMS_BOTTLE_OF_PILLS =
+            EXECUTABLE_EFFECT_REGISTRY.register("moms_bottle_of_pills", () -> new AbilityEffectEntry(
+                    GENERATE_LOOT, ctx -> {
+                ctx.set(ContextKeys.RESOURCE_LOCATIONS, List.of(ModLootTables.RANDOM_PILLS));
+                ctx.set(ContextKeys.LOOT_COUNT, ctx.getOrDefault(ContextKeys.AMPLIFIER, 1.).intValue());
+            }));
+
+    public static final RegistryObject<IExecutableEffect> MAGIC_FINGERS =
+            EXECUTABLE_EFFECT_REGISTRY.register("magic_fingers", MagicFingers::new);
+
+    public static final RegistryObject<IExecutableEffect> D8 =
+            EXECUTABLE_EFFECT_REGISTRY.register("d8", D8::new);
+
+    public static final RegistryObject<IExecutableEffect> KIDNEY_BEAN =
+            EXECUTABLE_EFFECT_REGISTRY.register("kidney_bean", () -> new AbilityEffectEntry(
+                    APPLY_EFFECT_TO_NEARBY, ctx -> {
+                ctx.set(ContextKeys.EXECUTABLE_EFFECT, POTIONS.get());
+                ctx.set(ContextKeys.BOOLEAN, List.of(true));
+                ctx.set(ContextKeys.DOUBLE, List.of(0.5));
+                ctx.set(ContextKeys.POTIONS, List.of(new PotionProfile(ModEffects.CHARM.get(), 120, 0, 0, 0, true)));
+            }));
+
+    public static final RegistryObject<IExecutableEffect> ETERNAL_D6 =
+            EXECUTABLE_EFFECT_REGISTRY.register("eternal_d6", EternalD6::new);
+
+    public static final RegistryObject<IExecutableEffect> MOMS_BRA_BLINDNESS =
+            EXECUTABLE_EFFECT_REGISTRY.register("moms_bra_blindness", () -> new AbilityEffectEntry(
+                    APPLY_EFFECT_TO_NEARBY, ctx -> {
+                ctx.set(ContextKeys.BOOLEAN, List.of(true));
+                ctx.set(ContextKeys.EXECUTABLE_EFFECT, target -> {
+                    if (!(target.getEntity() instanceof Player)) return;
+                    target.set(ContextKeys.POTIONS, List.of(new PotionProfile(MobEffects.BLINDNESS, 80, 0, 0, 0, true)));
+                    POTIONS.get().apply(target);
+                });
+            }));
 
     //</editor-fold>
     // entry end

@@ -48,7 +48,7 @@ public class SacredHeart extends PassiveAbility {
     @Override
     public void handleRemove(ServerPlayer player, @Nullable ItemStack stack) {
         StatManager.DAMAGE.apply(player, -1);
-        StatManager.removeMultiplier(player, Multipliers.DAMAGE.id(), 1);
+        StatManager.removeMultiplier(player, Multipliers.DAMAGE, 1);
         StatManager.BULLET_SPEED.apply(player, 1);
         StatManager.RANGE.apply(player, -1.5);
         StatManager.TEARS.apply(player, 0.6);

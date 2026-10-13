@@ -93,8 +93,8 @@ public enum StatManager {
             () -> Config.BLOCK_REACH_BONUS.get(), -2.0, null),
     TEARS("tears", ModAttributes.TEARS.get(), 0, true,
             () -> Config.TEARS_BONUS.get(), null, null),
-    TEARS_CORRECTION("tears_correction", ModAttributes.TEARS_CORRECTION.get(), 0, true,
-            () -> Config.TEARS_CORRECTION_BONUS.get(), null, null),
+    FIRE_RATE("fire_rate", ModAttributes.FIRE_RATE.get(), 0, true,
+            () -> Config.FIRE_RATE_BONUS.get(), null, null),
     BULLET_SPEED("bullet_speed", ModAttributes.BULLET_SPEED.get(), 0, true,
             () -> Config.BULLET_SPEED_BONUS.get(), null, null),
     ATTACK_SPEED("attack_speed", Attributes.ATTACK_SPEED, 0, true,
@@ -267,6 +267,13 @@ public enum StatManager {
         return MultiplierEntry.of(id, uuid, source, attribute, amount, operation);
     }
 
+    public static MultiplierEntry createMultiplierEntry(String item, ResourceLocation id, Attribute attribute,
+                                                        double amount, AttributeModifier.Operation operation) {
+        ResourceLocation source = ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, item);
+        UUID uuid = UUID.nameUUIDFromBytes(id.toString().getBytes(StandardCharsets.UTF_8));
+        return MultiplierEntry.of(id, uuid, source, attribute, amount, operation);
+    }
+
     public static void addMultiplier(ServerPlayer player, MultiplierEntry entry, int count) {
         if (player == null || entry == null || entry.attributeId() == null) {
             IsaacDisaster.LOGGER.warn("Ignoring multiplier addition with missing player, entry or attribute");
@@ -284,15 +291,15 @@ public enum StatManager {
         }, () -> IsaacDisaster.LOGGER.warn("Ignoring multiplier entry {}: player capability is unavailable", entry.id()));
     }
 
-    public static void removeMultiplier(ServerPlayer player, ResourceLocation entryId, int count) {
-        if (player == null) {
-            IsaacDisaster.LOGGER.warn("Ignoring multiplier removal without a player");
+    public static void removeMultiplier(ServerPlayer player, MultiplierEntry entry, int count) {
+        if (player == null || entry == null) {
+            IsaacDisaster.LOGGER.warn("Ignoring multiplier removal without a player or entry");
             return;
         }
         player.getCapability(PlayerStatModifierProvider.PLAYER_STAT_MODIFIER).resolve().ifPresentOrElse(modifiers -> {
-            modifiers.getMultiplierEntries().remove(entryId, count);
+            modifiers.getMultiplierEntries().remove(entry.key(), count);
             refreshMultipliers(player);
-        }, () -> IsaacDisaster.LOGGER.warn("Ignoring multiplier removal {}: player capability is unavailable", entryId));
+        }, () -> IsaacDisaster.LOGGER.warn("Ignoring multiplier removal {}: player capability is unavailable", entry.key()));
     }
     public static void addMultiplierRule(ServerPlayer player, MultiplierRules.RuleEntry rule, int count) {
         if (player == null) {

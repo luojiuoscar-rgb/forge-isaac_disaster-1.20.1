@@ -2,6 +2,8 @@ package net.luojiuoscar.isaac_disaster.event;
 
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.attribute.ModAttributes;
+import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
 import net.minecraftforge.event.entity.EntityAttributeModificationEvent;
@@ -15,6 +17,8 @@ public class ModEvents {
 
     @SubscribeEvent
     public static void onEntityAttributeModification(EntityAttributeModificationEvent event) {
+        MobEffects.DIG_SPEED.addAttributeModifier(ModAttributes.FIRE_RATE.get(),
+                "c01d3738-93ec-4e8a-bb45-d138672e5ac6", 1.0D, AttributeModifier.Operation.ADDITION);
         // 给所有生物添加Scale
         event.getTypes().forEach(type -> {
             if (Mob.class.isAssignableFrom(type.getBaseClass()) || type == EntityType.PLAYER) {
@@ -27,7 +31,7 @@ public class ModEvents {
             // 给玩家追加的属性
             if (type == EntityType.PLAYER) {
                 event.add(EntityType.PLAYER, ModAttributes.TEARS.get());
-                event.add(EntityType.PLAYER, ModAttributes.TEARS_CORRECTION.get());
+                event.add(EntityType.PLAYER, ModAttributes.FIRE_RATE.get());
                 event.add(EntityType.PLAYER, ModAttributes.BLOCK_BREAKING_SPEED.get());
                 event.add(EntityType.PLAYER, ModAttributes.BULLET_COUNT.get());
                 event.add(EntityType.PLAYER, ModAttributes.COLLISION_DAMAGE.get());

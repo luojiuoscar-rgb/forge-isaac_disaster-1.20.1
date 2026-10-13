@@ -4,6 +4,7 @@ import net.luojiuoscar.isaac_disaster.helper.LootHelper;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.item.ModItems;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ExecutableEffectContext;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.ContextKeys;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ModExecutableEffects;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.pill_effect.PillEffect;
 import net.luojiuoscar.isaac_disaster.sound.ModSounds;
@@ -26,10 +27,10 @@ public class Energy48 extends PillEffect {
             PlayerHelper.chargeAll(player, null, true);
         }
 
-        int count = isHorse ? player.getRandom().nextInt(3,5)
-                : player.getRandom().nextInt(1,3);
+        int lootCount = Math.max(0, context.has(ContextKeys.LOOT_COUNT) ? context.get(ContextKeys.LOOT_COUNT)
+                : isHorse ? player.getRandom().nextInt(3, 5) : player.getRandom().nextInt(1, 3));
 
-        LootHelper.spawnItemViaLoot(player, player.position(), ModItems.SMALL_BATTERY.get(), count);
+        LootHelper.spawnItemViaLoot(player, player.position(), ModItems.SMALL_BATTERY.get(), lootCount);
         return true;
     }
 

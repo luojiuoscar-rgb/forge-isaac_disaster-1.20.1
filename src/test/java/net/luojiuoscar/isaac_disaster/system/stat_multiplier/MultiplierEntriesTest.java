@@ -37,7 +37,7 @@ class MultiplierEntriesTest {
 
         entries.add(BLOOD_RANGE, 1);
         entries.reconcile(ignored -> attribute, false, rules);
-        assertEquals(2, entries.snapshot().get(BLOOD_RANGE.id()).stacks());
+        assertEquals(2, entries.snapshot().get(BLOOD_RANGE.key()).stacks());
         assertEquals(1, attribute.getModifiers().size());
         assertEquals(8.0, attribute.getValue(), 1.0E-12);
 
@@ -46,10 +46,10 @@ class MultiplierEntriesTest {
         assertEquals(6.4, attribute.getValue(), 1.0E-12);
         assertEquals(1, attribute.getModifiers().size());
 
-        entries.remove(BLOOD_RANGE.id(), 1);
+        entries.remove(BLOOD_RANGE.key(), 1);
         entries.reconcile(ignored -> attribute, true, rules);
         assertEquals(8.0, attribute.getValue(), 1.0E-12);
-        entries.remove(BLOOD_RANGE.id(), 1);
+        entries.remove(BLOOD_RANGE.key(), 1);
         entries.reconcile(ignored -> attribute, true, rules);
         assertTrue(entries.snapshot().isEmpty());
         assertNull(attribute.getModifier(BLOOD_RANGE.uuid()));
@@ -67,7 +67,7 @@ class MultiplierEntriesTest {
         assertEquals(-0.4, attribute.getModifier(base.uuid()).getAmount(), 1.0E-12);
         assertEquals(7.2, attribute.getValue(), 1.0E-12);
 
-        entries.remove(base.id(), 2);
+        entries.remove(base.key(), 2);
         entries.add(BLOOD_RANGE, 2);
         entries.reconcile(ignored -> attribute, true, new MultiplierRules());
         assertEquals(7.68, attribute.getValue(), 1.0E-12);
@@ -175,7 +175,7 @@ class MultiplierEntriesTest {
         entries.add(BLOOD_RANGE, 2);
         entries.reconcile(ignored -> attribute, true, new MultiplierRules());
         assertEquals(7.68, attribute.getValue(), 1.0E-12);
-        entries.remove(BLOOD_RANGE.id(), 2);
+        entries.remove(BLOOD_RANGE.key(), 2);
         entries.reconcile(ignored -> attribute, false, new MultiplierRules());
         assertEquals(12.0, attribute.getValue(), 1.0E-12);
         assertFalse(attribute.getModifier(legacyId) == null);
@@ -198,7 +198,7 @@ class MultiplierEntriesTest {
                 AttributeModifier.Operation.MULTIPLY_TOTAL), 1);
         entries.add(new MultiplierEntry(BLOOD_RANGE.id(), BLOOD_RANGE.uuid(), BLOOD, ATTRIBUTE, Double.NaN,
                 AttributeModifier.Operation.MULTIPLY_TOTAL), 1);
-        assertEquals(1, entries.snapshot().get(BLOOD_RANGE.id()).stacks());
+        assertEquals(1, entries.snapshot().get(BLOOD_RANGE.key()).stacks());
 
         ListTag saved = entries.save();
         CompoundTag invalid = saved.getCompound(0).copy();
@@ -211,7 +211,7 @@ class MultiplierEntriesTest {
         loaded.load(saved);
         assertEquals(entries.snapshot(), loaded.snapshot());
 
-        entries.remove(BLOOD_RANGE.id(), 2);
+        entries.remove(BLOOD_RANGE.key(), 2);
         assertTrue(entries.snapshot().isEmpty());
     }
 
@@ -220,7 +220,7 @@ class MultiplierEntriesTest {
         MultiplierEntries entries = new MultiplierEntries();
         entries.add(BLOOD_RANGE, Integer.MAX_VALUE);
         entries.add(BLOOD_RANGE, 1);
-        assertEquals(Integer.MAX_VALUE, entries.snapshot().get(BLOOD_RANGE.id()).stacks());
+        assertEquals(Integer.MAX_VALUE, entries.snapshot().get(BLOOD_RANGE.key()).stacks());
         assertEquals(0, new MultiplierEntries.EntryStack(BLOOD_RANGE, -1).stacks());
 
         MultiplierRules rules = new MultiplierRules();
@@ -257,6 +257,101 @@ class MultiplierEntriesTest {
         AttributeInstance attribute = new AttributeInstance(Attributes.ATTACK_DAMAGE, ignored -> {});
         attribute.setBaseValue(10.0);
         return attribute;
+    }
+
+    @Test
+    void sharedIdKeepsBothSourcesAndRestoresTheWeakerSourceInEitherOrder() {
+        MultiplierEntry weaker = entry("shared_penalty", CRICKET, -0.5,
+                AttributeModifier.Operation.MULTIPLY_TOTAL);
+        MultiplierEntry stronger = entry("shared_penalty", BLOOD, -2.0 / 3.0,
+                AttributeModifier.Operation.MULTIPLY_TOTAL);
+        for (boolean reverse : new boolean[]{false, true}) {
+            MultiplierEntries entries = new MultiplierEntries();
+            entries.add(reverse ? stronger : weaker, 2);
+            entries.add(reverse ? weaker : stronger, 2);
+            AttributeInstance attribute = attribute();
+            entries.reconcile(ignored -> attribute, false, new MultiplierRules());
+            assertEquals(2, entries.snapshot().size());
+            assertEquals(1, attribute.getModifiers().size());
+            assertEquals(10.0 / 3.0, attribute.getValue(), 1.0e-12);
+            entries.remove(stronger.key(), 1);
+            entries.reconcile(ignored -> attribute, false, new MultiplierRules());
+            assertEquals(10.0 / 3.0, attribute.getValue(), 1.0e-12);
+            entries.remove(stronger.key(), 1);
+            entries.reconcile(ignored -> attribute, false, new MultiplierRules());
+            assertEquals(5.0, attribute.getValue(), 1.0e-12);
+            assertEquals(2, entries.snapshot().get(weaker.key()).stacks());
+            entries.remove(weaker.key(), 2);
+            entries.reconcile(ignored -> attribute, false, new MultiplierRules());
+            assertEquals(10.0, attribute.getValue(), 1.0e-12);
+            assertTrue(attribute.getModifiers().isEmpty());
+        }
+    }
+
+    @Test
+    void stackingCombinesEverySourceAndCopyIntoOneModifier() {
+        MultiplierEntry first = entry("shared_penalty", CRICKET, -0.5,
+                AttributeModifier.Operation.MULTIPLY_TOTAL);
+        MultiplierEntry second = entry("shared_penalty", BLOOD, -2.0 / 3.0,
+                AttributeModifier.Operation.MULTIPLY_TOTAL);
+        MultiplierEntries entries = new MultiplierEntries();
+        entries.add(first, 2);
+        entries.add(second, 1);
+        AttributeInstance attribute = attribute();
+        entries.reconcile(ignored -> attribute, true, new MultiplierRules());
+        assertEquals(10.0 / 12.0, attribute.getValue(), 1.0e-12);
+        assertEquals(1, attribute.getModifiers().size());
+        entries.reconcile(ignored -> attribute, false, new MultiplierRules());
+        assertEquals(10.0 / 3.0, attribute.getValue(), 1.0e-12);
+        entries.reconcile(ignored -> attribute, true, new MultiplierRules());
+        assertEquals(10.0 / 12.0, attribute.getValue(), 1.0e-12);
+    }
+
+    @Test
+    void sharedBaseMultiplierDoesNotDoubleByDefaultAndSumsWhenEnabled() {
+        MultiplierEntry first = entry("shared_boost", CRICKET, 0.5,
+                AttributeModifier.Operation.MULTIPLY_BASE);
+        MultiplierEntry second = entry("shared_boost", BLOOD, 0.5,
+                AttributeModifier.Operation.MULTIPLY_BASE);
+        MultiplierEntries entries = new MultiplierEntries();
+        entries.add(first, 2);
+        entries.add(second, 1);
+        AttributeInstance attribute = attribute();
+        entries.reconcile(ignored -> attribute, false, new MultiplierRules());
+        assertEquals(15.0, attribute.getValue());
+        entries.reconcile(ignored -> attribute, true, new MultiplierRules());
+        assertEquals(25.0, attribute.getValue());
+        assertEquals(1, attribute.getModifiers().size());
+        entries.remove(first.key(), 2);
+        entries.reconcile(ignored -> attribute, true, new MultiplierRules());
+        assertEquals(15.0, attribute.getValue());
+    }
+
+    @Test
+    void sharedSourcesPersistCopyAndStayHeldWhileTheirWholeGroupIsSuppressed() {
+        MultiplierEntry first = entry("shared_penalty", CRICKET, -0.5,
+                AttributeModifier.Operation.MULTIPLY_TOTAL);
+        MultiplierEntry second = entry("shared_penalty", BLOOD, -2.0 / 3.0,
+                AttributeModifier.Operation.MULTIPLY_TOTAL);
+        MultiplierEntries entries = new MultiplierEntries();
+        entries.add(first, 1);
+        entries.add(second, 2);
+        MultiplierEntries restored = new MultiplierEntries();
+        restored.load(entries.save());
+        assertEquals(entries.snapshot(), restored.snapshot());
+        MultiplierEntries copy = new MultiplierEntries();
+        copy.copyFrom(restored);
+        assertEquals(entries.snapshot(), copy.snapshot());
+        MultiplierRules rules = new MultiplierRules();
+        MultiplierRules.RuleEntry suppress = rule("whole_group", BLOOD, first.id());
+        rules.add(suppress, 1);
+        AttributeInstance attribute = attribute();
+        copy.reconcile(ignored -> attribute, true, rules);
+        assertEquals(10.0, attribute.getValue());
+        assertEquals(2, copy.snapshot().size());
+        rules.remove(suppress.id(), 1);
+        copy.reconcile(ignored -> attribute, false, rules);
+        assertEquals(10.0 / 3.0, attribute.getValue(), 1.0e-12);
     }
 
     private static MultiplierEntry entry(String name, ResourceLocation source, double amount,

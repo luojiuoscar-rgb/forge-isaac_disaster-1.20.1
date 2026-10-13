@@ -20,8 +20,8 @@ public class GildingActive implements IAbilityEffect {
         if (instance == null) return false;
         Vec3 pos = context.getOrDefault(ContextKeys.TARGET_POSITION, entity.position());
 
-        int amplifier = instance.getAmplifier() + 1;
-        LootHelper.spawnLootAtPos(entity, entity.position(), ModLootTables.RANDOM_COINS, amplifier);
+        int lootCount = Math.max(0, context.getOrDefault(ContextKeys.LOOT_COUNT, instance.getAmplifier() + 1));
+        LootHelper.spawnLootAtPos(entity, entity.position(), ModLootTables.RANDOM_COINS, lootCount);
         entity.removeEffect(ModEffects.GILDING.get()); // 移除
 
         entity.level().playSound(null, pos.x, pos.y, pos.z,

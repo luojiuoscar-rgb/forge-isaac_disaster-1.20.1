@@ -19,7 +19,7 @@ import java.util.List;
 public class MagicMushroom extends PassiveAbility {
     public static final class Multipliers {
         public static final MultiplierEntry DAMAGE = StatManager.createMultiplierEntry(
-                "magic_mushroom", "damage", Attributes.ATTACK_DAMAGE, 0.5, AttributeModifier.Operation.MULTIPLY_BASE);
+                "magic_mushroom", MultiplierEntry.DAMAGE_BOOST_ID, Attributes.ATTACK_DAMAGE, 0.5, AttributeModifier.Operation.MULTIPLY_BASE);
     }
 
     public MagicMushroom(int id, int level) {
@@ -54,7 +54,7 @@ public class MagicMushroom extends PassiveAbility {
         StatManager.SCALE.apply(player, -2.5);
         StatManager.MOVEMENT_SPEED.apply(player, -1.5);
         StatManager.DAMAGE.apply(player, -0.25);
-        StatManager.removeMultiplier(player, Multipliers.DAMAGE.id(), 1);
+        StatManager.removeMultiplier(player, Multipliers.DAMAGE, 1);
         StatManager.RANGE.apply(player, -1);
         StatManager.BLOCK_REACH.apply(player, -1);
         StatManager.ENTITY_REACH.apply(player, -1);

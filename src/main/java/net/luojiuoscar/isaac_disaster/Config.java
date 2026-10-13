@@ -55,7 +55,7 @@ public class Config
     public static ForgeConfigSpec.DoubleValue DEFAULT_ENTITY_REACH;
     public static ForgeConfigSpec.DoubleValue DEFAULT_BLOCK_REACH;
     public static ForgeConfigSpec.DoubleValue DEFAULT_TEARS;
-    public static ForgeConfigSpec.DoubleValue DEFAULT_TEARS_CORRECTION;
+    public static ForgeConfigSpec.DoubleValue DEFAULT_FIRE_RATE_ADDITION;
     public static ForgeConfigSpec.DoubleValue DEFAULT_BULLET_SPEED;
     public static ForgeConfigSpec.DoubleValue DEFAULT_ATTACK_SPEED;
     public static ForgeConfigSpec.DoubleValue DEFAULT_BLOCK_BREAKING_SPEED;
@@ -78,7 +78,7 @@ public class Config
     public static ForgeConfigSpec.DoubleValue ENTITY_REACH_BONUS;
     public static ForgeConfigSpec.DoubleValue BULLET_SPEED_BONUS;
     public static ForgeConfigSpec.DoubleValue TEARS_BONUS;
-    public static ForgeConfigSpec.DoubleValue TEARS_CORRECTION_BONUS;
+    public static ForgeConfigSpec.DoubleValue FIRE_RATE_BONUS;
     public static ForgeConfigSpec.DoubleValue ATTACK_SPEED_BONUS;
     public static ForgeConfigSpec.DoubleValue BLOCK_BREAKING_SPEED_BONUS;
     public static ForgeConfigSpec.DoubleValue ATTACK_KNOCKBACK_BONUS;
@@ -159,9 +159,9 @@ public class Config
                 .comment("Default player tears value.")
                 .defineInRange("default_tears", IsaacConfigDefaults.DEFAULT_TEARS, -1024.0, 1024.0);
 
-        DEFAULT_TEARS_CORRECTION = BUILDER
-                .comment("Default player tears correction.")
-                .defineInRange("default_tears_correction", IsaacConfigDefaults.DEFAULT_TEARS_CORRECTION,
+        DEFAULT_FIRE_RATE_ADDITION = BUILDER
+                .comment("Default additive shots-per-second bonus after converting Tears.")
+                .defineInRange("default_fire_rate_addition", IsaacConfigDefaults.DEFAULT_FIRE_RATE_ADDITION,
                         -1024.0, 1024.0);
 
         DEFAULT_BULLET_SPEED = BUILDER
@@ -265,9 +265,9 @@ public class Config
                 .defineInRange("tears_bonus", IsaacConfigDefaults.TEARS_BONUS, 0.0, 99999.0);
 
         // 射速修正  默认1
-        TEARS_CORRECTION_BONUS = BUILDER
-                .comment("Reduction of shot delay")
-                .defineInRange("tears_correction_bonus", IsaacConfigDefaults.TEARS_CORRECTION_BONUS, 0.0, 99999.0);
+        FIRE_RATE_BONUS = BUILDER
+                .comment("Shots-per-second addition per fire-rate bonus unit")
+                .defineInRange("fire_rate_bonus", IsaacConfigDefaults.FIRE_RATE_BONUS, 0.0, 99999.0);
 
         // 攻击速度  默认1
         ATTACK_SPEED_BONUS = BUILDER
@@ -381,7 +381,7 @@ public class Config
                 .define("time_stop_exclude_friendly", IsaacConfigDefaults.TIME_STOP_EXCLUDE_FRIENDLY);
 
         ALLOW_SAME_MULTIPLIER_ENTRY_STACKING = BUILDER
-                .comment("Allow each copy of a source-owned multiplier entry to apply independently.")
+                .comment("Allow every source and copy sharing a multiplier ID to contribute; otherwise use the strongest source.")
                 .define("allow_same_multiplier_entry_stacking",
                         IsaacConfigDefaults.ALLOW_SAME_MULTIPLIER_ENTRY_STACKING);
 

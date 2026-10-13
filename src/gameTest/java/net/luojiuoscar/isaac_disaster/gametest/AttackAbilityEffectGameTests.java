@@ -5,7 +5,7 @@ import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.capability.entity.ExtraDataProvider;
 import net.luojiuoscar.isaac_disaster.effect.ModEffects;
 import net.luojiuoscar.isaac_disaster.event.custom.attack.AttackPlanEvent;
-import net.luojiuoscar.isaac_disaster.event.custom.misc.GetShotDelayEvent;
+import net.minecraftforge.eventbus.api.Event;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ContextKeys;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ExecutableEffectContext;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.IAbilityEffect;
@@ -30,7 +30,7 @@ public final class AttackAbilityEffectGameTests {
     public static void invalidInputsFailAndOrdinarySkipsSucceed(GameTestHelper helper) {
         ServerPlayer player = player(helper);
         List<IAbilityEffect> eventEffects = List.of(new BrimstonePlusMonstrosLung(),
-                new FiringModifierAttackPlan(), new FiringModifierShotDelay(),
+                new FiringModifierAttackPlan(),
                 new TheWizAttackPlan(), new LeadPencilShotCounter());
         var invalidEntity = new ExecutableEffectContext(new Zombie(helper.getLevel()));
         for (var effect : eventEffects) {
@@ -50,13 +50,11 @@ public final class AttackAbilityEffectGameTests {
         var data = player.getCapability(ExtraDataProvider.EXTRA_DATA_CAP).orElseThrow(IllegalStateException::new);
         helper.assertTrue(!data.hasDouble(LeadPencilShotCounter.DATA_KEY), "Skipped counter does not create progress");
 
-        context.set(ContextKeys.EVENT, new GetShotDelayEvent(player, 10));
+        context.set(ContextKeys.EVENT, new Event());
         for (var effect : List.of(new BrimstonePlusMonstrosLung(), new FiringModifierAttackPlan(),
                 new TheWizAttackPlan(), new LeadPencilShotCounter())) {
             helper.assertTrue(!effect.applyEffect(context), "Wrong event type fails");
         }
-        context.set(ContextKeys.EVENT, extraPlan);
-        helper.assertTrue(!new FiringModifierShotDelay().applyEffect(context), "Shot delay rejects attack-plan event");
         helper.succeed();
     }
 
@@ -64,11 +62,6 @@ public final class AttackAbilityEffectGameTests {
     public static void validEventEffectsKeepAttackBehavior(GameTestHelper helper) {
         ServerPlayer player = player(helper);
         var context = new ExecutableEffectContext(player);
-        var delay = new GetShotDelayEvent(player, 10);
-        context.set(ContextKeys.EVENT, delay);
-        helper.assertTrue(new FiringModifierShotDelay().applyEffect(context), "Valid delay execution succeeds");
-        helper.assertTrue(delay.getDelay() == 10, "No firing items preserves original delay");
-
         var primary = plan(player, ModAttackTypes.BULLET.get(), AttackOrigin.PLAYER_PRIMARY);
         context.set(ContextKeys.EVENT, primary);
         helper.assertTrue(new FiringModifierAttackPlan().applyEffect(context), "Valid multishot execution succeeds");

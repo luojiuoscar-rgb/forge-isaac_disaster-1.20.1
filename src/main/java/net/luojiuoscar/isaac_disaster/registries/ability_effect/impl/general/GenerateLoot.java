@@ -23,7 +23,8 @@ public class GenerateLoot implements IAbilityEffect {
         if (rls.isEmpty()) return false;
         ResourceLocation loot = rls.get(0);
 
-        LootHelper.spawnLootAtPos(entity, pos, loot);
+        int count = Math.max(0, context.getOrDefault(ContextKeys.LOOT_COUNT, 1));
+        LootHelper.spawnLootAtPos(entity, pos, loot, count);
 
         // 对生成掉落的源施加一个小冷却
         if (entity instanceof Player player && hand != null){

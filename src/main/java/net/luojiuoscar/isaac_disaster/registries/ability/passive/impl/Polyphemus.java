@@ -1,9 +1,10 @@
 package net.luojiuoscar.isaac_disaster.registries.ability.passive.impl;
 
+import net.luojiuoscar.isaac_disaster.attribute.ModAttributes;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
-import net.luojiuoscar.isaac_disaster.system.stat_multiplier.MultiplierEntry;
 import net.luojiuoscar.isaac_disaster.registries.ability.passive.PassiveAbility;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerModules;
+import net.luojiuoscar.isaac_disaster.system.stat_multiplier.MultiplierEntry;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
@@ -16,6 +17,10 @@ import java.util.List;
 
 public class Polyphemus extends PassiveAbility {
     public static final class Multipliers {
+        public static final MultiplierEntry FIRE_RATE = StatManager.createMultiplierEntry(
+                "polyphemus", MultiplierEntry.FIRING_PENALTY_ID, ModAttributes.FIRE_RATE.get(), -0.5D,
+                AttributeModifier.Operation.MULTIPLY_TOTAL);
+
         public static final MultiplierEntry DAMAGE = StatManager.createMultiplierEntry(
                 "polyphemus", "damage", Attributes.ATTACK_DAMAGE, 0.8, AttributeModifier.Operation.MULTIPLY_BASE);
     }
@@ -30,6 +35,7 @@ public class Polyphemus extends PassiveAbility {
 
     @Override
     public void handleObtain(ServerPlayer player, @Nullable ItemStack stack) {
+        StatManager.addMultiplier(player, Multipliers.FIRE_RATE, 1);
         StatManager.addMultiplier(player, Multipliers.DAMAGE, 1);
         StatManager.DAMAGE.apply(player, 4);
         StatManager.addTriggerModule(player, ModTriggerModules.FIRING_MODIFIER.getId(), 1);
@@ -37,7 +43,8 @@ public class Polyphemus extends PassiveAbility {
 
     @Override
     public void handleRemove(ServerPlayer player, @Nullable ItemStack stack) {
-        StatManager.removeMultiplier(player, Multipliers.DAMAGE.id(), 1);
+        StatManager.removeMultiplier(player, Multipliers.FIRE_RATE, 1);
+        StatManager.removeMultiplier(player, Multipliers.DAMAGE, 1);
         StatManager.DAMAGE.apply(player, -4);
         StatManager.addTriggerModule(player, ModTriggerModules.FIRING_MODIFIER.getId(), -1);
     }

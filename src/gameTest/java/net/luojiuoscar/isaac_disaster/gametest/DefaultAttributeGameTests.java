@@ -104,7 +104,7 @@ public final class DefaultAttributeGameTests {
                 new ExpectedAttribute(ForgeMod.ENTITY_REACH.get(), 3.0),
                 new ExpectedAttribute(ForgeMod.BLOCK_REACH.get(), 4.5),
                 new ExpectedAttribute(ModAttributes.TEARS.get(), 0.0),
-                new ExpectedAttribute(ModAttributes.TEARS_CORRECTION.get(), 0.0),
+                new ExpectedAttribute(ModAttributes.FIRE_RATE.get(), 20.0 / 7.0),
                 new ExpectedAttribute(ModAttributes.BULLET_SPEED.get(), 1.0),
                 new ExpectedAttribute(Attributes.ATTACK_SPEED, 4.0),
                 new ExpectedAttribute(ModAttributes.BLOCK_BREAKING_SPEED.get(), 0.0),

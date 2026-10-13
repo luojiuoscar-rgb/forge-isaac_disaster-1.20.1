@@ -142,4 +142,36 @@ public class ModActiveItems {
     public static final RegistryObject<Item> BOX = ITEMS.register("box",
             () -> new DisposableActiveItem(new Item.Properties(), 0, 0, ModActiveAbilities.BOX));
     static {ItemListManager.ACTIVE_ITEM_LIST.add(BOX);}
+
+    public static final RegistryObject<Item> MOMS_BRA = ITEMS.register("moms_bra",
+            () -> new ActiveItem(new Item.Properties(), 6, 6, ModActiveAbilities.MOMS_BRA));
+    static {ItemListManager.ACTIVE_ITEM_LIST.add(MOMS_BRA);}
+
+    public static final RegistryObject<Item> DECK_OF_CARDS = ITEMS.register("deck_of_cards",
+            () -> new ActiveItem(new Item.Properties(), 12, 12, ModActiveAbilities.DECK_OF_CARDS));
+    static {ItemListManager.ACTIVE_ITEM_LIST.add(DECK_OF_CARDS);}
+
+    public static final RegistryObject<Item> THE_BOOK_OF_SIN = ITEMS.register("the_book_of_sin",
+            () -> new ActiveItem(new Item.Properties(), 8, 8, ModActiveAbilities.THE_BOOK_OF_SIN));
+    static {ItemListManager.ACTIVE_ITEM_LIST.add(THE_BOOK_OF_SIN);}
+
+    public static final RegistryObject<Item> MOMS_BOTTLE_OF_PILLS = ITEMS.register("moms_bottle_of_pills",
+            () -> new ActiveItem(new Item.Properties(), 12, 12, ModActiveAbilities.MOMS_BOTTLE_OF_PILLS));
+    static {ItemListManager.ACTIVE_ITEM_LIST.add(MOMS_BOTTLE_OF_PILLS);}
+
+    public static final RegistryObject<Item> MAGIC_FINGERS = ITEMS.register("magic_fingers",
+            () -> new ActiveItem(new Item.Properties(), 0, 0, ModActiveAbilities.MAGIC_FINGERS));
+    static {ItemListManager.ACTIVE_ITEM_LIST.add(MAGIC_FINGERS);}
+
+    public static final RegistryObject<Item> D8 = ITEMS.register("d8",
+            () -> new ActiveItem(new Item.Properties(), 8, 8, ModActiveAbilities.D8));
+    static {ItemListManager.ACTIVE_ITEM_LIST.add(D8);}
+
+    public static final RegistryObject<Item> KIDNEY_BEAN = ITEMS.register("kidney_bean",
+            () -> new ActiveItem(new Item.Properties(), 2, 2, ModActiveAbilities.KIDNEY_BEAN));
+    static {ItemListManager.ACTIVE_ITEM_LIST.add(KIDNEY_BEAN);}
+
+    public static final RegistryObject<Item> ETERNAL_D6 = ITEMS.register("eternal_d6",
+            () -> new ActiveItem(new Item.Properties(), 4, 4, ModActiveAbilities.ETERNAL_D6));
+    static {ItemListManager.ACTIVE_ITEM_LIST.add(ETERNAL_D6);}
 }

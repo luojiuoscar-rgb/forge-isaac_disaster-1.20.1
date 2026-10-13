@@ -42,7 +42,7 @@ public class ThinOddMushroom extends PassiveAbility {
         StatManager.SCALE.apply(player, 1);
         StatManager.MOVEMENT_SPEED.apply(player, -1.5);
         StatManager.TEARS.apply(player, -1.5);
-        StatManager.removeMultiplier(player, Multipliers.DAMAGE.id(), 1);
+        StatManager.removeMultiplier(player, Multipliers.DAMAGE, 1);
         StatManager.modifySetWithId(player, ModSetAbilities.FUN_GUY.getId(), -1);
     }
 

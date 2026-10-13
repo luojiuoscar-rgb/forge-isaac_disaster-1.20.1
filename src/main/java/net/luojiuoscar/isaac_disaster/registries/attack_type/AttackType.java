@@ -1,16 +1,14 @@
 package net.luojiuoscar.isaac_disaster.registries.attack_type;
 
+import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.attribute.ModAttributes;
 import net.luojiuoscar.isaac_disaster.helper.GeometryHelper;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerAbilityProvider;
-import net.luojiuoscar.isaac_disaster.event.custom.misc.GetShotDelayEvent;
 import net.luojiuoscar.isaac_disaster.event.custom.misc.IsaacGetBulletCountEvent;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.CompositeTrigger;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.tags.IChargeableAttack;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
@@ -163,48 +161,7 @@ public abstract class AttackType {
         return attr != null ? Math.max(Math.min(attr.getValue(), 64), 1) : 18.0;
     }
 
-    protected double getTears(Player player) {
-        AttributeInstance instance = player.getAttribute(ModAttributes.TEARS.get());
-        if (instance == null) return 0.0;
-
-        return  Math.max(instance.getValue(),-7);
-    }
-
-    protected double getTearsCorrection(Player player) {
-        AttributeInstance instance = player.getAttribute(ModAttributes.TEARS_CORRECTION.get());
-        MobEffectInstance effect = player.getEffect(MobEffects.DIG_SPEED);
-
-        double value = 0;
-        value += effect != null ? effect.getAmplifier() + 1 : 0;
-        value += instance != null ? instance.getValue() : 0;
-
-        return  value;
-    }
-
     protected double getShotDelay(Player player) {
-        double tears = getTears(player);
-        double delay;
-
-        if (tears < -(10.0/13.0)){
-            delay = (11 - 4*tears);
-        }else if(tears >= -(10.0/13.0) && tears < 0){
-            delay = (11 - 4*Math.sqrt(1.3*tears+1) - 4*tears);
-        }else if(tears >= 0 && tears < (165.0/104.0)){
-            delay = (11 - 4*Math.sqrt(1.3*tears+1));
-        }else{
-            delay =  4;
-        }
-        delay -= getTearsCorrection(player);
-
-        GetShotDelayEvent event = new GetShotDelayEvent(player, delay);
-        MinecraftForge.EVENT_BUS.post(event);
-
-        if (!event.isCanceled()){
-            delay = event.getDelay();
-        }
-
-        return Math.max(delay, 0);
+        return PlayerHelper.getShotDelay(player);
     }
-
-
 }

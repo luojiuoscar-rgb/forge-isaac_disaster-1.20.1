@@ -21,6 +21,7 @@ public final class ContextKeys {
     public static final ContextKey<InteractionHand> HAND = new ContextKey<>();
     public static final ContextKey<Double> AMPLIFIER = new ContextKey<>();
     public static final ContextKey<Item> ITEM = new ContextKey<>();
+    public static final ContextKey<Integer> LOOT_COUNT = new ContextKey<>();
 
     // 药水相关
     public static final ContextKey<List<PotionProfile>> POTIONS = new ContextKey<>();

@@ -3,6 +3,14 @@
     {
       "rolls": 1,
       "entries": [
+        {"type": "minecraft:item", "name": "isaac_disaster:eternal_d6"},
+        {"type": "minecraft:item", "name": "isaac_disaster:kidney_bean"},
+        {"type": "minecraft:item", "name": "isaac_disaster:d8"},
+        {"type": "minecraft:item", "name": "isaac_disaster:magic_fingers"},
+        {"type": "minecraft:item", "name": "isaac_disaster:moms_bottle_of_pills"},
+        {"type": "minecraft:item", "name": "isaac_disaster:the_book_of_sin"},
+        {"type": "minecraft:item", "name": "isaac_disaster:deck_of_cards"},
+        {"type": "minecraft:item", "name": "isaac_disaster:moms_bra"},
         {"type": "minecraft:item", "name": "isaac_disaster:lead_pencil"},
         {"type": "minecraft:item", "name": "isaac_disaster:crickets_head"},
         {"type": "minecraft:item", "name": "isaac_disaster:the_common_cold"},

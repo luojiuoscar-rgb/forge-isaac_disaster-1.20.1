@@ -140,11 +140,35 @@ public class ModActiveAbilities {
             ACTIVE_ABILITY_REGISTRY.register("box",
                     () -> new Box(ItemId.BOX.getId(), ItemId.BOX.getLevel()));
 
+    public static final RegistryObject<ActiveAbility> MOMS_BRA =
+            ACTIVE_ABILITY_REGISTRY.register("moms_bra",
+                    () -> new MomsBra(ItemId.MOMS_BRA.getId(), ItemId.MOMS_BRA.getLevel()));
 
+    public static final RegistryObject<ActiveAbility> DECK_OF_CARDS =
+            ACTIVE_ABILITY_REGISTRY.register("deck_of_cards",
+                    () -> new DeckOfCards(ItemId.DECK_OF_CARDS.getId(), ItemId.DECK_OF_CARDS.getLevel()));
 
+    public static final RegistryObject<ActiveAbility> THE_BOOK_OF_SIN =
+            ACTIVE_ABILITY_REGISTRY.register("the_book_of_sin",
+                    () -> new TheBookOfSin(ItemId.THE_BOOK_OF_SIN.getId(), ItemId.THE_BOOK_OF_SIN.getLevel()));
+
+    public static final RegistryObject<ActiveAbility> MOMS_BOTTLE_OF_PILLS =
+            ACTIVE_ABILITY_REGISTRY.register("moms_bottle_of_pills",
+                    () -> new MomsBottleOfPills(ItemId.MOMS_BOTTLE_OF_PILLS.getId(), ItemId.MOMS_BOTTLE_OF_PILLS.getLevel()));
+
+    public static final RegistryObject<ActiveAbility> MAGIC_FINGERS =
+            ACTIVE_ABILITY_REGISTRY.register("magic_fingers",
+                    () -> new MagicFingers(ItemId.MAGIC_FINGERS.getId(), ItemId.MAGIC_FINGERS.getLevel()));
+
+    public static final RegistryObject<ActiveAbility> D8 =
+            ACTIVE_ABILITY_REGISTRY.register("d8",
+                    () -> new D8(ItemId.D8.getId(), ItemId.D8.getLevel()));
+
+    public static final RegistryObject<ActiveAbility> KIDNEY_BEAN =
+            ACTIVE_ABILITY_REGISTRY.register("kidney_bean",
+                    () -> new KidneyBean(ItemId.KIDNEY_BEAN.getId(), ItemId.KIDNEY_BEAN.getLevel()));
+
+    public static final RegistryObject<ActiveAbility> ETERNAL_D6 =
+            ACTIVE_ABILITY_REGISTRY.register("eternal_d6",
+                    () -> new EternalD6(ItemId.ETERNAL_D6.getId(), ItemId.ETERNAL_D6.getLevel()));
 }
-
-
-
-
-

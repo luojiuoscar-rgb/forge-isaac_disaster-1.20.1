@@ -57,7 +57,7 @@ public class ChestLootTrinket implements IAbilityEffect {
                             .withParameter(LootContextParams.THIS_ENTITY, player)
                             .withParameter(LootContextParams.ORIGIN, pos)
                             .create(LootContextParamSets.EMPTY),
-                    LootGenerationMode.DERIVED_DROP));
+                    LootGenerationMode.DERIVED_DROP, Math.max(0, context.getOrDefault(ContextKeys.LOOT_COUNT, 1))));
         }
 
         // match stick
@@ -67,7 +67,7 @@ public class ChestLootTrinket implements IAbilityEffect {
                             .withParameter(LootContextParams.THIS_ENTITY, player)
                             .withParameter(LootContextParams.ORIGIN, pos)
                             .create(LootContextParamSets.EMPTY),
-                    LootGenerationMode.DERIVED_DROP));
+                    LootGenerationMode.DERIVED_DROP, Math.max(0, context.getOrDefault(ContextKeys.LOOT_COUNT, 1))));
         }
 
         // childs heart
@@ -77,7 +77,7 @@ public class ChestLootTrinket implements IAbilityEffect {
                             .withParameter(LootContextParams.THIS_ENTITY, player)
                             .withParameter(LootContextParams.ORIGIN, pos)
                             .create(LootContextParamSets.EMPTY),
-                    LootGenerationMode.DERIVED_DROP));
+                    LootGenerationMode.DERIVED_DROP, Math.max(0, context.getOrDefault(ContextKeys.LOOT_COUNT, 1))));
         }
 
         // rusted key
@@ -87,7 +87,7 @@ public class ChestLootTrinket implements IAbilityEffect {
                             .withParameter(LootContextParams.THIS_ENTITY, player)
                             .withParameter(LootContextParams.ORIGIN, pos)
                             .create(LootContextParamSets.EMPTY),
-                    LootGenerationMode.DERIVED_DROP));
+                    LootGenerationMode.DERIVED_DROP, Math.max(0, context.getOrDefault(ContextKeys.LOOT_COUNT, 1))));
         }
 
         // ace of spades
@@ -97,7 +97,7 @@ public class ChestLootTrinket implements IAbilityEffect {
                             .withParameter(LootContextParams.THIS_ENTITY, player)
                             .withParameter(LootContextParams.ORIGIN, pos)
                             .create(LootContextParamSets.EMPTY),
-                    LootGenerationMode.DERIVED_DROP));
+                    LootGenerationMode.DERIVED_DROP, Math.max(0, context.getOrDefault(ContextKeys.LOOT_COUNT, 1))));
         }
 
         // safety pin
@@ -107,7 +107,7 @@ public class ChestLootTrinket implements IAbilityEffect {
                             .withParameter(LootContextParams.THIS_ENTITY, player)
                             .withParameter(LootContextParams.ORIGIN, pos)
                             .create(LootContextParamSets.EMPTY),
-                    LootGenerationMode.DERIVED_DROP));
+                    LootGenerationMode.DERIVED_DROP, Math.max(0, context.getOrDefault(ContextKeys.LOOT_COUNT, 1))));
         }
 
         // poker chip

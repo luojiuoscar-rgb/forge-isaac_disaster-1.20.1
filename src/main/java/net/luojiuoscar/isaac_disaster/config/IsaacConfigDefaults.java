@@ -13,7 +13,7 @@ public final class IsaacConfigDefaults {
     public static final double DEFAULT_ENTITY_REACH = 3.0;
     public static final double DEFAULT_BLOCK_REACH = 4.5;
     public static final double DEFAULT_TEARS = 0.0;
-    public static final double DEFAULT_TEARS_CORRECTION = 0.0;
+    public static final double DEFAULT_FIRE_RATE_ADDITION = 0.0;
     public static final double DEFAULT_BULLET_SPEED = 1.0;
     public static final double DEFAULT_ATTACK_SPEED = 4.0;
     public static final double DEFAULT_BLOCK_BREAKING_SPEED = 0.0;
@@ -36,7 +36,7 @@ public final class IsaacConfigDefaults {
     public static final double BLOCK_REACH_BONUS = 1.0;
     public static final double BULLET_SPEED_BONUS = 0.2;
     public static final double TEARS_BONUS = 0.7;
-    public static final double TEARS_CORRECTION_BONUS = 1.0;
+    public static final double FIRE_RATE_BONUS = 1.0;
     public static final double ATTACK_SPEED_BONUS = 1.0;
     public static final double BLOCK_BREAKING_SPEED_BONUS = 5.0;
     public static final double BULLET_SCALE_BONUS = 0.1;

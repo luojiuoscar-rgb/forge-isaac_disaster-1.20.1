@@ -26,7 +26,7 @@ public class CancerTrinket extends TrinketAbility {
 
     @Override
     public List<Component> getDesc(@Nullable ItemStack stack, Player player) {
-        return List.of(StatManager.TEARS_CORRECTION.description(1));
+        return List.of(StatManager.FIRE_RATE.description(1));
     }
 
     @Override
@@ -47,9 +47,9 @@ public class CancerTrinket extends TrinketAbility {
     public void onEquipped(LivingEntity entity, TrinketAbilityContext ctx){
         if (!(entity instanceof Player player)) return;
         if (ctx.isEnchanted) {
-            StatManager.TEARS_CORRECTION.apply(player, 2);
+            StatManager.FIRE_RATE.apply(player, 2);
         } else {
-            StatManager.TEARS_CORRECTION.apply(player, 1);
+            StatManager.FIRE_RATE.apply(player, 1);
         }
 
     };
@@ -57,9 +57,9 @@ public class CancerTrinket extends TrinketAbility {
     public void onUnequipped(LivingEntity entity, TrinketAbilityContext ctx){
         if (!(entity instanceof Player player)) return;
         if (ctx.isEnchanted) {
-            StatManager.TEARS_CORRECTION.apply(player, -2);
+            StatManager.FIRE_RATE.apply(player, -2);
         } else {
-            StatManager.TEARS_CORRECTION.apply(player, -1);
+            StatManager.FIRE_RATE.apply(player, -1);
         }
     }
 
