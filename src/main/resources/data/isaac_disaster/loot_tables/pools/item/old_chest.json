@@ -3,6 +3,7 @@
     {
       "rolls": 1,
       "entries": [
+        {"type": "minecraft:item", "name": "isaac_disaster:dads_ring"},
         {"type": "minecraft:item", "name": "isaac_disaster:moms_pearls"},
         {"type": "minecraft:item", "name": "isaac_disaster:moms_lipstick"},
         {"type": "minecraft:item", "name": "isaac_disaster:moms_bottle_of_pills"},

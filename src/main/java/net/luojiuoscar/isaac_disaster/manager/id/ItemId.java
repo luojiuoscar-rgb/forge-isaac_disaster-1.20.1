@@ -201,7 +201,17 @@ public enum ItemId {
     MR_DOLLY(3),
     PJS(2),
     A_BAR_OF_SOAP(3),
-    BOOSTER_PACK(1);
+    BOOSTER_PACK(1),
+    SAGITTARIUS(3),
+    CAPRICORN(3),
+    EVES_MASCARA(3),
+    ANALOG_STICK(2),
+    MARROW(1),
+    DADS_RING(3),
+    SPOOKY_2(1),
+    PLUTO(3),
+    BATTERY_PACK(0),
+    TROPICAMIDE(1);
 
 
 

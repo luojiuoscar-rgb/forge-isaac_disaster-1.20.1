@@ -36,7 +36,6 @@ public class ModExecutableEffects {
     public static final DeferredRegister<IExecutableEffect> EXECUTABLE_EFFECT_REGISTRY =
             DeferredRegister.create(EXECUTABLE_EFFECT_KEY, IsaacDisaster.MOD_ID);
 
-    //<editor-fold desc="ability effects">
     public static final RegistryObject<IExecutableEffect> HEAL =
             EXECUTABLE_EFFECT_REGISTRY.register("heal", Heal::new);
     public static final RegistryObject<IExecutableEffect> WOODEN_NICKEL =
@@ -380,20 +379,9 @@ public class ModExecutableEffects {
     public static final RegistryObject<IExecutableEffect> GUPPYS_COLLAR_REVIVE_EFFECT =
             EXECUTABLE_EFFECT_REGISTRY.register("guppys_collar_revive_effect", GuppysCollarReviveEffect::new);
 
-    //</editor-fold>
 
 
 
-
-
-
-
-
-
-
-
-    // entry start
-    //<editor-fold desc="ability effect entries">
     public static final RegistryObject<IExecutableEffect> FREE_LEMONADE =
             EXECUTABLE_EFFECT_REGISTRY.register("free_lemonade", () -> new AbilityEffectEntry(
                     LEMON, ctx -> ctx.set(ContextKeys.DOUBLE, List.of(0.8, 100., 0., 10., 4.))
@@ -1018,6 +1006,9 @@ public class ModExecutableEffects {
                 });
             }));
 
-    //</editor-fold>
-    // entry end
+    public static final RegistryObject<IExecutableEffect> DADS_RING =
+            EXECUTABLE_EFFECT_REGISTRY.register("dads_ring", DadsRing::new);
+
+    public static final RegistryObject<IExecutableEffect> SPOOKY_2 =
+            EXECUTABLE_EFFECT_REGISTRY.register("two_spooky", TwoSpooky::new);
 }

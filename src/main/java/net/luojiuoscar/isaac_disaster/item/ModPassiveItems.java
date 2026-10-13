@@ -662,4 +662,44 @@ public class ModPassiveItems {
     public static final RegistryObject<Item> BOOSTER_PACK = ITEMS.register("booster_pack",
             () -> new PassiveItem(new Item.Properties(), ModPassiveAbilities.BOOSTER_PACK));
     static {ItemListManager.PASSIVE_ITEM_LIST.add(BOOSTER_PACK);}
+
+    public static final RegistryObject<Item> SAGITTARIUS = ITEMS.register("sagittarius",
+            () -> new PassiveItem(new Item.Properties(), ModPassiveAbilities.SAGITTARIUS));
+    static {ItemListManager.PASSIVE_ITEM_LIST.add(SAGITTARIUS);}
+
+    public static final RegistryObject<Item> CAPRICORN = ITEMS.register("capricorn",
+            () -> new PassiveItem(new Item.Properties(), ModPassiveAbilities.CAPRICORN));
+    static {ItemListManager.PASSIVE_ITEM_LIST.add(CAPRICORN);}
+
+    public static final RegistryObject<Item> EVES_MASCARA = ITEMS.register("eves_mascara",
+            () -> new PassiveItem(new Item.Properties(), ModPassiveAbilities.EVES_MASCARA));
+    static {ItemListManager.PASSIVE_ITEM_LIST.add(EVES_MASCARA);}
+
+    public static final RegistryObject<Item> ANALOG_STICK = ITEMS.register("analog_stick",
+            () -> new PassiveItem(new Item.Properties(), ModPassiveAbilities.ANALOG_STICK));
+    static {ItemListManager.PASSIVE_ITEM_LIST.add(ANALOG_STICK);}
+
+    public static final RegistryObject<Item> MARROW = ITEMS.register("marrow",
+            () -> new PassiveItem(new Item.Properties(), ModPassiveAbilities.MARROW));
+    static {ItemListManager.PASSIVE_ITEM_LIST.add(MARROW);}
+
+    public static final RegistryObject<Item> DADS_RING = ITEMS.register("dads_ring",
+            () -> new PassiveItem(new Item.Properties(), ModPassiveAbilities.DADS_RING));
+    static {ItemListManager.PASSIVE_ITEM_LIST.add(DADS_RING);}
+
+    public static final RegistryObject<Item> SPOOKY_2 = ITEMS.register("two_spooky",
+            () -> new PassiveItem(new Item.Properties(), ModPassiveAbilities.SPOOKY_2));
+    static {ItemListManager.PASSIVE_ITEM_LIST.add(SPOOKY_2);}
+
+    public static final RegistryObject<Item> PLUTO = ITEMS.register("pluto",
+            () -> new PassiveItem(new Item.Properties(), ModPassiveAbilities.PLUTO));
+    static {ItemListManager.PASSIVE_ITEM_LIST.add(PLUTO);}
+
+    public static final RegistryObject<Item> BATTERY_PACK = ITEMS.register("battery_pack",
+            () -> new PassiveItem(new Item.Properties(), ModPassiveAbilities.BATTERY_PACK));
+    static {ItemListManager.PASSIVE_ITEM_LIST.add(BATTERY_PACK);}
+
+    public static final RegistryObject<Item> TROPICAMIDE = ITEMS.register("tropicamide",
+            () -> new PassiveItem(new Item.Properties(), ModPassiveAbilities.TROPICAMIDE));
+    static {ItemListManager.PASSIVE_ITEM_LIST.add(TROPICAMIDE);}
 }

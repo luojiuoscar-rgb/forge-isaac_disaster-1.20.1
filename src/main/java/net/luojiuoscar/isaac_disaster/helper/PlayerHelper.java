@@ -165,9 +165,11 @@ public class PlayerHelper {
         for (ItemStack stack : invItems) {
             if (!stack.isEmpty() && stack.getItem() instanceof ActiveItem &&
             !isFullCharge(stack, canOverCharge)) {
-                if (amount == null) amount = stack.getMaxDamage() * 2; // 确保可以充满
-
-                chargeItem(stack, amount, canOverCharge);
+                if (amount == null) {
+                    if (stack.getMaxDamage() > 0) ActiveItem.fullCharge(stack, canOverCharge);
+                } else {
+                    chargeItem(stack, amount, canOverCharge);
+                }
             }
         }
     }

@@ -39,8 +39,7 @@ public final class MrDolly extends PassiveAbility {
         return List.of(
                 StatManager.TEARS.description(1),
                 StatManager.RANGE.description(1),
-                Component.translatable("item.isaac_disaster.mr_dolly.lore.1", 3),
-                Component.translatable("item.isaac_disaster.mr_dolly.lore.2")
+                Component.translatable("item.isaac_disaster.mr_dolly.lore.1", 3)
         );
     }
 }

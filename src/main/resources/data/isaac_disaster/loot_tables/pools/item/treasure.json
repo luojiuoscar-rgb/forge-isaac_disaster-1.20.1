@@ -3,6 +3,10 @@
     {
       "rolls": 1,
       "entries": [
+        {"type": "minecraft:item", "name": "isaac_disaster:analog_stick"},
+        {"type": "minecraft:item", "name": "isaac_disaster:eves_mascara"},
+        {"type": "minecraft:item", "name": "isaac_disaster:capricorn"},
+        {"type": "minecraft:item", "name": "isaac_disaster:sagittarius"},
         {"type": "minecraft:item", "name": "isaac_disaster:eternal_d6"},
         {"type": "minecraft:item", "name": "isaac_disaster:kidney_bean"},
         {"type": "minecraft:item", "name": "isaac_disaster:d8"},

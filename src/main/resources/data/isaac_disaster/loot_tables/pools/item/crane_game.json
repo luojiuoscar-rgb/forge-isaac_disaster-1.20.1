@@ -3,6 +3,7 @@
     {
       "rolls": 1,
       "entries": [
+        {"type": "minecraft:item", "name": "isaac_disaster:analog_stick"},
         {"type": "minecraft:item", "name": "isaac_disaster:booster_pack"},
         {"type": "minecraft:item", "name": "isaac_disaster:mr_dolly"},
         {"type": "minecraft:item", "name": "isaac_disaster:eternal_d6"},

@@ -19,9 +19,9 @@ public final class CrackJacks extends PassiveAbility {
 
     @Override
     public void handleFirstObtain(ServerPlayer player, @Nullable ItemStack stack) {
+        StatManager.MAX_HEALTH.apply(player, 1);
         StatManager.healHealth(player, 2);
         LootHelper.spawnLootAtPos(player, player.position(), ModLootTables.RANDOM_TRINKETS);
-        StatManager.MAX_HEALTH.apply(player, 1);
     }
 
     @Override

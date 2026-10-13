@@ -19,10 +19,10 @@ public final class BlackLotus extends PassiveAbility {
 
     @Override
     public void handleFirstObtain(ServerPlayer player, @Nullable ItemStack stack) {
+        StatManager.MAX_HEALTH.apply(player, 1.0);
         StatManager.healHealth(player, 2);
         PlayerHelper.giveItem(player, ModItems.SOUL_HEART.get(), 1);
         PlayerHelper.giveItem(player, ModItems.BLACK_HEART.get(), 1);
-        StatManager.MAX_HEALTH.apply(player, 1.0);
     }
 
     @Override

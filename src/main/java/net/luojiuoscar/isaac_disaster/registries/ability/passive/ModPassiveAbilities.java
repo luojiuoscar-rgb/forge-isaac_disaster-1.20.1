@@ -658,4 +658,44 @@ public class ModPassiveAbilities {
     public static final RegistryObject<PassiveAbility> BOOSTER_PACK =
             PASSIVE_ABILITY_REGISTRY.register("booster_pack",
                     () -> new BoosterPack(ItemId.BOOSTER_PACK.getId(), ItemId.BOOSTER_PACK.getLevel()));
+
+    public static final RegistryObject<PassiveAbility> SAGITTARIUS =
+            PASSIVE_ABILITY_REGISTRY.register("sagittarius",
+                    () -> new Sagittarius(ItemId.SAGITTARIUS.getId(), ItemId.SAGITTARIUS.getLevel()));
+
+    public static final RegistryObject<PassiveAbility> CAPRICORN =
+            PASSIVE_ABILITY_REGISTRY.register("capricorn",
+                    () -> new Capricorn(ItemId.CAPRICORN.getId(), ItemId.CAPRICORN.getLevel()));
+
+    public static final RegistryObject<PassiveAbility> EVES_MASCARA =
+            PASSIVE_ABILITY_REGISTRY.register("eves_mascara",
+                    () -> new EvesMascara(ItemId.EVES_MASCARA.getId(), ItemId.EVES_MASCARA.getLevel()));
+
+    public static final RegistryObject<PassiveAbility> ANALOG_STICK =
+            PASSIVE_ABILITY_REGISTRY.register("analog_stick",
+                    () -> new AnalogStick(ItemId.ANALOG_STICK.getId(), ItemId.ANALOG_STICK.getLevel()));
+
+    public static final RegistryObject<PassiveAbility> MARROW =
+            PASSIVE_ABILITY_REGISTRY.register("marrow",
+                    () -> new Marrow(ItemId.MARROW.getId(), ItemId.MARROW.getLevel()));
+
+    public static final RegistryObject<PassiveAbility> DADS_RING =
+            PASSIVE_ABILITY_REGISTRY.register("dads_ring",
+                    () -> new DadsRing(ItemId.DADS_RING.getId(), ItemId.DADS_RING.getLevel()));
+
+    public static final RegistryObject<PassiveAbility> SPOOKY_2 =
+            PASSIVE_ABILITY_REGISTRY.register("two_spooky",
+                    () -> new TwoSpooky(ItemId.SPOOKY_2.getId(), ItemId.SPOOKY_2.getLevel()));
+
+    public static final RegistryObject<PassiveAbility> PLUTO =
+            PASSIVE_ABILITY_REGISTRY.register("pluto",
+                    () -> new Pluto(ItemId.PLUTO.getId(), ItemId.PLUTO.getLevel()));
+
+    public static final RegistryObject<PassiveAbility> BATTERY_PACK =
+            PASSIVE_ABILITY_REGISTRY.register("battery_pack",
+                    () -> new BatteryPack(ItemId.BATTERY_PACK.getId(), ItemId.BATTERY_PACK.getLevel()));
+
+    public static final RegistryObject<PassiveAbility> TROPICAMIDE =
+            PASSIVE_ABILITY_REGISTRY.register("tropicamide",
+                    () -> new Tropicamide(ItemId.TROPICAMIDE.getId(), ItemId.TROPICAMIDE.getLevel()));
 }
