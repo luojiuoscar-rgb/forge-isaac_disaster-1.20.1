@@ -32,7 +32,7 @@ For single-item and batch tasks, complete steps 1–6 for one item before starti
 3. **Research behavior.** Consult both [Chinese Wiki](https://isaac.huijiwiki.com/wiki) and [English Wiki](https://bindingofisaacrebirth.fandom.com/wiki/Binding_of_Isaac:_Rebirth_Wiki) for Repentance effects, values, level, and synergies. Ask about Repentance+ changes. Neither Wiki is the sole numeric authority: show conflicts, omissions, ambiguous values, or ambiguous stat categories before choosing.
 4. **Assess implementation.** Determine stats, modules, lifecycle, assets, and relevant synergies using the selected branch rules. For complex behavior, perform a bounded `rg` search with a few event/effect/target/cadence keywords, inspect snippets first, and read only relevant files. Keep at most three reuse candidates. Ask before adopting a candidate, explaining similarity, reusable parts, and semantics not to copy. Search failure does not block work.
 5. **Check lore layout.** Review every description sentence and plausible dynamic-value substitution against the current tooltip assembly. Split long or multi-clause lore at natural semantic boundaries into ordered components or translation entries. Record the result as the final lines or “无需拆分”. Use font measurement or a screenshot when available; otherwise report static review only.
-6. **Confirm the item.** Present a Chinese specification and ask only unresolved questions through concise interactive windows when available, otherwise concise text. Keep each item separate. Confirm gameplay values and ratios, modules, synergies, names, MC-only attributes, projectile-color priority, special assets, persistent `ItemStack` data, Wiki disagreements, final lore, and layout result.
+6. **Confirm the item.** Present a Chinese specification and ask only unresolved questions through concise interactive windows when available, otherwise concise text. Keep each item separate. For each stat, show the Wiki original value, proposed project ratio, and configuration-based actual effect as separate fields. Confirm the ratio as the item's balance decision, along with modules, synergies, names, MC-only attributes, projectile-color priority, special assets, persistent `ItemStack` data, Wiki disagreements, final lore, and layout result.
 
 After all items are confirmed:
 
@@ -42,22 +42,29 @@ After all items are confirmed:
 
 ## Common Stats And Descriptions
 
-Use `StatManager` interfaces for stat changes, ratio conversion, standardized descriptions, modules, sets, and inverse removal whenever the selected branch requires them.
+Use `StatManager` interfaces to apply confirmed project ratios and generate descriptions. Distinguish three quantities: the Wiki original value (research reference), the project ratio (item strength selected for this mod), and the actual Minecraft attribute change (computed by `StatManager` using current configuration).
 
-| Effect | Ratio or default |
-| --- | --- |
-| Red-heart health | 1 red heart = 1 health unit |
-| Speed | 0.2 = 1 speed unit |
-| Damage | 1.5 = 1 damage unit |
-| Luck | 1 = 1 luck unit |
-| Size | 0.2 = 1 size unit; additive scaling |
-| Range | 1.5 = 1 range unit |
-| Fire rate | 0.7 = 1 fire-rate unit |
-| Fire-rate modifier | 1 = 1 modifier unit |
-| Shot speed | 0.2 = 1 shot-speed unit |
-| Pill quality | better = +1; worse = -1 |
-| Flight time | flight description = +1 unit |
-| Projectile count | follow original behavior |
+The following table proposes project ratios from original-game effects. It does not define Minecraft attribute values or the configured size of a project unit. For numeric rows, divide the Wiki value only by the explicitly listed original-game reference amount when proposing a ratio; preserve the sign. Confirm the proposal with the user before implementation.
+
+| Effect | Original-game reference | Proposed project ratio |
+| --- | --- | --- |
+| Red-heart health | 1 red heart | 1 |
+| Speed | +0.2 speed | +1 |
+| Damage | +1 damage | +1 |
+| Luck | +1 luck | +1 |
+| Size | +0.2 size | +1; use additive scaling |
+| Range | +1.5 range | +1 |
+| Fire rate | +0.7 fire rate | +1 |
+| Fire-rate modifier | +1 modifier | +1 |
+| Shot speed | +0.2 shot speed | +1 |
+| Pill quality | better / worse pills | +1 / -1 |
+| Flight time | flight effect description | +1 |
+| Projectile count | original behavior | confirm original count behavior |
+
+- Once approved, the project ratio is independent of `Config` bonus values. For additive `StatManager.apply`, the actual attribute change is `ratio * getBonus()`; changes to configuration scale the effect without changing the item's ratio. Inspect specialized interfaces for their own semantics.
+- Never divide a Wiki value by the mod's configured per-unit bonus to preserve the original absolute value. Do not derive ratios by dividing by `getBonus()` or use inverse scaling to cancel the user's balance configuration. Only an explicit user decision to target a fixed Minecraft value may override this policy.
+- Example: Wiki damage +1 proposes `ratio = 1`. Use `StatManager.DAMAGE.apply(player, 1)` and `StatManager.DAMAGE.description(1)`. With a configured damage bonus of 1.5, this grants +1.5; with 2.0, it grants +2.0. Do not replace the ratio with `1 / 1.5`, `1 / 2.0`, or `1 / getBonus()`. Wiki damage +0.5 proposes `ratio = 0.5`; do not assume every attribute's Wiki +1 means one ratio.
+- Use the same confirmed ratio for effect application and its description. Show configuration-derived values through existing description methods; do not hardcode 1.5 or another per-unit Minecraft bonus in the skill's conversion table or translations.
 
 - Gameplay values still require confirmation. Ask about entity/block reach, attack speed, block breaking, knockback, projectile size, multiplicative size, and unlisted durations, cooldowns, chances, or spawn counts.
 - Fire rate maps to `TEARS`; fire-rate modifier maps to `TEARS_CORRECTION`. Never equate, merge, or substitute them.
@@ -88,6 +95,6 @@ Use `StatManager` interfaces for stat changes, ratio conversion, standardized de
 
 ## Common Validation And Report
 
-- Check the approved specification against IDs/level, selected branch registrations and lifecycle, module and executable-effect registrations, approved synergies, tooltip values/order, textures, and pools.
+- Check the approved specification against IDs/level, selected branch registrations and lifecycle, module and executable-effect registrations, approved synergies, tooltip values/order, textures, and pools. Verify that stat application and descriptions use the approved ratio and that no inverse configuration scaling cancels the per-unit bonus.
 - Run `runData` once after a single item or once after all items in a batch are ready. Check exit status and generated model/tag/data errors. Do not run compilation or `build`.
 - Report actual changed files, reused/new modules, branch lifecycle, synergy outcomes, image source/status, pools, lore review, `runData` result, failed texture downloads and reasons, missing non-image assets, and remaining work in Chinese. Do not claim unperformed runtime or visual validation.

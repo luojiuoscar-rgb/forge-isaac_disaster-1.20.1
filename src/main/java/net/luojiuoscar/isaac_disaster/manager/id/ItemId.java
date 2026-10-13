@@ -191,7 +191,17 @@ public enum ItemId {
     MAGIC_FINGERS(1),
     D8(2),
     KIDNEY_BEAN(1),
-    ETERNAL_D6(3);
+    ETERNAL_D6(3),
+    MOMS_LIPSTICK(1),
+    CEREMONIAL_ROBES(3),
+    BLACK_LOTUS(2),
+    LATCH_KEY(1),
+    CRACK_JACKS(2),
+    MOMS_PEARLS(2),
+    MR_DOLLY(3),
+    PJS(2),
+    A_BAR_OF_SOAP(3),
+    BOOSTER_PACK(1);
 
 
 

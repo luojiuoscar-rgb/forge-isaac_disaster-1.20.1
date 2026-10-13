@@ -17,7 +17,8 @@ Read this file after the router identifies a passive item.
 
 - Use `handleObtain` for ordinary acquisition effects.
 - Put recovery and spawned drops in `handleFirstObtain`.
-- Use `handleRemove` for inverse removal and cleanup.
+- Grant all MaxHealth-related attribute bonuses through the existing `StatManager` interfaces in `handleFirstObtain`, never in `handleObtain`. These bonuses persist after the item is removed: do not subtract or remove them in `handleRemove`. Treat this as an explicit exception to obtain/remove symmetry and record it in the item specification and verification.
+- Use `handleRemove` for inverse removal and cleanup of removable effects; preserve first-obtain MaxHealth bonuses.
 - Preserve the current order `handleObtain` before `handleFirstObtain`. Ask with a reason before changing it.
 - Declare in the specification which lifecycle method changes each provider, consumer, module, attribute, set, or item-owned state.
 - For revive items, `handleRemove` must remove both revive `provider` and revive `consumer`, leaving no item-owned state behind.
@@ -41,4 +42,4 @@ Confirm the following when applicable:
 - Use the existing passive item description patterns and common `StatManager` descriptions.
 - The normal tooltip describes one copy by default. Hide duplicate-item totals and stacking-only values unless the user approves exposing them or the project’s established implementation requires it.
 - Run the common lore layout check before localization.
-- Implement inverse removal for every obtain-time stat, module, set, provider, or consumer change.
+- Implement inverse removal for removable obtain-time stats, modules, sets, providers, and consumers. First-obtain MaxHealth bonuses are excluded and must remain after removal.

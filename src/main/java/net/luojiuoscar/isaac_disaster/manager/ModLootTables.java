@@ -99,4 +99,12 @@ public class ModLootTables {
 
     public static final ResourceLocation BOOK_OF_SIN_PICKUPS =
             ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "pickups/book_of_sin");
+
+    public static final ResourceLocation MR_DOLLY_HEARTS =
+            ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "pickups/mr_dolly_hearts");
+
+    public static final ResourceLocation BOOSTER_PACK_SPECIAL_SLOT =
+            ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "pickups/booster_pack_special_slot");
+    public static final ResourceLocation BOOSTER_PACK_NORMAL_SLOT =
+            ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "pickups/booster_pack_normal_slot");
 }

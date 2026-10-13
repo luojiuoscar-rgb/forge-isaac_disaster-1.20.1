@@ -1,0 +1,21 @@
+{
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "isaac_disaster:red_heart"
+        },
+        {
+          "type": "minecraft:item",
+          "name": "isaac_disaster:soul_heart"
+        },
+        {
+          "type": "minecraft:item",
+          "name": "isaac_disaster:black_heart"
+        }
+      ]
+    }
+  ]
+}

@@ -618,4 +618,44 @@ public class ModPassiveAbilities {
     public static final RegistryObject<PassiveAbility> LEAD_PENCIL =
             PASSIVE_ABILITY_REGISTRY.register("lead_pencil",
                     () -> new LeadPencil(ItemId.LEAD_PENCIL.getId(), ItemId.LEAD_PENCIL.getLevel()));
+
+    public static final RegistryObject<PassiveAbility> MOMS_LIPSTICK =
+            PASSIVE_ABILITY_REGISTRY.register("moms_lipstick",
+                    () -> new MomsLipstick(ItemId.MOMS_LIPSTICK.getId(), ItemId.MOMS_LIPSTICK.getLevel()));
+
+    public static final RegistryObject<PassiveAbility> CEREMONIAL_ROBES =
+            PASSIVE_ABILITY_REGISTRY.register("ceremonial_robes",
+                    () -> new CeremonialRobes(ItemId.CEREMONIAL_ROBES.getId(), ItemId.CEREMONIAL_ROBES.getLevel()));
+
+    public static final RegistryObject<PassiveAbility> BLACK_LOTUS =
+            PASSIVE_ABILITY_REGISTRY.register("black_lotus",
+                    () -> new BlackLotus(ItemId.BLACK_LOTUS.getId(), ItemId.BLACK_LOTUS.getLevel()));
+
+    public static final RegistryObject<PassiveAbility> LATCH_KEY =
+            PASSIVE_ABILITY_REGISTRY.register("latch_key",
+                    () -> new LatchKey(ItemId.LATCH_KEY.getId(), ItemId.LATCH_KEY.getLevel()));
+
+    public static final RegistryObject<PassiveAbility> CRACK_JACKS =
+            PASSIVE_ABILITY_REGISTRY.register("crack_jacks",
+                    () -> new CrackJacks(ItemId.CRACK_JACKS.getId(), ItemId.CRACK_JACKS.getLevel()));
+
+    public static final RegistryObject<PassiveAbility> MOMS_PEARLS =
+            PASSIVE_ABILITY_REGISTRY.register("moms_pearls",
+                    () -> new MomsPearls(ItemId.MOMS_PEARLS.getId(), ItemId.MOMS_PEARLS.getLevel()));
+
+    public static final RegistryObject<PassiveAbility> MR_DOLLY =
+            PASSIVE_ABILITY_REGISTRY.register("mr_dolly",
+                    () -> new MrDolly(ItemId.MR_DOLLY.getId(), ItemId.MR_DOLLY.getLevel()));
+
+    public static final RegistryObject<PassiveAbility> PJS =
+            PASSIVE_ABILITY_REGISTRY.register("pjs",
+                    () -> new PJs(ItemId.PJS.getId(), ItemId.PJS.getLevel()));
+
+    public static final RegistryObject<PassiveAbility> A_BAR_OF_SOAP =
+            PASSIVE_ABILITY_REGISTRY.register("a_bar_of_soap",
+                    () -> new ABarOfSoap(ItemId.A_BAR_OF_SOAP.getId(), ItemId.A_BAR_OF_SOAP.getLevel()));
+
+    public static final RegistryObject<PassiveAbility> BOOSTER_PACK =
+            PASSIVE_ABILITY_REGISTRY.register("booster_pack",
+                    () -> new BoosterPack(ItemId.BOOSTER_PACK.getId(), ItemId.BOOSTER_PACK.getLevel()));
 }

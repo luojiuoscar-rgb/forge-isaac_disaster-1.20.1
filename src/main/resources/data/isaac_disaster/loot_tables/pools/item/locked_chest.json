@@ -3,6 +3,11 @@
     {
       "rolls": 1,
       "entries": [
+        {"type": "minecraft:item", "name": "isaac_disaster:pjs"},
+        {"type": "minecraft:item", "name": "isaac_disaster:mr_dolly"},
+        {"type": "minecraft:item", "name": "isaac_disaster:moms_pearls"},
+        {"type": "minecraft:item", "name": "isaac_disaster:crack_jacks"},
+        {"type": "minecraft:item", "name": "isaac_disaster:latch_key"},
         {"type": "minecraft:item", "name": "isaac_disaster:lead_pencil"},
         {"type": "minecraft:item", "name": "isaac_disaster:midnight_snack"},
         {"type": "minecraft:item", "name": "isaac_disaster:glass_eye"},

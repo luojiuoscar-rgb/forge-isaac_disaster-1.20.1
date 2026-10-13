@@ -3,6 +3,8 @@
     {
       "rolls": 1,
       "entries": [
+        {"type": "minecraft:item", "name": "isaac_disaster:booster_pack"},
+        {"type": "minecraft:item", "name": "isaac_disaster:mr_dolly"},
         {"type": "minecraft:item", "name": "isaac_disaster:eternal_d6"},
         {"type": "minecraft:item", "name": "isaac_disaster:d8"},
         {"type": "minecraft:item", "name": "isaac_disaster:moms_bottle_of_pills"},

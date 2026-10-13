@@ -622,4 +622,44 @@ public class ModPassiveItems {
     public static final RegistryObject<Item> LEAD_PENCIL = ITEMS.register("lead_pencil",
             () -> new PassiveItem(new Item.Properties(), ModPassiveAbilities.LEAD_PENCIL));
     static {ItemListManager.PASSIVE_ITEM_LIST.add(LEAD_PENCIL);}
+
+    public static final RegistryObject<Item> MOMS_LIPSTICK = ITEMS.register("moms_lipstick",
+            () -> new PassiveItem(new Item.Properties(), ModPassiveAbilities.MOMS_LIPSTICK));
+    static {ItemListManager.PASSIVE_ITEM_LIST.add(MOMS_LIPSTICK);}
+
+    public static final RegistryObject<Item> CEREMONIAL_ROBES = ITEMS.register("ceremonial_robes",
+            () -> new PassiveItem(new Item.Properties(), ModPassiveAbilities.CEREMONIAL_ROBES));
+    static {ItemListManager.PASSIVE_ITEM_LIST.add(CEREMONIAL_ROBES);}
+
+    public static final RegistryObject<Item> BLACK_LOTUS = ITEMS.register("black_lotus",
+            () -> new PassiveItem(new Item.Properties(), ModPassiveAbilities.BLACK_LOTUS));
+    static {ItemListManager.PASSIVE_ITEM_LIST.add(BLACK_LOTUS);}
+
+    public static final RegistryObject<Item> LATCH_KEY = ITEMS.register("latch_key",
+            () -> new PassiveItem(new Item.Properties(), ModPassiveAbilities.LATCH_KEY));
+    static {ItemListManager.PASSIVE_ITEM_LIST.add(LATCH_KEY);}
+
+    public static final RegistryObject<Item> CRACK_JACKS = ITEMS.register("crack_jacks",
+            () -> new PassiveItem(new Item.Properties(), ModPassiveAbilities.CRACK_JACKS));
+    static {ItemListManager.PASSIVE_ITEM_LIST.add(CRACK_JACKS);}
+
+    public static final RegistryObject<Item> MOMS_PEARLS = ITEMS.register("moms_pearls",
+            () -> new PassiveItem(new Item.Properties(), ModPassiveAbilities.MOMS_PEARLS));
+    static {ItemListManager.PASSIVE_ITEM_LIST.add(MOMS_PEARLS);}
+
+    public static final RegistryObject<Item> MR_DOLLY = ITEMS.register("mr_dolly",
+            () -> new PassiveItem(new Item.Properties(), ModPassiveAbilities.MR_DOLLY));
+    static {ItemListManager.PASSIVE_ITEM_LIST.add(MR_DOLLY);}
+
+    public static final RegistryObject<Item> PJS = ITEMS.register("pjs",
+            () -> new PassiveItem(new Item.Properties(), ModPassiveAbilities.PJS));
+    static {ItemListManager.PASSIVE_ITEM_LIST.add(PJS);}
+
+    public static final RegistryObject<Item> A_BAR_OF_SOAP = ITEMS.register("a_bar_of_soap",
+            () -> new PassiveItem(new Item.Properties(), ModPassiveAbilities.A_BAR_OF_SOAP));
+    static {ItemListManager.PASSIVE_ITEM_LIST.add(A_BAR_OF_SOAP);}
+
+    public static final RegistryObject<Item> BOOSTER_PACK = ITEMS.register("booster_pack",
+            () -> new PassiveItem(new Item.Properties(), ModPassiveAbilities.BOOSTER_PACK));
+    static {ItemListManager.PASSIVE_ITEM_LIST.add(BOOSTER_PACK);}
 }
