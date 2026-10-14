@@ -9,6 +9,7 @@
     "AttributeInstanceMixin",
     "LivingEntityMixin",
     "MobMixin",
+    "CreeperMixin",
     "PlayerMixin"
   ],
   "client": [

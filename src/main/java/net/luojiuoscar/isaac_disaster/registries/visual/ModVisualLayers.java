@@ -24,6 +24,10 @@ public final class ModVisualLayers {
     public static final RegistryObject<VisualLayer> FROZEN = VISUAL_LAYER_REGISTRY.register(
             "frozen", () -> new VisualLayer(null, 0));
 
+    public static final RegistryObject<VisualLayer> DADS_RING = VISUAL_LAYER_REGISTRY.register(
+            "dads_ring", () -> new VisualLayer(ResourceLocation.fromNamespaceAndPath(
+                    IsaacDisaster.MOD_ID, "dads_ring"), 0));
+
     private ModVisualLayers() {
     }
 }

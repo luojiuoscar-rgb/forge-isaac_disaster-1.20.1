@@ -7,6 +7,10 @@ import net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerTypes;
 import net.luojiuoscar.isaac_disaster.registries.recursive_module.RecursiveModule;
 import net.luojiuoscar.isaac_disaster.registries.recursive_module.RecursiveModuleQueue;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.server.level.ServerPlayer;
+import net.luojiuoscar.isaac_disaster.networking.EntityVisualStateSync;
+import net.luojiuoscar.isaac_disaster.registries.visual.ModVisualLayers;
+import net.luojiuoscar.isaac_disaster.system.freeze.state.EntityVisualState;
 
 import java.util.List;
 
@@ -19,4 +23,13 @@ public final class DadsRing extends RecursiveModule {
 
     @Override
     public int getTickInterval(LivingEntity entity, int stacks, RecursiveModuleQueue queue) { return 4; }
+
+    @Override
+    public void handleRemove(LivingEntity entity) {
+        if (!(entity instanceof ServerPlayer player)) return;
+        if (EntityVisualState.mutate(player, state -> state.removeVisualLayer(ModVisualLayers.DADS_RING.getId()))) {
+            EntityVisualStateSync.syncToTracking(player);
+            EntityVisualStateSync.syncToPlayer(player, player);
+        }
+    }
 }

@@ -9,7 +9,8 @@ import net.luojiuoscar.isaac_disaster.registries.ability_effect.IAbilityEffect;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ModExecutableEffects;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.profile.PotionProfile;
 import net.luojiuoscar.isaac_disaster.system.freeze.state.EntityVisualState;
-import net.minecraft.core.particles.ParticleTypes;
+import net.luojiuoscar.isaac_disaster.networking.EntityVisualStateSync;
+import net.luojiuoscar.isaac_disaster.registries.visual.ModVisualLayers;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffects;
 
@@ -24,6 +25,10 @@ public final class DadsRing implements IAbilityEffect {
         if (!(context.getEntity() instanceof ServerPlayer player)) return false;
         var center = player.position();
         var level = player.serverLevel();
+        if (EntityVisualState.mutate(player, state -> state.addVisualLayer(ModVisualLayers.DADS_RING.getId()))) {
+            EntityVisualStateSync.syncToTracking(player);
+            EntityVisualStateSync.syncToPlayer(player, player);
+        }
         for (var target : LevelHelper.selectBySphere(level, center, RADIUS)) {
             if (!target.isAlive() || target.isInvulnerable() || EntityHelper.isFriendly(player, target)) continue;
             if (player.distanceToSqr(target) <= INNER_RADIUS * INNER_RADIUS) continue;
@@ -36,11 +41,6 @@ public final class DadsRing implements IAbilityEffect {
                 targetContext.set(ContextKeys.POTIONS, List.of(new PotionProfile(ModEffects.PETRIFIED.get(), 8, 0, 0, 0, true)));
             }
             ModExecutableEffects.POTIONS.get().apply(targetContext);
-        }
-        for (int index = 0; index < 8; index++) {
-            double angle = index * Math.PI / 4;
-            level.sendParticles(ParticleTypes.END_ROD, center.x + RADIUS * Math.cos(angle), center.y + 0.7 * player.getScale(),
-                    center.z + RADIUS * Math.sin(angle), 1, 0, 0, 0, 0);
         }
         return true;
     }

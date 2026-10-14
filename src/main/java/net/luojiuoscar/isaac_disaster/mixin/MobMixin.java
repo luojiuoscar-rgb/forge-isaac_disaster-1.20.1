@@ -3,6 +3,8 @@ package net.luojiuoscar.isaac_disaster.mixin;
 import net.luojiuoscar.isaac_disaster.system.freeze.EntityFreezeRules;
 import net.luojiuoscar.isaac_disaster.system.freeze.state.TimeStopState;
 import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.LivingEntity;
+import net.luojiuoscar.isaac_disaster.effect.custom.PanicEffect;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -10,6 +12,13 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(Mob.class)
 public abstract class MobMixin {
+    @Inject(method = "setTarget", at = @At("HEAD"), cancellable = true)
+    private void preventFearedTarget(LivingEntity target, CallbackInfo ci) {
+        if (target != null) {
+            PanicEffect.suppressesAttacks((Mob) (Object) this);
+        }
+    }
+
     @Inject(method = "tick", at = @At("HEAD"))
     private void updateTimeStopState(CallbackInfo ci) {
         Mob self = (Mob) (Object) this;
