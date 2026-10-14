@@ -37,6 +37,8 @@ public class ModEvents {
                 event.add(EntityType.PLAYER, ModAttributes.COLLISION_DAMAGE.get());
                 event.add(EntityType.PLAYER, ModAttributes.FLY_TIME.get());
                 event.add(EntityType.PLAYER, ModAttributes.PILL_QUALITY.get());
+                event.add(EntityType.PLAYER, ModAttributes.TRINKET_SLOTS.get());
+                event.add(EntityType.PLAYER, ModAttributes.PASSIVE_ITEM_SLOTS.get());
                 event.add(EntityType.PLAYER, ModAttributes.DEVIL_CHANCE.get());
                 event.add(EntityType.PLAYER, ModAttributes.ANGEL_CHANCE.get());
                 event.add(EntityType.PLAYER, ModAttributes.PLANETARIUM_CHANCE.get());

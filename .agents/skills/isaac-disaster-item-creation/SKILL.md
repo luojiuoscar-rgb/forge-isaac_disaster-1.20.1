@@ -22,6 +22,7 @@ Use this skill for passive and active collectible items. Read current project co
 - Once the user approves a plan, implement it in execution mode while continuing to use this skill and the selected branch document.
 - Begin every generated plan with: “执行此计划时也必须使用 `isaac-disaster-item-creation` skill，并遵守其通用规则和对应道具分支规则。”
 - Treat explicit decisions in the current request, earlier item confirmations, and the approved plan as settled. Ask only about unresolved fields. If a new material fact changes one item, return only that item to confirmation.
+- If the user explicitly authorizes direct implementation of simple items, do not request another plan or confirmation. If the user forbids planning files, do not use `planning-with-files` or create planning artifacts.
 
 ## Workflow
 
@@ -72,17 +73,29 @@ The following table proposes project ratios from original-game effects. It does 
 - Use `StatManager.<STAT>.description(...)` for stat text and `StatManager.healHealthDescription(ratio)` for health recovery. Keep displayed values tied to actual server configuration through existing methods or placeholders.
 - Use concise wording and minimal punctuation. Show known probabilities as percentages. Never invent missing values or hardcode dynamic values in translations.
 - Describe one copy by default. If the game or current project explicitly exposes a stacking mechanic, identify it and confirm whether the stacking effect should be shown; do not apply the passive rule blindly to active items.
+- Ordinary additive stats may stack repeatedly. Apply duplicate suppression only to multiplier systems that define it; do not add `COPYKEY`-style deduplication for normal stats.
+- A literal percent after a placeholder must be escaped (`%s%%`, never `%s%`). Verify dynamic lore through Minecraft's real translation parser, not JSON shape alone.
 
 ## Common Modules, Synergies, And Code Reuse
 
 - Use direct stat changes for persistent stats, trigger modules for events, and recursive modules for repeated behavior. Confirm scope, event/cadence, conditions, targets, values, chance/cooldown/duration, amplification, lifecycle/cleanup, side, and projectile interaction.
+- Judge Event dependence by semantics: retain concrete Event checks for attack-plan, loot-generation, and hurt-only effects; allow entity/player/target effects to run from other events when their required context is present. Do not replace required Event data with ContextKeys merely to decouple code.
+- Add a ContextKey only for data with real cross-event meaning. Remove keys that merely mirror one specific Event. Do not force extra helpers, profile factories, or copy abstractions when callers can construct the value directly.
 - New trigger or recursive modules define `private static final CompositeTrigger TRIGGER = ...;` at class level and have constructors call `super(TRIGGER);`.
 - For effect strength carried by `ContextKeys.AMPLIFIER`, prefer `amplifier` over `stacks` or `stack` in new identifiers.
 - Before creating an `IExecutableEffect`, inspect existing trigger types and reuse them by default. Ask before introducing a new trigger type.
 - Plan each new `IAbilityEffect.applyEffect(...)` boolean contract. `true` means safe completion, including an approved no-op; `false` means a required context, entity, target, nested effect, or safe condition is invalid or missing. A missed chance is not an execution error. Do not swallow unexpected exceptions as `false`; inspect the current caller before claiming fallback behavior.
 - For `MobEffect`, prefer `PotionProfile -> ContextKeys.POTIONS -> ModExecutableEffects.POTIONS`. Ask before introducing alternate plumbing.
+- Callers construct their own `PotionProfile`; shared effects should provide numeric helpers only. The project's `DEADLY_POISON` is distinct from vanilla poison: snapshot the current panel damage at application time, encode it as amplifier, allow lethal damage and milk cure, and do not restore a source-damage capability.
 - If modules cannot express an approved effect, propose isolated ability logic or a focused shared-architecture change and wait for approval.
 - Check relevant synergies with partners already implemented in the mod using targeted registry and code checks. Explain the original interaction and whether it is naturally supported, needs special implementation, or needs MC adaptation. Ask whether to retain, add, modify, or exclude each relevant synergy. Record the decision per item. Do not implement missing partner items or silently add special cases.
+
+## Project Semantic Invariants
+
+- Reuse the existing trigger/event system. Cone Head uses the hurt stage and sets hurt amount to zero; fear must also cancel the target's attack behavior. Prefer a direct distance condition for simple auras over a complex geometry abstraction.
+- Bullet scale effects modify the player's `BulletScale` attribute directly. Full-charge actions charge all active items in the player's configured inventory scope.
+- Runtime coin generation, recognition, payment, and conversion read the configured tier IDs; never hardcode `PENNY`, `NICKEL`, or `DIME` in those paths. Shared action descriptions belong in the action translation group, and explicitly independent projectile art must not reuse an item icon.
+- Curios capacity is separate from ordinary item effects: keep passive and trinket capacities independent, treat desired capacity and Curios' actual slots as separate state, and never rescan or synchronize slots recursively from inside an equip callback. Slot tests must physically equip stacks and cover unequip, resize, and reload paths.
 
 ## Common Registration And Assets
 
@@ -99,3 +112,4 @@ The following table proposes project ratios from original-game effects. It does 
 - Check the approved specification against IDs/level, selected branch registrations and lifecycle, module and executable-effect registrations, approved synergies, tooltip values/order, textures, and pools. Verify that stat application and descriptions use the approved ratio and that no inverse configuration scaling cancels the per-unit bonus.
 - Run `runData` once after a single item or once after all items in a batch are ready. Check exit status and generated model/tag/data errors. Do not run compilation or `build`.
 - Report actual changed files, reused/new modules, branch lifecycle, synergy outcomes, image source/status, pools, lore review, `runData` result, failed texture downloads and reasons, missing non-image assets, and remaining work in Chinese. Do not claim unperformed runtime or visual validation.
+- Report `runData`, JUnit, GameTest, client visual checks, and save/reload checks separately. A runtime crash revokes completion status until fixed; refresh audit/database snapshots after source changes.

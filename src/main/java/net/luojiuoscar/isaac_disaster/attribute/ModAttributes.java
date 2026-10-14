@@ -47,6 +47,12 @@ public class ModAttributes {
     public static final RegistryObject<Attribute> PILL_QUALITY = MOD_ATTRIBUTE.register("pill_quality",
             () -> new RangedAttribute("attribute.isaac_disaster.pill_quality", IsaacConfigDefaults.DEFAULT_PILL_QUALITY, -1024.0D, 1024D).setSyncable(true));
 
+    public static final RegistryObject<Attribute> TRINKET_SLOTS = MOD_ATTRIBUTE.register("trinket_slots",
+            () -> new RangedAttribute("attribute.isaac_disaster.trinket_slots", IsaacConfigDefaults.DEFAULT_TRINKET_SLOTS, 0.0D, 1024D).setSyncable(true));
+
+    public static final RegistryObject<Attribute> PASSIVE_ITEM_SLOTS = MOD_ATTRIBUTE.register("passive_item_slots",
+            () -> new RangedAttribute("attribute.isaac_disaster.passive_item_slots", IsaacConfigDefaults.DEFAULT_PASSIVE_ITEM_SLOTS, 0.0D, 1024D).setSyncable(true));
+
     public static final RegistryObject<Attribute> FLY_TIME = MOD_ATTRIBUTE.register("fly_time",
             () -> new RangedAttribute("attribute.isaac_disaster.fly_time", IsaacConfigDefaults.DEFAULT_FLY_TIME, 0.0D, 1024D).setSyncable(true));
 

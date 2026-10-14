@@ -21,6 +21,8 @@ public final class IsaacConfigDefaults {
     public static final double DEFAULT_BULLET_SCALE = 0.0;
     public static final double DEFAULT_BULLET_COUNT = 1.0;
     public static final double DEFAULT_PILL_QUALITY = 0.0;
+    public static final int DEFAULT_TRINKET_SLOTS = 1;
+    public static final int DEFAULT_PASSIVE_ITEM_SLOTS = 5;
     public static final double DEFAULT_FLY_TIME = 0.0;
     public static final double HEALTH_BONUS = 10.0;
     public static final double MOVEMENT_SPEED_BONUS = 0.02;
@@ -54,7 +56,6 @@ public final class IsaacConfigDefaults {
     public static final int PASSIVE_ITEM_LIMIT = 999;
     public static final boolean EXTRA_PASSIVE_ITEM_BACKPACK = false;
     public static final boolean ALLOW_CURIO_UNEQUIP = true;
-    public static final boolean AUTO_ADAPT_CURIO_SLOT = true;
     public static final boolean ITEM_REMOVAL_FROM_POOL = false;
     public static final boolean ITEM_REMOVAL_FROM_ALL_POOL = false;
     public static final boolean PLAYERS_SHARE_ITEM_POOLS = false;

@@ -108,6 +108,16 @@ public final class DefaultAttributeManager {
                     () -> Config.DEFAULT_PILL_QUALITY.get()
             ),
             new DefaultAttributeSpec(
+                    "default_trinket_slots",
+                    ModAttributes.TRINKET_SLOTS.get(),
+                    () -> Config.DEFAULT_TRINKET_SLOTS.get()
+            ),
+            new DefaultAttributeSpec(
+                    "default_passive_item_slots",
+                    ModAttributes.PASSIVE_ITEM_SLOTS.get(),
+                    () -> Config.DEFAULT_PASSIVE_ITEM_SLOTS.get()
+            ),
+            new DefaultAttributeSpec(
                     "default_fly_time",
                     ModAttributes.FLY_TIME.get(),
                     () -> Config.DEFAULT_FLY_TIME.get()

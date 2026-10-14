@@ -1,7 +1,5 @@
 package net.luojiuoscar.isaac_disaster.helper;
 
-import net.luojiuoscar.isaac_disaster.item.ModPassiveItems;
-import net.luojiuoscar.isaac_disaster.item.ModTrinkets;
 import net.luojiuoscar.isaac_disaster.Config;
 import net.luojiuoscar.isaac_disaster.attribute.ModAttributes;
 import net.luojiuoscar.isaac_disaster.block.ModBlocks;
@@ -10,13 +8,14 @@ import net.luojiuoscar.isaac_disaster.capability.player.*;
 import net.luojiuoscar.isaac_disaster.entity.tnt.BombData;
 import net.luojiuoscar.isaac_disaster.entity.tnt.IsaacBomb;
 import net.luojiuoscar.isaac_disaster.item.ModItems;
+import net.luojiuoscar.isaac_disaster.item.ModPassiveItems;
+import net.luojiuoscar.isaac_disaster.item.ModTrinkets;
 import net.luojiuoscar.isaac_disaster.item.item.ActiveItem;
 import net.luojiuoscar.isaac_disaster.item.pickup.special.IsaacHead;
+import net.luojiuoscar.isaac_disaster.manager.CurioSlotManager;
 import net.luojiuoscar.isaac_disaster.manager.DefaultAttributeManager;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.manager.data.BlockData;
-import net.luojiuoscar.isaac_disaster.manager.id.ItemId;
-import net.luojiuoscar.isaac_disaster.manager.id.TrinketId;
 import net.luojiuoscar.isaac_disaster.sound.ModSounds;
 import net.luojiuoscar.isaac_disaster.system.flight.IsaacFlightController;
 import net.minecraft.core.BlockPos;
@@ -31,8 +30,6 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageTypes;
-import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -45,7 +42,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.server.ServerLifecycleHooks;
 import org.jetbrains.annotations.Nullable;
@@ -506,20 +502,7 @@ public class PlayerHelper {
     }
 
     public static int swallowAllTrinkets(Player player){
-        if (!(player instanceof ServerPlayer serverPlayer)) return 0;
-
-        int[] count = {0};
-        Map<CurioSlotKey, ItemStack> stackMap = CuriosHelper.getEquippedItemsBySlot(player, CuriosHelper.TRINKET);
-        player.getCapability(PlayerIsaacItemsProvider.PLAYER_ISAAC_ITEMS).ifPresent(
-                playerIsaacItems -> {
-                    for (Map.Entry<CurioSlotKey, ItemStack> entry : stackMap.entrySet()){
-                        ItemStack stack = entry.getValue();
-                        playerIsaacItems.swallow(stack);
-                        CuriosHelper.forgetIsaacCurioSlot(serverPlayer, entry.getKey());
-                        count[0]++;
-                    }
-                });
-        return count[0];
+        return player instanceof ServerPlayer serverPlayer ? CurioSlotManager.swallowTrinkets(serverPlayer) : 0;
     }
 
     public static int countPlayer(Predicate<ServerPlayer> filter){

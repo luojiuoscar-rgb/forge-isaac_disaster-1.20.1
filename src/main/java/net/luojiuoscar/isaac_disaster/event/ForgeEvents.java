@@ -21,7 +21,7 @@ import net.luojiuoscar.isaac_disaster.commands.revive.ReviveModuleCmd;
 import net.luojiuoscar.isaac_disaster.commands.trinket.TrinketClearSwallowedCmd;
 import net.luojiuoscar.isaac_disaster.commands.trinket.TrinketSetEnchanted;
 import net.luojiuoscar.isaac_disaster.effect.ModEffects;
-import net.luojiuoscar.isaac_disaster.helper.CuriosHelper;
+import net.luojiuoscar.isaac_disaster.manager.CurioSlotManager;
 import net.luojiuoscar.isaac_disaster.item.ModItems;
 import net.luojiuoscar.isaac_disaster.item.item.IsaacItem;
 import net.luojiuoscar.isaac_disaster.item.pickup.special.IsaacHead;
@@ -105,9 +105,10 @@ public class ForgeEvents {
     @SubscribeEvent
     public static void onPlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
         if (!(event.getEntity() instanceof ServerPlayer player)) return;
-        CuriosHelper.syncAllIsaacCurios(player);
         DefaultAttributeManager.apply(player);
         StatManager.refreshMultipliers(player);
+        CurioSlotManager.requestReconcile(player);
+        CurioSlotManager.tick(player);
         player.getCapability(PlayerIsaacItemsProvider.PLAYER_ISAAC_ITEMS)
                 .ifPresent(PlayerIsaacItems::refreshItemCountCache);
         syncAllDataToClient(player);
@@ -127,14 +128,20 @@ public class ForgeEvents {
     @SubscribeEvent
     public static void onPlayerRespawn(PlayerEvent.PlayerRespawnEvent event) {
         if (!(event.getEntity() instanceof ServerPlayer player)) return;
-        CuriosHelper.syncAllIsaacCurios(player);
         DefaultAttributeManager.apply(player);
         StatManager.refreshMultipliers(player);
+        CurioSlotManager.requestReconcile(player);
+        CurioSlotManager.tick(player);
         player.getCapability(PlayerIsaacItemsProvider.PLAYER_ISAAC_ITEMS)
                 .ifPresent(PlayerIsaacItems::refreshItemCountCache);
         player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY).ifPresent(
                 ability -> ability.updateAttackSelection(player));
         syncAllDataToClient(player);
+    }
+
+    @SubscribeEvent
+    public static void onCurioPlayerChangedDimension(PlayerEvent.PlayerChangedDimensionEvent event) {
+        if (event.getEntity() instanceof ServerPlayer player) CurioSlotManager.requestReconcile(player);
     }
 
     public static void syncAllDataToClient(ServerPlayer player){

@@ -1,7 +1,7 @@
 package net.luojiuoscar.isaac_disaster.capability.player;
 
 import net.luojiuoscar.isaac_disaster.event.ForgeEvents;
-import net.luojiuoscar.isaac_disaster.helper.CuriosHelper;
+import net.luojiuoscar.isaac_disaster.manager.CurioSlotManager;
 import net.luojiuoscar.isaac_disaster.item.item.PassiveItem;
 import net.luojiuoscar.isaac_disaster.item.item.Trinket;
 import net.luojiuoscar.isaac_disaster.networking.ModMessages;
@@ -351,7 +351,7 @@ public class PlayerIsaacItems {
      */
     public List<ItemStack> getAllTrinkets(Player player) {
         List<ItemStack> stackList = getSwallowedTrinkets();
-        stackList.addAll(CuriosHelper.getEquippedItemsInSlot(player, CuriosHelper.TRINKET));
+        stackList.addAll(CurioSlotManager.getEquippedItemsInSlot(player, CurioSlotManager.TRINKET));
         return new ArrayList<>(stackList);
     }
 
@@ -433,7 +433,7 @@ public class PlayerIsaacItems {
      */
     public List<ItemStack> getAllTrinketListFromId(Player player, ResourceLocation id){
         List<ItemStack> trinkets = getCapTrinketListFromId(id);
-        for (ItemStack stack : CuriosHelper.getEquippedItemsInSlot(player, CuriosHelper.TRINKET)){
+        for (ItemStack stack : CurioSlotManager.getEquippedItemsInSlot(player, CurioSlotManager.TRINKET)){
             if (stack.getItem() instanceof Trinket
                     && id.equals(ForgeRegistries.ITEMS.getKey(stack.getItem()))){
                 trinkets.add(stack.copy());

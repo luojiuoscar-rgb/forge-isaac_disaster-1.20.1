@@ -109,6 +109,10 @@ public enum StatManager {
             null, 1.0, null),
     PILL_QUALITY("pill_quality", ModAttributes.PILL_QUALITY.get(), 0, false,
             null, null, null),
+    TRINKET_SLOTS("trinket_slots", ModAttributes.TRINKET_SLOTS.get(), 0, false,
+            null, null, null),
+    PASSIVE_ITEM_SLOTS("passive_item_slots", ModAttributes.PASSIVE_ITEM_SLOTS.get(), 0, false,
+            null, null, null),
     FLY_TIME("fly_time", ModAttributes.FLY_TIME.get(), 0, false,
             () -> Config.FLY_TIME.get(), null, null){
         @Override

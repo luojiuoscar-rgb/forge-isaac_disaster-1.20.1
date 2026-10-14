@@ -70,18 +70,6 @@ public final class ThirdPassiveBatchGameTests {
     }
 
     @GameTest(template = "trajectory_empty", batch = "passive_batch3")
-    public static void purseSlotChangeIsReversible(GameTestHelper helper) {
-        var player = player(helper);
-        var data = player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY).orElseThrow(IllegalStateException::new);
-        int before = data.getExtraTrinketSlotCounts();
-        ModPassiveAbilities.MOMS_PURSE.get().handleObtain(player, null);
-        helper.assertTrue(data.getExtraTrinketSlotCounts() == before + 1, "Purse adds one slot");
-        ModPassiveAbilities.MOMS_PURSE.get().handleRemove(player, null);
-        helper.assertTrue(data.getExtraTrinketSlotCounts() == before, "Removing purse restores the count");
-        helper.succeed();
-    }
-
-    @GameTest(template = "trajectory_empty", batch = "passive_batch3")
     public static void scorpioPoisonsTwiceAtTheOwnersDamage(GameTestHelper helper) {
         var player = player(helper);
         player.getAttribute(Attributes.ATTACK_DAMAGE).setBaseValue(8.2);

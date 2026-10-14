@@ -27,7 +27,6 @@ public class PlayerAbility {
     private int spectral;
     private int controllable;
 
-    private int extraTrinketSlotCounts;
     private final Map<ResourceLocation, Integer> chargeAmounts = new HashMap<>();
     private final Map<ResourceLocation, ChargeBarSync.State> chargeBarStates = new HashMap<>();
 
@@ -50,7 +49,6 @@ public class PlayerAbility {
         homing = 0;
         spectral = 0;
         controllable = 0;
-        extraTrinketSlotCounts = 0;
         clearChargeStates();
 
         bestBulletColor = ModBulletColors.BASE.getId();
@@ -66,7 +64,6 @@ public class PlayerAbility {
         this.homing = source.homing;
         this.spectral = source.spectral;
         this.controllable = source.controllable;
-        this.extraTrinketSlotCounts = source.extraTrinketSlotCounts;
         this.bestBulletColor = source.bestBulletColor;
 
         this.attackType.clear();
@@ -84,7 +81,6 @@ public class PlayerAbility {
         nbt.putInt("homing", homing);
         nbt.putInt("spectral", spectral);
         nbt.putInt("controllable", controllable);
-        nbt.putInt("trinket_slot_counts", extraTrinketSlotCounts);
         nbt.putString("best_bullet_color", bestBulletColor.toString());
 
         ListTag bulletTypeList = new ListTag();
@@ -120,7 +116,6 @@ public class PlayerAbility {
         this.piercing = nbt.getInt("piercing");
         this.homing = nbt.getInt("homing");
         this.controllable = nbt.getInt("controllable");
-        this.extraTrinketSlotCounts = nbt.getInt("trinket_slot_counts");
         this.bestBulletColor = ResourceLocation.parse(nbt.getString("best_bullet_color"));
 
         attackType.clear();
@@ -203,14 +198,6 @@ public class PlayerAbility {
 
     public void setControllable(int amount) {
         controllable = amount;
-    }
-
-    public int getExtraTrinketSlotCounts() {
-        return extraTrinketSlotCounts;
-    }
-
-    public void setExtraTrinketSlotCounts(int amount) {
-        this.extraTrinketSlotCounts = amount;
     }
 
     public int getChargeAmount(ResourceLocation id) {

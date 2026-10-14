@@ -42,7 +42,7 @@ class ProbabilityLoreTranslationTest {
                     "dark_matter.lore.1", "37.50%概率恐惧弹",
                     "head_of_the_keeper.lore.2", "命中有37.50%概率掉普通硬币",
                     "cone_head.lore.1", "37.50%概率忽略伤害",
-                    "marbles.lore.1", "受伤时37.50%概率吞下装备饰品"
+                    "marbles.lore.1", "受伤时37.50%概率吞下饰品"
             );
             for (var entry : expected.entrySet()) {
                 String key = "item.isaac_disaster." + entry.getKey();

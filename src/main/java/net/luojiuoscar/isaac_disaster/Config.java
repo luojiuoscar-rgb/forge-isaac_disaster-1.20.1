@@ -2,6 +2,7 @@ package net.luojiuoscar.isaac_disaster;
 
 import net.luojiuoscar.isaac_disaster.config.IsaacConfigDefaults;
 import net.luojiuoscar.isaac_disaster.manager.DefaultAttributeManager;
+import net.luojiuoscar.isaac_disaster.manager.CurioSlotManager;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
@@ -64,6 +65,8 @@ public class Config
     public static ForgeConfigSpec.DoubleValue DEFAULT_BULLET_COUNT;
     public static ForgeConfigSpec.DoubleValue DEFAULT_PILL_QUALITY;
     public static ForgeConfigSpec.DoubleValue DEFAULT_FLY_TIME;
+    public static ForgeConfigSpec.IntValue DEFAULT_TRINKET_SLOTS;
+    public static ForgeConfigSpec.IntValue DEFAULT_PASSIVE_ITEM_SLOTS;
     public static ForgeConfigSpec.DoubleValue HEALTH_BONUS;
     public static ForgeConfigSpec.DoubleValue MOVEMENT_SPEED_BONUS;
     public static ForgeConfigSpec.DoubleValue MOVEMENT_SPEED_LIMIT;
@@ -93,7 +96,6 @@ public class Config
     public static ForgeConfigSpec.DoubleValue MONEY_IS_POWER_STRENGTH;
     public static ForgeConfigSpec.BooleanValue EXTRA_PASSIVE_ITEM_BACKPACK;
     public static ForgeConfigSpec.BooleanValue ALLOW_CURIO_UNEQUIP;
-    public static ForgeConfigSpec.BooleanValue AUTO_ADAPT_CURIO_SLOT;
     public static ForgeConfigSpec.IntValue ACTIVE_ITEM_DURABILITY_RESTORE_RATE;
     public static ForgeConfigSpec.BooleanValue LIMITED_ACTIVE_ITEM_DURABILITY_RESTORE;
     public static ForgeConfigSpec.BooleanValue ACTIVE_ITEM_AUTO_RESTORE;
@@ -193,6 +195,14 @@ public class Config
         DEFAULT_PILL_QUALITY = BUILDER
                 .comment("Default player pill quality.")
                 .defineInRange("default_pill_quality", IsaacConfigDefaults.DEFAULT_PILL_QUALITY, -1024.0, 1024.0);
+
+        DEFAULT_TRINKET_SLOTS = BUILDER
+                .comment("Default number of equipped trinket slots")
+                .defineInRange("default_trinket_slots", IsaacConfigDefaults.DEFAULT_TRINKET_SLOTS, 0, 1024);
+
+        DEFAULT_PASSIVE_ITEM_SLOTS = BUILDER
+                .comment("Default number of equipped passive item slots")
+                .defineInRange("default_passive_item_slots", IsaacConfigDefaults.DEFAULT_PASSIVE_ITEM_SLOTS, 0, 1024);
 
         DEFAULT_FLY_TIME = BUILDER
                 .comment("Default player flight time.")
@@ -355,10 +365,6 @@ public class Config
                 .comment("If the item can be unequipped from curio slot")
                 .define("allow_curio_unequip", IsaacConfigDefaults.ALLOW_CURIO_UNEQUIP);
 
-        AUTO_ADAPT_CURIO_SLOT = BUILDER
-                .comment("Clamp the extra Curios slot count to zero when item effects try to remove more slots than the player has.")
-                .define("auto_adapt_curio_slot", IsaacConfigDefaults.AUTO_ADAPT_CURIO_SLOT);
-
         ITEM_REMOVAL_FROM_POOL = BUILDER
                 .comment("Item will be removed from the exact pool when it spawns.")
                 .define("item_removal_from_pool", IsaacConfigDefaults.ITEM_REMOVAL_FROM_POOL);
@@ -465,6 +471,7 @@ public class Config
         if (server != null) server.execute(() -> server.getPlayerList().getPlayers()
                 .forEach(player -> {
                     DefaultAttributeManager.apply(player);
+                    CurioSlotManager.requestReconcile(player);
                     StatManager.refreshMultipliers(player);
                 }));
         logDirtBlock = LOG_DIRT_BLOCK.get();

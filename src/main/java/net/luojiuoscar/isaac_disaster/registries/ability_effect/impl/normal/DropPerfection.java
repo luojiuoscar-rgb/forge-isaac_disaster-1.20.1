@@ -1,7 +1,7 @@
 package net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.normal;
 
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerIsaacItemsProvider;
-import net.luojiuoscar.isaac_disaster.helper.CuriosHelper;
+import net.luojiuoscar.isaac_disaster.manager.CurioSlotManager;
 import net.luojiuoscar.isaac_disaster.item.ModTrinkets;
 import net.luojiuoscar.isaac_disaster.item.item.Trinket;
 import net.luojiuoscar.isaac_disaster.manager.id.TrinketId;
@@ -21,7 +21,7 @@ public class DropPerfection implements IAbilityEffect {
     public boolean applyEffect(ExecutableEffectContext context) {
         if (!(context.getEntity() instanceof ServerPlayer player)) return false;
 
-        List<ItemStack> trinkets = CuriosHelper.getEquippedItemsInSlot(player, CuriosHelper.TRINKET);
+        List<ItemStack> trinkets = CurioSlotManager.getEquippedItemsInSlot(player, CurioSlotManager.TRINKET);
         if ((trinkets.stream().anyMatch(Trinket::isEnchanted) ? 0.4 : 0.2) < player.getRandom().nextDouble()) return true;
 
         if (trinkets.stream().anyMatch(stack -> {
