@@ -211,7 +211,17 @@ public enum ItemId {
     SPOOKY_2(1),
     PLUTO(3),
     BATTERY_PACK(0),
-    TROPICAMIDE(1);
+    TROPICAMIDE(1),
+    BLOOD_BAG(2),
+    MOMS_CONTACTS(3),
+    MOMS_PURSE(2),
+    CELTIC_CROSS(1),
+    OLD_BANDAGE(2),
+    DARK_MATTER(3),
+    SCORPIO(3),
+    HEAD_OF_THE_KEEPER(2),
+    CONE_HEAD(2),
+    MARBLES(2);
 
 
 

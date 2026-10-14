@@ -46,4 +46,8 @@ public final class ModBulletVisuals {
 
     private ModBulletVisuals() {
     }
+
+    public static final RegistryObject<TearBulletVisual> KEEPER_COIN = BULLET_VISUAL_REGISTRY.register(
+            "keeper_coin", () -> new TearBulletVisual(0.5,
+                    ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "textures/particle/keeper_coin_tear.png"), false));
 }

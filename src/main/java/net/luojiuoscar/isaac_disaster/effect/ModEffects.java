@@ -29,8 +29,8 @@ public class ModEffects {
             () -> new CurseOfTheMaze(MobEffectCategory.HARMFUL, 0x512799));
 
     // normal effects
-    public static final RegistryObject<MobEffect> POISON = MOB_EFFECTS.register(EffectManager.POISON.getName(),
-            () -> new PoisonEffect(MobEffectCategory.HARMFUL, 8889187));
+    public static final RegistryObject<MobEffect> DEADLY_POISON = MOB_EFFECTS.register(EffectManager.DEADLY_POISON.getName(),
+            () -> new DeadlyPoisonEffect(MobEffectCategory.HARMFUL, 8889187));
 
     public static final RegistryObject<MobEffect> POWER_OF_BELIAL = MOB_EFFECTS.register(EffectManager.POWER_OF_BELIAL.getName(),
             () -> new PowerOfBelialEffect(MobEffectCategory.BENEFICIAL, 0xee1c24));

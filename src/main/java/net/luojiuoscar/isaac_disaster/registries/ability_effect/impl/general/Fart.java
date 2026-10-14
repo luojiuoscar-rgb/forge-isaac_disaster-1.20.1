@@ -1,15 +1,17 @@
 package net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.general;
 
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ContextKeys;
+import net.luojiuoscar.isaac_disaster.effect.custom.DeadlyPoisonEffect;
+import net.luojiuoscar.isaac_disaster.effect.ModEffects;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.profile.PotionProfile;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ExecutableEffectContext;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.IAbilityEffect;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ModExecutableEffects;
-import net.luojiuoscar.isaac_disaster.registries.ability_effect.profile.PotionProfile;
 import net.luojiuoscar.isaac_disaster.sound.ModSounds;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
-import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.ArrayList;
@@ -30,19 +32,20 @@ public class Fart implements IAbilityEffect {
 
         if (duration < 20) duration = 20;
         amplifier = Mth.clamp(amplifier, 0, 255);
+        var attribute = entity.getAttribute(Attributes.ATTACK_DAMAGE);
+        double damage = (attribute == null ? 0 : attribute.getValue()) * (0.3 + 0.05 * amplifier);
+        int poisonAmplifier = DeadlyPoisonEffect.amplifierForDamage(damage);
 
         context.set(ContextKeys.POTIONS, List.of(
-                new PotionProfile(
-                        MobEffects.POISON,
-                        duration,
-                        amplifier
-                )
+                new PotionProfile(ModEffects.DEADLY_POISON.get(), duration, poisonAmplifier)
         ));
+        context.set(ContextKeys.AMPLIFIER, 1.0);
+        context.set(ContextKeys.EXECUTABLE_EFFECT, ModExecutableEffects.POTIONS.get());
 
         if (context.get(ContextKeys.BOOLEAN) == null)
             context.set(ContextKeys.BOOLEAN, List.of(true));
 
-        // 施加中毒效果
+        // 施加剧毒效果
         ModExecutableEffects.APPLY_EFFECT_TO_NEARBY.get().apply(context);
 
         if (amplifier > 1){

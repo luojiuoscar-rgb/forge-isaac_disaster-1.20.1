@@ -52,4 +52,8 @@ public class ModBulletColors {
     public static final RegistryObject<BulletColor> SHOOP_DA_WHOOP =
             BULLET_COLOR_REGISTRY.register("white", () -> new BulletColor(0xFFFFFF, 1.0f, 100));
 
+    public static final RegistryObject<BulletColor> PETRIFIED =
+            BULLET_COLOR_REGISTRY.register("petrified", () -> new BulletColor(0xB0B0B0, 1.0f, 20));
+    public static final RegistryObject<BulletColor> DARK_MATTER =
+            BULLET_COLOR_REGISTRY.register("dark_matter", () -> new BulletColor(0x191919, 1.0f, 20));
 }

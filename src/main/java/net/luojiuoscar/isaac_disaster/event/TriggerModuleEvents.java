@@ -147,7 +147,7 @@ public class TriggerModuleEvents {
         ExecutableEffectContext context = new ExecutableEffectContext(bulletObject.getOwner());
         context.set(ContextKeys.EVENT, event);
         context.set(ContextKeys.BULLET, bulletObject);
-        context.set(ContextKeys.TARGET_POSITION, bulletObject.getPosition());
+        context.set(ContextKeys.TARGET_POSITION, event.getHit().getLocation());
         if (event.getHit().getEntity() instanceof LivingEntity entity){
             context.set(ContextKeys.SECONDARY_LIVING_ENTITIES, List.of(entity));
         }
@@ -164,7 +164,7 @@ public class TriggerModuleEvents {
         ExecutableEffectContext context = new ExecutableEffectContext(bulletObject.getOwner());
         context.set(ContextKeys.EVENT, event);
         context.set(ContextKeys.BULLET, bulletObject);
-        context.set(ContextKeys.TARGET_POSITION, bulletObject.getPosition());
+        context.set(ContextKeys.TARGET_POSITION, event.getHit().getLocation());
         if (event.getHit().getEntity() instanceof LivingEntity entity){
             context.set(ContextKeys.SECONDARY_LIVING_ENTITIES, List.of(entity));
         }

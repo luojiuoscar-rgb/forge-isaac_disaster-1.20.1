@@ -1,13 +1,16 @@
 package net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.normal;
 
+import net.luojiuoscar.isaac_disaster.effect.custom.DeadlyPoisonEffect;
 import net.luojiuoscar.isaac_disaster.effect.ModEffects;
 import net.luojiuoscar.isaac_disaster.helper.EntityHelper;
 import net.luojiuoscar.isaac_disaster.helper.LevelHelper;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ExecutableEffectContext;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ContextKeys;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.IAbilityEffect;
-import net.minecraft.world.effect.MobEffectInstance;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.ModExecutableEffects;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.profile.PotionProfile;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.ArrayList;
@@ -37,21 +40,21 @@ public class Ipecac implements IAbilityEffect {
         LevelHelper.explodeCustom(attacker, pos, power, damage, false, false);
 
         List<LivingEntity> livingEntities = LevelHelper.selectBySquare(attacker.level(), pos, power + 2);
+        var attribute = attacker.getAttribute(Attributes.ATTACK_DAMAGE);
+        double poisonDamage = (attribute == null ? 0 : attribute.getValue())
+                * (0.3 + 0.05 * Math.max(0, power - 3));
+        int poisonAmplifier = DeadlyPoisonEffect.amplifierForDamage(poisonDamage);
+        var potion = new PotionProfile(ModEffects.DEADLY_POISON.get(),
+                (int) Math.min(320, damage * 10), poisonAmplifier);
 
         for (LivingEntity entity : livingEntities){
 
             if(EntityHelper.isFriendly(entity, attacker)) continue;
 
-            MobEffectInstance poisonEffect = new MobEffectInstance(
-                    ModEffects.POISON.get(),
-                    (int) Math.min(320, damage * 10),
-                    (int) Math.max(0, power - 3),
-                    false,
-                    true,
-                    true
-            );
-
-            entity.addEffect(poisonEffect, attacker);
+            var targetContext = new ExecutableEffectContext(entity);
+            targetContext.set(ContextKeys.AMPLIFIER, 1.0);
+            targetContext.set(ContextKeys.POTIONS, List.of(potion));
+            ModExecutableEffects.POTIONS.get().apply(targetContext);
         }
     }
 

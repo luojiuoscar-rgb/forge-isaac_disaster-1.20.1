@@ -173,4 +173,28 @@ public class ModTriggerModules {
         TRIGGER_MODULE_REGISTRY.register("brimstone_monstros_lung", BrimstoneMonstrosLung::new);
     public static final RegistryObject<TriggerModule> LEAD_PENCIL =
         TRIGGER_MODULE_REGISTRY.register("lead_pencil", LeadPencil::new);
+
+    public static final RegistryObject<TriggerModule> MOMS_CONTACTS =
+            TRIGGER_MODULE_REGISTRY.register("moms_contacts", MomsContacts::new);
+
+    public static final RegistryObject<TriggerModule> DARK_MATTER =
+            TRIGGER_MODULE_REGISTRY.register("dark_matter", DarkMatter::new);
+
+    public static final RegistryObject<TriggerModule> CELTIC_CROSS =
+            TRIGGER_MODULE_REGISTRY.register("celtic_cross", CelticCross::new);
+
+    public static final RegistryObject<TriggerModule> OLD_BANDAGE =
+            TRIGGER_MODULE_REGISTRY.register("old_bandage", OldBandage::new);
+
+    public static final RegistryObject<TriggerModule> MARBLES =
+            TRIGGER_MODULE_REGISTRY.register("marbles", Marbles::new);
+
+    public static final RegistryObject<TriggerModule> SCORPIO =
+            TRIGGER_MODULE_REGISTRY.register("scorpio", Scorpio::new);
+
+    public static final RegistryObject<TriggerModule> HEAD_OF_THE_KEEPER =
+            TRIGGER_MODULE_REGISTRY.register("head_of_the_keeper", HeadOfTheKeeper::new);
+
+    public static final RegistryObject<TriggerModule> CONE_HEAD =
+            TRIGGER_MODULE_REGISTRY.register("cone_head", ConeHead::new);
 }

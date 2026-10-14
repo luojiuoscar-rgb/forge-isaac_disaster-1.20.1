@@ -51,8 +51,8 @@ public final class EvesMascara extends PassiveAbility {
     @Override
     public List<Component> getDesc(@Nullable ItemStack stack, @Nullable Player player) {
         return List.of(
-                Component.translatable("item.isaac_disaster.action.damage_multiplier", "+1"),
-                Component.translatable("item.isaac_disaster.action.fire_rate_multiplier", "-0.34"),
+                Component.translatable("item.isaac_disaster.action.damage_multiplier", "+100"),
+                Component.translatable("item.isaac_disaster.action.fire_rate_multiplier", "-34"),
                 StatManager.BULLET_SPEED.description(-2.5)
         );
     }

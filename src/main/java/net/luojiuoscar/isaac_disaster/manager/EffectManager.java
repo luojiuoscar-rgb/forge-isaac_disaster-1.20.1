@@ -8,7 +8,7 @@ public enum EffectManager {
     CURSE_OF_THE_MAZE("curse_of_the_maze"),
 
     // normal effects
-    POISON("poison"),
+    DEADLY_POISON("deadly_poison"),
     POWER_OF_BELIAL("power_of_belial"),
     DIZZINESS("dizziness"),
     TRANSCENDENCE("transcendence"),

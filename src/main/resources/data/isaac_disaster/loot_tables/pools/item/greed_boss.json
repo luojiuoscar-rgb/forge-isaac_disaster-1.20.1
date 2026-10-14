@@ -3,6 +3,7 @@
     {
       "rolls": 1,
       "entries": [
+        {"type": "minecraft:item", "name": "isaac_disaster:marbles"},
         {"type": "minecraft:item", "name": "isaac_disaster:tropicamide"},
         {"type": "minecraft:item", "name": "isaac_disaster:marrow"},
         {"type": "minecraft:item", "name": "isaac_disaster:booster_pack"},

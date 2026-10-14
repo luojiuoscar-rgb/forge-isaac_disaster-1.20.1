@@ -3,6 +3,7 @@
     {
       "rolls": 1,
       "entries": [
+        {"type": "minecraft:item", "name": "isaac_disaster:dark_matter"},
         {"type": "minecraft:item", "name": "isaac_disaster:ceremonial_robes"},
         {"type": "minecraft:item", "name": "isaac_disaster:moms_bottle_of_pills"},
         {"type": "minecraft:item", "name": "isaac_disaster:roid_rage"},

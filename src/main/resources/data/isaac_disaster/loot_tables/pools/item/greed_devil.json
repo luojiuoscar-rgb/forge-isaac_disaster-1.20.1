@@ -3,6 +3,7 @@
     {
       "rolls": 1,
       "entries": [
+        {"type": "minecraft:item", "name": "isaac_disaster:dark_matter"},
         {"type": "minecraft:item", "name": "isaac_disaster:two_spooky"},
         {"type": "minecraft:item", "name": "isaac_disaster:ceremonial_robes"},
         {"type": "minecraft:item", "name": "isaac_disaster:the_book_of_sin"},

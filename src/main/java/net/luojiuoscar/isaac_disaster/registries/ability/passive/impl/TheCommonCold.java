@@ -52,7 +52,7 @@ public class TheCommonCold extends PassiveAbility {
     public List<Component> getExtraDesc(@Nullable ItemStack stack, Player player){
         List<Component> description = new ArrayList<>();
 
-        description.add(EffectManager.POISON.getExplainDesc());
+        description.add(EffectManager.DEADLY_POISON.getExplainDesc());
 
         return description;
     }

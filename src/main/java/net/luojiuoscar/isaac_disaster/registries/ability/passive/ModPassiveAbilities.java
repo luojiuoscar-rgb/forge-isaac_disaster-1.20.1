@@ -698,4 +698,44 @@ public class ModPassiveAbilities {
     public static final RegistryObject<PassiveAbility> TROPICAMIDE =
             PASSIVE_ABILITY_REGISTRY.register("tropicamide",
                     () -> new Tropicamide(ItemId.TROPICAMIDE.getId(), ItemId.TROPICAMIDE.getLevel()));
+
+    public static final RegistryObject<PassiveAbility> BLOOD_BAG =
+            PASSIVE_ABILITY_REGISTRY.register("blood_bag",
+                    () -> new BloodBag(ItemId.BLOOD_BAG.getId(), ItemId.BLOOD_BAG.getLevel()));
+
+    public static final RegistryObject<PassiveAbility> MOMS_CONTACTS =
+            PASSIVE_ABILITY_REGISTRY.register("moms_contacts",
+                    () -> new MomsContacts(ItemId.MOMS_CONTACTS.getId(), ItemId.MOMS_CONTACTS.getLevel()));
+
+    public static final RegistryObject<PassiveAbility> MOMS_PURSE =
+            PASSIVE_ABILITY_REGISTRY.register("moms_purse",
+                    () -> new MomsPurse(ItemId.MOMS_PURSE.getId(), ItemId.MOMS_PURSE.getLevel()));
+
+    public static final RegistryObject<PassiveAbility> CELTIC_CROSS =
+            PASSIVE_ABILITY_REGISTRY.register("celtic_cross",
+                    () -> new CelticCross(ItemId.CELTIC_CROSS.getId(), ItemId.CELTIC_CROSS.getLevel()));
+
+    public static final RegistryObject<PassiveAbility> OLD_BANDAGE =
+            PASSIVE_ABILITY_REGISTRY.register("old_bandage",
+                    () -> new OldBandage(ItemId.OLD_BANDAGE.getId(), ItemId.OLD_BANDAGE.getLevel()));
+
+    public static final RegistryObject<PassiveAbility> DARK_MATTER =
+            PASSIVE_ABILITY_REGISTRY.register("dark_matter",
+                    () -> new DarkMatter(ItemId.DARK_MATTER.getId(), ItemId.DARK_MATTER.getLevel()));
+
+    public static final RegistryObject<PassiveAbility> SCORPIO =
+            PASSIVE_ABILITY_REGISTRY.register("scorpio",
+                    () -> new Scorpio(ItemId.SCORPIO.getId(), ItemId.SCORPIO.getLevel()));
+
+    public static final RegistryObject<PassiveAbility> HEAD_OF_THE_KEEPER =
+            PASSIVE_ABILITY_REGISTRY.register("head_of_the_keeper",
+                    () -> new HeadOfTheKeeper(ItemId.HEAD_OF_THE_KEEPER.getId(), ItemId.HEAD_OF_THE_KEEPER.getLevel()));
+
+    public static final RegistryObject<PassiveAbility> CONE_HEAD =
+            PASSIVE_ABILITY_REGISTRY.register("cone_head",
+                    () -> new ConeHead(ItemId.CONE_HEAD.getId(), ItemId.CONE_HEAD.getLevel()));
+
+    public static final RegistryObject<PassiveAbility> MARBLES =
+            PASSIVE_ABILITY_REGISTRY.register("marbles",
+                    () -> new Marbles(ItemId.MARBLES.getId(), ItemId.MARBLES.getLevel()));
 }

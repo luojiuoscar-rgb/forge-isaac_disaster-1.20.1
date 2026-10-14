@@ -4,6 +4,7 @@ import net.luojiuoscar.isaac_disaster.item.ModPassiveItems;
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.block.ModBlockEntities;
 import net.luojiuoscar.isaac_disaster.effect.ModEffects;
+import net.luojiuoscar.isaac_disaster.effect.custom.DeadlyPoisonEffect;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.item.ModItems;
 import net.luojiuoscar.isaac_disaster.manager.ModLootTables;
@@ -18,10 +19,13 @@ import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.RegistryObject;
@@ -496,8 +500,11 @@ public class ModExecutableEffects {
     public static final RegistryObject<IExecutableEffect> THE_COMMON_COLD =
             EXECUTABLE_EFFECT_REGISTRY.register("the_common_cold", () -> new AbilityEffectEntry(
                     APPLY_EFFECT_TO_SECONDARY_LIVING_ENTITY, ctx -> {
+                var attribute = ctx.getEntity().getAttribute(Attributes.ATTACK_DAMAGE);
+                int amplifier = DeadlyPoisonEffect.amplifierForDamage(
+                        (attribute == null ? 0 : attribute.getValue()) * 0.3);
                 ctx.set(ContextKeys.POTIONS, List.of(
-                        new PotionProfile(ModEffects.POISON.get(), 70, 0)
+                        new PotionProfile(ModEffects.DEADLY_POISON.get(), 70, amplifier)
                 ));
                 ctx.set(ContextKeys.EXECUTABLE_EFFECT, POTIONS.get());
             }));
@@ -1011,4 +1018,40 @@ public class ModExecutableEffects {
 
     public static final RegistryObject<IExecutableEffect> SPOOKY_2 =
             EXECUTABLE_EFFECT_REGISTRY.register("two_spooky", TwoSpooky::new);
+
+    public static final RegistryObject<IExecutableEffect> MOMS_CONTACTS =
+            EXECUTABLE_EFFECT_REGISTRY.register("moms_contacts", () -> new AbilityEffectEntry(
+                    APPLY_EFFECT_TO_SECONDARY_LIVING_ENTITY, ctx -> {
+                ctx.set(ContextKeys.EXECUTABLE_EFFECT, POTIONS.get());
+                ctx.set(ContextKeys.AMPLIFIER, 1.0);
+                ctx.set(ContextKeys.POTIONS, List.of(new PotionProfile(ModEffects.PETRIFIED.get(), 80, 0, 0, 0, true)));
+            }));
+    public static final RegistryObject<IExecutableEffect> DARK_MATTER =
+            EXECUTABLE_EFFECT_REGISTRY.register("dark_matter", () -> new AbilityEffectEntry(
+                    APPLY_EFFECT_TO_SECONDARY_LIVING_ENTITY, ctx -> {
+                ctx.set(ContextKeys.EXECUTABLE_EFFECT, POTIONS.get());
+                ctx.set(ContextKeys.AMPLIFIER, 1.0);
+                ctx.set(ContextKeys.POTIONS, List.of(new PotionProfile(ModEffects.PANIC.get(), 80, 0, 0, 0, true)));
+            }));
+    public static final RegistryObject<IExecutableEffect> CELTIC_CROSS =
+            EXECUTABLE_EFFECT_REGISTRY.register("celtic_cross", CelticCrossShield::new);
+    public static final RegistryObject<IExecutableEffect> OLD_BANDAGE =
+            EXECUTABLE_EFFECT_REGISTRY.register("old_bandage", () -> ctx -> {
+                net.luojiuoscar.isaac_disaster.helper.LootHelper.spawnItemViaLoot(ctx.getEntity(),
+                        ctx.getEntity().position(), ModItems.RED_HEART.get(), 1);
+            });
+    public static final RegistryObject<IExecutableEffect> MARBLES =
+            EXECUTABLE_EFFECT_REGISTRY.register("marbles", () -> ctx -> {
+                if (ctx.getEntity() instanceof ServerPlayer player) {
+                    PlayerHelper.swallowAllTrinkets(player);
+                    player.playNotifySound(SoundEvents.PLAYER_BURP, SoundSource.PLAYERS, 1f, 1f);
+                }
+            });
+    public static final RegistryObject<IExecutableEffect> SCORPIO =
+            EXECUTABLE_EFFECT_REGISTRY.register("scorpio", ScorpioPoison::new);
+    public static final RegistryObject<IExecutableEffect> HEAD_OF_THE_KEEPER =
+            EXECUTABLE_EFFECT_REGISTRY.register("head_of_the_keeper", KeeperCoinDrop::new);
+
+    public static final RegistryObject<IExecutableEffect> CONE_HEAD =
+            EXECUTABLE_EFFECT_REGISTRY.register("cone_head", ConeHead::new);
 }

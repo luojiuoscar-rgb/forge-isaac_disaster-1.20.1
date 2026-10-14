@@ -1,17 +1,20 @@
 package net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.pill_effect.impl;
 
 import net.luojiuoscar.isaac_disaster.helper.LevelHelper;
+import net.luojiuoscar.isaac_disaster.effect.custom.DeadlyPoisonEffect;
+import net.luojiuoscar.isaac_disaster.effect.ModEffects;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ExecutableEffectContext;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.ContextKeys;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.profile.PotionProfile;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ModExecutableEffects;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.pill_effect.PillEffect;
 import net.luojiuoscar.isaac_disaster.sound.ModSounds;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 
@@ -30,10 +33,9 @@ public class BadGas extends PillEffect {
         Level level = player.level();
         Vec3 pos = player.blockPosition().getCenter();
 
-        MobEffectInstance effect = new MobEffectInstance(MobEffects.POISON, 300, 0);
-        if (isHorse){
-            effect = new MobEffectInstance(MobEffects.POISON, 600, 2);
-        }
+        int amplifier = DeadlyPoisonEffect.amplifierForDamage(
+                player.getAttributeValue(Attributes.ATTACK_DAMAGE) * (isHorse ? 1 : 0.3));
+        var potion = new PotionProfile(ModEffects.DEADLY_POISON.get(), isHorse ? 600 : 300, amplifier);
 
         List<LivingEntity> entities = LevelHelper.selectBySphere(level, pos, StatManager.getNearbyRange());
         for (LivingEntity entity : entities){
@@ -45,7 +47,10 @@ public class BadGas extends PillEffect {
                 LevelHelper.pushEntity(level, entity, pos, 2, 0.2);
             }
 
-            entity.addEffect(effect);
+            var targetContext = context.copy(entity);
+            targetContext.set(ContextKeys.AMPLIFIER, 1.0);
+            targetContext.set(ContextKeys.POTIONS, List.of(potion));
+            ModExecutableEffects.POTIONS.get().apply(targetContext);
         }
 
         return true;

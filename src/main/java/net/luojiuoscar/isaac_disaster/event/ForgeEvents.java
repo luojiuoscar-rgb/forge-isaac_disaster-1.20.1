@@ -3,7 +3,6 @@ package net.luojiuoscar.isaac_disaster.event;
 import net.luojiuoscar.isaac_disaster.Config;
 import net.luojiuoscar.isaac_disaster.attribute.ModAttributes;
 import net.luojiuoscar.isaac_disaster.capability.entity.EffectModulesProvider;
-import net.luojiuoscar.isaac_disaster.capability.entity.EntityEffectProvider;
 import net.luojiuoscar.isaac_disaster.capability.entity.ExtraDataProvider;
 import net.luojiuoscar.isaac_disaster.capability.player.*;
 import net.luojiuoscar.isaac_disaster.capability.player.flight.PlayerIsaacFlightProvider;
@@ -63,6 +62,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.RegisterCommandsEvent;
+import net.minecraftforge.registries.MissingMappingsEvent;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
@@ -239,9 +239,6 @@ public class ForgeEvents {
             }
         }
         if (event.getObject() instanceof LivingEntity){
-            if(!event.getObject().getCapability(EntityEffectProvider.ENTITY_EFFECT_CAP).isPresent()){
-                event.addCapability(ResourceLocation.fromNamespaceAndPath(MOD_ID, "entity_effect_cap"), new EntityEffectProvider());
-            }
             if(!event.getObject().getCapability(EffectModulesProvider.EFFECT_MODULES).isPresent()){
                 event.addCapability(ResourceLocation.fromNamespaceAndPath(MOD_ID, "effect_module_cap"), new EffectModulesProvider());
             }
@@ -289,12 +286,6 @@ public class ForgeEvents {
             });
             copyFamiliarData(event.getOriginal(), event.getEntity());
             copyIsaacFlightData(event.getOriginal(), event.getEntity());
-            // effect
-            event.getOriginal().getCapability(EntityEffectProvider.ENTITY_EFFECT_CAP).ifPresent(oldStore -> {
-                event.getEntity().getCapability(EntityEffectProvider.ENTITY_EFFECT_CAP).ifPresent(newStore -> {
-                    newStore.copyFrom(oldStore);
-                });
-            });
             // trigger modules
             event.getOriginal().getCapability(EffectModulesProvider.EFFECT_MODULES).ifPresent(oldStore -> {
                 event.getEntity().getCapability(EffectModulesProvider.EFFECT_MODULES).ifPresent(newStore -> {
@@ -379,32 +370,6 @@ public class ForgeEvents {
 
 
         ConfigCommand.register(event.getDispatcher());
-    }
-
-    @SubscribeEvent
-    public static void onLivingAddEffect(MobEffectEvent.Added event) {
-        // 获取受到效果的实体
-        LivingEntity affectedEntity = event.getEntity();
-        // 获取效果的来源（伤害来源）
-        Entity source = event.getEffectSource();
-        // 检查是否是目标药水效果
-        if (event.getEffectInstance().getEffect() == ModEffects.POISON.get()) {
-            // 确保来源是实体且存在
-            if (source instanceof LivingEntity damageSourceEntity) {
-                // 获取伤害来源的攻击伤害属性
-                AttributeInstance attackDamage = damageSourceEntity.getAttribute(Attributes.ATTACK_DAMAGE);
-
-                if (attackDamage != null) {
-                    // 获取攻击伤害值
-                    double damageValue = attackDamage.getValue();
-                    // 保存
-                    affectedEntity.getCapability(EntityEffectProvider.ENTITY_EFFECT_CAP).ifPresent(
-                            entityEffect -> entityEffect.setSourceDamage(EffectManager.POISON.getId(),
-                                    damageValue)
-                    );
-                }
-            }
-        }
     }
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
