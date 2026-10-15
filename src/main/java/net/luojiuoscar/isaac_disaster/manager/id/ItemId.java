@@ -221,7 +221,17 @@ public enum ItemId {
     SCORPIO(3),
     HEAD_OF_THE_KEEPER(2),
     CONE_HEAD(2),
-    MARBLES(2);
+    MARBLES(2),
+    NUMBER_ONE(2),
+    HUMBLEING_BUNDLE(3),
+    BUTT_BOMBS(2),
+    INFAMY(2),
+    DARK_PRINCES_CROWN(1),
+    APPLE(3),
+    DEAD_TOOTH(1),
+    ADRENALINE(2),
+    JUMPER_CABLES(3),
+    SOUL_LOCKET(1);
 
 
 

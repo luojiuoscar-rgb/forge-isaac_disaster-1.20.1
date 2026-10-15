@@ -3,6 +3,13 @@
     {
       "rolls": 1,
       "entries": [
+        {"type": "minecraft:item", "name": "isaac_disaster:jumper_cables"},
+        {"type": "minecraft:item", "name": "isaac_disaster:adrenaline"},
+        {"type": "minecraft:item", "name": "isaac_disaster:dead_tooth"},
+        {"type": "minecraft:item", "name": "isaac_disaster:apple"},
+        {"type": "minecraft:item", "name": "isaac_disaster:infamy"},
+        {"type": "minecraft:item", "name": "isaac_disaster:butt_bombs"},
+        {"type": "minecraft:item", "name": "isaac_disaster:number_one"},
         {"type": "minecraft:item", "name": "isaac_disaster:cone_head"},
         {"type": "minecraft:item", "name": "isaac_disaster:scorpio"},
         {"type": "minecraft:item", "name": "isaac_disaster:celtic_cross"},

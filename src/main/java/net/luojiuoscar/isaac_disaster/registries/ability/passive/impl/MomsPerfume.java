@@ -49,7 +49,7 @@ public class MomsPerfume extends PassiveAbility {
                 ? BASE_FEAR_CHANCE_PERCENT
                 : getTriggerChance(player) * 100.0;
         description.add(Component.translatable("item.isaac_disaster.moms_perfume.lore.1",
-                DescriptionHelper.dynamicNumber(BASE_FEAR_CHANCE_PERCENT, chancePercent)));
+                DescriptionHelper.dynamicNumber(chancePercent)));
         return description;
     }
 

@@ -45,7 +45,7 @@ public class IronBar extends PassiveAbility {
         return List.of(
                 StatManager.DAMAGE.description(0.3),
                 Component.translatable("item.isaac_disaster.iron_bar.lore.1",
-                        DescriptionHelper.dynamicNumber(BASE_TRIGGER_CHANCE_PERCENT, chancePercent))
+                        DescriptionHelper.dynamicNumber(chancePercent))
         );
     }
 }

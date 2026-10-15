@@ -37,7 +37,7 @@ public final class DarkMatter extends PassiveAbility {
         return List.of(
                 StatManager.DAMAGE.description(1),
                 Component.translatable("item.isaac_disaster.dark_matter.lore.1",
-                        DescriptionHelper.dynamicNumber(100.0 / 3, player == null ? 100.0 / 3 : chance(player) * 100))
+                        DescriptionHelper.dynamicNumber(player == null ? 100.0 / 3 : chance(player) * 100))
         );
     }
 }

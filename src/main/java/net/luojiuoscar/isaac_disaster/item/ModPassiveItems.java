@@ -742,4 +742,44 @@ public class ModPassiveItems {
     public static final RegistryObject<Item> MARBLES = ITEMS.register("marbles",
             () -> new PassiveItem(new Item.Properties(), ModPassiveAbilities.MARBLES));
     static {ItemListManager.PASSIVE_ITEM_LIST.add(MARBLES);}
+
+    public static final RegistryObject<Item> NUMBER_ONE = ITEMS.register("number_one",
+            () -> new PassiveItem(new Item.Properties(), ModPassiveAbilities.NUMBER_ONE));
+    static {ItemListManager.PASSIVE_ITEM_LIST.add(NUMBER_ONE);}
+
+    public static final RegistryObject<Item> HUMBLEING_BUNDLE = ITEMS.register("humbleing_bundle",
+            () -> new PassiveItem(new Item.Properties(), ModPassiveAbilities.HUMBLEING_BUNDLE));
+    static {ItemListManager.PASSIVE_ITEM_LIST.add(HUMBLEING_BUNDLE);}
+
+    public static final RegistryObject<Item> BUTT_BOMBS = ITEMS.register("butt_bombs",
+            () -> new PassiveItem(new Item.Properties(), ModPassiveAbilities.BUTT_BOMBS));
+    static {ItemListManager.PASSIVE_ITEM_LIST.add(BUTT_BOMBS);}
+
+    public static final RegistryObject<Item> INFAMY = ITEMS.register("infamy",
+            () -> new PassiveItem(new Item.Properties(), ModPassiveAbilities.INFAMY));
+    static {ItemListManager.PASSIVE_ITEM_LIST.add(INFAMY);}
+
+    public static final RegistryObject<Item> DARK_PRINCES_CROWN = ITEMS.register("dark_princes_crown",
+            () -> new PassiveItem(new Item.Properties(), ModPassiveAbilities.DARK_PRINCES_CROWN));
+    static {ItemListManager.PASSIVE_ITEM_LIST.add(DARK_PRINCES_CROWN);}
+
+    public static final RegistryObject<Item> APPLE = ITEMS.register("apple",
+            () -> new PassiveItem(new Item.Properties(), ModPassiveAbilities.APPLE));
+    static {ItemListManager.PASSIVE_ITEM_LIST.add(APPLE);}
+
+    public static final RegistryObject<Item> DEAD_TOOTH = ITEMS.register("dead_tooth",
+            () -> new PassiveItem(new Item.Properties(), ModPassiveAbilities.DEAD_TOOTH));
+    static {ItemListManager.PASSIVE_ITEM_LIST.add(DEAD_TOOTH);}
+
+    public static final RegistryObject<Item> ADRENALINE = ITEMS.register("adrenaline",
+            () -> new PassiveItem(new Item.Properties(), ModPassiveAbilities.ADRENALINE));
+    static {ItemListManager.PASSIVE_ITEM_LIST.add(ADRENALINE);}
+
+    public static final RegistryObject<Item> JUMPER_CABLES = ITEMS.register("jumper_cables",
+            () -> new PassiveItem(new Item.Properties(), ModPassiveAbilities.JUMPER_CABLES));
+    static {ItemListManager.PASSIVE_ITEM_LIST.add(JUMPER_CABLES);}
+
+    public static final RegistryObject<Item> SOUL_LOCKET = ITEMS.register("soul_locket",
+            () -> new PassiveItem(new Item.Properties(), ModPassiveAbilities.SOUL_LOCKET));
+    static {ItemListManager.PASSIVE_ITEM_LIST.add(SOUL_LOCKET);}
 }

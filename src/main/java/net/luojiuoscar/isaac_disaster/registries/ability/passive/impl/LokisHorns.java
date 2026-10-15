@@ -42,7 +42,7 @@ public class LokisHorns extends PassiveAbility {
                 : getTriggerChance(player) * 100.0;
         return List.of(
                 Component.translatable("item.isaac_disaster.lokis_horns.lore.1",
-                        DescriptionHelper.dynamicNumber(BASE_TRIGGER_CHANCE_PERCENT, chancePercent))
+                        DescriptionHelper.dynamicNumber(chancePercent))
         );
     }
 }

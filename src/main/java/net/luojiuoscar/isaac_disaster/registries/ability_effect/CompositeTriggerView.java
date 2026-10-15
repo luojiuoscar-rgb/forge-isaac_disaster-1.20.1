@@ -5,6 +5,7 @@ import org.jetbrains.annotations.Nullable;
 import oshi.annotation.concurrent.Immutable;
 
 import java.util.List;
+import java.util.Comparator;
 
 @Immutable
 public class CompositeTriggerView {
@@ -15,11 +16,10 @@ public class CompositeTriggerView {
     }
 
     public void fire(ExecutableEffectContext context, @Nullable TriggerType type) {
-        for (SimpleTrigger t : triggers) {
-            if (type == null || t.type.is(type)){
-                t.fire(context);
-            }
-        }
+        triggers.stream()
+                .filter(trigger -> type == null || trigger.type.is(type))
+                .sorted(Comparator.comparingDouble(SimpleTrigger::getPriority).reversed())
+                .forEach(trigger -> trigger.fire(context));
     }
 
     /** Returns true if the given effect is found */

@@ -10,7 +10,7 @@ public class Habit implements IAbilityEffect {
     public boolean applyEffect(ExecutableEffectContext context) {
         if (!(context.getEntity() instanceof ServerPlayer player)) return false;
 
-        PlayerHelper.chargeAll(player, 100);
+        PlayerHelper.chargeFirst(player, 100);
         return true;
     }
 }

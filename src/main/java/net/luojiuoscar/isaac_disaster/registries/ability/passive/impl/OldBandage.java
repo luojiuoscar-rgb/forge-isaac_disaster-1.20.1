@@ -35,7 +35,7 @@ public final class OldBandage extends PassiveAbility {
         return List.of(
                 StatManager.MAX_HEALTH.description(1),
                 Component.translatable("item.isaac_disaster.old_bandage.lore.1",
-                        DescriptionHelper.dynamicNumber(20, player == null ? 20 : chance(player) * 100))
+                        DescriptionHelper.dynamicNumber(player == null ? 20 : chance(player) * 100))
         );
     }
 }

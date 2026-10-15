@@ -50,4 +50,7 @@ public final class ModBulletVisuals {
     public static final RegistryObject<TearBulletVisual> KEEPER_COIN = BULLET_VISUAL_REGISTRY.register(
             "keeper_coin", () -> new TearBulletVisual(0.5,
                     ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "textures/particle/keeper_coin_tear.png"), false));
+    public static final RegistryObject<TearBulletVisual> TERRA_ROCK = BULLET_VISUAL_REGISTRY.register(
+            "terra_rock", () -> new TearBulletVisual(1.5,
+                    ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "textures/particle/terra_rock.png"), false));
 }

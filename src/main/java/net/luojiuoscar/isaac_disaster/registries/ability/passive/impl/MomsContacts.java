@@ -40,7 +40,7 @@ public final class MomsContacts extends PassiveAbility {
         return List.of(
                 StatManager.RANGE.description(1),
                 Component.translatable("item.isaac_disaster.moms_contacts.lore.1",
-                        DescriptionHelper.dynamicNumber(20, player == null ? 20 : chance(player) * 100))
+                        DescriptionHelper.dynamicNumber(player == null ? 20 : chance(player) * 100))
         );
     }
 

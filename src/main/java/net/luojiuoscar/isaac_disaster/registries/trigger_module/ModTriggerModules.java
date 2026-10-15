@@ -197,4 +197,19 @@ public class ModTriggerModules {
 
     public static final RegistryObject<TriggerModule> CONE_HEAD =
             TRIGGER_MODULE_REGISTRY.register("cone_head", ConeHead::new);
+
+    public static final RegistryObject<TriggerModule> HUMBLEING_BUNDLE =
+            TRIGGER_MODULE_REGISTRY.register("humbleing_bundle", HumbleingBundle::new);
+
+    public static final RegistryObject<TriggerModule> BUTT_BOMBS =
+            TRIGGER_MODULE_REGISTRY.register("butt_bombs", ButtBombs::new);
+
+    public static final RegistryObject<TriggerModule> INFAMY =
+            TRIGGER_MODULE_REGISTRY.register("infamy", Infamy::new);
+
+    public static final RegistryObject<TriggerModule> APPLE =
+            TRIGGER_MODULE_REGISTRY.register("apple", Apple::new);
+
+    public static final RegistryObject<TriggerModule> JUMPER_CABLES =
+            TRIGGER_MODULE_REGISTRY.register("jumper_cables", JumperCables::new);
 }

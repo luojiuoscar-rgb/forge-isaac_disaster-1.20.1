@@ -170,6 +170,33 @@ public class PlayerHelper {
         }
     }
 
+    /** Charges the first unfinished active item: main hand, offhand, then inventory index. Null fills it. */
+    public static boolean chargeFirst(ServerPlayer player, @Nullable Integer amount) {
+        return chargeFirst(player, amount, hasItem(ModPassiveItems.THE_BATTERY.getId(), player));
+    }
+
+    /** Uses an explicit overcharge allowance when selecting and charging one active item. */
+    public static boolean chargeFirst(ServerPlayer player, @Nullable Integer amount, boolean canOverCharge) {
+        Inventory inventory = player.getInventory();
+        List<ItemStack> candidates = new ArrayList<>();
+        candidates.add(player.getMainHandItem());
+        candidates.add(player.getOffhandItem());
+        for (int slot = 0; slot < inventory.items.size(); slot++) {
+            if (slot != inventory.selected) candidates.add(inventory.items.get(slot));
+        }
+        for (ItemStack stack : candidates) {
+            if (stack.isEmpty() || !(stack.getItem() instanceof ActiveItem)
+                    || stack.getMaxDamage() <= 0 || isFullCharge(stack, canOverCharge)) continue;
+            if (amount == null) {
+                ActiveItem.fullCharge(stack, canOverCharge);
+            } else {
+                chargeItem(stack, amount, canOverCharge);
+            }
+            return true;
+        }
+        return false;
+    }
+
     public static boolean isFullCharge(ItemStack stack, boolean canOverCharge){
         if (canOverCharge && !ActiveItem.getOverCharged(stack)) return false;
         return stack.getDamageValue() == 0;

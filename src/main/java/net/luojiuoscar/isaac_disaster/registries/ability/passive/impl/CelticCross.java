@@ -34,7 +34,7 @@ public final class CelticCross extends PassiveAbility {
     public List<Component> getDesc(@Nullable ItemStack stack, @Nullable Player player) {
         return List.of(
                 Component.translatable("item.isaac_disaster.celtic_cross.lore.1",
-                        DescriptionHelper.dynamicNumber(20, player == null ? 20 : chance(player) * 100)),
+                        DescriptionHelper.dynamicNumber(player == null ? 20 : chance(player) * 100)),
                 Component.translatable("item.isaac_disaster.celtic_cross.lore.2", 7)
         );
     }

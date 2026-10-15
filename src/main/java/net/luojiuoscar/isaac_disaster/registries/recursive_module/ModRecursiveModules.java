@@ -58,4 +58,13 @@ public class ModRecursiveModules {
             RECURSIVE_MODULE_REGISTRY.register("dads_ring", DadsRing::new);
     public static final RegistryObject<RecursiveModule> SPOOKY_2 =
             RECURSIVE_MODULE_REGISTRY.register("two_spooky", TwoSpooky::new);
+
+    public static final RegistryObject<RecursiveModule> DARK_PRINCES_CROWN =
+            RECURSIVE_MODULE_REGISTRY.register("dark_princes_crown", DarkPrincesCrown::new);
+
+    public static final RegistryObject<RecursiveModule> DEAD_TOOTH =
+            RECURSIVE_MODULE_REGISTRY.register("dead_tooth", DeadTooth::new);
+
+    public static final RegistryObject<RecursiveModule> ADRENALINE =
+            RECURSIVE_MODULE_REGISTRY.register("adrenaline", Adrenaline::new);
 }

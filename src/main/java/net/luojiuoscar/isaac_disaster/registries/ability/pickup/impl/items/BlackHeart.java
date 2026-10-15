@@ -1,6 +1,5 @@
 package net.luojiuoscar.isaac_disaster.registries.ability.pickup.impl.items;
 
-import net.luojiuoscar.isaac_disaster.registries.ability.pickup.FoodPickupAbility;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.CompositeTrigger;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ModExecutableEffects;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.SimpleTrigger;
@@ -12,7 +11,7 @@ import net.minecraft.sounds.SoundSource;
 import java.util.List;
 
 
-public class BlackHeart extends FoodPickupAbility {
+public class BlackHeart extends SoulHeart {
     private static final CompositeTrigger TRIGGER = new CompositeTrigger(List.of(
             new SimpleTrigger(ModTriggerTypes.EMTPY, ModExecutableEffects.ABSORPTION),
             new SimpleTrigger(ModTriggerTypes.EMTPY, ModExecutableEffects.STRENGTH),

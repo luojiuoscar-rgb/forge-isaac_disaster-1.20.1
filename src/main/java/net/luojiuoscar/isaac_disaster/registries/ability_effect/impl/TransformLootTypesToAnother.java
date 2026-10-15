@@ -8,7 +8,6 @@ import net.luojiuoscar.isaac_disaster.registries.ability_effect.IAbilityEffect;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerTypes;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerType;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
@@ -24,106 +23,58 @@ public abstract class TransformLootTypesToAnother implements IAbilityEffect {
     @Override
     public boolean applyEffect(ExecutableEffectContext context) {
         if (!(context.get(ContextKeys.EVENT) instanceof GeneralLootModifyEvent event)) return false;
-        var objectArrayList = event.getObjectArrayList();
-        var lootContext = event.getLootContext();
-
-        if (objectArrayList.isEmpty()) return true;
-
         if (!(event.getEntity() instanceof ServerPlayer)) return true;
-
-        RandomSource rand = lootContext.getRandom();
-        ObjectArrayList<ItemStack> newList = new ObjectArrayList<>();
-
-        List<Item> originalList = getOriginalItemType();
-        List<Item> transformedList = getTransformedItemType();
-        Class<? extends Item> instanceType = getOriginalInstanceType();
-
-        for (ItemStack stack : objectArrayList) {
-            // instanceof 判断（优先级最高）
+        var source = event.getObjectArrayList();
+        if (source.isEmpty()) return true;
+        var random = event.getLootContext().getRandom();
+        var output = new ObjectArrayList<ItemStack>();
+        var originals = getOriginalItemType();
+        var replacements = getTransformedItemType();
+        var instanceType = getOriginalInstanceType();
+        for (ItemStack stack : source) {
+            Item replacement;
             if (instanceType != null && instanceType.isInstance(stack.getItem())) {
-                int originalCount = stack.getCount();
-                int count = originalCount;
-
-                Item transformedItem = transformedList.get(transformedList.size() - 1);
-
-                int transformedCount = 0;
-
-                for (int j = 0; j < originalCount; j++) {
-                    if (rand.nextDouble() < getProbability(context)) {
-                        transformedCount++;
-                        count--;
-                    }
-                }
-
-                stack.setCount(count);
-
-                if (count != 0) {
-                    newList.add(stack);
-                }
-
-                if (transformedCount > 0) {
-                    ItemStack newStack = new ItemStack(transformedItem);
-                    newStack.setCount(transformedCount);
-                    newList.add(newStack);
-                }
-
-                continue;
-            }
-
-
-            // original List判断
-            int index = originalList.indexOf(stack.getItem());
-
-            if (index != -1) {
-                int originalCount = stack.getCount();
-                int count = originalCount;
-
-                // 获取对应的 transformed item
-                Item transformedItem;
-                if (index < transformedList.size()) {
-                    transformedItem = transformedList.get(index);
-                } else {
-                    transformedItem = transformedList.get(transformedList.size() - 1);
-                }
-
-                int transformedCount = 0;
-
-                for (int j = 0; j < originalCount; j++) {
-                    if (rand.nextDouble() < getProbability(context)) {
-                        transformedCount++;
-                        count--;
-                    }
-                }
-
-                stack.setCount(count);
-
-                if (count != 0) {
-                    newList.add(stack);
-                }
-
-                if (transformedCount > 0) {
-                    ItemStack newStack = new ItemStack(transformedItem);
-                    newStack.setCount(transformedCount);
-                    newList.add(newStack);
-                }
-
+                replacement = replacements.get(replacements.size() - 1);
             } else {
-                newList.add(stack);
+                int index = originals.indexOf(stack.getItem());
+                if (index < 0) {
+                    output.add(stack);
+                    continue;
+                }
+                replacement = replacements.get(Math.min(index, replacements.size() - 1));
             }
+            int transformed = 0;
+            for (int i = 0; i < stack.getCount(); i++) {
+                if (random.nextDouble() < getProbability(context)) transformed++;
+            }
+            ItemStack converted = transformed == 0 ? ItemStack.EMPTY : createTransformedStack(stack, replacement, transformed);
+            stack.setCount(stack.getCount() - transformed);
+            addStack(output, stack);
+            addStack(output, converted);
         }
-
-        event.setObjectArrayList(newList);
-
+        event.setObjectArrayList(output);
         return true;
     }
 
-    abstract protected double getProbability(ExecutableEffectContext context);
-    /** 转化后的物品和transformedItemType的index一一对应。如果超出索引，则默认使用transformed列表的最后一位 */
-    abstract protected List<Item> getOriginalItemType();
-    abstract protected List<Item> getTransformedItemType();
+    protected abstract double getProbability(ExecutableEffectContext context);
+    protected abstract List<Item> getOriginalItemType();
+    protected abstract List<Item> getTransformedItemType();
 
-    /** 通过这种方式转化的物品默认使用transformedItemType的最后一位
-     * 使用这种判断方法会跳过originalType的判断*/
+    /** Override when conversion needs a different quantity or must retain source stack data. */
+    protected ItemStack createTransformedStack(ItemStack original, Item replacement, int count) {
+        return new ItemStack(replacement, count);
+    }
+
+    private static void addStack(ObjectArrayList<ItemStack> output, ItemStack stack) {
+        int remaining = stack.getCount();
+        while (remaining > 0) {
+            int amount = Math.min(remaining, stack.getMaxStackSize());
+            output.add(stack.copyWithCount(amount));
+            remaining -= amount;
+        }
+    }
+
+    /** Instance matches take precedence and use the last replacement in the list. */
     @Nullable
     protected Class<? extends Item> getOriginalInstanceType() {
         return null;

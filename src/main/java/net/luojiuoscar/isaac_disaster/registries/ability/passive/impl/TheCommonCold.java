@@ -44,7 +44,7 @@ public class TheCommonCold extends PassiveAbility {
                 : getTriggerChance(player) * 100.0;
         return List.of(
                 Component.translatable("item.isaac_disaster.the_common_cold.lore.1",
-                        DescriptionHelper.dynamicNumber(BASE_TRIGGER_CHANCE_PERCENT, chancePercent))
+                        DescriptionHelper.dynamicNumber(chancePercent))
         );
     }
 

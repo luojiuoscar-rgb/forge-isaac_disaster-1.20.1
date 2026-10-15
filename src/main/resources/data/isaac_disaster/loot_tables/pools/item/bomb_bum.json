@@ -3,6 +3,7 @@
     {
       "rolls": 1,
       "entries": [
+        {"type": "minecraft:item", "name": "isaac_disaster:butt_bombs"},
         {"type": "minecraft:item", "name": "isaac_disaster:mr_mega"},
         {"type": "minecraft:item", "name": "isaac_disaster:bomber_boy"},
         {"type": "minecraft:item", "name": "isaac_disaster:scatter_bomb"},

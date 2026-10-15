@@ -1054,4 +1054,35 @@ public class ModExecutableEffects {
 
     public static final RegistryObject<IExecutableEffect> CONE_HEAD =
             EXECUTABLE_EFFECT_REGISTRY.register("cone_head", ConeHead::new);
+
+    public static final RegistryObject<IExecutableEffect> HUMBLEING_BUNDLE =
+            EXECUTABLE_EFFECT_REGISTRY.register("humbleing_bundle", HumbleingBundle::new);
+
+    public static final RegistryObject<IExecutableEffect> BUTT_BOMB =
+            EXECUTABLE_EFFECT_REGISTRY.register("butt_bomb", ButtBomb::new);
+
+    public static final RegistryObject<IExecutableEffect> ATTACH_BUTT_BOMB =
+            EXECUTABLE_EFFECT_REGISTRY.register("attach_butt_bomb", () -> new AbilityEffectEntry(
+                    ATTACH_EFFECT_TO_TNT, ctx -> ctx.set(ContextKeys.EXECUTABLE_EFFECT, BUTT_BOMB.get())));
+
+    public static final RegistryObject<IExecutableEffect> DARK_PRINCES_CROWN =
+            EXECUTABLE_EFFECT_REGISTRY.register("dark_princes_crown", DarkPrincesCrown::new);
+
+    public static final RegistryObject<IExecutableEffect> APPLE_DAMAGE =
+            EXECUTABLE_EFFECT_REGISTRY.register("apple_damage", AppleDamage::new);
+
+    public static final RegistryObject<IExecutableEffect> DEAD_TOOTH =
+            EXECUTABLE_EFFECT_REGISTRY.register("dead_tooth", DeadTooth::new);
+
+    public static final RegistryObject<IExecutableEffect> ADRENALINE =
+            EXECUTABLE_EFFECT_REGISTRY.register("adrenaline", Adrenaline::new);
+
+    public static final RegistryObject<IExecutableEffect> JUMPER_CABLES =
+            EXECUTABLE_EFFECT_REGISTRY.register("jumper_cables", JumperCables::new);
+
+    public static final RegistryObject<IExecutableEffect> JUMPER_CABLES_KILL_COUNTER =
+            EXECUTABLE_EFFECT_REGISTRY.register("jumper_cables_kill_counter", JumperCablesKillCounter::new);
+
+    public static final RegistryObject<IExecutableEffect> SOUL_LOCKET =
+            EXECUTABLE_EFFECT_REGISTRY.register("soul_locket", SoulLocket::new);
 }

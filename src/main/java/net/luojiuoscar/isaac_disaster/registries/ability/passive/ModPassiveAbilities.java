@@ -738,4 +738,44 @@ public class ModPassiveAbilities {
     public static final RegistryObject<PassiveAbility> MARBLES =
             PASSIVE_ABILITY_REGISTRY.register("marbles",
                     () -> new Marbles(ItemId.MARBLES.getId(), ItemId.MARBLES.getLevel()));
+
+    public static final RegistryObject<PassiveAbility> NUMBER_ONE =
+            PASSIVE_ABILITY_REGISTRY.register("number_one",
+                    () -> new NumberOne(ItemId.NUMBER_ONE.getId(), ItemId.NUMBER_ONE.getLevel()));
+
+    public static final RegistryObject<PassiveAbility> HUMBLEING_BUNDLE =
+            PASSIVE_ABILITY_REGISTRY.register("humbleing_bundle",
+                    () -> new HumbleingBundle(ItemId.HUMBLEING_BUNDLE.getId(), ItemId.HUMBLEING_BUNDLE.getLevel()));
+
+    public static final RegistryObject<PassiveAbility> BUTT_BOMBS =
+            PASSIVE_ABILITY_REGISTRY.register("butt_bombs",
+                    () -> new ButtBombs(ItemId.BUTT_BOMBS.getId(), ItemId.BUTT_BOMBS.getLevel()));
+
+    public static final RegistryObject<PassiveAbility> INFAMY =
+            PASSIVE_ABILITY_REGISTRY.register("infamy",
+                    () -> new Infamy(ItemId.INFAMY.getId(), ItemId.INFAMY.getLevel()));
+
+    public static final RegistryObject<PassiveAbility> DARK_PRINCES_CROWN =
+            PASSIVE_ABILITY_REGISTRY.register("dark_princes_crown",
+                    () -> new DarkPrincesCrown(ItemId.DARK_PRINCES_CROWN.getId(), ItemId.DARK_PRINCES_CROWN.getLevel()));
+
+    public static final RegistryObject<PassiveAbility> APPLE =
+            PASSIVE_ABILITY_REGISTRY.register("apple",
+                    () -> new Apple(ItemId.APPLE.getId(), ItemId.APPLE.getLevel()));
+
+    public static final RegistryObject<PassiveAbility> DEAD_TOOTH =
+            PASSIVE_ABILITY_REGISTRY.register("dead_tooth",
+                    () -> new DeadTooth(ItemId.DEAD_TOOTH.getId(), ItemId.DEAD_TOOTH.getLevel()));
+
+    public static final RegistryObject<PassiveAbility> ADRENALINE =
+            PASSIVE_ABILITY_REGISTRY.register("adrenaline",
+                    () -> new Adrenaline(ItemId.ADRENALINE.getId(), ItemId.ADRENALINE.getLevel()));
+
+    public static final RegistryObject<PassiveAbility> JUMPER_CABLES =
+            PASSIVE_ABILITY_REGISTRY.register("jumper_cables",
+                    () -> new JumperCables(ItemId.JUMPER_CABLES.getId(), ItemId.JUMPER_CABLES.getLevel()));
+
+    public static final RegistryObject<PassiveAbility> SOUL_LOCKET =
+            PASSIVE_ABILITY_REGISTRY.register("soul_locket",
+                    () -> new SoulLocket(ItemId.SOUL_LOCKET.getId(), ItemId.SOUL_LOCKET.getLevel()));
 }

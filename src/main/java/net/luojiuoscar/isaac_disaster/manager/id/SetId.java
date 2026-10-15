@@ -7,7 +7,8 @@ public enum SetId {
     BOOK,
     MOM,
     CAT,
-    SERAPHIM;
+    SERAPHIM,
+    OH_CRAP;
 
 
     private final int id;
