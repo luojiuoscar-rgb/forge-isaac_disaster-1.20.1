@@ -1,6 +1,7 @@
 package net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.normal;
 
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.*;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.attachment.LeadPencilAttachment;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.*;
 import net.luojiuoscar.isaac_disaster.registries.bullet_color.*;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.*;
@@ -20,27 +21,30 @@ class LeadPencilBurstTest {
 
     @Test
     void redRollsAreIndependentAndDoNotRecolorFetusesOrLasers() throws Exception {
-        TriggerModule module = new net.luojiuoscar.isaac_disaster.registries.trigger_module.impl.normal.LeadPencil();
+        var effect = new LeadPencilAttachment();
         ensureColors();
         TestPlayer player = player();
         ExecutableEffectContext context = new ExecutableEffectContext(player);
         int red = 0;
         for (int i = 0; i < 1000; i++) {
             AttackContext tear = tear(player, TestAttackTypes.BULLET, ModBulletColors.BASE.getId());
-            module.attachToBullet(context, tear);
+            context.set(ContextKeys.ATTACK_CONTEXT, tear);
+            effect.apply(context);
             if (tear.getColorRl().equals(ModBulletColors.BLOOD_TEAR.getId())) red++;
         }
         assertTrue(red > 400 && red < 600, "One independent 50% roll per tear");
         for (var type : List.of(TestAttackTypes.C_SECTION, TestAttackTypes.LASER, TestAttackTypes.BRIMSTONE)) {
             for (int i = 0; i < 30; i++) {
                 AttackContext projectile = tear(player, type, ModBulletColors.BASE.getId());
-                module.attachToBullet(context, projectile);
+                context.set(ContextKeys.ATTACK_CONTEXT, projectile);
+            effect.apply(context);
                 assertEquals(ModBulletColors.BASE.getId(), projectile.getColorRl());
             }
         }
         for (int i = 0; i < 30; i++) {
             AttackContext poison = tear(player, TestAttackTypes.BULLET, ModBulletColors.POISON.getId());
-            module.attachToBullet(context, poison);
+            context.set(ContextKeys.ATTACK_CONTEXT, poison);
+            effect.apply(context);
             assertEquals(ModBulletColors.POISON.getId(), poison.getColorRl());
         }
     }

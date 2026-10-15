@@ -1,5 +1,6 @@
 package net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.normal;
 
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.ExecutableEffectPriority;
 import net.luojiuoscar.isaac_disaster.effect.ModEffects;
 import net.luojiuoscar.isaac_disaster.event.custom.attack.AttackPlanEvent;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ContextKeys;
@@ -17,6 +18,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TheWizAttackPlan implements IAbilityEffect {
+    @Override
+    public double getPriority() {
+        return ExecutableEffectPriority.LOW.priority;
+    }
+
     @Override
     public TriggerType getRequiredTriggerType() {
         return ModTriggerTypes.ATTACK_PLAN;

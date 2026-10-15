@@ -2,6 +2,8 @@ package net.luojiuoscar.isaac_disaster.registries.ability_effect;
 
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.normal.BulletBounceOnBlock;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.normal.Callus;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.normal.JumperCables;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.normal.JumperCablesKillCounter;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.normal.FiringModifierAttackPlan;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.normal.LaserPlusBrimstone;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.normal.RandomHarmfulPotion;
@@ -17,10 +19,12 @@ class RequiredTriggerTypeTest {
         IExecutableEffect effect = context -> {};
 
         assertSame(ModTriggerTypes.EMTPY, effect.getRequiredTriggerType());
+        assertSame(ModTriggerTypes.EMTPY, new JumperCables().getRequiredTriggerType());
     }
 
     @Test
     void explicitlyBoundEffectsExposeTheirRequiredTriggerType() {
+        assertSame(ModTriggerTypes.KILL_ENTITY, new JumperCablesKillCounter().getRequiredTriggerType());
         assertSame(ModTriggerTypes.BULLET_HIT_BLOCK,
                 new BulletBounceOnBlock().getRequiredTriggerType());
         assertSame(ModTriggerTypes.ON_HURT,

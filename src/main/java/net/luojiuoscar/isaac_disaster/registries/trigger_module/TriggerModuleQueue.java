@@ -9,7 +9,6 @@ import net.minecraftforge.registries.IForgeRegistry;
 import net.minecraftforge.registries.RegistryManager;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 
 public class TriggerModuleQueue {
@@ -29,7 +28,6 @@ public class TriggerModuleQueue {
             CompoundTag tag = new CompoundTag();
             tag.putString("id", inst.id().toString());
             tag.putInt("stacks", inst.stacks());
-            tag.putDouble("priority", inst.priority());
             list.add(tag);
         }
         return list;
@@ -45,8 +43,7 @@ public class TriggerModuleQueue {
             try {
                 modules.add(new TriggerModuleInstance(
                         ResourceLocation.parse(tag.getString("id")),
-                        tag.getInt("stacks"),
-                        tag.getDouble("priority")));
+                        tag.getInt("stacks")));
             } catch (Exception ignored) {
             }
         }
@@ -57,7 +54,6 @@ public class TriggerModuleQueue {
         queue.clear();
         modules.stream()
                 .filter(module -> module.stacks() > 0)
-                .sorted(Comparator.comparingDouble(TriggerModuleInstance::priority).reversed())
                 .forEach(queue::add);
     }
 
@@ -84,15 +80,16 @@ public class TriggerModuleQueue {
         TriggerModuleInstance existing = get(id);
         if (existing == null) {
             if (stacks > 0) {
-                insertSorted(new TriggerModuleInstance(id, stacks, module.getPriority()));
+                queue.add(new TriggerModuleInstance(id, stacks));
             }
             return;
         }
 
-        queue.remove(existing);
         int updatedStacks = existing.stacks() + stacks;
         if (updatedStacks > 0) {
-            insertSorted(new TriggerModuleInstance(id, updatedStacks, module.getPriority()));
+            queue.set(queue.indexOf(existing), new TriggerModuleInstance(id, updatedStacks));
+        } else {
+            queue.remove(existing);
         }
     }
 
@@ -121,19 +118,4 @@ public class TriggerModuleQueue {
         return queue.isEmpty();
     }
 
-    private void insertSorted(TriggerModuleInstance instance) {
-        int left = 0;
-        int right = queue.size() - 1;
-
-        while (left <= right) {
-            int middle = (left + right) >>> 1;
-            if (instance.priority() > queue.get(middle).priority()) {
-                right = middle - 1;
-            } else {
-                left = middle + 1;
-            }
-        }
-        // left
-        queue.add(left, instance);
-    }
 }

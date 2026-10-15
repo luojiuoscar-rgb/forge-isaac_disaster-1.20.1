@@ -10,6 +10,7 @@ import net.luojiuoscar.isaac_disaster.event.custom.misc.*;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ContextKeys;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ExecutableEffectContext;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.ExecutableEffectBatch;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.IBulletObject;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerModules;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerTypes;
@@ -59,18 +60,18 @@ public class TriggerModuleEvents {
             BeforeTriggerModuleActiveEvent preEvent = new BeforeTriggerModuleActiveEvent(context);
             MinecraftForge.EVENT_BUS.post(preEvent);
 
+            var batch = new ExecutableEffectBatch();
             for (var inst : snapshot.modules()) {
                 TriggerModule module = reg.getValue(inst.id());
                 if (module == null) continue;
 
-                TriggerModuleRuleContext ruleContext = new TriggerModuleRuleContext(inst, type, context, snapshot);
-                if (!TriggerModuleRules.allows(ruleContext)) continue;
-
-                context.set(ContextKeys.AMPLIFIER, (double) inst.stacks());
-
-                // 调用模块的 fire 方法，触发对应 TriggerType 的 SimpleTrigger
-                module.fire(context, type);
+                ExecutableEffectContext moduleContext = context.copy(null);
+                moduleContext.set(ContextKeys.AMPLIFIER, (double) inst.stacks());
+                TriggerModuleRuleContext ruleContext = new TriggerModuleRuleContext(inst, type, moduleContext, snapshot);
+                batch.add(module.getTriggers(moduleContext), moduleContext, type,
+                        () -> TriggerModuleRules.allows(ruleContext));
             }
+            batch.fire();
         });
     }
 

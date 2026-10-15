@@ -1,9 +1,9 @@
 package net.luojiuoscar.isaac_disaster.registries.ability_effect;
 
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerType;
-import net.minecraftforge.registries.RegistryObject;
 
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 /**
  * 记录type->effect
@@ -11,18 +11,18 @@ import java.util.function.Predicate;
  */
 public class SimpleTrigger {
     public final TriggerType type;
-    public final RegistryObject<IExecutableEffect> effect;
+    public final Supplier<? extends IExecutableEffect> effect;
     private final Predicate<ExecutableEffectContext> condition;
 
     public SimpleTrigger(TriggerType type,
-                         RegistryObject<IExecutableEffect> effect,
+                         Supplier<? extends IExecutableEffect> effect,
                          Predicate<ExecutableEffectContext> condition) {
         this.type = type;
         this.effect = effect;
         this.condition = condition != null ? condition : ctx -> true;
     }
 
-    public SimpleTrigger(TriggerType type, RegistryObject<IExecutableEffect> effect){
+    public SimpleTrigger(TriggerType type, Supplier<? extends IExecutableEffect> effect){
         this(type, effect, null);
     }
 
@@ -38,6 +38,10 @@ public class SimpleTrigger {
 
     public TriggerType getType() {
         return type;
+    }
+
+    public final double getPriority() {
+        return effect.get().getPriority();
     }
 
     @Override

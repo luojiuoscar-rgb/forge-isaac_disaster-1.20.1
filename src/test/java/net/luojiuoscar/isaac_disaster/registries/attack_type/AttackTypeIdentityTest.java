@@ -5,6 +5,8 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.util.List;
 import java.util.Map;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ExecutableEffectContext;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.ContextKeys;
+import net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerTypes;
 import net.luojiuoscar.isaac_disaster.registries.attack_pattern.impl.PatternTestSupport;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.impl.*;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.impl.normal.TrajectoryAttachment;
@@ -12,6 +14,12 @@ import net.minecraft.resources.ResourceLocation;
 import org.junit.jupiter.api.Test;
 
 class AttackTypeIdentityTest {
+    private static ExecutableEffectContext preparation(AttackContext attack) {
+        var context = new ExecutableEffectContext(null);
+        context.set(ContextKeys.ATTACK_CONTEXT, attack);
+        return context;
+    }
+
     @Test
     void derivedAttacksDeclareConcreteAndRootIds() {
         var types =
@@ -45,7 +53,7 @@ class AttackTypeIdentityTest {
         var attachment =
             new TrajectoryAttachment(
                 null, Map.of(type.getRootId(), ResourceLocation.parse("test:laser")));
-        attachment.attachToBullet(new ExecutableEffectContext(null), context);
+        attachment.fire(preparation(context), ModTriggerTypes.ATTACK_CONTEXT_PREPARE);
         assertEquals(ResourceLocation.parse("test:laser"), context.getTrajectorySpecs().get(0).id());
         context.freeze();
         context.setAttackType(new BulletAttack(0));
@@ -79,7 +87,7 @@ class AttackTypeIdentityTest {
                     ResourceLocation.parse("test:bullet"),
                     ModAttackTypes.LASER.getId(),
                     ResourceLocation.parse("test:laser")))
-            .attachToBullet(new ExecutableEffectContext(null), context);
+            .fire(preparation(context), ModTriggerTypes.ATTACK_CONTEXT_PREPARE);
         assertTrue(context.getTrajectorySpecs().isEmpty());
     }
 

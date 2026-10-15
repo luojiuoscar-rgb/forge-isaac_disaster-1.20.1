@@ -5,7 +5,6 @@ import net.luojiuoscar.isaac_disaster.registries.ability_effect.ModExecutableEff
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.SimpleTrigger;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerTypes;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerModule;
-import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerModulePriority;
 
 import java.util.List;
 
@@ -18,8 +17,4 @@ public class SackHead extends TriggerModule {
         super(TRIGGER);
     }
 
-    @Override
-    public double getPriority() {
-        return TriggerModulePriority.HIGH.priority;
-    }
 }

@@ -6,15 +6,21 @@ import java.util.List;
 import java.util.Map;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ContextKeys;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ExecutableEffectContext;
+import net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerTypes;
 import net.luojiuoscar.isaac_disaster.registries.attack_pattern.impl.PatternTestSupport;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackContext;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.TestAttackTypes;
-import net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerTypes;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.impl.normal.TrajectoryAttachment;
 import net.minecraft.resources.ResourceLocation;
 import org.junit.jupiter.api.Test;
 
 class TrajectoryAttachmentTest {
+    private static ExecutableEffectContext preparation(AttackContext attack) {
+        var context = new ExecutableEffectContext(null);
+        context.set(ContextKeys.ATTACK_CONTEXT, attack);
+        return context;
+    }
+
     @Test
     void attachmentExposesExplicitMappingAndUniversalConstructors() {
         var constructors = TrajectoryAttachment.class.getConstructors();
@@ -47,7 +53,7 @@ class TrajectoryAttachmentTest {
         for (var variant : TestAttackTypes.PROJECTILES) {
             var context = PatternTestSupport.context(0, 0).toBuilder().attackType(variant).build();
             assertEquals(variant.getRootId(), context.getRootTypeId());
-            trigger.attachToBullet(new ExecutableEffectContext(null), context);
+            trigger.fire(preparation(context), ModTriggerTypes.ATTACK_CONTEXT_PREPARE);
             assertEquals(
                 List.of(new TrajectorySpec(modulesByRoot.get(variant.getRootId()), 0)),
                 context.getTrajectorySpecs());
@@ -83,11 +89,11 @@ class TrajectoryAttachmentTest {
                     TestAttackTypes.LASER.getRootId(), laserId));
         for (AttackContext copy : List.of(original.copy(), original.toBuilder().build())) {
             assertTrue(copy.isLaserAttack());
-            trigger.attachToBullet(new ExecutableEffectContext(null), copy);
+            trigger.fire(preparation(copy), ModTriggerTypes.ATTACK_CONTEXT_PREPARE);
             assertEquals(List.of(new TrajectorySpec(laserId, 0)), copy.getTrajectorySpecs());
         }
         AttackContext ordinary = PatternTestSupport.context(0, 0);
-        trigger.attachToBullet(new ExecutableEffectContext(null), ordinary);
+        trigger.fire(preparation(ordinary), ModTriggerTypes.ATTACK_CONTEXT_PREPARE);
         assertEquals(List.of(new TrajectorySpec(bulletId, 0)), ordinary.getTrajectorySpecs());
     }
 
@@ -120,7 +126,7 @@ class TrajectoryAttachmentTest {
         AttackContext attack =
             PatternTestSupport.context(0, 0).toBuilder().attackType(TestAttackTypes.BRIMSTONE).build();
 
-        trigger.attachToBullet(new ExecutableEffectContext(null), attack);
+        trigger.fire(preparation(attack), ModTriggerTypes.ATTACK_CONTEXT_PREPARE);
 
         assertEquals(List.of(new TrajectorySpec(ID, 0)), attack.getTrajectorySpecs());
     }
@@ -133,7 +139,7 @@ class TrajectoryAttachmentTest {
         AttackContext attack =
             PatternTestSupport.context(0, 0).toBuilder().attackType(TestAttackTypes.LASER).build();
 
-        trigger.attachToBullet(new ExecutableEffectContext(null), attack);
+        trigger.fire(preparation(attack), ModTriggerTypes.ATTACK_CONTEXT_PREPARE);
 
         assertEquals(List.of(new TrajectorySpec(override, 0)), attack.getTrajectorySpecs());
     }

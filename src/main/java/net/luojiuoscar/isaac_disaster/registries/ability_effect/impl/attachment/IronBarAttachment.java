@@ -1,0 +1,23 @@
+package net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.attachment;
+
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.*;
+import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackContext;
+import net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerTypes;
+import net.minecraft.world.entity.LivingEntity;
+import java.util.List;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.ExecutableEffectContext;
+import static net.luojiuoscar.isaac_disaster.registries.trigger_module.impl.normal.IronBar.getTriggerChance;
+
+public final class IronBarAttachment extends AttackPreparationEffect {
+    private static final List<SimpleTrigger> BULLET_TRIGGER = List.of(
+            new SimpleTrigger(ModTriggerTypes.BULLET_HIT_ENTITY_BEFORE, ModExecutableEffects.IRON_BAR)
+    );
+
+    @Override
+    protected void prepare(ExecutableEffectContext context, AttackContext attackContext) {
+        LivingEntity entity = context.getEntity();
+        if (entity.getRandom().nextDouble() < getTriggerChance(entity)){
+            attackContext.addSimpleTriggers(BULLET_TRIGGER);
+        }
+    }
+}

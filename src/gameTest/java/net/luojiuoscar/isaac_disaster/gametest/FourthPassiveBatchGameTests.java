@@ -346,16 +346,16 @@ public final class FourthPassiveBatchGameTests {
         var originalVisuals = attack.getVisualIds();
         TriggerModuleEvents.dispatch(context, ModTriggerTypes.ATTACK_CONTEXT_PREPARE);
         helper.assertTrue(attack.getVisualIds().equals(originalVisuals), "Apple keeps the ordinary tear appearance even when its damage effect triggers");
-        attack.addSimpleTrigger(new SimpleTrigger(ModTriggerTypes.BULLET_HIT_ENTITY_BEFORE, ModExecutableEffects.APPLE_DAMAGE) {
+        attack.addSimpleTrigger(new SimpleTrigger(ModTriggerTypes.BULLET_HIT_ENTITY_BEFORE, () -> new IExecutableEffect() {
             @Override
             public double getPriority() { return 0; }
 
             @Override
-            public void fire(ExecutableEffectContext hitContext) {
+            public void apply(ExecutableEffectContext hitContext) {
                 var hit = (IsaacAttackBeforeHitEntityEvent) hitContext.get(ContextKeys.EVENT);
                 hit.setDamage(hit.getDamage() + 3);
             }
-        });
+        }));
         var target = helper.spawn(EntityType.COW, new BlockPos(2, 1, 1)); target.setNoAi(true);
         for (var shot : List.of(attack, attack.toBuilder().damage(1.0).build())) {
             var hit = new IsaacAttackBeforeHitEntityEvent(null, player, ModAttackTypes.BULLET.getId(), shot.copyTrigger(), new EntityHitResult(target), shot.getDamage());

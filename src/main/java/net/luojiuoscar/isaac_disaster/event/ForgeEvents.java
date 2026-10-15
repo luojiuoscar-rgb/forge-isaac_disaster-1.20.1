@@ -339,9 +339,7 @@ public class ForgeEvents {
 
     /** 给玩家添加默认模块 */
     private static void addPermanentModules(TriggerModuleQueue queue){
-        queue.addIfNotExist(ModTriggerModules.HIGH_PRIORITY_PLAYER_PERMANENT_MODULE.getId(), 1);
         queue.addIfNotExist(ModTriggerModules.PLAYER_PERMANENT_MODULE.getId(), 1);
-        queue.addIfNotExist(ModTriggerModules.LOW_PRIORITY_PLAYER_PERMANENT_MODULE.getId(), 1);
     }
 
 

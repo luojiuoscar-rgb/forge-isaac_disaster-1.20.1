@@ -1,28 +1,18 @@
 package net.luojiuoscar.isaac_disaster.registries.trigger_module.impl.normal;
 
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.*;
-import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackContext;
-import net.luojiuoscar.isaac_disaster.registries.bullet_visual.ModBulletVisuals;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerModule;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerTypes;
 
 import java.util.List;
-import java.util.HashSet;
 
 public class Terra extends TriggerModule {
-    private static final List<SimpleTrigger> bullet_triggers = List.of(
-            new SimpleTrigger(ModTriggerTypes.BULLET_HIT_BLOCK, ModExecutableEffects.BREAK_BLOCK_AND_DROP)
-    );
+    private static final CompositeTrigger TRIGGER = new CompositeTrigger(List.of(
+            new SimpleTrigger(ModTriggerTypes.ATTACK_CONTEXT_PREPARE, ModExecutableEffects.TERRA_ATTACHMENT)
+    ));
 
     public Terra() {
-        super(CompositeTrigger.EMPTY);
+        super(TRIGGER);
     }
 
-    @Override
-    public void attachToBullet(ExecutableEffectContext context, AttackContext attackContext) {
-        attackContext.addSimpleTriggers(bullet_triggers);
-        var visuals = new HashSet<>(attackContext.getVisualIds());
-        visuals.add(ModBulletVisuals.TERRA_ROCK.getId());
-        attackContext.setVisualIds(visuals);
-    }
 }

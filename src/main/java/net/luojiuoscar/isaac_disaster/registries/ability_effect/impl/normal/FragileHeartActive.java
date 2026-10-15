@@ -1,5 +1,6 @@
 package net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.normal;
 
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.ExecutableEffectPriority;
 import net.luojiuoscar.isaac_disaster.effect.IStackableEffect;
 import net.luojiuoscar.isaac_disaster.effect.ModEffects;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
@@ -15,6 +16,11 @@ import net.minecraftforge.event.entity.living.LivingHurtEvent;
 
 public class FragileHeartActive implements IAbilityEffect {
     @Override
+    public double getPriority() {
+        return ExecutableEffectPriority.HIGHER.priority;
+    }
+
+    @Override
     public TriggerType getRequiredTriggerType() {
         return ModTriggerTypes.ON_HURT;
     }
@@ -22,6 +28,7 @@ public class FragileHeartActive implements IAbilityEffect {
     @Override
     public boolean applyEffect(ExecutableEffectContext context) {
         if (!(context.get(ContextKeys.EVENT) instanceof LivingHurtEvent event)) return false;
+        if (event.isCanceled() || event.getAmount() <= 0) return true;
 
         if (!(event.getEntity() instanceof Player player)) return true;
         if (event.getAmount() <= Math.max(1.0f, StatManager.MAX_HEALTH.getBonus() * 0.25f)) return true;

@@ -1,5 +1,6 @@
 package net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.normal;
 
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.ExecutableEffectPriority;
 import net.luojiuoscar.isaac_disaster.Config;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.item.ModItems;
@@ -12,6 +13,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public final class HumbleingBundle extends TransformLootTypesToAnother {
+    @Override
+    public double getPriority() {
+        return ExecutableEffectPriority.LOWER.priority;
+    }
+
     @Override
     protected double getProbability(ExecutableEffectContext context) {
         return 0.5;

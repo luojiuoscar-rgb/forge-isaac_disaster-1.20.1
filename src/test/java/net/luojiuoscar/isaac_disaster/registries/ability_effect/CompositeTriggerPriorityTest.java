@@ -1,6 +1,6 @@
 package net.luojiuoscar.isaac_disaster.registries.ability_effect;
 
-import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerModulePriority;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.ExecutableEffectPriority;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -10,22 +10,22 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class CompositeTriggerPriorityTest {
     private static SimpleTrigger trigger(double priority, Runnable action) {
-        return new SimpleTrigger(null, null) {
+        return new SimpleTrigger(null, () -> new IExecutableEffect() {
             @Override
             public double getPriority() { return priority; }
 
             @Override
-            public void fire(ExecutableEffectContext context) { action.run(); }
-        };
+            public void apply(ExecutableEffectContext context) { action.run(); }
+        });
     }
 
     @Test
     void lateMultiplierRunsAfterAdditionsRegardlessOfInsertionOrder() {
         double[] damage = {2};
         var view = new CompositeTriggerView(List.of(
-                trigger(TriggerModulePriority.LOWEST.priority, () -> damage[0] *= 4),
-                trigger(TriggerModulePriority.MEDIUM.priority, () -> damage[0] += 3)));
-        view.fire(null, null);
+                trigger(ExecutableEffectPriority.LOWEST.priority, () -> damage[0] *= 4),
+                trigger(ExecutableEffectPriority.MEDIUM.priority, () -> damage[0] += 3)));
+        view.fire(new ExecutableEffectContext(null), null);
         assertEquals(20, damage[0]);
     }
 
@@ -37,7 +37,7 @@ class CompositeTriggerPriorityTest {
                 trigger(0, () -> order.add("first")),
                 trigger(0, () -> order.add("second")),
                 trigger(100, () -> order.add("high"))));
-        view.fire(null, null);
+        view.fire(new ExecutableEffectContext(null), null);
         assertEquals(List.of("high", "first", "second", "last"), order);
     }
 
@@ -47,10 +47,10 @@ class CompositeTriggerPriorityTest {
         var composite = new CompositeTrigger(List.of(trigger(-100, () -> damage[0] *= 4)));
         var initial = composite.getView();
         composite.add(trigger(0, () -> damage[0] += 3));
-        initial.fire(null, null);
+        initial.fire(new ExecutableEffectContext(null), null);
         assertEquals(8, damage[0]);
         damage[0] = 2;
-        composite.copy().getView().fire(null, null);
+        composite.copy().getView().fire(new ExecutableEffectContext(null), null);
         assertEquals(20, damage[0]);
     }
 }

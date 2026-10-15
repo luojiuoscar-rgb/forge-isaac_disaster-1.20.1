@@ -1,5 +1,6 @@
 package net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.normal;
 
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.ExecutableEffectPriority;
 import net.luojiuoscar.isaac_disaster.item.ModPassiveItems;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerIsaacItemsProvider;
 import net.luojiuoscar.isaac_disaster.effect.ModEffects;
@@ -16,6 +17,11 @@ import net.minecraft.world.effect.MobEffectInstance;
 import java.util.Objects;
 
 public class FiringModifierAttackPlan implements IAbilityEffect {
+    @Override
+    public double getPriority() {
+        return ExecutableEffectPriority.HIGH.priority;
+    }
+
     @Override
     public TriggerType getRequiredTriggerType() {
         return ModTriggerTypes.ATTACK_PLAN;

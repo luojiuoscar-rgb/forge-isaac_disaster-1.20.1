@@ -1,5 +1,6 @@
 package net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.normal;
 
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.ExecutableEffectPriority;
 import net.luojiuoscar.isaac_disaster.effect.ModEffects;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ExecutableEffectContext;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ContextKeys;
@@ -13,6 +14,11 @@ import net.minecraftforge.event.entity.living.LivingHurtEvent;
 
 public class EternalHeartPunish implements IAbilityEffect {
     @Override
+    public double getPriority() {
+        return ExecutableEffectPriority.HIGHEST.priority;
+    }
+
+    @Override
     public TriggerType getRequiredTriggerType() {
         return ModTriggerTypes.ON_HURT_NEGATIVE;
     }
@@ -20,6 +26,7 @@ public class EternalHeartPunish implements IAbilityEffect {
     @Override
     public boolean applyEffect(ExecutableEffectContext context) {
         if (!(context.get(ContextKeys.EVENT) instanceof LivingHurtEvent event)) return false;
+        if (event.isCanceled() || event.getAmount() <= 0) return true;
 
         if (!(event.getEntity() instanceof Player player) || player.getAbsorptionAmount() != 0) return true;
 

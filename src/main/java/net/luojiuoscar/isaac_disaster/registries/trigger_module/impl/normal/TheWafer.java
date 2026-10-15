@@ -16,8 +16,4 @@ public class TheWafer extends TriggerModule {
         super(TRIGGER);
     }
 
-    @Override
-    public double getPriority(){
-        return TriggerModulePriority.LOWEST.priority;
-    }
 }

@@ -1,5 +1,6 @@
 package net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.normal;
 
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.ExecutableEffectPriority;
 import net.luojiuoscar.isaac_disaster.event.custom.attack.IsaacAttackHitBlockEvent;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ExecutableEffectContext;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ContextKeys;
@@ -12,6 +13,11 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 
 public class BulletBounceOnBlock implements IAbilityEffect {
+    @Override
+    public double getPriority() {
+        return ExecutableEffectPriority.HIGHEST.priority;
+    }
+
     @Override
     public TriggerType getRequiredTriggerType() {
         return ModTriggerTypes.BULLET_HIT_BLOCK;

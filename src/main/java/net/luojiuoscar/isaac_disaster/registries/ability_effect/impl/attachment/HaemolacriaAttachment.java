@@ -1,0 +1,19 @@
+package net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.attachment;
+
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.ExecutableEffectContext;
+import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackContext;
+import net.luojiuoscar.isaac_disaster.registries.attack_type.ModAttackTypes;
+import net.luojiuoscar.isaac_disaster.registries.split_module.ModSplitModules;
+import net.luojiuoscar.isaac_disaster.registries.trajectory.ModTrajectoryModules;
+
+public final class HaemolacriaAttachment extends AttackPreparationEffect {
+
+    @Override
+    protected void prepare(ExecutableEffectContext context, AttackContext attackContext) {
+        if (!ModAttackTypes.BULLET.getId().equals(attackContext.getRootTypeId())) return;
+        attackContext.addTrajectoryModule(ModTrajectoryModules.GRAVITY.getId(), 1);
+        attackContext.addSplitModule(ModSplitModules.HAEMOLACRIA.getId(), 1);
+        attackContext.addSplitModule(ModSplitModules.HAEMOLACRIA_BRIMSTONE.getId(), 1);
+        attackContext.setBulletScale(attackContext.getBulletScale() * 1.71, true);
+    }
+}

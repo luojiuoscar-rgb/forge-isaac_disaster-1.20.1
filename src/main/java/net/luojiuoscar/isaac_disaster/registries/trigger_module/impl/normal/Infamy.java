@@ -6,7 +6,6 @@ import net.luojiuoscar.isaac_disaster.registries.ability_effect.ModExecutableEff
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.SimpleTrigger;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerTypes;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerModule;
-import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerModulePriority;
 import net.luojiuoscar.isaac_disaster.manager.ModDamageType;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.entity.projectile.Projectile;
@@ -28,6 +27,4 @@ public final class Infamy extends TriggerModule {
 
     public Infamy() { super(TRIGGER); }
 
-    @Override
-    public double getPriority() { return TriggerModulePriority.HIGHEST.priority; }
 }

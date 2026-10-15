@@ -6,12 +6,12 @@ import net.luojiuoscar.isaac_disaster.registries.ability_effect.ExecutableEffect
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.IAbilityEffect;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerTypes;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerType;
-import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerModulePriority;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.ExecutableEffectPriority;
 
 public final class AppleDamage implements IAbilityEffect {
     @Override
     public double getPriority() {
-        return TriggerModulePriority.LOWEST.priority;
+        return ExecutableEffectPriority.LOWEST.priority;
     }
 
     @Override

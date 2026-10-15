@@ -1,6 +1,6 @@
-package net.luojiuoscar.isaac_disaster.registries.trigger_module;
+package net.luojiuoscar.isaac_disaster.registries.ability_effect;
 
-public enum TriggerModulePriority {
+public enum ExecutableEffectPriority {
     HIGHEST(100),
     HIGHER(50),
     HIGH(25),
@@ -13,7 +13,7 @@ public enum TriggerModulePriority {
 
     public final double priority;
 
-    TriggerModulePriority(double priority){
+    ExecutableEffectPriority(double priority){
         this.priority = priority;
     }
 }

@@ -10,6 +10,7 @@ import net.luojiuoscar.isaac_disaster.item.ModItems;
 import net.luojiuoscar.isaac_disaster.manager.ModLootTables;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.general.*;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.attachment.*;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.bomb.*;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.normal.*;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.pill_effect.impl.*;
@@ -39,6 +40,45 @@ public class ModExecutableEffects {
 
     public static final DeferredRegister<IExecutableEffect> EXECUTABLE_EFFECT_REGISTRY =
             DeferredRegister.create(EXECUTABLE_EFFECT_KEY, IsaacDisaster.MOD_ID);
+
+    public static final RegistryObject<IExecutableEffect> APPLE_ATTACHMENT =
+            EXECUTABLE_EFFECT_REGISTRY.register("apple_attachment", AppleAttachment::new);
+    public static final RegistryObject<IExecutableEffect> BOUNCE_ON_BLOCK_ATTACHMENT =
+            EXECUTABLE_EFFECT_REGISTRY.register("bounce_on_block_attachment", BounceOnBlockAttachment::new);
+    public static final RegistryObject<IExecutableEffect> BOUNCE_ON_ENTITY_ATTACHMENT =
+            EXECUTABLE_EFFECT_REGISTRY.register("bounce_on_entity_attachment", BounceOnEntityAttachment::new);
+    public static final RegistryObject<IExecutableEffect> COMPOUND_FRACTURE_ATTACHMENT =
+            EXECUTABLE_EFFECT_REGISTRY.register("compound_fracture_attachment", CompoundFractureAttachment::new);
+    public static final RegistryObject<IExecutableEffect> CRICKETS_BODY_ATTACHMENT =
+            EXECUTABLE_EFFECT_REGISTRY.register("crickets_body_attachment", CricketsBodyAttachment::new);
+    public static final RegistryObject<IExecutableEffect> DARK_MATTER_ATTACHMENT =
+            EXECUTABLE_EFFECT_REGISTRY.register("dark_matter_attachment", DarkMatterAttachment::new);
+    public static final RegistryObject<IExecutableEffect> HAEMOLACRIA_ATTACHMENT =
+            EXECUTABLE_EFFECT_REGISTRY.register("haemolacria_attachment", HaemolacriaAttachment::new);
+    public static final RegistryObject<IExecutableEffect> HEAD_OF_THE_KEEPER_ATTACHMENT =
+            EXECUTABLE_EFFECT_REGISTRY.register("head_of_the_keeper_attachment", HeadOfTheKeeperAttachment::new);
+    public static final RegistryObject<IExecutableEffect> IPECAC_ATTACHMENT =
+            EXECUTABLE_EFFECT_REGISTRY.register("ipecac_attachment", IpecacAttachment::new);
+    public static final RegistryObject<IExecutableEffect> IRON_BAR_ATTACHMENT =
+            EXECUTABLE_EFFECT_REGISTRY.register("iron_bar_attachment", IronBarAttachment::new);
+    public static final RegistryObject<IExecutableEffect> LASER_ATTACHMENT =
+            EXECUTABLE_EFFECT_REGISTRY.register("laser_attachment", LaserAttachment::new);
+    public static final RegistryObject<IExecutableEffect> LEAD_PENCIL_ATTACHMENT =
+            EXECUTABLE_EFFECT_REGISTRY.register("lead_pencil_attachment", LeadPencilAttachment::new);
+    public static final RegistryObject<IExecutableEffect> MOMS_CONTACTS_ATTACHMENT =
+            EXECUTABLE_EFFECT_REGISTRY.register("moms_contacts_attachment", MomsContactsAttachment::new);
+    public static final RegistryObject<IExecutableEffect> MOMS_EYESHADOW_ATTACHMENT =
+            EXECUTABLE_EFFECT_REGISTRY.register("moms_eyeshadow_attachment", MomsEyeshadowAttachment::new);
+    public static final RegistryObject<IExecutableEffect> MOMS_PERFUME_ATTACHMENT =
+            EXECUTABLE_EFFECT_REGISTRY.register("moms_perfume_attachment", MomsPerfumeAttachment::new);
+    public static final RegistryObject<IExecutableEffect> PARASITE_ATTACHMENT =
+            EXECUTABLE_EFFECT_REGISTRY.register("parasite_attachment", ParasiteAttachment::new);
+    public static final RegistryObject<IExecutableEffect> SCORPIO_ATTACHMENT =
+            EXECUTABLE_EFFECT_REGISTRY.register("scorpio_attachment", ScorpioAttachment::new);
+    public static final RegistryObject<IExecutableEffect> TERRA_ATTACHMENT =
+            EXECUTABLE_EFFECT_REGISTRY.register("terra_attachment", TerraAttachment::new);
+    public static final RegistryObject<IExecutableEffect> THE_COMMON_COLD_ATTACHMENT =
+            EXECUTABLE_EFFECT_REGISTRY.register("the_common_cold_attachment", TheCommonColdAttachment::new);
 
     public static final RegistryObject<IExecutableEffect> HEAL =
             EXECUTABLE_EFFECT_REGISTRY.register("heal", Heal::new);

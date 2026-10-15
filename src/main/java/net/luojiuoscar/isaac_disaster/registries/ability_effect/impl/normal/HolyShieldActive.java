@@ -1,5 +1,6 @@
 package net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.normal;
 
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.ExecutableEffectPriority;
 import net.luojiuoscar.isaac_disaster.effect.IStackableEffect;
 import net.luojiuoscar.isaac_disaster.effect.ModEffects;
 import net.luojiuoscar.isaac_disaster.helper.LevelHelper;
@@ -20,6 +21,11 @@ import net.minecraftforge.event.entity.living.LivingHurtEvent;
 
 public class HolyShieldActive implements IAbilityEffect {
     @Override
+    public double getPriority() {
+        return ExecutableEffectPriority.HIGHEST.priority;
+    }
+
+    @Override
     public TriggerType getRequiredTriggerType() {
         return ModTriggerTypes.ON_HURT_NEGATIVE;
     }
@@ -27,6 +33,7 @@ public class HolyShieldActive implements IAbilityEffect {
     @Override
     public boolean applyEffect(ExecutableEffectContext context) {
         if (!(context.get(ContextKeys.EVENT) instanceof LivingHurtEvent event)) return false;
+        if (event.isCanceled() || event.getAmount() <= 0) return true;
 
         double damage = event.getAmount();
         if (!(event.getEntity() instanceof Player player)) return true;

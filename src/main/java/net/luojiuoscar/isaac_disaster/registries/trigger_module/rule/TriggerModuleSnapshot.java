@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Immutable, priority-ordered view of the active trigger modules for one dispatch.
+ * Immutable, insertion-ordered view of the active trigger modules for one dispatch.
  */
 public final class TriggerModuleSnapshot {
     private static final TriggerModuleSnapshot EMPTY = new TriggerModuleSnapshot(List.of());

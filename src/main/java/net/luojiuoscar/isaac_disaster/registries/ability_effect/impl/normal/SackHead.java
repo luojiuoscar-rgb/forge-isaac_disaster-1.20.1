@@ -1,5 +1,6 @@
 package net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.normal;
 
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.ExecutableEffectPriority;
 import net.luojiuoscar.isaac_disaster.item.ModPassiveItems;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.luojiuoscar.isaac_disaster.event.custom.misc.GeneralLootModifyEvent;
@@ -20,6 +21,11 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.ItemStack;
 
 public class SackHead implements IAbilityEffect {
+    @Override
+    public double getPriority() {
+        return ExecutableEffectPriority.HIGH.priority;
+    }
+
     @Override
     public TriggerType getRequiredTriggerType() {
         return ModTriggerTypes.LOOT;

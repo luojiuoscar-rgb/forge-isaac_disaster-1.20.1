@@ -1,8 +1,6 @@
 package net.luojiuoscar.isaac_disaster.registries.trigger_module.impl.normal;
 
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.*;
-import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackContext;
-import net.luojiuoscar.isaac_disaster.registries.bullet_color.ModBulletColors;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerModule;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerTypes;
 import net.minecraft.world.entity.LivingEntity;
@@ -11,14 +9,11 @@ import java.util.List;
 
 public class TheCommonCold extends TriggerModule {
     private static final CompositeTrigger TRIGGER = new CompositeTrigger( List.of(
+            new SimpleTrigger(ModTriggerTypes.ATTACK_CONTEXT_PREPARE, ModExecutableEffects.THE_COMMON_COLD_ATTACHMENT),
             new SimpleTrigger(ModTriggerTypes.HIT_ENTITY_RESTRICTED, ModExecutableEffects.THE_COMMON_COLD, context ->
                  context.getEntity().getRandom().nextDouble()
                          < getTriggerChance(context.getEntity()))
     ));
-
-    private static final List<SimpleTrigger> bullet_triggers = List.of(
-            new SimpleTrigger(ModTriggerTypes.BULLET_HIT_ENTITY_BEFORE, ModExecutableEffects.THE_COMMON_COLD)
-    );
 
     public TheCommonCold() {
         super(TRIGGER);
@@ -28,12 +23,4 @@ public class TheCommonCold extends TriggerModule {
         return LuckTriggerChance.commonCold(TriggerModule.getLuck(entity));
     }
 
-    @Override
-    public void attachToBullet(ExecutableEffectContext context, AttackContext attackContext) {
-        LivingEntity entity = context.getEntity();
-        if (entity.getRandom().nextDouble() < getTriggerChance(entity)){
-            attackContext.setColorRl(ModBulletColors.POISON.getId());
-            attackContext.addSimpleTriggers(bullet_triggers);
-        }
-    }
 }

@@ -1,9 +1,8 @@
 package net.luojiuoscar.isaac_disaster.registries.trigger_module;
 
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.CompositeTrigger;
-import net.luojiuoscar.isaac_disaster.registries.ability_effect.ContextKeys;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.CompositeTriggerView;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ExecutableEffectContext;
-import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackContext;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -15,21 +14,13 @@ public abstract class TriggerModule {
         this.trigger = trigger == null ? new CompositeTrigger() : trigger.copy();
     }
 
-    public void attachToBullet(ExecutableEffectContext context, AttackContext attackContext){}
-
-    // 执行所有fire
-    public void fire(ExecutableEffectContext context, TriggerType type){
-        if (type.is(ModTriggerTypes.ATTACK_CONTEXT_PREPARE)) {
-            AttackContext attackContext = context.get(ContextKeys.ATTACK_CONTEXT);
-            if (attackContext != null) {
-                attachToBullet(context, attackContext);
-            }
-        }
-
-        trigger.fire(context, type);
+    public CompositeTriggerView getTriggers(ExecutableEffectContext context) {
+        return trigger.getView();
     }
 
-    public double getPriority() {return 0; }
+    public final void fire(ExecutableEffectContext context, TriggerType type) {
+        getTriggers(context).fire(context, type);
+    }
 
     /** 每一次获取模块的时候都会触发 */
     public void onAdded(LivingEntity entity){}

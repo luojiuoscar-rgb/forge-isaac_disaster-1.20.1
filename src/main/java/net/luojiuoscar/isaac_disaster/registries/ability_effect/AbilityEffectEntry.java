@@ -26,4 +26,9 @@ public class AbilityEffectEntry implements IExecutableEffect {
     public TriggerType getRequiredTriggerType() {
         return effect.get().getRequiredTriggerType();
     }
+
+    @Override
+    public double getPriority() {
+        return effect.get().getPriority();
+    }
 }

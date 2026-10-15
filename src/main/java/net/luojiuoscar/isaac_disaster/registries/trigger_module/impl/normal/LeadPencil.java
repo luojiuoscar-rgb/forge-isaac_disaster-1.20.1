@@ -2,12 +2,10 @@ package net.luojiuoscar.isaac_disaster.registries.trigger_module.impl.normal;
 
 import net.luojiuoscar.isaac_disaster.capability.entity.EffectModulesProvider;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.CompositeTrigger;
-import net.luojiuoscar.isaac_disaster.registries.ability_effect.ExecutableEffectContext;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ModExecutableEffects;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.SimpleTrigger;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.normal.LeadPencilShotCounter;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackContext;
-import net.luojiuoscar.isaac_disaster.registries.attack_type.ModAttackTypes;
 import net.luojiuoscar.isaac_disaster.registries.bullet_color.ModBulletColors;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerModules;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerTypes;
@@ -20,21 +18,12 @@ import java.util.List;
 
 public final class LeadPencil extends TriggerModule {
     private static final CompositeTrigger TRIGGER = new CompositeTrigger(List.of(
+            new SimpleTrigger(ModTriggerTypes.ATTACK_CONTEXT_PREPARE, ModExecutableEffects.LEAD_PENCIL_ATTACHMENT),
             new SimpleTrigger(ModTriggerTypes.ATTACK_PLAN, ModExecutableEffects.LEAD_PENCIL_SHOT_COUNTER)
     ));
 
     public LeadPencil() {
         super(TRIGGER);
-    }
-
-    @Override
-    public void attachToBullet(ExecutableEffectContext context, AttackContext attackContext) {
-        if (!(context.getEntity() instanceof ServerPlayer)) return;
-        if (!ModAttackTypes.BULLET.getId().equals(attackContext.getRootTypeId())
-                || ModAttackTypes.C_SECTION.getId().equals(attackContext.getTypeId())) return;
-        if (context.getEntity().getRandom().nextDouble() < 0.5) {
-            applyBloodColor(attackContext);
-        }
     }
 
     @Override

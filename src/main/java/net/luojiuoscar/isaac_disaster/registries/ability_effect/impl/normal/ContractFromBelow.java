@@ -1,5 +1,6 @@
 package net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.normal;
 
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.ExecutableEffectPriority;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.luojiuoscar.isaac_disaster.event.custom.misc.GeneralLootModifyEvent;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ContextKeys;
@@ -10,6 +11,11 @@ import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerType;
 import net.minecraft.world.item.ItemStack;
 
 public class ContractFromBelow implements IAbilityEffect {
+    @Override
+    public double getPriority() {
+        return ExecutableEffectPriority.HIGHEST.priority;
+    }
+
     @Override
     public TriggerType getRequiredTriggerType() {
         return ModTriggerTypes.LOOT;

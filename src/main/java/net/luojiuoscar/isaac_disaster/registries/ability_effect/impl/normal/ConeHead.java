@@ -1,5 +1,6 @@
 package net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.normal;
 
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.ExecutableEffectPriority;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ContextKeys;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ExecutableEffectContext;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.IAbilityEffect;
@@ -8,6 +9,11 @@ import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerType;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 
 public final class ConeHead implements IAbilityEffect {
+    @Override
+    public double getPriority() {
+        return ExecutableEffectPriority.HIGHEST.priority;
+    }
+
     @Override
     public TriggerType getRequiredTriggerType() { return ModTriggerTypes.ON_HURT; }
 

@@ -1,30 +1,18 @@
 package net.luojiuoscar.isaac_disaster.registries.trigger_module.impl.normal;
 
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.*;
-import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackContext;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerModule;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerTypes;
-import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerModulePriority;
 
 import java.util.List;
 
 public class BounceOnBlock extends TriggerModule {
-    private static final List<SimpleTrigger> bullet_triggers = List.of(
-            new SimpleTrigger(ModTriggerTypes.BULLET_HIT_BLOCK, ModExecutableEffects.BULLET_BOUNCE_ON_BLOCK)
-    );
+    private static final CompositeTrigger TRIGGER = new CompositeTrigger(List.of(
+            new SimpleTrigger(ModTriggerTypes.ATTACK_CONTEXT_PREPARE, ModExecutableEffects.BOUNCE_ON_BLOCK_ATTACHMENT)
+    ));
 
     public BounceOnBlock() {
-        super(CompositeTrigger.EMPTY);
+        super(TRIGGER);
     }
 
-
-    @Override
-    public void attachToBullet(ExecutableEffectContext context, AttackContext attackContext) {
-        attackContext.addSimpleTriggers(bullet_triggers);
-    }
-
-    @Override
-    public double getPriority(){
-        return TriggerModulePriority.HIGHEST.priority;
-    }
 }
