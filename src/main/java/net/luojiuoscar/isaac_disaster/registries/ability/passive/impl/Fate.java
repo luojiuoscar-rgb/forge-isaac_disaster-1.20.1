@@ -1,6 +1,5 @@
 package net.luojiuoscar.isaac_disaster.registries.ability.passive.impl;
 
-import net.luojiuoscar.isaac_disaster.manager.EffectManager;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.registries.ability.passive.PassiveAbility;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ModExecutableEffects;
@@ -44,7 +43,9 @@ public class Fate extends PassiveAbility {
     @Override
     public List<Component> getExtraDesc(@Nullable ItemStack stack, Player player) {
         List<Component> desc = new ArrayList<>();
-        desc.add(EffectManager.ETERNAL_HEART.getExplainDesc());
+        desc.add(Component.translatable("effect.isaac_disaster.eternal_heart")
+                .append(": ")
+                .append(Component.translatable("effect.isaac_disaster.eternal_heart.description")));
         return desc;
     }
 }

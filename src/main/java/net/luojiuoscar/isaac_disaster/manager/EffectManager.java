@@ -28,7 +28,6 @@ public enum EffectManager {
     BABYLON("babylon"),
     SOUL_STATE("soul_state"),
     THE_WORLD("the_world"),
-    ETERNAL_HEART("eternal_heart"),
     GILDING("gilding"),
     THE_WIZ("the_wiz"),
     GOLDEN("golden"),

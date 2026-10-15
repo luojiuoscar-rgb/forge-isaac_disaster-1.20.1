@@ -9,7 +9,7 @@ public interface IExecutableEffect {
 
     void apply(ExecutableEffectContext context);
 
-    /** Higher priorities run first; equal priorities retain their insertion order. */
+    /** Stable definition metadata: higher priorities run first; ties retain insertion order. */
     default double getPriority() {
         return ExecutableEffectPriority.MEDIUM.priority;
     }

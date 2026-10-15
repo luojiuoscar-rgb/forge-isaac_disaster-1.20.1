@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CompositeTrigger {
+    private static final CompositeTriggerView EMPTY_VIEW = new CompositeTriggerView(List.of());
     public static final CompositeTrigger EMPTY = new CompositeTrigger(List.of());
 
     private final List<SimpleTrigger> triggers;
@@ -23,7 +24,10 @@ public class CompositeTrigger {
     }
 
     public CompositeTrigger copy() {
-        return new CompositeTrigger(this.triggers);
+        var copy = new CompositeTrigger(this.triggers);
+        copy.cachedView = getView();
+        copy.dirty = false;
+        return copy;
     }
 
     public void fire(ExecutableEffectContext context, @Nullable TriggerType type) {
@@ -33,7 +37,7 @@ public class CompositeTrigger {
 
     public CompositeTriggerView getView(){
         if (cachedView == null || dirty) {
-            cachedView = new CompositeTriggerView(triggers);
+            cachedView = triggers.isEmpty() ? EMPTY_VIEW : new CompositeTriggerView(triggers);
             dirty = false;
         }
         return cachedView;

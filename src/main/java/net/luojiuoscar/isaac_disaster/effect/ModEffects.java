@@ -89,9 +89,6 @@ public class ModEffects {
     public static final RegistryObject<MobEffect> THE_WORLD = MOB_EFFECTS.register(EffectManager.THE_WORLD.getName(),
             () -> new TheWorldEffect(MobEffectCategory.BENEFICIAL, 0xFDFF00));
 
-    public static final RegistryObject<MobEffect> ETERNAL_HEART = MOB_EFFECTS.register(EffectManager.ETERNAL_HEART.getName(),
-            () -> new EternalHeartEffect(MobEffectCategory.BENEFICIAL, 0xFFFFFF));
-
     public static final RegistryObject<MobEffect> GILDING = MOB_EFFECTS.register(EffectManager.GILDING.getName(),
             () -> new GildingEffect(MobEffectCategory.BENEFICIAL, 0xefe300));
 

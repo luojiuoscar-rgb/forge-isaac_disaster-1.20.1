@@ -165,8 +165,14 @@ public final class EffectPriorityGameTests {
         var player = player(helper);
         var queue = queue(player);
         queue.add(ADD, 1);
+        var first = queue.snapshot();
+        helper.assertTrue(first == queue.snapshot(), "Unchanged inventory reuses its immutable snapshot");
         queue.add(MIXED, 3);
+        helper.assertTrue(first != queue.snapshot(), "Adding a module invalidates the snapshot");
+        var beforeStacks = queue.snapshot();
         queue.add(ADD, 1);
+        helper.assertTrue(beforeStacks.getStacks(ADD) == 1 && queue.snapshot().getStacks(ADD) == 2,
+                "Stack updates invalidate the cache and preserve prior snapshots");
         var saved = queue.saveNBTData();
         for (Tag value : saved) {
             helper.assertTrue(!((CompoundTag) value).contains("priority"), "Priority is effect metadata, not saved module state");

@@ -13,9 +13,11 @@ import java.util.List;
 
 public class TriggerModuleQueue {
     private final List<TriggerModuleInstance> queue = new ArrayList<>();
+    private TriggerModuleSnapshot cachedSnapshot = TriggerModuleSnapshot.empty();
 
     public void clear() {
         queue.clear();
+        cachedSnapshot = TriggerModuleSnapshot.empty();
     }
 
     public void copyFrom(TriggerModuleQueue source) {
@@ -52,6 +54,7 @@ public class TriggerModuleQueue {
 
     public void replaceAll(List<TriggerModuleInstance> modules) {
         queue.clear();
+        cachedSnapshot = null;
         modules.stream()
                 .filter(module -> module.stacks() > 0)
                 .forEach(queue::add);
@@ -81,11 +84,13 @@ public class TriggerModuleQueue {
         if (existing == null) {
             if (stacks > 0) {
                 queue.add(new TriggerModuleInstance(id, stacks));
+                cachedSnapshot = null;
             }
             return;
         }
 
         int updatedStacks = existing.stacks() + stacks;
+        cachedSnapshot = null;
         if (updatedStacks > 0) {
             queue.set(queue.indexOf(existing), new TriggerModuleInstance(id, updatedStacks));
         } else {
@@ -94,11 +99,14 @@ public class TriggerModuleQueue {
     }
 
     public void remove(ResourceLocation id) {
-        queue.removeIf(instance -> instance.id().equals(id));
+        if (queue.removeIf(instance -> instance.id().equals(id))) cachedSnapshot = null;
     }
 
     public TriggerModuleSnapshot snapshot() {
-        return queue.isEmpty() ? TriggerModuleSnapshot.empty() : new TriggerModuleSnapshot(queue);
+        if (cachedSnapshot == null) {
+            cachedSnapshot = queue.isEmpty() ? TriggerModuleSnapshot.empty() : new TriggerModuleSnapshot(queue);
+        }
+        return cachedSnapshot;
     }
 
     public boolean contains(ResourceLocation id) {

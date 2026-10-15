@@ -16,6 +16,7 @@ import net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.normal.*;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.pill_effect.impl.*;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.revive.*;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.profile.PotionProfile;
+import net.luojiuoscar.isaac_disaster.system.heart.EternalHeartState;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -863,20 +864,11 @@ public class ModExecutableEffects {
                     THROW_BOMB, ctx -> ctx.set(ContextKeys.DOUBLE, List.of(80., 7.))
             ));
     public static final RegistryObject<IExecutableEffect> ETERNAL_HEART =
-            EXECUTABLE_EFFECT_REGISTRY.register("eternal_heart", () -> new AbilityEffectEntry(
-                    STACK_POTION, ctx -> {
-                        ctx.set(ContextKeys.POTIONS, List.of(
-                        new PotionProfile(
-                                ModEffects.ETERNAL_HEART.get(),
-                                3600,
-                                0,
-                                0,
-                                0,
-                                false
-                        )
-                ));
-                        ctx.set(ContextKeys.BOOLEAN, List.of(false, true));
-            }));
+            EXECUTABLE_EFFECT_REGISTRY.register("eternal_heart", () -> context -> {
+                if (context.getEntity() instanceof ServerPlayer player) {
+                    EternalHeartState.grant(player);
+                }
+            });
     public static final RegistryObject<IExecutableEffect> GOLDEN_HEART =
             EXECUTABLE_EFFECT_REGISTRY.register("golden_heart", () -> new AbilityEffectEntry(
                     STACK_GILDING_EFFECT, ctx -> {
