@@ -1,9 +1,6 @@
 package net.luojiuoscar.isaac_disaster;
 
 import net.luojiuoscar.isaac_disaster.config.IsaacConfigDefaults;
-import net.luojiuoscar.isaac_disaster.manager.DefaultAttributeManager;
-import net.luojiuoscar.isaac_disaster.manager.CurioSlotManager;
-import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraftforge.common.ForgeConfigSpec;
@@ -11,7 +8,6 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.config.ModConfigEvent;
 import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.server.ServerLifecycleHooks;
 
 import java.util.List;
 import java.util.Set;
@@ -19,8 +15,7 @@ import java.util.stream.Collectors;
 
 import static net.luojiuoscar.isaac_disaster.IsaacDisaster.MOD_ID;
 
-// An example config class. This is not required, but it's a good idea to have one to keep your config organized.
-// Demonstrates how to use Forge's config APIs
+/** Initial values for newly initialized world datapacks. Existing worlds never read live TOML. */
 @Mod.EventBusSubscriber(modid = MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class Config
 {
@@ -92,8 +87,6 @@ public class Config
     public static ForgeConfigSpec.IntValue PASSIVE_ITEM_LIMIT;
     public static ForgeConfigSpec.DoubleValue NEARBY_RANGE;
     public static ForgeConfigSpec.DoubleValue BASIC_TIME_INTERVAL;
-    public static ForgeConfigSpec.DoubleValue HOLY_SHIELD_STRENGTH;
-    public static ForgeConfigSpec.DoubleValue MONEY_IS_POWER_STRENGTH;
     public static ForgeConfigSpec.BooleanValue EXTRA_PASSIVE_ITEM_BACKPACK;
     public static ForgeConfigSpec.BooleanValue ALLOW_CURIO_UNEQUIP;
     public static ForgeConfigSpec.IntValue ACTIVE_ITEM_DURABILITY_RESTORE_RATE;
@@ -114,9 +107,6 @@ public class Config
     public static ForgeConfigSpec.ConfigValue<String> COIN_TIER_2_ID;
     public static ForgeConfigSpec.ConfigValue<String> COIN_TIER_3_ID;
 
-    public static ForgeConfigSpec.IntValue COIN_TIER_1_WEIGHT;
-    public static ForgeConfigSpec.IntValue COIN_TIER_2_WEIGHT;
-    public static ForgeConfigSpec.IntValue COIN_TIER_3_WEIGHT;
     public static ForgeConfigSpec.IntValue COIN_TIER_1_VALUE;
     public static ForgeConfigSpec.IntValue COIN_TIER_2_VALUE;
     public static ForgeConfigSpec.IntValue COIN_TIER_3_VALUE;
@@ -331,18 +321,6 @@ public class Config
                 .comment("Active item will auto restore durability with time.")
                 .define("active_item_auto_restore", IsaacConfigDefaults.ACTIVE_ITEM_AUTO_RESTORE);
 
-        // 神圣护盾强度  默认3
-        HOLY_SHIELD_STRENGTH = BUILDER
-                .comment("Amount * (Amplifier + 1);" +
-                        "Damages that holy shield effect can immune.")
-                .defineInRange("holy_shield_strength", IsaacConfigDefaults.HOLY_SHIELD_STRENGTH, 0.0, 99999.0);
-
-        // 钱力强度  默认0.008
-        MONEY_IS_POWER_STRENGTH = BUILDER
-                .comment("Damage increment of money is power. (each coin)")
-                .defineInRange("money_is_power_strength", IsaacConfigDefaults.MONEY_IS_POWER_STRENGTH, 0.0, 99999.0);
-
-
         BUILDER.pop();
     }
     static {
@@ -409,19 +387,6 @@ public class Config
                 .comment("Item ID for Tier 3 Coin (e.g., isaac_disaster:dime)")
                 .define("coin_tier_3_id", IsaacConfigDefaults.COIN_TIER_3_ID);
 
-        // 权重定义（用于战利品表动态概率）
-        COIN_TIER_1_WEIGHT = BUILDER
-                .comment("Weight for Tier 1 Coin")
-                .defineInRange("coin_tier_1_weight", IsaacConfigDefaults.COIN_TIER_1_WEIGHT, 0, 99999);
-
-        COIN_TIER_2_WEIGHT = BUILDER
-                .comment("Weight for Tier 2 Coin")
-                .defineInRange("coin_tier_2_weight", IsaacConfigDefaults.COIN_TIER_2_WEIGHT, 0, 99999);
-
-        COIN_TIER_3_WEIGHT = BUILDER
-                .comment("Weight for Tier 3 Coin")
-                .defineInRange("coin_tier_3_weight", IsaacConfigDefaults.COIN_TIER_3_WEIGHT, 0, 99999);
-
         // 价值定义
         COIN_TIER_1_VALUE = BUILDER
                 .comment("Value for Tier 1 Coin")
@@ -467,13 +432,6 @@ public class Config
     static void onLoad(final ModConfigEvent event)
     {
         if (event.getConfig().getSpec() != SPEC) return;
-        var server = ServerLifecycleHooks.getCurrentServer();
-        if (server != null) server.execute(() -> server.getPlayerList().getPlayers()
-                .forEach(player -> {
-                    DefaultAttributeManager.apply(player);
-                    CurioSlotManager.requestReconcile(player);
-                    StatManager.refreshMultipliers(player);
-                }));
         logDirtBlock = LOG_DIRT_BLOCK.get();
         magicNumber = MAGIC_NUMBER.get();
         magicNumberIntroduction = MAGIC_NUMBER_INTRODUCTION.get();

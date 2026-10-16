@@ -2,11 +2,10 @@ package net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.general;
 
 import net.luojiuoscar.isaac_disaster.item.ModTrinkets;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import net.luojiuoscar.isaac_disaster.Config;
+import net.luojiuoscar.isaac_disaster.datapack.gameplay.GameplayConfig;
 import net.luojiuoscar.isaac_disaster.event.custom.misc.GeneralLootModifyEvent;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.item.ModItems;
-import net.luojiuoscar.isaac_disaster.manager.id.TrinketId;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ContextKeys;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ExecutableEffectContext;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.IAbilityEffect;
@@ -196,7 +195,7 @@ public class PennyTrinket implements IAbilityEffect {
     private ItemStack counterfeitPenny(ServerPlayer player, int value, int max) {
 
         int count = PlayerHelper.getTrinketCount(ModTrinkets.COUNTERFEIT_PENNY.getId(), player);
-        Item tier1Coin = PlayerHelper.getItemFromConfig(Config.COIN_TIER_1_ID.get());
+        Item tier1Coin = PlayerHelper.getItemFromConfig(GameplayConfig.COIN_TIER_1_ID.get());
         if (tier1Coin == null) return ItemStack.EMPTY;
 
         if (count == 0 || value <= 0) {

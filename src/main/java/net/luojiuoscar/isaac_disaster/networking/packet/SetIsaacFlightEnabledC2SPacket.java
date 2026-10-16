@@ -1,7 +1,6 @@
 package net.luojiuoscar.isaac_disaster.networking.packet;
 
-import net.luojiuoscar.isaac_disaster.IsaacDisaster;
-import net.luojiuoscar.isaac_disaster.Config;
+import net.luojiuoscar.isaac_disaster.datapack.gameplay.GameplayConfig;
 import net.luojiuoscar.isaac_disaster.capability.player.flight.PlayerIsaacFlightProvider;
 import net.luojiuoscar.isaac_disaster.networking.ModMessages;
 import net.luojiuoscar.isaac_disaster.system.flight.IsaacFlightController;
@@ -33,7 +32,7 @@ public class SetIsaacFlightEnabledC2SPacket {
                 if (!state.isEnabled()) IsaacFlightController.stopThrust(player);
                 player.displayClientMessage(Component.literal("以撒飞行：" + (state.isEnabled() ? "已启用" : "已禁用")), true);
                 ModMessages.sentToPlayer(new IsaacFlightStateS2CPacket(state.isEnabled(), state.isThrusting(),
-                        Config.FLIGHT_SPEED_MULTIPLIER.get(), Config.FLIGHT_ABSOLUTE_SPEED_CAP.get()), player);
+                        GameplayConfig.FLIGHT_SPEED_MULTIPLIER.get(), GameplayConfig.FLIGHT_ABSOLUTE_SPEED_CAP.get()), player);
             });
         });
         context.setPacketHandled(true);

@@ -3,7 +3,7 @@ package net.luojiuoscar.isaac_disaster.loot.type;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
-import net.luojiuoscar.isaac_disaster.Config;
+import net.luojiuoscar.isaac_disaster.datapack.gameplay.GameplayConfig;
 import net.luojiuoscar.isaac_disaster.loot.ModLootTypes;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
@@ -35,27 +35,19 @@ public class CoinLootEntry extends LootPoolSingletonContainer {
 
     private static Item getCoinFromTier(int tier) {
         String id = switch (tier) {
-            case 1 -> Config.COIN_TIER_1_ID.get();
-            case 2 -> Config.COIN_TIER_2_ID.get();
-            case 3 -> Config.COIN_TIER_3_ID.get();
+            case 1 -> GameplayConfig.COIN_TIER_1_ID.get();
+            case 2 -> GameplayConfig.COIN_TIER_2_ID.get();
+            case 3 -> GameplayConfig.COIN_TIER_3_ID.get();
             default -> "minecraft:air";
         };
         return ForgeRegistries.ITEMS.getValue(ResourceLocation.parse(id));
-    }
-
-    private static int getWeightFromTier(int tier) {
-        return switch (tier) {
-            case 1 -> Config.COIN_TIER_1_WEIGHT.get();
-            case 2 -> Config.COIN_TIER_2_WEIGHT.get();
-            case 3 -> Config.COIN_TIER_3_WEIGHT.get();
-            default -> 0;
-        };
     }
 
     // ---------------- 序列化器 ----------------
     public static class Serializer extends LootPoolSingletonContainer.Serializer<CoinLootEntry> {
         @Override
         public void serializeCustom(JsonObject json, CoinLootEntry entry, JsonSerializationContext context) {
+            super.serializeCustom(json, entry, context);
             json.addProperty("tier", entry.tier);
         }
 
@@ -65,8 +57,7 @@ public class CoinLootEntry extends LootPoolSingletonContainer {
                                          LootItemCondition[] conditions,
                                          LootItemFunction[] functions) {
             int tier = json.get("tier").getAsInt();
-            int w = getWeightFromTier(tier);
-            return new CoinLootEntry(tier, w, quality, conditions, functions);
+            return new CoinLootEntry(tier, weight, quality, conditions, functions);
         }
 
     }

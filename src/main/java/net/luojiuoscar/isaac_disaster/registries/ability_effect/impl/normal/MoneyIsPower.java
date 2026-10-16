@@ -1,6 +1,6 @@
 package net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.normal;
 
-import net.luojiuoscar.isaac_disaster.Config;
+import net.luojiuoscar.isaac_disaster.datapack.gameplay.item.ItemSettings;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ExecutableEffectContext;
@@ -20,7 +20,7 @@ public class MoneyIsPower implements IAbilityEffect {
         if (!(context.getEntity() instanceof ServerPlayer player)) return true;
 
         int money = PlayerHelper.countMoney(player);
-        double damage = money * Config.MONEY_IS_POWER_STRENGTH.get();
+        double damage = money * ItemSettings.moneyIsPower().damagePerCoin();
         StatManager.setModifier(player, MONEY_IS_POWER_ADDER, Attributes.ATTACK_DAMAGE,
                 damage, null, null, 0);
         return true;

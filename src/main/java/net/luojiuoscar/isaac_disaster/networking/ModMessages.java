@@ -1,6 +1,7 @@
 package net.luojiuoscar.isaac_disaster.networking;
 
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
+import net.luojiuoscar.isaac_disaster.datapack.sync.GameplaySettingsS2CPacket;
 import net.luojiuoscar.isaac_disaster.networking.packet.*;
 import net.luojiuoscar.isaac_disaster.networking.packet.bullet.*;
 import net.luojiuoscar.isaac_disaster.networking.packet.laser.LaserBeamBatchS2CPacket;
@@ -19,6 +20,7 @@ import net.minecraftforge.network.simple.SimpleChannel;
 
 
 public class ModMessages {
+    private static final String PROTOCOL_VERSION = "2";
     private static SimpleChannel INSTANCE;
 
     private static int packetId = 0;
@@ -29,9 +31,9 @@ public class ModMessages {
     public static void register(){
         SimpleChannel net = NetworkRegistry.ChannelBuilder
                 .named(ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "messages"))
-                .networkProtocolVersion(() -> "1.0")
-                .clientAcceptedVersions(s -> true)
-                .serverAcceptedVersions(s -> true)
+                .networkProtocolVersion(() -> PROTOCOL_VERSION)
+                .clientAcceptedVersions(PROTOCOL_VERSION::equals)
+                .serverAcceptedVersions(PROTOCOL_VERSION::equals)
                 .simpleChannel();
 
         INSTANCE = net;
@@ -189,6 +191,12 @@ public class ModMessages {
         net.messageBuilder(RevelationBeamS2CPacket.class, id(), NetworkDirection.PLAY_TO_CLIENT)
                 .decoder(RevelationBeamS2CPacket::new).encoder(RevelationBeamS2CPacket::toBytes)
                 .consumerNetworkThread(RevelationBeamS2CPacket::handle).add();
+
+        net.messageBuilder(GameplaySettingsS2CPacket.class, id(), NetworkDirection.PLAY_TO_CLIENT)
+                .decoder(GameplaySettingsS2CPacket::new)
+                .encoder(GameplaySettingsS2CPacket::toBytes)
+                .consumerNetworkThread(GameplaySettingsS2CPacket::handle)
+                .add();
 
     }
 

@@ -1,20 +1,23 @@
 ---
 name: isaac-disaster-item-creation
-description: Use when creating or modifying a passive or active collectible item for the Isaac Disaster Forge 1.20.1 project, including Repentance behavior, abilities, textures, localization, item IDs, item pools, and project-specific interactions. Do not use for trinkets, cards, pills, or other pickups.
+description: Use when creating or modifying a passive item, active item, or trinket for the Isaac Disaster Forge 1.20.1 project, or when planning or reviewing pickup behavior and preparing card textures. Pickup guidance currently covers confirmed texture and workflow-review constraints, not a complete card or pill creation procedure.
 ---
 
 # Isaac Disaster Item Creation
 
-Use this skill for passive and active collectible items. Read current project code before choosing an API. Write plans, questions, and reports in Chinese; preserve English names, identifiers, paths, and Wiki facts.
+Use this skill for passive items, active items, and trinkets. Read current project code before choosing an API. Write plans, questions, and reports in Chinese; preserve English names, identifiers, paths, and Wiki facts.
 
 ## Router
 
-1. Determine whether the request concerns a passive item or an active item.
+1. Determine whether the request concerns a passive item, active item, or trinket.
 2. Read exactly one matching branch document before planning or implementation:
    - Passive item: `references/passive-item.md`
    - Active item: `references/active-item.md`
-3. If the item type is unclear, ask before continuing. Read both branch documents only when a confirmed synergy or shared architecture crosses the two item types.
+   - Trinket: `references/trinket.md`
+   - Pickup planning/review or card texture work: `references/pickups.md` (confirmed constraints only; the complete pickup creation workflow is not yet defined).
+3. If the item type is unclear, ask before continuing. Read additional branch documents only when the current item's synergy or shared architecture requires them; do not load every branch by default. In mixed batches, select the matching branch separately for each item.
 4. The branch document is mandatory implementation guidance. Do not infer the missing lifecycle, registration, or resource rules from the other branch.
+5. For pickups, use the partial branch for its confirmed rules. Do not apply collectible/trinket ID, quality, lifecycle, localization, or pool requirements by analogy; establish the missing contracts from current code and user-confirmed behavior during planning.
 
 ## Entry And Approval
 
@@ -28,8 +31,8 @@ Use this skill for passive and active collectible items. Read current project co
 
 For single-item and batch tasks, complete steps 1–6 for one item before starting the next.
 
-1. **Resolve identity.** Search the Chinese Wiki first, considering names, aliases, and redirects; then cross-check the English page and Wiki original ID. If identity remains ambiguous, ask for the intended page and ID and show at most three candidates. Never infer “地狱契约” means `THE_PACT`. Separate Wiki original name/ID from mod `ItemId`, registry ID, Java name, texture name, and localization key.
-2. **Check existence.** Use the resolved identity to check `ItemId`, the selected item and ability registries, localization, textures, and pools. For creation, report an existing item and skip further research/planning. An explicit modification request continues.
+1. **Resolve identity.** Search the Chinese Wiki first, considering names, aliases, and redirects; then cross-check the English page and Wiki original ID. If identity remains ambiguous, ask for the intended page and ID and show at most three candidates. Never infer “地狱契约” means `THE_PACT`. Separate Wiki original name/ID and item category from the mod numeric ID (`ItemId` for collectibles, `TrinketId` for trinkets), registry ID, Java name, texture name, and localization key. Wiki collectible and trinket IDs belong to different categories.
+2. **Check existence.** Use the resolved identity to check the matching ID enum (`ItemId` or `TrinketId`), item and ability registries, localization, textures, and pools. For creation, report an existing item and skip further research/planning. An explicit modification request continues.
 3. **Research behavior.** Consult both [Chinese Wiki](https://isaac.huijiwiki.com/wiki) and [English Wiki](https://bindingofisaacrebirth.fandom.com/wiki/Binding_of_Isaac:_Rebirth_Wiki) for Repentance effects, values, level, and synergies. Ask about Repentance+ changes. Neither Wiki is the sole numeric authority: show conflicts, omissions, ambiguous values, or ambiguous stat categories before choosing.
 4. **Assess implementation.** Determine stats, modules, lifecycle, assets, and relevant synergies using the selected branch rules. For complex behavior, perform a bounded `rg` search with a few event/effect/target/cadence keywords, inspect snippets first, and read only relevant files. Keep at most three reuse candidates. Ask before adopting a candidate, explaining similarity, reusable parts, and semantics not to copy. Search failure does not block work.
 5. **Check lore layout.** Review every description sentence and plausible dynamic-value substitution against the current tooltip assembly. Split long or multi-clause lore at natural semantic boundaries into ordered components or translation entries. Record the result as the final lines or “无需拆分”. Use font measurement or a screenshot when available; otherwise report static review only.
@@ -37,7 +40,7 @@ For single-item and batch tasks, complete steps 1–6 for one item before starti
 
 After all items are confirmed:
 
-7. **Submit one approval plan.** List every item separately: Wiki original name/ID; mod technical name and `ItemId.ordinal()` source; level; numeric changes and ratios; selected branch lifecycle; new/reused abilities and modules; bullet triggers and `bullet_color`; synergies and their approved handling; assets; localization and final lore; pools; approved references or “无”. Wait for explicit approval before implementation.
+7. **Submit one approval plan.** List every item separately: category and Wiki original name/ID; mod technical name and matching ID enum's `ordinal()` source; level; numeric changes and ratios; selected branch lifecycle; new/reused abilities and modules; bullet triggers and `bullet_color`; synergies and their approved handling; assets; localization and final lore; pools; approved references or “无”. Include ordinary/enhanced behavior and swallowed-state handling for trinkets. Wait for explicit approval before implementation.
 8. **Implement sequentially.** Complete each approved item’s texture, branch-specific item and ability, modules, registrations, localization, and pools before starting the next.
 9. **Verify and report.** Apply the common and branch-specific checks, then report actual results in Chinese.
 
@@ -78,6 +81,7 @@ The following table proposes project ratios from original-game effects. It does 
 
 ## Common Modules, Synergies, And Code Reuse
 
+- Existing code is evidence of interfaces and call relationships, not the sole authority for intended behavior. Before adopting a reference, check consistency between events, effect execution, consumption, sound, use records, and return values. Report contradictions with the concrete call path, actual behavior, and proposed correction; confirm unresolved semantics rather than preserving a historical defect as a skill requirement. State the impact of any shared-flow repair and include it in the approved plan. Descriptions of current call order are observations to verify, not mandatory ordering rules for new implementations.
 - Use direct stat changes for persistent stats, trigger modules for events, and recursive modules for repeated behavior. Confirm scope, event/cadence, conditions, targets, values, chance/cooldown/duration, amplification, lifecycle/cleanup, side, and projectile interaction.
 - Judge Event dependence by semantics: retain concrete Event checks for attack-plan, loot-generation, and hurt-only effects; allow entity/player/target effects to run from other events when their required context is present. Do not replace required Event data with ContextKeys merely to decouple code.
 - Separate count-based proc progress from the reusable payoff effect, as in `LeadPencilShotCounter` / `LeadPencilBurst` and `JumperCablesKillCounter` / `JumperCables`. The counter owns event eligibility, source checks, persisted progress, threshold/reset logic, and progress cleanup. The payoff owns only its actual effect and required inputs; do not require the original event, item ownership, or counter state unless the effect itself semantically requires them. Reset progress before invoking the payoff, propagate its execution result, and verify that direct or cross-event invocation does not advance or consume progress.
@@ -100,13 +104,13 @@ The following table proposes project ratios from original-game effects. It does 
 
 ## Common Registration And Assets
 
-- Append new entries to `manager/id/ItemId`; the mod ID is `ordinal()`, never the Wiki original ID. Never insert or reorder constants.
+- Append collectible entries to `manager/id/ItemId` and trinket entries to `manager/id/TrinketId`; the mod numeric ID is the matching enum's `ordinal()`, never the Wiki original ID. Never insert or reorder constants. Confirm a trinket's project level rather than assuming it has an original collectible quality.
 - Use `IsaacDisaster.MOD_ID` for mod-owned `ResourceLocation` namespaces.
 - Do not add comments or Javadoc to routine inherited-method implementations. Add comments only for complex logic and Javadoc for reusable utility methods.
-- Download Repentance item icons only from the English Wiki as actual `32x32` PNG files. `Collectible_` is a useful clue, not proof; verify identity and version, then save under the confirmed project texture name. Confirm names containing special characters before normalizing them.
+- Download Repentance icons only from the English Wiki as actual PNG files. The `32x32` requirement applies to passive/active collectible and trinket icons, not pickup assets. Card textures use the `20x20` transparent-canvas contract in `references/pickups.md`; other pickup dimensions require their own confirmed contract. For collectible icons, `Collectible_` is a useful clue, not proof; verify category, identity, and version, then save under the confirmed project texture name. Confirm names containing special characters before normalizing them.
 - Do not manually create item models. Add the item to the correct existing datagen list; `runData` generates models and tags.
 - Request non-image assets such as sounds from the user. If an icon download or format/size check fails because of network errors, an unavailable Wiki, an invalid link, an HTTP error, or an unexpected format, record the item, concrete reason, and missing-file status and state it explicitly in the final response. Never silently omit a failed texture.
-- Insert localization before `"item end": ""`. Add the item to the corresponding project pool and Repentance+ pool entries without weights, following the current project’s tag and loot-table structure.
+- Insert collectible localization before `"item end": ""` and trinket localization before `"trinket end": ""`. Collectible pools follow Repentance+ without weights; trinkets follow the branch's tag-based trinket pool. Do not place trinkets in collectible pools by default.
 
 ## Common Validation And Report
 

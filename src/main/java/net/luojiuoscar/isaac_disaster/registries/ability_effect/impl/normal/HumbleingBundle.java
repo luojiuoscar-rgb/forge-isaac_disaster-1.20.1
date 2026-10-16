@@ -1,7 +1,7 @@
 package net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.normal;
 
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ExecutableEffectPriority;
-import net.luojiuoscar.isaac_disaster.Config;
+import net.luojiuoscar.isaac_disaster.datapack.gameplay.GameplayConfig;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.item.ModItems;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ExecutableEffectContext;
@@ -26,7 +26,7 @@ public final class HumbleingBundle extends TransformLootTypesToAnother {
     @Override
     protected List<Item> getOriginalItemType() {
         var items = new ArrayList<>(List.of(ModItems.BOMB.get(), ModItems.KEY.get(), ModItems.RED_HEART.get()));
-        Item coin = PlayerHelper.getItemFromConfig(Config.COIN_TIER_1_ID.get());
+        Item coin = PlayerHelper.getItemFromConfig(GameplayConfig.COIN_TIER_1_ID.get());
         if (coin != null) items.add(coin);
         return items;
     }
@@ -34,7 +34,7 @@ public final class HumbleingBundle extends TransformLootTypesToAnother {
     @Override
     protected List<Item> getTransformedItemType() {
         var items = new ArrayList<>(List.of(ModItems.DOUBLE_BOMB.get(), ModItems.KEY_RING.get(), ModItems.DOUBLE_RED_HEART.get()));
-        Item coin = PlayerHelper.getItemFromConfig(Config.COIN_TIER_1_ID.get());
+        Item coin = PlayerHelper.getItemFromConfig(GameplayConfig.COIN_TIER_1_ID.get());
         if (coin != null) items.add(coin);
         return items;
     }

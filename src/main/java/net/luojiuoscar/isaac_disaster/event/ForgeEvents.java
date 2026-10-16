@@ -1,6 +1,6 @@
 package net.luojiuoscar.isaac_disaster.event;
 
-import net.luojiuoscar.isaac_disaster.Config;
+import net.luojiuoscar.isaac_disaster.datapack.gameplay.GameplayConfig;
 import net.luojiuoscar.isaac_disaster.attribute.ModAttributes;
 import net.luojiuoscar.isaac_disaster.capability.entity.EffectModulesProvider;
 import net.luojiuoscar.isaac_disaster.capability.entity.ExtraDataProvider;
@@ -25,7 +25,6 @@ import net.luojiuoscar.isaac_disaster.manager.CurioSlotManager;
 import net.luojiuoscar.isaac_disaster.item.ModItems;
 import net.luojiuoscar.isaac_disaster.item.item.IsaacItem;
 import net.luojiuoscar.isaac_disaster.item.pickup.special.IsaacHead;
-import net.luojiuoscar.isaac_disaster.manager.EffectManager;
 import net.luojiuoscar.isaac_disaster.manager.DefaultAttributeManager;
 import net.luojiuoscar.isaac_disaster.manager.ModDamageType;
 import net.luojiuoscar.isaac_disaster.manager.PillEffectManager;
@@ -49,7 +48,6 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.npc.WanderingTrader;
 import net.minecraft.world.entity.player.Player;
@@ -62,12 +60,10 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.RegisterCommandsEvent;
-import net.minecraftforge.registries.MissingMappingsEvent;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.living.LivingKnockBackEvent;
-import net.minecraftforge.event.entity.living.MobEffectEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.level.LevelEvent;
@@ -514,7 +510,7 @@ public class ForgeEvents {
 
     private static void addMandatoryTrades(MerchantOffers offers, WanderingTrader trader) {
         // 获取货币物品
-        String moneyId = Config.COIN_TIER_1_ID.get();
+        String moneyId = GameplayConfig.COIN_TIER_1_ID.get();
         Item money = ForgeRegistries.ITEMS.getValue(ResourceLocation.parse(moneyId));
         if (money == null) return;
 

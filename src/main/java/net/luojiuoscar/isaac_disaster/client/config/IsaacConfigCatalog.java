@@ -138,11 +138,7 @@ public final class IsaacConfigCatalog {
                         Config.LIMITED_ACTIVE_ITEM_DURABILITY_RESTORE,
                         IsaacConfigDefaults.LIMITED_ACTIVE_ITEM_DURABILITY_RESTORE),
                 booleanEntry("active_item_auto_restore", IsaacConfigCategory.ITEM_RELATED,
-                        Config.ACTIVE_ITEM_AUTO_RESTORE, IsaacConfigDefaults.ACTIVE_ITEM_AUTO_RESTORE),
-                doubleEntry("holy_shield_strength", IsaacConfigCategory.ITEM_RELATED,
-                        Config.HOLY_SHIELD_STRENGTH, IsaacConfigDefaults.HOLY_SHIELD_STRENGTH),
-                doubleEntry("money_is_power_strength", IsaacConfigCategory.ITEM_RELATED,
-                        Config.MONEY_IS_POWER_STRENGTH, IsaacConfigDefaults.MONEY_IS_POWER_STRENGTH)
+                        Config.ACTIVE_ITEM_AUTO_RESTORE, IsaacConfigDefaults.ACTIVE_ITEM_AUTO_RESTORE)
         ));
 
         entries.addAll(Arrays.asList(
@@ -176,12 +172,6 @@ public final class IsaacConfigCatalog {
                         IsaacConfigDefaults.COIN_TIER_2_ID),
                 stringEntry("coin_tier_3_id", IsaacConfigCategory.COINS, Config.COIN_TIER_3_ID,
                         IsaacConfigDefaults.COIN_TIER_3_ID),
-                intEntry("coin_tier_1_weight", IsaacConfigCategory.COINS, Config.COIN_TIER_1_WEIGHT,
-                        IsaacConfigDefaults.COIN_TIER_1_WEIGHT),
-                intEntry("coin_tier_2_weight", IsaacConfigCategory.COINS, Config.COIN_TIER_2_WEIGHT,
-                        IsaacConfigDefaults.COIN_TIER_2_WEIGHT),
-                intEntry("coin_tier_3_weight", IsaacConfigCategory.COINS, Config.COIN_TIER_3_WEIGHT,
-                        IsaacConfigDefaults.COIN_TIER_3_WEIGHT),
                 intEntry("coin_tier_1_value", IsaacConfigCategory.COINS, Config.COIN_TIER_1_VALUE,
                         IsaacConfigDefaults.COIN_TIER_1_VALUE),
                 intEntry("coin_tier_2_value", IsaacConfigCategory.COINS, Config.COIN_TIER_2_VALUE,

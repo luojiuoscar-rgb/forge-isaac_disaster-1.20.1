@@ -10,7 +10,9 @@
     "LivingEntityMixin",
     "MobMixin",
     "CreeperMixin",
-    "PlayerMixin"
+    "PlayerMixin",
+    "WorldDatapackBootstrapMixin",
+    "WorldDatapackOrderMixin"
   ],
   "client": [
     "LivingEntityRendererMixin",

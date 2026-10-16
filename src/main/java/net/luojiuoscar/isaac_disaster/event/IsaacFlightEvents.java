@@ -3,7 +3,7 @@ package net.luojiuoscar.isaac_disaster.event;
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.capability.player.flight.PlayerIsaacFlightProvider;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerStatModifierProvider;
-import net.luojiuoscar.isaac_disaster.Config;
+import net.luojiuoscar.isaac_disaster.datapack.gameplay.GameplayConfig;
 import net.luojiuoscar.isaac_disaster.helper.FlightHelper;
 import net.luojiuoscar.isaac_disaster.networking.ModMessages;
 import net.luojiuoscar.isaac_disaster.networking.packet.IsaacFlightStateS2CPacket;
@@ -76,6 +76,6 @@ public final class IsaacFlightEvents {
         player.getCapability(PlayerIsaacFlightProvider.PLAYER_ISAAC_FLIGHT).ifPresent(
                 state -> ModMessages.sentToPlayer(
                         new IsaacFlightStateS2CPacket(state.isEnabled(), state.isThrusting(),
-                                Config.FLIGHT_SPEED_MULTIPLIER.get(), Config.FLIGHT_ABSOLUTE_SPEED_CAP.get()), player));
+                                GameplayConfig.FLIGHT_SPEED_MULTIPLIER.get(), GameplayConfig.FLIGHT_ABSOLUTE_SPEED_CAP.get()), player));
     }
 }

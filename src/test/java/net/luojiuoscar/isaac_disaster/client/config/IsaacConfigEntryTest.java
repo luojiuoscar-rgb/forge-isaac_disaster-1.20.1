@@ -13,10 +13,10 @@ class IsaacConfigEntryTest {
         }
         assertTrue(damage.isValidText("0"));
         assertTrue(damage.isValidText("99999"));
-        IsaacConfigEntry<?> weight = entry("coin_tier_1_weight");
-        assertFalse(weight.isValidText("-1"));
-        assertFalse(weight.isValidText("100000"));
-        assertFalse(weight.isValidText("1.5"));
+        IsaacConfigEntry<?> value = entry("coin_tier_1_value");
+        assertFalse(value.isValidText("-1"));
+        assertFalse(value.isValidText("100000"));
+        assertFalse(value.isValidText("1.5"));
     }
 
     @Test

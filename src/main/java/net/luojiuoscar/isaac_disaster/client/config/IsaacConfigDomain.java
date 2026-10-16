@@ -5,7 +5,7 @@ import net.luojiuoscar.isaac_disaster.config.IsaacClientConfig;
 import net.minecraft.network.chat.Component;
 import net.minecraftforge.common.ForgeConfigSpec;
 
-/** UI domains: SERVER continues to edit the local COMMON spec. */
+/** SERVER edits the COMMON template for future worlds; it does not edit an existing world. */
 public enum IsaacConfigDomain {
     CLIENT("client"), SERVER("server");
 

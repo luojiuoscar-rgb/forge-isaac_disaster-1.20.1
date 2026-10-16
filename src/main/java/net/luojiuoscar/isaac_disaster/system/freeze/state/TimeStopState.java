@@ -1,6 +1,6 @@
 package net.luojiuoscar.isaac_disaster.system.freeze.state;
 
-import net.luojiuoscar.isaac_disaster.Config;
+import net.luojiuoscar.isaac_disaster.datapack.gameplay.GameplayConfig;
 import net.luojiuoscar.isaac_disaster.effect.ModEffects;
 import net.luojiuoscar.isaac_disaster.helper.EntityHelper;
 import net.luojiuoscar.isaac_disaster.manager.TagManager;
@@ -154,7 +154,7 @@ public final class TimeStopState {
         }
 
         // When enabled, one friendly source is enough to exempt the target.
-        if (Config.TIME_STOP_EXCLUDE_FRIENDLY.get()) {
+        if (GameplayConfig.TIME_STOP_EXCLUDE_FRIENDLY.get()) {
             for (UUID sourceId : sourceIds) {
                 Player source = entity.level().getPlayerByUUID(sourceId);
                 if (source instanceof ServerPlayer serverSource

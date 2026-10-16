@@ -1,6 +1,6 @@
 package net.luojiuoscar.isaac_disaster.helper;
 
-import net.luojiuoscar.isaac_disaster.Config;
+import net.luojiuoscar.isaac_disaster.datapack.gameplay.GameplayConfig;
 import net.luojiuoscar.isaac_disaster.attribute.ModAttributes;
 import net.luojiuoscar.isaac_disaster.block.ModBlocks;
 import net.luojiuoscar.isaac_disaster.block.block_entity.PedestalBlockEntity;
@@ -73,8 +73,8 @@ public class PlayerHelper {
         level.addFreshEntity(itemEntity);
     }
     public static void giveMoney(Player player, int amount){
-        int value = Config.COIN_TIER_1_VALUE.get();
-        String moneyId = Config.COIN_TIER_1_ID.get();
+        int value = GameplayConfig.COIN_TIER_1_VALUE.get();
+        String moneyId = GameplayConfig.COIN_TIER_1_ID.get();
 
         if (value <= 0) value = 1;
         // 计算需要给予的数量
@@ -239,13 +239,13 @@ public class PlayerHelper {
         int money = 0;
 
         // 从配置中读取三个钱币及其对应价值
-        Item tier1Coin = getItemFromConfig(Config.COIN_TIER_1_ID.get());
-        Item tier2Coin = getItemFromConfig(Config.COIN_TIER_2_ID.get());
-        Item tier3Coin = getItemFromConfig(Config.COIN_TIER_3_ID.get());
+        Item tier1Coin = getItemFromConfig(GameplayConfig.COIN_TIER_1_ID.get());
+        Item tier2Coin = getItemFromConfig(GameplayConfig.COIN_TIER_2_ID.get());
+        Item tier3Coin = getItemFromConfig(GameplayConfig.COIN_TIER_3_ID.get());
 
-        int value1 = Config.COIN_TIER_1_VALUE.get();
-        int value2 = Config.COIN_TIER_2_VALUE.get();
-        int value3 = Config.COIN_TIER_3_VALUE.get();
+        int value1 = GameplayConfig.COIN_TIER_1_VALUE.get();
+        int value2 = GameplayConfig.COIN_TIER_2_VALUE.get();
+        int value3 = GameplayConfig.COIN_TIER_3_VALUE.get();
 
         // 遍历所有物品
         for (ItemStack stack : items) {
@@ -269,9 +269,9 @@ public class PlayerHelper {
         int count = 0;
 
         // 从配置中读取三个钱币及其对应价值
-        Item tier1Coin = getItemFromConfig(Config.COIN_TIER_1_ID.get());
-        Item tier2Coin = getItemFromConfig(Config.COIN_TIER_2_ID.get());
-        Item tier3Coin = getItemFromConfig(Config.COIN_TIER_3_ID.get());
+        Item tier1Coin = getItemFromConfig(GameplayConfig.COIN_TIER_1_ID.get());
+        Item tier2Coin = getItemFromConfig(GameplayConfig.COIN_TIER_2_ID.get());
+        Item tier3Coin = getItemFromConfig(GameplayConfig.COIN_TIER_3_ID.get());
 
         // 遍历所有物品
         for (ItemStack stack : items) {
@@ -294,13 +294,13 @@ public class PlayerHelper {
 
     public static boolean takeMoney(Player player, int amount) {
         // 读取配置
-        int value1 = Config.COIN_TIER_1_VALUE.get();
-        int value2 = Config.COIN_TIER_2_VALUE.get();
-        int value3 = Config.COIN_TIER_3_VALUE.get();
+        int value1 = GameplayConfig.COIN_TIER_1_VALUE.get();
+        int value2 = GameplayConfig.COIN_TIER_2_VALUE.get();
+        int value3 = GameplayConfig.COIN_TIER_3_VALUE.get();
 
-        Item tier1Coin = getItemFromConfig(Config.COIN_TIER_1_ID.get());
-        Item tier2Coin = getItemFromConfig(Config.COIN_TIER_2_ID.get());
-        Item tier3Coin = getItemFromConfig(Config.COIN_TIER_3_ID.get());
+        Item tier1Coin = getItemFromConfig(GameplayConfig.COIN_TIER_1_ID.get());
+        Item tier2Coin = getItemFromConfig(GameplayConfig.COIN_TIER_2_ID.get());
+        Item tier3Coin = getItemFromConfig(GameplayConfig.COIN_TIER_3_ID.get());
 
         int total = countMoney(player);
         if (amount <= 0 || total < amount) {

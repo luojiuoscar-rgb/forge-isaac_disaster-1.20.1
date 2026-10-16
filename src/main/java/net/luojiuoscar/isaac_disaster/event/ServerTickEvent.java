@@ -1,7 +1,7 @@
 package net.luojiuoscar.isaac_disaster.event;
 
 import net.luojiuoscar.isaac_disaster.item.ModPassiveItems;
-import net.luojiuoscar.isaac_disaster.Config;
+import net.luojiuoscar.isaac_disaster.datapack.gameplay.GameplayConfig;
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.attribute.ModAttributes;
 import net.luojiuoscar.isaac_disaster.capability.entity.EffectModulesProvider;
@@ -113,7 +113,7 @@ public class ServerTickEvent {
     }
     private static void chargeActiveItem(ServerPlayer player){
         // 是否启用自动回复
-        if (!Config.ACTIVE_ITEM_AUTO_RESTORE.get()) return;
+        if (!GameplayConfig.ACTIVE_ITEM_AUTO_RESTORE.get()) return;
 
         // 有4.5伏特时不执行充能
         if (PlayerHelper.hasItem(ModPassiveItems.VOLT_4P5.getId(), player)) return;
@@ -122,7 +122,7 @@ public class ServerTickEvent {
         Inventory inv = player.getInventory();
         List<ItemStack> items = new ArrayList<>();
         // 仅在主副手
-        if (Config.LIMITED_ACTIVE_ITEM_DURABILITY_RESTORE.get()){
+        if (GameplayConfig.LIMITED_ACTIVE_ITEM_DURABILITY_RESTORE.get()){
             items.add(player.getMainHandItem());
             items.add(player.getOffhandItem());
         }else{
@@ -133,7 +133,7 @@ public class ServerTickEvent {
         for (ItemStack stack : items) {
 
             if (!stack.isEmpty() && stack.getItem() instanceof ActiveItem) {
-                PlayerHelper.chargeItem(stack, Config.ACTIVE_ITEM_DURABILITY_RESTORE_RATE.get(), PlayerHelper.hasItem(ModPassiveItems.THE_BATTERY.getId(), player));
+                PlayerHelper.chargeItem(stack, GameplayConfig.ACTIVE_ITEM_DURABILITY_RESTORE_RATE.get(), PlayerHelper.hasItem(ModPassiveItems.THE_BATTERY.getId(), player));
             }
         }
     }

@@ -1,6 +1,7 @@
 package net.luojiuoscar.isaac_disaster.manager;
 
-import net.luojiuoscar.isaac_disaster.Config;
+import net.luojiuoscar.isaac_disaster.datapack.gameplay.GameplayConfig;
+import net.luojiuoscar.isaac_disaster.datapack.gameplay.item.ItemSettings;
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.attribute.ModAttributes;
 import net.luojiuoscar.isaac_disaster.capability.entity.EffectModulesProvider;
@@ -36,11 +37,11 @@ import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.function.Supplier;
 
-import static net.luojiuoscar.isaac_disaster.Config.*;
+import static net.luojiuoscar.isaac_disaster.datapack.gameplay.GameplayConfig.*;
 
 public enum StatManager {
     MAX_HEALTH("max_health", Attributes.MAX_HEALTH, 0, true,
-            () -> Config.HEALTH_BONUS.get(), -20.0, null){
+            () -> GameplayConfig.HEALTH_BONUS.get(), -20.0, null){
         @Override
         public void apply(Player player, double ratio){
             super.apply(player, ratio);
@@ -56,7 +57,7 @@ public enum StatManager {
         }
     },
     MOVEMENT_SPEED("movement_speed", Attributes.MOVEMENT_SPEED, 0, true,
-            () -> Config.MOVEMENT_SPEED_BONUS.get(), null, null) {
+            () -> GameplayConfig.MOVEMENT_SPEED_BONUS.get(), null, null) {
         @Override
         public Component description(double value, Style style){
             // 四舍五入到两位小数
@@ -71,11 +72,11 @@ public enum StatManager {
         }
     },
     DAMAGE("damage", Attributes.ATTACK_DAMAGE, 0, true,
-            () -> Config.DAMAGE_BONUS.get(), null, null),
+            () -> GameplayConfig.DAMAGE_BONUS.get(), null, null),
     LUCK("luck", Attributes.LUCK, 0, true,
-            () -> Config.LUCK_BONUS.get(), null, null),
+            () -> GameplayConfig.LUCK_BONUS.get(), null, null),
     SCALE("scale", ModAttributes.SCALE.get(), 0, false,
-            () -> Config.SCALE_BONUS.get(), -0.75, 10.0){
+            () -> GameplayConfig.SCALE_BONUS.get(), -0.75, 10.0){
         @Override
         public void apply(Player player, double ratio){
             super.apply(player, ratio);
@@ -86,25 +87,25 @@ public enum StatManager {
         }
     },
     RANGE("bullet_range", ModAttributes.BULLET_RANGE.get(), 0, true,
-            () -> Config.RANGE_BONUS.get(), null, null),
+            () -> GameplayConfig.RANGE_BONUS.get(), null, null),
     ENTITY_REACH("entity_reach", ForgeMod.ENTITY_REACH.get(), 0, true,
-            () -> Config.ENTITY_REACH_BONUS.get(), -2.0, null),
+            () -> GameplayConfig.ENTITY_REACH_BONUS.get(), -2.0, null),
     BLOCK_REACH("block_reach", ForgeMod.BLOCK_REACH.get(), 0, true,
-            () -> Config.BLOCK_REACH_BONUS.get(), -2.0, null),
+            () -> GameplayConfig.BLOCK_REACH_BONUS.get(), -2.0, null),
     TEARS("tears", ModAttributes.TEARS.get(), 0, true,
-            () -> Config.TEARS_BONUS.get(), null, null),
+            () -> GameplayConfig.TEARS_BONUS.get(), null, null),
     FIRE_RATE("fire_rate", ModAttributes.FIRE_RATE.get(), 0, true,
-            () -> Config.FIRE_RATE_BONUS.get(), null, null),
+            () -> GameplayConfig.FIRE_RATE_BONUS.get(), null, null),
     BULLET_SPEED("bullet_speed", ModAttributes.BULLET_SPEED.get(), 0, true,
-            () -> Config.BULLET_SPEED_BONUS.get(), null, null),
+            () -> GameplayConfig.BULLET_SPEED_BONUS.get(), null, null),
     ATTACK_SPEED("attack_speed", Attributes.ATTACK_SPEED, 0, true,
-            () -> Config.ATTACK_SPEED_BONUS.get(), null, null),
+            () -> GameplayConfig.ATTACK_SPEED_BONUS.get(), null, null),
     BLOCK_BREAKING("block_breaking_speed", ModAttributes.BLOCK_BREAKING_SPEED.get(), 0, true,
-            () -> Config.BLOCK_BREAKING_SPEED_BONUS.get(), 0.0, null),
+            () -> GameplayConfig.BLOCK_BREAKING_SPEED_BONUS.get(), 0.0, null),
     ATTACK_KNOCKBACK("attack_knockback", Attributes.ATTACK_KNOCKBACK, 0, false,
-            () -> Config.ATTACK_KNOCKBACK_BONUS.get(), null, null),
+            () -> GameplayConfig.ATTACK_KNOCKBACK_BONUS.get(), null, null),
     BULLET_SCALE("bullet_scale", ModAttributes.BULLET_SCALE.get(), 0, false,
-            () -> Config.BULLET_SCALE_BONUS.get(), null, null),
+            () -> GameplayConfig.BULLET_SCALE_BONUS.get(), null, null),
     BULLET_COUNT("bullet_count", ModAttributes.BULLET_COUNT.get(), 0, false,
             null, 1.0, null),
     PILL_QUALITY("pill_quality", ModAttributes.PILL_QUALITY.get(), 0, false,
@@ -114,7 +115,7 @@ public enum StatManager {
     PASSIVE_ITEM_SLOTS("passive_item_slots", ModAttributes.PASSIVE_ITEM_SLOTS.get(), 0, false,
             null, null, null),
     FLY_TIME("fly_time", ModAttributes.FLY_TIME.get(), 0, false,
-            () -> Config.FLY_TIME.get(), null, null){
+            () -> GameplayConfig.FLY_TIME.get(), null, null){
         @Override
         public void apply(Player player, double ratio){
             super.apply(player, ratio);
@@ -334,7 +335,7 @@ public enum StatManager {
         }
         player.getCapability(PlayerStatModifierProvider.PLAYER_STAT_MODIFIER).ifPresent(modifiers ->
                 modifiers.getMultiplierEntries().reconcile(player,
-                        Config.ALLOW_SAME_MULTIPLIER_ENTRY_STACKING.get(), modifiers.getMultiplierRules()));
+                        GameplayConfig.ALLOW_SAME_MULTIPLIER_ENTRY_STACKING.get(), modifiers.getMultiplierRules()));
     }
 
     public static void removeModifier(ServerPlayer player, @Nullable AttributeInstance attribute, UUID uuid) {
@@ -431,7 +432,7 @@ public enum StatManager {
     public static double getNearbyRange(){return NEARBY_RANGE.get();}
     /** 返回ticks */
     public static int getTimeInterval(int ratio){return (int) (BASIC_TIME_INTERVAL.get() * ratio * 20);}
-    public static double getHolyShieldStrength(){return HOLY_SHIELD_STRENGTH.get();}
+    public static double getHolyShieldStrength(){return ItemSettings.holyShield().strengthPerStack();}
 
     /* ---------------------- 生命 ---------------------- */
 

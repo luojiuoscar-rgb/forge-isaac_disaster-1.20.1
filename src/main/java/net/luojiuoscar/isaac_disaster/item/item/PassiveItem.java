@@ -1,6 +1,6 @@
 package net.luojiuoscar.isaac_disaster.item.item;
 
-import net.luojiuoscar.isaac_disaster.Config;
+import net.luojiuoscar.isaac_disaster.datapack.gameplay.GameplayConfig;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerIsaacItemsProvider;
 import net.luojiuoscar.isaac_disaster.registries.ability.passive.PassiveAbility;
 import net.minecraft.network.chat.Component;
@@ -28,7 +28,7 @@ public class PassiveItem extends IsaacItem implements IIsaacCuriosItem {
 
     @Override
     public boolean canUnequip(SlotContext slotContext, ItemStack stack) {
-        return Config.ALLOW_CURIO_UNEQUIP.get();
+        return GameplayConfig.ALLOW_CURIO_UNEQUIP.get();
     }
 
     @Override
@@ -51,14 +51,14 @@ public class PassiveItem extends IsaacItem implements IIsaacCuriosItem {
     @Override
     public @NotNull InteractionResultHolder<ItemStack> use(@NotNull Level level, Player player, @NotNull InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
-        if (!Config.EXTRA_PASSIVE_ITEM_BACKPACK.get() || player.level().isClientSide) return InteractionResultHolder.fail(stack);
+        if (!GameplayConfig.EXTRA_PASSIVE_ITEM_BACKPACK.get() || player.level().isClientSide) return InteractionResultHolder.fail(stack);
 
         PassiveAbility ability = (PassiveAbility) this.getAbility();
 
         if (player instanceof ServerPlayer serverPlayer){
             boolean canStore = player.getCapability(PlayerIsaacItemsProvider.PLAYER_ISAAC_ITEMS)
                     .map(playerPassiveItems -> playerPassiveItems.getTotalItemsCountInCap()
-                            < Config.PASSIVE_ITEM_LIMIT.get())
+                            < GameplayConfig.PASSIVE_ITEM_LIMIT.get())
                     .orElse(false);
             if (!canStore) {
                 player.getCapability(PlayerIsaacItemsProvider.PLAYER_ISAAC_ITEMS)

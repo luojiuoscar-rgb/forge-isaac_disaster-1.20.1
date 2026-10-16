@@ -1,6 +1,6 @@
 package net.luojiuoscar.isaac_disaster.system.flight;
 
-import net.luojiuoscar.isaac_disaster.Config;
+import net.luojiuoscar.isaac_disaster.datapack.gameplay.GameplayConfig;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerStatModifierProvider;
 import net.luojiuoscar.isaac_disaster.capability.player.flight.PlayerIsaacFlight;
 import net.luojiuoscar.isaac_disaster.capability.player.flight.PlayerIsaacFlightProvider;
@@ -121,10 +121,10 @@ public final class IsaacFlightController {
         double movementSpeed = player.getAttributeValue(net.minecraft.world.entity.ai.attributes.Attributes.MOVEMENT_SPEED);
         double speedMultiplier = player.level().isClientSide
                 ? state.getSpeedMultiplier()
-                : Config.FLIGHT_SPEED_MULTIPLIER.get();
+                : GameplayConfig.FLIGHT_SPEED_MULTIPLIER.get();
         double absoluteSpeedCap = player.level().isClientSide
                 ? state.getAbsoluteSpeedCap()
-                : Config.FLIGHT_ABSOLUTE_SPEED_CAP.get();
+                : GameplayConfig.FLIGHT_ABSOLUTE_SPEED_CAP.get();
         double speedCap = IsaacFlightRules.calculateSpeedCap(
                 movementSpeed,
                 speedMultiplier,
@@ -156,7 +156,7 @@ public final class IsaacFlightController {
 
     private static void sendStoppedState(ServerPlayer player, PlayerIsaacFlight state) {
         ModMessages.sentToPlayer(new IsaacFlightStateS2CPacket(state.isEnabled(), false,
-                Config.FLIGHT_SPEED_MULTIPLIER.get(), Config.FLIGHT_ABSOLUTE_SPEED_CAP.get()), player);
+                GameplayConfig.FLIGHT_SPEED_MULTIPLIER.get(), GameplayConfig.FLIGHT_ABSOLUTE_SPEED_CAP.get()), player);
     }
 
 }

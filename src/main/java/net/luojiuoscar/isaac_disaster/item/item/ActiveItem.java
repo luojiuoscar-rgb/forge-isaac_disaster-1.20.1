@@ -2,14 +2,12 @@ package net.luojiuoscar.isaac_disaster.item.item;
 
 import net.luojiuoscar.isaac_disaster.item.ModPassiveItems;
 import net.luojiuoscar.isaac_disaster.item.ModTrinkets;
-import net.luojiuoscar.isaac_disaster.Config;
+import net.luojiuoscar.isaac_disaster.datapack.gameplay.GameplayConfig;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerItemUseRecordProvider;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerIsaacItemsProvider;
 import net.luojiuoscar.isaac_disaster.event.custom.misc.ActiveItemUseEvent;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.manager.ColorManager;
-import net.luojiuoscar.isaac_disaster.manager.id.ItemId;
-import net.luojiuoscar.isaac_disaster.manager.id.TrinketId;
 import net.luojiuoscar.isaac_disaster.registries.ability.active.ActiveAbility;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
@@ -45,7 +43,7 @@ public class ActiveItem extends IsaacItem {
 
     @Override
     public void addAdditionalInfo(List<Component> tooltipComponents, @Nullable ItemStack stack){
-        if (max_item_damage > 0 || !Config.ACTIVE_ITEM_AUTO_RESTORE.get()){
+        if (max_item_damage > 0 || !GameplayConfig.ACTIVE_ITEM_AUTO_RESTORE.get()){
             tooltipComponents.add(
                     Component.translatable("item.isaac_disaster.special.recharge_require", (max_item_damage / 20))
                             .withStyle(style -> style.withColor(ColorManager.TRANSPARENT_GRAY)

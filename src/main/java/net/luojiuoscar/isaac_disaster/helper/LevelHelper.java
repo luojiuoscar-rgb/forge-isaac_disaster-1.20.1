@@ -1,6 +1,6 @@
 package net.luojiuoscar.isaac_disaster.helper;
 
-import net.luojiuoscar.isaac_disaster.Config;
+import net.luojiuoscar.isaac_disaster.datapack.gameplay.GameplayConfig;
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.RegistryAccess;
@@ -234,8 +234,8 @@ public class LevelHelper {
     }
 
     public static void spawnMoney(ServerLevel level, Vec3 pos, int amount){
-        int value = Config.COIN_TIER_1_VALUE.get();
-        String moneyId = Config.COIN_TIER_1_ID.get();
+        int value = GameplayConfig.COIN_TIER_1_VALUE.get();
+        String moneyId = GameplayConfig.COIN_TIER_1_ID.get();
 
         if (value <= 0) value = 1;
         // 计算需要给予的数量
@@ -256,9 +256,9 @@ public class LevelHelper {
         ResourceLocation id = ForgeRegistries.ITEMS.getKey(item);
         if (id == null) return false;
 
-        return id.toString().equals(Config.COIN_TIER_1_ID.get())
-                || id.toString().equals(Config.COIN_TIER_2_ID.get())
-                || id.toString().equals(Config.COIN_TIER_3_ID.get());
+        return id.toString().equals(GameplayConfig.COIN_TIER_1_ID.get())
+                || id.toString().equals(GameplayConfig.COIN_TIER_2_ID.get())
+                || id.toString().equals(GameplayConfig.COIN_TIER_3_ID.get());
     }
 
     public static List<ItemStack> getMoney(int amount) {
@@ -266,14 +266,14 @@ public class LevelHelper {
 
         // 从 Config 获取金币信息
         int[] values = {
-                Config.COIN_TIER_3_VALUE.get(),
-                Config.COIN_TIER_2_VALUE.get(),
-                Config.COIN_TIER_1_VALUE.get()
+                GameplayConfig.COIN_TIER_3_VALUE.get(),
+                GameplayConfig.COIN_TIER_2_VALUE.get(),
+                GameplayConfig.COIN_TIER_1_VALUE.get()
         };
         String[] ids = {
-                Config.COIN_TIER_3_ID.get(),
-                Config.COIN_TIER_2_ID.get(),
-                Config.COIN_TIER_1_ID.get()
+                GameplayConfig.COIN_TIER_3_ID.get(),
+                GameplayConfig.COIN_TIER_2_ID.get(),
+                GameplayConfig.COIN_TIER_1_ID.get()
         };
 
         // 遍历金币类型，从高到低兑换
@@ -302,11 +302,11 @@ public class LevelHelper {
         // 如果还有剩余的 amount（无法被任何币种整除）
         if (amount > 0) {
             // 默认用最小币种补足
-            ResourceLocation rl = ResourceLocation.tryParse(Config.COIN_TIER_1_ID.get());
+            ResourceLocation rl = ResourceLocation.tryParse(GameplayConfig.COIN_TIER_1_ID.get());
             if (rl != null) {
                 Item item = ForgeRegistries.ITEMS.getValue(rl);
                 if (item != null && item != Items.AIR) {
-                    int value = Config.COIN_TIER_1_VALUE.get();
+                    int value = GameplayConfig.COIN_TIER_1_VALUE.get();
                     int count = (int) Math.ceil((double) amount / value);
                     while (count > 0) {
                         int stackCount = Math.min(count, 64);

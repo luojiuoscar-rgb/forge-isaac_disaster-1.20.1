@@ -49,8 +49,6 @@ public final class IsaacConfigDefaults {
     public static final int ACTIVE_ITEM_DURABILITY_RESTORE_RATE = 4;
     public static final boolean LIMITED_ACTIVE_ITEM_DURABILITY_RESTORE = false;
     public static final boolean ACTIVE_ITEM_AUTO_RESTORE = true;
-    public static final double HOLY_SHIELD_STRENGTH = 3.0;
-    public static final double MONEY_IS_POWER_STRENGTH = 0.007;
 
     public static final int MAX_ACTIVE_BULLETS = 20_000;
     public static final int PASSIVE_ITEM_LIMIT = 999;
@@ -66,9 +64,6 @@ public final class IsaacConfigDefaults {
     public static final String COIN_TIER_1_ID = "isaac_disaster:penny";
     public static final String COIN_TIER_2_ID = "isaac_disaster:nickel";
     public static final String COIN_TIER_3_ID = "isaac_disaster:dime";
-    public static final int COIN_TIER_1_WEIGHT = 93;
-    public static final int COIN_TIER_2_WEIGHT = 6;
-    public static final int COIN_TIER_3_WEIGHT = 1;
     public static final int COIN_TIER_1_VALUE = 1;
     public static final int COIN_TIER_2_VALUE = 5;
     public static final int COIN_TIER_3_VALUE = 10;

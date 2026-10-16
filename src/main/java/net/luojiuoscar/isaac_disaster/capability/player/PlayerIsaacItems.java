@@ -28,7 +28,7 @@ import net.minecraftforge.registries.RegistryManager;
 
 import java.util.*;
 
-import static net.luojiuoscar.isaac_disaster.Config.PASSIVE_ITEM_LIMIT;
+import static net.luojiuoscar.isaac_disaster.datapack.gameplay.GameplayConfig.PASSIVE_ITEM_LIMIT;
 
 @AutoRegisterCapability
 public class PlayerIsaacItems {

@@ -1,6 +1,6 @@
 package net.luojiuoscar.isaac_disaster.helper;
 
-import net.luojiuoscar.isaac_disaster.Config;
+import net.luojiuoscar.isaac_disaster.datapack.gameplay.GameplayConfig;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerItemPools;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerItemPoolsProvider;
 import net.luojiuoscar.isaac_disaster.manager.data.ServerItemPoolsData;
@@ -17,9 +17,9 @@ public class PoolHelper {
 
     public static void markAsRemoval(Player player, ResourceLocation rl, ResourceLocation itemId) {
         // 根据配置决定要走全池移除还是单池移除（由 Config 控制）
-        if (Config.ITEM_REMOVAL_FROM_ALL_POOL.get()) {
+        if (GameplayConfig.ITEM_REMOVAL_FROM_ALL_POOL.get()) {
             removeFromAll(player, itemId);
-        } else if (Config.ITEM_REMOVAL_FROM_POOL.get()) {
+        } else if (GameplayConfig.ITEM_REMOVAL_FROM_POOL.get()) {
             removeFromPool(player, rl, itemId);
         }
     }
@@ -27,7 +27,7 @@ public class PoolHelper {
     public static void removeFromPool(Player player, ResourceLocation rl, ResourceLocation itemId) {
         if (!(player.level() instanceof ServerLevel serverLevel)) return;
 
-        if (Config.PLAYERS_SHARE_ITEM_POOLS.get()) {
+        if (GameplayConfig.PLAYERS_SHARE_ITEM_POOLS.get()) {
             ServerItemPoolsData.get(serverLevel).removeFromPool(rl, itemId);
         } else {
             player.getCapability(PlayerItemPoolsProvider.PLAYER_ITEM_POOL)
@@ -38,7 +38,7 @@ public class PoolHelper {
     public static void removeFromAll(Player player, ResourceLocation itemId) {
         if (!(player.level() instanceof ServerLevel serverLevel)) return;
 
-        if (Config.PLAYERS_SHARE_ITEM_POOLS.get()) {
+        if (GameplayConfig.PLAYERS_SHARE_ITEM_POOLS.get()) {
             ServerItemPoolsData.get(serverLevel).removeFromAll(itemId);
         } else {
             player.getCapability(PlayerItemPoolsProvider.PLAYER_ITEM_POOL)
@@ -49,7 +49,7 @@ public class PoolHelper {
     public static void addToPool(Player player, ResourceLocation rl, ResourceLocation itemId) {
         if (!(player.level() instanceof ServerLevel serverLevel)) return;
 
-        if (Config.PLAYERS_SHARE_ITEM_POOLS.get()) {
+        if (GameplayConfig.PLAYERS_SHARE_ITEM_POOLS.get()) {
             ServerItemPoolsData.get(serverLevel).addToPool(rl, itemId);
         } else {
             player.getCapability(PlayerItemPoolsProvider.PLAYER_ITEM_POOL)
@@ -60,7 +60,7 @@ public class PoolHelper {
     public static void addToAll(Player player, ResourceLocation itemId) {
         if (!(player.level() instanceof ServerLevel serverLevel)) return;
 
-        if (Config.PLAYERS_SHARE_ITEM_POOLS.get()) {
+        if (GameplayConfig.PLAYERS_SHARE_ITEM_POOLS.get()) {
             ServerItemPoolsData.get(serverLevel).addToAll(itemId);
         } else {
             player.getCapability(PlayerItemPoolsProvider.PLAYER_ITEM_POOL)
@@ -75,7 +75,7 @@ public class PoolHelper {
     public static boolean isRemoved(Player player, ResourceLocation rl, ResourceLocation itemId) {
         if (!(player.level() instanceof ServerLevel serverLevel)) return false;
 
-        if (Config.PLAYERS_SHARE_ITEM_POOLS.get()) {
+        if (GameplayConfig.PLAYERS_SHARE_ITEM_POOLS.get()) {
             return ServerItemPoolsData.get(serverLevel).isRemoved(rl, itemId);
         } else {
             return player.getCapability(PlayerItemPoolsProvider.PLAYER_ITEM_POOL)
@@ -87,7 +87,7 @@ public class PoolHelper {
     public static boolean isAdded(Player player, ResourceLocation rl, ResourceLocation itemId) {
         if (!(player.level() instanceof ServerLevel serverLevel)) return false;
 
-        if (Config.PLAYERS_SHARE_ITEM_POOLS.get()) {
+        if (GameplayConfig.PLAYERS_SHARE_ITEM_POOLS.get()) {
             return ServerItemPoolsData.get(serverLevel).isAdded(rl, itemId);
         } else {
             return player.getCapability(PlayerItemPoolsProvider.PLAYER_ITEM_POOL)
@@ -100,7 +100,7 @@ public class PoolHelper {
     public static Set<ResourceLocation> getRemoval(Player player, ResourceLocation rl) {
         if (!(player.level() instanceof ServerLevel serverLevel)) return Collections.emptySet();
 
-        if (Config.PLAYERS_SHARE_ITEM_POOLS.get()) {
+        if (GameplayConfig.PLAYERS_SHARE_ITEM_POOLS.get()) {
             return ServerItemPoolsData.get(serverLevel).getRemoval(rl);
         } else {
             return player.getCapability(PlayerItemPoolsProvider.PLAYER_ITEM_POOL)
@@ -113,7 +113,7 @@ public class PoolHelper {
     public static Set<ResourceLocation> getAddition(Player player, ResourceLocation rl) {
         if (!(player.level() instanceof ServerLevel serverLevel)) return Collections.emptySet();
 
-        if (Config.PLAYERS_SHARE_ITEM_POOLS.get()) {
+        if (GameplayConfig.PLAYERS_SHARE_ITEM_POOLS.get()) {
             return ServerItemPoolsData.get(serverLevel).getAddition(rl);
         } else {
             return player.getCapability(PlayerItemPoolsProvider.PLAYER_ITEM_POOL)
@@ -128,7 +128,7 @@ public class PoolHelper {
     public static void clear(Player player) {
         if (!(player.level() instanceof ServerLevel serverLevel)) return;
 
-        if (Config.PLAYERS_SHARE_ITEM_POOLS.get()) {
+        if (GameplayConfig.PLAYERS_SHARE_ITEM_POOLS.get()) {
             ServerItemPoolsData.get(serverLevel).clear();
         } else {
             player.getCapability(PlayerItemPoolsProvider.PLAYER_ITEM_POOL)

@@ -1,7 +1,7 @@
 package net.luojiuoscar.isaac_disaster.bullet.server;
 
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
-import net.luojiuoscar.isaac_disaster.Config;
+import net.luojiuoscar.isaac_disaster.datapack.gameplay.GameplayConfig;
 import net.luojiuoscar.isaac_disaster.bullet.core.BulletState;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackContext;
 import net.minecraftforge.event.TickEvent;
@@ -63,7 +63,7 @@ public final class BulletRuntime {
 
     /** All dimensions share capacity; rejected bullets are never queued for later. */
     public boolean canSpawn(ServerLevel level) {
-        return activeCount(level.getServer()) < Config.MAX_ACTIVE_BULLETS.get();
+        return activeCount(level.getServer()) < GameplayConfig.MAX_ACTIVE_BULLETS.get();
     }
 
     /** Removes optimized bullets from all loaded dimensions and notifies every affected client stream. */
