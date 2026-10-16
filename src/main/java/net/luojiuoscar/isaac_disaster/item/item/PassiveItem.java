@@ -2,6 +2,7 @@ package net.luojiuoscar.isaac_disaster.item.item;
 
 import net.luojiuoscar.isaac_disaster.datapack.gameplay.GameplayConfig;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerIsaacItemsProvider;
+import net.luojiuoscar.isaac_disaster.manager.CurioSlotManager;
 import net.luojiuoscar.isaac_disaster.registries.ability.passive.PassiveAbility;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
@@ -29,6 +30,13 @@ public class PassiveItem extends IsaacItem implements IIsaacCuriosItem {
     @Override
     public boolean canUnequip(SlotContext slotContext, ItemStack stack) {
         return GameplayConfig.ALLOW_CURIO_UNEQUIP.get();
+    }
+
+    @Override
+    public boolean canEquipFromUse(SlotContext slotContext, ItemStack stack) {
+        return !GameplayConfig.EXTRA_PASSIVE_ITEM_BACKPACK.get()
+                && CurioSlotManager.PASSIVE_ITEM.equals(slotContext.identifier())
+                && canEquip(slotContext, stack) && CurioSlotManager.isEmptySlot(slotContext);
     }
 
     @Override

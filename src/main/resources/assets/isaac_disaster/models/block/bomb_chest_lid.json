@@ -4,7 +4,7 @@
 	"texture_size": [64, 64],
 	"textures": {
 		"0": "isaac_disaster:block/bomb_chest",
-		"particle": "isaac_disaster:block/bomb_chest"
+		"particle": "isaac_disaster:block/chest_particles/bomb_chest"
 	},
 	"elements": [
 		{

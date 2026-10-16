@@ -1,6 +1,7 @@
 package net.luojiuoscar.isaac_disaster.item.item;
 
 import net.luojiuoscar.isaac_disaster.client.hooks.TrinketClientHooks;
+import net.luojiuoscar.isaac_disaster.manager.CurioSlotManager;
 import net.luojiuoscar.isaac_disaster.registries.ability.trinket.TrinketAbility;
 import net.luojiuoscar.isaac_disaster.registries.ability.trinket.TrinketAbilityContext;
 import net.minecraft.ChatFormatting;
@@ -55,6 +56,13 @@ public class Trinket extends Item implements IIsaacCuriosItem {
     public boolean canEquip(SlotContext slotContext, ItemStack stack) {
         return this.canEquip;
     }
+
+    @Override
+    public boolean canEquipFromUse(SlotContext slotContext, ItemStack stack) {
+        return CurioSlotManager.TRINKET.equals(slotContext.identifier())
+                && canEquip(slotContext, stack) && CurioSlotManager.isEmptySlot(slotContext);
+    }
+
     @Override
     public boolean canUnequip(SlotContext slotContext, ItemStack stack) {
         return this.canUnequip;

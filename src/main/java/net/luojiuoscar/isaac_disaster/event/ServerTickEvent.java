@@ -168,16 +168,10 @@ public class ServerTickEvent {
     private static void IsaacHeadAttack(ServerPlayer player){
         player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY).ifPresent(
                 playerAbility -> {
-                    ItemStack stack = null;
-                    if (player.getMainHandItem().getItem() instanceof IsaacHead){
-                        stack = player.getMainHandItem();
-
-                    }else if(player.getOffhandItem().getItem() instanceof IsaacHead){
-                        stack = player.getOffhandItem();
-                    }
+                    ItemStack stack = player.getMainHandItem();
                     AttackType attack = playerAbility.getAttackSelection().mainAttack();
                     playerAbility.tickAttacks(player);
-                    if (stack == null) return;
+                    if (!(stack.getItem() instanceof IsaacHead)) return;
 
                     if (playerAbility.isHoldingRightClick()){
                         RightClickTickEvent rcEvent = new RightClickTickEvent(player);

@@ -96,6 +96,18 @@ public final class CurioSlotManager {
         return (int) Math.max(0, Math.min(1024, Math.floor(value)));
     }
 
+    /** Gates native right-click equipment to empty functional slots, preventing replacement. */
+    public static boolean isEmptySlot(SlotContext context) {
+        if (context.cosmetic() || context.index() < 0) return false;
+        Optional<ICuriosItemHandler> optional = CuriosApi.getCuriosInventory(context.entity()).resolve();
+        if (optional.isEmpty()) return false;
+
+        return optional.get().getStacksHandler(context.identifier()).map(stacksHandler -> {
+            var stacks = stacksHandler.getStacks();
+            return context.index() < stacks.getSlots() && stacks.getStackInSlot(context.index()).isEmpty();
+        }).orElse(false);
+    }
+
     public static void requestReconcile(ServerPlayer player) {
         STATES.computeIfAbsent(player, ignored -> new State()).reconcileRequested = true;
     }

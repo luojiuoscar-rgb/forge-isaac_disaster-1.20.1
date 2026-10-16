@@ -27,7 +27,8 @@ public abstract class IsaacChestBlock extends ChestBlock {
 
     @Override
     public @NotNull RenderShape getRenderShape(BlockState state) {
-        return RenderShape.MODEL;
+        // Draw body and lid together so both use the same entity lighting.
+        return RenderShape.ENTITYBLOCK_ANIMATED;
     }
 
     @Override
