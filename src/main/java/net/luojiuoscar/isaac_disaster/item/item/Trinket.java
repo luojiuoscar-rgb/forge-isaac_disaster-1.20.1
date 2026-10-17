@@ -4,7 +4,6 @@ import net.luojiuoscar.isaac_disaster.client.hooks.TrinketClientHooks;
 import net.luojiuoscar.isaac_disaster.manager.CurioSlotManager;
 import net.luojiuoscar.isaac_disaster.registries.ability.trinket.TrinketAbility;
 import net.luojiuoscar.isaac_disaster.registries.ability.trinket.TrinketAbilityContext;
-import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -23,6 +22,7 @@ import java.util.List;
 
 
 public class Trinket extends Item implements IIsaacCuriosItem {
+    private static final int ENCHANTED_NAME_COLOR = 0xFFE65A;
     private static final String ENCHANTED = "enchanted";
     private static final String SWALLOWING = "swallowing";
     private static final String CONSUMED = "consumed";
@@ -72,7 +72,7 @@ public class Trinket extends Item implements IIsaacCuriosItem {
     public @NotNull Component getName(@NotNull ItemStack stack) {
         if (isEnchanted(stack)){
             return Component.translatable(this.getDescriptionId(stack)).withStyle(
-                    style -> style.withColor(ChatFormatting.LIGHT_PURPLE));
+                    style -> style.withColor(ENCHANTED_NAME_COLOR));
         }
         return Component.translatable(this.getDescriptionId(stack));
     }
