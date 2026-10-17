@@ -687,9 +687,6 @@ public class PlayerHelper {
     }
 
     public static boolean isHoldingIsaacHead(ServerPlayer player){
-        ItemStack stack = player.getMainHandItem();
-        if (stack.getItem() instanceof IsaacHead) return true;
-        stack = player.getOffhandItem();
-        return stack.getItem() instanceof IsaacHead;
+        return player.getMainHandItem().getItem() instanceof IsaacHead;
     }
 }

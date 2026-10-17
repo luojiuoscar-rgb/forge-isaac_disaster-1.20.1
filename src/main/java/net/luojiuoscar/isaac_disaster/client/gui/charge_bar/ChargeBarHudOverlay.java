@@ -21,8 +21,7 @@ public class ChargeBarHudOverlay {
                 var minecraft = Minecraft.getInstance();
                 var player = minecraft.player;
                 if (player == null || minecraft.options.hideGui) return;
-                if (!(player.getMainHandItem().getItem() instanceof IsaacHead)
-                        && !(player.getOffhandItem().getItem() instanceof IsaacHead)) return;
+                if (!(player.getMainHandItem().getItem() instanceof IsaacHead)) return;
                 IForgeRegistry<ChargeBarType> registry = RegistryManager.ACTIVE.getRegistry(
                         ModChargeBars.CHARGE_BAR_KEY.location());
                 if (registry == null) return;

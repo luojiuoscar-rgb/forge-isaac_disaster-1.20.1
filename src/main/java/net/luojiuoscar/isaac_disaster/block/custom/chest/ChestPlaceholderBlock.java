@@ -7,6 +7,7 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -18,6 +19,12 @@ public class ChestPlaceholderBlock extends ItemChestBlock {
 
     public ChestPlaceholderBlock(Properties properties) {
         super(properties, ModBlockEntities.CHEST_PLACEHOLDER_BLOCK_ENTITY::get);
+    }
+
+    @Override
+    public RenderShape getRenderShape(BlockState state) {
+        // This marker has no animated lid and stays in the chunk mesh.
+        return RenderShape.MODEL;
     }
 
     @Nullable

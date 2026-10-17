@@ -16,7 +16,10 @@
   ],
   "client": [
     "LivingEntityRendererMixin",
-    "ModelPartMixin"
+    "ModelPartMixin",
+    "ItemRendererMixin",
+    "RenderBuffersMixin",
+    "GlintBufferSourceMixin"
   ],
   "injectors": {
     "defaultRequire": 1
