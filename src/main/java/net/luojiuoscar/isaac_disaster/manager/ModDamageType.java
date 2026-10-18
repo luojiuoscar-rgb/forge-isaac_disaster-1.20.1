@@ -22,6 +22,12 @@ public class ModDamageType {
                     ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "laser")
             );
 
+    public static final ResourceKey<DamageType> FAMILIAR =
+            ResourceKey.create(
+                    Registries.DAMAGE_TYPE,
+                    ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "familiar")
+            );
+
     public static final ResourceKey<DamageType> FROZEN_SHATTER =
             ResourceKey.create(
                     Registries.DAMAGE_TYPE,

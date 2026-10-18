@@ -8,6 +8,7 @@
     "AttributeMapMixin",
     "AttributeInstanceMixin",
     "LivingEntityMixin",
+    "LivingEntityKnockbackMixin",
     "MobMixin",
     "CreeperMixin",
     "PlayerMixin",

@@ -2,7 +2,7 @@ package net.luojiuoscar.isaac_disaster.renderer.familiar;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
-import net.luojiuoscar.isaac_disaster.entity.familiar.MomKnifeEntity;
+import net.luojiuoscar.isaac_disaster.entity.familiar.impl.MomKnifeEntity;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRenderer;

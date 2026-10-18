@@ -10,21 +10,20 @@ import net.luojiuoscar.isaac_disaster.bullet.core.TrajectoryEvaluator;
 import net.luojiuoscar.isaac_disaster.bullet.debug.TrajectoryTelemetry;
 import net.luojiuoscar.isaac_disaster.bullet.tracking.TrackingGroups;
 import net.luojiuoscar.isaac_disaster.bullet.tracking.TrackingProfile;
-import net.luojiuoscar.isaac_disaster.event.ForgeEvents;
 import net.luojiuoscar.isaac_disaster.event.custom.attack.IsaacAttackAfterHitEvent;
 import net.luojiuoscar.isaac_disaster.event.custom.attack.IsaacAttackBeforeHitEntityEvent;
 import net.luojiuoscar.isaac_disaster.event.custom.attack.IsaacAttackHitBlockEvent;
 import net.luojiuoscar.isaac_disaster.event.custom.attack.tear_bullet.BulletTickEvent;
 import net.luojiuoscar.isaac_disaster.event.custom.attack.tear_bullet.TearBulletEndOfLifeEvent;
 import net.luojiuoscar.isaac_disaster.helper.EntityHelper;
-import net.luojiuoscar.isaac_disaster.manager.ModDamageType;
+import net.luojiuoscar.isaac_disaster.helper.TrackingTargetRules;
+import net.luojiuoscar.isaac_disaster.system.damage.ModDamageSources;
 import net.luojiuoscar.isaac_disaster.networking.packet.bullet.BulletCorrectionS2CPacket;
 import net.luojiuoscar.isaac_disaster.networking.packet.bullet.BulletShatterS2CPacket;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.ModAttackTypes;
 import net.luojiuoscar.isaac_disaster.registries.split_module.SplitExecutor;
 import net.luojiuoscar.isaac_disaster.registries.split_module.SplitTriggerType;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
@@ -287,11 +286,11 @@ public final class BulletManager {
                     || bullet.rememberHitTargets()
                         && bullet.getDamagedEntities().contains(candidate.getUUID())) continue;
                 if (!(bullet.getOwner() != null && bullet.getOwner().level() instanceof ServerLevel level)
-                    || !profile.eligible(level, bullet.getOwner(), candidate)) continue;
+                    || !TrackingTargetRules.eligible(level, bullet.getOwner(), candidate)) continue;
                 if (candidate.distanceToSqr(bullet.position().x, bullet.position().y, bullet.position().z)
                     > profile.range() * profile.range()) continue;
                 int priority =
-                    TrackingProfile.priority(
+                    TrackingTargetRules.priority(
                         (ServerLevel) bullet.getOwner().level(), bullet.getOwner(), candidate);
                 double distance = candidate.distanceToSqr(searchCenter.x, searchCenter.y, searchCenter.z);
                 if (priority < bestPriority || priority == bestPriority && distance < best) {
@@ -540,7 +539,6 @@ public final class BulletManager {
         // all candidates are swept before event dispatch, so a later same-tick candidate must
         // observe the cooldown set by an earlier successful hit.
         if (bullet.hitCooldownTicks() > 0) return true;
-        ForgeEvents.registerOptimizedTearKnockback(target, bullet.velocity());
         if (target.hurt(tearDamageSource(level, bullet), (float) before.getDamage())) {
             if (bullet.rememberHitTargets()) bullet.getDamagedEntities().add(target.getUUID());
             bullet.setHitCooldownTicks(
@@ -577,13 +575,7 @@ public final class BulletManager {
      * entity.
      */
     private static DamageSource tearDamageSource(ServerLevel level, BulletState bullet) {
-        return new DamageSource(
-            level
-                .registryAccess()
-                .registryOrThrow(Registries.DAMAGE_TYPE)
-                .getHolderOrThrow(ModDamageType.TEAR),
-            null,
-            bullet.getOwner());
+        return ModDamageSources.tear(level, bullet.getOwner(), bullet.velocity());
     }
 
     /** Coalesces same-tick redirects so each slot/generation receives at most one correction. */

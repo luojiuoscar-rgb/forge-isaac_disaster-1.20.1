@@ -24,7 +24,7 @@ public class FamiliarEntry {
 
     public FamiliarEntry(ResourceLocation type, int count, List<UUID> entityIds) {
         this.type = type;
-        this.count = Math.max(0, count);
+        setCount(count);
         this.entityIds = new ArrayList<>();
         this.entityIdsView = Collections.unmodifiableList(this.entityIds);
         for (UUID entityId : entityIds) {
@@ -40,7 +40,7 @@ public class FamiliarEntry {
         return count;
     }
 
-    public void setCount(int count) {
+    void setCount(int count) {
         this.count = Math.max(0, count);
     }
 
@@ -106,7 +106,7 @@ public class FamiliarEntry {
     public CompoundTag saveNBT() {
         CompoundTag tag = new CompoundTag();
         tag.putString("Type", type.toString());
-        tag.putInt("Count", count);
+        tag.putInt("Count", getCount());
         return tag;
     }
 

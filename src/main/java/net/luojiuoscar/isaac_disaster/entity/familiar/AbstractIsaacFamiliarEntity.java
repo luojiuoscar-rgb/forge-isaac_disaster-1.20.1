@@ -15,6 +15,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.network.NetworkHooks;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.NotNull;
@@ -27,7 +28,7 @@ import java.util.UUID;
  * Base entity for non-persistent Isaac familiars owned by a server player.
  */
 public abstract class AbstractIsaacFamiliarEntity extends Entity {
-    private static final double MAX_VALID_DISTANCE = 64.0;
+    protected static final double MAX_VALID_DISTANCE = 16.0;
     private static final int MIN_VALIDITY_CHECK_INTERVAL = 20;
     private static final int MAX_VALIDITY_CHECK_INTERVAL = 40;
     private static final EntityDataAccessor<Optional<UUID>> OWNER_UUID =
@@ -37,6 +38,7 @@ public abstract class AbstractIsaacFamiliarEntity extends Entity {
     protected Player cachedOwner;
     private int formationIndex;
     private int validityCheckDelay;
+    private boolean recallPending;
 
     protected AbstractIsaacFamiliarEntity(EntityType<?> type, Level level) {
         super(type, level);
@@ -51,12 +53,30 @@ public abstract class AbstractIsaacFamiliarEntity extends Entity {
         this.noPhysics = true;
         this.setNoGravity(true);
 
-        if (!level().isClientSide && --validityCheckDelay <= 0) {
-            if (!isValidFamiliar()) {
+        if (!level().isClientSide) {
+            Player owner = getOwner();
+            if (owner instanceof ServerPlayer && owner.isAlive() && !owner.isRemoved()
+                    && owner.level() != level()) {
+                // Cross-dimension and unavailable entities retain the replacement fallback.
                 discardAndUnlink();
                 return;
             }
-            resetValidityCheckDelay();
+            if (--validityCheckDelay <= 0) {
+                if (!isValidFamiliar()) {
+                    discardAndUnlink();
+                    return;
+                }
+                resetValidityCheckDelay();
+            }
+            if (owner instanceof ServerPlayer && owner.isAlive() && !owner.isRemoved()
+                    && distanceToSqr(owner) > MAX_VALID_DISTANCE * MAX_VALID_DISTANCE) {
+                requestRecall();
+                return;
+            }
+            if (recallPending) {
+                setDeltaMovement(Vec3.ZERO);
+                return;
+            }
         }
 
         tickFamiliar();
@@ -73,16 +93,50 @@ public abstract class AbstractIsaacFamiliarEntity extends Entity {
     public boolean isValidFamiliar() {
         Player owner = getOwner();
         ResourceLocation familiarType = getFamiliarType();
-        if (!(owner instanceof ServerPlayer) || !owner.isAlive() || owner.isRemoved() || familiarType == null) {
+        if (isRemoved() || !(owner instanceof ServerPlayer) || !owner.isAlive() || owner.isRemoved()
+                || owner.level() != level() || familiarType == null) {
             return false;
         }
-        if (distanceToSqr(owner) > MAX_VALID_DISTANCE * MAX_VALID_DISTANCE) return false;
-
         final boolean[] valid = {false};
         owner.getCapability(PlayerFamiliarDataProvider.PLAYER_FAMILIAR_DATA).ifPresent(
                 data -> valid[0] = data.containsEntity(familiarType, getUUID()));
         return valid[0];
     }
+
+    public final boolean isRecallPending() {
+        return recallPending;
+    }
+
+    /** Queues an existing entity without freeing its roster slot or persistent requirement. */
+    private void requestRecall() {
+        if (recallPending) {
+            setDeltaMovement(Vec3.ZERO);
+            return;
+        }
+        if (!isValidFamiliar()) {
+            discardAndUnlink();
+            return;
+        }
+        recallPending = true;
+        setDeltaMovement(Vec3.ZERO);
+        getOwner().getCapability(PlayerFamiliarDataProvider.PLAYER_FAMILIAR_DATA)
+                .ifPresent(data -> data.queueRecall(getUUID()));
+    }
+
+    /** Called only by the owner's shared admission scheduler. */
+    public final boolean recallToOwner() {
+        if (!recallPending || !isValidFamiliar()) return false;
+        Player owner = getOwner();
+        teleportTo(owner.getX(), owner.getY() + owner.getBbHeight() * 0.55, owner.getZ());
+        setDeltaMovement(Vec3.ZERO);
+        recallPending = false;
+        resetValidityCheckDelay();
+        onRecalled();
+        return true;
+    }
+
+    /** Subclasses clear attack/navigation state after an actual teleport, before behavior resumes. */
+    protected void onRecalled() { }
 
     /**
      * Discards the entity without editing the owner capability.

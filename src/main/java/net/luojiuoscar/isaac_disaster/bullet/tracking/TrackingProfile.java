@@ -3,14 +3,7 @@ package net.luojiuoscar.isaac_disaster.bullet.tracking;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.ModAttackTypes;
 import net.luojiuoscar.isaac_disaster.bullet.core.BulletState;
 import net.luojiuoscar.isaac_disaster.bullet.core.BulletSteeringMode;
-import net.luojiuoscar.isaac_disaster.helper.EntityHelper;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.NeutralMob;
-import net.minecraft.world.entity.monster.Enemy;
-import net.minecraft.world.entity.monster.Monster;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 
 /** Shared tracking policy for all lightweight bullets. */
@@ -30,7 +23,7 @@ public record TrackingProfile(double range, double steer, double forwardBias, do
         return velocity.lengthSqr() < 1.0E-8D ? bullet.position() : bullet.position().add(velocity.normalize().scale(offset));
     }
 
-    /** Returns the same target-center geometry used by server and legacy entity paths. */
+    /** Returns the target's body center for steering. */
     public Vec3 targetCenter(LivingEntity target) {
         return target.position().add(0.0D, target.getBbHeight() * 0.5D, 0.0D);
     }
@@ -81,26 +74,4 @@ public record TrackingProfile(double range, double steer, double forwardBias, do
         return bullet.velocity().normalize().scale(bullet.baseSpeed());
     }
 
-    /** Restores the legacy hostility ordering before distance is considered. */
-    public static int priority(ServerLevel level, LivingEntity owner, LivingEntity entity) {
-        if (entity instanceof Enemy) {
-            boolean aggro = false;
-            if (entity instanceof Monster monster) {
-                aggro = monster.getTarget() == owner;
-                if (monster instanceof NeutralMob neutral && owner instanceof Player player) aggro |= neutral.isAngryAt(player);
-            }
-            return aggro ? 0 : 1;
-        }
-        if (entity instanceof Mob) return 2;
-        if (entity instanceof Player player && owner instanceof Player ownerPlayer
-                && level.getServer().isPvpAllowed() && ownerPlayer.canHarmPlayer(player)
-                && !ownerPlayer.isAlliedTo(player)) return 3;
-        return Integer.MAX_VALUE;
-    }
-
-    /** Returns whether a candidate is eligible for this owner. */
-    public boolean eligible(ServerLevel level, LivingEntity owner, LivingEntity entity) {
-        return entity.isAlive() && entity != owner && !entity.isInvulnerable()
-                && !EntityHelper.isFriendly(entity, owner) && priority(level, owner, entity) != Integer.MAX_VALUE;
-    }
 }

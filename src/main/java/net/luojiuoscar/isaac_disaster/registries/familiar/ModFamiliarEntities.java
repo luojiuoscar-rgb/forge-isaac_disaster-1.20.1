@@ -20,7 +20,12 @@ public final class ModFamiliarEntities {
             DeferredRegister.create(FAMILIAR_ENTITY_KEY, IsaacDisaster.MOD_ID);
 
     public static final RegistryObject<FamiliarEntityType> MOM_KNIFE =
-            FAMILIAR_ENTITY_REGISTRY.register("mom_knife", () -> new FamiliarEntityType(ModEntities.MOM_KNIFE));
+            FAMILIAR_ENTITY_REGISTRY.register("mom_knife", () ->
+                    new FamiliarEntityType(ModEntities.MOM_KNIFE, Integer.MAX_VALUE, null, 0, true));
+
+    public static final RegistryObject<FamiliarEntityType> BLUE_FLY =
+            FAMILIAR_ENTITY_REGISTRY.register("blue_fly", () ->
+                    new FamiliarEntityType(ModEntities.BLUE_FLY, 64, ModFamiliarLimitGroups.FLIES, 0, false));
 
     private ModFamiliarEntities() {
     }

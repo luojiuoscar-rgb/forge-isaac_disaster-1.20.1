@@ -7,6 +7,8 @@ import net.luojiuoscar.isaac_disaster.block.renderer.IdentifierRenderer;
 import net.luojiuoscar.isaac_disaster.block.renderer.IsaacChestRenderer;
 import net.luojiuoscar.isaac_disaster.block.renderer.PedestalRenderer;
 import net.luojiuoscar.isaac_disaster.client.ModKeyMappings;
+import net.luojiuoscar.isaac_disaster.client.model.creature.FlyModel;
+import net.luojiuoscar.isaac_disaster.client.renderer.creature.FlyRenderer;
 import net.luojiuoscar.isaac_disaster.client.gui.charge_bar.ChargeBarHudOverlay;
 import net.luojiuoscar.isaac_disaster.client.gui.hud.FlyHudOverlay;
 import net.luojiuoscar.isaac_disaster.client.gui.hud.ReviveHudOverlay;
@@ -41,6 +43,11 @@ import net.minecraftforge.registries.ForgeRegistries;
 
 @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
 public class ClientModEvents {
+    @SubscribeEvent
+    public static void registerModelLayers(EntityRenderersEvent.RegisterLayerDefinitions event) {
+        event.registerLayerDefinition(FlyModel.LAYER_LOCATION, FlyModel::createBodyLayer);
+    }
+
     // 订阅实体渲染器注册事件
     @SubscribeEvent
     public static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
@@ -48,6 +55,7 @@ public class ClientModEvents {
         event.registerEntityRenderer(ModEntities.GIGA_BOMB.get(), CustomTntRenderer::new);
         event.registerEntityRenderer(ModEntities.SELECTIVE_EFFECT_CLOUD.get(), NoopRenderer::new);
         event.registerEntityRenderer(ModEntities.MOM_KNIFE.get(), MomKnifeRenderer::new);
+        event.registerEntityRenderer(ModEntities.BLUE_FLY.get(), FlyRenderer::new);
 
         event.registerBlockEntityRenderer(ModBlockEntities.PEDESTAL_BLOCK_ENTITY.get(), PedestalRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.NORMAL_CHEST_BLOCK_ENTITY.get(), IsaacChestRenderer::new);

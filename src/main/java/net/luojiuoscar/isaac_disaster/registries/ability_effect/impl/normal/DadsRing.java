@@ -2,7 +2,6 @@ package net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.normal;
 
 import net.luojiuoscar.isaac_disaster.effect.ModEffects;
 import net.luojiuoscar.isaac_disaster.helper.EntityHelper;
-import net.luojiuoscar.isaac_disaster.helper.LevelHelper;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ContextKeys;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ExecutableEffectContext;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.IAbilityEffect;
@@ -13,6 +12,7 @@ import net.luojiuoscar.isaac_disaster.networking.EntityVisualStateSync;
 import net.luojiuoscar.isaac_disaster.registries.visual.ModVisualLayers;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.LivingEntity;
 
 import java.util.List;
 
@@ -29,9 +29,13 @@ public final class DadsRing implements IAbilityEffect {
             EntityVisualStateSync.syncToTracking(player);
             EntityVisualStateSync.syncToPlayer(player, player);
         }
-        for (var target : LevelHelper.selectBySphere(level, center, RADIUS)) {
+        for (var target : level.getEntitiesOfClass(LivingEntity.class, player.getBoundingBox().inflate(RADIUS))) {
             if (!target.isAlive() || target.isInvulnerable() || EntityHelper.isFriendly(player, target)) continue;
-            if (player.distanceToSqr(target) <= INNER_RADIUS * INNER_RADIUS) continue;
+            var offset = target.position().subtract(center);
+            double horizontalDistanceSqr = offset.horizontalDistanceSqr();
+            if (Math.abs(offset.y) > RADIUS
+                    || horizontalDistanceSqr <= INNER_RADIUS * INNER_RADIUS
+                    || horizontalDistanceSqr > RADIUS * RADIUS) continue;
             var targetContext = context.copy(target);
             targetContext.set(ContextKeys.AMPLIFIER, 1.0);
             if (!EntityVisualState.isEligible(target)) {

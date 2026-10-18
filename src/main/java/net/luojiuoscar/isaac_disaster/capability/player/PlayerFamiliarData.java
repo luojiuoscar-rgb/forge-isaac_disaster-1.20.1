@@ -1,5 +1,8 @@
 package net.luojiuoscar.isaac_disaster.capability.player;
 
+import net.luojiuoscar.isaac_disaster.helper.FamiliarHelper;
+import net.luojiuoscar.isaac_disaster.registries.familiar.FamiliarEntityType;
+import net.luojiuoscar.isaac_disaster.registries.familiar.FamiliarLimitGroup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
@@ -8,88 +11,97 @@ import net.minecraftforge.common.capabilities.AutoRegisterCapability;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.IdentityHashMap;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Function;
 
-/**
- * Player capability that records which Isaac familiars should exist for the player.
- */
+/** Persistent ownership counts, with per-player group allocations and runtime entity registrations. */
 @AutoRegisterCapability
 public class PlayerFamiliarData {
     private final Map<ResourceLocation, FamiliarEntry> familiars = new LinkedHashMap<>();
+    private final Map<FamiliarLimitGroup, FamiliarLimitGroupInstance> groups = new IdentityHashMap<>();
+    private final Function<ResourceLocation, FamiliarEntityType> typeResolver;
+    private final LinkedHashSet<UUID> pendingRecalls = new LinkedHashSet<>();
     private int nextSpawnIndex;
+    private long lastAdmissionTick = Long.MIN_VALUE;
 
-    /**
-     * Sets the required count for a familiar type.
-     */
+    public PlayerFamiliarData() {
+        this(FamiliarHelper::getFamiliarType, FamiliarHelper.getRegisteredFamiliarLimitGroups());
+    }
+
+    PlayerFamiliarData(Function<ResourceLocation, FamiliarEntityType> typeResolver, Collection<FamiliarLimitGroup> definitions) {
+        this.typeResolver = Objects.requireNonNull(typeResolver);
+        for (FamiliarLimitGroup definition : definitions) groups.put(definition, new FamiliarLimitGroupInstance(definition));
+    }
+
     public void setCount(ResourceLocation type, int count) {
         FamiliarEntry entry = getOrCreateEntry(type);
         entry.setCount(count);
-        if (entry.getCount() == 0 && entry.hasNoEntities()) {
-            familiars.remove(type);
-            normalizeSpawnIndex();
+        FamiliarEntityType descriptor = typeResolver.apply(type);
+        if (descriptor != null) {
+            applyOwnLimit(entry, descriptor);
+            FamiliarLimitGroupInstance group = groups.get(descriptor.getGroup());
+            if (group != null) group.reconcile(familiars.values(), typeResolver);
         }
+        pruneEmptyEntries();
     }
 
-    /**
-     * Adds a delta to the required count for a familiar type.
-     */
     public void addCount(ResourceLocation type, int delta) {
         long nextCount = (long) getCount(type) + delta;
         setCount(type, (int) Math.max(0L, Math.min(Integer.MAX_VALUE, nextCount)));
     }
 
-    /**
-     * Sets every familiar requirement to zero while keeping entity UUIDs for the next reconciliation pass.
-     */
+    /** Keeps UUIDs until reconciliation can discard the corresponding world entities. */
     public void clearRequirements() {
-        for (FamiliarEntry entry : familiars.values()) {
-            entry.setCount(0);
-        }
+        for (FamiliarEntry entry : familiars.values()) entry.setCount(0);
+        for (FamiliarLimitGroupInstance group : groups.values()) group.clear();
     }
 
-    /**
-     * Removes entries that no longer request or reference any familiar entities.
-     */
     public void pruneEmptyEntries() {
-        familiars.entrySet().removeIf(entry ->
-                entry.getValue().getCount() == 0 && entry.getValue().hasNoEntities());
-        normalizeSpawnIndex();
+        familiars.entrySet().removeIf(item -> item.getValue().getCount() == 0 && item.getValue().hasNoEntities());
     }
 
     public int getCount(ResourceLocation type) {
-        return familiars.containsKey(type) ? familiars.get(type).getCount() : 0;
+        FamiliarEntry entry = familiars.get(type);
+        return entry == null ? 0 : entry.getCount();
     }
 
-    public Optional<FamiliarEntry> getEntry(ResourceLocation type) {
-        return Optional.ofNullable(familiars.get(type));
+    public int getEffectiveCount(ResourceLocation type) {
+        FamiliarEntry entry = familiars.get(type);
+        FamiliarEntityType descriptor = typeResolver.apply(type);
+        if (entry == null || descriptor == null) return 0;
+        if (descriptor.getGroup() == null) return Math.min(entry.getCount(), descriptor.getLimit());
+        FamiliarLimitGroupInstance group = groups.get(descriptor.getGroup());
+        return group == null ? 0 : group.getQuota(type);
     }
+
+    public Optional<FamiliarEntry> getEntry(ResourceLocation type) { return Optional.ofNullable(familiars.get(type)); }
 
     public FamiliarEntry getOrCreateEntry(ResourceLocation type) {
         return familiars.computeIfAbsent(type, FamiliarEntry::new);
     }
 
-    /**
-     * Records a familiar entity as owned by this player.
-     */
+    /** Links an entity to an already granted slot; unlinking never releases that allocation. */
     public void registerEntity(ResourceLocation type, UUID entityId) {
-        getOrCreateEntry(type).addEntity(entityId);
+        FamiliarEntry entry = getOrCreateEntry(type);
+        if (entry.containsEntity(entityId)) return;
+        if (entry.getEntityCount() >= getEffectiveCount(type))
+            throw new IllegalStateException("No allocated familiar slot for " + type);
+        entry.addEntity(entityId);
     }
 
-    /**
-     * Removes a familiar entity UUID from its entry.
-     */
     public void removeEntity(ResourceLocation type, UUID entityId) {
+        pendingRecalls.remove(entityId);
         FamiliarEntry entry = familiars.get(type);
         if (entry == null) return;
-
         entry.removeEntity(entityId);
-        if (entry.getCount() == 0 && entry.hasNoEntities()) {
-            familiars.remove(type);
-            normalizeSpawnIndex();
-        }
+        if (entry.getCount() == 0 && entry.hasNoEntities()) familiars.remove(type);
     }
 
     public boolean containsEntity(ResourceLocation type, UUID entityId) {
@@ -102,88 +114,93 @@ public class PlayerFamiliarData {
         return entry == null ? -1 : entry.getIndex(entityId);
     }
 
-    public Collection<FamiliarEntry> getEntries() {
-        return Collections.unmodifiableCollection(familiars.values());
-    }
+    public Collection<FamiliarEntry> getEntries() { return Collections.unmodifiableCollection(familiars.values()); }
 
-    /**
-     * Returns the next unmet familiar requirement in stable insertion-order round-robin order.
-     */
+    /** Round-robin entity restoration; quota was already assigned when requirements changed. */
     public Optional<FamiliarEntry> getNextIncompleteEntry() {
         int size = familiars.size();
-        if (size == 0) {
-            nextSpawnIndex = 0;
-            return Optional.empty();
-        }
-
-        normalizeSpawnIndex();
-        FamiliarEntry wrappedCandidate = null;
+        if (size == 0) return Optional.empty();
+        nextSpawnIndex = Math.floorMod(nextSpawnIndex, size);
+        FamiliarEntry wrapped = null;
         int wrappedIndex = -1;
         int index = 0;
         for (FamiliarEntry entry : familiars.values()) {
-            if (entry.getEntityCount() < entry.getCount()) {
+            if (entry.getEntityCount() < getEffectiveCount(entry.getType())) {
                 if (index >= nextSpawnIndex) {
                     nextSpawnIndex = (index + 1) % size;
                     return Optional.of(entry);
                 }
-                if (wrappedCandidate == null) {
-                    wrappedCandidate = entry;
+                if (wrapped == null) {
+                    wrapped = entry;
                     wrappedIndex = index;
                 }
             }
             index++;
         }
-
-        if (wrappedCandidate != null) {
-            nextSpawnIndex = (wrappedIndex + 1) % size;
-            return Optional.of(wrappedCandidate);
-        }
-        return Optional.empty();
+        if (wrapped != null) nextSpawnIndex = (wrappedIndex + 1) % size;
+        return Optional.ofNullable(wrapped);
     }
 
-    /**
-     * Copies persistent familiar requirements from another player capability.
-     */
+    /** Runtime-only FIFO; repeated distance checks cannot enqueue an entity twice. */
+    public void queueRecall(UUID entityId) { pendingRecalls.add(entityId); }
+
+    public UUID pollRecall() {
+        var iterator = pendingRecalls.iterator();
+        if (!iterator.hasNext()) return null;
+        UUID entityId = iterator.next();
+        iterator.remove();
+        return entityId;
+    }
+
+    /** Recalls and new spawns share one admission per server tick. */
+    public boolean beginAdmission(long tick) {
+        if (lastAdmissionTick == tick) return false;
+        lastAdmissionTick = tick;
+        return true;
+    }
+
+    public void clearPendingRecalls() { pendingRecalls.clear(); }
+
+    /** Copies persistent counts and insertion order, never runtime allocations or UUIDs. */
     public void copyFrom(PlayerFamiliarData source) {
+        List<FamiliarEntry> copied = source.familiars.values().stream()
+                .map(entry -> new FamiliarEntry(entry.getType(), entry.getCount(), List.of())).toList();
         familiars.clear();
-        nextSpawnIndex = 0;
-        for (FamiliarEntry entry : source.familiars.values()) {
-            FamiliarEntry copied = new FamiliarEntry(entry.getType(), entry.getCount(), java.util.List.of());
-            familiars.put(copied.getType(), copied);
-        }
+        for (FamiliarEntry entry : copied) familiars.put(entry.getType(), entry);
+        rebuildRuntimeState();
     }
 
-    /**
-     * Saves familiar requirements. Runtime entity UUIDs are intentionally not persistent.
-     */
     public void saveNBTData(CompoundTag nbt) {
         ListTag entries = new ListTag();
-        for (FamiliarEntry entry : familiars.values()) {
-            entries.add(entry.saveNBT());
-        }
+        for (FamiliarEntry entry : familiars.values()) entries.add(entry.saveNBT());
         nbt.put("Familiars", entries);
     }
 
-    /**
-     * Loads familiar requirements. Real entities are recreated by the familiar reconciler.
-     */
     public void loadNBTData(CompoundTag nbt) {
         familiars.clear();
-        nextSpawnIndex = 0;
-        if (!nbt.contains("Familiars", Tag.TAG_LIST)) return;
-
-        ListTag entries = nbt.getList("Familiars", Tag.TAG_COMPOUND);
-        for (Tag entryTag : entries) {
-            if (!(entryTag instanceof CompoundTag compoundTag)) continue;
-            FamiliarEntry.loadNBT(compoundTag).ifPresent(entry -> familiars.put(entry.getType(), entry));
+        if (nbt.contains("Familiars", Tag.TAG_LIST)) {
+            for (Tag entryTag : nbt.getList("Familiars", Tag.TAG_COMPOUND)) {
+                if (entryTag instanceof CompoundTag tag)
+                    FamiliarEntry.loadNBT(tag).ifPresent(entry -> familiars.put(entry.getType(), entry));
+            }
         }
+        rebuildRuntimeState();
     }
 
-    private void normalizeSpawnIndex() {
-        if (familiars.isEmpty()) {
-            nextSpawnIndex = 0;
-        } else {
-            nextSpawnIndex = Math.floorMod(nextSpawnIndex, familiars.size());
+    private void rebuildRuntimeState() {
+        pendingRecalls.clear();
+        lastAdmissionTick = Long.MIN_VALUE;
+        nextSpawnIndex = 0;
+        for (FamiliarLimitGroupInstance group : groups.values()) group.clear();
+        for (FamiliarEntry entry : familiars.values()) {
+            FamiliarEntityType descriptor = typeResolver.apply(entry.getType());
+            if (descriptor != null) applyOwnLimit(entry, descriptor);
         }
+        for (FamiliarLimitGroupInstance group : groups.values()) group.reconcile(familiars.values(), typeResolver);
+        pruneEmptyEntries();
+    }
+
+    private static void applyOwnLimit(FamiliarEntry entry, FamiliarEntityType type) {
+        if (!type.retainOverflow()) entry.setCount(Math.min(entry.getCount(), type.getLimit()));
     }
 }

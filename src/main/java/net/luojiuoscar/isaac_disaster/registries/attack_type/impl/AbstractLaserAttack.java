@@ -10,7 +10,7 @@ import net.luojiuoscar.isaac_disaster.event.custom.attack.IsaacAttackHitBlockEve
 import net.luojiuoscar.isaac_disaster.helper.EntityHelper;
 import net.luojiuoscar.isaac_disaster.helper.GeometryHelper;
 import net.luojiuoscar.isaac_disaster.helper.ProjectileCollisionHelper;
-import net.luojiuoscar.isaac_disaster.manager.ModDamageType;
+import net.luojiuoscar.isaac_disaster.system.damage.ModDamageSources;
 import net.luojiuoscar.isaac_disaster.networking.ModMessages;
 import net.luojiuoscar.isaac_disaster.networking.packet.laser.LaserBeamBatchS2CPacket;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.CompositeTrigger;
@@ -30,7 +30,6 @@ import net.luojiuoscar.isaac_disaster.registries.trajectory.TrajectoryRuntime;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.DustParticleOptions;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -1022,12 +1021,7 @@ public abstract class AbstractLaserAttack extends AttackType {
     protected DamageSource getDamageSource(LivingEntity source) {
         ServerLevel level = getLaserLevel(source);
         if (level == null) return source.damageSources().generic();
-        var damageTypeHolder =
-            level
-                .registryAccess()
-                .registryOrThrow(Registries.DAMAGE_TYPE)
-                .getHolderOrThrow(ModDamageType.LASER);
-        return new DamageSource(damageTypeHolder, source, source);
+        return ModDamageSources.laser(level, source);
     }
 
     /** Resolves the world for collision, damage and visuals; persistent beams may pin it at release. */

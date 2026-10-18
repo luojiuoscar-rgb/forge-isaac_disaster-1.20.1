@@ -2,7 +2,8 @@ package net.luojiuoscar.isaac_disaster.entity;
 
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.entity.custom.LemonEffectCloud;
-import net.luojiuoscar.isaac_disaster.entity.familiar.MomKnifeEntity;
+import net.luojiuoscar.isaac_disaster.entity.familiar.impl.fly.BlueFlyEntity;
+import net.luojiuoscar.isaac_disaster.entity.familiar.impl.MomKnifeEntity;
 import net.luojiuoscar.isaac_disaster.entity.tnt.GigaBomb;
 import net.luojiuoscar.isaac_disaster.entity.tnt.IsaacBomb;
 import net.minecraft.world.entity.EntityType;
@@ -47,4 +48,12 @@ public class ModEntities {
                             .clientTrackingRange(64)
                             .updateInterval(1)
                             .build("mom_knife"));
+
+    public static final RegistryObject<EntityType<BlueFlyEntity>> BLUE_FLY =
+            MOD_ENTITIES.register("blue_fly",
+                    () -> EntityType.Builder.<BlueFlyEntity>of(BlueFlyEntity::new, MobCategory.MISC)
+                            .sized(0.125F, 0.125F)
+                            .clientTrackingRange(3)
+                            .updateInterval(1)
+                            .build("blue_fly"));
 }

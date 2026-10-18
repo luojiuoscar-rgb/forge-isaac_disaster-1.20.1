@@ -1,6 +1,7 @@
 package net.luojiuoscar.isaac_disaster.event;
 
 import net.minecraft.world.phys.Vec3;
+import net.luojiuoscar.isaac_disaster.system.damage.HurtKnockback;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -17,12 +18,27 @@ class ForgeEventsProjectileKnockbackTest {
     @Test
     void tearImpulseIsHorizontalAndRespectsKnockbackResistance() {
         Vec3 currentVelocity = new Vec3(0.2D, 0.37D, -0.1D);
-        Vec3 updatedVelocity = ForgeEvents.applyTearImpulse(currentVelocity, new Vec3(3.0D, 0.0D, 4.0D),
-                0.10D, 0.25D);
+        Vec3 updatedVelocity = HurtKnockback.applyTearImpulse(currentVelocity, 0.10D, -3.0D, -4.0D, 0.25D);
 
         assertEquals(0.245D, updatedVelocity.x, EPSILON);
         assertEquals(0.37D, updatedVelocity.y, EPSILON);
         assertEquals(-0.04D, updatedVelocity.z, EPSILON);
+    }
+
+    @Test
+    void fullResistanceAndMissingDirectionCannotCreateAnImpulse() {
+        Vec3 current = new Vec3(0.2D, 0.37D, -0.1D);
+        assertEquals(current, HurtKnockback.applyTearImpulse(current, 0.4D, 3, 4, 1));
+        assertEquals(current, HurtKnockback.applyTearImpulse(current, 0.4D, 0, 0, 0));
+        assertEquals(current, HurtKnockback.applyTearImpulse(current, 0, 3, 4, 0));
+    }
+
+    @Test
+    void eventModifiedRatiosReverseTheImpulseWithoutChangingVerticalVelocity() {
+        Vec3 updated = HurtKnockback.applyTearImpulse(new Vec3(0.2D, 0.37D, -0.1D), 0.4D, 0, 2, 0.25);
+        assertEquals(0.2D, updated.x, EPSILON);
+        assertEquals(0.37D, updated.y, EPSILON);
+        assertEquals(-0.4D, updated.z, EPSILON);
     }
 
     @Test

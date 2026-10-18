@@ -18,6 +18,7 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ai.goal.AvoidEntityGoal;
 import net.minecraft.world.entity.monster.Creeper;
 import net.minecraft.world.entity.monster.Zombie;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.util.FakePlayerFactory;
 import net.minecraftforge.gametest.GameTestHolder;
 import net.minecraftforge.gametest.PrefixGameTestTemplate;
@@ -27,6 +28,48 @@ import java.util.UUID;
 @GameTestHolder(IsaacDisaster.MOD_ID)
 @PrefixGameTestTemplate(false)
 public final class PanicAndRingGameTests {
+    @GameTest(template = "trajectory_empty", batch = "panic_ring")
+    public static void ringPetrifiesSlimesThroughoutItsHorizontalAnnulus(GameTestHelper helper) {
+        var player = FakePlayerFactory.get(helper.getLevel(), new GameProfile(UUID.randomUUID(), "ring_height"));
+        player.setPos(helper.absolutePos(new BlockPos(1, 1, 1)).getCenter());
+        for (var offset : new Vec3[]{new Vec3(1.8, 1.0, 0), new Vec3(1.8, -1.0, 0),
+                new Vec3(2.0, 2.0, 0), new Vec3(0, -2.0, 2.0), new Vec3(1.2, 1.5, 1.2)}) {
+            var slime = helper.spawn(EntityType.SLIME, new BlockPos(1, 1, 1));
+            slime.setSize(1, true);
+            slime.setPos(player.position().add(offset));
+            try {
+                ModExecutableEffects.DADS_RING.get().apply(new ExecutableEffectContext(player));
+                helper.assertTrue(slime.hasEffect(ModEffects.PETRIFIED.get()),
+                        "Slimes inside the horizontal annulus must be petrified at offset " + offset);
+                helper.assertTrue(EntityVisualState.isFrozen(slime), "Petrification activates the freeze state");
+            } finally {
+                slime.discard();
+            }
+        }
+        helper.succeed();
+    }
+
+    @GameTest(template = "trajectory_empty", batch = "panic_ring")
+    public static void ringExcludesItsHorizontalCenterAndTargetsBeyondCylinderBounds(GameTestHelper helper) {
+        var player = FakePlayerFactory.get(helper.getLevel(), new GameProfile(UUID.randomUUID(), "ring_bounds"));
+        player.setPos(helper.absolutePos(new BlockPos(1, 1, 1)).getCenter());
+        for (var offset : new Vec3[]{new Vec3(0.75, 1.5, 0), new Vec3(1.0, 1.5, 0),
+                new Vec3(2.01, 0, 0), new Vec3(1.8, 0, 1.8),
+                new Vec3(1.5, 2.01, 0), new Vec3(1.5, -2.01, 0)}) {
+            var slime = helper.spawn(EntityType.SLIME, new BlockPos(1, 1, 1));
+            slime.setSize(1, true);
+            slime.setPos(player.position().add(offset));
+            try {
+                ModExecutableEffects.DADS_RING.get().apply(new ExecutableEffectContext(player));
+                helper.assertTrue(!slime.hasEffect(ModEffects.PETRIFIED.get()),
+                        "Targets outside the cylindrical annulus must be excluded at offset " + offset);
+            } finally {
+                slime.discard();
+            }
+        }
+        helper.succeed();
+    }
+
     @GameTest(template = "trajectory_empty", batch = "panic_ring")
     public static void fearCancelsMeleeAndTargetsThenAllowsRecovery(GameTestHelper helper) {
         Zombie zombie = helper.spawn(EntityType.ZOMBIE, new BlockPos(1, 1, 1));

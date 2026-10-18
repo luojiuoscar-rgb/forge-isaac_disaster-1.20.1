@@ -7,6 +7,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerFamiliarDataProvider;
+import net.luojiuoscar.isaac_disaster.capability.player.PlayerFamiliarData;
 import net.luojiuoscar.isaac_disaster.helper.FamiliarHelper;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -73,18 +74,29 @@ public class FamiliarCmd {
             throw INVALID_FAMILIAR.create(type);
         }
 
+        long changedCount = 0;
+        long recordedCount = 0;
+        long effectiveCount = 0;
         for (ServerPlayer player : players) {
-            player.getCapability(PlayerFamiliarDataProvider.PLAYER_FAMILIAR_DATA).ifPresent(data -> {
-                data.addCount(type, delta);
-                FamiliarHelper.maintainExistingFamiliars(player);
-            });
+            PlayerFamiliarData data = player.getCapability(PlayerFamiliarDataProvider.PLAYER_FAMILIAR_DATA)
+                    .resolve().orElse(null);
+            if (data == null) continue;
+            int previousCount = data.getCount(type);
+            data.addCount(type, delta);
+            changedCount += Math.abs((long) data.getCount(type) - previousCount);
+            FamiliarHelper.maintainExistingFamiliars(player);
+            recordedCount += data.getCount(type);
+            effectiveCount += data.getEffectiveCount(type);
         }
 
         String action = delta >= 0 ? "Added" : "Removed";
-        int amount = Math.abs(delta);
+        long amount = changedCount;
+        long recorded = recordedCount;
+        long effective = effectiveCount;
         context.getSource().sendSuccess(
                 () -> Component.literal(action + " " + amount + " familiar(s) of " + type +
-                        " for " + players.size() + " player(s)."),
+                        " across " + players.size() + " player(s). Recorded: " + recorded
+                        + ", currently effective: " + effective + "."),
                 true
         );
         return players.size();

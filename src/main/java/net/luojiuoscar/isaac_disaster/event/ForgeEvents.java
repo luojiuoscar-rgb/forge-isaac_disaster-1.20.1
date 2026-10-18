@@ -26,7 +26,6 @@ import net.luojiuoscar.isaac_disaster.item.ModItems;
 import net.luojiuoscar.isaac_disaster.item.item.IsaacItem;
 import net.luojiuoscar.isaac_disaster.item.pickup.special.IsaacHead;
 import net.luojiuoscar.isaac_disaster.manager.DefaultAttributeManager;
-import net.luojiuoscar.isaac_disaster.manager.ModDamageType;
 import net.luojiuoscar.isaac_disaster.manager.PillEffectManager;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.networking.ModMessages;
@@ -44,10 +43,8 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.damagesource.DamageTypes;
-import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.npc.WanderingTrader;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -56,7 +53,6 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.trading.MerchantOffer;
 import net.minecraft.world.item.trading.MerchantOffers;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
@@ -66,7 +62,6 @@ import net.minecraftforge.event.entity.living.LivingKnockBackEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.level.LevelEvent;
-import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -75,10 +70,8 @@ import net.minecraftforge.registries.IForgeRegistry;
 import net.minecraftforge.registries.RegistryManager;
 import net.minecraftforge.server.command.ConfigCommand;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 import static net.luojiuoscar.isaac_disaster.IsaacDisaster.MOD_ID;
 
@@ -375,12 +368,6 @@ public class ForgeEvents {
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public static void onLivingHurt(LivingHurtEvent event) {
         LivingEntity victim = event.getEntity();
-        DamageSource source = event.getSource();
-        if (source.is(ModDamageType.TEAR)) {
-            PENDING_KNOCKBACK_RESPONSE.putIfAbsent(victim.getUUID(), new PendingKnockbackResponse(true, Vec3.ZERO));
-        } else if (source.is(ModDamageType.LASER)) {
-            PENDING_KNOCKBACK_RESPONSE.put(victim.getUUID(), new PendingKnockbackResponse(false, Vec3.ZERO));
-        }
 
         // 易伤
         if (victim.hasEffect(ModEffects.VULNERABLE.get())){
@@ -390,59 +377,13 @@ public class ForgeEvents {
         }
     }
 
-    private static final Map<UUID, PendingKnockbackResponse> PENDING_KNOCKBACK_RESPONSE = new HashMap<>();
-    private record PendingKnockbackResponse(boolean tear, Vec3 direction) {
-    }
-
-    /**
-     * Registers a lightweight tear's velocity before it applies the ordinary TEAR damage source.
-     *
-     * <p>Optimized bullets deliberately have no direct Minecraft entity, so this preserves the
-     * existing tear knockback response without fabricating an entity just for damage attribution.</p>
-     */
-    public static void registerOptimizedTearKnockback(LivingEntity victim, Vec3 velocity) {
-        if (victim == null || velocity == null) return;
-        PENDING_KNOCKBACK_RESPONSE.put(victim.getUUID(), new PendingKnockbackResponse(true, velocity));
-    }
-
     @SubscribeEvent
     public static void onEntityKnockback(LivingKnockBackEvent event) {
-        final double tearKnockbackStrength = 0.10D;
         LivingEntity victim = event.getEntity();
-        PendingKnockbackResponse response = PENDING_KNOCKBACK_RESPONSE.remove(victim.getUUID());
-        if (response != null) {
-            event.setCanceled(true);
-            if (response.tear()) {
-                Vec3 updatedVelocity = applyTearImpulse(victim.getDeltaMovement(), response.direction(),
-                        tearKnockbackStrength,
-                        victim.getAttributeValue(Attributes.KNOCKBACK_RESISTANCE));
-                victim.setDeltaMovement(updatedVelocity);
-                victim.hasImpulse = true;
-            }
-            return;
-        }
 
         if (victim instanceof Player player
                 && player.hasEffect(ModEffects.HOLY_SHIELD.get())) {
             event.setCanceled(true);
-        }
-    }
-
-    /** Replaces vanilla's vertical knockback with the fixed horizontal tear response. */
-    public static Vec3 applyTearImpulse(Vec3 currentVelocity, Vec3 projectileVelocity, double strength,
-                                        double knockbackResistance) {
-        Vec3 horizontalDirection = new Vec3(projectileVelocity.x, 0.0D, projectileVelocity.z);
-        if (horizontalDirection.lengthSqr() < 1.0E-12D) {
-            return currentVelocity;
-        }
-        double adjustedStrength = strength * Math.max(0.0D, 1.0D - knockbackResistance);
-        return currentVelocity.add(horizontalDirection.normalize().scale(adjustedStrength));
-    }
-
-    @SubscribeEvent
-    public static void onServerTickEnd(TickEvent.ServerTickEvent event) {
-        if (event.phase == TickEvent.Phase.END) {
-            PENDING_KNOCKBACK_RESPONSE.clear();
         }
     }
 

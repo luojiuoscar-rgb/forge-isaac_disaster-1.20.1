@@ -27,7 +27,7 @@ public class FamiliarEvents {
         if (player.tickCount % RECONCILE_INTERVAL == 0) {
             FamiliarHelper.maintainExistingFamiliars(player);
         }
-        FamiliarHelper.spawnNextMissingFamiliar(player);
+        FamiliarHelper.tickFamiliarAdmissions(player);
     }
 
     /**

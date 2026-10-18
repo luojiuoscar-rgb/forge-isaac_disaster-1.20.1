@@ -1,6 +1,7 @@
-package net.luojiuoscar.isaac_disaster.entity.familiar;
+package net.luojiuoscar.isaac_disaster.entity.familiar.impl;
 
 import net.luojiuoscar.isaac_disaster.entity.ModEntities;
+import net.luojiuoscar.isaac_disaster.entity.familiar.AbstractIsaacFamiliarEntity;
 import net.luojiuoscar.isaac_disaster.entity.familiar.state.FamiliarStateMachine;
 import net.luojiuoscar.isaac_disaster.helper.EntityHelper;
 import net.minecraft.core.BlockPos;
@@ -114,6 +115,22 @@ public class MomKnifeEntity extends AbstractIsaacFamiliarEntity
     public MomKnifeEntity(Level level, ServerPlayer owner) {
         this(ModEntities.MOM_KNIFE.get(), level);
         setOwner(owner);
+    }
+
+    @Override
+    protected void onRecalled() {
+        clearTarget();
+        clearAttackDirection();
+        stateTicks = 0;
+        contactDamageTimer = 0;
+        cooldown = MIN_ATTACK_COOLDOWN;
+        pendingServerMovement = Vec3.ZERO;
+        nextServerMovement = Vec3.ZERO;
+        nextServerYaw = getYRot();
+        hasPendingServerPlan = false;
+        hasPublishedVisualPlan = false;
+        setFamiliarState(MomKnifeState.IDLE);
+        publishVisualPlan();
     }
 
     /**
