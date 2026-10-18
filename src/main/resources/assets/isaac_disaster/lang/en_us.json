@@ -4,6 +4,8 @@
   "rarity.isaac_disaster.rare": "RARE",
   "rarity.isaac_disaster.epic": "EPIC",
   "rarity.isaac_disaster.legendary": "LEGENDARY",
+  "death.attack.self_damage": "%1$s died from self-inflicted damage",
+  "death.attack.self_damage.player": "%1$s died from self-inflicted damage while fighting %2$s",
   "death.attack.tear": "%1$s was killed by a tear",
   "death.attack.tear.player": "%1$s was killed by %2$s's tears",
   "death.attack.tear.item": "%1$s was killed by %3$s's tears used by %2$s",

@@ -4,6 +4,8 @@
   "rarity.isaac_disaster.rare": "RARE",
   "rarity.isaac_disaster.epic": "EPIC",
   "rarity.isaac_disaster.legendary": "LEGENDARY",
+  "death.attack.self_damage": "%1$s 死于自伤",
+  "death.attack.self_damage.player": "%1$s 在与 %2$s 战斗时死于自伤",
   "death.attack.tear": "%1$s 被泪弹杀死了",
   "death.attack.tear.player": "%1$s 被 %2$s 的泪弹杀死了",
   "death.attack.tear.item": "%1$s 被 %2$s 使用 %3$s 的泪弹杀死了",
