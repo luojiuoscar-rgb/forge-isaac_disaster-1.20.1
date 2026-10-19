@@ -204,4 +204,7 @@ public class ModTriggerModules {
 
     public static final RegistryObject<TriggerModule> JUMPER_CABLES =
             TRIGGER_MODULE_REGISTRY.register("jumper_cables", JumperCables::new);
+    public static final RegistryObject<TriggerModule> SINUS_INFECTION =
+            TRIGGER_MODULE_REGISTRY.register("sinus_infection", SinusInfection::new);
+
 }

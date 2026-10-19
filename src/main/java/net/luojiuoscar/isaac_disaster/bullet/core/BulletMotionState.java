@@ -76,6 +76,20 @@ final class BulletMotionState {
         return true;
     }
 
+    boolean advanceAttached(Vec3 nextPosition, Vec3 nextVelocity, Vec3 nextAcceleration) {
+        if (!alive) return false;
+        if (nextPosition == null || !Double.isFinite(nextPosition.x)
+                || !Double.isFinite(nextPosition.y) || !Double.isFinite(nextPosition.z)) {
+            alive = false;
+            return false;
+        }
+        previousPosition = position;
+        position = nextPosition;
+        age++;
+        acceleration = nextAcceleration;
+        return replaceVelocity(nextVelocity, true);
+    }
+
     Vec3 position() {
         return position;
     }
@@ -145,7 +159,7 @@ final class BulletMotionState {
         return validateRuntimeVelocity(false);
     }
 
-    private boolean validateRuntimeVelocity(boolean allowLowSpeedWhenMoving) {
+    boolean validateRuntimeVelocity(boolean allowLowSpeedWhenMoving) {
         if (!alive || velocity == null) return false;
         double x = velocity.x;
         double y = velocity.y;

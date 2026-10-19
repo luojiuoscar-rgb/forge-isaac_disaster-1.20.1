@@ -1,16 +1,18 @@
 package net.luojiuoscar.isaac_disaster.registries.attack_type;
 
+import java.util.*;
+import java.util.HashSet;
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
+import net.luojiuoscar.isaac_disaster.attribute.ModAttributes;
+import net.luojiuoscar.isaac_disaster.helper.GeometryHelper;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.CompositeTrigger;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.SimpleTrigger;
-import net.luojiuoscar.isaac_disaster.helper.GeometryHelper;
-import net.luojiuoscar.isaac_disaster.attribute.ModAttributes;
 import net.luojiuoscar.isaac_disaster.registries.split_module.SplitSequence;
-import net.luojiuoscar.isaac_disaster.registries.trajectory.TrajectorySpec;
-import net.luojiuoscar.isaac_disaster.registries.trajectory.TrajectorySequence;
 import net.luojiuoscar.isaac_disaster.registries.trajectory.TrajectoryRuntime;
-import net.minecraft.resources.ResourceLocation;
+import net.luojiuoscar.isaac_disaster.registries.trajectory.TrajectorySequence;
+import net.luojiuoscar.isaac_disaster.registries.trajectory.TrajectorySpec;
 import net.minecraft.core.BlockPos;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
@@ -18,8 +20,6 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.*;
 
 /** Creation-time data used to construct one attack object. */
 public class AttackContext {
@@ -43,6 +43,7 @@ public class AttackContext {
     private final double bulletSpeed;
     private SplitSequence splitSequence;
     private boolean useFixedLaunchTransform;
+    private int stickDurationTicks;
     private boolean frozen;
     private final Entity shooter;
     private final LivingEntity owner;
@@ -76,6 +77,7 @@ public class AttackContext {
         this.bulletSpeed = sanitizeSpeed(builder.speed);
         this.splitSequence = builder.splitSequence == null ? new SplitSequence() : builder.splitSequence.copy();
         this.useFixedLaunchTransform = builder.useFixedLaunchTransform;
+        this.stickDurationTicks = builder.stickDurationTicks;
         this.hitBlockPositions = immutableBlockPositions(builder.hitBlockPositions);
         this.inheritedTrajectorySnapshot = builder.inheritedTrajectorySnapshot;
     }
@@ -89,7 +91,7 @@ public class AttackContext {
         return Builder.from(this).color(colorRl).visuals(visualIds).trigger(trigger).trajectorySequence(trajectorySequence)
                 .position(pos).attackType(attackType).mainAxis(mainAxis).damage((double) damage).range(bulletRange)
                 .speed(bulletSpeed).bulletScaleModifier(bulletScaleModifier).splitSequence(splitSequence)
-                .useFixedLaunchTransform(useFixedLaunchTransform).hitBlockPositions(hitBlockPositions)
+                .useFixedLaunchTransform(useFixedLaunchTransform).stickDurationTicks(stickDurationTicks).hitBlockPositions(hitBlockPositions)
                 .inheritTrajectorySnapshot(inheritedTrajectorySnapshot);
     }
 
@@ -131,6 +133,17 @@ public class AttackContext {
     public float getDamage() { return damage; }
     public double getBulletRange() { return bulletRange; }
     public double getBulletSpeed() { return bulletSpeed; }
+    public int getStickDurationTicks() { return stickDurationTicks; }
+    /**
+     * Requests a shared attachment lifetime during preparation. Repeated requests retain the
+     * maximum, so zero and shorter requests cannot cancel another module's sticking ability.
+     * Module incompatibilities must be resolved by TriggerModuleRule before preparation.
+     */
+    public void setMaxStickDurationTicks(int ticks) {
+        if (ticks < 0) ticks = 0;
+        if (ensureMutable("setMaxStickDurationTicks")) stickDurationTicks = Math.max(stickDurationTicks, ticks);
+    }
+
     /** Definition of the concrete attack, bound before preparation or direct execution. */
     private AttackType attackType;
     @Nullable public AttackType getAttackType() { return attackType; }
@@ -232,11 +245,9 @@ public class AttackContext {
     }
 
     private static Vec3 normalizeMainAxis(Vec3 direction) {
-        Objects.requireNonNull(direction, "direction");
-        if (!Double.isFinite(direction.x) || !Double.isFinite(direction.y)
-                || !Double.isFinite(direction.z) || direction.lengthSqr() < 1.0E-8) {
-            throw new IllegalArgumentException("mainAxis must be finite and non-zero");
-        }
+        if (direction == null || !Double.isFinite(direction.x) || !Double.isFinite(direction.y)
+                || !Double.isFinite(direction.z) || direction.lengthSqr() < 1.0E-8)
+            return new Vec3(1, 0, 0);
         return direction.normalize();
     }
 
@@ -260,6 +271,7 @@ public class AttackContext {
         this.bulletSpeed = source.bulletSpeed;
         this.splitSequence = source.splitSequence.copy();
         this.useFixedLaunchTransform = source.useFixedLaunchTransform;
+        this.stickDurationTicks = source.stickDurationTicks;
         this.hitBlockPositions = immutableBlockPositions(source.hitBlockPositions);
         this.inheritedTrajectorySnapshot = includeInheritance ? source.inheritedTrajectorySnapshot : null;
         this.frozen = source.frozen;
@@ -284,6 +296,7 @@ public class AttackContext {
         this.bulletSpeed = sanitizeSpeed(builder.speed);
         this.splitSequence = builder.splitSequence == null ? new SplitSequence() : builder.splitSequence.copy();
         this.useFixedLaunchTransform = builder.useFixedLaunchTransform;
+        this.stickDurationTicks = builder.stickDurationTicks;
         this.hitBlockPositions = immutableBlockPositions(builder.hitBlockPositions);
         this.inheritedTrajectorySnapshot = builder.inheritedTrajectorySnapshot;
         this.frozen = false;
@@ -307,6 +320,7 @@ public class AttackContext {
         private double speed = DEFAULT_SPEED;
         private SplitSequence splitSequence;
         private boolean useFixedLaunchTransform;
+        private int stickDurationTicks;
         private Set<BlockPos> hitBlockPositions = Set.of();
         private AttackType attackType;
         private TrajectoryRuntime.Snapshot inheritedTrajectorySnapshot;
@@ -330,7 +344,7 @@ public class AttackContext {
             if (positions == null || positions.isEmpty()) {
                 this.hitBlockPositions = Set.of();
             } else {
-                java.util.HashSet<BlockPos> copy = new java.util.HashSet<>();
+                HashSet<BlockPos> copy = new HashSet<>();
                 for (BlockPos position : positions) {
                     if (position != null) copy.add(position.immutable());
                 }
@@ -354,6 +368,11 @@ public class AttackContext {
         public Builder bulletScaleModifier(@Nullable Double modifier) { this.bulletScaleModifier = modifier; return this; }
         public Builder range(double range) { this.range = range; return this; }
         public Builder speed(double speed) { this.speed = speed; return this; }
+        public Builder stickDurationTicks(int ticks) {
+            if (ticks < 0) ticks = 0;
+            this.stickDurationTicks = Math.max(this.stickDurationTicks, ticks);
+            return this;
+        }
         public Builder splitSequence(SplitSequence splitSequence) { this.splitSequence = splitSequence; return this; }
         public Builder useFixedLaunchTransform() { this.useFixedLaunchTransform = true; return this; }
         private Builder useFixedLaunchTransform(boolean value) { this.useFixedLaunchTransform = value; return this; }

@@ -1,14 +1,13 @@
 package net.luojiuoscar.isaac_disaster.networking.packet.laser;
 
+import java.util.List;
+import java.util.function.Supplier;
 import net.luojiuoscar.isaac_disaster.client.network.ClientPacketHandlers;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.network.NetworkEvent;
-
-import java.util.List;
-import java.util.function.Supplier;
 
 /** One short-lived packet containing the straight laser visuals created in one attack batch. */
 public final class LaserBeamBatchS2CPacket {
@@ -41,7 +40,7 @@ public final class LaserBeamBatchS2CPacket {
     public record Beam(Vec3 start, Vec3 end, float width, int color) {
         public Beam {
             if (start == null || end == null) throw new IllegalArgumentException("Beam endpoints cannot be null");
-            if (!Float.isFinite(width) || width <= 0.0F) throw new IllegalArgumentException("Beam width must be positive");
+            width = Float.isFinite(width) ? Math.max(0, width) : 0;
         }
 
         public Beam(FriendlyByteBuf buf) {

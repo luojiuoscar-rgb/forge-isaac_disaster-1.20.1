@@ -1,12 +1,11 @@
 package net.luojiuoscar.isaac_disaster.bullet;
 
 import io.netty.buffer.Unpooled;
+import java.util.List;
 import net.luojiuoscar.isaac_disaster.networking.packet.laser.LaserBeamBatchS2CPacket;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.phys.Vec3;
 import org.junit.jupiter.api.Test;
-
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -21,5 +20,10 @@ class LaserBeamBatchPacketTest {
         LaserBeamBatchS2CPacket decoded = new LaserBeamBatchS2CPacket(buffer);
 
         assertEquals(packet.entries(), decoded.entries());
+    }
+    @Test
+    void invalidVisualWidthsClampToZero() {
+        for (float width : new float[]{-1, Float.NaN, Float.POSITIVE_INFINITY})
+            assertEquals(0, new LaserBeamBatchS2CPacket.Beam(Vec3.ZERO, Vec3.ZERO, width, 0).width());
     }
 }

@@ -232,7 +232,8 @@ public enum ItemId {
     ADRENALINE(2),
     JUMPER_CABLES(3),
     SOUL_LOCKET(1),
-    D12(2);
+    D12(2),
+    SINUS_INFECTION(3);
 
 
 

@@ -24,6 +24,18 @@ public class ModTriggerTypes {
             new TriggerType(ResourceLocation.fromNamespaceAndPath(
                     IsaacDisaster.MOD_ID, "bullet_hit_entity_after"));
 
+    public static final TriggerType BULLET_STICK_START =
+            new TriggerType(ResourceLocation.fromNamespaceAndPath(
+                    IsaacDisaster.MOD_ID, "bullet_stick_start"));
+
+    public static final TriggerType BULLET_STICK_TICK =
+            new TriggerType(ResourceLocation.fromNamespaceAndPath(
+                    IsaacDisaster.MOD_ID, "bullet_stick_tick"));
+
+    public static final TriggerType BULLET_STICK_END =
+            new TriggerType(ResourceLocation.fromNamespaceAndPath(
+                    IsaacDisaster.MOD_ID, "bullet_stick_end"));
+
     public static final TriggerType BULLET_END_OF_LIFE =
             new TriggerType(ResourceLocation.fromNamespaceAndPath(
                     IsaacDisaster.MOD_ID, "bullet_end_of_life"));

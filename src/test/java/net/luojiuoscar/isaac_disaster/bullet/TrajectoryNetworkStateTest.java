@@ -1,11 +1,11 @@
 package net.luojiuoscar.isaac_disaster.bullet;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 import io.netty.buffer.Unpooled;
 import java.util.List;
 import net.luojiuoscar.isaac_disaster.bullet.client.ClientBulletRuntime;
+import net.luojiuoscar.isaac_disaster.bullet.core.BulletState;
 import net.luojiuoscar.isaac_disaster.bullet.core.BulletSteeringMode;
+import net.luojiuoscar.isaac_disaster.bullet.core.BulletStickState;
 import net.luojiuoscar.isaac_disaster.networking.packet.bullet.BulletCorrectionS2CPacket;
 import net.luojiuoscar.isaac_disaster.networking.packet.bullet.BulletSpawnS2CPacket;
 import net.luojiuoscar.isaac_disaster.registries.trajectory.*;
@@ -17,6 +17,8 @@ import net.minecraft.world.phys.Vec3;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 class TrajectoryNetworkStateTest {
     private static final ResourceLocation ID = ResourceLocation.parse("isaac_disaster:wiggle_worm");
@@ -96,7 +98,7 @@ class TrajectoryNetworkStateTest {
                 0,
                 0,
                  BulletSteeringMode.DIRECT,
-                 source.snapshot(), noGravity);
+                 source.snapshot(), noGravity, BulletStickState.Snapshot.flight());
         ((WiggleWormTrajectoryModule.State) source.states().get(ID)).phase(99);
         var buffer = new FriendlyByteBuf(Unpooled.buffer());
         try {
@@ -127,7 +129,7 @@ class TrajectoryNetworkStateTest {
         var stream = ClientBulletRuntime.INSTANCE.stream();
         stream.clear();
         stream.acceptEpoch(1);
-        var client = net.luojiuoscar.isaac_disaster.bullet.core.BulletState.builder().build();
+        var client = BulletState.builder().build();
         stream.spawn(2, 3, 0, client);
         client.getTrajectoryRuntime().distance(100);
         client

@@ -1,11 +1,13 @@
 package net.luojiuoscar.isaac_disaster.bullet.client;
 
-import net.luojiuoscar.isaac_disaster.registries.attack_type.ModAttackTypes;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
+import java.util.*;
+import java.util.function.IntFunction;
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.bullet.core.BulletState;
+import net.luojiuoscar.isaac_disaster.registries.attack_type.ModAttackTypes;
 import net.luojiuoscar.isaac_disaster.registries.bullet_visual.BulletVisual;
 import net.luojiuoscar.isaac_disaster.registries.bullet_visual.FetusBulletVisual;
 import net.luojiuoscar.isaac_disaster.registries.bullet_visual.ModBulletVisuals;
@@ -23,6 +25,8 @@ import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.resources.DefaultPlayerSkin;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.monster.Skeleton;
 import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
@@ -31,8 +35,6 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.registries.IForgeRegistry;
 import net.minecraftforge.registries.RegistryManager;
-
-import java.util.*;
 
 /**
  * Client-only rendering bridge for lightweight bullets.
@@ -45,7 +47,7 @@ import java.util.*;
 public final class BulletClientRenderer {
     private static PlayerModel<AbstractClientPlayer> fetusWideModel;
     private static PlayerModel<AbstractClientPlayer> fetusSlimModel;
-    private static SkeletonModel<net.minecraft.world.entity.monster.Skeleton> skeletonModel;
+    private static SkeletonModel<Skeleton> skeletonModel;
     private static final Map<Set<ResourceLocation>, TearVisual> TEAR_VISUAL_CACHE = new HashMap<>();
     private static final Map<Set<ResourceLocation>, FetusVisual> FETUS_VISUAL_CACHE = new HashMap<>();
 
@@ -69,9 +71,9 @@ public final class BulletClientRenderer {
             Vec3 relative = position.subtract(camera);
             poseStack.translate(relative.x, relative.y, relative.z);
             if (ModAttackTypes.C_SECTION.getId().equals(state.getTypeId())) {
-                usedTypes.add(renderFetus(state, poseStack, buffers));
+                usedTypes.add(renderFetus(state, position, poseStack, buffers));
             } else {
-                usedTypes.add(renderTear(state, poseStack, buffers));
+                usedTypes.add(renderTear(state, position, poseStack, buffers));
             }
             poseStack.popPose();
         });
@@ -94,12 +96,28 @@ public final class BulletClientRenderer {
 
     /** Computes the frame-interpolated center directly from the live stream state. */
     private static Vec3 interpolatedPosition(BulletState state, float partialTicks) {
+        var level = Minecraft.getInstance().level;
+        if (state.isStuck() && level != null) {
+            return attachedPosition(state, partialTicks, level::getEntity,
+                ClientBulletRuntime.INSTANCE.stream().authoritativePosition(state));
+        }
         float partial = Math.max(0.0F, Math.min(1.0F, partialTicks));
         return state.previousPosition().lerp(state.position(), partial);
     }
 
+    /** Resolves both identity components before following the target's current render interpolation. */
+    static Vec3 attachedPosition(BulletState state, float partialTicks, IntFunction<Entity> lookup,
+                                 Vec3 unresolvedPosition) {
+        var attachment = state.stickState();
+        Entity target = lookup.apply(attachment.targetEntityId());
+        if (target == null || target.isRemoved() || attachment.targetUuid() == null
+            || !attachment.targetUuid().equals(target.getUUID())) return unresolvedPosition;
+        float partial = Math.max(0.0F, Math.min(1.0F, partialTicks));
+        return new Vec3(target.xo, target.yo, target.zo).lerp(target.position(), partial)
+            .add(attachment.offset());
+    }
     /** Draws one camera-facing tear quad using the resolved, server-selected visual profile. */
-    private static RenderType renderTear(BulletState state, PoseStack poseStack, MultiBufferSource buffers) {
+    private static RenderType renderTear(BulletState state, Vec3 position, PoseStack poseStack, MultiBufferSource buffers) {
         poseStack.mulPose(Minecraft.getInstance().getEntityRenderDispatcher().cameraOrientation());
         poseStack.mulPose(Axis.YP.rotationDegrees(180.0F));
         float scale = (float) state.renderScale();
@@ -111,12 +129,12 @@ public final class BulletClientRenderer {
         float blue = visual.acceptsTint ? (state.color() & 255) / 255.0F : 1.0F;
         RenderType renderType = ProjectileRenderTypes.translucent(visual.texture);
         VertexConsumer vertices = buffers.getBuffer(renderType);
-        emitQuad(vertices, poseStack, red, green, blue, state.alpha(), lightAt(state.position()));
+        emitQuad(vertices, poseStack, red, green, blue, state.alpha(), lightAt(position));
         return renderType;
     }
 
     /** Draws the default Fetus player-model visual without constructing a projectile entity. */
-    private static RenderType renderFetus(BulletState state, PoseStack poseStack, MultiBufferSource buffers) {
+    private static RenderType renderFetus(BulletState state, Vec3 position, PoseStack poseStack, MultiBufferSource buffers) {
         Vec3 velocity = state.velocity();
         if (velocity.lengthSqr() > 1.0E-6D) {
             poseStack.mulPose(Axis.YP.rotationDegrees((float) Math.toDegrees(Math.atan2(velocity.x, velocity.z))));
@@ -125,7 +143,7 @@ public final class BulletClientRenderer {
         float scale = (float) state.renderScale() * 0.35F;
         poseStack.scale(scale, scale, scale);
         int color = state.color();
-        int light = lightAt(state.position());
+        int light = lightAt(position);
         FetusVisual visual = cachedFetusVisual(state.visualIds());
         if (visual.skeleton()) {
             RenderType renderType = ProjectileRenderTypes.translucent(visual.texture());
@@ -185,7 +203,7 @@ public final class BulletClientRenderer {
         return fetusSlimModel;
     }
 
-    private static SkeletonModel<net.minecraft.world.entity.monster.Skeleton> skeletonModel() {
+    private static SkeletonModel<Skeleton> skeletonModel() {
         if (skeletonModel == null) skeletonModel = new SkeletonModel<>(Minecraft.getInstance().getEntityModels().bakeLayer(ModelLayers.SKELETON));
         return skeletonModel;
     }

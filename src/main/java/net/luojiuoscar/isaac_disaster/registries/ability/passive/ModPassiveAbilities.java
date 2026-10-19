@@ -778,4 +778,8 @@ public class ModPassiveAbilities {
     public static final RegistryObject<PassiveAbility> SOUL_LOCKET =
             PASSIVE_ABILITY_REGISTRY.register("soul_locket",
                     () -> new SoulLocket(ItemId.SOUL_LOCKET.getId(), ItemId.SOUL_LOCKET.getLevel()));
+    public static final RegistryObject<PassiveAbility> SINUS_INFECTION =
+            PASSIVE_ABILITY_REGISTRY.register("sinus_infection",
+                    () -> new SinusInfection(ItemId.SINUS_INFECTION.getId(), ItemId.SINUS_INFECTION.getLevel()));
+
 }

@@ -17,15 +17,17 @@ import net.luojiuoscar.isaac_disaster.event.custom.attack.tear_bullet.BulletTick
 import net.luojiuoscar.isaac_disaster.event.custom.attack.tear_bullet.TearBulletEndOfLifeEvent;
 import net.luojiuoscar.isaac_disaster.helper.EntityHelper;
 import net.luojiuoscar.isaac_disaster.helper.TrackingTargetRules;
-import net.luojiuoscar.isaac_disaster.system.damage.ModDamageSources;
 import net.luojiuoscar.isaac_disaster.networking.packet.bullet.BulletCorrectionS2CPacket;
 import net.luojiuoscar.isaac_disaster.networking.packet.bullet.BulletShatterS2CPacket;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.ModAttackTypes;
 import net.luojiuoscar.isaac_disaster.registries.split_module.SplitExecutor;
 import net.luojiuoscar.isaac_disaster.registries.split_module.SplitTriggerType;
+import net.luojiuoscar.isaac_disaster.registries.trajectory.TrajectoryMotion;
+import net.luojiuoscar.isaac_disaster.system.damage.ModDamageSources;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
@@ -165,10 +167,12 @@ public final class BulletManager {
         AABB queryBounds = null;
         for (Integer integer : active) {
             BulletState bullet = slots.get(integer);
-            if (bullet == null) continue;
+            if (bullet == null || !bullet.isAlive()) continue;
             double searchMargin =
-                Math.max(16.0D, bullet.velocity().length() + bullet.size() + bullet.homingRange());
-            AABB bounds = new AABB(bullet.position(), bullet.position()).inflate(searchMargin);
+                Math.max(16.0D, Math.max(bullet.baseSpeed(), bullet.velocity().length()) + bullet.size() + bullet.homingRange());
+            Vec3 possibleAttachment = bullet.isStuck() && bullet.stickState().target() != null
+                    ? bullet.stickState().target().position().add(bullet.stickState().offset()) : bullet.position();
+            AABB bounds = new AABB(bullet.position(), possibleAttachment).inflate(searchMargin);
             queryBounds = queryBounds == null ? bounds : queryBounds.minmax(bounds);
         }
         Collection<LivingEntity> indexedEntities =
@@ -181,7 +185,7 @@ public final class BulletManager {
 
         for (Integer integer : active) {
             BulletState bullet = slots.get(integer);
-            if (bullet == null || !(bullet.isHoming() || bullet.isControllable())) continue;
+            if (bullet == null || !bullet.isAlive() || !bullet.isFlying() || !(bullet.isHoming() || bullet.isControllable())) continue;
             bullet.tickTargetSearchCooldown();
             if (steeringTick
                 && bullet.isHoming()
@@ -195,34 +199,56 @@ public final class BulletManager {
         for (Integer integer : active) {
             BulletState bullet = slots.get(integer);
             if (bullet == null) continue;
+            if (!bullet.isAlive()) { deferRemoval(bullet); continue; }
+            if (bullet.isStuck()) {
+                var reason = bullet.stickTargetLoss(level);
+                if (reason != null) bullet.endStick(reason);
+                else bullet.tickAttachedPosition(bullet.stickState().target().position().add(bullet.stickState().offset()));
+            }
+            if (!bullet.isAlive()) { deferRemoval(bullet); continue; }
             MinecraftForge.EVENT_BUS.post(new BulletTickEvent(bullet));
+            if (!bullet.isAlive()) { deferRemoval(bullet); continue; }
+            if (bullet.isStuck()) {
+                var reason = bullet.stickTargetLoss(level);
+                if (reason != null) bullet.endStick(reason);
+                else {
+                    bullet.tickStickEffects();
+                    if (bullet.isAlive() && bullet.isStuck()) {
+                        reason = bullet.stickTargetLoss(level);
+                        if (reason != null) bullet.endStick(reason);
+                    }
+                }
+                if (!bullet.isAlive()) deferRemoval(bullet);
+                continue;
+            }
             if (bullet.isHoming() || bullet.isControllable()) updateTracking(bullet, steeringTick);
             if (bullet.isHoming() || bullet.isControllable()) applySteering(bullet);
             Vec3 start = bullet.position();
             boolean steeringActive = bullet.trackingPosition() != null;
-            net.luojiuoscar.isaac_disaster.registries.trajectory.TrajectoryMotion trajectoryMotion = null;
+            TrajectoryMotion trajectoryMotion = null;
             boolean advanced;
-            if (steeringActive) {
+            if (steeringActive && !bullet.isDetached()) {
                 // A steering controller owns this tick's motion; do not leak a
                 // previous trajectory acceleration into the steering path.
                 bullet.setAcceleration(Vec3.ZERO);
                 advanced = bullet.tickPhysics();
             } else if (!bullet.getTrajectorySpecs().isEmpty()) {
-                if (bullet.getShooter() instanceof net.minecraft.world.entity.Entity shooter)
+                if (bullet.getShooter() instanceof Entity shooter)
                     bullet.getTrajectoryRuntime().updateAnchor(shooter);
                 // The trajectory clock is based on the immutable launch axis.
                 // Reconstructing this from the current velocity would fold
                 // relative controllers (for example Gravity) into the base
                 // path and make their residual grow every tick.
-                Vec3 baseVelocity = bullet.getTrajectoryRuntime().mainDirection().scale(bullet.baseSpeed());
+                Vec3 baseVelocity = steeringActive ? bullet.velocity()
+                        : bullet.getTrajectoryRuntime().mainDirection().scale(bullet.baseSpeed());
                 bullet.markTrajectoryEvaluation(bullet.getTrajectoryRuntime().distance());
                 bullet.getTrajectoryRuntime().beginStep();
                 trajectoryMotion = TrajectoryEvaluator.evaluate(bullet, baseVelocity, 0.0D, 1.0D);
                 if (trajectoryMotion.status()
-                    == net.luojiuoscar.isaac_disaster.registries.trajectory.TrajectoryMotion.Status
+                    == TrajectoryMotion.Status
                         .WORK_LIMIT) {
                     bullet.getTrajectoryRuntime().rollbackStep();
-                    bullet.kill();
+                    bullet.discard();
                     advanced = false;
                 } else {
                     advanced = bullet.advanceTrajectory(trajectoryMotion, 1.0D);
@@ -244,8 +270,10 @@ public final class BulletManager {
                 Vec3 segmentStart = start;
                 int completedSegments = 0;
                 for (Vec3 segmentEnd : trajectoryMotion.path()) {
+                    int revision = bullet.stickState().revision();
                     resolveCollisions(level, segmentStart, segmentEnd, bullet);
-                    if (!bullet.isAlive() || bullet.position().distanceToSqr(segmentEnd) > 1e-10) {
+                    if (!bullet.isAlive() || !bullet.isFlying() || revision != bullet.stickState().revision()
+                            || bullet.position().distanceToSqr(segmentEnd) > 1e-10) {
                         double length = segmentStart.distanceTo(segmentEnd);
                         double part =
                             length > 1e-10
@@ -259,7 +287,15 @@ public final class BulletManager {
                     completedSegments++;
                     segmentStart = segmentEnd;
                 }
-            } else resolveCollisions(level, start, end, bullet);
+            } else {
+                resolveCollisions(level, start, end, bullet);
+                if (trajectoryMotion != null && bullet.position().distanceToSqr(end) > 1.0E-10) {
+                    double length = start.distanceTo(end);
+                    bullet.retainTrajectoryFraction(length > 1.0E-10
+                            ? Math.min(1, start.distanceTo(bullet.position()) / length) : 0);
+                    truncated = bullet.isAlive();
+                }
+            }
             if (trajectoryMotion != null) {
                 if (truncated) bullet.getTrajectoryRuntime().rollbackStep();
                 else bullet.getTrajectoryRuntime().commitStep();
@@ -354,7 +390,10 @@ public final class BulletManager {
             if (!bullet.isAlive()) return;
             Vec3 point = start.lerp(end, entity.parameter());
             bullet.setPosition(point);
-            if (!handleEntity(level, point, entity.target(), bullet)) return;
+            if (!handleEntity(level, point, entity.target(), bullet)) {
+                bullet.truncateMovementDistance(fullDistance, start.distanceTo(bullet.position()));
+                return;
+            }
         }
         if (block != null && bullet.isAlive()) {
             if (bullet.isSpectral()) handleSpectralBlockContact(block, bullet);
@@ -485,7 +524,7 @@ public final class BulletManager {
                     bullet, bullet.getOwner(), bullet.getTypeId(), bullet.getTriggers(), result));
         if (!canceled) {
             pendingShatters.add(shatterEntry(bullet, point, splitVelocity));
-            bullet.kill();
+            bullet.discard();
             deferRemoval(bullet);
         } else queueCorrection(bullet, 0.65F);
     }
@@ -535,6 +574,8 @@ public final class BulletManager {
                 hit,
                 bullet.getDamage());
         if (MinecraftForge.EVENT_BUS.post(before)) return true;
+        if (!bullet.isAlive()) return false;
+        boolean stickOnContact = bullet.isFlying() && bullet.stickState().durationTicks() > 0;
         // FetusBullet's attack interval is checked by applyDamage. Recheck it here because
         // all candidates are swept before event dispatch, so a later same-tick candidate must
         // observe the cooldown set by an earlier successful hit.
@@ -560,14 +601,23 @@ public final class BulletManager {
                         hit,
                         before.getDamage(),
                         target.getHealth()));
-            if (!bullet.isPiercing() && !canceled) {
+            if (!stickOnContact && !bullet.isPiercing() && !canceled) {
                 pendingShatters.add(shatterEntry(bullet, point, splitVelocity));
-                bullet.kill();
+                bullet.discard();
                 deferRemoval(bullet);
-            } else if (canceled) queueCorrection(bullet, 0.65F);
-            if (canceled) return false;
+            } else if (canceled && !stickOnContact) queueCorrection(bullet, 0.65F);
+            if (canceled && !stickOnContact) return false;
         }
-        return true;
+        if (stickOnContact && bullet.isAlive()) {
+            bullet.stickTo(target, point);
+            if (bullet.isAlive() && bullet.isStuck()) {
+                var reason = bullet.stickTargetLoss(level);
+                if (reason != null) bullet.endStick(reason);
+            }
+            if (!bullet.isAlive()) deferRemoval(bullet);
+            return false;
+        }
+        return bullet.isAlive();
     }
 
     /**

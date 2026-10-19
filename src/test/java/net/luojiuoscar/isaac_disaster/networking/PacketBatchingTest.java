@@ -1,24 +1,67 @@
 package net.luojiuoscar.isaac_disaster.networking;
 
 import io.netty.buffer.Unpooled;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.UUID;
+import java.util.function.BiConsumer;
+import java.util.function.Function;
+import java.util.stream.IntStream;
+import java.util.stream.LongStream;
 import net.luojiuoscar.isaac_disaster.bullet.core.BulletState;
+import net.luojiuoscar.isaac_disaster.bullet.core.BulletSteeringMode;
+import net.luojiuoscar.isaac_disaster.bullet.core.BulletStickState;
 import net.luojiuoscar.isaac_disaster.networking.packet.bullet.*;
 import net.luojiuoscar.isaac_disaster.networking.packet.laser.LaserBeamBatchS2CPacket;
+import net.luojiuoscar.isaac_disaster.registries.trajectory.TrajectoryRuntime;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.game.ClientboundCustomPayloadPacket;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.Vec3;
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.function.BiConsumer;
-import java.util.function.Function;
-import java.util.stream.IntStream;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 class PacketBatchingTest {
+    @Test
+    void stickyStateBurstPreservesEpochTickAndEveryIdentity() {
+        var snapshot = new BulletStickState.Snapshot(
+                BulletStickState.Phase.STUCK,
+                100, 5, 0, 42, new UUID(1, 2), new Vec3(0, 1, 0));
+        var entries = IntStream.range(0, 20_000).mapToObj(slot -> new BulletStickBatchS2CPacket.Entry(slot, 7, new Vec3(slot, 1, 0), Vec3.ZERO, Vec3.ZERO, 0, 0, snapshot, new TrajectoryRuntime(new Vec3(slot, 1, 0), Vec3.ZERO, List.of()).snapshot())).toList();
+        var parts = split(new BulletStickBatchS2CPacket(9, 200, entries), BulletStickBatchS2CPacket.class);
+        assertTrue(parts.size() > 1);
+        List<Integer> slots = new ArrayList<>();
+        for (var part : parts) {
+            var decoded = roundTrip(part, BulletStickBatchS2CPacket::toBytes, BulletStickBatchS2CPacket::new);
+            assertEquals(9, decoded.epoch());
+            assertEquals(200, decoded.serverTick());
+            decoded.entries().forEach(entry -> {
+                assertEquals(7, entry.generation());
+                assertEquals(snapshot, entry.stickSnapshot());
+                slots.add(entry.slot());
+            });
+        }
+        assertEquals(IntStream.range(0, 20_000).boxed().toList(), slots);
+    }
+
+    @Test
+    void visibilityExitBurstPreservesReentryReasonAndServerTimeAfterSplitting() {
+        var ids = LongStream.range(0, 100_000).boxed().toList();
+        var parts = split(new BulletDespawnBatchS2CPacket(9, 123, true, ids), BulletDespawnBatchS2CPacket.class);
+        assertTrue(parts.size() > 1);
+        List<Long> restored = new ArrayList<>();
+        for (var part : parts) {
+            var decoded = roundTrip(part, BulletDespawnBatchS2CPacket::toBytes, BulletDespawnBatchS2CPacket::new);
+            assertEquals(9, decoded.epoch());
+            assertEquals(123, decoded.serverTick());
+            assertTrue(decoded.visibilityExit());
+            restored.addAll(decoded.identities());
+        }
+        assertEquals(ids, restored);
+    }
+
     @Test
     void correctionBurstStaysWithinVanillaLimitWithoutLosingSnapshots() {
         var snapshot = BulletState.builder().velocity(new Vec3(1, 0, 0)).build().getTrajectoryRuntime().snapshot();
@@ -46,7 +89,9 @@ class PacketBatchingTest {
                 3, slot, 1, 10, Vec3.ZERO, Vec3.ZERO, new Vec3(1, 0, 0), Vec3.ZERO,
                 1, 0, 200, 0, 64, 1, 1, 0.1, 0.1, 0xFFFFFF, 1,
                 List.of(visual), ResourceLocation.parse("test:tear"), ResourceLocation.parse("test:tear"),
-                null, false, false, 0, 0, 0, 0)).toList();
+                null, false, false, 0, 0, 0, 0, BulletSteeringMode.LIMITED,
+                new TrajectoryRuntime(Vec3.ZERO, new Vec3(1, 0, 0), List.of()).snapshot(),
+                false, BulletStickState.Snapshot.flight())).toList();
         var parts = split(new BulletSpawnBatchS2CPacket(entries), BulletSpawnBatchS2CPacket.class);
         assertTrue(parts.size() > 1);
         List<Integer> decodedSlots = new ArrayList<>();
@@ -94,14 +139,14 @@ class PacketBatchingTest {
     @Test
     void despawnShatterAndLaserBurstsStayWithinVanillaLimit() {
         var identities = IntStream.range(0, 140_000).mapToObj(i -> (long) i).toList();
-        var despawns = split(new BulletDespawnBatchS2CPacket(2, identities), BulletDespawnBatchS2CPacket.class);
+        var despawns = split(new BulletDespawnBatchS2CPacket(2, 20, false, identities), BulletDespawnBatchS2CPacket.class);
         List<Long> decodedIdentities = new ArrayList<>();
         for (var part : despawns) decodedIdentities.addAll(roundTrip(
                 part, BulletDespawnBatchS2CPacket::toBytes, BulletDespawnBatchS2CPacket::new).identities());
         assertEquals(identities, decodedIdentities);
 
         var shatter = new BulletShatterS2CPacket.Entry(Vec3.ZERO, new Vec3(1, 0, 0), 1, 0xFFFFFF, 1, List.of(), false);
-        var shatters = split(new BulletShatterS2CPacket(2, java.util.Collections.nCopies(20_000, shatter)),
+        var shatters = split(new BulletShatterS2CPacket(2, Collections.nCopies(20_000, shatter)),
                 BulletShatterS2CPacket.class);
         int decodedShatters = 0;
         for (var part : shatters) decodedShatters += roundTrip(
@@ -109,7 +154,7 @@ class PacketBatchingTest {
         assertEquals(20_000, decodedShatters);
 
         var beam = new LaserBeamBatchS2CPacket.Beam(Vec3.ZERO, new Vec3(1, 0, 0), 1, 0xFFFFFF);
-        var lasers = split(new LaserBeamBatchS2CPacket(java.util.Collections.nCopies(20_000, beam)),
+        var lasers = split(new LaserBeamBatchS2CPacket(Collections.nCopies(20_000, beam)),
                 LaserBeamBatchS2CPacket.class);
         int decodedBeams = 0;
         for (var part : lasers) decodedBeams += roundTrip(
@@ -128,7 +173,7 @@ class PacketBatchingTest {
 
     @Test
     void emptyBatchStillDeliversItsStreamEpoch() {
-        var parts = split(new BulletDespawnBatchS2CPacket(12, List.of()), BulletDespawnBatchS2CPacket.class);
+        var parts = split(new BulletDespawnBatchS2CPacket(12, 20, false, List.of()), BulletDespawnBatchS2CPacket.class);
         assertEquals(1, parts.size());
         var decoded = roundTrip(parts.get(0), BulletDespawnBatchS2CPacket::toBytes, BulletDespawnBatchS2CPacket::new);
         assertEquals(12, decoded.epoch());
@@ -139,7 +184,7 @@ class PacketBatchingTest {
     void oneOversizedEntryCannotCrashOrDiscardOtherShatterEntries() {
         var hugeVisual = ResourceLocation.parse("test:" + "v".repeat(32_000));
         var huge = new BulletShatterS2CPacket.Entry(Vec3.ZERO, Vec3.ZERO, 1, 0, 1,
-                java.util.Collections.nCopies(34, hugeVisual), false);
+                Collections.nCopies(34, hugeVisual), false);
         var normal = new BulletShatterS2CPacket.Entry(new Vec3(2, 0, 0), Vec3.ZERO, 1, 0, 1, List.of(), false);
         var parts = split(new BulletShatterS2CPacket(1, List.of(normal, huge, normal)), BulletShatterS2CPacket.class);
         int decodedEntries = 0;

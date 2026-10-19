@@ -1,16 +1,15 @@
 package net.luojiuoscar.isaac_disaster.bullet.client;
 
-import net.luojiuoscar.isaac_disaster.registries.attack_type.TestAttackTypes;
+import java.util.ArrayList;
+import java.util.List;
 import net.luojiuoscar.isaac_disaster.bullet.core.BulletState;
 import net.luojiuoscar.isaac_disaster.bullet.core.BulletSteeringMode;
-import net.minecraft.world.phys.Vec3;
 import net.luojiuoscar.isaac_disaster.networking.packet.bullet.BulletTrackingBatchS2CPacket;
+import net.luojiuoscar.isaac_disaster.registries.attack_type.TestAttackTypes;
 import net.luojiuoscar.isaac_disaster.registries.trajectory.TrajectorySpec;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.phys.Vec3;
 import org.junit.jupiter.api.Test;
-
-import java.util.List;
-import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -110,7 +109,7 @@ class BulletStreamTest {
                 .lifetime(20)
                 .build());
 
-        stream.tick();
+        stream.tick(BulletState::position);
 
         assertEquals(0, stream.size());
     }
@@ -119,9 +118,9 @@ class BulletStreamTest {
     void spawnSnapshotIsNotFastForwardedByClientLocalTicks() {
         BulletStream stream = new BulletStream();
         stream.spawn(1, 1, 10, BulletState.builder().lifetime(20).build());
-        stream.tick();
-        stream.tick();
-        stream.tick();
+        stream.tick(BulletState::position);
+        stream.tick(BulletState::position);
+        stream.tick(BulletState::position);
 
         BulletState late = stream.spawn(2, 1, 10, BulletState.builder()
                 .position(Vec3.ZERO).velocity(new Vec3(1, 0, 0)).lifetime(20).build());
@@ -193,7 +192,7 @@ class BulletStreamTest {
                 List.of());
 
         assertEquals(1.0, state.velocity().x, 1e-9);
-        stream.tick();
+        stream.tick(BulletState::position);
         assertTrue(state.velocity().x > 0.0);
         assertTrue(state.velocity().z > 0.0);
         assertTrue(state.velocity().z < 1.0);
@@ -213,8 +212,8 @@ class BulletStreamTest {
                 List.of(new BulletTrackingBatchS2CPacket.VelocitySample(4, 1, Vec3.ZERO, Vec3.ZERO)),
                 List.of(new BulletTrackingBatchS2CPacket.Assignment(4, 1, 1, false)));
 
-        stream.tick();
-        stream.tick();
+        stream.tick(BulletState::position);
+        stream.tick(BulletState::position);
 
         assertTrue(fetus.velocity().length() > 0.0D);
         assertTrue(fetus.position().z > 0.0D);
@@ -273,8 +272,8 @@ class BulletStreamTest {
         stream.applyTrackingVelocity(12, 4,
             List.of(new BulletTrackingBatchS2CPacket.TargetSample(7, new Vec3(0, 0, 4))),
             List.of(), List.of());
-        stream.tick();
-        stream.tick();
+        stream.tick(BulletState::position);
+        stream.tick(BulletState::position);
 
         assertTrue(survivor.position().z > 0.0D);
     }
@@ -287,7 +286,7 @@ class BulletStreamTest {
         stream.applyTrackingVelocity(11, 2, List.of(), List.of(
                 new BulletTrackingBatchS2CPacket.VelocitySample(5, 1, Vec3.ZERO, Vec3.ZERO)), List.of());
 
-        stream.tick();
+        stream.tick(BulletState::position);
 
         assertEquals(0, stream.size());
         assertEquals(0, stream.identityMetadataSize());

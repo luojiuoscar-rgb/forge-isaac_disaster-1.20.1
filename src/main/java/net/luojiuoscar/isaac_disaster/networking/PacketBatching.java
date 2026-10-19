@@ -1,16 +1,15 @@
 package net.luojiuoscar.isaac_disaster.networking;
 
 import io.netty.buffer.Unpooled;
-import net.luojiuoscar.isaac_disaster.IsaacDisaster;
-import net.luojiuoscar.isaac_disaster.networking.packet.bullet.*;
-import net.luojiuoscar.isaac_disaster.networking.packet.laser.LaserBeamBatchS2CPacket;
-import net.minecraft.network.FriendlyByteBuf;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import net.luojiuoscar.isaac_disaster.IsaacDisaster;
+import net.luojiuoscar.isaac_disaster.networking.packet.bullet.*;
+import net.luojiuoscar.isaac_disaster.networking.packet.laser.LaserBeamBatchS2CPacket;
+import net.minecraft.network.FriendlyByteBuf;
 
 /** Dispatches outbound batches through a payload size boundary. */
 public final class PacketBatching {
@@ -25,9 +24,12 @@ public final class PacketBatching {
         } else if (packet instanceof BulletCorrectionBatchS2CPacket batch) {
             split(batch.entries(), (buf, entry) -> entry.toBytes(buf),
                     entries -> new BulletCorrectionBatchS2CPacket(batch.epoch(), entries), 15, sender);
+        } else if (packet instanceof BulletStickBatchS2CPacket batch) {
+            split(batch.entries(), (buf, entry) -> entry.toBytes(buf),
+                    entries -> new BulletStickBatchS2CPacket(batch.epoch(), batch.serverTick(), entries), 20, sender);
         } else if (packet instanceof BulletDespawnBatchS2CPacket batch) {
             split(batch.identities(), FriendlyByteBuf::writeLong,
-                    entries -> new BulletDespawnBatchS2CPacket(batch.epoch(), entries), 15, sender);
+                    entries -> new BulletDespawnBatchS2CPacket(batch.epoch(), batch.serverTick(), batch.visibilityExit(), entries), 21, sender);
         } else if (packet instanceof BulletShatterS2CPacket batch) {
             split(batch.entries(), (buf, entry) -> entry.toBytes(buf),
                     entries -> new BulletShatterS2CPacket(batch.epoch(), entries), 15, sender);

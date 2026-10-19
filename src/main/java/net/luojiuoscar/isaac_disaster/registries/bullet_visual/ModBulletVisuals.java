@@ -53,4 +53,8 @@ public final class ModBulletVisuals {
     public static final RegistryObject<TearBulletVisual> TERRA_ROCK = BULLET_VISUAL_REGISTRY.register(
             "terra_rock", () -> new TearBulletVisual(1.5,
                     ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "textures/particle/terra_rock.png"), false));
+    public static final RegistryObject<TearBulletVisual> SINUS_INFECTION_TEAR = BULLET_VISUAL_REGISTRY.register(
+            "sinus_infection_tear", () -> new TearBulletVisual(2.0D,
+                    ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "textures/particle/sinus_infection_tear.png"), false));
+
 }

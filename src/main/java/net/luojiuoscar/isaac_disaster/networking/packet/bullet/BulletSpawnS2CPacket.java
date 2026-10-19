@@ -1,6 +1,11 @@
 package net.luojiuoscar.isaac_disaster.networking.packet.bullet;
 
+import java.util.List;
+import java.util.Objects;
+import java.util.UUID;
+import java.util.function.Supplier;
 import net.luojiuoscar.isaac_disaster.bullet.core.BulletSteeringMode;
+import net.luojiuoscar.isaac_disaster.bullet.core.BulletStickState;
 import net.luojiuoscar.isaac_disaster.client.network.ClientPacketHandlers;
 import net.luojiuoscar.isaac_disaster.registries.trajectory.TrajectoryRuntime;
 import net.minecraft.network.FriendlyByteBuf;
@@ -9,10 +14,6 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.network.NetworkEvent;
-
-import java.util.List;
-import java.util.UUID;
-import java.util.function.Supplier;
 
 /** Server-to-client immutable bullet snapshot, including deterministic trajectory state. */
 public final class BulletSpawnS2CPacket {
@@ -27,6 +28,7 @@ public final class BulletSpawnS2CPacket {
     private final UUID ownerUuid;
     private final double homingRange, homingSteer, controlRange, controlSteer;
     private final TrajectoryRuntime.Snapshot trajectorySnapshot;
+    private final BulletStickState.Snapshot stickSnapshot;
 
     public BulletSpawnS2CPacket(int epoch, int slot, int generation, int snapshotTick, Vec3 position,
                                 Vec3 previousPosition, Vec3 velocity, Vec3 acceleration, double baseSpeed, int age,
@@ -35,21 +37,8 @@ public final class BulletSpawnS2CPacket {
                                 List<ResourceLocation> visualIds, ResourceLocation typeId, ResourceLocation rootTypeId, UUID ownerUuid, boolean homing,
                                 boolean controllable, double homingRange, double homingSteer,
                                 double controlRange, double controlSteer, BulletSteeringMode steeringMode,
-                                TrajectoryRuntime.Snapshot trajectorySnapshot) {
-        this(epoch, slot, generation, snapshotTick, position, previousPosition, velocity, acceleration, baseSpeed, age,
-                lifetime, traveled, range, damage, renderScale, collisionWidth, collisionHeight, color, alpha, visualIds,
-                typeId, rootTypeId, ownerUuid, homing, controllable, homingRange, homingSteer, controlRange, controlSteer,
-                steeringMode, trajectorySnapshot, false);
-    }
-
-    public BulletSpawnS2CPacket(int epoch, int slot, int generation, int snapshotTick, Vec3 position,
-                                Vec3 previousPosition, Vec3 velocity, Vec3 acceleration, double baseSpeed, int age,
-                                int lifetime, double traveled, double range, float damage, double renderScale,
-                                double collisionWidth, double collisionHeight, int color, float alpha,
-                                List<ResourceLocation> visualIds, ResourceLocation typeId, ResourceLocation rootTypeId, UUID ownerUuid, boolean homing,
-                                boolean controllable, double homingRange, double homingSteer,
-                                double controlRange, double controlSteer, BulletSteeringMode steeringMode,
-                                TrajectoryRuntime.Snapshot trajectorySnapshot, boolean noGravity) {
+                                TrajectoryRuntime.Snapshot trajectorySnapshot, boolean noGravity,
+                                BulletStickState.Snapshot stickSnapshot) {
         this.epoch = epoch; this.slot = slot; this.generation = generation; this.snapshotTick = snapshotTick;
         this.position = position == null ? Vec3.ZERO : position;
         this.previousPosition = previousPosition == null ? this.position : previousPosition;
@@ -59,37 +48,12 @@ public final class BulletSpawnS2CPacket {
         this.damage = damage; this.renderScale = renderScale; this.collisionWidth = collisionWidth; this.collisionHeight = collisionHeight;
         this.color = color; this.alpha = alpha; this.visualIds = visualIds == null ? List.of() : List.copyOf(visualIds);
         this.steeringMode = steeringMode == null ? BulletSteeringMode.LIMITED : steeringMode;
-        this.typeId = java.util.Objects.requireNonNull(typeId, "typeId");
-        this.rootTypeId = java.util.Objects.requireNonNull(rootTypeId, "rootTypeId"); this.ownerUuid = ownerUuid; this.homing = homing; this.controllable = controllable;
+        this.typeId = Objects.requireNonNull(typeId, "typeId");
+        this.rootTypeId = Objects.requireNonNull(rootTypeId, "rootTypeId"); this.ownerUuid = ownerUuid; this.homing = homing; this.controllable = controllable;
         this.homingRange = homingRange; this.homingSteer = homingSteer; this.controlRange = controlRange; this.controlSteer = controlSteer;
-        this.trajectorySnapshot = java.util.Objects.requireNonNull(trajectorySnapshot, "trajectorySnapshot");
+        this.trajectorySnapshot = Objects.requireNonNull(trajectorySnapshot, "trajectorySnapshot");
         this.noGravity = noGravity;
-    }
-
-    public BulletSpawnS2CPacket(int epoch, int slot, int generation, int snapshotTick, Vec3 position,
-                                Vec3 previousPosition, Vec3 velocity, Vec3 acceleration, double baseSpeed, int age,
-                                int lifetime, double traveled, double range, float damage, double renderScale,
-                                double collisionWidth, double collisionHeight, int color, float alpha,
-                                List<ResourceLocation> visualIds, ResourceLocation typeId, ResourceLocation rootTypeId, UUID ownerUuid, boolean homing,
-                                boolean controllable, double homingRange, double homingSteer,
-                                double controlRange, double controlSteer, TrajectoryRuntime.Snapshot trajectorySnapshot) {
-        this(epoch, slot, generation, snapshotTick, position, previousPosition, velocity, acceleration, baseSpeed, age,
-                lifetime, traveled, range, damage, renderScale, collisionWidth, collisionHeight, color, alpha, visualIds,
-                typeId, rootTypeId, ownerUuid, homing, controllable, homingRange, homingSteer, controlRange, controlSteer,
-                BulletSteeringMode.LIMITED, trajectorySnapshot);
-    }
-
-    public BulletSpawnS2CPacket(int epoch, int slot, int generation, int snapshotTick, Vec3 position,
-                                Vec3 previousPosition, Vec3 velocity, Vec3 acceleration, double baseSpeed, int age,
-                                int lifetime, double traveled, double range, float damage, double renderScale,
-                                double collisionWidth, double collisionHeight, int color, float alpha,
-                                List<ResourceLocation> visualIds, ResourceLocation typeId, ResourceLocation rootTypeId, UUID ownerUuid, boolean homing,
-                                boolean controllable, double homingRange, double homingSteer,
-                                double controlRange, double controlSteer) {
-        this(epoch, slot, generation, snapshotTick, position, previousPosition, velocity, acceleration, baseSpeed, age,
-                lifetime, traveled, range, damage, renderScale, collisionWidth, collisionHeight, color, alpha, visualIds,
-                typeId, rootTypeId, ownerUuid, homing, controllable, homingRange, homingSteer, controlRange, controlSteer,
-                BulletSteeringMode.LIMITED, new TrajectoryRuntime(position, velocity, List.of()).snapshot());
+        this.stickSnapshot = Objects.requireNonNull(stickSnapshot, "stickSnapshot");
     }
 
     public BulletSpawnS2CPacket(FriendlyByteBuf buf) {
@@ -98,7 +62,7 @@ public final class BulletSpawnS2CPacket {
                 buf.readDouble(), buf.readDouble(), buf.readInt(), buf.readFloat(), buf.readList(FriendlyByteBuf::readResourceLocation),
                 buf.readResourceLocation(), buf.readResourceLocation(), readUuid(buf), buf.readBoolean(), buf.readBoolean(), buf.readDouble(), buf.readDouble(), buf.readDouble(), buf.readDouble(),
                 buf.readEnum(BulletSteeringMode.class),
-                TrajectoryRuntime.Snapshot.read(buf), buf.readBoolean());
+                TrajectoryRuntime.Snapshot.read(buf), buf.readBoolean(), BulletStickState.Snapshot.read(buf));
     }
 
     public int epoch() { return epoch; } public int slot() { return slot; } public int generation() { return generation; }
@@ -113,6 +77,7 @@ public final class BulletSpawnS2CPacket {
     public double homingSteer() { return homingSteer; } public double controlRange() { return controlRange; } public double controlSteer() { return controlSteer; }
     public TrajectoryRuntime.Snapshot trajectorySnapshot() { return trajectorySnapshot; }
     public boolean noGravity() { return noGravity; }
+    public BulletStickState.Snapshot stickSnapshot() { return stickSnapshot; }
 
     public void toBytes(FriendlyByteBuf buf) {
         buf.writeVarInt(epoch); buf.writeVarInt(slot); buf.writeVarInt(generation); buf.writeVarInt(snapshotTick);
@@ -124,6 +89,7 @@ public final class BulletSpawnS2CPacket {
         buf.writeEnum(steeringMode);
         trajectorySnapshot.write(buf);
         buf.writeBoolean(noGravity);
+        stickSnapshot.write(buf);
     }
 
     public void handle(Supplier<NetworkEvent.Context> supplier) {

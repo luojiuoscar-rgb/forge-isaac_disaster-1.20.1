@@ -1,17 +1,20 @@
 package net.luojiuoscar.isaac_disaster.registries.ability_effect;
 
-import net.luojiuoscar.isaac_disaster.item.ModPassiveItems;
+import java.util.ArrayList;
+import java.util.List;
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.block.ModBlockEntities;
 import net.luojiuoscar.isaac_disaster.effect.ModEffects;
 import net.luojiuoscar.isaac_disaster.effect.custom.DeadlyPoisonEffect;
+import net.luojiuoscar.isaac_disaster.helper.LootHelper;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.item.ModItems;
+import net.luojiuoscar.isaac_disaster.item.ModPassiveItems;
 import net.luojiuoscar.isaac_disaster.manager.ModLootTables;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
-import net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.general.*;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.attachment.*;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.bomb.*;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.general.*;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.normal.*;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.pill_effect.impl.*;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.revive.*;
@@ -26,14 +29,11 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.RegistryObject;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class ModExecutableEffects {
     public static final ResourceKey<Registry<IExecutableEffect>> EXECUTABLE_EFFECT_KEY =
@@ -1071,7 +1071,7 @@ public class ModExecutableEffects {
             EXECUTABLE_EFFECT_REGISTRY.register("celtic_cross", CelticCrossShield::new);
     public static final RegistryObject<IExecutableEffect> OLD_BANDAGE =
             EXECUTABLE_EFFECT_REGISTRY.register("old_bandage", () -> ctx -> {
-                net.luojiuoscar.isaac_disaster.helper.LootHelper.spawnItemViaLoot(ctx.getEntity(),
+                LootHelper.spawnItemViaLoot(ctx.getEntity(),
                         ctx.getEntity().position(), ModItems.RED_HEART.get(), 1);
             });
     public static final RegistryObject<IExecutableEffect> MARBLES =
@@ -1119,4 +1119,11 @@ public class ModExecutableEffects {
 
     public static final RegistryObject<IExecutableEffect> SOUL_LOCKET =
             EXECUTABLE_EFFECT_REGISTRY.register("soul_locket", SoulLocket::new);
+    public static final RegistryObject<IExecutableEffect> SINUS_INFECTION_ATTACHMENT =
+            EXECUTABLE_EFFECT_REGISTRY.register("sinus_infection_attachment", SinusInfectionAttachment::new);
+    public static final RegistryObject<IExecutableEffect> SINUS_INFECTION_POISON =
+            EXECUTABLE_EFFECT_REGISTRY.register("sinus_infection_poison", SinusInfectionPoison::new);
+    public static final RegistryObject<IExecutableEffect> SINUS_INFECTION_DAMAGE =
+            EXECUTABLE_EFFECT_REGISTRY.register("sinus_infection_damage", SinusInfectionDamage::new);
+
 }

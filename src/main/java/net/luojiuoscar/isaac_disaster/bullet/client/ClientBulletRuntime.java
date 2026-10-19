@@ -1,11 +1,14 @@
 package net.luojiuoscar.isaac_disaster.bullet.client;
 
+import java.util.HashSet;
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.bullet.core.BulletState;
 import net.luojiuoscar.isaac_disaster.client.particle.TearShatterParticles;
 import net.luojiuoscar.isaac_disaster.networking.packet.bullet.BulletCorrectionS2CPacket;
+import net.luojiuoscar.isaac_disaster.networking.packet.bullet.BulletDespawnBatchS2CPacket;
 import net.luojiuoscar.isaac_disaster.networking.packet.bullet.BulletShatterS2CPacket;
 import net.luojiuoscar.isaac_disaster.networking.packet.bullet.BulletSpawnS2CPacket;
+import net.luojiuoscar.isaac_disaster.networking.packet.bullet.BulletStickBatchS2CPacket;
 import net.luojiuoscar.isaac_disaster.networking.packet.bullet.BulletTrackingBatchS2CPacket;
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.api.distmarker.Dist;
@@ -29,6 +32,17 @@ public final class ClientBulletRuntime {
         stream.despawn((int) identity, (int) (identity >>> 32));
     }
 
+    /** Distinguishes temporary visibility loss from terminal authoritative removal. */
+    public void applyDespawn(BulletDespawnBatchS2CPacket packet) {
+        if (!stream.acceptEpoch(packet.epoch())) return;
+        for (long identity : packet.identities()) {
+            if (packet.visibilityExit()) {
+                stream.visibilityExit((int) identity, (int) (identity >>> 32), packet.serverTick());
+            } else {
+                stream.despawn(identity);
+            }
+        }
+    }
     /** Accepts a lifecycle packet epoch before applying a removal or correction. */
     public boolean acceptEpoch(int epoch) {
         return stream.acceptEpoch(epoch);
@@ -40,21 +54,18 @@ public final class ClientBulletRuntime {
         if (level != null)
             stream.forEachState(
                 state -> {
+                    if (!state.isFlying()) return;
                     var runtime = state.getTrajectoryRuntime();
                     runtime.updateAnchor(level.getEntity(runtime.anchorEntityId()));
                 });
-        stream.tick();
+        stream.tick(state -> level == null ? state.position()
+            : BulletClientRenderer.attachedPosition(state, 1.0F, level::getEntity, stream.authoritativePosition(state)));
     }
 
     /** Decodes a compact spawn packet into the local prediction stream. */
     public void spawn(BulletSpawnS2CPacket packet) {
         if (!stream.acceptEpoch(packet.epoch())) return;
-        BulletState state =
-            stream.spawn(
-                packet.slot(),
-                packet.generation(),
-                packet.snapshotTick(),
-                BulletState.builder()
+        BulletState decoded = BulletState.builder()
                     .position(packet.position())
                     .velocity(packet.velocity())
                     .acceleration(packet.acceleration())
@@ -68,7 +79,7 @@ public final class ClientBulletRuntime {
                     .ownerUuid(packet.ownerUuid())
                     .color(packet.color())
                     .alpha(packet.alpha())
-                    .visualIds(new java.util.HashSet<>(packet.visualIds()))
+                    .visualIds(new HashSet<>(packet.visualIds()))
                     .typeIds(packet.typeId(), packet.rootTypeId())
                     .steeringMode(packet.steeringMode())
                     .homing(packet.homing())
@@ -79,7 +90,10 @@ public final class ClientBulletRuntime {
                     .controlRange(packet.controlRange())
                     .controlSteer(packet.controlSteer())
                     .restoreTrajectory(packet.trajectorySnapshot())
-                    .build());
+                    .build();
+        decoded.applyStickSnapshot(packet.stickSnapshot());
+        decoded.restoreSnapshot(packet.previousPosition(), packet.age(), packet.traveled());
+        BulletState state = stream.spawn(packet.slot(), packet.generation(), packet.snapshotTick(), decoded);
 
         if (state == null) return;
         // Temporary safety net for a rare stalled-projectile failure. Remove or revise this guard
@@ -88,9 +102,15 @@ public final class ClientBulletRuntime {
             stream.despawn(packet.slot(), packet.generation());
             return;
         }
-        state.restoreSnapshot(packet.previousPosition(), packet.age(), packet.traveled());
     }
 
+    /** Applies server-authoritative attachment and resumed-flight transitions. */
+    public void applyStick(BulletStickBatchS2CPacket packet) {
+        if (!stream.acceptEpoch(packet.epoch())) return;
+        for (BulletStickBatchS2CPacket.Entry entry : packet.entries()) {
+            stream.applyStick(packet.serverTick(), entry);
+        }
+    }
     /** Applies a sparse server correction through the stream's blend policy. */
     public void correct(BulletCorrectionS2CPacket packet) {
         if (!stream.acceptEpoch(packet.epoch())) return;

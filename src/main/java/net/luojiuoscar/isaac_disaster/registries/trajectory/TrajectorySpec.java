@@ -6,11 +6,11 @@ import net.minecraft.resources.ResourceLocation;
 public record TrajectorySpec(ResourceLocation id, int amplifier) {
     public TrajectorySpec {
         if (id == null) throw new IllegalArgumentException("trajectory id cannot be null");
+        amplifier = Math.max(0, Math.min(Integer.MAX_VALUE - 1, amplifier));
     }
 
     /** Converts attached module stacks to the zero-based runtime amplifier. */
     public static TrajectorySpec fromStacks(ResourceLocation id, int stacks) {
-        if (stacks <= 0) throw new IllegalArgumentException("stacks must be positive");
-        return new TrajectorySpec(id, stacks - 1);
+        return new TrajectorySpec(id, Math.max(1, stacks) - 1);
     }
 }

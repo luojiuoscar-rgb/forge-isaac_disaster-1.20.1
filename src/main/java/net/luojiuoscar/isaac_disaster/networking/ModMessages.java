@@ -3,13 +3,13 @@ package net.luojiuoscar.isaac_disaster.networking;
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.datapack.sync.GameplaySettingsS2CPacket;
 import net.luojiuoscar.isaac_disaster.networking.packet.*;
+import net.luojiuoscar.isaac_disaster.networking.packet.ChargeBarUpdateS2CPacket;
+import net.luojiuoscar.isaac_disaster.networking.packet.ClearPassiveItemC2SPacket;
+import net.luojiuoscar.isaac_disaster.networking.packet.EntityVisualStateS2CPacket;
+import net.luojiuoscar.isaac_disaster.networking.packet.FlyUpdateS2CPacket;
 import net.luojiuoscar.isaac_disaster.networking.packet.bullet.*;
 import net.luojiuoscar.isaac_disaster.networking.packet.laser.LaserBeamBatchS2CPacket;
 import net.luojiuoscar.isaac_disaster.networking.packet.laser.RevelationBeamS2CPacket;
-import net.luojiuoscar.isaac_disaster.networking.packet.ClearPassiveItemC2SPacket;
-import net.luojiuoscar.isaac_disaster.networking.packet.ChargeBarUpdateS2CPacket;
-import net.luojiuoscar.isaac_disaster.networking.packet.EntityVisualStateS2CPacket;
-import net.luojiuoscar.isaac_disaster.networking.packet.FlyUpdateS2CPacket;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
@@ -18,9 +18,8 @@ import net.minecraftforge.network.NetworkRegistry;
 import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.network.simple.SimpleChannel;
 
-
 public class ModMessages {
-    private static final String PROTOCOL_VERSION = "2";
+    private static final String PROTOCOL_VERSION = "4";
     private static SimpleChannel INSTANCE;
 
     private static int packetId = 0;
@@ -167,6 +166,10 @@ public class ModMessages {
         net.messageBuilder(BulletCorrectionBatchS2CPacket.class, id(), NetworkDirection.PLAY_TO_CLIENT)
                 .decoder(BulletCorrectionBatchS2CPacket::new).encoder(BulletCorrectionBatchS2CPacket::toBytes)
                 .consumerNetworkThread(BulletCorrectionBatchS2CPacket::handle).add();
+
+        net.messageBuilder(BulletStickBatchS2CPacket.class, id(), NetworkDirection.PLAY_TO_CLIENT)
+                .decoder(BulletStickBatchS2CPacket::new).encoder(BulletStickBatchS2CPacket::toBytes)
+                .consumerNetworkThread(BulletStickBatchS2CPacket::handle).add();
 
         net.messageBuilder(BulletDespawnBatchS2CPacket.class, id(), NetworkDirection.PLAY_TO_CLIENT)
                 .decoder(BulletDespawnBatchS2CPacket::new).encoder(BulletDespawnBatchS2CPacket::toBytes)

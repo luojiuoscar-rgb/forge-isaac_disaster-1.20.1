@@ -1,10 +1,14 @@
 package net.luojiuoscar.isaac_disaster.bullet.core;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.bullet.tracking.TrackingProfile;
+import net.luojiuoscar.isaac_disaster.event.custom.attack.tear_bullet.BulletStickEndEvent;
+import net.luojiuoscar.isaac_disaster.event.custom.attack.tear_bullet.BulletStickStartEvent;
+import net.luojiuoscar.isaac_disaster.event.custom.attack.tear_bullet.BulletStickTickEvent;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.CompositeTrigger;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackContext;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackType;
@@ -16,14 +20,18 @@ import net.luojiuoscar.isaac_disaster.registries.bullet_color.ModBulletColors;
 import net.luojiuoscar.isaac_disaster.registries.split_module.SplitSequence;
 import net.luojiuoscar.isaac_disaster.registries.split_module.SplitTriggerCounts;
 import net.luojiuoscar.isaac_disaster.registries.split_module.SplitTriggerType;
+import net.luojiuoscar.isaac_disaster.registries.trajectory.ModTrajectoryModules;
 import net.luojiuoscar.isaac_disaster.registries.trajectory.TrajectoryMotion;
 import net.luojiuoscar.isaac_disaster.registries.trajectory.TrajectoryRuntime;
 import net.luojiuoscar.isaac_disaster.registries.trajectory.TrajectorySpec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.registries.IForgeRegistry;
 import net.minecraftforge.registries.RegistryManager;
 import org.jetbrains.annotations.Nullable;
@@ -39,6 +47,7 @@ public final class BulletState implements IBulletObject {
     public static final double MIN_VALID_SPEED = BulletMotionState.MIN_VALID_SPEED;
 
     private final BulletMotionState motionState;
+    private final BulletStickState stickState;
     private final BulletTrajectoryState trajectoryState;
     private float damage;
     private final BulletProfile profile;
@@ -63,6 +72,9 @@ public final class BulletState implements IBulletObject {
                 b.baseSpeed,
                 b.lifetime,
                 b.range);
+        this.stickState = new BulletStickState(Math.max(
+                b.stickDurationTicks == null ? 0 : b.stickDurationTicks,
+                b.attackContext == null ? 0 : b.attackContext.getStickDurationTicks()));
         this.damage = b.damage;
         this.profile = new BulletProfile(
             b.renderScale,
@@ -107,11 +119,11 @@ public final class BulletState implements IBulletObject {
         ResourceLocation typeId =
             attackContext == null
                 ? b.typeId
-                : java.util.Objects.requireNonNull(attackContext.getTypeId(), "prepared attack type");
+                : Objects.requireNonNull(attackContext.getTypeId(), "prepared attack type");
         ResourceLocation rootTypeId =
             attackContext == null
                 ? b.rootTypeId
-                : java.util.Objects.requireNonNull(attackContext.getRootTypeId(), "prepared root type");
+                : Objects.requireNonNull(attackContext.getRootTypeId(), "prepared root type");
         this.identity = new BulletAttackIdentity(
             b.owner,
             b.shooter,
@@ -198,7 +210,7 @@ public final class BulletState implements IBulletObject {
 
     public void retainTrajectoryFraction(double fraction) {
         motionState.setTraveled(
-            trajectoryState.retainTrajectoryFraction(motionState.traveled(), fraction));
+            trajectoryState.retainTrajectoryFraction(motionState.traveled(), previousPosition(), fraction));
     }
 
     public Vec3 position() {
@@ -315,8 +327,100 @@ public final class BulletState implements IBulletObject {
         return motionState.isAlive();
     }
 
-    public void kill() {
+    /** Effect-facing removal; nested callbacks never notify the same attachment twice. */
+    public void discard() {
+        if (!isAlive()) return;
+        if (isStuck()) endStick(BulletStickEndReason.REMOVED_BY_EFFECT);
         motionState.kill();
+    }
+
+    public BulletStickState stickState() { return stickState; }
+    public boolean isFlying() { return !isStuck(); }
+    public boolean isStuck() { return stickState.phase() == BulletStickState.Phase.STUCK; }
+    public boolean isDetached() { return stickState.phase() == BulletStickState.Phase.DETACHED; }
+
+    public void applyStickSnapshot(BulletStickState.Snapshot snapshot) {
+        stickState.restore(snapshot);
+        if (!isFlying()) {
+            setTrackingTarget(null);
+            setSteeringTarget(null, false);
+            setDesiredVelocity(null);
+            setTrackingHandle(0);
+            trajectoryState.suspendForPhysics();
+        }
+    }
+
+    public boolean stickTo(LivingEntity target, Vec3 contact) {
+        if (!isAlive() || !isFlying() || stickState.durationTicks() <= 0) return false;
+        stickState.begin(target, contact, trajectoryState.contactVelocity(previousPosition(), contact, velocity()));
+        setPosition(contact);
+        motionState.replaceVelocity(Vec3.ZERO, true);
+        setAcceleration(Vec3.ZERO);
+        setTrackingTarget(null);
+        setSteeringTarget(null, false);
+        setDesiredVelocity(null);
+        setTrackingHandle(0);
+        getTrajectoryRuntime().suspend();
+        if (!target.level().isClientSide()) MinecraftForge.EVENT_BUS.post(
+                new BulletStickStartEvent(stickContext(null)));
+        return true;
+    }
+
+    public BulletStickContext stickContext(@Nullable BulletStickEndReason reason) {
+        return new BulletStickContext(this, stickState.target(), stickState.targetUuid(), position(),
+                stickState.elapsedTicks(), stickState.durationTicks(), reason);
+    }
+
+    /** Returns a server-side loss reason without consulting client tracking availability. */
+    public @Nullable BulletStickEndReason stickTargetLoss(Level level) {
+        LivingEntity target = stickState.target();
+        if (target == null) return BulletStickEndReason.TARGET_REMOVED;
+        if (target.level() != level || target.getRemovalReason() == Entity.RemovalReason.CHANGED_DIMENSION)
+            return BulletStickEndReason.TARGET_CHANGED_DIMENSION;
+        if (target.isDeadOrDying() || target.getRemovalReason() == Entity.RemovalReason.KILLED)
+            return BulletStickEndReason.TARGET_DIED;
+        if (target.isRemoved()) return BulletStickEndReason.TARGET_REMOVED;
+        return null;
+    }
+
+    public void endStick(BulletStickEndReason reason) {
+        boolean detach = reason == BulletStickEndReason.TARGET_DIED
+                || reason == BulletStickEndReason.TARGET_REMOVED
+                || reason == BulletStickEndReason.TARGET_CHANGED_DIMENSION;
+        BulletStickContext context = stickContext(reason);
+        if (!stickState.end(detach)) return;
+        if (stickState.attachmentLevel() != null && !stickState.attachmentLevel().isClientSide())
+            MinecraftForge.EVENT_BUS.post(
+                new BulletStickEndEvent(context));
+        stickState.releaseTarget();
+        if (!detach) motionState.kill();
+        else if (isAlive()) {
+            Vec3 velocity = stickState.flightVelocity();
+            if (velocity.lengthSqr() < 1.0E-12)
+                velocity = getTrajectoryRuntime().mainDirection().scale(Math.max(baseSpeed(), MIN_VALID_SPEED));
+            motionState.replaceVelocity(velocity, true);
+            setAcceleration(Vec3.ZERO);
+            getTrajectoryRuntime().addSpec(new TrajectorySpec(ModTrajectoryModules.GRAVITY.getId(), 0));
+            getTrajectoryRuntime().translateOrigin(position().subtract(stickState.contactPosition()));
+        }
+    }
+
+    /** The host has already been validated and positioned before this event is emitted. */
+    public void tickStickEffects() {
+        if (!isAlive() || !isStuck()) return;
+        if (stickState.advanceElapsed() >= stickState.durationTicks()) {
+            endStick(BulletStickEndReason.EXPIRED);
+            return;
+        }
+        if (stickState.attachmentLevel() != null && !stickState.attachmentLevel().isClientSide())
+            MinecraftForge.EVENT_BUS.post(
+                new BulletStickTickEvent(stickContext(null)));
+    }
+
+    public void tickAttachedPosition(Vec3 position) {
+        if (!isAlive() || !isStuck()) return;
+        tickHitCooldown();
+        motionState.advanceAttached(position, Vec3.ZERO, Vec3.ZERO);
     }
 
     public int slot() {
@@ -344,7 +448,7 @@ public final class BulletState implements IBulletObject {
     }
 
     public void setVelocity(Vec3 value) {
-        motionState.setVelocity(value);
+        motionState.replaceVelocity(value, !isFlying() || isDetached());
     }
 
     /**
@@ -352,7 +456,7 @@ public final class BulletState implements IBulletObject {
      * stalled-projectile failure and may be removed or revised after its root cause is known.
      */
     public boolean validateRuntimeVelocity() {
-        return motionState.validateRuntimeVelocity();
+        return motionState.validateRuntimeVelocity(!isFlying() || isDetached());
     }
 
     @Override
@@ -637,7 +741,7 @@ public final class BulletState implements IBulletObject {
 
     @Override
     public boolean noGravity() {
-        return noGravity;
+        return noGravity && !isDetached();
     }
 
     @Override
@@ -714,6 +818,7 @@ public final class BulletState implements IBulletObject {
         private TrajectoryRuntime.Snapshot trajectorySnapshot;
         private List<TrajectorySpec> trajectorySpecs = List.of();
         private int lifetime = 1;
+        private Integer stickDurationTicks;
         private double range;
         private float damage = 1.0f;
         private double renderScale = 1.0D, collisionWidth = 0.125D, collisionHeight = 0.125D;
@@ -769,6 +874,12 @@ public final class BulletState implements IBulletObject {
 
         public Builder trajectorySpecs(List<TrajectorySpec> v) {
             trajectorySpecs = v == null ? List.of() : List.copyOf(v);
+            return this;
+        }
+
+        public Builder stickDurationTicks(int ticks) {
+            ticks = Math.max(0, ticks);
+            stickDurationTicks = Math.max(stickDurationTicks == null ? 0 : stickDurationTicks, ticks);
             return this;
         }
 
@@ -925,8 +1036,8 @@ public final class BulletState implements IBulletObject {
 
         /** Restores the immutable identity declared by the server's attack definition. */
         public Builder typeIds(ResourceLocation current, ResourceLocation root) {
-            typeId = java.util.Objects.requireNonNull(current, "typeId");
-            rootTypeId = java.util.Objects.requireNonNull(root, "rootTypeId");
+            typeId = Objects.requireNonNull(current, "typeId");
+            rootTypeId = Objects.requireNonNull(root, "rootTypeId");
             return this;
         }
 

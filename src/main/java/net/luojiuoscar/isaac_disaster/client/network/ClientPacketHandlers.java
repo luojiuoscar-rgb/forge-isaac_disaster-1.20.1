@@ -2,10 +2,10 @@ package net.luojiuoscar.isaac_disaster.client.network;
 
 import java.util.List;
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
+import net.luojiuoscar.isaac_disaster.bullet.client.ClientBulletRuntime;
 import net.luojiuoscar.isaac_disaster.client.ClientDataManager;
 import net.luojiuoscar.isaac_disaster.client.gui.attribute_indicator.AttributeIndicatorHudOverlay;
-import net.luojiuoscar.isaac_disaster.system.attribute_indicator.AttributeSnapshot;
-import net.luojiuoscar.isaac_disaster.bullet.client.ClientBulletRuntime;
+import net.luojiuoscar.isaac_disaster.client.laser.RevelationBeamRenderer;
 import net.luojiuoscar.isaac_disaster.networking.packet.ChargeBarUpdateS2CPacket;
 import net.luojiuoscar.isaac_disaster.networking.packet.bullet.BulletCorrectionBatchS2CPacket;
 import net.luojiuoscar.isaac_disaster.networking.packet.bullet.BulletCorrectionS2CPacket;
@@ -13,15 +13,16 @@ import net.luojiuoscar.isaac_disaster.networking.packet.bullet.BulletDespawnBatc
 import net.luojiuoscar.isaac_disaster.networking.packet.bullet.BulletShatterS2CPacket;
 import net.luojiuoscar.isaac_disaster.networking.packet.bullet.BulletSpawnBatchS2CPacket;
 import net.luojiuoscar.isaac_disaster.networking.packet.bullet.BulletSpawnS2CPacket;
+import net.luojiuoscar.isaac_disaster.networking.packet.bullet.BulletStickBatchS2CPacket;
 import net.luojiuoscar.isaac_disaster.networking.packet.bullet.BulletTrackingBatchS2CPacket;
 import net.luojiuoscar.isaac_disaster.networking.packet.laser.LaserBeamBatchS2CPacket;
 import net.luojiuoscar.isaac_disaster.networking.packet.laser.RevelationBeamS2CPacket;
-import net.luojiuoscar.isaac_disaster.client.laser.RevelationBeamRenderer;
 import net.luojiuoscar.isaac_disaster.screen.IsaacItemScreen;
+import net.luojiuoscar.isaac_disaster.system.attribute_indicator.AttributeSnapshot;
 import net.minecraft.client.Minecraft;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.core.particles.ParticleOptions;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
@@ -80,11 +81,12 @@ public final class ClientPacketHandlers {
         packet.entries().forEach(ClientBulletRuntime.INSTANCE::correct);
     }
 
+    public static void handleBulletStick(BulletStickBatchS2CPacket packet) {
+        ClientBulletRuntime.INSTANCE.applyStick(packet);
+    }
+
     public static void handleBulletDespawnBatch(BulletDespawnBatchS2CPacket packet) {
-        if (!ClientBulletRuntime.INSTANCE.acceptEpoch(packet.epoch())) {
-            return;
-        }
-        packet.identities().forEach(ClientBulletRuntime.INSTANCE::despawn);
+        ClientBulletRuntime.INSTANCE.applyDespawn(packet);
     }
 
     public static void handleBulletShatter(BulletShatterS2CPacket packet) {

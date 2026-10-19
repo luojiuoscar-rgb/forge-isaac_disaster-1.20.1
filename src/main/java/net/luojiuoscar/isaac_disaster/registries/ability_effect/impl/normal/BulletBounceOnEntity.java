@@ -1,18 +1,18 @@
 package net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.normal;
 
-import net.luojiuoscar.isaac_disaster.registries.ability_effect.ExecutableEffectPriority;
+import java.util.UUID;
+import net.luojiuoscar.isaac_disaster.bullet.core.BulletState;
 import net.luojiuoscar.isaac_disaster.event.custom.attack.IsaacAttackAfterHitEvent;
 import net.luojiuoscar.isaac_disaster.helper.EntityHelper;
-import net.luojiuoscar.isaac_disaster.registries.ability_effect.ExecutableEffectContext;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ContextKeys;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.ExecutableEffectContext;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.ExecutableEffectPriority;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.IAbilityEffect;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.IBulletObject;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerTypes;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.Vec3;
-
-import java.util.UUID;
 
 public class BulletBounceOnEntity implements IAbilityEffect {
     @Override
@@ -31,6 +31,7 @@ public class BulletBounceOnEntity implements IAbilityEffect {
 
         IBulletObject bullet = event.getBulletObject();
         if (bullet == null) return false;
+        if (bullet instanceof BulletState state && state.stickState().durationTicks() > 0) return true;
         if (bullet.isPiercing()) return true;
 
         double speed = bullet.getVelocity().length();

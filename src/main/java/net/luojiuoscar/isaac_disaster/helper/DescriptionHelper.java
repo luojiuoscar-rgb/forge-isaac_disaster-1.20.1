@@ -1,12 +1,11 @@
 package net.luojiuoscar.isaac_disaster.helper;
 
-import net.luojiuoscar.isaac_disaster.manager.ColorManager;
-import net.minecraft.network.chat.Component;
-
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
+import net.luojiuoscar.isaac_disaster.manager.ColorManager;
+import net.minecraft.network.chat.Component;
 
 public class DescriptionHelper {
     private DescriptionHelper() {
@@ -25,9 +24,7 @@ public class DescriptionHelper {
     }
 
     private static BigDecimal roundToTwoDecimals(double value) {
-        if (!Double.isFinite(value)) {
-            throw new IllegalArgumentException("Dynamic description values must be finite");
-        }
+        if (!Double.isFinite(value)) value = 0;
         return BigDecimal.valueOf(value).setScale(2, RoundingMode.HALF_UP);
     }
 

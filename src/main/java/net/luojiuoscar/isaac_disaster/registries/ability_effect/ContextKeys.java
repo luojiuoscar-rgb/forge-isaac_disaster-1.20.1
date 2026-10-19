@@ -1,5 +1,7 @@
 package net.luojiuoscar.isaac_disaster.registries.ability_effect;
 
+import java.util.List;
+import net.luojiuoscar.isaac_disaster.bullet.core.BulletStickContext;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.profile.PotionProfile;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackContext;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.IBulletObject;
@@ -12,8 +14,6 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.eventbus.api.Event;
-
-import java.util.List;
 
 public final class ContextKeys {
     // 消耗品相关
@@ -32,6 +32,7 @@ public final class ContextKeys {
     // 事件触发相关
     public static final ContextKey<Event> EVENT = new ContextKey<>();
     public static final ContextKey<IBulletObject> BULLET = new ContextKey<>();
+    public static final ContextKey<BulletStickContext> BULLET_STICK = new ContextKey<>();
     public static final ContextKey<ResourceLocation> BULLET_COLOR_ID = new ContextKey<>();
     public static final ContextKey<AttackContext> ATTACK_CONTEXT = new ContextKey<>();
     public static final ContextKey<RecursiveModuleQueue> RECURSIVE_MODULE_QUEUE = new ContextKey<>();

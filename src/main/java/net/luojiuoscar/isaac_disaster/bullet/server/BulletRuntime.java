@@ -1,35 +1,36 @@
 package net.luojiuoscar.isaac_disaster.bullet.server;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
+import java.util.WeakHashMap;
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
-import net.luojiuoscar.isaac_disaster.datapack.gameplay.GameplayConfig;
 import net.luojiuoscar.isaac_disaster.bullet.core.BulletState;
-import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackContext;
-import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.server.MinecraftServer;
+import net.luojiuoscar.isaac_disaster.bullet.core.TrajectoryEvaluator;
+import net.luojiuoscar.isaac_disaster.datapack.gameplay.GameplayConfig;
 import net.luojiuoscar.isaac_disaster.networking.ModMessages;
-import net.luojiuoscar.isaac_disaster.networking.packet.bullet.BulletSpawnS2CPacket;
-import net.luojiuoscar.isaac_disaster.networking.packet.bullet.BulletSpawnBatchS2CPacket;
 import net.luojiuoscar.isaac_disaster.networking.packet.bullet.BulletCorrectionBatchS2CPacket;
 import net.luojiuoscar.isaac_disaster.networking.packet.bullet.BulletCorrectionS2CPacket;
 import net.luojiuoscar.isaac_disaster.networking.packet.bullet.BulletDespawnBatchS2CPacket;
-import net.luojiuoscar.isaac_disaster.networking.packet.bullet.BulletTrackingBatchS2CPacket;
 import net.luojiuoscar.isaac_disaster.networking.packet.bullet.BulletShatterS2CPacket;
+import net.luojiuoscar.isaac_disaster.networking.packet.bullet.BulletSpawnBatchS2CPacket;
+import net.luojiuoscar.isaac_disaster.networking.packet.bullet.BulletSpawnS2CPacket;
+import net.luojiuoscar.isaac_disaster.networking.packet.bullet.BulletStickBatchS2CPacket;
+import net.luojiuoscar.isaac_disaster.networking.packet.bullet.BulletTrackingBatchS2CPacket;
+import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackContext;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.level.LevelEvent;
 import net.minecraftforge.event.server.ServerStoppingEvent;
-import net.minecraftforge.event.entity.player.PlayerEvent;
-
-import java.util.Map;
-import java.util.WeakHashMap;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 import org.jetbrains.annotations.Nullable;
 
 /** Server-side owner of transient bullet managers, one manager per level. */
@@ -40,8 +41,10 @@ public final class BulletRuntime {
     private static final long TRACKING_HANDLE_GRACE_TICKS = 80L;
     private final Map<ServerLevel, BulletManager> managers = new WeakHashMap<>();
     private final Map<ServerLevel, Map<UUID, Set<Long>>> visible = new WeakHashMap<>();
+    private final Map<ServerLevel, Map<UUID, Set<Long>>> hidden = new WeakHashMap<>();
     private final Map<ServerLevel, Integer> streamEpochs = new WeakHashMap<>();
     private final Map<ServerLevel, TrackingHandleState> trackingHandles = new WeakHashMap<>();
+    private final Map<ServerLevel, Map<Long, Integer>> stickRevisions = new WeakHashMap<>();
     private int nextEpoch = 1;
     private BulletRuntime() {}
 
@@ -75,12 +78,16 @@ public final class BulletRuntime {
             if (manager == null) continue;
             removed += manager.clear().size();
             trackingHandles.remove(level);
+            stickRevisions.remove(level);
             Map<UUID, Set<Long>> levelVisible = visible.remove(level);
-            if (levelVisible == null) continue;
+            Map<UUID, Set<Long>> levelHidden = hidden.remove(level);
+            if (levelVisible == null && levelHidden == null) continue;
             for (ServerPlayer player : level.players()) {
-                Set<Long> playerVisible = levelVisible.get(player.getUUID());
+                Set<Long> playerVisible = new HashSet<>();
+                if (levelVisible != null) playerVisible.addAll(levelVisible.getOrDefault(player.getUUID(), Set.of()));
+                if (levelHidden != null) playerVisible.addAll(levelHidden.getOrDefault(player.getUUID(), Set.of()));
                 if (playerVisible != null && !playerVisible.isEmpty()) {
-                    ModMessages.sentToPlayer(new BulletDespawnBatchS2CPacket(epoch(level), new ArrayList<>(playerVisible)), player);
+                    ModMessages.sentToPlayer(new BulletDespawnBatchS2CPacket(epoch(level), (int) level.getGameTime(), false, new ArrayList<>(playerVisible)), player);
                 }
             }
         }
@@ -141,8 +148,10 @@ public final class BulletRuntime {
     public void onServerStopping(ServerStoppingEvent event) {
         managers.clear();
         visible.clear();
+        hidden.clear();
         streamEpochs.clear();
         trackingHandles.clear();
+        stickRevisions.clear();
     }
 
     /** Drops server-side visibility state when a player disconnects so reconnects receive snapshots. */
@@ -162,6 +171,8 @@ public final class BulletRuntime {
     private void clearPlayerVisibility(UUID playerId) {
         for (Map<UUID, Set<Long>> levelVisible : visible.values()) levelVisible.remove(playerId);
         visible.entrySet().removeIf(entry -> entry.getValue().isEmpty());
+        for (Map<UUID, Set<Long>> levelHidden : hidden.values()) levelHidden.remove(playerId);
+        hidden.entrySet().removeIf(entry -> entry.getValue().isEmpty());
     }
 
     /** Drops one level's manager, pending packets, visibility table, and handle table. */
@@ -169,20 +180,24 @@ public final class BulletRuntime {
         BulletManager manager = managers.remove(level);
         if (manager != null) manager.clear();
         visible.remove(level);
+        hidden.remove(level);
         streamEpochs.remove(level);
         trackingHandles.remove(level);
+        stickRevisions.remove(level);
     }
 
     /** Sends only newly visible stream entries and removes entries that left the visibility radius. */
     private void synchronizeVisible(ServerLevel level, BulletManager manager) {
         Map<UUID, Set<Long>> levelVisible = visible.computeIfAbsent(level, ignored -> new HashMap<>());
+        Map<UUID, Set<Long>> levelHidden = hidden.computeIfAbsent(level, ignored -> new HashMap<>());
         List<BulletState> active = manager.activeStates();
         // Consume authoritative removals before rebuilding each player's visible set.
         // The set-difference below handles range exits; this list also covers bullets
         // removed during the tick before they can appear in the active snapshot.
-        List<Long> eventDespawns = manager.drainDespawns();
+        Set<Long> eventDespawns = new HashSet<>(manager.drainDespawns());
         for (ServerPlayer player : level.players()) {
             Set<Long> previous = levelVisible.computeIfAbsent(player.getUUID(), ignored -> new HashSet<>());
+            Set<Long> playerHidden = levelHidden.computeIfAbsent(player.getUUID(), ignored -> new HashSet<>());
             Set<Long> current = new HashSet<>();
             List<BulletSpawnS2CPacket> toSpawn = new ArrayList<>();
             for (BulletState state : active) {
@@ -194,22 +209,33 @@ public final class BulletRuntime {
                 if (!previous.contains(key)) toSpawn.add(snapshot(level, state));
             }
             if (!toSpawn.isEmpty()) ModMessages.sentToPlayer(new BulletSpawnBatchS2CPacket(toSpawn), player);
-            Set<Long> despawn = new HashSet<>(previous);
-            despawn.removeAll(current);
+            Set<Long> visibilityExits = new HashSet<>(previous);
+            visibilityExits.removeAll(current);
+            visibilityExits.removeAll(eventDespawns);
+            Set<Long> terminal = new HashSet<>();
             for (Long identity : eventDespawns) {
-                if (previous.contains(identity)) despawn.add(identity);
+                if (previous.contains(identity) || playerHidden.contains(identity)) terminal.add(identity);
             }
-            if (!despawn.isEmpty()) ModMessages.sentToPlayer(new BulletDespawnBatchS2CPacket(epoch(level), new ArrayList<>(despawn)), player);
+            if (!visibilityExits.isEmpty()) ModMessages.sentToPlayer(
+                new BulletDespawnBatchS2CPacket(epoch(level), (int) level.getGameTime(), true,
+                    new ArrayList<>(visibilityExits)), player);
+            if (!terminal.isEmpty()) ModMessages.sentToPlayer(
+                new BulletDespawnBatchS2CPacket(epoch(level), (int) level.getGameTime(), false,
+                    new ArrayList<>(terminal)), player);
+            playerHidden.addAll(visibilityExits);
+            playerHidden.removeAll(current);
+            playerHidden.removeAll(eventDespawns);
             previous.clear();
             previous.addAll(current);
         }
+        synchronizeStick(level, active, levelVisible);
         List<BulletCorrectionS2CPacket> corrections = manager.drainCorrections();
         if (!corrections.isEmpty() || (level.getGameTime() & 3L) == 0L) {
             for (ServerPlayer player : level.players()) {
             List<BulletCorrectionS2CPacket> visibleCorrections = new ArrayList<>();
             for (BulletCorrectionS2CPacket correction : corrections) {
                     BulletState state = manager.get(correction.slot(), correction.generation());
-                    if (state != null && player.distanceToSqr(correction.position().x, correction.position().y, correction.position().z)
+                    if (state != null && state.isFlying() && player.distanceToSqr(correction.position().x, correction.position().y, correction.position().z)
                     <= VISIBLE_RADIUS * VISIBLE_RADIUS) visibleCorrections.add(correction);
             }
             if (!visibleCorrections.isEmpty()) ModMessages.sentToPlayer(new BulletCorrectionBatchS2CPacket(epoch(level), visibleCorrections), player);
@@ -228,6 +254,36 @@ public final class BulletRuntime {
         synchronizeTracking(level, active);
     }
 
+    /** Sends each attachment transition immediately and refreshes attached centers every four ticks. */
+    private void synchronizeStick(ServerLevel level, List<BulletState> active,
+                                  Map<UUID, Set<Long>> levelVisible) {
+        Map<Long, Integer> previous = stickRevisions.computeIfAbsent(level, ignored -> new HashMap<>());
+        Set<Long> current = new HashSet<>();
+        List<BulletStickBatchS2CPacket.Entry> updates = new ArrayList<>();
+        boolean refresh = (level.getGameTime() & 3L) == 0L;
+        for (BulletState state : active) {
+            if (state.stickState().revision() == 0 && state.isFlying()) continue;
+            long identity = identity(state.slot(), state.generation());
+            current.add(identity);
+            int revision = state.stickState().revision();
+            Integer oldRevision = previous.put(identity, revision);
+            if (oldRevision == null || oldRevision != revision || refresh && state.isStuck()) {
+                updates.add(BulletStickBatchS2CPacket.Entry.from(state));
+            }
+        }
+        previous.keySet().retainAll(current);
+        if (updates.isEmpty()) return;
+        for (ServerPlayer player : level.players()) {
+            Set<Long> playerVisible = levelVisible.get(player.getUUID());
+            if (playerVisible == null || playerVisible.isEmpty()) continue;
+            List<BulletStickBatchS2CPacket.Entry> entries = new ArrayList<>();
+            for (BulletStickBatchS2CPacket.Entry entry : updates) {
+                if (playerVisible.contains(identity(entry.slot(), entry.generation()))) entries.add(entry);
+            }
+            if (!entries.isEmpty()) ModMessages.sentToPlayer(
+                new BulletStickBatchS2CPacket(epoch(level), (int) level.getGameTime(), entries), player);
+        }
+    }
     /** Publishes one four-tick steering snapshot using anonymous stream-local target handles. */
     private void synchronizeTracking(ServerLevel level, List<BulletState> active) {
         if ((level.getGameTime() & 3L) != 0L) return;
@@ -238,7 +294,7 @@ public final class BulletRuntime {
             List<BulletTrackingBatchS2CPacket.VelocitySample> velocitySamples = new ArrayList<>();
             Map<Integer, Vec3> positions = new HashMap<>();
             for (BulletState state : active) {
-                if (!(state.isHoming() || state.isControllable()) || player.distanceToSqr(state.position().x, state.position().y, state.position().z)
+                if (!state.isFlying() || !(state.isHoming() || state.isControllable()) || player.distanceToSqr(state.position().x, state.position().y, state.position().z)
                         > VISIBLE_RADIUS * VISIBLE_RADIUS) continue;
                 int handle = handles.handleFor(state, level.getGameTime());
                 state.setTrackingHandle(handle);
@@ -258,7 +314,7 @@ public final class BulletRuntime {
     }
 
     private static BulletSpawnS2CPacket snapshot(ServerLevel level, BulletState state) {
-        net.luojiuoscar.isaac_disaster.bullet.core.TrajectoryEvaluator.initialize(state);
+        if (state.isFlying()) TrajectoryEvaluator.initialize(state);
         return new BulletSpawnS2CPacket(INSTANCE.epoch(level), state.slot(), state.generation(), (int) level.getGameTime(), state.position(),
                 state.previousPosition(), state.velocity(), state.acceleration(), state.baseSpeed(), state.age(), state.lifetime(), state.traveled(),
                 state.getRange(), state.getDamage(), state.renderScale(),
@@ -266,7 +322,7 @@ public final class BulletRuntime {
                 state.getTypeId(), state.getRootTypeId(),
                 state.ownerUuid(), state.isHoming(), state.isControllable(), state.homingRange(), state.homingSteer(),
                  state.controlRange(), state.controlSteer(), state.steeringMode(),
-                 state.getTrajectoryRuntime().snapshot(), state.noGravity());
+                 state.getTrajectoryRuntime().snapshot(), state.noGravity(), state.stickState().snapshot());
     }
 
     private static long identity(int slot, int generation) {

@@ -1,16 +1,17 @@
 package net.luojiuoscar.isaac_disaster.event;
 
+import java.util.ArrayList;
+import java.util.List;
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.capability.entity.EffectModulesProvider;
 import net.luojiuoscar.isaac_disaster.entity.tnt.IsaacBomb;
 import net.luojiuoscar.isaac_disaster.event.custom.attack.*;
-import net.luojiuoscar.isaac_disaster.event.custom.attack.tear_bullet.BulletTickEvent;
-import net.luojiuoscar.isaac_disaster.event.custom.attack.tear_bullet.TearBulletEndOfLifeEvent;
+import net.luojiuoscar.isaac_disaster.event.custom.attack.tear_bullet.*;
 import net.luojiuoscar.isaac_disaster.event.custom.misc.*;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ContextKeys;
-import net.luojiuoscar.isaac_disaster.registries.ability_effect.ExecutableEffectContext;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ExecutableEffectBatch;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.ExecutableEffectContext;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.IBulletObject;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerModules;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerTypes;
@@ -37,9 +38,6 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.registries.IForgeRegistry;
 import net.minecraftforge.registries.RegistryManager;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Mod.EventBusSubscriber(modid = IsaacDisaster.MOD_ID)
 public class TriggerModuleEvents {
@@ -189,6 +187,39 @@ public class TriggerModuleEvents {
     }
 
     @SubscribeEvent
+    public static void onBulletStickStart(BulletStickStartEvent event) {
+        dispatchStick(event, ModTriggerTypes.BULLET_STICK_START);
+    }
+
+    @SubscribeEvent
+    public static void onBulletStickTick(BulletStickTickEvent event) {
+        dispatchStick(event, ModTriggerTypes.BULLET_STICK_TICK);
+    }
+
+    @SubscribeEvent
+    public static void onBulletStickEnd(BulletStickEndEvent event) {
+        dispatchStick(event, ModTriggerTypes.BULLET_STICK_END);
+    }
+
+    private static void dispatchStick(BulletStickEvent event, TriggerType type) {
+        var stick = event.getStickContext();
+        IBulletObject bullet = event.getBulletObject();
+        LivingEntity owner = bullet.getOwner();
+        if (owner == null) return;
+
+        ExecutableEffectContext context = new ExecutableEffectContext(owner);
+        context.set(ContextKeys.EVENT, event);
+        context.set(ContextKeys.BULLET, bullet);
+        context.set(ContextKeys.BULLET_STICK, stick);
+        context.set(ContextKeys.TARGET_POSITION, stick.position());
+        LivingEntity target = stick.target();
+        if (target != null && target.isAlive() && !target.isRemoved() && target.level() == owner.level()) {
+            context.set(ContextKeys.SECONDARY_LIVING_ENTITIES, List.of(target));
+        }
+        dispatchBullet(context, type);
+    }
+
+    @SubscribeEvent
     public static void onBulletEndOfLife(TearBulletEndOfLifeEvent event) {
         IBulletObject bullet = event.getBulletObject();
 
@@ -244,6 +275,7 @@ public class TriggerModuleEvents {
     public static void onBulletTick(BulletTickEvent event) {
         IBulletObject bullet = event.getBullet();
         LivingEntity entity = bullet.getOwner();
+        if (entity == null) return;
 
         ExecutableEffectContext context = new ExecutableEffectContext(entity);
         context.set(ContextKeys.EVENT, event);

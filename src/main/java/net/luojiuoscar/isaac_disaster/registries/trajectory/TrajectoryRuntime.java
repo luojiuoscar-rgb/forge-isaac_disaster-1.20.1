@@ -1,15 +1,14 @@
 package net.luojiuoscar.isaac_disaster.registries.trajectory;
 
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.Vec3;
-
 import org.jetbrains.annotations.Nullable;
-
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * One projectile's trajectory memory. Configuration is immutable; mutable state is never shared.
@@ -111,7 +110,12 @@ public final class TrajectoryRuntime {
         Snapshot checkpoint = stepCheckpoint;
         Vec3 redirectPosition = pendingRedirectPosition;
         Vec3 redirectDirection = pendingRedirectDirection;
+        // Collision callbacks may detach/reconfigure the bullet; only evaluator progress rolls back.
+        List<TrajectorySpec> currentSpecs = specs;
+        Vec3 originTranslation = origin.subtract(checkpoint.saved.origin);
         restore(checkpoint);
+        specs = currentSpecs;
+        origin = origin.add(originTranslation);
         stepCheckpoint = null;
         pendingRedirectPosition = null;
         pendingRedirectDirection = null;
@@ -150,6 +154,20 @@ public final class TrajectoryRuntime {
 
     public List<TrajectorySpec> specs() {
         return specs;
+    }
+
+    /** Adds a controller while preserving all existing module state and progress. */
+    public void addSpec(TrajectorySpec spec) {
+        if (specs.stream().anyMatch(existing -> existing.id().equals(spec.id()))) return;
+        var updated = new ArrayList<>(specs);
+        updated.add(spec);
+        specs = List.copyOf(updated);
+    }
+
+    /** Translates launch geometry after attachment motion without resetting trajectory progress. */
+    public void translateOrigin(Vec3 delta) {
+        origin = origin.add(finiteOrZero(delta));
+        suspend();
     }
 
     public double distance() {

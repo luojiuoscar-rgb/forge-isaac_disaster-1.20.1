@@ -5,10 +5,14 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import net.luojiuoscar.isaac_disaster.bullet.core.BulletState;
 import net.luojiuoscar.isaac_disaster.bullet.core.TrajectoryEvaluator;
 import net.luojiuoscar.isaac_disaster.bullet.tracking.TrackingProfile;
+import net.luojiuoscar.isaac_disaster.networking.packet.bullet.BulletStickBatchS2CPacket;
 import net.luojiuoscar.isaac_disaster.networking.packet.bullet.BulletTrackingBatchS2CPacket;
+import net.luojiuoscar.isaac_disaster.registries.trajectory.TrajectoryMotion;
+import net.luojiuoscar.isaac_disaster.registries.trajectory.TrajectoryRuntime;
 import net.minecraft.world.phys.Vec3;
 
 /** Client-side stream of predicted bullets, independent from Minecraft Entity tracking. */
@@ -19,6 +23,8 @@ public final class BulletStream {
     private final Map<Long, BulletState> states = new HashMap<>();
     private final Map<Integer, Long> slotIdentities = new HashMap<>();
     private final Map<Integer, Integer> latestGenerations = new HashMap<>();
+    private final Map<Integer, Integer> latestSpawnTicks = new HashMap<>();
+    private final Map<Integer, VisibilityPermit> visibilityPermits = new HashMap<>();
     private final Map<Integer, Vec3> trackingPositions = new HashMap<>();
     private final Map<Integer, Vec3> previousTrackingPositions = new HashMap<>();
     private final Map<Integer, Integer> previousTrackingSampleTicks = new HashMap<>();
@@ -30,13 +36,24 @@ public final class BulletStream {
     private final Map<Long, Integer> appliedVelocityCorrectionTicks = new HashMap<>();
     private final Map<Integer, Integer> trackingHandleReferences = new HashMap<>();
     private final Map<Long, CorrectionStamp> lastCorrectionStamps = new HashMap<>();
+    private final Map<Long, Vec3> authoritativePositions = new HashMap<>();
+    private final Map<Long, Integer> stickSampleTicks = new HashMap<>();
+    private final Map<Long, Integer> stickTransitionAges = new HashMap<>();
     private long serverTick;
     private int epoch = Integer.MIN_VALUE;
 
     /** Installs one server-created state in the client prediction stream. */
     public BulletState spawn(int slot, int generation, int startTick, BulletState state) {
         Integer latestGeneration = latestGenerations.get(slot);
-        if (latestGeneration != null && generation <= latestGeneration) return null;
+        if (latestGeneration != null) {
+            if (generation < latestGeneration) return null;
+            if (generation == latestGeneration) {
+                VisibilityPermit permit = visibilityPermits.get(slot);
+                if (permit == null || permit.generation() != generation || startTick < permit.exitTick()
+                    || states.containsKey(key(slot, generation))) return null;
+            }
+        }
+        visibilityPermits.remove(slot);
         Long oldIdentity = slotIdentities.remove(slot);
         if (oldIdentity != null) {
             BulletState oldState = states.remove(oldIdentity);
@@ -46,9 +63,15 @@ public final class BulletStream {
         state.assignSlot(slot, generation);
         long identity = key(slot, generation);
         states.put(identity, state);
+        if (state.stickState().durationTicks() > 0 || !state.isFlying()) {
+            stickSampleTicks.put(identity, startTick);
+            stickTransitionAges.put(identity, state.age());
+            authoritativePositions.put(identity, state.position());
+        }
         slotIdentities.put(slot, identity);
         addTrackingReference(state.trackingHandle());
         latestGenerations.put(slot, generation);
+        latestSpawnTicks.put(slot, startTick);
         // Packet state is already a server-time snapshot. Client-local ticks cannot
         // be treated as server ticks because that fast-forwards delayed spawns.
         serverTick = Math.max(serverTick, startTick);
@@ -86,6 +109,8 @@ public final class BulletStream {
         states.clear();
         slotIdentities.clear();
         latestGenerations.clear();
+        latestSpawnTicks.clear();
+        visibilityPermits.clear();
         trackingPositions.clear();
         previousTrackingPositions.clear();
         previousTrackingSampleTicks.clear();
@@ -97,12 +122,17 @@ public final class BulletStream {
         appliedVelocityCorrectionTicks.clear();
         trackingHandleReferences.clear();
         lastCorrectionStamps.clear();
+        stickSampleTicks.clear();
+        stickTransitionAges.clear();
+        authoritativePositions.clear();
         serverTick = 0L;
     }
 
     /** Removes a state only when the slot generation is current. */
     public boolean despawn(int slot, int generation) {
         latestGenerations.merge(slot, generation, Math::max);
+        visibilityPermits.computeIfPresent(slot,
+            (ignored, permit) -> permit.generation() <= generation ? null : permit);
         long identity = key(slot, generation);
         BulletState removed = states.remove(identity);
         if (removed != null && slotIdentities.getOrDefault(slot, Long.MIN_VALUE) == identity)
@@ -112,19 +142,52 @@ public final class BulletStream {
         return removed != null;
     }
 
+    /** Hides a currently visible identity while permitting one ordered same-generation reentry. */
+    public boolean visibilityExit(int slot, int generation, int exitTick) {
+        Integer currentGeneration = latestGenerations.get(slot);
+        if (currentGeneration == null || currentGeneration != generation
+            || exitTick < latestSpawnTicks.getOrDefault(slot, Integer.MIN_VALUE)) return false;
+        long identity = key(slot, generation);
+        BulletState removed = states.remove(identity);
+        VisibilityPermit previous = visibilityPermits.get(slot);
+        // An absent identity without a visibility permit is terminal. A delayed exit must not
+        // turn that hard tombstone into permission to resurrect a despawned projectile.
+        if (removed == null && previous == null) return false;
+        if (previous == null || exitTick > previous.exitTick()) {
+            visibilityPermits.put(slot, new VisibilityPermit(generation, exitTick));
+        }
+        if (removed == null) return false;
+        slotIdentities.remove(slot, identity);
+        removeTrackingReference(removed.trackingHandle());
+        removeIdentityMetadata(identity);
+        return true;
+    }
+
+    private record VisibilityPermit(int generation, int exitTick) { }
     /** Removes an entry using the packed generation/slot identity used by batch packets. */
     public boolean despawn(long identity) {
         return despawn((int) identity, (int) (identity >>> 32));
     }
 
-    /** Predicts one client tick and drops states that reached their lifetime. */
-    public void tick() {
+    /** Supplies an attached center without letting local target availability detach bullets. */
+    public void tick(Function<BulletState, Vec3> attachedPosition) {
         serverTick++;
         if (serverTick % TRACKING_CLEANUP_INTERVAL_TICKS == 0) cleanupTrackingHandles();
         Iterator<Map.Entry<Long, BulletState>> iterator = states.entrySet().iterator();
         while (iterator.hasNext()) {
             Map.Entry<Long, BulletState> entry = iterator.next();
             BulletState state = entry.getValue();
+            if (state.isStuck()) {
+                Vec3 attached = attachedPosition.apply(state);
+                state.tickAttachedPosition(attached == null ? state.position() : attached);
+                continue;
+            }
+            // A hit can extend the server lifetime through attachment. Keep its identity available
+            // while the phase packet is in flight, then let authoritative despawn end the wait.
+            if (state.stickState().durationTicks() > 0
+                && (state.getTrajectorySpecs().isEmpty()
+                    ? (long) state.age() + 1 >= state.lifetime()
+                    : state.traveled() >= state.getRange())) continue;
             boolean steeringActive = false;
             if (state.trackingHandle() != 0) {
                 int handle = state.trackingHandle();
@@ -139,20 +202,21 @@ public final class BulletStream {
                 }
             }
             boolean advanced;
-            if (steeringActive) {
+            if (steeringActive && !state.isDetached()) {
                 state.setAcceleration(Vec3.ZERO);
                 advanced = state.tickPhysics();
             } else if (!state.getTrajectorySpecs().isEmpty()) {
                 // Match the server's immutable launch-axis base.  The current
                 // velocity may already contain trajectory-relative residuals.
-                Vec3 baseVelocity = state.getTrajectoryRuntime().mainDirection().scale(state.baseSpeed());
+                Vec3 baseVelocity = steeringActive ? state.velocity()
+                        : state.getTrajectoryRuntime().mainDirection().scale(state.baseSpeed());
                 state.getTrajectoryRuntime().beginStep();
                 var motion = TrajectoryEvaluator.evaluate(state, baseVelocity, 0.0D, 1.0D);
                 if (motion.status()
-                    == net.luojiuoscar.isaac_disaster.registries.trajectory.TrajectoryMotion.Status
+                    == TrajectoryMotion.Status
                         .WORK_LIMIT) {
                     state.getTrajectoryRuntime().rollbackStep();
-                    state.kill();
+                    state.discard();
                     advanced = false;
                 } else {
                     advanced = state.advanceTrajectory(motion, 1.0D);
@@ -197,7 +261,8 @@ public final class BulletStream {
         if (!acceptEpoch(packetEpoch)) return;
         for (BulletTrackingBatchS2CPacket.Assignment assignment : assignments) {
             BulletState state = get(assignment.slot(), assignment.generation());
-            if (state == null) continue;
+            if (state == null || !state.isFlying()
+                || sampleTick < stickSampleTicks.getOrDefault(key(state.slot(), state.generation()), Integer.MIN_VALUE)) continue;
             int previousHandle = state.trackingHandle();
             if (previousHandle != assignment.handle()) {
                 removeTrackingReference(previousHandle);
@@ -216,7 +281,8 @@ public final class BulletStream {
             Integer previousSample = velocitySampleTicks.get(identity);
             if (previousSample != null && sampleTick <= previousSample) continue;
             BulletState state = states.get(identity);
-            if (state == null) continue;
+            if (state == null || !state.isFlying()
+                || sampleTick < stickSampleTicks.getOrDefault(key(state.slot(), state.generation()), Integer.MIN_VALUE)) continue;
             authoritativeVelocities.put(identity, sample.velocity());
             authoritativeVelocityTicks.put(identity, sampleTick);
             velocitySampleTicks.put(identity, sampleTick);
@@ -285,9 +351,10 @@ public final class BulletStream {
         double blend,
         int snapshotAge,
         double snapshotTraveled,
-        net.luojiuoscar.isaac_disaster.registries.trajectory.TrajectoryRuntime.Snapshot snapshot) {
+        TrajectoryRuntime.Snapshot snapshot) {
         BulletState state = states.get(key(slot, generation));
-        if (state == null) return false;
+        if (state == null || !state.isFlying()) return false;
+        if (state.stickState().revision() > 0 && snapshotAge < stickTransitionAges.getOrDefault(key(slot, generation), 0)) return false;
         if (snapshot == null && !state.getTrajectorySpecs().isEmpty()) return false;
         long identity = key(slot, generation);
         CorrectionStamp incoming = new CorrectionStamp(snapshotAge, snapshotTraveled);
@@ -312,7 +379,7 @@ public final class BulletStream {
         Vec3 position,
         Vec3 velocity,
         double blend,
-        net.luojiuoscar.isaac_disaster.registries.trajectory.TrajectoryRuntime.Snapshot snapshot) {
+        TrajectoryRuntime.Snapshot snapshot) {
         BulletState state = states.get(key(slot, generation));
         return state != null
             && correct(
@@ -321,6 +388,40 @@ public final class BulletStream {
 
     public boolean correct(int slot, int generation, Vec3 position, Vec3 velocity, double blend) {
         return correct(slot, generation, position, velocity, blend, null);
+    }
+
+    /** Installs an ordered attachment transition, including restored flight trajectories. */
+    public boolean applyStick(int sampleTick, BulletStickBatchS2CPacket.Entry entry) {
+        long identity = key(entry.slot(), entry.generation());
+        BulletState state = states.get(identity);
+        if (state == null || entry.stickSnapshot().revision() < state.stickState().revision()) return false;
+        Integer previous = stickSampleTicks.get(identity);
+        if (previous != null && (sampleTick < previous || sampleTick == previous
+                && entry.stickSnapshot().revision() <= state.stickState().revision() && !state.isFlying()))
+            return false;
+        removeTrackingReference(state.trackingHandle());
+        state.setTrackingHandle(0);
+        state.setSteeringTarget(null, false);
+        // Drop velocity samples queued before the hit so they cannot be replayed after attachment.
+        authoritativeVelocities.remove(identity);
+        authoritativeVelocityTicks.remove(identity);
+        appliedVelocityCorrectionTicks.remove(identity);
+        velocitySampleTicks.remove(identity);
+        state.applyStickSnapshot(entry.stickSnapshot());
+        state.setPosition(entry.position());
+        state.setVelocity(entry.velocity());
+        state.setAcceleration(entry.acceleration());
+        state.getTrajectoryRuntime().restore(entry.trajectorySnapshot());
+        state.restoreSnapshot(entry.position(), entry.age(), entry.traveled());
+        stickSampleTicks.put(identity, sampleTick);
+        stickTransitionAges.put(identity, entry.age());
+        authoritativePositions.put(identity, entry.position());
+        serverTick = Math.max(serverTick, sampleTick);
+        return true;
+    }
+    /** Freezes unresolved attachments at the last server coordinate, independent of local following. */
+    public Vec3 authoritativePosition(BulletState state) {
+        return authoritativePositions.getOrDefault(key(state.slot(), state.generation()), state.position());
     }
 
     public BulletState get(int slot, int generation) {
@@ -355,7 +456,10 @@ public final class BulletStream {
             + authoritativeVelocities.size()
             + authoritativeVelocityTicks.size()
             + appliedVelocityCorrectionTicks.size()
-            + lastCorrectionStamps.size();
+            + lastCorrectionStamps.size()
+            + stickSampleTicks.size()
+            + stickTransitionAges.size()
+            + authoritativePositions.size();
     }
 
     private void removeIdentityMetadata(long identity) {
@@ -364,6 +468,9 @@ public final class BulletStream {
         authoritativeVelocityTicks.remove(identity);
         appliedVelocityCorrectionTicks.remove(identity);
         lastCorrectionStamps.remove(identity);
+        stickSampleTicks.remove(identity);
+        stickTransitionAges.remove(identity);
+        authoritativePositions.remove(identity);
     }
 
     private void addTrackingReference(int handle) {
