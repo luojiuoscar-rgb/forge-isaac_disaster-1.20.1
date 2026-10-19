@@ -174,4 +174,9 @@ public class ModActiveItems {
     public static final RegistryObject<Item> ETERNAL_D6 = ITEMS.register("eternal_d6",
             () -> new ActiveItem(new Item.Properties(), 4, 4, ModActiveAbilities.ETERNAL_D6));
     static {ItemListManager.ACTIVE_ITEM_LIST.add(ETERNAL_D6);}
+
+    public static final RegistryObject<Item> D12 = ITEMS.register("d12",
+            () -> new ActiveItem(new Item.Properties(), 12, 12, ModActiveAbilities.D12));
+    static {ItemListManager.ACTIVE_ITEM_LIST.add(D12);}
+
 }

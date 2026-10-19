@@ -93,6 +93,8 @@ public class ModExecutableEffects {
             EXECUTABLE_EFFECT_REGISTRY.register("apply_effect_to_nearby", ApplyEffectToNearby::new);
     public static final RegistryObject<IExecutableEffect> D6 =
             EXECUTABLE_EFFECT_REGISTRY.register("d6", D6::new);
+    public static final RegistryObject<IExecutableEffect> D12 =
+            EXECUTABLE_EFFECT_REGISTRY.register("d12", D12::new);
     public static final RegistryObject<IExecutableEffect> STACK_POTION =
             EXECUTABLE_EFFECT_REGISTRY.register("stack_potion", StackPotion::new);
     public static final RegistryObject<IExecutableEffect> TELEPORT =

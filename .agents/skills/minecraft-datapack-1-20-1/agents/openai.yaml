@@ -1,4 +1,0 @@
-interface:
-  display_name: "Minecraft Datapack 1.20.1"
-  short_description: "Create and check Java / Forge 1.20.1 datapacks."
-  default_prompt: "Use $minecraft-datapack-1-20-1 to create or update a datapack for this Minecraft Forge 1.20.1 project."

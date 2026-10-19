@@ -171,4 +171,9 @@ public class ModActiveAbilities {
     public static final RegistryObject<ActiveAbility> ETERNAL_D6 =
             ACTIVE_ABILITY_REGISTRY.register("eternal_d6",
                     () -> new EternalD6(ItemId.ETERNAL_D6.getId(), ItemId.ETERNAL_D6.getLevel()));
+
+    public static final RegistryObject<ActiveAbility> D12 =
+            ACTIVE_ABILITY_REGISTRY.register("d12",
+                    () -> new D12(ItemId.D12.getId(), ItemId.D12.getLevel()));
+
 }

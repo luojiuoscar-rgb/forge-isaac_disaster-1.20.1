@@ -231,7 +231,8 @@ public enum ItemId {
     DEAD_TOOTH(1),
     ADRENALINE(2),
     JUMPER_CABLES(3),
-    SOUL_LOCKET(1);
+    SOUL_LOCKET(1),
+    D12(2);
 
 
 
