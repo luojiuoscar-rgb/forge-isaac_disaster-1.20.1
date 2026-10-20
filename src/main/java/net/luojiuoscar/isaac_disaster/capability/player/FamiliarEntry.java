@@ -5,8 +5,10 @@ import net.minecraft.resources.ResourceLocation;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 /**
@@ -17,6 +19,7 @@ public class FamiliarEntry {
     private int count;
     private final List<UUID> entityIds;
     private final List<UUID> entityIdsView;
+    private final Set<UUID> entityMembership = new HashSet<>();
 
     public FamiliarEntry(ResourceLocation type) {
         this(type, 0, new ArrayList<>());
@@ -64,14 +67,14 @@ public class FamiliarEntry {
     }
 
     public boolean containsEntity(UUID entityId) {
-        return entityIds.contains(entityId);
+        return entityMembership.contains(entityId);
     }
 
     /**
      * Adds an entity UUID if it is not already recorded.
      */
     public void addEntity(UUID entityId) {
-        if (entityId == null || entityIds.contains(entityId)) return;
+        if (entityId == null || !entityMembership.add(entityId)) return;
         entityIds.add(entityId);
     }
 
@@ -79,14 +82,8 @@ public class FamiliarEntry {
      * Removes an entity UUID from this entry.
      */
     public boolean removeEntity(UUID entityId) {
+        if (!entityMembership.remove(entityId)) return false;
         return entityIds.remove(entityId);
-    }
-
-    /**
-     * Removes and returns the runtime UUID at the requested formation index.
-     */
-    public UUID removeEntityAt(int index) {
-        return entityIds.remove(index);
     }
 
     /**
@@ -94,10 +91,7 @@ public class FamiliarEntry {
      */
     public void clearEntityIds() {
         entityIds.clear();
-    }
-
-    public int getIndex(UUID entityId) {
-        return entityIds.indexOf(entityId);
+        entityMembership.clear();
     }
 
     /**

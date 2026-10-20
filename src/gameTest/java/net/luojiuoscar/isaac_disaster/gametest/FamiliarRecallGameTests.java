@@ -5,7 +5,7 @@ import net.luojiuoscar.isaac_disaster.capability.player.PlayerFamiliarData;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerFamiliarDataProvider;
 import net.luojiuoscar.isaac_disaster.entity.ModEntities;
 import net.luojiuoscar.isaac_disaster.entity.familiar.AbstractIsaacFamiliarEntity;
-import net.luojiuoscar.isaac_disaster.entity.familiar.impl.MomKnifeEntity;
+import net.luojiuoscar.isaac_disaster.entity.familiar.impl.mom_knife.MomKnifeEntity;
 import net.luojiuoscar.isaac_disaster.entity.familiar.impl.fly.AbstractFlyFamiliarEntity;
 import net.luojiuoscar.isaac_disaster.entity.familiar.impl.fly.BlueFlyEntity;
 import net.luojiuoscar.isaac_disaster.helper.FamiliarHelper;
@@ -57,21 +57,21 @@ public final class FamiliarRecallGameTests {
     }
 
     @GameTest(template = "trajectory_empty", batch = "familiar_recall")
-    public static void distantKnifePausesItsAttackAndResetsAfterTeleport(GameTestHelper helper) {
+    public static void distantKnifePausesAndResetsAfterTeleport(GameTestHelper helper) {
         try (Fixture fixture = new Fixture(helper)) {
             MomKnifeEntity knife = (MomKnifeEntity) fixture.spawn(MOM_KNIFE);
             Vec3 distant = fixture.owner.position().add(0, 17, 0);
             knife.setPos(distant);
-            knife.setFamiliarState(MomKnifeEntity.MomKnifeState.ALIGN);
+            MomKnifeEntity.State pausedState = knife.getBehaviorState();
             knife.tick();
             helper.assertTrue(!knife.isRemoved(), "The shared recall preserves Mom's knife too");
             helper.assertTrue(knife.position().equals(distant)
-                            && knife.getFamiliarState() == MomKnifeEntity.MomKnifeState.ALIGN,
+                            && knife.getBehaviorState() == pausedState,
                     "Recall prevents the old attack state from advancing or queuing movement");
             fixture.assertLinked(MOM_KNIFE, knife);
             fixture.admit();
             helper.assertTrue(knife.distanceToSqr(fixture.owner) < 4
-                            && knife.getFamiliarState() == MomKnifeEntity.MomKnifeState.IDLE,
+                            && knife.getBehaviorState() == MomKnifeEntity.State.FOLLOW,
                     "Teleport resets the knife's old attack state before behavior resumes");
         }
         helper.succeed();

@@ -16,7 +16,7 @@ import net.luojiuoscar.isaac_disaster.client.gui.attribute_indicator.AttributeIn
 import net.luojiuoscar.isaac_disaster.entity.ModEntities;
 import net.luojiuoscar.isaac_disaster.entity.tnt.CustomTntRenderer;
 import net.luojiuoscar.isaac_disaster.renderer.InvincibleChargeLayer;
-import net.luojiuoscar.isaac_disaster.renderer.familiar.MomKnifeRenderer;
+import net.luojiuoscar.isaac_disaster.client.renderer.familiar.mom_knife.MomKnifeRenderer;
 import net.luojiuoscar.isaac_disaster.renderer.layer.frozen.FrozenShellLayer;
 import net.luojiuoscar.isaac_disaster.renderer.layer.golden.GoldenLayer;
 import net.luojiuoscar.isaac_disaster.renderer.layer.golden.SlimeGoldenLayer;

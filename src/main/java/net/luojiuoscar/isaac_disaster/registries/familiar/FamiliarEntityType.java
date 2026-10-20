@@ -23,7 +23,7 @@ public final class FamiliarEntityType {
 
     public FamiliarEntityType(
             Supplier<? extends EntityType<? extends AbstractIsaacFamiliarEntity>> entityTypeSupplier) {
-        this(entityTypeSupplier, Integer.MAX_VALUE);
+        this(entityTypeSupplier, 1);
     }
 
     public FamiliarEntityType(
@@ -34,7 +34,7 @@ public final class FamiliarEntityType {
     public FamiliarEntityType(
             Supplier<? extends EntityType<? extends AbstractIsaacFamiliarEntity>> entityTypeSupplier, int limit,
             @Nullable Supplier<? extends FamiliarLimitGroup> group, int priority, boolean retainOverflow) {
-        if (limit < 0) limit = 0;
+        if (limit < 1) limit = 1;
         this.entityTypeSupplier = Objects.requireNonNull(entityTypeSupplier);
         this.limit = limit;
         this.group = group;
