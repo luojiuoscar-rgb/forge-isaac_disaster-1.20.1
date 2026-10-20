@@ -6,11 +6,12 @@ import net.luojiuoscar.isaac_disaster.registries.ability_effect.ContextKeys;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ExecutableEffectContext;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ModExecutableEffects;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.normal.EternalHeartPunish;
-import net.luojiuoscar.isaac_disaster.system.heart.EternalHeartState;
+import net.luojiuoscar.isaac_disaster.effect.ModEffects;
 import net.minecraft.core.BlockPos;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraftforge.common.util.FakePlayerFactory;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.gametest.GameTestHolder;
@@ -25,26 +26,22 @@ public final class EternalHeartGameTests {
     }
 
     @GameTest(template = "trajectory_empty", batch = "eternal_heart")
-    public static void whiteHeartUsesInternalState(GameTestHelper helper) {
+    public static void whiteHeartUsesPotionEffect(GameTestHelper helper) {
         ServerPlayer player = player(helper);
-        double maxHealth = player.getMaxHealth();
 
         ModExecutableEffects.ETERNAL_HEART.get().apply(new ExecutableEffectContext(player));
 
-        helper.assertTrue(EternalHeartState.has(player), "The player has a pending white heart");
-
-        for (int tick = 0; tick < EternalHeartState.DURATION_TICKS; tick++) {
-            EternalHeartState.tick(player);
-        }
-        helper.assertTrue(!EternalHeartState.has(player), "The pending white heart is consumed at the deadline");
-        helper.assertTrue(player.getMaxHealth() > maxHealth, "The deadline grants a permanent health unit");
+        MobEffectInstance effect = player.getEffect(ModEffects.ETERNAL_HEART.get());
+        helper.assertTrue(effect != null, "The player receives the eternal-heart potion effect");
+        helper.assertTrue(effect.getDuration() == 3600, "The eternal-heart duration is 3600 ticks");
+        helper.assertTrue(effect.getAmplifier() == 0, "The eternal-heart amplifier is zero");
         helper.succeed();
     }
 
     @GameTest(template = "trajectory_empty", batch = "eternal_heart")
     public static void whiteHeartBlocksDamageWithoutAbsorption(GameTestHelper helper) {
         ServerPlayer player = player(helper);
-        EternalHeartState.grant(player);
+        player.addEffect(new MobEffectInstance(ModEffects.ETERNAL_HEART.get(), 3600, 0));
         LivingHurtEvent hurt = new LivingHurtEvent(player, player.damageSources().generic(), 4.0f);
         ExecutableEffectContext context = new ExecutableEffectContext(player);
         context.set(ContextKeys.EVENT, hurt);
@@ -52,14 +49,14 @@ public final class EternalHeartGameTests {
         new EternalHeartPunish().applyEffect(context);
 
         helper.assertTrue(hurt.getAmount() == 0.0f, "White heart blocks qualifying damage");
-        helper.assertTrue(!EternalHeartState.has(player), "Blocked damage consumes the white heart");
+        helper.assertTrue(player.getEffect(ModEffects.ETERNAL_HEART.get()) == null, "Blocked damage consumes the white heart");
         helper.succeed();
     }
 
     @GameTest(template = "trajectory_empty", batch = "eternal_heart")
     public static void whiteHeartWaitsWhileAbsorptionIsPresent(GameTestHelper helper) {
         ServerPlayer player = player(helper);
-        EternalHeartState.grant(player);
+        player.addEffect(new MobEffectInstance(ModEffects.ETERNAL_HEART.get(), 3600, 0));
         player.setAbsorptionAmount(1.0f);
         LivingHurtEvent hurt = new LivingHurtEvent(player, player.damageSources().generic(), 4.0f);
         ExecutableEffectContext context = new ExecutableEffectContext(player);
@@ -68,21 +65,20 @@ public final class EternalHeartGameTests {
         new EternalHeartPunish().applyEffect(context);
 
         helper.assertTrue(hurt.getAmount() == 4.0f, "Absorption keeps the white heart from triggering");
-        helper.assertTrue(EternalHeartState.has(player), "Absorption does not consume the white heart");
+        helper.assertTrue(player.getEffect(ModEffects.ETERNAL_HEART.get()) != null, "Absorption does not consume the white heart");
         helper.succeed();
     }
 
     @GameTest(template = "trajectory_empty", batch = "eternal_heart")
-    public static void secondWhiteHeartConvertsImmediately(GameTestHelper helper) {
+    public static void expiredWhiteHeartConvertsToMaxHealth(GameTestHelper helper) {
         ServerPlayer player = player(helper);
         double maxHealth = player.getMaxHealth();
-        ExecutableEffectContext context = new ExecutableEffectContext(player);
+        player.addEffect(new MobEffectInstance(ModEffects.ETERNAL_HEART.get(), 1, 0));
 
-        ModExecutableEffects.ETERNAL_HEART.get().apply(context);
-        ModExecutableEffects.ETERNAL_HEART.get().apply(context);
+        player.tick();
 
-        helper.assertTrue(!EternalHeartState.has(player), "Two white hearts do not leave a pending state");
-        helper.assertTrue(player.getMaxHealth() > maxHealth, "Two white hearts convert to one health unit");
+        helper.assertTrue(player.getEffect(ModEffects.ETERNAL_HEART.get()) == null, "The expired white heart is removed");
+        helper.assertTrue(player.getMaxHealth() > maxHealth, "The expired white heart grants a permanent health unit");
         helper.succeed();
     }
 

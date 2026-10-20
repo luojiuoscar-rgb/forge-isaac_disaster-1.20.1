@@ -12,7 +12,6 @@ import net.luojiuoscar.isaac_disaster.registries.ability_effect.ModExecutableEff
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.SimpleTrigger;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerModule;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerTypes;
-import net.luojiuoscar.isaac_disaster.system.heart.EternalHeartState;
 import net.minecraft.server.level.ServerPlayer;
 
 import java.util.List;
@@ -26,7 +25,7 @@ public class PlayerPermanentModule extends TriggerModule {
                             && event.getOrigin() == AttackOrigin.PLAYER_PRIMARY),
 
             new SimpleTrigger(ModTriggerTypes.ON_HURT_NEGATIVE, ModExecutableEffects.ETERNAL_HEART_PUNISH,
-                              context -> EternalHeartState.has(context.getEntity())),
+                              context -> context.getEntity().hasEffect(ModEffects.ETERNAL_HEART.get())),
 
             new SimpleTrigger(ModTriggerTypes.ON_HURT_NEGATIVE, ModExecutableEffects.HOLY_SHIELD_ACTIVE,
                               context -> context.getEntity().hasEffect(ModEffects.HOLY_SHIELD.get())),

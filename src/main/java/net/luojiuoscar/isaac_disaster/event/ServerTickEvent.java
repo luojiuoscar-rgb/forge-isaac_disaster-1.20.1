@@ -26,7 +26,6 @@ import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackPipelineMode;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackRequest;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.tags.IChargeableAttack;
 import net.luojiuoscar.isaac_disaster.system.ScaleUtils;
-import net.luojiuoscar.isaac_disaster.system.heart.EternalHeartState;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
@@ -77,7 +76,6 @@ public class ServerTickEvent {
 
         CurioSlotManager.tick(player);
 
-        EternalHeartState.tick(player);
         IsaacHeadAttack(player);
         recursiveModuleTick(player);
         refreshScaleIfChanged(player);
