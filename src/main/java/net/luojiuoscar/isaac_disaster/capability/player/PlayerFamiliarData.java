@@ -109,11 +109,6 @@ public class PlayerFamiliarData {
         return entry != null && entry.containsEntity(entityId);
     }
 
-    public int getIndex(ResourceLocation type, UUID entityId) {
-        FamiliarEntry entry = familiars.get(type);
-        return entry == null ? -1 : entry.getIndex(entityId);
-    }
-
     public Collection<FamiliarEntry> getEntries() { return Collections.unmodifiableCollection(familiars.values()); }
 
     /** Round-robin entity restoration; quota was already assigned when requirements changed. */

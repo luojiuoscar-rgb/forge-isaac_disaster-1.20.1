@@ -21,7 +21,7 @@ public final class ModFamiliarEntities {
 
     public static final RegistryObject<FamiliarEntityType> MOM_KNIFE =
             FAMILIAR_ENTITY_REGISTRY.register("mom_knife", () ->
-                    new FamiliarEntityType(ModEntities.MOM_KNIFE, Integer.MAX_VALUE, null, 0, true));
+                    new FamiliarEntityType(ModEntities.MOM_KNIFE, 27)); // Three formation layers: 5 + 9 + 13.
 
     public static final RegistryObject<FamiliarEntityType> BLUE_FLY =
             FAMILIAR_ENTITY_REGISTRY.register("blue_fly", () ->

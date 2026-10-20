@@ -69,7 +69,7 @@ public abstract class AbstractIsaacFamiliarEntity extends Entity {
                 resetValidityCheckDelay();
             }
             if (owner instanceof ServerPlayer && owner.isAlive() && !owner.isRemoved()
-                    && distanceToSqr(owner) > MAX_VALID_DISTANCE * MAX_VALID_DISTANCE) {
+                    && exceedsRecallDistance(owner)) {
                 requestRecall();
                 return;
             }
@@ -80,6 +80,11 @@ public abstract class AbstractIsaacFamiliarEntity extends Entity {
         }
 
         tickFamiliar();
+    }
+
+    /** Large formations can account for their legitimate extent without changing other familiars. */
+    protected boolean exceedsRecallDistance(Player owner) {
+        return distanceToSqr(owner) > MAX_VALID_DISTANCE * MAX_VALID_DISTANCE;
     }
 
     /**
@@ -209,20 +214,6 @@ public abstract class AbstractIsaacFamiliarEntity extends Entity {
     @Nullable
     public ResourceLocation getFamiliarType() {
         return ForgeRegistries.ENTITY_TYPES.getKey(getType());
-    }
-
-    /**
-     * Returns this familiar's current order in the owner capability for server-side positioning logic.
-     */
-    public int getFamiliarIndex() {
-        Player owner = getOwner();
-        ResourceLocation familiarType = getFamiliarType();
-        if (owner == null || familiarType == null) return -1;
-
-        final int[] index = {-1};
-        owner.getCapability(PlayerFamiliarDataProvider.PLAYER_FAMILIAR_DATA).ifPresent(
-                data -> index[0] = data.getIndex(familiarType, getUUID()));
-        return index[0];
     }
 
     private void resetValidityCheckDelay() {
