@@ -8,7 +8,9 @@ import net.minecraft.world.phys.Vec3;
 /** Small, world-independent steps for rising, aiming and a fixed-range thrust. */
 final class MomKnifeAttack {
     static final int RISE_TICKS = 3;
-    static final int AIM_TICKS = 3;
+    static final int MAX_RISE_WAIT_TICKS = 6;
+    static final int MIN_AIM_TICKS = 2;
+    static final int MAX_AIM_TICKS = 6;
     static final int PAUSE_TICKS = 5;
     static final int RETURN_TICKS = 8;
     static final int MIN_COOLDOWN = 20;
@@ -33,13 +35,13 @@ final class MomKnifeAttack {
     }
 
     /** Lift backward from the follow pose, keeping the cutting edge below the blade. */
-    static MomKnifePose aim(Vec3 anchor, Vec3 target, MomKnifePose start, double age) {
+    static MomKnifePose aim(Vec3 anchor, Vec3 target, MomKnifePose start, double age, int durationTicks) {
         Vec3 direction = target.subtract(anchor);
         double length = direction.length();
         if (length < 1e-8) return start;
         float yaw = MomKnifeMotion.facingYaw(anchor, target, start.yaw() - 180.0F) + 180.0F;
         float pitch = (float) -Math.toDegrees(Math.acos(Mth.clamp(-direction.y / length, -1, 1)));
-        float progress = (float) smooth(age / AIM_TICKS);
+        float progress = (float) smooth(age / Math.max(1, durationTicks));
         if (progress <= 0) return start;
         return new MomKnifePose(Mth.rotLerp(progress, start.yaw(), yaw),
                 Mth.lerp(progress, start.pitch(), pitch),

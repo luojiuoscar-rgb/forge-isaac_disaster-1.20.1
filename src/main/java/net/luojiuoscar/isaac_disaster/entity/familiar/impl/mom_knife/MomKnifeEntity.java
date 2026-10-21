@@ -39,6 +39,8 @@ public class MomKnifeEntity extends AbstractIsaacFamiliarEntity {
     private final MomKnifeMotion motion = new MomKnifeMotion();
     private final Set<UUID> hitVictims = new HashSet<>();
     @Nullable private UUID targetId;
+    private long riseAt = Long.MIN_VALUE;
+    private int aimTicks;
     private Vec3 riseOrigin = Vec3.ZERO;
     private double riseHeight;
     private int attackLayerCount = 1;
@@ -101,6 +103,15 @@ public class MomKnifeEntity extends AbstractIsaacFamiliarEntity {
         moveToPoint(MomKnifeMotion.follow(position(), slot(owner)));
         setPose(new MomKnifePose(MomKnifeMotion.facingYaw(position(), owner.position(),
                 entityData.get(POSE_YAW)), 0, 0));
+        if (targetId != null) {
+            if (MomKnifeTargeting.validTarget(owner, target())) {
+                if (now >= riseAt) beginRise(now);
+                return;
+            }
+            targetId = null;
+            riseAt = Long.MIN_VALUE;
+            attackLayerCount = 1;
+        }
         if (cooldown > 0 || now < nextTargetSearch) return;
         nextTargetSearch = now + MomKnifeTargeting.SCAN_INTERVAL;
         int layers = layerCount(owner);
@@ -109,6 +120,12 @@ public class MomKnifeEntity extends AbstractIsaacFamiliarEntity {
         hitVictims.clear();
         targetId = target.getUUID();
         attackLayerCount = layers;
+        riseAt = now + random.nextInt(MomKnifeAttack.MAX_RISE_WAIT_TICKS + 1);
+        if (now >= riseAt) beginRise(now);
+    }
+
+    private void beginRise(long now) {
+        riseAt = Long.MIN_VALUE;
         riseOrigin = position();
         riseHeight = MomKnifeAttack.riseHeight(random.nextDouble());
         aimStart = getRenderPose(0);
@@ -125,6 +142,8 @@ public class MomKnifeEntity extends AbstractIsaacFamiliarEntity {
         setPose(aimStart);
         if (age(now) >= MomKnifeAttack.RISE_TICKS) {
             aimStart = getRenderPose(0);
+            aimTicks = MomKnifeAttack.MIN_AIM_TICKS
+                    + random.nextInt(MomKnifeAttack.MAX_AIM_TICKS - MomKnifeAttack.MIN_AIM_TICKS + 1);
             changeState(State.AIM, now);
         }
     }
@@ -136,8 +155,8 @@ public class MomKnifeEntity extends AbstractIsaacFamiliarEntity {
             return;
         }
         moveToPoint(position());
-        setPose(MomKnifeAttack.aim(position(), target.getBoundingBox().getCenter(), aimStart, age(now)));
-        if (age(now) >= MomKnifeAttack.AIM_TICKS) {
+        setPose(MomKnifeAttack.aim(position(), target.getBoundingBox().getCenter(), aimStart, age(now), aimTicks));
+        if (age(now) >= aimTicks) {
             launchPose = getRenderPose(0);
             launchOrigin = position();
             remainingFlight = MomKnifeAttack.thrustDistance(attackLayerCount);
@@ -199,6 +218,8 @@ public class MomKnifeEntity extends AbstractIsaacFamiliarEntity {
     private void beginReturn(long now) {
         hitVictims.clear();
         targetId = null;
+        riseAt = Long.MIN_VALUE;
+        aimTicks = 0;
         attackLayerCount = 1;
         riseOrigin = Vec3.ZERO;
         riseHeight = 0;
@@ -280,6 +301,8 @@ public class MomKnifeEntity extends AbstractIsaacFamiliarEntity {
     protected void onRecalled() {
         hitVictims.clear();
         targetId = null;
+        riseAt = Long.MIN_VALUE;
+        aimTicks = 0;
         attackLayerCount = 1;
         riseOrigin = Vec3.ZERO;
         riseHeight = 0;
@@ -321,7 +344,7 @@ public class MomKnifeEntity extends AbstractIsaacFamiliarEntity {
         }
         // Return uses the server's eased pose, rather than turning toward its travel velocity.
         motion.turnTo(desiredYaw, attacking ? 90 : state == State.RETURN ? 45 : 18);
-        motion.turnPitchTo(entityData.get(POSE_PITCH), attacking ? 60 : 22.5F);
+        motion.turnPitchTo(entityData.get(POSE_PITCH), attacking ? MomKnifeMotion.ATTACK_PITCH_STEP : 22.5F);
         motion.turnTwistTo(entityData.get(POSE_TWIST), attacking ? 90 : 45);
     }
 

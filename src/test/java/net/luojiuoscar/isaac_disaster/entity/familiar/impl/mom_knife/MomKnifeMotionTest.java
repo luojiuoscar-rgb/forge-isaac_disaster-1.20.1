@@ -2,6 +2,8 @@ package net.luojiuoscar.isaac_disaster.entity.familiar.impl.mom_knife;
 
 import net.minecraft.world.phys.Vec3;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
@@ -10,6 +12,22 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class MomKnifeMotionTest {
     private static final double EPSILON = 1.0e-6;
     private static final Vec3 OWNER = new Vec3(10, 20, 30);
+
+    @ParameterizedTest
+    @ValueSource(ints = {2, 4, 6})
+    void clientPitchFinishesAimingAtElevatedTargetsBeforeLaunch(int duration) {
+        for (Vec3 target : new Vec3[]{new Vec3(0, Math.sqrt(3), 1), new Vec3(0, 1, 0)}) {
+            MomKnifeMotion motion = new MomKnifeMotion();
+            MomKnifePose start = new MomKnifePose(0, 0, 0);
+            for (int age = 1; age <= duration; age++) {
+                MomKnifePose authoritative = MomKnifeAttack.aim(Vec3.ZERO, target, start, age, duration);
+                motion.turnPitchTo(authoritative.pitch(), MomKnifeMotion.ATTACK_PITCH_STEP);
+            }
+            float expectedPitch = target.z == 0 ? -180 : -150;
+            assertEquals(expectedPitch, motion.renderPitch(1), EPSILON,
+                    "Client smoothing must finish the shortest aim before the first thrust step");
+        }
+    }
 
     @Test
     void formationLayersAdvanceOnlyWhenTheCurrentArcIsFull() {

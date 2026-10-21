@@ -5,6 +5,7 @@ import net.minecraft.world.phys.Vec3;
 
 /** Formation placement, movement and display heading without entity or packet ownership. */
 final class MomKnifeMotion {
+    static final float ATTACK_PITCH_STEP = 180.0F / MomKnifeAttack.MIN_AIM_TICKS;
     private static final double FOLLOW_RESPONSE = 0.35;
     private static final double FOLLOW_MAX_SPEED = 1.5;
 

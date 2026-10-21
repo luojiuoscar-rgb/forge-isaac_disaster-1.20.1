@@ -3,10 +3,40 @@ package net.luojiuoscar.isaac_disaster.entity.familiar.impl.mom_knife;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class MomKnifeAttackTest {
+    @ParameterizedTest
+    @ValueSource(ints = {2, 4, 6})
+    void aimUsesItsSampledDurationAndStillTracksTheLatestTarget(int duration) {
+        Vec3 anchor = new Vec3(2, 5, 3);
+        MomKnifePose start = new MomKnifePose(179, 0, 0);
+        Vec3 target = anchor.add(1, -1, 0);
+        assertEquals(start, MomKnifeAttack.aim(anchor, target, start, 0, duration));
+        MomKnifePose halfway = MomKnifeAttack.aim(anchor, target, start, duration / 2.0, duration);
+        assertEquals(134.5, halfway.yaw(), 1e-5);
+        assertEquals(-22.5, halfway.pitch(), 1e-5);
+        MomKnifePose finished = MomKnifeAttack.aim(anchor, target, start, duration, duration);
+        assertVector(target.subtract(anchor).normalize(), finished.bladePoint(anchor, 1).subtract(anchor));
+        Vec3 moved = anchor.add(-2, 3, -4);
+        MomKnifePose tracked = MomKnifeAttack.aim(anchor, moved, start, duration + 1, duration);
+        assertVector(moved.subtract(anchor).normalize(), tracked.bladePoint(anchor, 1).subtract(anchor));
+        assertEquals(anchor, tracked.bladePoint(anchor, 0));
+    }
+
+    @Test
+    void aimClampsNonPositiveDurationsToOneTick() {
+        MomKnifePose start = new MomKnifePose(0, 0, 0);
+        for (int duration : new int[]{0, -3}) {
+            assertEquals(start, MomKnifeAttack.aim(Vec3.ZERO, new Vec3(0, 0, 1), start, 0, duration));
+            MomKnifePose finished = MomKnifeAttack.aim(Vec3.ZERO, new Vec3(0, 0, 1), start, 1, duration);
+            assertVector(new Vec3(0, 0, 1), finished.bladePoint(Vec3.ZERO, 1));
+        }
+    }
+
     @Test
     void riseLocksHorizontalPositionAndFinishesInThreeTicks() {
         Vec3 origin = new Vec3(4, 2, -7);
@@ -31,14 +61,14 @@ class MomKnifeAttackTest {
         Vec3 anchor = new Vec3(2, 5, 3);
         MomKnifePose start = new MomKnifePose(179, 0, 0);
         Vec3 target = anchor.add(1, -1, 0);
-        assertEquals(start, MomKnifeAttack.aim(anchor, target, start, 0));
-        MomKnifePose middle = MomKnifeAttack.aim(anchor, target, start, 1.5);
+        assertEquals(start, MomKnifeAttack.aim(anchor, target, start, 0, 3));
+        MomKnifePose middle = MomKnifeAttack.aim(anchor, target, start, 1.5, 3);
         assertEquals(134.5, middle.yaw(), 1e-5);
         assertEquals(-22.5, middle.pitch(), 1e-5);
-        MomKnifePose aimed = MomKnifeAttack.aim(anchor, target, start, 3);
+        MomKnifePose aimed = MomKnifeAttack.aim(anchor, target, start, 3, 3);
         assertVector(target.subtract(anchor).normalize(), aimed.bladePoint(anchor, 1).subtract(anchor));
         Vec3 moved = anchor.add(-2, 3, -4);
-        MomKnifePose changed = MomKnifeAttack.aim(anchor, moved, start, 4);
+        MomKnifePose changed = MomKnifeAttack.aim(anchor, moved, start, 4, 3);
         assertVector(moved.subtract(anchor).normalize(), changed.bladePoint(anchor, 1).subtract(anchor));
         assertEquals(anchor, changed.bladePoint(anchor, 0));
         assertEquals(0, changed.twist());
@@ -47,11 +77,11 @@ class MomKnifeAttackTest {
     @Test
     void aimHandlesTargetsDirectlyAboveBelowAndAtTheHandle() {
         MomKnifePose fallback = new MomKnifePose(37, 0, 0);
-        assertEquals(-180, MomKnifeAttack.aim(Vec3.ZERO, new Vec3(0, 1, 0), fallback, 3).pitch());
-        assertEquals(0, MomKnifeAttack.aim(Vec3.ZERO, new Vec3(0, -1, 0), fallback, 3).pitch(), 1e-6);
-        assertEquals(37, MomKnifeAttack.aim(Vec3.ZERO, new Vec3(0, 1, 0), fallback, 3).yaw(), 1e-6);
-        assertEquals(37, MomKnifeAttack.aim(Vec3.ZERO, new Vec3(0, -1, 0), fallback, 3).yaw(), 1e-6);
-        assertEquals(fallback, MomKnifeAttack.aim(Vec3.ZERO, Vec3.ZERO, fallback, 3));
+        assertEquals(-180, MomKnifeAttack.aim(Vec3.ZERO, new Vec3(0, 1, 0), fallback, 3, 3).pitch());
+        assertEquals(0, MomKnifeAttack.aim(Vec3.ZERO, new Vec3(0, -1, 0), fallback, 3, 3).pitch(), 1e-6);
+        assertEquals(37, MomKnifeAttack.aim(Vec3.ZERO, new Vec3(0, 1, 0), fallback, 3, 3).yaw(), 1e-6);
+        assertEquals(37, MomKnifeAttack.aim(Vec3.ZERO, new Vec3(0, -1, 0), fallback, 3, 3).yaw(), 1e-6);
+        assertEquals(fallback, MomKnifeAttack.aim(Vec3.ZERO, Vec3.ZERO, fallback, 3, 3));
     }
 
     @Test
@@ -137,13 +167,13 @@ class MomKnifeAttackTest {
             double radians = Math.toRadians(yaw);
             Vec3 rearTarget = new Vec3(Math.sin(radians) * 4, 0, -Math.cos(radians) * 4);
             for (double age : new double[]{0, 0.5, 1, 1.5, 2, 2.5, 3}) {
-                MomKnifePose aiming = MomKnifeAttack.aim(Vec3.ZERO, rearTarget, start, age);
+                MomKnifePose aiming = MomKnifeAttack.aim(Vec3.ZERO, rearTarget, start, age, 3);
                 // The game's fast atan2 is approximate; millidegree drift is not a turn.
                 assertEquals(yaw, aiming.yaw(), 1e-3);
                 assertEquals(0, aiming.twist(), 1e-6);
                 assertTrue(aiming.pitch() <= 0 && aiming.pitch() >= -90);
             }
-            MomKnifePose launched = MomKnifeAttack.aim(Vec3.ZERO, rearTarget, start, 3);
+            MomKnifePose launched = MomKnifeAttack.aim(Vec3.ZERO, rearTarget, start, 3, 3);
             assertTrue(rearTarget.normalize().distanceTo(launched.bladePoint(Vec3.ZERO, 1)) < 2e-5);
         }
     }

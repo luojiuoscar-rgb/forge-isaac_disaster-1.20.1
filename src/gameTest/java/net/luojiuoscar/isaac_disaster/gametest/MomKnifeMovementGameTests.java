@@ -21,11 +21,13 @@ import net.minecraftforge.gametest.PrefixGameTestTemplate;
 
 import java.util.EnumSet;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /** Uses real game-time ticks for attack progression, and real ownership for movement/recall. */
 @GameTestHolder("isaac_disaster_mom_knife")
 @PrefixGameTestTemplate(false)
 public final class MomKnifeMovementGameTests {
+    private static final AtomicInteger NEXT_FIXTURE = new AtomicInteger();
     private static final ResourceLocation MOM_KNIFE =
             ResourceLocation.fromNamespaceAndPath("isaac_disaster", "mom_knife");
 
@@ -46,23 +48,25 @@ public final class MomKnifeMovementGameTests {
 
     @GameTest(template = "trajectory_empty", batch = "mom_knife_movement")
     public static void targetLossStopsImmediatelyAndReturnMovesInTheCurrentTick(GameTestHelper helper) {
-        try (Fixture f = new Fixture(helper)) {
-            f.spawnTarget();
-            f.knife.tick();
-            helper.assertTrue(f.knife.getBehaviorState() == MomKnifeEntity.State.RISE, "Rear target starts rise");
-            Vec3 stoppedAt = f.knife.position();
-            f.target.discard();
-            f.knife.tick();
-            helper.assertTrue(f.knife.getBehaviorState() == MomKnifeEntity.State.RETURN
-                            && f.knife.position().equals(stoppedAt) && f.knife.getDeltaMovement().equals(Vec3.ZERO),
-                    "Target loss does not execute an old movement request");
-            Vec3 returnStart = f.owner.position().add(4, 0, 0);
-            f.knife.setPos(returnStart);
-            f.knife.tick();
-            helper.assertTrue(Math.abs(f.knife.position().distanceTo(returnStart) - 0.2) < 1e-6,
-                    "Return starts in this tick at its configured speed");
-        }
-        helper.succeed();
+        Fixture f = new Fixture(helper);
+        f.spawnTarget();
+        helper.onEachTick(() -> {
+            if (f.closed || f.knife.getBehaviorState() != MomKnifeEntity.State.RISE) return;
+            try {
+                Vec3 stoppedAt = f.knife.position();
+                f.target.discard();
+                f.knife.tick();
+                helper.assertTrue(f.knife.getBehaviorState() == MomKnifeEntity.State.RETURN
+                                && f.knife.position().equals(stoppedAt) && f.knife.getDeltaMovement().equals(Vec3.ZERO),
+                        "Target loss does not execute an old movement request");
+                Vec3 returnStart = f.owner.position().add(4, 0, 0);
+                f.knife.setPos(returnStart);
+                f.knife.tick();
+                helper.assertTrue(Math.abs(f.knife.position().distanceTo(returnStart) - 0.2) < 1e-6,
+                        "Return starts in this tick at its configured speed");
+                helper.succeed();
+            } finally { f.close(); }
+        });
     }
 
     @GameTest(template = "trajectory_empty", batch = "mom_knife_movement")
@@ -80,22 +84,23 @@ public final class MomKnifeMovementGameTests {
 
     @GameTest(template = "trajectory_empty", batch = "mom_knife_movement")
     public static void recallCancelsALockedKnifeAndKeepsTheOriginalUuid(GameTestHelper helper) {
-        try (Fixture f = new Fixture(helper)) {
-            f.spawnTarget();
-            f.knife.tick();
-            f.knife.tick();
-            helper.assertTrue(f.knife.getBehaviorState() == MomKnifeEntity.State.RISE, "The target is locked during rise");
-            UUID original = f.knife.getUUID();
-            f.knife.setPos(f.owner.position().add(0, 17, 0));
-            f.knife.tick();
-            helper.assertTrue(FamiliarHelper.tickFamiliarAdmissions(f.owner), "Scheduler processes recall");
-            f.knife.tick();
-            helper.assertTrue(f.knife.getBehaviorState() == MomKnifeEntity.State.FOLLOW
-                            && f.knife.distanceToSqr(f.owner) < 4 && f.knife.getUUID().equals(original)
-                            && f.data.getCount(MOM_KNIFE) == 1 && f.data.containsEntity(MOM_KNIFE, original),
-                    "Recall cancels attack and resumes following with the original UUID");
-        }
-        helper.succeed();
+        Fixture f = new Fixture(helper);
+        f.spawnTarget();
+        helper.onEachTick(() -> {
+            if (f.closed || f.knife.getBehaviorState() != MomKnifeEntity.State.RISE) return;
+            try {
+                UUID original = f.knife.getUUID();
+                f.knife.setPos(f.owner.position().add(0, 17, 0));
+                f.knife.tick();
+                helper.assertTrue(FamiliarHelper.tickFamiliarAdmissions(f.owner), "Scheduler processes recall");
+                f.knife.tick();
+                helper.assertTrue(f.knife.getBehaviorState() == MomKnifeEntity.State.FOLLOW
+                                && f.knife.distanceToSqr(f.owner) < 4 && f.knife.getUUID().equals(original)
+                                && f.data.getCount(MOM_KNIFE) == 1 && f.data.containsEntity(MOM_KNIFE, original),
+                        "Recall cancels attack and resumes following with the original UUID");
+                helper.succeed();
+            } finally { f.close(); }
+        });
     }
 
     @GameTest(template = "trajectory_empty", batch = "mom_knife_movement", timeoutTicks = 100)
@@ -144,7 +149,8 @@ public final class MomKnifeMovementGameTests {
                 moved[0] = true;
             }
         });
-        helper.runAfterDelay(16, () -> {
+        helper.onEachTick(() -> {
+            if (f.closed || f.knife.getBehaviorState() != MomKnifeEntity.State.PAUSE) return;
             try {
                 helper.assertTrue(moved[0] && f.knife.distanceToSqr(f.target) > 4, "Launched stab stays on its original path");
                 helper.assertTrue(f.target.getHealth() == initial, "A victim that leaves the flight path is not hit remotely");
@@ -157,9 +163,10 @@ public final class MomKnifeMovementGameTests {
     public static void interruptedAimReturnsFromItsCurrentPose(GameTestHelper helper) {
         Fixture f = new Fixture(helper);
         f.spawnTarget();
-        helper.runAfterDelay(5, () -> {
+        helper.onEachTick(() -> {
+            if (f.closed || f.knife.getBehaviorState() != MomKnifeEntity.State.AIM
+                    || f.knife.getRenderPose(0).pitch() >= 0) return;
             try {
-                helper.assertTrue(f.knife.getBehaviorState() == MomKnifeEntity.State.AIM, "Fixture is aiming");
                 MomKnifePose before = f.knife.getRenderPose(0);
                 helper.assertTrue(before.pitch() < 0, "Blade has lifted backward from neutral");
                 f.target.discard();
@@ -178,16 +185,22 @@ public final class MomKnifeMovementGameTests {
     public static void riseIgnoresOwnerMovementAndSamplesTheRequestedHeight(GameTestHelper helper) {
         Fixture f = new Fixture(helper);
         f.spawnTarget();
-        f.knife.tick();
-        Vec3 origin = f.knife.position();
+        Vec3[] origin = {null};
+        long[] riseStarted = {-1};
         float health = f.target.getHealth();
-        f.owner.setPos(f.owner.position().add(3, 0, 0));
-        helper.runAfterDelay(4, () -> {
+        helper.onEachTick(() -> {
+            if (f.closed) return;
+            if (origin[0] == null && f.knife.getBehaviorState() == MomKnifeEntity.State.RISE) {
+                origin[0] = f.knife.position();
+                riseStarted[0] = f.knife.level().getGameTime();
+                f.owner.setPos(f.owner.position().add(3, 0, 0));
+            }
+            if (f.knife.getBehaviorState() != MomKnifeEntity.State.AIM) return;
             try {
                 Vec3 raised = f.knife.position();
-                double height = raised.y - origin.y;
-                helper.assertTrue(f.knife.getBehaviorState() == MomKnifeEntity.State.AIM, "Rise finishes quickly");
-                helper.assertTrue(Math.abs(raised.x - origin.x) < 1e-6 && Math.abs(raised.z - origin.z) < 1e-6,
+                double height = raised.y - origin[0].y;
+                helper.assertTrue(f.knife.level().getGameTime() - riseStarted[0] == 3, "Rise lasts three ticks");
+                helper.assertTrue(Math.abs(raised.x - origin[0].x) < 1e-6 && Math.abs(raised.z - origin[0].z) < 1e-6,
                         "The locked knife no longer follows its owner horizontally");
                 helper.assertTrue(height >= 0.5 - 1e-6 && height <= 2 + 1e-6, "Rise height is 0.5-2 blocks");
                 helper.assertTrue(f.target.getHealth() == health, "Rise and aim cannot damage");
@@ -235,8 +248,8 @@ public final class MomKnifeMovementGameTests {
             if (returnedAt[0] >= 0 && f.knife.getBehaviorState() == MomKnifeEntity.State.RISE) {
                 try {
                     long elapsed = now - returnedAt[0];
-                    helper.assertTrue(elapsed >= 20 && elapsed <= 34,
-                            "New lock waits 20-30 ticks plus at most a target-search interval");
+                    helper.assertTrue(elapsed >= 20 && elapsed <= 40,
+                            "Next rise includes cooldown, the search interval and up to six waiting ticks");
                     helper.succeed();
                 } finally { f.close(); }
             }
@@ -354,19 +367,22 @@ public final class MomKnifeMovementGameTests {
         Fixture f = new Fixture(helper);
         f.knife.setPos(f.owner.position().add(0.8, f.owner.getBbHeight() * 0.7, -0.95));
         f.spawnTarget();
-        f.knife.tick();
-        MomKnifePose start = f.knife.getRenderPose(0);
-        Vec3 towardOwner = f.owner.position().subtract(f.knife.position()).multiply(1, 0, 1).normalize();
-        helper.assertTrue(f.knife.getBehaviorState() == MomKnifeEntity.State.RISE
-                        && towardOwner.distanceTo(Vec3.directionFromRotation(0, start.yaw())) < 1e-4,
-                "Locking starts rise with the follow pose, without replacing it with the owner's yaw");
-        helper.runAfterDelay(3, () -> {
+        MomKnifePose[] start = {null};
+        helper.onEachTick(() -> {
+            if (f.closed) return;
+            if (start[0] == null && f.knife.getBehaviorState() == MomKnifeEntity.State.RISE) {
+                start[0] = f.knife.getRenderPose(0);
+                Vec3 towardOwner = f.owner.position().subtract(f.knife.position()).multiply(1, 0, 1).normalize();
+                helper.assertTrue(towardOwner.distanceTo(Vec3.directionFromRotation(0, start[0].yaw())) < 1e-4,
+                        "Rise starts with the latest follow pose");
+            }
+            if (f.knife.getBehaviorState() != MomKnifeEntity.State.AIM) return;
             try {
                 MomKnifePose raised = f.knife.getRenderPose(0);
                 Vec3 ownerHeading = f.owner.position().subtract(f.knife.position())
                         .multiply(1, 0, 1).normalize();
                 helper.assertTrue(f.knife.getBehaviorState() == MomKnifeEntity.State.AIM
-                                && raised.equals(start)
+                                && raised.equals(start[0])
                                 && ownerHeading.distanceTo(Vec3.directionFromRotation(0, raised.yaw())) < 1e-4,
                         "Rise keeps the follow heading until the aiming phase starts");
                 helper.succeed();
@@ -596,7 +612,9 @@ public final class MomKnifeMovementGameTests {
             this.helper = helper;
             owner = FakePlayerFactory.get(helper.getLevel(), new GameProfile(UUID.randomUUID(), "knife-test"));
             BlockPos anchor = helper.absolutePos(new BlockPos(1, 1, 1));
-            owner.setPos(anchor.getX() + 0.5, altitude, anchor.getZ() + 0.5);
+            // Concurrent tests must not discover or damage each other's targets.
+            owner.setPos(anchor.getX() + 0.5, altitude + NEXT_FIXTURE.getAndIncrement() * 32,
+                    anchor.getZ() + 0.5);
             owner.setYRot(0);
             data = owner.getCapability(PlayerFamiliarDataProvider.PLAYER_FAMILIAR_DATA).resolve().orElseThrow();
             data.addCount(MOM_KNIFE, 1);
