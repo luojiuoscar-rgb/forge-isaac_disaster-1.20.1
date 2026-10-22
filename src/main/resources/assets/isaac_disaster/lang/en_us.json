@@ -984,6 +984,7 @@
   "set.isaac_disaster.seraphim": "Seraphim",
   "set.isaac_disaster.seraphim.lore.1": "No additional effect",
   "entity.isaac_disaster.blue_fly": "Blue Fly",
+  "entity.isaac_disaster.blue_spider": "Blue Spider",
   "config.isaac_disaster.title": "Isaac's Disasterconfig",
   "config.isaac_disaster.subtitle": "Choose a config category",
   "config.isaac_disaster.domain_selection": "Choose client or server settings",

@@ -30,7 +30,7 @@ public final class FamiliarLimitGameTests {
         try {
             int result = level.getServer().getCommands().performPrefixedCommand(
                     player.createCommandSourceStack().withPermission(4),
-                    "isd familiar add @s isaac_disaster:blue_fly 128");
+                    "isd familiar @s add isaac_disaster:blue_fly 128");
             helper.assertTrue(result == 1 && data.getCount(BLUE_FLY) == 64,
                     "Command accepts the player but retains only 64 requested blue flies");
             helper.assertTrue(data.getEffectiveCount(BLUE_FLY) == 64,

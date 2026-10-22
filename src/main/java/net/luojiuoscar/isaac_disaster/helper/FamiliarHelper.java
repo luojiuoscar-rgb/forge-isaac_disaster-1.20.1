@@ -233,7 +233,7 @@ public final class FamiliarHelper {
         if (familiar == null) return null;
 
         familiar.setOwner(player);
-        familiar.setPos(player.position().add(0, player.getBbHeight() * 0.55, 0));
+        familiar.placeAtOwner();
         return familiar;
     }
 

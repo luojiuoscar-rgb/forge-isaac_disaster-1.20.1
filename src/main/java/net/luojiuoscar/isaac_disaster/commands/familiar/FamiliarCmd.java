@@ -2,6 +2,7 @@ package net.luojiuoscar.isaac_disaster.commands.familiar;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
+import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
@@ -37,29 +38,21 @@ public class FamiliarCmd {
         dispatcher.register(Commands.literal("isd")
                 .then(Commands.literal("familiar")
                         .requires(source -> source.hasPermission(2))
-                        .then(Commands.literal("add")
-                                .then(Commands.argument("targets", EntityArgument.players())
-                                        .then(Commands.argument("type", ResourceLocationArgument.id())
-                                                .suggests(FAMILIAR_SUGGESTIONS)
-                                                .executes(context -> changeCount(context, 1))
-                                                .then(Commands.argument("count", IntegerArgumentType.integer(1))
-                                                        .executes(context -> changeCount(
-                                                                context,
-                                                                IntegerArgumentType.getInteger(context, "count")
-                                                        ))))))
-                        .then(Commands.literal("remove")
-                                .then(Commands.argument("targets", EntityArgument.players())
-                                        .then(Commands.argument("type", ResourceLocationArgument.id())
-                                                .suggests(FAMILIAR_SUGGESTIONS)
-                                                .executes(context -> changeCount(context, -1))
-                                                .then(Commands.argument("count", IntegerArgumentType.integer(1))
-                                                        .executes(context -> changeCount(
-                                                                context,
-                                                                -IntegerArgumentType.getInteger(context, "count")
-                                                        ))))))
-                        .then(Commands.literal("clear")
-                                .then(Commands.argument("targets", EntityArgument.players())
+                        .then(Commands.argument("targets", EntityArgument.players())
+                                .then(countOperation("add", 1))
+                                .then(countOperation("remove", -1))
+                                .then(Commands.literal("clear")
                                         .executes(this::clearFamiliars)))));
+    }
+
+    private static LiteralArgumentBuilder<CommandSourceStack> countOperation(String operation, int sign) {
+        return Commands.literal(operation)
+                .then(Commands.argument("type", ResourceLocationArgument.id())
+                        .suggests(FAMILIAR_SUGGESTIONS)
+                        .executes(context -> changeCount(context, sign))
+                        .then(Commands.argument("count", IntegerArgumentType.integer(1))
+                                .executes(context -> changeCount(context,
+                                        sign * IntegerArgumentType.getInteger(context, "count")))));
     }
 
     /**

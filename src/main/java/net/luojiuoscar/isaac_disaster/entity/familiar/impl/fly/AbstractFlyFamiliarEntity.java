@@ -17,7 +17,7 @@ import net.minecraft.world.phys.Vec3;
 
 import java.util.List;
 
-/** Base for owner-managed flies; subclasses supply their body color and behavior. */
+/** Shared flight, attack queue and contact lifecycle; variants supply color, damage and contact effects. */
 public abstract class AbstractFlyFamiliarEntity extends AbstractIsaacFamiliarEntity {
     public enum FlyState { ORBIT, CHASE, RETURN, ROAM }
 

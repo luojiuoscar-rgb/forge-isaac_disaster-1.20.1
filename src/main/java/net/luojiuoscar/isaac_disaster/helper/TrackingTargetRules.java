@@ -41,8 +41,8 @@ public final class TrackingTargetRules {
                 && priority(level, owner, candidate) != Integer.MAX_VALUE;
     }
 
-    /** Flies attack hostiles, mobs threatening their owner, and eligible opposing players. */
-    public static boolean eligibleFly(ServerLevel level, ServerPlayer owner, LivingEntity candidate) {
+    /** Hostile/owner-threat/PvP eligibility shared by every fly and spider familiar variant. */
+    public static boolean eligibleFlyOrSpider(ServerLevel level, ServerPlayer owner, LivingEntity candidate) {
         if (candidate instanceof Animal || !eligible(level, owner, candidate)) return false;
         if (candidate instanceof Player player) return !player.isCreative() && !player.isSpectator();
         return candidate instanceof Enemy
