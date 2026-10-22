@@ -2,7 +2,8 @@ package net.luojiuoscar.isaac_disaster.gametest;
 
 import com.mojang.authlib.GameProfile;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import net.luojiuoscar.isaac_disaster.Config;
+import net.luojiuoscar.isaac_disaster.datapack.GameTestDatapackSettings;
+import net.luojiuoscar.isaac_disaster.datapack.gameplay.GameplayConfig;
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.attribute.ModAttributes;
 import net.luojiuoscar.isaac_disaster.capability.entity.EffectModulesProvider;
@@ -177,9 +178,8 @@ public final class FourthPassiveBatchGameTests {
     public static void bundlePairsOnlyEligibleLootAndUsesConfiguredCoin(GameTestHelper helper) {
         var player = player(helper);
         equip(player, 0, ModPassiveItems.HUMBLEING_BUNDLE.get());
-        String previous = Config.COIN_TIER_1_ID.get();
-        Config.COIN_TIER_1_ID.set("minecraft:gold_nugget");
-        try {
+        try (var settings = GameTestDatapackSettings.override(helper)) {
+            settings.set(GameplayConfig.COIN_TIER_1_ID, "minecraft:gold_nugget");
             var entries = new ObjectArrayList<ItemStack>();
             var configuredCoin = new ItemStack(Items.GOLD_NUGGET, 256);
             configuredCoin.getOrCreateTag().putBoolean("bundle_test", true);
@@ -202,7 +202,7 @@ public final class FourthPassiveBatchGameTests {
             var bombs = new ObjectArrayList<ItemStack>(); bombs.add(new ItemStack(ModItems.BOMB.get(), 32));
             TriggerModuleEvents.onLoot(new GeneralLootModifyEvent(player, event.getLootContext(), bombs));
             helper.assertTrue(bombs.size() == 1 && bombs.get(0).is(ModItems.DOUBLE_BOMB.get()) && bombs.get(0).getCount() == 32, "Bogo pairing is not doubled a second time");
-        } finally { Config.COIN_TIER_1_ID.set(previous); }
+        }
         helper.succeed();
     }
 
@@ -499,7 +499,7 @@ public final class FourthPassiveBatchGameTests {
             context.set(ContextKeys.DOUBLE, List.of(6.8));
             effect.get().apply(context);
             int amount = effect == ModExecutableEffects.HABIT ? 100
-                    : effect == ModExecutableEffects.VOLT45 ? Math.max(6 * (Config.ACTIVE_ITEM_DURABILITY_RESTORE_RATE.get() / 2), 1)
+                    : effect == ModExecutableEffects.VOLT45 ? Math.max(6 * (GameplayConfig.ACTIVE_ITEM_DURABILITY_RESTORE_RATE.get() / 2), 1)
                     : effect == ModExecutableEffects.SMALL_BATTERY ? 400
                     : effect == ModExecutableEffects.BATTERY ? 1200 : 2400;
             helper.assertTrue(effect == ModExecutableEffects.MEGA_BATTERY || selected.getDamageValue() == Math.max(0, 500 - amount),

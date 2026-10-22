@@ -99,7 +99,7 @@ public final class BulletState implements IBulletObject {
                     motionState.velocity(),
                     specs,
                     b.shooter,
-                    attackContext == null ? null : attackContext.getInheritedTrajectorySnapshot());
+                    b.attackContext == null ? null : b.attackContext.getInheritedTrajectorySnapshot());
         this.trajectoryState = new BulletTrajectoryState(trajectoryRuntime);
         this.collisionState = new BulletCollisionState(
             attackContext == null ? b.hitBlockPositions : attackContext.getHitBlockPositions());

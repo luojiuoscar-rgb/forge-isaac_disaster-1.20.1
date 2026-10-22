@@ -93,7 +93,7 @@ public final class FamiliarLimitGameTests {
         try {
             int result = level.getServer().getCommands().performPrefixedCommand(
                     player.createCommandSourceStack().withPermission(4),
-                    "isd familiar add @s isaac_disaster:mom_knife 128");
+                    "isd familiar @s add isaac_disaster:mom_knife 128");
             helper.assertTrue(result == 1 && data.getCount(MOM_KNIFE) == 27
                             && data.getEffectiveCount(MOM_KNIFE) == 27,
                     "Only three layers (5 + 9 + 13 knives) are accepted");

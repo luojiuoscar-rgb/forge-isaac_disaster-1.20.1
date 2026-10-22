@@ -14,8 +14,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class MobMixin {
     @Inject(method = "setTarget", at = @At("HEAD"), cancellable = true)
     private void preventFearedTarget(LivingEntity target, CallbackInfo ci) {
-        if (target != null) {
-            PanicEffect.suppressesAttacks((Mob) (Object) this);
+        if (target != null && PanicEffect.suppressesAttacks((Mob) (Object) this)) {
+            ci.cancel();
         }
     }
 

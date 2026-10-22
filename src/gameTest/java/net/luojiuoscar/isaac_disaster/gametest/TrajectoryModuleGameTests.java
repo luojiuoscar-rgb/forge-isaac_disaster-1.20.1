@@ -691,12 +691,17 @@ public final class TrajectoryModuleGameTests {
             trinkets.forEach(ability -> ability.onEquipped(player, trinketContext));
         }
         AttackContext prepared = prepare(player, AttackContext.builder(player, player).build());
+        List<ResourceLocation> resolvedModules =
+            List.of(
+                ModTrajectoryModules.TINY_PLANET_BULLET.getId(),
+                ModTrajectoryModules.HOOK_WORM.getId(),
+                ModTrajectoryModules.WIGGLE_WORM.getId(),
+                ModTrajectoryModules.RING_WORM.getId(),
+                ModTrajectoryModules.OUROBOROS_WORM.getId());
         helper.assertTrue(
-            prepared.getTrajectorySpecs().size() == 6,
-            "Seven attachments resolve to six after Planet covers Reflection");
-        helper.assertTrue(
-            prepared.getTrajectorySpecs().stream().allMatch(spec -> spec.amplifier() == 1),
-            "Two trigger stacks produce amplifier one");
+            prepared.getTrajectorySpecs().equals(
+                resolvedModules.stream().map(id -> new TrajectorySpec(id, 1)).toList()),
+            "Planet covers Reflection and gravity while preserving both stacks and all four worms");
         helper.assertTrue(
             prepared.getTrigger().getView().contains(ModExecutableEffects.IPECAC.get()),
             "Ipecac still attaches its hit effects");
@@ -713,8 +718,8 @@ public final class TrajectoryModuleGameTests {
         passives.forEach(ability -> ability.handleRemove(player, null));
         trinkets.forEach(ability -> ability.onUnequipped(player, trinketContext));
         helper.assertTrue(
-            prepare(player, AttackContext.builder(player, player).build()).getTrajectorySpecs().stream()
-                .allMatch(spec -> spec.amplifier() == 0),
+            prepare(player, AttackContext.builder(player, player).build()).getTrajectorySpecs()
+                .equals(resolvedModules.stream().map(id -> new TrajectorySpec(id, 0)).toList()),
             "Removing one copy retains one stack");
         passives.forEach(ability -> ability.handleRemove(player, null));
         trinkets.forEach(ability -> ability.onUnequipped(player, trinketContext));
@@ -781,7 +786,16 @@ public final class TrajectoryModuleGameTests {
             BulletState bullet = BulletState.from(child.copy().bindAttackTypeOrCopy(source)).build();
             helper.assertTrue(
                 bullet.getTrajectorySpecs().equals(child.getTrajectorySpecs()), "Bullet family snapshot");
-            ((WiggleWormTrajectoryModule.State) bullet.getTrajectoryRuntime().states().get(id)).phase(7);
+            TrajectoryState inheritedState = bullet.getTrajectoryRuntime().state(id);
+            helper.assertTrue(
+                inheritedState instanceof WiggleWormTrajectoryModule.State,
+                "Bullet family inherits the parent module state: " + source.getId());
+            WiggleWormTrajectoryModule.State bulletState =
+                (WiggleWormTrajectoryModule.State) inheritedState;
+            helper.assertTrue(
+                bulletState.phase() == 2.5D,
+                "Bullet family preserves inherited phase: " + source.getId());
+            bulletState.phase(7);
             helper.assertTrue(
                 ((WiggleWormTrajectoryModule.State) child.getInheritedTrajectorySnapshot().restore().states().get(id)).phase() == 2.5D,
                 "Bullet runtime isolation");

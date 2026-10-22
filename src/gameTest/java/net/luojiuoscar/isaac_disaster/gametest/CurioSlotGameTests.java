@@ -1,7 +1,8 @@
 package net.luojiuoscar.isaac_disaster.gametest;
 
 import com.mojang.authlib.GameProfile;
-import net.luojiuoscar.isaac_disaster.Config;
+import net.luojiuoscar.isaac_disaster.datapack.GameTestDatapackSettings;
+import net.luojiuoscar.isaac_disaster.datapack.gameplay.GameplayConfig;
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.attribute.ModAttributes;
 import net.luojiuoscar.isaac_disaster.capability.entity.EffectModulesProvider;
@@ -124,9 +125,8 @@ public final class CurioSlotGameTests {
         equip(player, CurioSlotManager.PASSIVE_ITEM, 2, ModPassiveItems.CONE_HEAD.get());
         equip(player, CurioSlotManager.PASSIVE_ITEM, 3, ModPassiveItems.SCORPIO.get());
         equip(player, CurioSlotManager.PASSIVE_ITEM, 4, ModPassiveItems.MOMS_PURSE.get());
-        boolean allow = Config.ALLOW_CURIO_UNEQUIP.get();
-        try {
-            Config.ALLOW_CURIO_UNEQUIP.set(false);
+        try (var settings = GameTestDatapackSettings.override(helper)) {
+            settings.set(GameplayConfig.ALLOW_CURIO_UNEQUIP, false);
             player.getAttribute(ModAttributes.PASSIVE_ITEM_SLOTS.get()).setBaseValue(1);
             tick(player);
             tick(player);
@@ -142,8 +142,6 @@ public final class CurioSlotGameTests {
                     && !modules.contains(ModTriggerModules.CONE_HEAD.getId()) && !modules.contains(ModTriggerModules.SCORPIO.getId()), "Only retained modules remain");
             helper.assertTrue(data(player).getSetCountFromId(ModSetAbilities.MOM.getId()) == 0, "Removed Mom set contributions are gone");
             helper.assertTrue(data(player).getActiveCurioSlots().size() == 1, "No overflow equipment records remain");
-        } finally {
-            Config.ALLOW_CURIO_UNEQUIP.set(allow);
         }
         helper.succeed();
     }
@@ -217,7 +215,7 @@ public final class CurioSlotGameTests {
         CurioSlotManager.tick(restored);
         tick(restored);
         tick(restored);
-        helper.assertTrue(slots(restored, CurioSlotManager.TRINKET).getSlots() == Config.DEFAULT_TRINKET_SLOTS.get() + 1, "Loaded item bonus and rebuilt configured capacity agree");
+        helper.assertTrue(slots(restored, CurioSlotManager.TRINKET).getSlots() == GameplayConfig.DEFAULT_TRINKET_SLOTS.get() + 1, "Loaded item bonus and rebuilt configured capacity agree");
         helper.assertTrue(slots(restored, CurioSlotManager.PASSIVE_ITEM).getStacks().getStackInSlot(0).is(ModPassiveItems.MOMS_PURSE.get()), "First Curios tick does not eject loaded equipment");
         helper.assertTrue(data(restored).getActiveCurioSlots().size() == 1, "Current version equipment records load once");
         helper.assertTrue(rewards(helper, original) == before, "Load does not repeat the first-obtain reward");
@@ -261,25 +259,20 @@ public final class CurioSlotGameTests {
     @GameTest(template = "trajectory_empty", batch = "curio_slots")
     public static void changedDefaultsPreservePurseBonusAndSignedRemoval(GameTestHelper helper) {
         var player = player(helper);
-        int trinkets = Config.DEFAULT_TRINKET_SLOTS.get();
-        int passives = Config.DEFAULT_PASSIVE_ITEM_SLOTS.get();
-        try {
+        try (var settings = GameTestDatapackSettings.override(helper)) {
             equip(player, CurioSlotManager.PASSIVE_ITEM, 0, ModPassiveItems.MOMS_PURSE.get());
-            Config.DEFAULT_TRINKET_SLOTS.set(2);
-            Config.DEFAULT_PASSIVE_ITEM_SLOTS.set(7);
+            settings.set(GameplayConfig.DEFAULT_TRINKET_SLOTS, 2);
+            settings.set(GameplayConfig.DEFAULT_PASSIVE_ITEM_SLOTS, 7);
             DefaultAttributeManager.apply(player);
             CurioSlotManager.requestReconcile(player);
             tick(player);
-            helper.assertTrue(slots(player, CurioSlotManager.TRINKET).getSlots() == 3 && slots(player, CurioSlotManager.PASSIVE_ITEM).getSlots() == 7, "Config changes defaults while preserving item bonus");
+            helper.assertTrue(slots(player, CurioSlotManager.TRINKET).getSlots() == 3 && slots(player, CurioSlotManager.PASSIVE_ITEM).getSlots() == 7, "Datapack changes defaults while preserving item bonus");
             StatManager.TRINKET_SLOTS.apply(player, -10);
             tick(player);
             helper.assertTrue(slots(player, CurioSlotManager.TRINKET).getSlots() == 0, "Negative total clamps only at the final attribute");
             StatManager.TRINKET_SLOTS.apply(player, 10);
             tick(player);
             helper.assertTrue(slots(player, CurioSlotManager.TRINKET).getSlots() == 3, "Signed modifier debt is preserved and reverses exactly");
-        } finally {
-            Config.DEFAULT_TRINKET_SLOTS.set(trinkets);
-            Config.DEFAULT_PASSIVE_ITEM_SLOTS.set(passives);
         }
         helper.succeed();
     }
@@ -322,7 +315,7 @@ public final class CurioSlotGameTests {
                 ForgeEvents.onPlayerRespawn(new PlayerEvent.PlayerRespawnEvent(clone, false));
                 tick(clone);
                 tick(clone);
-                helper.assertTrue(slots(clone, CurioSlotManager.TRINKET).getSlots() == Config.DEFAULT_TRINKET_SLOTS.get() + (retain ? 1 : 0), "Death capacity follows configured defaults and retained Curios: " + retain);
+                helper.assertTrue(slots(clone, CurioSlotManager.TRINKET).getSlots() == GameplayConfig.DEFAULT_TRINKET_SLOTS.get() + (retain ? 1 : 0), "Death capacity follows configured defaults and retained Curios: " + retain);
                 helper.assertTrue(data(clone).getActiveCurioSlots().size() == (retain ? 1 : 0), "Only retained effects remain after clone: " + retain);
             }
         } finally {

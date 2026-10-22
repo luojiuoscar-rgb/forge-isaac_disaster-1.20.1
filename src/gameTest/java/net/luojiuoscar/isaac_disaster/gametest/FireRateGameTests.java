@@ -1,7 +1,8 @@
 package net.luojiuoscar.isaac_disaster.gametest;
 
 import com.mojang.authlib.GameProfile;
-import net.luojiuoscar.isaac_disaster.Config;
+import net.luojiuoscar.isaac_disaster.datapack.GameTestDatapackSettings;
+import net.luojiuoscar.isaac_disaster.datapack.gameplay.GameplayConfig;
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.attribute.ModAttributes;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerIsaacItemsProvider;
@@ -43,9 +44,8 @@ public final class FireRateGameTests {
         ServerPlayer player = player(helper);
         var tears = player.getAttribute(ModAttributes.TEARS.get());
         var rate = player.getAttribute(ModAttributes.FIRE_RATE.get());
-        double bonus = Config.FIRE_RATE_BONUS.get();
-        try {
-            Config.FIRE_RATE_BONUS.set(1.0);
+        try (var settings = GameTestDatapackSettings.override(helper)) {
+            settings.set(GameplayConfig.FIRE_RATE_BONUS, 1.0);
             StatManager.FIRE_RATE.apply(player, 1.0);
             helper.assertTrue(rate.getModifier(StatManager.FIRE_RATE.getUUID()).getOperation()
                     == AttributeModifier.Operation.ADDITION, "Fire-rate bonus uses ADDITION");
@@ -64,8 +64,6 @@ public final class FireRateGameTests {
             near(helper, rate.getValue(), PlayerHelper.tearsToFireRate(1.0) + 1.0, "Load restores derived base");
             tears.setBaseValue(100.0);
             near(helper, rate.getValue(), 6.0, "Additions exceed the Tears conversion cap");
-        } finally {
-            Config.FIRE_RATE_BONUS.set(bonus);
         }
         helper.succeed();
     }
@@ -78,11 +76,9 @@ public final class FireRateGameTests {
                 0.0, "Player supplier FireRate base is zero");
         near(helper, player.getAttributeValue(ModAttributes.FIRE_RATE.get()), 20.0 / 7.0,
                 "Fresh player derives actual FireRate from Tears before login");
-        double defaultTears = Config.DEFAULT_TEARS.get();
-        double defaultAddition = Config.DEFAULT_FIRE_RATE_ADDITION.get();
-        try {
-            Config.DEFAULT_TEARS.set(1.0);
-            Config.DEFAULT_FIRE_RATE_ADDITION.set(2.0);
+        try (var settings = GameTestDatapackSettings.override(helper)) {
+            settings.set(GameplayConfig.DEFAULT_TEARS, 1.0);
+            settings.set(GameplayConfig.DEFAULT_FIRE_RATE_ADDITION, 2.0);
             DefaultAttributeManager.apply(player);
             DefaultAttributeManager.apply(player);
             near(helper, PlayerHelper.getFireRate(player), PlayerHelper.tearsToFireRate(1.0) + 2.0,
@@ -93,9 +89,6 @@ public final class FireRateGameTests {
             player.removeEffect(MobEffects.DIG_SPEED);
             near(helper, PlayerHelper.getFireRate(player), PlayerHelper.tearsToFireRate(1.0) + 2.0,
                     "Haste removal restores FireRate");
-        } finally {
-            Config.DEFAULT_TEARS.set(defaultTears);
-            Config.DEFAULT_FIRE_RATE_ADDITION.set(defaultAddition);
         }
         helper.succeed();
     }
@@ -170,13 +163,12 @@ public final class FireRateGameTests {
     @GameTest(template = "trajectory_empty", batch = "fire_rate")
     public static void sharedFiringIdHonorsStackingAndPerfectVisionSuppressesTheGroup(GameTestHelper helper) {
         ServerPlayer player = player(helper);
-        boolean stacking = Config.ALLOW_SAME_MULTIPLIER_ENTRY_STACKING.get();
         var eye = new TheInnerEye(0, 1);
         var spider = new MutantSpider(0, 1);
         var ipecac = new Ipecac(0, 1);
         var vision = new PerfectVision(0, 1);
-        try {
-            Config.ALLOW_SAME_MULTIPLIER_ENTRY_STACKING.set(false);
+        try (var settings = GameTestDatapackSettings.override(helper)) {
+            settings.set(GameplayConfig.ALLOW_SAME_MULTIPLIER_ENTRY_STACKING, false);
             eye.handleObtain(player, null);
             eye.handleObtain(player, null);
             spider.handleObtain(player, null);
@@ -185,14 +177,14 @@ public final class FireRateGameTests {
                     && TheInnerEye.Multipliers.FIRE_RATE.id().equals(Ipecac.Multipliers.FIRE_RATE.id()),
                     "Firing penalties share one ID");
             near(helper, PlayerHelper.getShotDelay(player), 21.0, "Default keeps only Ipecac penalty");
-            Config.ALLOW_SAME_MULTIPLIER_ENTRY_STACKING.set(true);
+            settings.set(GameplayConfig.ALLOW_SAME_MULTIPLIER_ENTRY_STACKING, true);
             StatManager.refreshMultipliers(player);
             near(helper, PlayerHelper.getShotDelay(player), 168.0, "All three sources and both eye copies stack");
             vision.handleObtain(player, null);
             near(helper, PlayerHelper.getShotDelay(player), 7.0, "20/20 cancels the whole penalty group");
             vision.handleRemove(player, null);
             near(helper, PlayerHelper.getShotDelay(player), 168.0, "Removing 20/20 restores held sources");
-            Config.ALLOW_SAME_MULTIPLIER_ENTRY_STACKING.set(false);
+            settings.set(GameplayConfig.ALLOW_SAME_MULTIPLIER_ENTRY_STACKING, false);
             ipecac.handleRemove(player, null);
             near(helper, PlayerHelper.getShotDelay(player), 14.0, "Removing Ipecac restores shared double delay");
             eye.handleRemove(player, null);
@@ -200,21 +192,18 @@ public final class FireRateGameTests {
             near(helper, PlayerHelper.getShotDelay(player), 14.0, "Spider survives removal of both eye copies");
             spider.handleRemove(player, null);
             near(helper, PlayerHelper.getShotDelay(player), 7.0, "Last source removal clears the modifier");
-        } finally {
-            Config.ALLOW_SAME_MULTIPLIER_ENTRY_STACKING.set(stacking);
         }
         helper.succeed();
     }
 
     @GameTest(template = "trajectory_empty", batch = "fire_rate")
     public static void mushroomAndCricketsHeadShareOneDamageModifierAndRestoreBySource(GameTestHelper helper) {
-        boolean stacking = Config.ALLOW_SAME_MULTIPLIER_ENTRY_STACKING.get();
-        try {
+        try (var settings = GameTestDatapackSettings.override(helper)) {
             for (boolean reverse : List.of(false, true)) {
                 ServerPlayer player = player(helper);
                 var mushroom = new MagicMushroom(0, 1);
                 var head = new CricketsHead(0, 1);
-                Config.ALLOW_SAME_MULTIPLIER_ENTRY_STACKING.set(false);
+                settings.set(GameplayConfig.ALLOW_SAME_MULTIPLIER_ENTRY_STACKING, false);
                 if (reverse) {
                     head.handleObtain(player, null);
                     mushroom.handleObtain(player, null);
@@ -227,7 +216,7 @@ public final class FireRateGameTests {
                 var damage = player.getAttribute(Attributes.ATTACK_DAMAGE);
                 near(helper, damage.getModifier(MagicMushroom.Multipliers.DAMAGE.uuid()).getAmount(), 0.5,
                         "Default grants one +50% modifier");
-                Config.ALLOW_SAME_MULTIPLIER_ENTRY_STACKING.set(true);
+                settings.set(GameplayConfig.ALLOW_SAME_MULTIPLIER_ENTRY_STACKING, true);
                 StatManager.refreshMultipliers(player);
                 near(helper, damage.getModifier(MagicMushroom.Multipliers.DAMAGE.uuid()).getAmount(), 1.0,
                         "Stacking grants +100% from both sources");
@@ -238,8 +227,6 @@ public final class FireRateGameTests {
                 helper.assertTrue(damage.getModifier(MagicMushroom.Multipliers.DAMAGE.uuid()) == null,
                         "Removing last source clears shared damage modifier");
             }
-        } finally {
-            Config.ALLOW_SAME_MULTIPLIER_ENTRY_STACKING.set(stacking);
         }
         helper.succeed();
     }
