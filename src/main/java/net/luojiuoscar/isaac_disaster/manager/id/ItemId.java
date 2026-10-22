@@ -233,7 +233,8 @@ public enum ItemId {
     JUMPER_CABLES(3),
     SOUL_LOCKET(1),
     D12(2),
-    SINUS_INFECTION(3);
+    SINUS_INFECTION(3),
+    TRACTOR_BEAM(3);
 
 
 

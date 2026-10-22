@@ -782,4 +782,8 @@ public class ModPassiveAbilities {
             PASSIVE_ABILITY_REGISTRY.register("sinus_infection",
                     () -> new SinusInfection(ItemId.SINUS_INFECTION.getId(), ItemId.SINUS_INFECTION.getLevel()));
 
+    public static final RegistryObject<PassiveAbility> TRACTOR_BEAM =
+            PASSIVE_ABILITY_REGISTRY.register("tractor_beam",
+                    () -> new TractorBeam(ItemId.TRACTOR_BEAM.getId(), ItemId.TRACTOR_BEAM.getLevel()));
+
 }

@@ -786,4 +786,8 @@ public class ModPassiveItems {
             () -> new PassiveItem(new Item.Properties(), ModPassiveAbilities.SINUS_INFECTION));
     static {ItemListManager.PASSIVE_ITEM_LIST.add(SINUS_INFECTION);}
 
+    public static final RegistryObject<Item> TRACTOR_BEAM = ITEMS.register("tractor_beam",
+            () -> new PassiveItem(new Item.Properties(), ModPassiveAbilities.TRACTOR_BEAM));
+    static {ItemListManager.PASSIVE_ITEM_LIST.add(TRACTOR_BEAM);}
+
 }

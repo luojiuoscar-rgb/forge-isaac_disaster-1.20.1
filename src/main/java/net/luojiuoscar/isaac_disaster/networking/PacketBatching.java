@@ -44,7 +44,7 @@ public final class PacketBatching {
 
     private static void splitTracking(BulletTrackingBatchS2CPacket batch, Consumer<Object> sender) {
         long upperBound = 30L + 29L * batch.targets().size() + 16L * batch.assignments().size()
-                + 58L * batch.velocitySamples().size();
+                + 66L * batch.velocitySamples().size();
         if (upperBound <= MAX_PAYLOAD_BYTES) {
             sender.accept(batch);
             return;

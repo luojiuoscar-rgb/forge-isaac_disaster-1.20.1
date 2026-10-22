@@ -81,6 +81,7 @@ public class PlayerAbility {
         nbt.putInt("homing", homing);
         nbt.putInt("spectral", spectral);
         nbt.putInt("controllable", controllable);
+        nbt.remove("tractor");
         nbt.putString("best_bullet_color", bestBulletColor.toString());
 
         ListTag bulletTypeList = new ListTag();
@@ -115,7 +116,8 @@ public class PlayerAbility {
         this.spectral = nbt.getInt("spectral");
         this.piercing = nbt.getInt("piercing");
         this.homing = nbt.getInt("homing");
-        this.controllable = nbt.getInt("controllable");
+        // Fold the retired experimental beam count into ordinary controllable tears once.
+        this.controllable = nbt.getInt("controllable") + Math.max(0, nbt.getInt("tractor"));
         this.bestBulletColor = ResourceLocation.parse(nbt.getString("best_bullet_color"));
 
         attackType.clear();

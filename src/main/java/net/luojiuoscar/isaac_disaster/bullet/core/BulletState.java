@@ -116,6 +116,7 @@ public final class BulletState implements IBulletObject {
             b.maxSpeedChange,
             b.controlRange,
             b.controlSteer);
+        this.trackingState.setControlTurnMultiplier(b.controlTurnMultiplier);
         ResourceLocation typeId =
             attackContext == null
                 ? b.typeId
@@ -598,6 +599,14 @@ public final class BulletState implements IBulletObject {
         return trackingState.controlSteer();
     }
 
+    public double controlTurnMultiplier() {
+        return trackingState.controlTurnMultiplier();
+    }
+
+    public void setControlTurnMultiplier(double value) {
+        trackingState.setControlTurnMultiplier(value);
+    }
+
     /** Returns whether this bullet applies the normal one-hit-per-target filter. */
     public boolean rememberHitTargets() {
         return trackingState.rememberHitTargets();
@@ -845,6 +854,7 @@ public final class BulletState implements IBulletObject {
         private ResourceLocation typeId = ModAttackTypes.BULLET.getId();
         private ResourceLocation rootTypeId = ModAttackTypes.BULLET.getId();
         private double controlRange = 64.0D, controlSteer = 0.8D;
+        private double controlTurnMultiplier = 1.0D;
 
         public Builder position(Vec3 v) {
             position = v;
@@ -1048,6 +1058,11 @@ public final class BulletState implements IBulletObject {
 
         public Builder controlSteer(double v) {
             controlSteer = Math.max(0.0D, Math.min(1.0D, v));
+            return this;
+        }
+
+        public Builder controlTurnMultiplier(double value) {
+            controlTurnMultiplier = value;
             return this;
         }
 

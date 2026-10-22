@@ -89,6 +89,7 @@ public final class ClientBulletRuntime {
                     .homingSteer(packet.homingSteer())
                     .controlRange(packet.controlRange())
                     .controlSteer(packet.controlSteer())
+                    .controlTurnMultiplier(packet.controlTurnMultiplier())
                     .restoreTrajectory(packet.trajectorySnapshot())
                     .build();
         decoded.applyStickSnapshot(packet.stickSnapshot());
