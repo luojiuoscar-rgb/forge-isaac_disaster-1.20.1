@@ -2,6 +2,7 @@ package net.luojiuoscar.isaac_disaster.entity.familiar.impl.spider;
 
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.RandomSource;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.MoverType;
 import net.minecraft.world.phys.Vec3;
@@ -70,6 +71,12 @@ final class SpiderMotionController {
             tickClimbing(owner);
             return;
         }
+        if (moving() && behavior() == Behavior.ATTACK) {
+            LivingEntity target = attempt.activeTarget;
+            if (owner == null || target == null || !ownerFrame.validForTick(owner, target)
+                    || attempt.attack != null && attempt.attack.obsolete(entity.position(), target.position(),
+                    ownerFrame.targetVelocity(target), entity.level().getGameTime(), contactRadius(target))) finishBurst();
+        }
         if (!entity.onGround()) {
             tickFalling(owner);
             return;
@@ -80,10 +87,6 @@ final class SpiderMotionController {
         if (moving() && behavior() == Behavior.FOLLOW
                 && attempt.followAnchor != null && owner.position().subtract(attempt.followAnchor).horizontalDistanceSqr() > 9) {
             finishBurst();
-        }
-        if (moving() && behavior() == Behavior.ATTACK) {
-            if (attempt.activeTarget == null || !ownerFrame.validForTick(owner, attempt.activeTarget)) finishBurst();
-            // Keep the departure destination fixed. A future segment may choose the enemy's new position.
         }
         if (moving() && reachedGoal()) finishBurst();
 
@@ -117,6 +120,8 @@ final class SpiderMotionController {
         if (target != null) {
             startBurst(target.position(), Behavior.ATTACK, owner);
             attempt.activeTarget = target;
+            attempt.attack = new SpiderAttackPrediction(random);
+            updateAttackGoal();
             return;
         }
         Vec3 center = following ? owner.position() : entity.position();
@@ -127,6 +132,19 @@ final class SpiderMotionController {
         startBurst(destination, following ? Behavior.FOLLOW : Behavior.ROAM, owner);
         // Wandering may spend this attempt turning in place; urgent movement always travels.
         attempt.turnOnly = !following && random.nextBoolean();
+    }
+
+    private double contactRadius(LivingEntity target) {
+        return (entity.getBbWidth() + target.getBbWidth()) * 0.5;
+    }
+
+    private void updateAttackGoal() {
+        LivingEntity target = attempt.activeTarget;
+        Vec3 delta = target.position().subtract(entity.position());
+        double turnTicks = Math.ceil(Math.abs(Mth.wrapDegrees(
+                SpiderMovement.targetYaw(delta, attempt.travelMode) - entity.getYRot())) / SpiderMovement.TURN_DEGREES_PER_TICK);
+        attempt.goal = attempt.attack.goal(entity.position(), target.position(), ownerFrame.targetVelocity(target),
+                turnTicks, contactRadius(target));
     }
 
     /** All three decisions enter the same capped 6-9 block attempt. */
@@ -154,7 +172,18 @@ final class SpiderMotionController {
 
     private void moveBurst(ServerPlayer owner, boolean airborne) {
         Vec3 start = entity.position();
+        if (attempt.behavior == Behavior.ATTACK && attempt.attack == null) {
+            attempt.attack = new SpiderAttackPrediction(random);
+            updateAttackGoal();
+        }
         Vec3 delta = attempt.goal.subtract(start);
+        if (!attempt.travelStarted && attempt.attack != null && !attempt.attack.calibrated
+                && SpiderMovement.aligned(delta, entity.getYRot(), attempt.travelMode)) {
+            // Recheck once after the initial turn, then finish any small correction before departure.
+            updateAttackGoal();
+            attempt.attack.calibrated = true;
+            delta = attempt.goal.subtract(start);
+        }
         if (!attempt.travelStarted && (attempt.turnOnly || !SpiderMovement.aligned(delta, entity.getYRot(), attempt.travelMode))) {
             entity.setYRot(SpiderMovement.turnYaw(entity.getYRot(), SpiderMovement.targetYaw(delta, attempt.travelMode)));
             movementPhase = airborne ? Phase.FALLING : Phase.TURNING;
@@ -168,7 +197,11 @@ final class SpiderMotionController {
             if (!entity.isRemoved()) entity.updateMovementAnimation(Vec3.ZERO);
             return;
         }
-        // After departure, neither a changed target nor terrain drift can steer the body mid-segment.
+        // A departed attack may end early, but never bends or turns within the running segment.
+        if (!attempt.travelStarted && attempt.attack != null) {
+            attempt.attack.depart(start, attempt.goal, attempt.activeTarget.position(),
+                    ownerFrame.targetVelocity(attempt.activeTarget), entity.level().getGameTime());
+        }
         attempt.travelStarted = true;
         Vec3 heading = SpiderMovement.direction(entity.getYRot(), attempt.travelMode);
         double remaining = Math.min(attempt.burstSpeed, attempt.remainingDistance());
@@ -187,7 +220,7 @@ final class SpiderMotionController {
                 startClimbing(step, actual);
                 return;
             }
-            if (reachedGoal() || attempt.finished()) {
+            if (reachedGoal() || attempt.finished() || attempt.attack != null && attempt.attack.passedGoal(entity.position())) {
                 finishBurst();
                 break;
             }
@@ -292,6 +325,7 @@ final class SpiderMotionController {
         Vec3 goal;
         final Vec3 followAnchor;
         LivingEntity activeTarget;
+        SpiderAttackPrediction attack;
         double burstSpeed;
         SpiderMovement.Gait travelMode;
         boolean travelStarted;

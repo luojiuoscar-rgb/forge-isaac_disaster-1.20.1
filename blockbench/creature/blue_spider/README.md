@@ -147,3 +147,20 @@ Tests cover grass/path movement in both directions with real tracking packets,
 nearby correction interpolation, repeated corrections, far recall, multi-tick
 platform entry, obstruction during entry, and recall during entry. Client visual
 checks are reported separately from JUnit and server GameTests.
+
+## Attack interception
+
+Attack attempts predict a bounded horizontal interception rather than aiming at
+the enemy's old position. SpiderOwnerFrame samples actual target displacement
+once per owner tick from the existing four-tick candidate scan; teleports, stops
+and stale samples reset the estimate. No additional world scan is introduced.
+Each attempt chooses a stable timing variation and a small sideways spread.
+Prediction includes turning time, looks ahead at most 16 ticks and leads by at
+most three blocks, plus at most 0.25 blocks of sideways spread. Slow or already
+touching targets use their current position without spread.
+The goal is calibrated once after the initial turn. Departure locks the goal
+and body heading; small enemy motion does not steer the running spider. A sharp
+turn, a large deviation from the observed trajectory, or passing the interception
+point ends the attempt early and enters the normal recovery. Wall climbing still
+finishes before another movement decision. Burst budgets, speeds, the three
+body-axis directions and the fixed animation rate are unchanged.

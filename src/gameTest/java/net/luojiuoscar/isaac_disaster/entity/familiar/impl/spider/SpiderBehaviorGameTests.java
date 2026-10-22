@@ -172,31 +172,94 @@ public final class SpiderBehaviorGameTests {
         helper.succeed();
     }
     @GameTest(template="trajectory_empty",batch="spider_controller")
-    public static void movingEnemyDoesNotChangeAnActiveSegmentsGoalOrHeading(GameTestHelper helper) {
-        try(var f=new Fixture(helper)) {
-            var target=EntityType.ZOMBIE.create(helper.getLevel());
-            target.setNoAi(true);target.setNoGravity(true);target.setPos(f.start.add(4,0,0));
-            helper.getLevel().addFreshEntity(target);
+    public static void largeTargetChangeEndsTheSegmentWithoutSteering(GameTestHelper helper) {
+        try (var f = new Fixture(helper)) {
+            var target = EntityType.ZOMBIE.create(f.level);
+            target.setNoAi(true); target.setNoGravity(true); target.setPos(f.start.add(4, 0, 0));
+            f.level.addFreshEntity(target);
             try {
-                Vec3 destination=target.position();
-                begin(f,destination,SpiderMotionController.Behavior.ATTACK);
-                set(f.spider,"activeTarget",target);
-                SpiderMovement.Gait mode=(SpiderMovement.Gait)get(f.spider,"travelMode");
-                f.spider.setYRot(SpiderMovement.targetYaw(destination.subtract(f.start),mode));
-                f.spider.setOnGround(true);f.spider.tickFamiliar();
-                float yaw=f.spider.getYRot();
-                target.setPos(f.start.add(0,0,4));
-                Vec3 before=f.spider.position();f.spider.tickFamiliar();
-                Vec3 continued=f.spider.position().subtract(before);
-                helper.assertTrue(Math.abs(continued.x-0.5)<1e-6&&Math.abs(continued.z)<1e-6,
-                        "Moving enemy does not bend or interrupt an active straight segment");
-                helper.assertTrue(f.spider.getYRot()==yaw&&get(f.spider,"goal").equals(destination),
-                        "Goal and body yaw are fixed at departure; future segments may choose again");
-                helper.assertTrue(f.spider.getMovementAnimation()==mode,"The chosen forward/left/right gait stays consistent");
-            } finally {target.discard();}
+                begin(f, target.position(), SpiderMotionController.Behavior.ATTACK);
+                set(f.spider, "activeTarget", target);
+                var mode = (SpiderMovement.Gait) get(f.spider, "travelMode");
+                f.spider.setYRot(SpiderMovement.targetYaw(target.position().subtract(f.start), mode));
+                f.spider.setOnGround(true); f.spider.tickFamiliar();
+                float yaw = f.spider.getYRot();
+                target.setPos(f.start.add(0, 0, 4));
+                Vec3 before = f.spider.position();
+                f.spider.tickFamiliar();
+                helper.assertTrue(f.spider.position().subtract(before).horizontalDistanceSqr() < 1e-10,
+                        "A clearly obsolete interception stops rather than running to the old position");
+                helper.assertTrue(f.spider.getYRot() == yaw && f.movement.behavior() == SpiderMotionController.Behavior.IDLE,
+                        "Aborting never bends the running segment or instantly turns the body");
+                helper.assertTrue(f.spider.getMovementAnimation() == SpiderMovement.Gait.IDLE,
+                        "Aborting an attack returns to idle");
+                for (int tick = 0; tick < 4; tick++) {
+                    f.spider.tickFamiliar();
+                    helper.assertTrue(f.spider.position().subtract(before).horizontalDistanceSqr() < 1e-10,
+                            "An obsolete attack still observes normal recovery before another attempt");
+                }
+            } finally { target.discard(); }
         }
         helper.succeed();
     }
+
+    @GameTest(template="trajectory_empty",batch="spider_controller")
+    public static void movingTargetGetsALeadAndOneDepartureRecalibration(GameTestHelper helper) {
+        try (var f = new Fixture(helper)) {
+            var target = EntityType.ZOMBIE.create(f.level);
+            target.setNoAi(true); target.setNoGravity(true); target.setPos(f.start.add(4, 0, 0));
+            f.level.addFreshEntity(target);
+            try {
+                sampleTargetMotion(f, target, new Vec3(0, 0, 0.2));
+                f.spider.setOnGround(true); f.spider.tickFamiliar();
+                try {
+                    var method = SpiderMotionController.class.getDeclaredMethod("chooseMovement", ServerPlayer.class,
+                            net.minecraft.world.entity.LivingEntity.class, boolean.class);
+                    method.setAccessible(true); method.invoke(f.movement, f.owner, target, false);
+                } catch (ReflectiveOperationException failure) { throw new AssertionError(failure); }
+                Vec3 initialGoal = (Vec3) get(f.spider, "goal");
+                helper.assertTrue(initialGoal.z > target.getZ() + 0.5,
+                        "A laterally moving enemy is intercepted ahead of its current position");
+                helper.assertTrue(initialGoal.subtract(target.position()).horizontalDistance() <= 3.3,
+                        "Prediction and side spread stay bounded");
+                var mode = (SpiderMovement.Gait) get(f.spider, "travelMode");
+                f.spider.setYRot(SpiderMovement.targetYaw(initialGoal.subtract(f.start), mode));
+                target.setPos(target.position().add(0, 0, 0.8));
+                sampleTargetMotion(f, target, new Vec3(0, 0, 0.2));
+                f.spider.setOnGround(true); f.spider.tickFamiliar();
+                Vec3 corrected = (Vec3) get(f.spider, "goal");
+                helper.assertTrue(corrected.distanceToSqr(initialGoal) > 1e-5,
+                        "Completing the initial turn recalibrates against the newest target position");
+                for (int tick = 0; tick < 10 && !(boolean) get(f.spider, "travelStarted"); tick++) {
+                    f.spider.tickFamiliar();
+                }
+                helper.assertTrue((boolean) get(f.spider, "travelStarted"), "Recalibration does not cause endless turning");
+                float yaw = f.spider.getYRot();
+                Vec3 before = f.spider.position();
+                target.setPos(target.position().add(0, 0, 0.05));
+                f.spider.tickFamiliar();
+                Vec3 movement = f.spider.position().subtract(before);
+                helper.assertTrue(Math.abs(movement.horizontalDistance() - 0.5) < 1e-6,
+                        "A small subsequent change preserves the attack speed");
+                helper.assertTrue(f.spider.getYRot() == yaw && get(f.spider, "goal").equals(corrected),
+                        "After departure, small target motion never steers or retargets the straight segment");
+                helper.assertTrue(f.spider.getMovementAnimation() == mode, "The selected body-axis animation remains correct");
+            } finally { target.discard(); }
+        }
+        helper.succeed();
+    }
+
+    private static void sampleTargetMotion(Fixture f, Zombie target, Vec3 velocity) {
+        // Explicit snapshot times simulate two actual positions without ticking unrelated fixtures.
+        long tick = f.level.getGameTime();
+        Vec3 current = target.position();
+        target.setPos(current.subtract(velocity));
+        var frame = SpiderOwnerFrame.get(f.owner);
+        frame.refresh(f.owner, tick - 1);
+        target.setPos(current);
+        frame.refresh(f.owner, tick);
+    }
+
     @GameTest(template="trajectory_empty",batch="spider_controller")
     public static void sweptContactUsesPanelAndConsumesOnce(GameTestHelper helper) {
         try(var f=new Fixture(helper)) {

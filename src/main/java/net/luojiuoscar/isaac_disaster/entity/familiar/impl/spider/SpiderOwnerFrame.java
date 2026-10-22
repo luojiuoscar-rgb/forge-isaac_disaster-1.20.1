@@ -19,6 +19,8 @@ final class SpiderOwnerFrame {
     private final Map<LivingEntity, Boolean> validity = new IdentityHashMap<>();
     private final Map<SpiderTargetAssignments.Cell, List<LivingEntity>> contactCells = new HashMap<>();
     private final List<LivingEntity> largeTargets = new ArrayList<>();
+    private final Map<LivingEntity, SpiderAttackPrediction.Motion> targetMotions = new IdentityHashMap<>();
+    private int motionSampleCount;
     private List<LivingEntity> candidates = List.of();
     private long tick = Long.MIN_VALUE;
     private long scanTick = Long.MIN_VALUE;
@@ -76,6 +78,7 @@ final class SpiderOwnerFrame {
             assignments.rebuild(points, targets);
             assignmentPassCount++;
         }
+        updateTargetMotion(owner, gameTick);
         rebuildContactCells();
     }
 
@@ -110,6 +113,23 @@ final class SpiderOwnerFrame {
                 && target.getBoundingBox().getCenter().distanceToSqr(owner.getBoundingBox().getCenter()) <= 64
                 && TrackingTargetRules.eligibleFlyOrSpider(owner.serverLevel(), owner, target);
     }
+
+    private void updateTargetMotion(ServerPlayer owner, long gameTick) {
+        for (LivingEntity target : candidates) {
+            if (!validForTick(owner, target)) continue;
+            targetMotions.computeIfAbsent(target, ignored -> new SpiderAttackPrediction.Motion())
+                    .sample(target.position(), gameTick);
+            motionSampleCount++;
+        }
+        targetMotions.values().removeIf(motion -> motion.tick() != gameTick);
+    }
+
+    Vec3 targetVelocity(LivingEntity target) {
+        var motion = targetMotions.get(target);
+        return motion == null ? Vec3.ZERO : motion.velocity();
+    }
+
+    int motionSamples() { return motionSampleCount; }
 
     private void rebuildContactCells() {
         contactCells.clear();

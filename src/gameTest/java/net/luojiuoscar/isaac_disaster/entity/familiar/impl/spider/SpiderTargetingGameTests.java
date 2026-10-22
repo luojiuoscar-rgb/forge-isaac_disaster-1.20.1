@@ -53,7 +53,9 @@ public final class SpiderTargetingGameTests {
             }
             helper.assertTrue(frame.scans() == 1 && frame.assignmentPasses() == 1
                     && frame.priorityEvaluations() == 4, "256 lookups do not repeat scan, assignment, or priority work");
+            helper.assertTrue(frame.motionSamples() == 16, "Target motion is sampled once per enemy per owner tick, not per spider");
             frame.refresh(f.owner, tick + 4);
+            helper.assertTrue(frame.motionSamples() == 20, "The next owner tick adds only four observations");
             helper.assertTrue(frame.scans() == 2 && frame.assignmentPasses() == 2
                     && frame.priorityEvaluations() == 8, "One more shared pass is due after four ticks");
         }
@@ -200,6 +202,31 @@ public final class SpiderTargetingGameTests {
                     "Consuming another variant preserves the blue spider and its requirement");
             helper.assertTrue(!spider.tryContact(f.owner, f.start, target.position()) && spider.hooks == 1,
                     "A consumed spider never damages or runs its effect twice");
+        }
+        helper.succeed();
+    }
+
+    @GameTest(template = "trajectory_empty", batch = "spider_targeting")
+    public static void targetMotionUsesActualDisplacementWithoutExtraWorldScans(GameTestHelper helper) {
+        try (var f = new Fixture(helper, 1)) {
+            var target = f.zombie(f.start.add(2, 0, 0));
+            var frame = SpiderOwnerFrame.get(f.owner);
+            long tick = f.level.getGameTime();
+            target.setDeltaMovement(10, 0, 0);
+            frame.refresh(f.owner, tick + 1);
+            helper.assertTrue(frame.targetVelocity(target).equals(Vec3.ZERO),
+                    "A velocity flag without actual displacement does not invent movement");
+            target.setPos(target.position().add(0.2, 0, 0));
+            frame.refresh(f.owner, tick + 2);
+            helper.assertTrue(Math.abs(frame.targetVelocity(target).x - 0.2) < 1e-8,
+                    "Observed position changes supply the prediction velocity");
+            int samples = frame.motionSamples();
+            for (int lookup = 0; lookup < 64; lookup++) frame.attackTarget(f.owner, f.spiders.get(0), tick + 2);
+            helper.assertTrue(frame.motionSamples() == samples && frame.scans() == 1,
+                    "Repeated spider decisions neither resample the enemy nor scan the world");
+            target.setHealth(0);
+            frame.refresh(f.owner, tick + 3);
+            helper.assertTrue(frame.targetVelocity(target).equals(Vec3.ZERO), "Invalid targets release motion history");
         }
         helper.succeed();
     }
