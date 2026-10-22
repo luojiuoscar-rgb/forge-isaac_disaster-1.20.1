@@ -2,6 +2,7 @@ package net.luojiuoscar.isaac_disaster.entity;
 
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.entity.custom.LemonEffectCloud;
+import net.luojiuoscar.isaac_disaster.entity.familiar.impl.spider.BlueSpiderEntity;
 import net.luojiuoscar.isaac_disaster.entity.familiar.impl.fly.BlueFlyEntity;
 import net.luojiuoscar.isaac_disaster.entity.familiar.impl.mom_knife.MomKnifeEntity;
 import net.luojiuoscar.isaac_disaster.entity.tnt.GigaBomb;
@@ -56,4 +57,12 @@ public class ModEntities {
                             .clientTrackingRange(3)
                             .updateInterval(1)
                             .build("blue_fly"));
+
+    public static final RegistryObject<EntityType<BlueSpiderEntity>> BLUE_SPIDER =
+            MOD_ENTITIES.register("blue_spider",
+                    () -> EntityType.Builder.<BlueSpiderEntity>of(BlueSpiderEntity::new, MobCategory.MISC)
+                            .sized(0.125F, 0.15F)
+                            .clientTrackingRange(3)
+                            .updateInterval(1)
+                            .build("blue_spider"));
 }

@@ -38,7 +38,9 @@ public final class FamiliarRecallGameTests {
     public static void distantFlyWaitsWithoutMovingThenTeleportsWithItsOriginalUuid(GameTestHelper helper) {
         try (Fixture fixture = new Fixture(helper)) {
             BlueFlyEntity fly = (BlueFlyEntity) fixture.spawn(BLUE_FLY);
-            Vec3 distant = fixture.owner.position().add(17, 0, 0);
+            // Exercise the 16-block recall threshold inside the fixture's loaded chunk.
+            // A horizontal offset also tests chunk visibility, which is a separate lifecycle case.
+            Vec3 distant = fixture.owner.position().add(0, 17, 0);
             fly.setPos(distant);
             fly.tick();
             helper.assertTrue(!fly.isRemoved(), "A distant loaded fly waits for recall without being destroyed");

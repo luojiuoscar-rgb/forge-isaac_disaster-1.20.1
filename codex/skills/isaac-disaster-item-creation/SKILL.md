@@ -58,8 +58,8 @@ The following table proposes project ratios from original-game effects. It does 
 | Luck | +1 luck | +1 |
 | Size | +0.2 size | +1; use additive scaling |
 | Range | +1.5 range | +1 |
-| Fire rate | +0.7 fire rate | +1 |
-| Fire-rate modifier | +1 modifier | +1 |
+| Original Isaac “射速” | +0.7 tears | +1 to `TEARS` |
+| Original Isaac “射速修正” | +1 fire-rate correction | +1 to `fire_rate` |
 | Shot speed | +0.2 shot speed | +1 |
 | Pill quality | better / worse pills | +1 / -1 |
 | Flight time | flight effect description | +1 |
@@ -72,7 +72,7 @@ The following table proposes project ratios from original-game effects. It does 
 - For fixed attribute bonuses added through `StatManager.<STAT>.apply(...)`, write the confirmed ratio directly as a numeric literal, e.g. `StatManager.DAMAGE.apply(player, 1)`. Do not introduce an extra scalar variable or constant solely to hold that fixed number. Use the matching literal in descriptions and, for removable bonuses, its negative in removal. This rule concerns fixed bonuses; genuinely dynamic calculations may use the existing calculated value.
 
 - Gameplay values still require confirmation. Ask about entity/block reach, attack speed, block breaking, knockback, projectile size, multiplicative size, and unlisted durations, cooldowns, chances, or spawn counts.
-- Fire rate maps to `TEARS`; fire-rate modifier maps to `TEARS_CORRECTION`. Never equate, merge, or substitute them.
+- Keep the two original Isaac attributes separate. An original description labeled “射速” maps to `StatManager.TEARS` / `ModAttributes.TEARS`. An original description labeled “射速修正” maps to the mod's `fire_rate` attribute through `StatManager.FIRE_RATE` / `ModAttributes.FIRE_RATE`. Do not translate “射速修正” as “射速”, and do not map it to the removed or unrelated `TEARS_CORRECTION` name.
 - Use `StatManager.<STAT>.description(...)` for stat text and `StatManager.healHealthDescription(ratio)` for health recovery. Keep displayed values tied to actual server configuration through existing methods or placeholders.
 - Use concise wording and minimal punctuation. Show known probabilities as percentages. Never invent missing values or hardcode dynamic values in translations.
 - Describe one copy by default. If the game or current project explicitly exposes a stacking mechanic, identify it and confirm whether the stacking effect should be shown; do not apply the passive rule blindly to active items.

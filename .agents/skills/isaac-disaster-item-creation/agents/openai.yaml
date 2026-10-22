@@ -1,0 +1,4 @@
+interface:
+  display_name: "Isaac Disaster Item Creation"
+  short_description: "Create items and trinkets; plan pickup workflows"
+  default_prompt: "Use $isaac-disaster-item-creation to create or modify an item or trinket, or plan pickup behavior and prepare card textures for Isaac Disaster."

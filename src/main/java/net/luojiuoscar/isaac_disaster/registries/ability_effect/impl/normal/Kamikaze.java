@@ -1,6 +1,7 @@
 package net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.normal;
 
 import net.luojiuoscar.isaac_disaster.helper.LevelHelper;
+import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ExecutableEffectContext;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ContextKeys;
@@ -23,6 +24,6 @@ public class Kamikaze implements IAbilityEffect {
 
     private void explode(LivingEntity entity, float power, float damage){
         LevelHelper.explodeCustom(entity, entity.position(), power, damage, true, false);
-        entity.hurt(entity.damageSources().genericKill(), (float) StatManager.MAX_HEALTH.getBonus());
+        entity.hurt(PlayerHelper.getSelfDamageSource(entity), (float) StatManager.MAX_HEALTH.getBonus());
     }
 }

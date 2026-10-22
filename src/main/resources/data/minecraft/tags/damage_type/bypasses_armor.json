@@ -1,6 +1,7 @@
 {
   "replace": false,
   "values": [
-    "isaac_disaster:frozen_shatter"
+    "isaac_disaster:frozen_shatter",
+    "isaac_disaster:self_damage"
   ]
 }

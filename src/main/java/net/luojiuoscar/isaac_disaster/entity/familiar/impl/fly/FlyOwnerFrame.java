@@ -71,7 +71,7 @@ final class FlyOwnerFrame {
     static boolean validTarget(ServerPlayer owner, LivingEntity target) {
         return target.level() == owner.level() && !target.isRemoved()
                 && target.getBoundingBox().getCenter().distanceToSqr(owner.getBoundingBox().getCenter()) <= 64
-                && TrackingTargetRules.eligibleFly(owner.serverLevel(), owner, target);
+                && TrackingTargetRules.eligibleFlyOrSpider(owner.serverLevel(), owner, target);
     }
 
     /** Decisions share expensive qualification; damage attempts still perform a fresh check. */

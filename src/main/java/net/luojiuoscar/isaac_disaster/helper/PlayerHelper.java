@@ -15,10 +15,12 @@ import net.luojiuoscar.isaac_disaster.item.pickup.special.IsaacHead;
 import net.luojiuoscar.isaac_disaster.manager.CurioSlotManager;
 import net.luojiuoscar.isaac_disaster.manager.DefaultAttributeManager;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
+import net.luojiuoscar.isaac_disaster.manager.ModDamageType;
 import net.luojiuoscar.isaac_disaster.manager.data.BlockData;
 import net.luojiuoscar.isaac_disaster.sound.ModSounds;
 import net.luojiuoscar.isaac_disaster.system.flight.IsaacFlightController;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
@@ -666,11 +668,12 @@ public class PlayerHelper {
     }
 
     public static boolean isSelfDamage(DamageSource source){
-        return source.is(DamageTypes.GENERIC_KILL);
+        return source.is(ModDamageType.SELF_DAMAGE);
     }
 
     public static DamageSource getSelfDamageSource(LivingEntity entity){
-        return entity.damageSources().genericKill();
+        return new DamageSource(entity.level().registryAccess()
+                .registryOrThrow(Registries.DAMAGE_TYPE).getHolderOrThrow(ModDamageType.SELF_DAMAGE));
     }
 
 

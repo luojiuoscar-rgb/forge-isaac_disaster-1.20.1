@@ -50,8 +50,7 @@ public abstract class AbstractIsaacFamiliarEntity extends Entity {
     @Override
     public void tick() {
         super.tick();
-        this.noPhysics = true;
-        this.setNoGravity(true);
+        configurePhysics();
 
         if (!level().isClientSide) {
             Player owner = getOwner();
@@ -92,6 +91,23 @@ public abstract class AbstractIsaacFamiliarEntity extends Entity {
      */
     protected abstract void tickFamiliar();
 
+    /** Airborne familiars retain their defaults; grounded variants opt into world physics. */
+    protected void configurePhysics() {
+        noPhysics = true;
+        setNoGravity(true);
+    }
+
+    protected Vec3 ownerPlacement(Player owner) {
+        return owner.position().add(0, owner.getBbHeight() * 0.55, 0);
+    }
+    /** Shared by first admission and recall so ground variants use the same placement rules. */
+    public final void placeAtOwner() {
+        Player owner = getOwner();
+        if (owner == null) return;
+        setPos(ownerPlacement(owner));
+        setDeltaMovement(Vec3.ZERO);
+    }
+
     /**
      * Checks whether this familiar is still accepted by its owner capability.
      */
@@ -131,8 +147,8 @@ public abstract class AbstractIsaacFamiliarEntity extends Entity {
     /** Called only by the owner's shared admission scheduler. */
     public final boolean recallToOwner() {
         if (!recallPending || !isValidFamiliar()) return false;
-        Player owner = getOwner();
-        teleportTo(owner.getX(), owner.getY() + owner.getBbHeight() * 0.55, owner.getZ());
+        Vec3 position = ownerPlacement(getOwner());
+        teleportTo(position.x, position.y, position.z);
         setDeltaMovement(Vec3.ZERO);
         recallPending = false;
         resetValidityCheckDelay();

@@ -13,7 +13,7 @@ import java.util.UUID;
 import java.util.function.Predicate;
 import java.util.function.BiPredicate;
 
-/** One attack, planner and movement trail for all of an owner's flies. */
+/** Owner-wide attack queue, planner and movement trail shared by all fly variants. */
 final class FlyAttackQueue {
     private static final double GAP = 0.3;
     private static final double EPSILON = 1e-7;

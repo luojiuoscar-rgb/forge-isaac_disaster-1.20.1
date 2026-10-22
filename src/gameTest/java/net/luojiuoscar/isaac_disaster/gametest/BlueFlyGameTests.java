@@ -62,7 +62,7 @@ public final class BlueFlyGameTests {
         ResourceLocation type = ResourceLocation.fromNamespaceAndPath("isaac_disaster", "blue_fly");
         helper.assertTrue(FamiliarHelper.isRegisteredFamiliarType(type), "Descriptor matches the entity type");
         int result = level.getServer().getCommands().performPrefixedCommand(
-                source, "isd familiar add @s isaac_disaster:blue_fly 1");
+                source, "isd familiar @s add isaac_disaster:blue_fly 1");
         helper.assertTrue(result == 1 && data.getCount(type) == 1, "Existing command accepts blue fly requests");
         helper.assertTrue(FamiliarHelper.spawnNextMissingFamiliar(player), "Existing scheduler creates the fly");
         var entry = data.getEntry(type).orElseThrow();
@@ -88,7 +88,7 @@ public final class BlueFlyGameTests {
             helper.assertTrue(fly.position().distanceToSqr(spawn) > 0.25,
                     "An idle fly moves into its orbit instead of staying at the spawn position");
             int removed = level.getServer().getCommands().performPrefixedCommand(
-                    source, "isd familiar remove @s isaac_disaster:blue_fly 1");
+                    source, "isd familiar @s remove isaac_disaster:blue_fly 1");
             helper.assertTrue(removed == 1 && data.getCount(type) == 0 && fly.isRemoved(),
                     "Existing command removes both the requirement and live fly");
             helper.assertTrue(!data.containsEntity(type, fly.getUUID()), "Removal unlinks the runtime UUID");

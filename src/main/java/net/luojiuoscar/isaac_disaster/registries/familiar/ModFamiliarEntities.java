@@ -27,6 +27,10 @@ public final class ModFamiliarEntities {
             FAMILIAR_ENTITY_REGISTRY.register("blue_fly", () ->
                     new FamiliarEntityType(ModEntities.BLUE_FLY, 64, ModFamiliarLimitGroups.FLIES, 0, false));
 
+    public static final RegistryObject<FamiliarEntityType> BLUE_SPIDER =
+            FAMILIAR_ENTITY_REGISTRY.register("blue_spider", () ->
+                    new FamiliarEntityType(ModEntities.BLUE_SPIDER, 64, ModFamiliarLimitGroups.SPIDERS, 0, false));
+
     private ModFamiliarEntities() {
     }
 }

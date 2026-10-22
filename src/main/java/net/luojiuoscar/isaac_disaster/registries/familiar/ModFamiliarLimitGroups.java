@@ -16,5 +16,8 @@ public final class ModFamiliarLimitGroups {
     public static final RegistryObject<FamiliarLimitGroup> FLIES =
             FAMILIAR_LIMIT_GROUP_REGISTRY.register("flies", () -> new FamiliarLimitGroup(64));
 
+    public static final RegistryObject<FamiliarLimitGroup> SPIDERS =
+            FAMILIAR_LIMIT_GROUP_REGISTRY.register("spiders", () -> new FamiliarLimitGroup(64));
+
     private ModFamiliarLimitGroups() { }
 }

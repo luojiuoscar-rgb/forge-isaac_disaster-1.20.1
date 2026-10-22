@@ -2,58 +2,43 @@ package net.luojiuoscar.isaac_disaster.client.renderer.creature;
 
 import net.minecraft.world.scores.Scoreboard;
 import org.junit.jupiter.api.Test;
-
 import java.util.UUID;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 class FlyRendererTest {
     @Test
-    void selfAndTeammatesKeepTheirOwnColorsEvenWithFriendlyFireEnabled() {
-        UUID viewer = UUID.randomUUID();
-        UUID owner = UUID.randomUUID();
-        var scoreboard = new Scoreboard();
-        var team = scoreboard.addPlayerTeam("friends");
-        team.setAllowFriendlyFire(true);
-        assertFalse(FlyRenderer.shouldFlash(viewer, null, UUID.fromString(viewer.toString()), null));
-        assertFalse(FlyRenderer.shouldFlash(viewer, team, owner, team));
-        for (int color : new int[]{0x4077E0, 0xD04030, 0x308050}) {
-            for (double seconds = 0; seconds < 1; seconds += 0.0125) {
-                assertEquals(color, FlyRenderer.color(color, false, seconds));
+    void allVariantsFlashForHostileViewersAndAlliesAndUnknownOwnersKeepTheirColors() {
+        UUID viewer=UUID.randomUUID(),owner=UUID.randomUUID();
+        var scoreboard=new Scoreboard();
+        var team=scoreboard.addPlayerTeam("friends");team.setAllowFriendlyFire(true);
+        var enemies=scoreboard.addPlayerTeam("enemies");
+        for(int color:new int[]{0x4077E0,0xD04030,0x308050}) {
+            for(double seconds:new double[]{0,0.0625,0.12499}) {
+                assertEquals(seconds < 0.0625 ? color : 0xD8D8D8,FlyRenderer.renderColor(color,viewer,null,owner,null,seconds),"Every variant inherits the hostile flash");
+                assertEquals(color,FlyRenderer.renderColor(color,viewer,null,viewer,null,seconds));
+                assertEquals(color,FlyRenderer.renderColor(color,viewer,team,owner,team,seconds));
+                assertEquals(color,FlyRenderer.renderColor(color,null,null,owner,null,seconds));
+                assertEquals(color,FlyRenderer.renderColor(color,viewer,null,null,null,seconds));
             }
+            assertEquals(0xD8D8D8,FlyRenderer.renderColor(color,viewer,team,owner,enemies,0.0625));
+            assertEquals(0xD8D8D8,FlyRenderer.renderColor(color,viewer,null,owner,team,0.0625));
+            assertEquals(0xD8D8D8,FlyRenderer.renderColor(color,viewer,team,owner,null,0.0625));
         }
     }
 
     @Test
-    void otherOwnersFlashWhenOnAnotherTeamOrWhenNeitherHasATeam() {
-        UUID viewer = UUID.randomUUID();
-        UUID owner = UUID.randomUUID();
-        var scoreboard = new Scoreboard();
-        var first = scoreboard.addPlayerTeam("first");
-        var second = scoreboard.addPlayerTeam("second");
-        assertTrue(FlyRenderer.shouldFlash(viewer, first, owner, second));
-        assertTrue(FlyRenderer.shouldFlash(viewer, null, owner, null));
-        assertTrue(FlyRenderer.shouldFlash(viewer, first, owner, null));
-        assertTrue(FlyRenderer.shouldFlash(viewer, null, owner, second));
-    }
-
-    @Test
-    void unknownViewerOrOwnerUsesNormalRenderingUntilAvailable() {
-        assertFalse(FlyRenderer.shouldFlash(null, null, UUID.randomUUID(), null));
-        assertFalse(FlyRenderer.shouldFlash(UUID.randomUUID(), null, null, null));
-    }
-
-    @Test
-    void eightFullCyclesPerSecondUseEqualHardSwitchedHalvesBetweenGameTicks() {
-        for (int original : new int[]{0x4077E0, 0xD04030, 0x308050}) {
-            for (int cycle = 0; cycle < 8; cycle++) {
-                double start = cycle * 0.125;
-                assertEquals(original, FlyRenderer.color(original, true, start));
-                assertEquals(original, FlyRenderer.color(original, true, start + 0.06249));
-                assertEquals(0xD8D8D8, FlyRenderer.color(original, true, start + 0.0625));
-                assertEquals(0xD8D8D8, FlyRenderer.color(original, true, start + 0.12499));
+    void allVariantsHardSwitchBetweenTheirCodeColorAndGrayEightFullCyclesPerSecond() {
+        UUID viewer=UUID.randomUUID(),owner=UUID.randomUUID();
+        for(int color:new int[]{0x4077E0,0xD04030,0x308050}) {
+            for(int cycle=0;cycle<8;cycle++) {
+                double start=cycle*0.125;
+                assertEquals(color,FlyRenderer.renderColor(color,viewer,null,owner,null,start));
+                assertEquals(color,FlyRenderer.renderColor(color,viewer,null,owner,null,start+0.06249));
+                assertEquals(0xD8D8D8,FlyRenderer.renderColor(color,viewer,null,owner,null,start+0.0625));
+                assertEquals(0xD8D8D8,FlyRenderer.renderColor(color,viewer,null,owner,null,start+0.12499));
             }
-            assertEquals(original, FlyRenderer.color(original, true, 1));
+            assertEquals(color,FlyRenderer.renderColor(color,viewer,null,owner,null,1));
         }
     }
+
 }
