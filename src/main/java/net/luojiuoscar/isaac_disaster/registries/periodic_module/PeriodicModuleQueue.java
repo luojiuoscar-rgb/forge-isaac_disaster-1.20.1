@@ -1,4 +1,4 @@
-package net.luojiuoscar.isaac_disaster.registries.recursive_module;
+package net.luojiuoscar.isaac_disaster.registries.periodic_module;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -12,16 +12,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Stores recursive modules that periodically fire while their stack count is positive.
+ * Stores periodic modules that periodically fire while their stack count is positive.
  */
-public class RecursiveModuleQueue {
-    private final List<RecursiveModuleInstance> queue;
+public class PeriodicModuleQueue {
+    private final List<PeriodicModuleInstance> queue;
 
-    public RecursiveModuleQueue(){
+    public PeriodicModuleQueue(){
         this.queue = new ArrayList<>();
     }
 
-    public RecursiveModuleQueue(List<RecursiveModuleInstance> modules) {
+    public PeriodicModuleQueue(List<PeriodicModuleInstance> modules) {
         this.queue = new ArrayList<>(modules);
     }
 
@@ -29,17 +29,17 @@ public class RecursiveModuleQueue {
         queue.clear();
     }
 
-    public void copyFrom(RecursiveModuleQueue source) {
+    public void copyFrom(PeriodicModuleQueue source) {
         queue.clear();
-        for (RecursiveModuleInstance inst : source.queue) {
-            queue.add(new RecursiveModuleInstance(inst.id, inst.stacks, inst.coolDown));
+        for (PeriodicModuleInstance inst : source.queue) {
+            queue.add(new PeriodicModuleInstance(inst.id, inst.stacks, inst.coolDown));
         }
     }
 
     /**
      * Adds an instance restored from persisted data.
      */
-    public void rawAdd(RecursiveModuleInstance inst) {
+    public void rawAdd(PeriodicModuleInstance inst) {
         if (inst == null || inst.stacks <= 0) return;
 
         queue.add(inst);
@@ -47,7 +47,7 @@ public class RecursiveModuleQueue {
 
     public ListTag saveNBTData() {
         ListTag list = new ListTag();
-        for (RecursiveModuleInstance inst : queue) {
+        for (PeriodicModuleInstance inst : queue) {
             if (inst.stacks <= 0) continue;
 
             CompoundTag tag = new CompoundTag();
@@ -74,34 +74,34 @@ public class RecursiveModuleQueue {
                     continue;
                 }
 
-                rawAdd(new RecursiveModuleInstance(id, stacks, coolDown));
+                rawAdd(new PeriodicModuleInstance(id, stacks, coolDown));
             } catch (Exception ignored) {
             }
         }
     }
 
     /**
-     * Changes the stack count of one recursive module.
+     * Changes the stack count of one periodic module.
      *
-     * <p>Recursive modules are active only while their stack count is positive. Negative changes
+     * <p>Periodic modules are active only while their stack count is positive. Negative changes
      * can remove an existing module, but must not create a negative-stack module that would still
      * be ticked by the queue.</p>
      */
     public void add(LivingEntity entity, ResourceLocation id, int stacks) {
         if (stacks == 0) return;
 
-        IForgeRegistry<RecursiveModule> registry =
-                RegistryManager.ACTIVE.getRegistry(ModRecursiveModules.RECURSIVE_MODULE_KEY);
+        IForgeRegistry<PeriodicModule> registry =
+                RegistryManager.ACTIVE.getRegistry(ModPeriodicModules.PERIODIC_MODULE_KEY);
         if (registry == null) return;
 
-        RecursiveModule module = registry.getValue(id);
+        PeriodicModule module = registry.getValue(id);
         if (module == null) return;
 
-        RecursiveModuleInstance instance = get(id);
+        PeriodicModuleInstance instance = get(id);
         if (instance == null) {
             if (stacks <= 0) return;
 
-            queue.add(new RecursiveModuleInstance(id, stacks, module.getInitialTick()));
+            queue.add(new PeriodicModuleInstance(id, stacks, module.getInitialTick()));
             return;
         }
 
@@ -112,21 +112,21 @@ public class RecursiveModuleQueue {
         }
     }
 
-    public List<RecursiveModuleInstance> getQueue(){
+    public List<PeriodicModuleInstance> getQueue(){
         return queue;
     }
 
-    public RecursiveModuleQueue getCopy(){
-        return new RecursiveModuleQueue(queue);
+    public PeriodicModuleQueue getCopy(){
+        return new PeriodicModuleQueue(queue);
     }
 
     /**
      * Ticks every active module and removes invalid stale instances left by older saves or bugs.
      */
     public void tickAll(LivingEntity entity) {
-        List<RecursiveModuleInstance> copy = getCopy().queue;
+        List<PeriodicModuleInstance> copy = getCopy().queue;
 
-        for (RecursiveModuleInstance inst : copy) {
+        for (PeriodicModuleInstance inst : copy) {
             if (!queue.contains(inst) || inst.stacks <= 0) {
                 queue.remove(inst);
                 continue;
@@ -143,8 +143,8 @@ public class RecursiveModuleQueue {
         return get(id) != null;
     }
 
-    public RecursiveModuleInstance get(ResourceLocation id) {
-        for (RecursiveModuleInstance inst : queue) {
+    public PeriodicModuleInstance get(ResourceLocation id) {
+        for (PeriodicModuleInstance inst : queue) {
             if (inst.id.equals(id)) {
                 return inst;
             }

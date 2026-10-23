@@ -29,7 +29,7 @@ Read this file after the router identifies a passive item.
 Confirm the following when applicable:
 
 - persistent stat values and their `StatManager` ratio
-- trigger and recursive module names and semantics
+- trigger and periodic module names and semantics
 - bullet behavior, bullet color, and projectile compatibility
 - set name, required count, and set effect
 - first-obtain recovery or drop behavior

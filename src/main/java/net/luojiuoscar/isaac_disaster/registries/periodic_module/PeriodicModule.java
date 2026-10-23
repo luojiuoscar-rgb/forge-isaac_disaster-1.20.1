@@ -1,13 +1,13 @@
-package net.luojiuoscar.isaac_disaster.registries.recursive_module;
+package net.luojiuoscar.isaac_disaster.registries.periodic_module;
 
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ExecutableEffectContext;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.CompositeTrigger;
 import net.minecraft.world.entity.LivingEntity;
 
-public abstract class RecursiveModule {
+public abstract class PeriodicModule {
     private final CompositeTrigger trigger;
 
-    public RecursiveModule(CompositeTrigger trigger){
+    public PeriodicModule(CompositeTrigger trigger){
         this.trigger = trigger;
     }
 
@@ -15,7 +15,7 @@ public abstract class RecursiveModule {
         return 0;
     }
 
-    public abstract int getTickInterval(LivingEntity entity, int stacks, RecursiveModuleQueue queue);
+    public abstract int getTickInterval(LivingEntity entity, int stacks, PeriodicModuleQueue queue);
 
     /** 最终移除时触发 */
     public void handleRemove(LivingEntity entity){};

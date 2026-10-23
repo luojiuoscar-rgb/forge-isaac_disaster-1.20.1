@@ -2,7 +2,7 @@ package net.luojiuoscar.isaac_disaster.registries.ability.passive.impl;
 
 import net.luojiuoscar.isaac_disaster.registries.ability.passive.PassiveAbility;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
-import net.luojiuoscar.isaac_disaster.registries.recursive_module.ModRecursiveModules;
+import net.luojiuoscar.isaac_disaster.registries.periodic_module.ModPeriodicModules;
 import net.luojiuoscar.isaac_disaster.client.ClientDataManager;
 import net.luojiuoscar.isaac_disaster.helper.DescriptionHelper;
 import net.luojiuoscar.isaac_disaster.item.ModPassiveItems;
@@ -28,14 +28,14 @@ public final class TwoSpooky extends PassiveAbility {
     public void handleObtain(ServerPlayer player, @Nullable ItemStack stack) {
         StatManager.TEARS.apply(player, 0.7);
         StatManager.BULLET_SPEED.apply(player, 1);
-        StatManager.addRecursiveModule(player, ModRecursiveModules.SPOOKY_2.getId(), 1);
+        StatManager.addPeriodicModule(player, ModPeriodicModules.SPOOKY_2.getId(), 1);
     }
 
     @Override
     public void handleRemove(ServerPlayer player, @Nullable ItemStack stack) {
         StatManager.TEARS.apply(player, -0.7);
         StatManager.BULLET_SPEED.apply(player, -1);
-        StatManager.addRecursiveModule(player, ModRecursiveModules.SPOOKY_2.getId(), -1);
+        StatManager.addPeriodicModule(player, ModPeriodicModules.SPOOKY_2.getId(), -1);
     }
 
     @Override

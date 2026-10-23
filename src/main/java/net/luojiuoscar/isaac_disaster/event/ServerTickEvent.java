@@ -77,7 +77,7 @@ public class ServerTickEvent {
         CurioSlotManager.tick(player);
 
         IsaacHeadAttack(player);
-        recursiveModuleTick(player);
+        periodicModuleTick(player);
         refreshScaleIfChanged(player);
         AttributeIndicatorSync.tick(player);
 
@@ -135,9 +135,9 @@ public class ServerTickEvent {
             }
         }
     }
-    private static void recursiveModuleTick(ServerPlayer player){
+    private static void periodicModuleTick(ServerPlayer player){
         player.getCapability(EffectModulesProvider.EFFECT_MODULES).ifPresent(
-                playerPassiveItem -> playerPassiveItem.getRecursiveModuleQueue().tickAll(player)
+                playerPassiveItem -> playerPassiveItem.getPeriodicModuleQueue().tickAll(player)
         );
     }
 

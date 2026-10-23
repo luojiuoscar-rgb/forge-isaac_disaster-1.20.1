@@ -298,7 +298,7 @@ public class Config
 
         // 基础单次时间间隔
         BASIC_TIME_INTERVAL = BUILDER
-                .comment("Defines time interval for items with recursive effects.(s)")
+                .comment("Defines time interval for items with periodic effects.(s)")
                 .defineInRange("basic_time_interval", IsaacConfigDefaults.BASIC_TIME_INTERVAL, 0.0, 99999.0);
 
 

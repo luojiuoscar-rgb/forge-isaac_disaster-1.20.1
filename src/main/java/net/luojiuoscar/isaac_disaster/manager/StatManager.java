@@ -514,9 +514,9 @@ public enum StatManager {
         );
     }
 
-    public static void addRecursiveModule(LivingEntity entity, ResourceLocation rl, int count){
+    public static void addPeriodicModule(LivingEntity entity, ResourceLocation rl, int count){
         entity.getCapability(EffectModulesProvider.EFFECT_MODULES).ifPresent(
-                effectModules -> effectModules.getRecursiveModuleQueue().add(entity, rl, count)
+                effectModules -> effectModules.getPeriodicModuleQueue().add(entity, rl, count)
         );
     }
 
