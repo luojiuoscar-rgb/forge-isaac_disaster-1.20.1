@@ -29,6 +29,7 @@ public class PlayerAbility {
 
     private final Map<ResourceLocation, Integer> chargeAmounts = new HashMap<>();
     private final Map<ResourceLocation, ChargeBarSync.State> chargeBarStates = new HashMap<>();
+    private final RuntimeEntityIndex runtimeEntities = new RuntimeEntityIndex();
 
     private final Map<ResourceLocation, Integer> attackType;
     private AttackSelection attackSelection;
@@ -44,6 +45,7 @@ public class PlayerAbility {
     }
 
     public void init() {
+        runtimeEntities.clear();
         holdRightClick = false;
         piercing = 0;
         homing = 0;
@@ -60,6 +62,7 @@ public class PlayerAbility {
     }
 
     public void copyFrom(PlayerAbility source, ServerPlayer player) {
+        runtimeEntities.clear();
         this.piercing = source.piercing;
         this.homing = source.homing;
         this.spectral = source.spectral;
@@ -113,6 +116,7 @@ public class PlayerAbility {
     }
 
     public void loadNBTData(CompoundTag nbt) {
+        runtimeEntities.clear();
         this.spectral = nbt.getInt("spectral");
         this.piercing = nbt.getInt("piercing");
         this.homing = nbt.getInt("homing");
@@ -160,6 +164,10 @@ public class PlayerAbility {
 
         clearChargeStates();
         attackSelection = AttackSelector.select(attackType);
+    }
+
+    public RuntimeEntityIndex getRuntimeEntities() {
+        return runtimeEntities;
     }
 
     public boolean isHoldingRightClick() {

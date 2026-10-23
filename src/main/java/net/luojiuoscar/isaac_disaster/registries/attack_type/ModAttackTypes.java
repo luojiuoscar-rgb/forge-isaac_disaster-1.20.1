@@ -58,4 +58,8 @@ public class ModAttackTypes {
     public static final RegistryObject<AttackType> MONSTROS_LUNG =
             ATTACK_TYPE_REGISTER.register("monstros_lung", () -> new MonstrosLungAttack(
                     AttackPrio.MONSTROS_LUNG.getTier(), AttackPrio.MONSTROS_LUNG.getPriority()));
+
+    public static final RegistryObject<AttackType> MOMS_KNIFE =
+            ATTACK_TYPE_REGISTER.register("moms_knife", () -> new MomsKnifeAttack(
+                    AttackPrio.MOMS_KNIFE.getTier(), AttackPrio.MOMS_KNIFE.getPriority()));
 }

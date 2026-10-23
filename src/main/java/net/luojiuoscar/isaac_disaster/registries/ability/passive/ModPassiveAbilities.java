@@ -786,4 +786,8 @@ public class ModPassiveAbilities {
             PASSIVE_ABILITY_REGISTRY.register("tractor_beam",
                     () -> new TractorBeam(ItemId.TRACTOR_BEAM.getId(), ItemId.TRACTOR_BEAM.getLevel()));
 
+    public static final RegistryObject<PassiveAbility> MOMS_KNIFE =
+            PASSIVE_ABILITY_REGISTRY.register("moms_knife",
+                    () -> new MomsKnife(ItemId.MOMS_KNIFE.getId(), ItemId.MOMS_KNIFE.getLevel()));
+
 }

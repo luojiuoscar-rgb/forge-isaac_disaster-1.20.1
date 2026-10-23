@@ -25,7 +25,8 @@ public enum AttackPrio {
     BRIMSTONE_CURSED_EYE_COMBO(200, 3),
     MONSTROS_LUNG(200, 300),
     C_SECTION_MONSTROS_LUNG_COMBO(200, 301),
-    BRIMSTONE_MONSTROS_LUNG_COMBO(200, 302);
+    BRIMSTONE_MONSTROS_LUNG_COMBO(200, 302),
+    MOMS_KNIFE(300, 0);
 
     private final int tier;
     private final double priority;

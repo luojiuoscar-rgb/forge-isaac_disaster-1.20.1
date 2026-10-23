@@ -790,4 +790,8 @@ public class ModPassiveItems {
             () -> new PassiveItem(new Item.Properties(), ModPassiveAbilities.TRACTOR_BEAM));
     static {ItemListManager.PASSIVE_ITEM_LIST.add(TRACTOR_BEAM);}
 
+    public static final RegistryObject<Item> MOMS_KNIFE = ITEMS.register("moms_knife",
+            () -> new PassiveItem(new Item.Properties(), ModPassiveAbilities.MOMS_KNIFE));
+    static {ItemListManager.PASSIVE_ITEM_LIST.add(MOMS_KNIFE);}
+
 }

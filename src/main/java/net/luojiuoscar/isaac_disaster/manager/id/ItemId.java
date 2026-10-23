@@ -234,7 +234,8 @@ public enum ItemId {
     SOUL_LOCKET(1),
     D12(2),
     SINUS_INFECTION(3),
-    TRACTOR_BEAM(3);
+    TRACTOR_BEAM(3),
+    MOMS_KNIFE(4);
 
 
 

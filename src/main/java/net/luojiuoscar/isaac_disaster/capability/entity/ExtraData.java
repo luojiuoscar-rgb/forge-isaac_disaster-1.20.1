@@ -3,6 +3,7 @@ package net.luojiuoscar.isaac_disaster.capability.entity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Collections;
 import java.util.LinkedHashSet;
@@ -81,8 +82,8 @@ public class ExtraData {
         return visualLayers.getResolvedLayers();
     }
 
-    public void replaceRuntimeState(java.util.Collection<ResourceLocation> sources,
-                                    java.util.Collection<ResourceLocation> layers) {
+    public void replaceRuntimeState(Collection<ResourceLocation> sources,
+                                    Collection<ResourceLocation> layers) {
         freezeSources.clear();
         freezeSources.addAll(sources);
         visualLayers.replaceAll(layers);
