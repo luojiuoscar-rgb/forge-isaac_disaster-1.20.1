@@ -15,6 +15,7 @@ import net.luojiuoscar.isaac_disaster.registries.bullet_visual.ModBulletVisuals;
 import net.luojiuoscar.isaac_disaster.registries.charge_bar.ModChargeBars;
 import net.luojiuoscar.isaac_disaster.registries.familiar.ModFamiliarEntities;
 import net.luojiuoscar.isaac_disaster.registries.familiar.ModFamiliarLimitGroups;
+import net.luojiuoscar.isaac_disaster.registries.ground_effect.ModGroundEffects;
 import net.luojiuoscar.isaac_disaster.registries.recursive_module.ModRecursiveModules;
 import net.luojiuoscar.isaac_disaster.registries.revive_module.ModReviveModules;
 import net.luojiuoscar.isaac_disaster.registries.split_module.ModSplitModules;
@@ -53,6 +54,7 @@ public class ModRegistries {
         registerRegistry(ModCombinationRules.ATTACK_COMBINATION_RULE_REGISTRY, ModCombinationRules.ATTACK_COMBINATION_RULE_KEY.location(), modEventBus);
         registerRegistry(ModFamiliarEntities.FAMILIAR_ENTITY_REGISTRY, ModFamiliarEntities.FAMILIAR_ENTITY_KEY.location(), modEventBus);
         registerRegistry(ModFamiliarLimitGroups.FAMILIAR_LIMIT_GROUP_REGISTRY, ModFamiliarLimitGroups.FAMILIAR_LIMIT_GROUP_KEY.location(), modEventBus);
+        registerRegistry(ModGroundEffects.GROUND_EFFECT_REGISTRY, ModGroundEffects.GROUND_EFFECT_KEY.location(), modEventBus);
         registerRegistry(ModExecutableEffects.EXECUTABLE_EFFECT_REGISTRY, ModExecutableEffects.EXECUTABLE_EFFECT_KEY.location(), modEventBus);
     }
 

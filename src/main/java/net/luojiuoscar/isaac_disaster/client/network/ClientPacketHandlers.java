@@ -6,6 +6,7 @@ import net.luojiuoscar.isaac_disaster.bullet.client.ClientBulletRuntime;
 import net.luojiuoscar.isaac_disaster.client.ClientDataManager;
 import net.luojiuoscar.isaac_disaster.client.gui.attribute_indicator.AttributeIndicatorHudOverlay;
 import net.luojiuoscar.isaac_disaster.client.laser.RevelationBeamRenderer;
+import net.luojiuoscar.isaac_disaster.groundeffect.client.ClientGroundEffectRuntime;
 import net.luojiuoscar.isaac_disaster.networking.packet.ChargeBarUpdateS2CPacket;
 import net.luojiuoscar.isaac_disaster.networking.packet.bullet.BulletCorrectionBatchS2CPacket;
 import net.luojiuoscar.isaac_disaster.networking.packet.bullet.BulletCorrectionS2CPacket;
@@ -15,6 +16,10 @@ import net.luojiuoscar.isaac_disaster.networking.packet.bullet.BulletSpawnBatchS
 import net.luojiuoscar.isaac_disaster.networking.packet.bullet.BulletSpawnS2CPacket;
 import net.luojiuoscar.isaac_disaster.networking.packet.bullet.BulletStickBatchS2CPacket;
 import net.luojiuoscar.isaac_disaster.networking.packet.bullet.BulletTrackingBatchS2CPacket;
+import net.luojiuoscar.isaac_disaster.networking.packet.groundeffect.GroundEffectDespawnBatchS2CPacket;
+import net.luojiuoscar.isaac_disaster.networking.packet.groundeffect.GroundEffectSnapshotBatchS2CPacket;
+import net.luojiuoscar.isaac_disaster.networking.packet.groundeffect.GroundEffectSnapshotFragmentS2CPacket;
+import net.luojiuoscar.isaac_disaster.networking.packet.groundeffect.GroundEffectSyncS2CPacket;
 import net.luojiuoscar.isaac_disaster.networking.packet.laser.LaserBeamBatchS2CPacket;
 import net.luojiuoscar.isaac_disaster.networking.packet.laser.RevelationBeamS2CPacket;
 import net.luojiuoscar.isaac_disaster.screen.IsaacItemScreen;
@@ -126,6 +131,22 @@ public final class ClientPacketHandlers {
 
     public static void handleBulletTracking(BulletTrackingBatchS2CPacket packet) {
         ClientBulletRuntime.INSTANCE.applyTracking(packet);
+    }
+
+    public static void handleGroundEffectSnapshot(GroundEffectSnapshotBatchS2CPacket packet) {
+        ClientGroundEffectRuntime.INSTANCE.applySnapshot(packet);
+    }
+
+    public static void handleGroundEffectDespawn(GroundEffectDespawnBatchS2CPacket packet) {
+        ClientGroundEffectRuntime.INSTANCE.applyDespawn(packet);
+    }
+
+    public static void handleGroundEffectSync(GroundEffectSyncS2CPacket packet) {
+        ClientGroundEffectRuntime.INSTANCE.applySync(packet);
+    }
+
+    public static void handleGroundEffectSnapshotFragment(GroundEffectSnapshotFragmentS2CPacket packet) {
+        ClientGroundEffectRuntime.INSTANCE.applySnapshotFragment(packet);
     }
 
     public static void handleRevelationBeam(RevelationBeamS2CPacket packet) {

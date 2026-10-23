@@ -28,6 +28,10 @@ public final class ModDamageSources {
         return new DamageSource(type(level, ModDamageType.FAMILIAR), direct, owner);
     }
 
+    public static DamageSource water(Level level, @Nullable Entity owner) {
+        return new DamageSource(type(level, ModDamageType.WATER), null, owner);
+    }
+
     private static Holder<DamageType> type(Level level, ResourceKey<DamageType> key) {
         return level.registryAccess().registryOrThrow(Registries.DAMAGE_TYPE).getHolderOrThrow(key);
     }

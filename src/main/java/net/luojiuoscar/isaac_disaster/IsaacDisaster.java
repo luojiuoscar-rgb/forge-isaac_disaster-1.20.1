@@ -5,6 +5,7 @@ import net.luojiuoscar.isaac_disaster.attribute.ModAttributes;
 import net.luojiuoscar.isaac_disaster.block.ModBlockEntities;
 import net.luojiuoscar.isaac_disaster.block.ModBlocks;
 import net.luojiuoscar.isaac_disaster.bullet.server.BulletRuntime;
+import net.luojiuoscar.isaac_disaster.groundeffect.server.GroundEffectRuntime;
 import net.luojiuoscar.isaac_disaster.client.config.IsaacConfigScreenRegistration;
 import net.luojiuoscar.isaac_disaster.config.IsaacClientConfig;
 import net.luojiuoscar.isaac_disaster.commands.gamerule.ModGameRules;
@@ -49,6 +50,7 @@ public class IsaacDisaster
         // Register ourselves for server and other game events we are interested in
         MinecraftForge.EVENT_BUS.register(this);
         MinecraftForge.EVENT_BUS.register(BulletRuntime.INSTANCE);
+        MinecraftForge.EVENT_BUS.register(GroundEffectRuntime.INSTANCE);
 
         ModRegistries.register(modEventBus);
 

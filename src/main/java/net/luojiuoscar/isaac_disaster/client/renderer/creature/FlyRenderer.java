@@ -4,6 +4,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.client.model.creature.FlyModel;
+import net.luojiuoscar.isaac_disaster.client.render.OwnerHostility;
 import net.luojiuoscar.isaac_disaster.entity.familiar.impl.fly.AbstractFlyFamiliarEntity;
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
@@ -52,8 +53,7 @@ public final class FlyRenderer<T extends AbstractFlyFamiliarEntity> extends Enti
     }
 
     static boolean shouldFlash(UUID viewer, Team viewerTeam, UUID owner, Team ownerTeam) {
-        return viewer != null && owner != null && !viewer.equals(owner)
-                && (viewerTeam == null || !viewerTeam.isAlliedTo(ownerTeam));
+        return OwnerHostility.isHostile(viewer, viewerTeam, owner, ownerTeam);
     }
 
     static int color(int original, boolean flashing, double seconds) {

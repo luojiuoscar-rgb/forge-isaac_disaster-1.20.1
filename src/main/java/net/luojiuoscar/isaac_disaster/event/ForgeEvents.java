@@ -7,6 +7,7 @@ import net.luojiuoscar.isaac_disaster.capability.entity.ExtraDataProvider;
 import net.luojiuoscar.isaac_disaster.capability.player.*;
 import net.luojiuoscar.isaac_disaster.capability.player.flight.PlayerIsaacFlightProvider;
 import net.luojiuoscar.isaac_disaster.commands.familiar.FamiliarCmd;
+import net.luojiuoscar.isaac_disaster.commands.groundeffect.GroundEffectCmd;
 import net.luojiuoscar.isaac_disaster.commands.bullet.BulletCountCmd;
 import net.luojiuoscar.isaac_disaster.commands.bullet.BulletClearCmd;
 import net.luojiuoscar.isaac_disaster.commands.bullet.BulletTrajectoryTraceCmd;
@@ -357,6 +358,7 @@ public class ForgeEvents {
 
         // familiar
         new FamiliarCmd(event.getDispatcher());
+        new GroundEffectCmd(event.getDispatcher());
 
         // revive module
         new ReviveModuleCmd(event.getDispatcher());

@@ -33,4 +33,10 @@ public class ModDamageType {
                     Registries.DAMAGE_TYPE,
                     ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "frozen_shatter")
             );
+
+    public static final ResourceKey<DamageType> WATER =
+            ResourceKey.create(
+                    Registries.DAMAGE_TYPE,
+                    ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "water")
+            );
 }
