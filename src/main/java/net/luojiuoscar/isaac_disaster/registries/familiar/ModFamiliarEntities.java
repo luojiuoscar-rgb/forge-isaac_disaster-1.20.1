@@ -27,6 +27,26 @@ public final class ModFamiliarEntities {
             FAMILIAR_ENTITY_REGISTRY.register("blue_fly", () ->
                     new FamiliarEntityType(ModEntities.BLUE_FLY, 64, ModFamiliarLimitGroups.FLIES, 0, false));
 
+    public static final RegistryObject<FamiliarEntityType> LOCUST_OF_PESTILENCE =
+            FAMILIAR_ENTITY_REGISTRY.register("locust_of_pestilence", () ->
+                    new FamiliarEntityType(ModEntities.LOCUST_OF_PESTILENCE, 64, ModFamiliarLimitGroups.FLIES, 1, false));
+
+    public static final RegistryObject<FamiliarEntityType> LOCUST_OF_FAMINE =
+            FAMILIAR_ENTITY_REGISTRY.register("locust_of_famine", () ->
+                    new FamiliarEntityType(ModEntities.LOCUST_OF_FAMINE, 64, ModFamiliarLimitGroups.FLIES, 1, false));
+
+    public static final RegistryObject<FamiliarEntityType> LOCUST_OF_DEATH =
+            FAMILIAR_ENTITY_REGISTRY.register("locust_of_death", () ->
+                    new FamiliarEntityType(ModEntities.LOCUST_OF_DEATH, 64, ModFamiliarLimitGroups.FLIES, 1, false));
+
+    public static final RegistryObject<FamiliarEntityType> LOCUST_OF_CONQUEST =
+            FAMILIAR_ENTITY_REGISTRY.register("locust_of_conquest", () ->
+                    new FamiliarEntityType(ModEntities.LOCUST_OF_CONQUEST, 64, ModFamiliarLimitGroups.FLIES, 1, false));
+
+    public static final RegistryObject<FamiliarEntityType> LOCUST_OF_WAR =
+            FAMILIAR_ENTITY_REGISTRY.register("locust_of_war", () ->
+                    new FamiliarEntityType(ModEntities.LOCUST_OF_WAR, 64, ModFamiliarLimitGroups.FLIES, 1, false));
+
     public static final RegistryObject<FamiliarEntityType> BLUE_SPIDER =
             FAMILIAR_ENTITY_REGISTRY.register("blue_spider", () ->
                     new FamiliarEntityType(ModEntities.BLUE_SPIDER, 64, ModFamiliarLimitGroups.SPIDERS, 0, false));

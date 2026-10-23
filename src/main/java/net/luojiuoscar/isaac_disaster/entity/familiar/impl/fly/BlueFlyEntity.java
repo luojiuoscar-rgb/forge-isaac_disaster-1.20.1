@@ -20,7 +20,7 @@ public class BlueFlyEntity extends AbstractFlyFamiliarEntity {
 
     @Override
     protected float getContactDamage(ServerPlayer owner, LivingEntity target) {
-        return (float) owner.getAttributeValue(Attributes.ATTACK_DAMAGE);
+        return (float) (2.0 * owner.getAttributeValue(Attributes.ATTACK_DAMAGE));
     }
 
     @Override

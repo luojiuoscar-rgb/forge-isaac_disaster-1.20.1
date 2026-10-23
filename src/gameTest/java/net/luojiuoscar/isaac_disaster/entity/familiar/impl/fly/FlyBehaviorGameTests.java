@@ -217,7 +217,7 @@ public final class FlyBehaviorGameTests {
             fly.tickFamiliar();
             helper.assertTrue(fly.hooks == 1 && fly.hitTarget == victim && fly.accepted,
                     "A real contact delivers one accepted attempt to the subclass hook" + fixture.describe(fly));
-            near(helper, fly.attemptedDamage, 7, 0.00001, "Damage reads the owner's current attack at contact time");
+            near(helper, fly.attemptedDamage, 14, 0.00001, "Blue fly deals twice the owner's current attack at contact time");
             helper.assertTrue(victim.getHealth() < victim.getMaxHealth()
                             && victim.getLastDamageSource() != null
                             && victim.getLastDamageSource().is(ModDamageType.FAMILIAR)

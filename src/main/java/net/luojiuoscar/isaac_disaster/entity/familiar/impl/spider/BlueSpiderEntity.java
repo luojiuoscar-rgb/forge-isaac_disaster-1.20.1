@@ -13,6 +13,6 @@ public final class BlueSpiderEntity extends AbstractSpiderFamiliarEntity {
     @Override public int getBodyColor() { return 0x4077E0; }
 
     @Override protected float getContactDamage(ServerPlayer owner,LivingEntity target) {
-        return (float) owner.getAttributeValue(Attributes.ATTACK_DAMAGE);
+        return (float) (2.5 * owner.getAttributeValue(Attributes.ATTACK_DAMAGE));
     }
 }

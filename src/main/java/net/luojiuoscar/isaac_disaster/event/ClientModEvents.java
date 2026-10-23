@@ -59,6 +59,11 @@ public class ClientModEvents {
         event.registerEntityRenderer(ModEntities.SELECTIVE_EFFECT_CLOUD.get(), NoopRenderer::new);
         event.registerEntityRenderer(ModEntities.MOM_KNIFE.get(), MomKnifeRenderer::new);
         event.registerEntityRenderer(ModEntities.BLUE_FLY.get(), FlyRenderer::new);
+        event.registerEntityRenderer(ModEntities.LOCUST_OF_PESTILENCE.get(), FlyRenderer::new);
+        event.registerEntityRenderer(ModEntities.LOCUST_OF_FAMINE.get(), FlyRenderer::new);
+        event.registerEntityRenderer(ModEntities.LOCUST_OF_DEATH.get(), FlyRenderer::new);
+        event.registerEntityRenderer(ModEntities.LOCUST_OF_CONQUEST.get(), FlyRenderer::new);
+        event.registerEntityRenderer(ModEntities.LOCUST_OF_WAR.get(), FlyRenderer::new);
         event.registerEntityRenderer(ModEntities.BLUE_SPIDER.get(), SpiderRenderer::new);
 
         event.registerBlockEntityRenderer(ModBlockEntities.PEDESTAL_BLOCK_ENTITY.get(), PedestalRenderer::new);
