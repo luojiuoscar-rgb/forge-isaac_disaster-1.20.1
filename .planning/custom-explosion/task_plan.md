@@ -26,3 +26,9 @@ Current review follow-up:
 - [x] Make Death locust override getContactDamage for one 4D hit; update attribution, damage snapshot and canceled-contact coverage.
 - [x] Run focused JUnit/GameTests and verify branch, whitespace and tutorial-directory cleanliness (154 JUnit, 27/27 Forge GameTests).
 - Keep the additive client knockback packet and attributed Explosion carrier; explain their actual responsibilities with source pointers.
+
+Post-commit knockback fixes (112559e8):
+- [x] Reproduce pending mob knockback loss and spectator/creative-flight knockback with captured server packets.
+- [x] Synchronize any pending authoritative player velocity before adding explosion impulse; avoid clearing later unrelated updates.
+- [x] Exclude spectators and prevent creative-flight impulse/forced motion synchronization, preserving their existing unrelated motion updates.
+- [x] Verify additive-only behavior, consecutive explosions, tracker synchronization, focused JUnit/GameTests and review (154 JUnit, 31/31 Forge GameTests).

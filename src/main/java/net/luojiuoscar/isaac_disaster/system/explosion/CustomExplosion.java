@@ -7,6 +7,7 @@ import net.luojiuoscar.isaac_disaster.networking.packet.ExplosionKnockbackS2CPac
 import net.luojiuoscar.isaac_disaster.sound.ModSounds;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.network.protocol.game.ClientboundSetEntityMotionPacket;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
@@ -128,7 +129,7 @@ public final class CustomExplosion {
     }
 
     private static boolean eligible(Entity entity, DamageSource source, ExplosionParameters parameters) {
-        if (entity.isRemoved()) return false;
+        if (entity.isRemoved() || entity.isSpectator()) return false;
         Entity direct = source.getDirectEntity();
         if (entity == direct && !(direct instanceof LivingEntity)) return false;
         if (parameters.ignoreFriendly() && entity instanceof LivingEntity target
@@ -165,13 +166,23 @@ public final class CustomExplosion {
                         ? ProtectionEnchantment.getExplosionKnockbackAfterDampener(living, impact) : impact;
                 push = direction.scale(knockback);
             }
+            boolean pendingPlayerMotion = entity instanceof ServerPlayer && entity.hurtMarked;
+            Vec3 velocityBeforeDamage = entity.getDeltaMovement();
             if (damage > 0) entity.hurt(explosion.getDamageSource(), damage);
             if (push.lengthSqr() <= 0) continue;
-            entity.setDeltaMovement(entity.getDeltaMovement().add(push));
-            entity.hurtMarked = true;
-            if (entity instanceof ServerPlayer player && !player.isSpectator()
-                    && (!player.isCreative() || !player.getAbilities().flying)) {
+            if (entity instanceof ServerPlayer player) {
+                if (player.isSpectator() || (player.isCreative() && player.getAbilities().flying)) continue;
+                // Finish any prior knockback (or a hurt callback's velocity change) before the impulse.
+                // A successful explosion hurt also marks motion without changing the baseline velocity.
+                if (pendingPlayerMotion || !velocityBeforeDamage.equals(player.getDeltaMovement())) {
+                    player.serverLevel().getChunkSource().broadcastAndSend(player, new ClientboundSetEntityMotionPacket(player));
+                }
+                player.hurtMarked = false;
+                player.setDeltaMovement(player.getDeltaMovement().add(push));
                 explosion.getHitPlayers().put(player, push);
+            } else {
+                entity.setDeltaMovement(entity.getDeltaMovement().add(push));
+                entity.hurtMarked = true;
             }
         }
     }
@@ -205,7 +216,6 @@ public final class CustomExplosion {
             if (player instanceof ServerPlayer serverPlayer) {
                 // The client owns its current movement; only add the explosion's impulse.
                 ModMessages.sentToPlayer(new ExplosionKnockbackS2CPacket(explosion.getHitPlayers().get(player)), serverPlayer);
-                serverPlayer.hurtMarked = false;
             }
         }
     }
