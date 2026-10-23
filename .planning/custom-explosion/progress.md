@@ -37,3 +37,9 @@ Follow-up correction: removed the overlooked docs/design/custom-explosions.md fr
 Verified mapped Forge 1.20.1 LivingEntity.hurt and DamageTypeTagsProvider: vanilla explosion does not have BYPASSES_COOLDOWN in this workspace. User explicitly chose vanilla explosion rules after clarification. Removed the dedicated War damage key, factory and JSON/tag additions; War now calls level.damageSources().explosion(this, owner). Tests now verify the vanilla PLAYER_EXPLOSION source, attribution, and actual health for both stronger and weaker explosions following contact.
 
 Follow-up verification passed under Microsoft Java17.0.11: 154 JUnit tests (zero failures/errors/skips), 27/27 Forge GameTests across locust, explosion and migration namespaces, BUILD SUCCESSFUL (build/custom-explosion-vanilla-correction.log). Stronger explosion supplements only the prior hit difference; weaker explosion adds no health damage during cooldown. No source references to the removed dedicated damage type remain. Damage registry/factory/cooldown tag files now match HEAD. Tutorial-directory working-tree and index diffs are empty; only docs/datapacks.md and docs/documentation.md remain. Whitespace check passed and branch remains feature/feature-b at f8c6458c, with no commits.
+
+2026-10-23用户补充：战争蝗虫爆炸应伤害主人和友方，采用standard预设默认ignoreFriendly=false，移除War专用true覆盖。既有友方免伤GameTest已改为友方受伤及击退断言；旧逻辑14项GameTest中这一项按预期失败（build/war-locust-friendly-fire-red.log）。原FakePlayer永久免伤且不在世界查询中，最终此测试改用实际ServerPlayer注册到世界以验证主人真实生命值减少，其他测试仍沿用原FakePlayer。正在执行最终验证；未改其他爆炸调用和友方规则。
+
+友伤验证首轮：友方狼伤害和击退已通过，主人断言失败。核对本地ServerPlayer.hurt及GameTestServer源码发现测试服务器默认pvp=false，玩家归属爆炸被原版canHarmPlayer拒绝；测试现在仅在真实玩家夹具生存期临时启用PvP并恢复原值，队伍显式允许友伤。生产逻辑不绕过PvP、队伍或爆炸免疫规则。重新执行同一14项蝗虫GameTest。
+
+友伤最终验证：14/14蝗虫GameTest全部通过，包括实际ServerPlayer主人及驯服同队狼生命值减少和击退；BUILD SUCCESSFUL in 1m 50s，日志build/war-locust-friendly-fire-verified.log。diff --check通过，通用爆炸模块和docs无差异，feature/feature-b仍为a7780f02，未提交。本次未另跑JUnit或客户端实测。

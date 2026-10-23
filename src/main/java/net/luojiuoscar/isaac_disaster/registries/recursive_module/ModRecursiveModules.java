@@ -2,6 +2,7 @@ package net.luojiuoscar.isaac_disaster.registries.recursive_module;
 
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.registries.recursive_module.impl.*;
+import net.luojiuoscar.isaac_disaster.registries.familiar.ModFamiliarEntities;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -67,4 +68,20 @@ public class ModRecursiveModules {
 
     public static final RegistryObject<RecursiveModule> ADRENALINE =
             RECURSIVE_MODULE_REGISTRY.register("adrenaline", Adrenaline::new);
+
+    public static final RegistryObject<RecursiveModule> LOCUST_OF_WAR =
+            RECURSIVE_MODULE_REGISTRY.register("locust_of_war", () ->
+                    new LocustGeneration(ModFamiliarEntities.LOCUST_OF_WAR.getId()));
+    public static final RegistryObject<RecursiveModule> LOCUST_OF_PESTILENCE =
+            RECURSIVE_MODULE_REGISTRY.register("locust_of_pestilence", () ->
+                    new LocustGeneration(ModFamiliarEntities.LOCUST_OF_PESTILENCE.getId()));
+    public static final RegistryObject<RecursiveModule> LOCUST_OF_FAMINE =
+            RECURSIVE_MODULE_REGISTRY.register("locust_of_famine", () ->
+                    new LocustGeneration(ModFamiliarEntities.LOCUST_OF_FAMINE.getId()));
+    public static final RegistryObject<RecursiveModule> LOCUST_OF_DEATH =
+            RECURSIVE_MODULE_REGISTRY.register("locust_of_death", () ->
+                    new LocustGeneration(ModFamiliarEntities.LOCUST_OF_DEATH.getId()));
+    public static final RegistryObject<RecursiveModule> LOCUST_OF_CONQUEST =
+            RECURSIVE_MODULE_REGISTRY.register("locust_of_conquest", () ->
+                    new ConquestLocustGeneration(ModFamiliarEntities.LOCUST_OF_CONQUEST.getId()));
 }

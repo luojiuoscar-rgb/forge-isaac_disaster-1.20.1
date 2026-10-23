@@ -9,7 +9,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 
-/** Red locust: ordinary fly contact followed by one friendly-filtered explosion. */
+/** Red locust: ordinary fly contact followed by one explosion. */
 public final class LocustOfWarEntity extends BlueFlyEntity {
     public LocustOfWarEntity(EntityType<? extends LocustOfWarEntity> type, Level level) {
         super(type, level);
@@ -26,6 +26,6 @@ public final class LocustOfWarEntity extends BlueFlyEntity {
         float centerDamage = (float) (20 * StatManager.DAMAGE.getBonus());
         LevelHelper.explodeCustom(owner.serverLevel(), hitPosition,
                 level().damageSources().explosion(this, owner),
-                ExplosionParameters.standard(4, centerDamage).withIgnoreFriendly(true));
+                ExplosionParameters.standard(4, centerDamage));
     }
 }

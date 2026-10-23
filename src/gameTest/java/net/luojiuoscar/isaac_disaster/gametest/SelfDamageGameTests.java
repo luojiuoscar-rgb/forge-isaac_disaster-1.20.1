@@ -127,7 +127,7 @@ public final class SelfDamageGameTests {
         try {
             victim.setGameMode(GameType.CREATIVE);
             var context = new ExecutableEffectContext(victim);
-            context.set(ContextKeys.LOOT_COUNT, 0);
+            context.set(ContextKeys.COUNT, 0);
             float damage = (float) (StatManager.MAX_HEALTH.getBonus() * 0.5);
             for (float health : new float[]{100, damage * 0.5f}) {
                 victim.invulnerableTime = 20;
@@ -191,7 +191,7 @@ public final class SelfDamageGameTests {
         var victim = player(helper);
         try {
             var context = new ExecutableEffectContext(victim);
-            context.set(ContextKeys.LOOT_COUNT, 0);
+            context.set(ContextKeys.COUNT, 0);
             float damage = (float) (StatManager.MAX_HEALTH.getBonus() * 0.5);
             victim.invulnerableTime = 20;
             new IvBag().applyEffect(context);

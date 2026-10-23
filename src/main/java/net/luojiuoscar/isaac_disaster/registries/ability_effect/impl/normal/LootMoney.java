@@ -11,7 +11,7 @@ public class LootMoney implements IAbilityEffect {
     @Override
     public boolean applyEffect(ExecutableEffectContext context) {
         if (context.getEntity() instanceof Player player){
-            int lootCount = Math.max(0, context.getOrDefault(ContextKeys.LOOT_COUNT, 1));
+            int lootCount = Math.max(0, context.getOrDefault(ContextKeys.COUNT, 1));
             LootHelper.spawnLootAtPos(player, player.position(), ModLootTables.RANDOM_COINS, lootCount);
             return true;
         }

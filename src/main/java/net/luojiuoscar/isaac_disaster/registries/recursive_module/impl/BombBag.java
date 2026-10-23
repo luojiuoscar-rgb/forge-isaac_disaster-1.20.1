@@ -22,11 +22,11 @@ public class BombBag extends RecursiveModule {
 
     @Override
     public int getInitialTick() {
-        return StatManager.getTimeInterval(4);
+        return StatManager.getTimeInterval(6);
     }
 
     @Override
     public int getTickInterval(LivingEntity entity, int stacks, RecursiveModuleQueue queue) {
-        return StatManager.getTimeInterval(entity.getRandom().nextInt(4,6));
+        return StatManager.getTimeInterval(6, 8, entity.getRandom());
     }
 }

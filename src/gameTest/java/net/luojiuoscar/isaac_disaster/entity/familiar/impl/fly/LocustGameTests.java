@@ -14,6 +14,9 @@ import net.luojiuoscar.isaac_disaster.helper.FamiliarHelper;
 import net.luojiuoscar.isaac_disaster.manager.ModDamageType;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.Connection;
+import net.minecraft.network.protocol.PacketFlow;
+import net.minecraft.server.network.ServerGamePacketListenerImpl;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.resources.ResourceLocation;
@@ -23,6 +26,7 @@ import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.monster.Zombie;
 import net.minecraft.world.entity.animal.Wolf;
@@ -131,8 +135,17 @@ public final class LocustGameTests {
     }
 
     @GameTest(template = "trajectory_empty", batch = "locust_contact")
-    public static void warExplodesAtContactSnapshotAfterLethalHitAndFiltersFriends(GameTestHelper helper) {
-        try (Fixture fixture = new Fixture(helper, "locust_of_war")) {
+    public static void warExplodesAtContactSnapshotAfterLethalHitAndHurtsFriends(GameTestHelper helper) {
+        try (Fixture fixture = new Fixture(helper, "locust_of_war", true)) {
+            fixture.owner.getAttribute(Attributes.MAX_HEALTH).setBaseValue(100);
+            fixture.owner.setHealth(100);
+            try {
+                var spawnProtection = ServerPlayer.class.getDeclaredField("spawnInvulnerableTime");
+                spawnProtection.setAccessible(true);
+                spawnProtection.setInt(fixture.owner, 0);
+            } catch (ReflectiveOperationException failure) {
+                throw new AssertionError(failure);
+            }
             Vec3 center = fixture.target.getBoundingBox().getCenter();
             Zombie bystander = fixture.spawnTarget(fixture.target.position().add(6, 0, 0));
             Zombie outside = fixture.spawnTarget(fixture.target.position().add(8.5, 0, 0));
@@ -143,9 +156,10 @@ public final class LocustGameTests {
             friend.setNoGravity(true);
             friend.setPos(fixture.target.position().add(1, 0, 0));
             helper.assertTrue(helper.getLevel().addFreshEntity(friend), "Owned wolf is present");
-            // FakePlayerFactory owners are not in ServerLevel.players(), so also use a real team.
+            // Verify allied entities as well as the owner's own explosion damage.
             var scoreboard = helper.getLevel().getScoreboard();
             var team = scoreboard.addPlayerTeam("war-" + NEXT_FIXTURE.get());
+            team.setAllowFriendlyFire(true);
             scoreboard.addPlayerToTeam(fixture.owner.getScoreboardName(), team);
             scoreboard.addPlayerToTeam(friend.getScoreboardName(), team);
             float friendHealth = friend.getHealth();
@@ -171,10 +185,12 @@ public final class LocustGameTests {
                         "Explosion uses the captured collision point even when hurt moves and kills the target");
                 helper.assertTrue(bystander.getHealth() < 100 && outside.getHealth() == 100,
                         "Power four damages an exposed hostile six blocks away, with actual radius eight");
-                helper.assertTrue(friend.getHealth() == friendHealth && friend.getDeltaMovement().equals(friendMotion)
-                                && fixture.owner.getHealth() == ownerHealth
-                                && fixture.owner.getDeltaMovement().equals(ownerMotion),
-                        "Owner and owned friend receive neither explosion damage nor knockback");
+                helper.assertTrue(friend.getHealth() < friendHealth && !friend.getDeltaMovement().equals(friendMotion),
+                        "An owned allied wolf receives explosion damage and knockback");
+                helper.assertTrue(fixture.owner.getHealth() < ownerHealth,
+                        "The War locust owner receives explosion damage: " + ownerHealth + " -> " + fixture.owner.getHealth());
+                helper.assertTrue(!fixture.owner.getDeltaMovement().equals(ownerMotion),
+                        "The War locust owner receives explosion knockback too");
                 fixture.assertConsumed();
             } finally {
                 MinecraftForge.EVENT_BUS.unregister(listener);
@@ -368,18 +384,34 @@ public final class LocustGameTests {
         private final ResourceLocation type;
         private final AbstractIsaacFamiliarEntity familiar;
         private final Zombie target;
+        private final boolean registeredOwner;
+        private final boolean originalPvp;
         private Consumer<LivingAttackEvent> listener;
 
         private Fixture(GameTestHelper helper, String name) {
+            this(helper, name, false);
+        }
+
+        private Fixture(GameTestHelper helper, String name, boolean registeredOwner) {
             this.helper = helper;
+            this.registeredOwner = registeredOwner;
             var level = helper.getLevel();
-            owner = FakePlayerFactory.get(level, new GameProfile(UUID.randomUUID(), "locust-test"));
+            originalPvp = level.getServer().isPvpAllowed();
+            GameProfile profile = new GameProfile(UUID.randomUUID(), "locust-test");
+            if (registeredOwner) {
+                level.getServer().setPvpAllowed(true);
+                owner = new ServerPlayer(level.getServer(), level, profile);
+                new ServerGamePacketListenerImpl(level.getServer(), new Connection(PacketFlow.SERVERBOUND), owner);
+            } else {
+                owner = FakePlayerFactory.get(level, profile);
+            }
             BlockPos anchor = helper.absolutePos(BlockPos.ZERO);
             owner.setPos(anchor.getX() + 4, 220 + NEXT_FIXTURE.getAndIncrement() * 12, anchor.getZ() + 4);
             owner.setGameMode(GameType.SURVIVAL);
             owner.setInvulnerable(false);
             owner.getAbilities().invulnerable = false;
             owner.getAttribute(Attributes.ATTACK_DAMAGE).setBaseValue(DAMAGE);
+            if (registeredOwner) level.addNewPlayer(owner);
             data = owner.getCapability(PlayerFamiliarDataProvider.PLAYER_FAMILIAR_DATA).resolve().orElseThrow();
             type = ResourceLocation.fromNamespaceAndPath("isaac_disaster", name);
             helper.assertTrue(FamiliarHelper.isRegisteredFamiliarType(type), "Registered familiar descriptor: " + type);
@@ -452,7 +484,10 @@ public final class LocustGameTests {
             FamiliarHelper.discardAllRuntimeFamiliars(owner);
             data.clearRequirements();
             data.pruneEmptyEntries();
-            owner.discard();
+            if (registeredOwner) {
+                helper.getLevel().removePlayerImmediately(owner, Entity.RemovalReason.DISCARDED);
+                helper.getLevel().getServer().setPvpAllowed(originalPvp);
+            } else owner.discard();
         }
     }
 }

@@ -3,6 +3,7 @@ package net.luojiuoscar.isaac_disaster.registries.ability.trinket;
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.manager.id.TrinketId;
 import net.luojiuoscar.isaac_disaster.registries.ability.trinket.impl.*;
+import net.luojiuoscar.isaac_disaster.registries.recursive_module.ModRecursiveModules;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -175,6 +176,22 @@ public class ModTrinketAbilities {
     public static final RegistryObject<TrinketAbility> SAFETY_SCISSORS =
             TRINKET_ABILITY_REGISTRY.register("safety_scissors",
                     () -> new SafetyScissors(TrinketId.SAFETY_SCISSORS.getId(), TrinketId.SAFETY_SCISSORS.getLevel()));
+
+    public static final RegistryObject<TrinketAbility> LOCUST_OF_WAR =
+            TRINKET_ABILITY_REGISTRY.register("locust_of_war", () -> new LocustTrinket(
+                    TrinketId.LOCUST_OF_WAR.getId(), TrinketId.LOCUST_OF_WAR.getLevel(), ModRecursiveModules.LOCUST_OF_WAR));
+    public static final RegistryObject<TrinketAbility> LOCUST_OF_PESTILENCE =
+            TRINKET_ABILITY_REGISTRY.register("locust_of_pestilence", () -> new LocustTrinket(
+                    TrinketId.LOCUST_OF_PESTILENCE.getId(), TrinketId.LOCUST_OF_PESTILENCE.getLevel(), ModRecursiveModules.LOCUST_OF_PESTILENCE));
+    public static final RegistryObject<TrinketAbility> LOCUST_OF_FAMINE =
+            TRINKET_ABILITY_REGISTRY.register("locust_of_famine", () -> new LocustTrinket(
+                    TrinketId.LOCUST_OF_FAMINE.getId(), TrinketId.LOCUST_OF_FAMINE.getLevel(), ModRecursiveModules.LOCUST_OF_FAMINE));
+    public static final RegistryObject<TrinketAbility> LOCUST_OF_DEATH =
+            TRINKET_ABILITY_REGISTRY.register("locust_of_death", () -> new LocustTrinket(
+                    TrinketId.LOCUST_OF_DEATH.getId(), TrinketId.LOCUST_OF_DEATH.getLevel(), ModRecursiveModules.LOCUST_OF_DEATH));
+    public static final RegistryObject<TrinketAbility> LOCUST_OF_CONQUEST =
+            TRINKET_ABILITY_REGISTRY.register("locust_of_conquest", () -> new LocustOfConquest(
+                    TrinketId.LOCUST_OF_CONQUEST.getId(), TrinketId.LOCUST_OF_CONQUEST.getLevel()));
 
 
 

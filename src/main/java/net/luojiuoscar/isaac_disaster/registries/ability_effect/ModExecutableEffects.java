@@ -102,6 +102,9 @@ public class ModExecutableEffects {
             EXECUTABLE_EFFECT_REGISTRY.register("tammys_head", TammysHead::new);
     public static final RegistryObject<IExecutableEffect> SWALLOW_TRINKETS =
             EXECUTABLE_EFFECT_REGISTRY.register("swallow_trinkets", SwallowTrinkets::new);
+    public static final RegistryObject<IExecutableEffect> ADD_FAMILIARS =
+            EXECUTABLE_EFFECT_REGISTRY.register("add_familiars", AddFamiliars::new);
+
     public static final RegistryObject<IExecutableEffect> GIVE_ITEM =
             EXECUTABLE_EFFECT_REGISTRY.register("give_item", GiveItem::new);
     public static final RegistryObject<IExecutableEffect> USE_PILL =
@@ -641,7 +644,7 @@ public class ModExecutableEffects {
             EXECUTABLE_EFFECT_REGISTRY.register("queen_of_heart", () -> new AbilityEffectEntry(
                     GIVE_ITEM_VIA_LOOT, ctx -> {
                 ctx.set(ContextKeys.ITEM, ModItems.RED_HEART.get());
-                ctx.set(ContextKeys.LOOT_COUNT, ctx.getEntity().getRandom().nextInt(1, 21));
+                ctx.set(ContextKeys.COUNT, ctx.getEntity().getRandom().nextInt(1, 21));
             }));
     public static final RegistryObject<IExecutableEffect> REVERSE_TAROTS_BACK =
             EXECUTABLE_EFFECT_REGISTRY.register("reverse_tarots_back", () -> new AbilityEffectEntry(
@@ -730,7 +733,7 @@ public class ModExecutableEffects {
                 double a = amplifier + 1.;
                 double b = amplifier + 2.;
 
-                ctx.set(ContextKeys.LOOT_COUNT, ctx.getEntity().getRandom().nextInt((int) a, (int) b));
+                ctx.set(ContextKeys.COUNT, ctx.getEntity().getRandom().nextInt((int) a, (int) b));
             }));
     public static final RegistryObject<IExecutableEffect> THE_HIEROPHANT_R =
             EXECUTABLE_EFFECT_REGISTRY.register("the_hierophant_r", () -> new AbilityEffectEntry(
@@ -740,7 +743,7 @@ public class ModExecutableEffects {
                 double a = amplifier + 1.;
                 double b = amplifier + 2.;
 
-                ctx.set(ContextKeys.LOOT_COUNT, ctx.getEntity().getRandom().nextInt((int) a, (int) b));
+                ctx.set(ContextKeys.COUNT, ctx.getEntity().getRandom().nextInt((int) a, (int) b));
             }));
     public static final RegistryObject<IExecutableEffect> THE_LOVERS =
             EXECUTABLE_EFFECT_REGISTRY.register("the_lovers", () -> new AbilityEffectEntry(
@@ -750,7 +753,7 @@ public class ModExecutableEffects {
                 double a = amplifier + 1.;
                 double b = amplifier + 2.;
 
-                ctx.set(ContextKeys.LOOT_COUNT, ctx.getEntity().getRandom().nextInt((int) a, (int) b));
+                ctx.set(ContextKeys.COUNT, ctx.getEntity().getRandom().nextInt((int) a, (int) b));
             }));
     public static final RegistryObject<IExecutableEffect> THE_MAGICIAN =
             EXECUTABLE_EFFECT_REGISTRY.register("the_magician", () -> new AbilityEffectEntry(
@@ -898,7 +901,7 @@ public class ModExecutableEffects {
                         }
 
                         double amplifier = ctx.getOrDefault(ContextKeys.AMPLIFIER, 1.);
-                        ctx.set(ContextKeys.LOOT_COUNT, ctx.getEntity().getRandom().nextInt((int) amplifier, (int) amplifier + 1));
+                        ctx.set(ContextKeys.COUNT, ctx.getEntity().getRandom().nextInt((int) amplifier, (int) amplifier + 1));
                     })
             );
     public static final RegistryObject<IExecutableEffect> STEAM_SALE =
@@ -1001,21 +1004,21 @@ public class ModExecutableEffects {
             EXECUTABLE_EFFECT_REGISTRY.register("deck_of_cards", () -> new AbilityEffectEntry(
                     GENERATE_LOOT, ctx -> {
                 ctx.set(ContextKeys.RESOURCE_LOCATIONS, List.of(ModLootTables.RANDOM_CARDS));
-                ctx.set(ContextKeys.LOOT_COUNT, ctx.getOrDefault(ContextKeys.AMPLIFIER, 1.).intValue());
+                ctx.set(ContextKeys.COUNT, ctx.getOrDefault(ContextKeys.AMPLIFIER, 1.).intValue());
             }));
 
     public static final RegistryObject<IExecutableEffect> THE_BOOK_OF_SIN =
             EXECUTABLE_EFFECT_REGISTRY.register("the_book_of_sin", () -> new AbilityEffectEntry(
                     GENERATE_LOOT, ctx -> {
                 ctx.set(ContextKeys.RESOURCE_LOCATIONS, List.of(ModLootTables.BOOK_OF_SIN_PICKUPS));
-                ctx.set(ContextKeys.LOOT_COUNT, ctx.getOrDefault(ContextKeys.AMPLIFIER, 1.).intValue());
+                ctx.set(ContextKeys.COUNT, ctx.getOrDefault(ContextKeys.AMPLIFIER, 1.).intValue());
             }));
 
     public static final RegistryObject<IExecutableEffect> MOMS_BOTTLE_OF_PILLS =
             EXECUTABLE_EFFECT_REGISTRY.register("moms_bottle_of_pills", () -> new AbilityEffectEntry(
                     GENERATE_LOOT, ctx -> {
                 ctx.set(ContextKeys.RESOURCE_LOCATIONS, List.of(ModLootTables.RANDOM_PILLS));
-                ctx.set(ContextKeys.LOOT_COUNT, ctx.getOrDefault(ContextKeys.AMPLIFIER, 1.).intValue());
+                ctx.set(ContextKeys.COUNT, ctx.getOrDefault(ContextKeys.AMPLIFIER, 1.).intValue());
             }));
 
     public static final RegistryObject<IExecutableEffect> MAGIC_FINGERS =

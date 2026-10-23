@@ -41,7 +41,12 @@ public enum TrinketId {
     CALLUS(1),
     BLACK_LIPSTICK(0),
     BIBLE_TRACT(0),
-    SAFETY_SCISSORS(3);
+    SAFETY_SCISSORS(3),
+    LOCUST_OF_WAR(1),
+    LOCUST_OF_PESTILENCE(1),
+    LOCUST_OF_FAMINE(1),
+    LOCUST_OF_DEATH(1),
+    LOCUST_OF_CONQUEST(1);
 
 
     private final int id;

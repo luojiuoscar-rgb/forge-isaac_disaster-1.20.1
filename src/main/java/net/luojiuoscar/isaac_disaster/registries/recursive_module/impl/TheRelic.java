@@ -27,6 +27,6 @@ public class TheRelic extends RecursiveModule {
 
     @Override
     public int getTickInterval(LivingEntity entity, int stacks, RecursiveModuleQueue queue) {
-        return StatManager.getTimeInterval(entity.getRandom().nextInt(12,19));
+        return StatManager.getTimeInterval(12, 18, entity.getRandom());
     }
 }

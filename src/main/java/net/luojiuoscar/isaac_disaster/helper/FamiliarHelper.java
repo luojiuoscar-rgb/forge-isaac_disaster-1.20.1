@@ -209,8 +209,8 @@ public final class FamiliarHelper {
                         familiar.discardSilently();
                     }
                 }
-                entry.clearEntityIds();
             }
+            data.clearRuntimeEntities();
         });
     }
 

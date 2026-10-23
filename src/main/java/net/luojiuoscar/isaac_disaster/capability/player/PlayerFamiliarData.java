@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import java.util.function.Function;
 
@@ -28,6 +29,7 @@ public class PlayerFamiliarData {
     private final Map<FamiliarLimitGroup, FamiliarLimitGroupInstance> groups = new IdentityHashMap<>();
     private final Function<ResourceLocation, FamiliarEntityType> typeResolver;
     private final LinkedHashSet<UUID> pendingRecalls = new LinkedHashSet<>();
+    private final Set<UUID> registeredEntityIds = new LinkedHashSet<>();
     private int nextSpawnIndex;
     private long lastAdmissionTick = Long.MIN_VALUE;
 
@@ -90,17 +92,18 @@ public class PlayerFamiliarData {
     /** Links an entity to an already granted slot; unlinking never releases that allocation. */
     public void registerEntity(ResourceLocation type, UUID entityId) {
         FamiliarEntry entry = getOrCreateEntry(type);
-        if (entry.containsEntity(entityId)) return;
+        if (entityId == null || entry.containsEntity(entityId)) return;
         if (entry.getEntityCount() >= getEffectiveCount(type))
             throw new IllegalStateException("No allocated familiar slot for " + type);
         entry.addEntity(entityId);
+        registeredEntityIds.add(entityId);
     }
 
     public void removeEntity(ResourceLocation type, UUID entityId) {
         pendingRecalls.remove(entityId);
         FamiliarEntry entry = familiars.get(type);
         if (entry == null) return;
-        entry.removeEntity(entityId);
+        if (entry.removeEntity(entityId)) registeredEntityIds.remove(entityId);
         if (entry.getCount() == 0 && entry.hasNoEntities()) familiars.remove(type);
     }
 
@@ -110,6 +113,18 @@ public class PlayerFamiliarData {
     }
 
     public Collection<FamiliarEntry> getEntries() { return Collections.unmodifiableCollection(familiars.values()); }
+
+    /** Unmodifiable runtime roster in registration order across all familiar types. */
+    public Collection<UUID> getEntityIdsInAdmissionOrder() {
+        return Collections.unmodifiableSet(registeredEntityIds);
+    }
+
+    /** Unlinks all runtime entities after disposal, without changing granted counts. */
+    public void clearRuntimeEntities() {
+        for (FamiliarEntry entry : familiars.values()) entry.clearEntityIds();
+        registeredEntityIds.clear();
+        pendingRecalls.clear();
+    }
 
     /** Round-robin entity restoration; quota was already assigned when requirements changed. */
     public Optional<FamiliarEntry> getNextIncompleteEntry() {
@@ -184,6 +199,7 @@ public class PlayerFamiliarData {
 
     private void rebuildRuntimeState() {
         pendingRecalls.clear();
+        registeredEntityIds.clear();
         lastAdmissionTick = Long.MIN_VALUE;
         nextSpawnIndex = 0;
         for (FamiliarLimitGroupInstance group : groups.values()) group.clear();

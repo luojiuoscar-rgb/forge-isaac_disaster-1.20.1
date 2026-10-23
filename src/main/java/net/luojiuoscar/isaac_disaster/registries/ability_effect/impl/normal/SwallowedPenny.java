@@ -14,7 +14,7 @@ public class SwallowedPenny implements IAbilityEffect {
         int amplifier = context.getOrDefault(ContextKeys.AMPLIFIER, 1.).intValue();
         if (entity.getRandom().nextDouble() < Math.min(0.7, 0.35 * amplifier)){
             LootHelper.spawnLootAtPos(entity, context.getOrDefault(ContextKeys.TARGET_POSITION, entity.position()),
-                    ModLootTables.RANDOM_COINS, Math.max(0, context.getOrDefault(ContextKeys.LOOT_COUNT, 1)));
+                    ModLootTables.RANDOM_COINS, Math.max(0, context.getOrDefault(ContextKeys.COUNT, 1)));
         }
 
         return true;

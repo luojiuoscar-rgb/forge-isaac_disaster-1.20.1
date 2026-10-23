@@ -46,13 +46,11 @@ final class FlyOwnerFrame {
         flies.clear();
         slots.clear();
         owner.getCapability(PlayerFamiliarDataProvider.PLAYER_FAMILIAR_DATA).ifPresent(data -> {
-            for (var entry : data.getEntries()) {
-                for (UUID id : entry.getEntityIds()) {
-                    if (owner.serverLevel().getEntity(id) instanceof AbstractFlyFamiliarEntity fly
-                            && !fly.isRemoved() && fly.getOwner() == owner) {
-                        slots.put(id, flies.size());
-                        flies.add(fly);
-                    }
+            for (UUID id : data.getEntityIdsInAdmissionOrder()) {
+                if (owner.serverLevel().getEntity(id) instanceof AbstractFlyFamiliarEntity fly
+                        && !fly.isRemoved() && fly.getOwner() == owner) {
+                    slots.put(id, flies.size());
+                    flies.add(fly);
                 }
             }
         });

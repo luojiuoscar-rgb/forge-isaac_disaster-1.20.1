@@ -20,7 +20,7 @@ public class GiveItemViaLoot implements IAbilityEffect {
         Item item = context.get(ContextKeys.ITEM);
         if (item == null) return false;
 
-        int lootCount = Math.max(0, context.getOrDefault(ContextKeys.LOOT_COUNT, 1));
+        int lootCount = Math.max(0, context.getOrDefault(ContextKeys.COUNT, 1));
         LootHelper.spawnItemViaLoot(entity, pos, item, lootCount);
         return true;
     }
