@@ -2,9 +2,17 @@ package net.luojiuoscar.isaac_disaster.registries.familiar;
 
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.entity.ModEntities;
+import net.luojiuoscar.isaac_disaster.entity.familiar.impl.fly.BlueFlyEntity;
+import net.luojiuoscar.isaac_disaster.entity.familiar.impl.fly.LocustOfConquestEntity;
+import net.luojiuoscar.isaac_disaster.entity.familiar.impl.fly.LocustOfDeathEntity;
+import net.luojiuoscar.isaac_disaster.entity.familiar.impl.fly.LocustOfFamineEntity;
+import net.luojiuoscar.isaac_disaster.entity.familiar.impl.fly.LocustOfPestilenceEntity;
+import net.luojiuoscar.isaac_disaster.entity.familiar.impl.fly.LocustOfWarEntity;
+import net.luojiuoscar.isaac_disaster.entity.familiar.impl.spider.BlueSpiderEntity;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.RandomSource;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.RegistryObject;
 
@@ -25,31 +33,36 @@ public final class ModFamiliarEntities {
 
     public static final RegistryObject<FamiliarEntityType> BLUE_FLY =
             FAMILIAR_ENTITY_REGISTRY.register("blue_fly", () ->
-                    new FamiliarEntityType(ModEntities.BLUE_FLY, 64, ModFamiliarLimitGroups.FLIES, 0, false));
+                    new FamiliarEntityType(ModEntities.BLUE_FLY, BlueFlyEntity.class, 64, ModFamiliarLimitGroups.FLIES, 0, false));
 
     public static final RegistryObject<FamiliarEntityType> LOCUST_OF_PESTILENCE =
             FAMILIAR_ENTITY_REGISTRY.register("locust_of_pestilence", () ->
-                    new FamiliarEntityType(ModEntities.LOCUST_OF_PESTILENCE, 64, ModFamiliarLimitGroups.FLIES, 1, false));
+                    new FamiliarEntityType(ModEntities.LOCUST_OF_PESTILENCE, LocustOfPestilenceEntity.class, 64, ModFamiliarLimitGroups.FLIES, 1, false));
 
     public static final RegistryObject<FamiliarEntityType> LOCUST_OF_FAMINE =
             FAMILIAR_ENTITY_REGISTRY.register("locust_of_famine", () ->
-                    new FamiliarEntityType(ModEntities.LOCUST_OF_FAMINE, 64, ModFamiliarLimitGroups.FLIES, 1, false));
+                    new FamiliarEntityType(ModEntities.LOCUST_OF_FAMINE, LocustOfFamineEntity.class, 64, ModFamiliarLimitGroups.FLIES, 1, false));
 
     public static final RegistryObject<FamiliarEntityType> LOCUST_OF_DEATH =
             FAMILIAR_ENTITY_REGISTRY.register("locust_of_death", () ->
-                    new FamiliarEntityType(ModEntities.LOCUST_OF_DEATH, 64, ModFamiliarLimitGroups.FLIES, 1, false));
+                    new FamiliarEntityType(ModEntities.LOCUST_OF_DEATH, LocustOfDeathEntity.class, 64, ModFamiliarLimitGroups.FLIES, 1, false));
 
     public static final RegistryObject<FamiliarEntityType> LOCUST_OF_CONQUEST =
             FAMILIAR_ENTITY_REGISTRY.register("locust_of_conquest", () ->
-                    new FamiliarEntityType(ModEntities.LOCUST_OF_CONQUEST, 64, ModFamiliarLimitGroups.FLIES, 1, false));
+                    new FamiliarEntityType(ModEntities.LOCUST_OF_CONQUEST, LocustOfConquestEntity.class, 64, ModFamiliarLimitGroups.FLIES, 1, false) {
+                        @Override
+                        protected int getAdditionCount(RandomSource random) {
+                            return random.nextInt(4) + 1;
+                        }
+                    });
 
     public static final RegistryObject<FamiliarEntityType> LOCUST_OF_WAR =
             FAMILIAR_ENTITY_REGISTRY.register("locust_of_war", () ->
-                    new FamiliarEntityType(ModEntities.LOCUST_OF_WAR, 64, ModFamiliarLimitGroups.FLIES, 1, false));
+                    new FamiliarEntityType(ModEntities.LOCUST_OF_WAR, LocustOfWarEntity.class, 64, ModFamiliarLimitGroups.FLIES, 1, false));
 
     public static final RegistryObject<FamiliarEntityType> BLUE_SPIDER =
             FAMILIAR_ENTITY_REGISTRY.register("blue_spider", () ->
-                    new FamiliarEntityType(ModEntities.BLUE_SPIDER, 64, ModFamiliarLimitGroups.SPIDERS, 0, false));
+                    new FamiliarEntityType(ModEntities.BLUE_SPIDER, BlueSpiderEntity.class, 64, ModFamiliarLimitGroups.SPIDERS, 0, false));
 
     private ModFamiliarEntities() {
     }

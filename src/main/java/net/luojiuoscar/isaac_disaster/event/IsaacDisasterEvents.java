@@ -19,6 +19,7 @@ import net.luojiuoscar.isaac_disaster.registries.ability.passive.impl.BingeEater
 import net.luojiuoscar.isaac_disaster.registries.ability.passive.impl.EchoChamber;
 import net.luojiuoscar.isaac_disaster.registries.ability.passive.impl.GlitchedCrown;
 import net.luojiuoscar.isaac_disaster.registries.ability.set.ModSetAbilities;
+import net.luojiuoscar.isaac_disaster.registries.ability.trinket.impl.BrokenRemote;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -68,9 +69,9 @@ public class IsaacDisasterEvents {
                             trinket.getTrinketId() == TrinketId.BROKEN_REMOTE.getId())){
                         List<ItemStack> s = playerPassiveItem.getAllTrinketListFromId(player, ModTrinkets.BROKEN_REMOTE.getId());
                         if (s.stream().anyMatch(Trinket::isEnchanted)){
-                            EntityHelper.teleportToRandomLocation(player, StatManager.getNearbyRange() * 6);
+                            EntityHelper.teleportToRandomLocation(player, BrokenRemote.getTeleportRange(true));
                         }else{
-                            EntityHelper.teleportToRandomLocation(player, StatManager.getNearbyRange() * 3);
+                            EntityHelper.teleportToRandomLocation(player, BrokenRemote.getTeleportRange(false));
                         }
                     }
                 });

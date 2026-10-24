@@ -12,10 +12,14 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.Tags;
 
 public class LuckyRock implements IAbilityEffect {
+    public static double getChance(double amplifier) {
+        return Double.isFinite(amplifier) ? Math.min(0.1, 0.05 * Math.max(0, amplifier)) : 0;
+    }
+
     @Override
     public boolean applyEffect(ExecutableEffectContext context) {
         if (context.getEntity() instanceof Player player){
-            if (player.getRandom().nextDouble() < Math.min(0.1, 0.05 * context.get(ContextKeys.AMPLIFIER))
+            if (player.getRandom().nextDouble() < getChance(context.getOrDefault(ContextKeys.AMPLIFIER, 1.))
                     && player.level() instanceof ServerLevel level){
 
                 Vec3 p = context.get(ContextKeys.TARGET_POSITION);

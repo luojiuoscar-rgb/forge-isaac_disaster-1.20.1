@@ -197,4 +197,8 @@ public class ModTrinkets {
     public static final RegistryObject<Item> LOCUST_OF_CONQUEST = ITEMS.register("locust_of_conquest",
             () -> new Trinket(new Item.Properties(), ModTrinketAbilities.LOCUST_OF_CONQUEST));
     static {ItemListManager.TRINKET_LIST.add(LOCUST_OF_CONQUEST);}
+
+    public static final RegistryObject<Item> CRICKET_LEG = ITEMS.register("cricket_leg",
+            () -> new Trinket(new Item.Properties(), ModTrinketAbilities.CRICKET_LEG));
+    static {ItemListManager.TRINKET_LIST.add(CRICKET_LEG);}
 }

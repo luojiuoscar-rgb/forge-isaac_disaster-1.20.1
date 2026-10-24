@@ -46,7 +46,8 @@ public enum TrinketId {
     LOCUST_OF_PESTILENCE(1),
     LOCUST_OF_FAMINE(1),
     LOCUST_OF_DEATH(1),
-    LOCUST_OF_CONQUEST(1);
+    LOCUST_OF_CONQUEST(1),
+    CRICKET_LEG(1);
 
 
     private final int id;

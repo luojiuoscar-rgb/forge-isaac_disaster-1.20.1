@@ -1,7 +1,5 @@
 package net.luojiuoscar.isaac_disaster.registries.ability.trinket.impl;
 
-import net.luojiuoscar.isaac_disaster.helper.DescriptionHelper;
-import net.luojiuoscar.isaac_disaster.item.item.Trinket;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.registries.ability.trinket.TrinketAbility;
 import net.luojiuoscar.isaac_disaster.registries.ability.trinket.TrinketAbilityContext;
@@ -12,7 +10,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
 import java.util.List;
 
 public class CursedPenny extends TrinketAbility {
@@ -36,23 +33,9 @@ public class CursedPenny extends TrinketAbility {
     }
 
     @Override
-    public List<Component> getDesc(@Nullable ItemStack stack, Player player) {
+    public List<Component> getDesc(@Nullable ItemStack stack, @Nullable Player player) {
         return List.of(
                 Component.translatable("item.isaac_disaster.cursed_penny.lore.1")
         );
-    }
-
-    @Override
-    public List<Component> getSynergyDesc(@Nullable ItemStack stack, Player player) {
-        List<Component> desc = new ArrayList<>();
-
-        if (stack != null && Trinket.isEnchanted(stack)){
-            desc.add(DescriptionHelper.getSynergyDesc(
-                    Component.translatable("item.isaac_disaster.trinket.enchanted"),
-                    Component.translatable("item.isaac_disaster.synergy.description.no_effect")
-            ));
-        }
-
-        return desc;
     }
 }

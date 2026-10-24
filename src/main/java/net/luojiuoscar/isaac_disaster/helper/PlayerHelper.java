@@ -11,6 +11,7 @@ import net.luojiuoscar.isaac_disaster.item.ModItems;
 import net.luojiuoscar.isaac_disaster.item.ModPassiveItems;
 import net.luojiuoscar.isaac_disaster.item.ModTrinkets;
 import net.luojiuoscar.isaac_disaster.item.item.ActiveItem;
+import net.luojiuoscar.isaac_disaster.item.item.Trinket;
 import net.luojiuoscar.isaac_disaster.item.pickup.special.IsaacHead;
 import net.luojiuoscar.isaac_disaster.manager.CurioSlotManager;
 import net.luojiuoscar.isaac_disaster.manager.DefaultAttributeManager;
@@ -119,7 +120,7 @@ public class PlayerHelper {
                 .map(playerIsaacItems -> {
                     List<ItemStack> stackList = playerIsaacItems.getAllTrinketListFromId(player, itemId);
                     if (onlyEnchanted) {
-                        return stackList.stream().anyMatch(ItemStack::isEnchanted);
+                        return stackList.stream().anyMatch(Trinket::isEnchanted);
                     } else {
                         return !stackList.isEmpty();
                     }
@@ -134,7 +135,7 @@ public class PlayerHelper {
     }
     public static double getValueFromTrinket(double normal, double enchanted, ResourceLocation itemId, ServerPlayer player){
         if (!hasTrinket(itemId, player)) return 0;
-        return hasTrinket(itemId, player, true) ? normal : enchanted;
+        return hasTrinket(itemId, player, true) ? enchanted : normal;
     }
 
 

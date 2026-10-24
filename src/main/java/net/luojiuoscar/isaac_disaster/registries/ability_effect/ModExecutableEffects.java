@@ -1129,4 +1129,7 @@ public class ModExecutableEffects {
     public static final RegistryObject<IExecutableEffect> SINUS_INFECTION_DAMAGE =
             EXECUTABLE_EFFECT_REGISTRY.register("sinus_infection_damage", SinusInfectionDamage::new);
 
+    public static final RegistryObject<IExecutableEffect> CRICKET_LEG =
+            EXECUTABLE_EFFECT_REGISTRY.register("cricket_leg", CricketLeg::new);
+
 }

@@ -1,6 +1,6 @@
 package net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.general;
 
-import net.luojiuoscar.isaac_disaster.entity.tnt.IsaacBomb;
+import net.luojiuoscar.isaac_disaster.system.explosion.BombEffectSource;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ContextKeys;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ExecutableEffectContext;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.IAbilityEffect;
@@ -11,7 +11,7 @@ public class AttachEffectToTnt implements IAbilityEffect {
     public boolean applyEffect(ExecutableEffectContext context) {
         if (!context.has(ContextKeys.ENTITY)
                 || context.get(ContextKeys.ENTITY).isEmpty()
-                || !(context.get(ContextKeys.ENTITY).get(0) instanceof IsaacBomb bomb)) return false;
+                || !(context.get(ContextKeys.ENTITY).get(0) instanceof BombEffectSource bomb)) return false;
 
         IExecutableEffect effect = context.get(ContextKeys.EXECUTABLE_EFFECT);
         if (effect == null) return false;

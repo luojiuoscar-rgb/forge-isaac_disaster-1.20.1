@@ -246,6 +246,16 @@ public enum StatManager {
                 .append(formatted).withStyle(style);
     }
 
+    /** Uses the stat's configured formatting and highlights only the changing value. */
+    public Component dynamicDescription(double ratio) {
+        var result = description(ratio).copy();
+        var values = result.getSiblings();
+        for (int i = 0; i < values.size(); i++) {
+            values.set(i, values.get(i).copy().withStyle(style -> style.withColor(ColorManager.SYNERGY)));
+        }
+        return result;
+    }
+
     /* ---------------------- STATICS ---------------------- */
 
     /** 根据 UUID 获取枚举实例 */

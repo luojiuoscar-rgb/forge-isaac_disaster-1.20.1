@@ -1,5 +1,6 @@
 package net.luojiuoscar.isaac_disaster.entity.familiar.impl.fly;
 
+import net.luojiuoscar.isaac_disaster.entity.familiar.Locust;
 import net.luojiuoscar.isaac_disaster.effect.ModEffects;
 import net.luojiuoscar.isaac_disaster.effect.custom.DeadlyPoisonEffect;
 import net.minecraft.server.level.ServerPlayer;
@@ -10,7 +11,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 
 /** Green locust: ordinary fly contact damage followed by two D-sized poison pulses. */
-public final class LocustOfPestilenceEntity extends BlueFlyEntity {
+public final class LocustOfPestilenceEntity extends BlueFlyEntity implements Locust {
     // Pulses occur at remaining durations 40 and 20, on ticks 20 and 40 after contact.
     // Starting at 40 would immediately lose the first pulse to vanilla hurt cooldown.
     private static final int POISON_DURATION_TICKS = 50;

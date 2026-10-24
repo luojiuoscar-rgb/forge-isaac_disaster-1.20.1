@@ -46,19 +46,12 @@ public class LocustTrinket extends TrinketAbility {
     @Override
     public List<Component> getDesc(@Nullable ItemStack stack, @Nullable Player player) {
         return List.of(Component.translatable("item.isaac_disaster.locust_trinket.lore.1",
-                BigDecimal.valueOf(StatManager.getTimeInterval(4) / 20.0).stripTrailingZeros().toPlainString(), getGenerationAmount(1),
+                BigDecimal.valueOf(StatManager.getTimeInterval(4) / 20.0).stripTrailingZeros().toPlainString(),
+                getGenerationAmount(stack != null && Trinket.isEnchanted(stack) ? 2 : 1),
                 Component.translatable("entity.isaac_disaster." + module.getId().getPath())));
     }
 
-    @Override
-    public List<Component> getSynergyDesc(@Nullable ItemStack stack, @Nullable Player player) {
-        if (stack == null || !Trinket.isEnchanted(stack)) return List.of();
-        return List.of(DescriptionHelper.getSynergyDesc(
-                Component.translatable("item.isaac_disaster.trinket.enchanted"),
-                Component.translatable("item.isaac_disaster.locust_trinket.enchanted.lore.1", getGenerationAmount(2))));
-    }
-
     protected Component getGenerationAmount(int amplifier) {
-        return Component.literal(Integer.toString(amplifier));
+        return DescriptionHelper.dynamicNumber(amplifier);
     }
 }

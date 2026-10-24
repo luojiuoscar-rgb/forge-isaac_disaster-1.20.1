@@ -193,6 +193,10 @@ public class ModTrinketAbilities {
             TRINKET_ABILITY_REGISTRY.register("locust_of_conquest", () -> new LocustOfConquest(
                     TrinketId.LOCUST_OF_CONQUEST.getId(), TrinketId.LOCUST_OF_CONQUEST.getLevel()));
 
+    public static final RegistryObject<TrinketAbility> CRICKET_LEG =
+            TRINKET_ABILITY_REGISTRY.register("cricket_leg", () -> new CricketLeg(
+                    TrinketId.CRICKET_LEG.getId(), TrinketId.CRICKET_LEG.getLevel()));
+
 
 
 

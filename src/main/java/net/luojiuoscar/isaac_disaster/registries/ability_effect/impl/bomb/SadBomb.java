@@ -2,7 +2,7 @@ package net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.bomb;
 
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerAbilityProvider;
 import net.luojiuoscar.isaac_disaster.entity.tnt.BombData;
-import net.luojiuoscar.isaac_disaster.entity.tnt.IsaacBomb;
+import net.luojiuoscar.isaac_disaster.system.explosion.BombEffectSource;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.CompositeTrigger;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ExecutableEffectContext;
 import net.luojiuoscar.isaac_disaster.registries.attack_pattern.AttackPatternContext;
@@ -24,7 +24,7 @@ import java.util.List;
 public class SadBomb extends BombRelated {
     @Override
     protected boolean customEffect(ExecutableEffectContext context, ServerPlayer player,
-                                   Level level, Vec3 pos, IsaacBomb bomb) {
+                                   Level level, Vec3 pos, BombEffectSource bomb) {
         player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY).ifPresent(
                 playerAbility -> {
                     AttackType attack = playerAbility.getAttackSelection().baseAttack();
@@ -33,9 +33,9 @@ public class SadBomb extends BombRelated {
 
                     int bulletCount = getBulletCount(bomb.getPower());
 
-                    AttackContext ctx = AttackContext.builder(player, bomb)
+                    AttackContext ctx = AttackContext.builder(player, bomb.getBombEffectEntity())
                             .color(colorRl).trigger(new CompositeTrigger())
-                            .position(pos).mainAxis(GeometryHelper.mainAxisFromRotation(bomb.getXRot(), bomb.getYRot()))
+                            .position(pos).mainAxis(GeometryHelper.mainAxisFromRotation(bomb.getBombEffectEntity().getXRot(), bomb.getBombEffectEntity().getYRot()))
                             .range(attack.getRange(player)).speed(attack.getBulletSpeed(player)).build();
 
                     List<AttackContext> contexts = ModAttackPatterns.RING.get().generate(

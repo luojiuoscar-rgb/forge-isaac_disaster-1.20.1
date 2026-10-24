@@ -1,5 +1,6 @@
 package net.luojiuoscar.isaac_disaster.entity.familiar.impl.fly;
 
+import net.luojiuoscar.isaac_disaster.entity.familiar.Locust;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
@@ -9,7 +10,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 
 /** Yellow locust: ordinary fly contact damage and a brief movement slow. */
-public final class LocustOfFamineEntity extends BlueFlyEntity {
+public final class LocustOfFamineEntity extends BlueFlyEntity implements Locust {
     public LocustOfFamineEntity(EntityType<? extends LocustOfFamineEntity> type, Level level) {
         super(type, level);
     }

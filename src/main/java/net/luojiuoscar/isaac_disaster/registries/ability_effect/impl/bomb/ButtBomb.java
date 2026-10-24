@@ -1,7 +1,7 @@
 package net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.bomb;
 
 import net.luojiuoscar.isaac_disaster.effect.ModEffects;
-import net.luojiuoscar.isaac_disaster.entity.tnt.IsaacBomb;
+import net.luojiuoscar.isaac_disaster.system.explosion.BombEffectSource;
 import net.luojiuoscar.isaac_disaster.helper.EntityHelper;
 import net.luojiuoscar.isaac_disaster.helper.LevelHelper;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
@@ -19,7 +19,7 @@ import java.util.List;
 
 public final class ButtBomb extends BombRelated {
     @Override
-    protected boolean customEffect(ExecutableEffectContext context, ServerPlayer player, Level level, Vec3 pos, IsaacBomb bomb) {
+    protected boolean customEffect(ExecutableEffectContext context, ServerPlayer player, Level level, Vec3 pos, BombEffectSource bomb) {
         boolean huge = bomb.getPower() > 4;
         double radius = StatManager.getNearbyRange() * (huge ? 1.5 : 1);
         double damage = StatManager.DAMAGE.getBonus() * (huge ? 20 : 10);
