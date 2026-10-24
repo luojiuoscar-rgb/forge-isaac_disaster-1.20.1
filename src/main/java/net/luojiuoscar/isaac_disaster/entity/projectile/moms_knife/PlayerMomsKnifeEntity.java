@@ -3,10 +3,27 @@ package net.luojiuoscar.isaac_disaster.entity.projectile.moms_knife;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerAbilityProvider;
 import net.luojiuoscar.isaac_disaster.entity.familiar.impl.mom_knife.MomKnifePose;
 import net.luojiuoscar.isaac_disaster.helper.EntityHelper;
+import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
+import net.luojiuoscar.isaac_disaster.item.ModPassiveItems;
+import net.luojiuoscar.isaac_disaster.event.custom.attack.IsaacAttackHitBlockEvent;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.CompositeTrigger;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.ContextKeys;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.ExecutableEffectContext;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.ModExecutableEffects;
+import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackContext;
+import net.luojiuoscar.isaac_disaster.registries.attack_type.IBulletObject;
+import net.luojiuoscar.isaac_disaster.registries.attack_type.util.DamagedEntities;
+import net.luojiuoscar.isaac_disaster.registries.split_module.SplitSequence;
+import net.luojiuoscar.isaac_disaster.registries.split_module.SplitTriggerCounts;
+import net.luojiuoscar.isaac_disaster.registries.split_module.SplitTriggerType;
+import net.luojiuoscar.isaac_disaster.registries.trajectory.TrajectoryRuntime;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.ModAttackTypes;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.impl.MomsKnifeAttack;
 import net.luojiuoscar.isaac_disaster.system.damage.ModDamageSources;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.core.BlockPos;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -21,15 +38,26 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.network.NetworkHooks;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.entity.IEntityAdditionalSpawnData;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.joml.Vector3f;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
-public final class PlayerMomsKnifeEntity extends Entity {
+public final class PlayerMomsKnifeEntity extends Entity implements IBulletObject, IEntityAdditionalSpawnData {
+    public enum Mode { RETURNING, ONE_WAY }
+
+    private static final EntityDataAccessor<Byte> MODE =
+            SynchedEntityData.defineId(PlayerMomsKnifeEntity.class, EntityDataSerializers.BYTE);
+    private static final EntityDataAccessor<Vector3f> DIRECTION =
+            SynchedEntityData.defineId(PlayerMomsKnifeEntity.class, EntityDataSerializers.VECTOR3);
     private static final EntityDataAccessor<Integer> OWNER =
             SynchedEntityData.defineId(PlayerMomsKnifeEntity.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Float> RANGE =
@@ -40,6 +68,18 @@ public final class PlayerMomsKnifeEntity extends Entity {
             SynchedEntityData.defineId(PlayerMomsKnifeEntity.class, EntityDataSerializers.LONG);
 
     @Nullable private Frame previous;
+    @Nullable private ExecutableEffectContext barrageOnReturn;
+    private final PlayerMomsKnifeTracking tracking = new PlayerMomsKnifeTracking();
+    private PlayerMomsKnifeAttackState attack = new PlayerMomsKnifeAttackState(null, Vec3.ZERO,
+            PlayerMomsKnifeMotion.FORWARD, 0, Vec3.ZERO);
+    private double remainingDistance;
+    private double oneWaySpeed;
+    private long lastDamageTick = Long.MIN_VALUE;
+    private Vec3 renderFrom = PlayerMomsKnifeMotion.FORWARD;
+    private Vec3 renderTo = PlayerMomsKnifeMotion.FORWARD;
+    private long directionUpdatedAt;
+    @Nullable private Vec3 interpolationTarget;
+    private int interpolationSteps;
 
     public PlayerMomsKnifeEntity(EntityType<? extends PlayerMomsKnifeEntity> type, Level level) {
         super(type, level);
@@ -50,7 +90,52 @@ public final class PlayerMomsKnifeEntity extends Entity {
     public void initialize(ServerPlayer owner) {
         entityData.set(OWNER, owner.getId());
         setPos(PlayerMomsKnifeMotion.idlePosition(owner, 1));
+        attack = new PlayerMomsKnifeAttackState(basicContext(owner), position(), owner.getLookAngle(), 0, Vec3.ZERO);
+        setYRot(owner.getYRot());
+        setXRot(owner.getXRot());
         setOldPosAndRot();
+    }
+
+    private static AttackContext basicContext(ServerPlayer owner) {
+        return AttackContext.builder(owner, owner).attackType(ModAttackTypes.MOMS_KNIFE.get()).build();
+    }
+
+    public boolean initializeOneWay(ServerPlayer owner, double range, double speed) {
+        Vec3 origin = PlayerMomsKnifeMotion.idlePosition(owner, 1);
+        return initializeOneWay(owner, origin, origin.add(owner.getLookAngle()), range, speed);
+    }
+
+    public boolean initializeOneWay(ServerPlayer owner, Vec3 origin, Vec3 aimPoint, double range, double speed) {
+        return initializeOneWay(owner, origin, aimPoint, range, speed, basicContext(owner));
+    }
+
+    public boolean initializeOneWay(ServerPlayer owner, Vec3 origin, Vec3 aimPoint, double range, double speed,
+                                    AttackContext context) {
+        if (!Double.isFinite(range) || !Double.isFinite(speed) || range <= 0 || speed <= 0) return false;
+        if (!Double.isFinite(origin.lengthSqr()) || !Double.isFinite(aimPoint.lengthSqr())) return false;
+        if (context.getOwner() != owner) return false;
+        entityData.set(MODE, (byte) Mode.ONE_WAY.ordinal());
+        entityData.set(OWNER, owner.getId());
+        setPos(origin);
+        remainingDistance = range;
+        oneWaySpeed = speed;
+        entityData.set(RANGE, (float) range);
+        entityData.set(SPEED, (float) speed);
+        Vec3 direction = aimPoint.subtract(origin);
+        if (direction.lengthSqr() < 1.0E-12) direction = owner.getLookAngle();
+        setDirection(direction);
+        attack = new PlayerMomsKnifeAttackState(context, origin, direction, range,
+                PlayerMomsKnifeMotion.unit(direction).scale(speed));
+        setDeltaMovement(attack.velocity);
+        MomKnifePose pose = PlayerMomsKnifeMotion.pose(direction, owner.getYRot());
+        setYRot(pose.yaw() - 180);
+        setXRot(pose.pitch() + 90);
+        setOldPosAndRot();
+        return true;
+    }
+
+    public Mode getMode() {
+        return entityData.get(MODE) == Mode.ONE_WAY.ordinal() ? Mode.ONE_WAY : Mode.RETURNING;
     }
 
     @Nullable
@@ -59,16 +144,40 @@ public final class PlayerMomsKnifeEntity extends Entity {
     }
 
     public boolean isInFlight() {
-        return entityData.get(RANGE) > 0;
+        return getMode() == Mode.ONE_WAY || entityData.get(RANGE) > 0;
     }
 
-    public void launch(double range, double speed) {
-        if (isInFlight() || !Double.isFinite(range) || !Double.isFinite(speed) || range <= 0 || speed <= 0) return;
+    public boolean launch(double range, double speed) {
+        return getOwner() instanceof ServerPlayer owner && launch(range, speed, basicContext(owner));
+    }
+
+    public boolean launch(double range, double speed, AttackContext context) {
+        return launch(range, speed, context, 0);
+    }
+
+    public boolean launch(double range, double speed, AttackContext context, int barrageCount) {
+        if (isInFlight() || !Double.isFinite(range) || !Double.isFinite(speed) || range <= 0 || speed <= 0
+                || (float) Math.min(8, range) <= 0 || !Float.isFinite((float) speed) || (float) speed <= 0) return false;
+        Player owner = getOwner();
+        if (owner == null || context.getOwner() != owner) return false;
+        tracking.clear();
+        setDirection(PlayerMomsKnifeMotion.FORWARD);
         entityData.set(RANGE, (float) Math.min(8, range));
         entityData.set(SPEED, (float) speed);
         entityData.set(LAUNCHED_AT, level().getGameTime());
-        Player owner = getOwner();
-        previous = owner == null ? null : frame(owner);
+        previous = frame(owner);
+        Vec3 velocity = PlayerMomsKnifeMotion.unit(owner.getLookAngle()).scale(entityData.get(SPEED));
+        attack = new PlayerMomsKnifeAttackState(context, position(), owner.getLookAngle(), entityData.get(RANGE), velocity);
+        setDeltaMovement(velocity);
+        barrageOnReturn = null;
+        if (barrageCount > 0) {
+            AttackContext snapshot = context.copyConfiguration();
+            snapshot.freeze();
+            barrageOnReturn = new ExecutableEffectContext(owner);
+            barrageOnReturn.set(ContextKeys.AMPLIFIER, (double) barrageCount);
+            barrageOnReturn.set(ContextKeys.ATTACK_CONTEXT, snapshot);
+        }
+        return true;
     }
 
     public double getFlightDistance(float partialTick) {
@@ -76,8 +185,47 @@ public final class PlayerMomsKnifeEntity extends Entity {
                 level().getGameTime() + partialTick - entityData.get(LAUNCHED_AT));
     }
 
+    private Vec3 direction() {
+        Vector3f value = entityData.get(DIRECTION);
+        return PlayerMomsKnifeMotion.unit(new Vec3(value.x, value.y, value.z));
+    }
+
+    private void setDirection(Vec3 direction) {
+        direction = PlayerMomsKnifeMotion.unit(direction);
+        entityData.set(DIRECTION, new Vector3f((float) direction.x, (float) direction.y, (float) direction.z));
+    }
+
+    public Vec3 getRenderDirection(Player owner, float partialTick) {
+        Vec3 direction = level().isClientSide
+                ? PlayerMomsKnifeMotion.interpolateDirection(renderFrom, renderTo,
+                        level().getGameTime() + partialTick - directionUpdatedAt) : direction();
+        return getMode() == Mode.RETURNING
+                ? PlayerMomsKnifeMotion.toWorld(direction, owner.getViewYRot(partialTick), owner.getViewXRot(partialTick))
+                : direction;
+    }
+
+    public Vec3 getRenderAnchor(Player owner, float partialTick) {
+        return getMode() == Mode.RETURNING
+                ? PlayerMomsKnifeMotion.idlePosition(owner, partialTick)
+                        .add(getRenderDirection(owner, partialTick).scale(getFlightDistance(partialTick)))
+                : getPosition(partialTick);
+    }
+
+    @Override
+    public void onSyncedDataUpdated(@NotNull EntityDataAccessor<?> accessor) {
+        super.onSyncedDataUpdated(accessor);
+        if (accessor.equals(DIRECTION) && level().isClientSide) {
+            renderFrom = PlayerMomsKnifeMotion.interpolateDirection(renderFrom, renderTo,
+                    level().getGameTime() - directionUpdatedAt);
+            renderTo = direction();
+            directionUpdatedAt = level().getGameTime();
+        }
+    }
+
     @Override
     protected void defineSynchedData() {
+        entityData.define(MODE, (byte) Mode.RETURNING.ordinal());
+        entityData.define(DIRECTION, new Vector3f(0, 0, 1));
         entityData.define(OWNER, -1);
         entityData.define(RANGE, 0.0F);
         entityData.define(SPEED, 1.0F);
@@ -87,15 +235,41 @@ public final class PlayerMomsKnifeEntity extends Entity {
     @Override
     public void tick() {
         super.tick();
-        if (level().isClientSide) return;
+        if (level().isClientSide) {
+            if (getMode() == Mode.ONE_WAY && interpolationTarget != null && interpolationSteps > 0) {
+                setPos(position().lerp(interpolationTarget, 1.0 / interpolationSteps--));
+            }
+            return;
+        }
         Player candidate = getOwner();
         if (!(candidate instanceof ServerPlayer owner) || !MomsKnifeAttack.isSelectedAndReady(owner)
                 || owner.getCapability(PlayerAbilityProvider.PLAYER_ABILITY)
                 .map(ability -> !ability.getAttackTypes().containsKey(ModAttackTypes.MOMS_KNIFE.getId())
-                        || !getUUID().equals(ability.getRuntimeEntities().getId(ModAttackTypes.MOMS_KNIFE.getId())))
+                        || getMode() == Mode.RETURNING
+                        && !getUUID().equals(ability.getRuntimeEntities().getId(ModAttackTypes.MOMS_KNIFE.getId())))
                 .orElse(true)) {
             discard();
             return;
+        }
+
+        boolean homing = owner.getCapability(PlayerAbilityProvider.PLAYER_ABILITY)
+                .map(ability -> ability.getHoming() > 0).orElse(false);
+        if (getMode() == Mode.ONE_WAY) tickOneWay(owner, homing);
+        else tickReturning(owner, homing);
+    }
+
+    private void tickReturning(ServerPlayer owner, boolean homing) {
+        Vec3 idle = PlayerMomsKnifeMotion.idlePosition(owner, 1);
+        Vec3 local = direction();
+        if (isInFlight() && homing) {
+            Vec3 world = PlayerMomsKnifeMotion.toWorld(local, owner.getYRot(), owner.getXRot());
+            Vec3 point = tracking.targetPoint(owner, idle.add(world.scale(getFlightDistance(0))), world, level().getGameTime());
+            Vec3 desired = point == null || point.distanceToSqr(idle) < 1.0E-12 ? PlayerMomsKnifeMotion.FORWARD
+                    : PlayerMomsKnifeMotion.toLocal(point.subtract(idle), owner.getYRot(), owner.getXRot());
+            setDirection(PlayerMomsKnifeMotion.steer(local, desired));
+        } else {
+            tracking.clear();
+            setDirection(PlayerMomsKnifeMotion.FORWARD);
         }
 
         Frame current = frame(owner);
@@ -106,22 +280,67 @@ public final class PlayerMomsKnifeEntity extends Entity {
         List<PlayerMomsKnifeMotion.Blade> path = sweep(from, current);
         setPos(path.get(path.size() - 1).anchor());
         previous = current;
-        damage(owner, path);
+        contacts(owner, path, isInFlight());
+        if (isRemoved()) return;
 
-        if (isInFlight() && current.time() - entityData.get(LAUNCHED_AT)
-                >= PlayerMomsKnifeMotion.duration(entityData.get(RANGE), entityData.get(SPEED))) {
+        double elapsed = current.time() - entityData.get(LAUNCHED_AT);
+        double duration = PlayerMomsKnifeMotion.duration(entityData.get(RANGE), entityData.get(SPEED));
+        if (isInFlight() && barrageOnReturn != null && elapsed >= duration / 2) {
+            ExecutableEffectContext effect = barrageOnReturn;
+            barrageOnReturn = null;
+            ModExecutableEffects.MOMS_KNIFE_BARRAGE.get().apply(effect);
+            if (isRemoved()) return;
+        }
+        if (isInFlight() && elapsed >= duration) {
             entityData.set(RANGE, 0.0F);
+            setDirection(PlayerMomsKnifeMotion.FORWARD);
+            tracking.clear();
+            attack.setVelocity(Vec3.ZERO);
+            setDeltaMovement(Vec3.ZERO);
         }
     }
 
+    private void tickOneWay(ServerPlayer owner, boolean homing) {
+        Vec3 from = position();
+        Vec3 beforeDirection = direction();
+        Vec3 nextDirection = beforeDirection;
+        Vec3 target = null;
+        if (homing) {
+            target = tracking.targetPoint(owner, from, beforeDirection, level().getGameTime());
+            if (target != null) nextDirection = PlayerMomsKnifeMotion.steer(beforeDirection, target.subtract(from));
+        } else tracking.clear();
+        if (target == null && isControllable()) {
+            Vec3 controlPoint = owner.getEyePosition().add(PlayerMomsKnifeMotion.unit(owner.getLookAngle()).scale(64));
+            nextDirection = PlayerMomsKnifeMotion.unit(PlayerMomsKnifeMotion.controlVelocity(from,
+                    beforeDirection.scale(oneWaySpeed), controlPoint,
+                    PlayerHelper.hasItem(ModPassiveItems.TRACTOR_BEAM.getId(), owner)));
+        }
+        double step = PlayerMomsKnifeMotion.oneWayStep(remainingDistance, oneWaySpeed);
+        if (step <= 0) {
+            discard();
+            return;
+        }
+        Vec3 to = from.add(nextDirection.scale(step));
+        setDirection(nextDirection);
+        MomKnifePose pose = PlayerMomsKnifeMotion.pose(nextDirection, getYRot());
+        setYRot(pose.yaw() - 180);
+        setXRot(pose.pitch() + 90);
+        setPos(to);
+        contacts(owner, sweepOneWay(from, beforeDirection, to, nextDirection), true);
+        if (isRemoved()) return;
+        remainingDistance = Math.max(0, remainingDistance - step);
+        if (remainingDistance == 0) discard();
+    }
+
     private Frame frame(Player owner) {
-        return new Frame(PlayerMomsKnifeMotion.idlePosition(owner, 1), owner.getYRot(), owner.getXRot(),
+        return new Frame(PlayerMomsKnifeMotion.idlePosition(owner, 1), owner.getYRot(), owner.getXRot(), direction(),
                 level().getGameTime());
     }
 
     private List<PlayerMomsKnifeMotion.Blade> sweep(Frame from, Frame to) {
         double turn = Math.max(Math.abs(Mth.wrapDegrees(to.yaw() - from.yaw())),
                 Math.abs(to.pitch() - from.pitch()));
+        turn = Math.max(turn, Math.toDegrees(Math.acos(Mth.clamp(from.localDirection().dot(to.localDirection()), -1, 1))));
         int steps = Math.max(1, (int) Math.ceil(turn / 5));
         List<Double> fractions = new ArrayList<>();
         for (int i = 0; i <= steps; i++) fractions.add((double) i / steps);
@@ -137,24 +356,58 @@ public final class PlayerMomsKnifeEntity extends Entity {
             double time = Mth.lerp(fraction, from.time(), to.time());
             double distance = PlayerMomsKnifeMotion.distance(entityData.get(RANGE), entityData.get(SPEED),
                     time - entityData.get(LAUNCHED_AT));
-            path.add(PlayerMomsKnifeMotion.blade(from.idle().lerp(to.idle(), fraction),
+            Vec3 local = PlayerMomsKnifeMotion.interpolateDirection(from.localDirection(), to.localDirection(), fraction);
+            Vec3 direction = PlayerMomsKnifeMotion.toWorld(local,
                     Mth.rotLerp((float) fraction, from.yaw(), to.yaw()),
-                    Mth.lerp((float) fraction, from.pitch(), to.pitch()), distance));
+                    Mth.lerp((float) fraction, from.pitch(), to.pitch()));
+            Vec3 anchor = from.idle().lerp(to.idle(), fraction).add(direction.scale(distance));
+            path.add(PlayerMomsKnifeMotion.blade(anchor, direction));
         }
         return path;
     }
 
+    private static List<PlayerMomsKnifeMotion.Blade> sweepOneWay(Vec3 from, Vec3 fromDirection, Vec3 to, Vec3 toDirection) {
+        double angle = Math.toDegrees(Math.acos(Mth.clamp(fromDirection.dot(toDirection), -1, 1)));
+        int steps = Math.max(1, (int) Math.ceil(angle / 5));
+        List<PlayerMomsKnifeMotion.Blade> path = new ArrayList<>(steps + 1);
+        for (int i = 0; i <= steps; i++) {
+            double fraction = (double) i / steps;
+            path.add(PlayerMomsKnifeMotion.blade(from.lerp(to, fraction),
+                    PlayerMomsKnifeMotion.interpolateDirection(fromDirection, toDirection, fraction)));
+        }
+        return path;
+    }
+
+    private void contacts(ServerPlayer owner, List<PlayerMomsKnifeMotion.Blade> path, boolean blocks) {
+        attack.advance(path, level().getGameTime());
+        setDeltaMovement(attack.velocity);
+        if (blocks) {
+            for (BlockHitResult hit : PlayerMomsKnifeBlockContacts.find(owner.serverLevel(), path, getHitBlockPositions())) {
+                if (isRemoved() || owner.level() != level() || !MomsKnifeAttack.isSelectedAndReady(owner)) return;
+                if (!markBlockHit(hit.getBlockPos())) continue;
+                setLastBlockHit(hit);
+                MinecraftForge.EVENT_BUS.post(new IsaacAttackHitBlockEvent(this, owner, getTypeId(), getTriggers(), hit));
+            }
+        }
+        if (!isRemoved() && owner.level() == level() && MomsKnifeAttack.isSelectedAndReady(owner)) damage(owner, path);
+    }
+
     private void damage(ServerPlayer owner, List<PlayerMomsKnifeMotion.Blade> path) {
+        if (lastDamageTick == level().getGameTime()) return;
+        lastDamageTick = level().getGameTime();
         AABB bounds = path.get(0).bounds();
         for (PlayerMomsKnifeMotion.Blade blade : path) bounds = bounds.minmax(blade.bounds());
-        float damage = (float) (2 * owner.getAttributeValue(Attributes.ATTACK_DAMAGE));
+        float damage = getDamage();
         if (!Float.isFinite(damage) || damage <= 0) return;
         for (LivingEntity target : level().getEntitiesOfClass(LivingEntity.class, bounds,
                 target -> target.isAlive() && !target.isRemoved() && !target.isSpectator()
                         && !EntityHelper.isFriendly(target, owner))) {
             for (int i = 1; i < path.size(); i++) {
                 if (PlayerMomsKnifeMotion.contacts(path.get(i - 1), path.get(i), target.getBoundingBox())) {
-                    target.hurt(ModDamageSources.momsKnife(level(), this, owner), damage);
+                    if (target.hurt(ModDamageSources.momsKnife(level(), this, owner), damage)) {
+                        getDamagedEntities().add(target.getUUID());
+                    }
+                    if (isRemoved()) return;
                     break;
                 }
             }
@@ -164,11 +417,180 @@ public final class PlayerMomsKnifeEntity extends Entity {
     @Override
     public void remove(@NotNull RemovalReason reason) {
         Player owner = getOwner();
-        if (!level().isClientSide && owner != null) {
+        tracking.clear();
+        barrageOnReturn = null;
+        if (!level().isClientSide && owner != null && getMode() == Mode.RETURNING) {
             owner.getCapability(PlayerAbilityProvider.PLAYER_ABILITY).ifPresent(ability ->
                     ability.getRuntimeEntities().unregister(ModAttackTypes.MOMS_KNIFE.getId(), getUUID()));
         }
         super.remove(reason);
+    }
+
+    @Override
+    public SplitSequence getSplitSequence() { return attack.splits; }
+
+    @Override
+    public AttackContext getAttackContext() { return attack.context; }
+
+    @Override
+    public ResourceLocation getTypeId() { return ModAttackTypes.MOMS_KNIFE.getId(); }
+
+    @Override
+    public ResourceLocation getRootTypeId() { return getTypeId(); }
+
+    @Override
+    public SplitTriggerCounts getSplitTriggerCounts() { return attack.splitCounts; }
+
+    @Override
+    public void recordSplitTrigger(SplitTriggerType type) {}
+
+    @Override
+    public float getDamage() {
+        Player owner = getOwner();
+        return owner == null ? 0 : (float) (2 * owner.getAttributeValue(Attributes.ATTACK_DAMAGE));
+    }
+
+    @Override
+    public Vec3 getVelocity() { return attack.velocity; }
+
+    @Override
+    public Vec3 getAcceleration() { return attack.acceleration; }
+
+    @Override
+    public double getTraveled() { return attack.traveled; }
+
+    @Override
+    public double getRange() { return attack.range; }
+
+    @Override
+    public Vec3 getPosition() { return position(); }
+
+    @Override
+    public Object getShooter() { return attack.context == null ? getOwner() : attack.context.getShooter(); }
+
+    @Override
+    public boolean noGravity() { return true; }
+
+    @Override
+    public boolean isHoming() {
+        Player owner = getOwner();
+        return owner != null && owner.getCapability(PlayerAbilityProvider.PLAYER_ABILITY)
+                .map(ability -> ability.getHoming() > 0).orElse(false);
+    }
+
+    @Override
+    public boolean isSpectral() { return true; }
+
+    @Override
+    public boolean isControllable() {
+        Player owner = getOwner();
+        return getMode() == Mode.ONE_WAY && owner != null && owner.getCapability(PlayerAbilityProvider.PLAYER_ABILITY)
+                .map(ability -> ability.getControllable() > 0).orElse(false);
+    }
+
+    @Override
+    public boolean isPiercing() { return true; }
+
+    @Override
+    public ResourceLocation getColorId() { return attack.context == null ? null : attack.context.getColorRl(); }
+
+    @Override
+    public TrajectoryRuntime getTrajectoryRuntime() { return attack.trajectory; }
+
+    @Override
+    public int getTrajectoryAge() { return attack.age; }
+
+    @Override
+    public CompositeTrigger getTriggers() { return attack.triggers; }
+
+    @Override
+    public BlockHitResult getLastBlockHit() { return attack.collisions.lastBlockHit(); }
+
+    @Override
+    public void setLastBlockHit(BlockHitResult hit) { attack.collisions.lastBlockHit(hit); }
+
+    @Override
+    public Set<BlockPos> getHitBlockPositions() { return attack.collisions.hitBlockPositions(); }
+
+    @Override
+    public boolean markBlockHit(BlockPos position) { return attack.collisions.markBlockHit(position); }
+
+    @Override
+    public DamagedEntities getDamagedEntities() { return attack.collisions.damagedEntities(); }
+
+    @Override
+    public Level getBulletLevel() { return level(); }
+
+    private Vec3 worldDirection() {
+        Player owner = getOwner();
+        return getMode() == Mode.RETURNING && owner != null
+                ? PlayerMomsKnifeMotion.toWorld(direction(), owner.getYRot(), owner.getXRot()) : direction();
+    }
+
+    @Override
+    public Vec3 getCenter() {
+        return position().add(worldDirection().scale((MomKnifePose.BLADE_BASE_DISTANCE + MomKnifePose.BLADE_TIP_DISTANCE) / 2));
+    }
+
+    @Override
+    public void setCenter(Vec3 center) { setPosition(position().add(center.subtract(getCenter()))); }
+
+    @Override
+    public void setPosition(Vec3 position) {
+        setPos(position);
+        attack.trajectory.kinematics().position(position);
+    }
+
+    @Override
+    public void setVelocity(Vec3 velocity) {
+        if (!Double.isFinite(velocity.lengthSqr())) return;
+        attack.setVelocity(velocity);
+        setDeltaMovement(velocity);
+        if (velocity.lengthSqr() < 1.0E-12) return;
+        Player owner = getOwner();
+        setDirection(getMode() == Mode.RETURNING && owner != null
+                ? PlayerMomsKnifeMotion.toLocal(velocity, owner.getYRot(), owner.getXRot()) : velocity);
+        if (getMode() == Mode.ONE_WAY) oneWaySpeed = velocity.length();
+    }
+
+    @Override
+    public float getCollisionHeight() {
+        return (float) (Math.abs(worldDirection().y) * (MomKnifePose.BLADE_TIP_DISTANCE - MomKnifePose.BLADE_BASE_DISTANCE)
+                + 2 * MomKnifePose.BLADE_RADIUS);
+    }
+
+    @Override
+    public float getCollisionWidth() {
+        Vec3 direction = worldDirection();
+        return (float) (Math.max(Math.abs(direction.x), Math.abs(direction.z))
+                * (MomKnifePose.BLADE_TIP_DISTANCE - MomKnifePose.BLADE_BASE_DISTANCE) + 2 * MomKnifePose.BLADE_RADIUS);
+    }
+
+    @Override
+    public void writeSpawnData(FriendlyByteBuf buffer) {
+        new PlayerMomsKnifeSpawnData(entityData.get(MODE), entityData.get(OWNER), direction(),
+                entityData.get(RANGE), entityData.get(SPEED), entityData.get(LAUNCHED_AT), getYRot(), getXRot()).write(buffer);
+    }
+
+    @Override
+    public void readSpawnData(FriendlyByteBuf buffer) {
+        var data = PlayerMomsKnifeSpawnData.read(buffer);
+        entityData.set(MODE, data.mode());
+        entityData.set(OWNER, data.owner());
+        setDirection(data.direction());
+        entityData.set(RANGE, data.range());
+        entityData.set(SPEED, data.speed());
+        entityData.set(LAUNCHED_AT, data.launchedAt());
+        renderFrom = renderTo = direction();
+        directionUpdatedAt = level().getGameTime();
+        interpolationTarget = null;
+        interpolationSteps = 0;
+        setYRot(data.yaw());
+        setXRot(data.pitch());
+        Vec3 initialVelocity = getMode() == Mode.ONE_WAY ? direction().scale(data.speed()) : Vec3.ZERO;
+        attack = new PlayerMomsKnifeAttackState(null, position(), direction(), data.range(), initialVelocity);
+        setDeltaMovement(initialVelocity);
+        setOldPosAndRot();
     }
 
     @Override
@@ -188,6 +610,10 @@ public final class PlayerMomsKnifeEntity extends Entity {
 
     @Override
     public @NotNull AABB getBoundingBoxForCulling() {
+        if (getMode() == Mode.ONE_WAY) {
+            AABB bounds = getBoundingBox().inflate(MomKnifePose.BLADE_TIP_DISTANCE);
+            return interpolationTarget == null ? bounds : bounds.minmax(bounds.move(interpolationTarget.subtract(position())));
+        }
         Player owner = getOwner();
         if (owner == null) return getBoundingBox().inflate(1);
         double reach = Math.max(0.6, owner.getBbWidth()) + entityData.get(RANGE)
@@ -198,9 +624,29 @@ public final class PlayerMomsKnifeEntity extends Entity {
     }
 
     @Override
+    public boolean shouldRenderAtSqrDistance(double distance) {
+        double reach = getType().clientTrackingRange() * 16 * getViewScale();
+        return distance < reach * reach;
+    }
+
+    @Override
+    public void lerpTo(double x, double y, double z, float yaw, float pitch, int steps, boolean teleport) {
+        if (teleport || !level().isClientSide || getMode() == Mode.RETURNING) {
+            super.lerpTo(x, y, z, yaw, pitch, steps, teleport);
+            interpolationTarget = null;
+            if (teleport) setOldPosAndRot();
+        } else {
+            interpolationTarget = new Vec3(x, y, z);
+            interpolationSteps = Math.max(1, steps);
+            setYRot(yaw);
+            setXRot(pitch);
+        }
+    }
+
+    @Override
     public @NotNull Packet<ClientGamePacketListener> getAddEntityPacket() {
         return NetworkHooks.getEntitySpawningPacket(this);
     }
 
-    private record Frame(Vec3 idle, float yaw, float pitch, long time) {}
+    private record Frame(Vec3 idle, float yaw, float pitch, Vec3 localDirection, long time) {}
 }

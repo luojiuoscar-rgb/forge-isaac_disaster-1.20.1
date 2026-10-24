@@ -6,6 +6,7 @@ import net.luojiuoscar.isaac_disaster.entity.ModEntities;
 import net.luojiuoscar.isaac_disaster.entity.projectile.moms_knife.PlayerMomsKnifeEntity;
 import net.luojiuoscar.isaac_disaster.entity.projectile.moms_knife.PlayerMomsKnifeMotion;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.normal.MomsKnifeBarrage;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackContext;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackExecutor;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackOrigin;
@@ -55,7 +56,7 @@ public final class MomsKnifeAttack extends AttackType implements BasicAttackType
         return player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY).map(ability -> {
             var entities = ability.getRuntimeEntities();
             PlayerMomsKnifeEntity knife = entities.getEntity(getId(), player.serverLevel(), PlayerMomsKnifeEntity.class);
-            if (knife != null && knife.getOwner() != player) {
+            if (knife != null && (knife.getOwner() != player || knife.getMode() != PlayerMomsKnifeEntity.Mode.RETURNING)) {
                 entities.unregister(getId(), knife.getUUID());
                 knife = null;
             }
@@ -110,7 +111,9 @@ public final class MomsKnifeAttack extends AttackType implements BasicAttackType
         player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY).ifPresent(ability -> {
             double fraction = Math.min(1, (double) Math.max(1, ability.getChargeAmount(getChargeBarId()))
                     / getTotalCharge(player));
-            knife.launch(PlayerMomsKnifeMotion.range(context.getBulletRange(), fraction), context.getBulletSpeed());
+            int barrageCount = ability.getAttackTypes().getOrDefault(ModAttackTypes.BRIMSTONE.getId(), 0) > 0
+                    ? MomsKnifeBarrage.countForCharge(fraction) : 0;
+            knife.launch(PlayerMomsKnifeMotion.range(context.getBulletRange(), fraction), context.getBulletSpeed(), context, barrageCount);
         });
     }
 

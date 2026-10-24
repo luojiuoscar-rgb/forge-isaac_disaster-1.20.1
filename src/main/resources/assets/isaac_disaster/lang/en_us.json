@@ -666,6 +666,7 @@
   "item.isaac_disaster.moms_knife": "妈妈的菜刀",
   "item.isaac_disaster.moms_knife.lore.1": "攻击方式改为发射妈妈的菜刀",
   "item.isaac_disaster.moms_knife.lore.2": "菜刀接触敌人时造成200%帧伤",
+  "item.isaac_disaster.moms_knife.synergy.brimstone.1": "额外连射2-10把菜刀",
   "item end": "",
   "trinket": "",
   "item.isaac_disaster.swallowed_penny": "被吞下的硬币",

@@ -156,6 +156,8 @@ public class ModExecutableEffects {
             EXECUTABLE_EFFECT_REGISTRY.register("cursed_eye", CursedEye::new);
     public static final RegistryObject<IExecutableEffect> BRIMSTONE_PLUS_C_SECTION =
             EXECUTABLE_EFFECT_REGISTRY.register("brimstone_plus_c_section", BrimstonePlusCSection::new);
+    public static final RegistryObject<IExecutableEffect> MOMS_KNIFE_BARRAGE =
+            EXECUTABLE_EFFECT_REGISTRY.register("moms_knife_barrage", MomsKnifeBarrage::new);
     public static final RegistryObject<IExecutableEffect> CHARM_OF_THE_VAMPIRE =
             EXECUTABLE_EFFECT_REGISTRY.register("charm_of_the_vampire", CharmOfTheVampire::new);
     public static final RegistryObject<IExecutableEffect> CARTRIDGE =

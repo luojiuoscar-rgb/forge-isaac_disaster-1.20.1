@@ -30,13 +30,14 @@ public final class PlayerMomsKnifeRenderer extends EntityRenderer<PlayerMomsKnif
         Player owner = entity.getOwner();
         if (owner == null || !owner.isAlive() || owner.isSpectator()
                 || !(owner.getMainHandItem().getItem() instanceof IsaacHead)) return;
-        Vec3 anchor = PlayerMomsKnifeMotion.idlePosition(owner, partialTick)
-                .add(owner.getViewVector(partialTick).scale(entity.getFlightDistance(partialTick)));
+        Vec3 anchor = entity.getRenderAnchor(owner, partialTick);
         Vec3 offset = anchor.subtract(entity.getPosition(partialTick));
         poses.pushPose();
         poses.translate(offset.x, offset.y, offset.z);
+        float fallbackYaw = entity.getMode() == PlayerMomsKnifeEntity.Mode.RETURNING
+                ? owner.getViewYRot(partialTick) : entity.getViewYRot(partialTick);
         MomKnifeModel.applyPose(poses,
-                PlayerMomsKnifeMotion.pose(owner.getViewYRot(partialTick), owner.getViewXRot(partialTick)));
+                PlayerMomsKnifeMotion.pose(entity.getRenderDirection(owner, partialTick), fallbackYaw));
         model.renderToBuffer(poses, buffers.getBuffer(model.renderType(TEXTURE)), packedLight,
                 OverlayTexture.NO_OVERLAY, 1, 1, 1, 1);
         poses.popPose();
