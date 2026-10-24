@@ -1,9 +1,9 @@
 package net.luojiuoscar.isaac_disaster.registries.ground_effect;
 
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
-import net.luojiuoscar.isaac_disaster.groundeffect.impl.WaterPuddleEffect;
-import net.luojiuoscar.isaac_disaster.groundeffect.impl.LemonPuddleEffect;
-import net.luojiuoscar.isaac_disaster.groundeffect.impl.PotionPuddleEffect;
+import net.luojiuoscar.isaac_disaster.system.combat_effect.groundeffect.impl.WaterPuddleEffect;
+import net.luojiuoscar.isaac_disaster.system.combat_effect.groundeffect.impl.LemonPuddleEffect;
+import net.luojiuoscar.isaac_disaster.system.combat_effect.groundeffect.impl.PotionPuddleEffect;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;

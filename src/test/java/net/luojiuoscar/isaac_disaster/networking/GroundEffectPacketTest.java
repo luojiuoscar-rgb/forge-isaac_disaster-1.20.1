@@ -1,9 +1,9 @@
 package net.luojiuoscar.isaac_disaster.networking;
 
 import io.netty.buffer.Unpooled;
-import net.luojiuoscar.isaac_disaster.groundeffect.client.GroundEffectStream;
-import net.luojiuoscar.isaac_disaster.groundeffect.core.AbstractGroundEffect;
-import net.luojiuoscar.isaac_disaster.groundeffect.core.GroundEffectContact;
+import net.luojiuoscar.isaac_disaster.system.combat_effect.groundeffect.client.GroundEffectStream;
+import net.luojiuoscar.isaac_disaster.system.combat_effect.groundeffect.core.AbstractGroundEffect;
+import net.luojiuoscar.isaac_disaster.system.combat_effect.groundeffect.core.GroundEffectContact;
 import net.luojiuoscar.isaac_disaster.registries.ground_effect.GroundEffectType;
 import net.luojiuoscar.isaac_disaster.networking.packet.groundeffect.GroundEffectDespawnBatchS2CPacket;
 import net.luojiuoscar.isaac_disaster.networking.packet.groundeffect.GroundEffectSnapshotBatchS2CPacket;
@@ -12,7 +12,7 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.Vec3;
 import org.junit.jupiter.api.Test;
-import static net.luojiuoscar.isaac_disaster.groundeffect.GroundEffectTestFixtures.*;
+import static net.luojiuoscar.isaac_disaster.system.combat_effect.groundeffect.GroundEffectTestFixtures.*;
 
 import java.util.List;
 import java.util.UUID;

@@ -1,7 +1,7 @@
 package net.luojiuoscar.isaac_disaster.commands.groundeffect;
 
 import com.mojang.brigadier.CommandDispatcher;
-import net.luojiuoscar.isaac_disaster.groundeffect.server.GroundEffectRuntime;
+import net.luojiuoscar.isaac_disaster.system.combat_effect.groundeffect.server.GroundEffectRuntime;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;

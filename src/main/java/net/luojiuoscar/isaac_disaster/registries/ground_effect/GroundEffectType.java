@@ -1,7 +1,7 @@
 package net.luojiuoscar.isaac_disaster.registries.ground_effect;
 
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
-import net.luojiuoscar.isaac_disaster.groundeffect.core.AbstractGroundEffect;
+import net.luojiuoscar.isaac_disaster.system.combat_effect.groundeffect.core.AbstractGroundEffect;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.registries.RegistryManager;

@@ -5,7 +5,7 @@ import net.luojiuoscar.isaac_disaster.attribute.ModAttributes;
 import net.luojiuoscar.isaac_disaster.block.ModBlockEntities;
 import net.luojiuoscar.isaac_disaster.block.ModBlocks;
 import net.luojiuoscar.isaac_disaster.bullet.server.BulletRuntime;
-import net.luojiuoscar.isaac_disaster.groundeffect.server.GroundEffectRuntime;
+import net.luojiuoscar.isaac_disaster.system.combat_effect.groundeffect.server.GroundEffectRuntime;
 import net.luojiuoscar.isaac_disaster.client.config.IsaacConfigScreenRegistration;
 import net.luojiuoscar.isaac_disaster.config.IsaacClientConfig;
 import net.luojiuoscar.isaac_disaster.commands.gamerule.ModGameRules;

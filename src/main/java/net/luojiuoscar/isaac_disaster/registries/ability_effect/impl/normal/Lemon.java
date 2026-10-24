@@ -1,6 +1,6 @@
 package net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.normal;
 
-import net.luojiuoscar.isaac_disaster.groundeffect.server.GroundEffectRuntime;
+import net.luojiuoscar.isaac_disaster.system.combat_effect.groundeffect.server.GroundEffectRuntime;
 import net.luojiuoscar.isaac_disaster.registries.ground_effect.ModGroundEffects;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ExecutableEffectContext;

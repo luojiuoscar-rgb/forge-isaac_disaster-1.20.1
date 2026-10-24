@@ -1,7 +1,7 @@
 package net.luojiuoscar.isaac_disaster.networking;
 
 import io.netty.buffer.Unpooled;
-import net.luojiuoscar.isaac_disaster.groundeffect.client.GroundEffectStream;
+import net.luojiuoscar.isaac_disaster.system.combat_effect.groundeffect.client.GroundEffectStream;
 import net.luojiuoscar.isaac_disaster.networking.packet.groundeffect.GroundEffectSnapshotBatchS2CPacket;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;

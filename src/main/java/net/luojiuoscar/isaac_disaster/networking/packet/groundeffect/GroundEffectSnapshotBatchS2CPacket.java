@@ -4,7 +4,7 @@ import net.luojiuoscar.isaac_disaster.client.network.ClientPacketHandlers;
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import java.util.ArrayList;
 import java.util.Collections;
-import net.luojiuoscar.isaac_disaster.groundeffect.core.AbstractGroundEffect;
+import net.luojiuoscar.isaac_disaster.system.combat_effect.groundeffect.core.AbstractGroundEffect;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.Vec3;

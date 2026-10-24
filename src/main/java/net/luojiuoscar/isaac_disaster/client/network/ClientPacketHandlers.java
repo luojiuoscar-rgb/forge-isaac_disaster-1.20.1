@@ -6,7 +6,7 @@ import net.luojiuoscar.isaac_disaster.bullet.client.ClientBulletRuntime;
 import net.luojiuoscar.isaac_disaster.client.ClientDataManager;
 import net.luojiuoscar.isaac_disaster.client.gui.attribute_indicator.AttributeIndicatorHudOverlay;
 import net.luojiuoscar.isaac_disaster.client.laser.RevelationBeamRenderer;
-import net.luojiuoscar.isaac_disaster.groundeffect.client.ClientGroundEffectRuntime;
+import net.luojiuoscar.isaac_disaster.system.combat_effect.groundeffect.client.ClientGroundEffectRuntime;
 import net.luojiuoscar.isaac_disaster.networking.packet.ChargeBarUpdateS2CPacket;
 import net.luojiuoscar.isaac_disaster.networking.packet.bullet.BulletCorrectionBatchS2CPacket;
 import net.luojiuoscar.isaac_disaster.networking.packet.bullet.BulletCorrectionS2CPacket;
