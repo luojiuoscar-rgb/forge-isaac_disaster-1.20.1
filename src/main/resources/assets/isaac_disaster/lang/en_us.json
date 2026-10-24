@@ -751,7 +751,7 @@
   "item.isaac_disaster.locust_trinket.lore.1": "每%s秒生成%s只%s",
   "item.isaac_disaster.locust_trinket.count_range": "%s–%s",
   "item.isaac_disaster.cricket_leg": "蟋蟀腿",
-  "item.isaac_disaster.cricket_leg.lore.1": "击杀生物时有%s%%的概率生成随机蝗虫",
+  "item.isaac_disaster.cricket_leg.lore.1": "击杀生物时有%s%%概率生成随机蝗虫",
   "trinket end": "",
   "cards": "",
   "item.isaac_disaster.trinket.enchanted": "金饰品",

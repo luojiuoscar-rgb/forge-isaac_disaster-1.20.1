@@ -11,6 +11,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
@@ -93,6 +94,12 @@ public class FamiliarEntityType {
 
     protected int getAdditionCount(RandomSource random) {
         return 1;
+    }
+
+    /** Immediately spawns one type-defined batch at an explicit position using the caller's random source. */
+    public List<AbstractIsaacFamiliarEntity> spawnEntry(ServerPlayer player, ResourceLocation typeId, Vec3 position, RandomSource random) {
+        if (FamiliarHelper.getFamiliarType(typeId) != this) return List.of();
+        return FamiliarHelper.spawnFamiliars(player, typeId, position, Math.max(0, getAdditionCount(random)));
     }
 
     /**

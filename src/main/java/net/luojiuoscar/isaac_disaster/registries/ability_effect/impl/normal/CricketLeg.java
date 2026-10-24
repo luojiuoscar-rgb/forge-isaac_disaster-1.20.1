@@ -23,7 +23,7 @@ public final class CricketLeg implements IAbilityEffect {
     public boolean applyEffect(ExecutableEffectContext context) {
         if (!(context.getEntity() instanceof ServerPlayer player)) return false;
         if (!(context.get(ContextKeys.EVENT) instanceof LivingDeathEvent event)) return false;
-        if (event.isCanceled() || event.getSource().getEntity() != player) return true;
+        if (event.isCanceled() || event.getSource().getEntity() != player || event.getEntity().level() != player.level()) return true;
         if (!player.getCapability(PlayerFamiliarDataProvider.PLAYER_FAMILIAR_DATA).isPresent()) return false;
         double chance = getChance(context.getOrDefault(ContextKeys.AMPLIFIER, 1.0));
         if (chance <= 0 || player.getRandom().nextDouble() >= chance) return true;
@@ -32,7 +32,8 @@ public final class CricketLeg implements IAbilityEffect {
                 .filter(id -> isEligibleType(FamiliarHelper.getFamiliarType(id))).toList();
         if (candidates.isEmpty()) return true;
         var selected = candidates.get(player.getRandom().nextInt(candidates.size()));
-        return FamiliarHelper.getFamiliarType(selected).addEntry(player, selected, player.getRandom());
+        FamiliarHelper.getFamiliarType(selected).spawnEntry(player, selected, event.getEntity().position(), player.getRandom());
+        return true;
     }
 
     public static double getChance(double amplifier) {

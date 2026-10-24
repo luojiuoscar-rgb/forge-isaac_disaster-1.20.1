@@ -147,12 +147,19 @@ public final class CricketLegGameTests {
                     helper.getLevel().damageSources().explosion(war, f.owner));
             for (var source : sources) {
                 int before = f.total();
+                var previousIds = List.copyOf(f.data.getEntityIdsInAdmissionOrder());
                 long seed = 0;
                 while (RandomSource.create(seed).nextDouble() >= 1.0 / 3) seed += 1_000_003L;
                 f.owner.getRandom().setSeed(seed);
                 MinecraftForge.EVENT_BUS.post(new LivingDeathEvent(friend, source));
                 helper.assertTrue(f.total() > before && f.total() - before <= 4,
                         "Every attributed kill event produces one batch, including an owned wolf: " + source.getMsgId());
+                var created = f.data.getEntityIdsInAdmissionOrder().stream().filter(uuid -> !previousIds.contains(uuid))
+                        .map(helper.getLevel()::getEntity).toList();
+                helper.assertTrue(created.size() == f.total() - before && created.stream().allMatch(entity ->
+                                entity instanceof AbstractIsaacFamiliarEntity familiar && familiar.getOwner() == f.owner
+                                        && familiar.position().equals(friend.position())),
+                        "Player, familiar and explosion kills immediately spawn their whole batch at the victim's feet");
             }
             int before = f.total();
             MinecraftForge.EVENT_BUS.post(new LivingDeathEvent(friend, helper.getLevel().damageSources().generic()));
@@ -180,6 +187,87 @@ public final class CricketLegGameTests {
     }
 
     @GameTest(template = "trajectory_empty")
+    public static void conquestKillBatchUsesPlayerRandomAndTheVictimsPosition(GameTestHelper helper) {
+        try (Fixture f = new Fixture(helper)) {
+            var candidates = FamiliarHelper.getRegisteredFamiliarTypeIds()
+                    .filter(type -> CricketLeg.isEligibleType(FamiliarHelper.getFamiliarType(type))).toList();
+            int conquest = candidates.indexOf(ModFamiliarEntities.LOCUST_OF_CONQUEST.getId());
+            helper.assertTrue(conquest >= 0, "Conquest belongs to the random pool");
+            long seed = 0;
+            int expected;
+            while (true) {
+                RandomSource reference = RandomSource.create(seed);
+                if (reference.nextDouble() < 1.0 / 6 && reference.nextInt(candidates.size()) == conquest) {
+                    expected = reference.nextInt(4) + 1;
+                    break;
+                }
+                seed += 1_000_003L;
+            }
+            var victim = f.victim(EntityType.HUSK);
+            victim.setPos(f.owner.position().add(5, 1, 3));
+            var context = new ExecutableEffectContext(f.owner);
+            context.set(ContextKeys.EVENT, new LivingDeathEvent(victim, f.owner.damageSources().playerAttack(f.owner)));
+            context.set(ContextKeys.AMPLIFIER, 1.0);
+            f.owner.getRandom().setSeed(seed);
+            helper.assertTrue(new CricketLeg().applyEffect(context), "An attributed kill payoff succeeds");
+            var entry = f.data.getEntry(ModFamiliarEntities.LOCUST_OF_CONQUEST.getId()).orElseThrow();
+            helper.assertTrue(entry.getCount() == expected && entry.getEntityCount() == expected
+                            && entry.getEntityIds().stream().allMatch(uuid -> {
+                                Entity entity = helper.getLevel().getEntity(uuid);
+                                return entity instanceof LocustOfConquestEntity familiar && familiar.getOwner() == f.owner
+                                        && familiar.position().equals(victim.position());
+                            }),
+                    "Conquest draws one batch of one-to-four from the player's RNG and spawns it at the killed entity");
+        }
+        helper.succeed();
+    }
+
+    @GameTest(template = "trajectory_empty")
+    public static void canceledKillRewardsDoNotLeaveQueuedReplacementRequirements(GameTestHelper helper) {
+        try (Fixture f = new Fixture(helper)) {
+            var victim = f.victim(EntityType.HUSK);
+            var context = new ExecutableEffectContext(f.owner);
+            context.set(ContextKeys.EVENT, new LivingDeathEvent(victim, f.owner.damageSources().playerAttack(f.owner)));
+            context.set(ContextKeys.AMPLIFIER, 1.0);
+            long seed = 0;
+            while (RandomSource.create(seed).nextDouble() >= 1.0 / 6) seed += 1_000_003L;
+            f.owner.getRandom().setSeed(seed);
+            Consumer<EntityJoinLevelEvent> listener = event -> {
+                if (event.getEntity() instanceof AbstractIsaacFamiliarEntity familiar && familiar.getOwner() == f.owner) {
+                    event.setCanceled(true);
+                }
+            };
+            MinecraftForge.EVENT_BUS.addListener(EventPriority.HIGHEST, false, EntityJoinLevelEvent.class, listener);
+            try {
+                helper.assertTrue(new CricketLeg().applyEffect(context), "Canceled familiar spawning is a safe no-op");
+            } finally {
+                MinecraftForge.EVENT_BUS.unregister(listener);
+            }
+            helper.assertTrue(f.total() == 0 && f.data.getEntityIdsInAdmissionOrder().isEmpty()
+                            && !FamiliarHelper.spawnNextMissingFamiliar(f.owner),
+                    "Canceled rewards neither increase requirements nor spawn later at the player");
+        }
+        helper.succeed();
+    }
+
+    @GameTest(template = "trajectory_empty")
+    public static void aFullLocustQuotaMakesKillRewardsASafeNoOp(GameTestHelper helper) {
+        try (Fixture f = new Fixture(helper)) {
+            f.data.setCount(ModFamiliarEntities.LOCUST_OF_FAMINE.getId(), 64);
+            var context = new ExecutableEffectContext(f.owner);
+            context.set(ContextKeys.EVENT, new LivingDeathEvent(f.victim(EntityType.HUSK), f.owner.damageSources().playerAttack(f.owner)));
+            context.set(ContextKeys.AMPLIFIER, 1.0);
+            long seed = 0;
+            while (RandomSource.create(seed).nextDouble() >= 1.0 / 6) seed += 1_000_003L;
+            f.owner.getRandom().setSeed(seed);
+            helper.assertTrue(new CricketLeg().applyEffect(context) && f.total() == 64
+                            && f.data.getEntries().stream().allMatch(entry -> entry.hasNoEntities()),
+                    "Full equal-priority quota safely rejects a reward without generating queued deficits at the victim");
+        }
+        helper.succeed();
+    }
+
+    @GameTest(template = "trajectory_empty")
     public static void killChanceUsesEntityRandomAndSelectsExactlyOneBatch(GameTestHelper helper) {
         try (Fixture f = new Fixture(helper)) {
             var context = new ExecutableEffectContext(f.owner);
@@ -189,6 +277,7 @@ public final class CricketLegGameTests {
             var effect = new CricketLeg();
             int successes = 0;
             for (int seed = 0; seed < 150; seed++) {
+                FamiliarHelper.discardAllRuntimeFamiliars(f.owner);
                 f.data.clearRequirements();
                 long randomSeed = seed * 1_000_003L;
                 f.owner.getRandom().setSeed(randomSeed);
@@ -216,6 +305,7 @@ public final class CricketLegGameTests {
             for (int amplifier : new int[]{2, 3, 6, Integer.MAX_VALUE}) {
                 context.set(ContextKeys.AMPLIFIER, (double) amplifier);
                 for (int seed = 0; seed < 40; seed++) {
+                    FamiliarHelper.discardAllRuntimeFamiliars(f.owner);
                     f.data.clearRequirements();
                     long randomSeed = seed * 1_000_003L;
                     f.owner.getRandom().setSeed(randomSeed);
@@ -427,8 +517,9 @@ public final class CricketLegGameTests {
         var ordinary = ability.getDesc(null, null);
         ItemStack gold = new ItemStack(ModTrinkets.CRICKET_LEG.get());
         Trinket.setEnchanted(gold, true);
-        helper.assertTrue(ordinary.size() == 3 && ordinary.get(0).getString().contains("16.67%"),
-                "Minecraft translation parser formats the ordinary probability and separate quantity line");
+        helper.assertTrue(ordinary.get(0).getString().contains("16.67%")
+                        && ordinary.get(ordinary.size() - 1).getString().equals(Component.translatable("item.isaac_disaster.special.stackable").getString()),
+                "Minecraft translation parser formats the ordinary probability and the stacking note");
         Component goldenLine = ability.getDesc(gold, null).get(0);
         helper.assertTrue(goldenLine.getString().contains("33.33%") && hasDynamicNumber(goldenLine, "33.33"),
                 "Golden chance replaces the ordinary percentage inline as a yellow dynamic component");

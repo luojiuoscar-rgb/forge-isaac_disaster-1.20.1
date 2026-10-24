@@ -8,6 +8,7 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.common.capabilities.AutoRegisterCapability;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -32,6 +33,8 @@ public class PlayerFamiliarData {
     private final Set<UUID> registeredEntityIds = new LinkedHashSet<>();
     private int nextSpawnIndex;
     private long lastAdmissionTick = Long.MIN_VALUE;
+    @Nullable
+    private SpawnReservation pendingSpawn;
 
     public PlayerFamiliarData() {
         this(FamiliarHelper::getFamiliarType, FamiliarHelper.getRegisteredFamiliarLimitGroups());
@@ -43,6 +46,7 @@ public class PlayerFamiliarData {
     }
 
     public void setCount(ResourceLocation type, int count) {
+        if (pendingSpawn != null && pendingSpawn.type.equals(type)) pendingSpawn = null;
         FamiliarEntry entry = getOrCreateEntry(type);
         entry.setCount(count);
         FamiliarEntityType descriptor = typeResolver.apply(type);
@@ -61,6 +65,7 @@ public class PlayerFamiliarData {
 
     /** Keeps UUIDs until reconciliation can discard the corresponding world entities. */
     public void clearRequirements() {
+        pendingSpawn = null;
         for (FamiliarEntry entry : familiars.values()) entry.setCount(0);
         for (FamiliarLimitGroupInstance group : groups.values()) group.clear();
     }
@@ -100,6 +105,7 @@ public class PlayerFamiliarData {
     }
 
     public void removeEntity(ResourceLocation type, UUID entityId) {
+        if (pendingSpawn != null && pendingSpawn.type.equals(type) && pendingSpawn.entityId.equals(entityId)) pendingSpawn = null;
         pendingRecalls.remove(entityId);
         FamiliarEntry entry = familiars.get(type);
         if (entry == null) return;
@@ -108,6 +114,7 @@ public class PlayerFamiliarData {
     }
 
     public boolean containsEntity(ResourceLocation type, UUID entityId) {
+        if (pendingSpawn != null && pendingSpawn.type.equals(type) && pendingSpawn.entityId.equals(entityId)) return true;
         FamiliarEntry entry = familiars.get(type);
         return entry != null && entry.containsEntity(entityId);
     }
@@ -121,6 +128,7 @@ public class PlayerFamiliarData {
 
     /** Unlinks all runtime entities after disposal, without changing granted counts. */
     public void clearRuntimeEntities() {
+        pendingSpawn = null;
         for (FamiliarEntry entry : familiars.values()) entry.clearEntityIds();
         registeredEntityIds.clear();
         pendingRecalls.clear();
@@ -198,6 +206,7 @@ public class PlayerFamiliarData {
     }
 
     private void rebuildRuntimeState() {
+        pendingSpawn = null;
         pendingRecalls.clear();
         registeredEntityIds.clear();
         lastAdmissionTick = Long.MIN_VALUE;
@@ -209,6 +218,55 @@ public class PlayerFamiliarData {
         }
         for (FamiliarLimitGroupInstance group : groups.values()) group.reconcile(familiars.values(), typeResolver);
         pruneEmptyEntries();
+    }
+
+    /**
+     * Reserves membership for an immediate world join without consuming persistent counts or replacing old entities.
+     * Only one immediate join per owner may be in progress; callers must close the reservation.
+     */
+    @Nullable
+    public SpawnReservation reserveSpawn(ResourceLocation type, UUID entityId) {
+        if (pendingSpawn != null || entityId == null || registeredEntityIds.contains(entityId) || !canAddImmediately(type)) return null;
+        pendingSpawn = new SpawnReservation(type, entityId);
+        return pendingSpawn;
+    }
+
+    private boolean canAddImmediately(ResourceLocation type) {
+        if (typeResolver.apply(type) == null || getCount(type) == Integer.MAX_VALUE) return false;
+        FamiliarEntry current = familiars.get(type);
+        if (current != null && current.getEntityCount() > getEffectiveCount(type)) return false;
+        PlayerFamiliarData preview = new PlayerFamiliarData(typeResolver, List.of());
+        for (FamiliarEntry entry : familiars.values()) {
+            preview.familiars.put(entry.getType(), new FamiliarEntry(entry.getType(), entry.getCount(), entry.getEntityIds()));
+        }
+        groups.forEach((definition, allocation) -> preview.groups.put(definition, allocation.copy()));
+        preview.addCount(type, 1);
+        return preview.getCount(type) == getCount(type) + 1
+                && preview.getEffectiveCount(type) == getEffectiveCount(type) + 1;
+    }
+
+    /** A tentative join becomes persistent only when the world accepts the entity and commit succeeds. */
+    public final class SpawnReservation implements AutoCloseable {
+        private final ResourceLocation type;
+        private final UUID entityId;
+
+        private SpawnReservation(ResourceLocation type, UUID entityId) {
+            this.type = type;
+            this.entityId = entityId;
+        }
+
+        public boolean commit() {
+            if (pendingSpawn != this || !canAddImmediately(type)) return false;
+            pendingSpawn = null;
+            addCount(type, 1);
+            registerEntity(type, entityId);
+            return true;
+        }
+
+        @Override
+        public void close() {
+            if (pendingSpawn == this) pendingSpawn = null;
+        }
     }
 
     private static void applyOwnLimit(FamiliarEntry entry, FamiliarEntityType type) {
