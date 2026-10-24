@@ -23,7 +23,7 @@ public final class BulletSpawnS2CPacket {
     private final float damage, alpha;
     private final BulletSteeringMode steeringMode;
     private final List<ResourceLocation> visualIds;
-    private final boolean homing, controllable, noGravity;
+    private final boolean homing, controllable, noGravity, fetusKnife;
     private final ResourceLocation typeId, rootTypeId;
     private final UUID ownerUuid;
     private final double homingRange, homingSteer, controlRange, controlSteer;
@@ -55,6 +55,22 @@ public final class BulletSpawnS2CPacket {
                                 double controlRange, double controlSteer, BulletSteeringMode steeringMode,
                                 TrajectoryRuntime.Snapshot trajectorySnapshot, boolean noGravity,
                                 BulletStickState.Snapshot stickSnapshot, double controlTurnMultiplier) {
+        this(epoch, slot, generation, snapshotTick, position, previousPosition, velocity, acceleration,
+                baseSpeed, age, lifetime, traveled, range, damage, renderScale, collisionWidth, collisionHeight,
+                color, alpha, visualIds, typeId, rootTypeId, ownerUuid, homing, controllable, homingRange,
+                homingSteer, controlRange, controlSteer, steeringMode, trajectorySnapshot, noGravity,
+                stickSnapshot, controlTurnMultiplier, false);
+    }
+
+    public BulletSpawnS2CPacket(int epoch, int slot, int generation, int snapshotTick, Vec3 position,
+                                Vec3 previousPosition, Vec3 velocity, Vec3 acceleration, double baseSpeed, int age,
+                                int lifetime, double traveled, double range, float damage, double renderScale,
+                                double collisionWidth, double collisionHeight, int color, float alpha,
+                                List<ResourceLocation> visualIds, ResourceLocation typeId, ResourceLocation rootTypeId, UUID ownerUuid, boolean homing,
+                                boolean controllable, double homingRange, double homingSteer,
+                                double controlRange, double controlSteer, BulletSteeringMode steeringMode,
+                                TrajectoryRuntime.Snapshot trajectorySnapshot, boolean noGravity,
+                                BulletStickState.Snapshot stickSnapshot, double controlTurnMultiplier, boolean fetusKnife) {
         this.epoch = epoch; this.slot = slot; this.generation = generation; this.snapshotTick = snapshotTick;
         this.position = position == null ? Vec3.ZERO : position;
         this.previousPosition = previousPosition == null ? this.position : previousPosition;
@@ -69,6 +85,7 @@ public final class BulletSpawnS2CPacket {
         this.homingRange = homingRange; this.homingSteer = homingSteer; this.controlRange = controlRange; this.controlSteer = controlSteer;
         this.trajectorySnapshot = Objects.requireNonNull(trajectorySnapshot, "trajectorySnapshot");
         this.noGravity = noGravity;
+        this.fetusKnife = fetusKnife;
         this.stickSnapshot = Objects.requireNonNull(stickSnapshot, "stickSnapshot");
         this.controlTurnMultiplier = Double.isFinite(controlTurnMultiplier) ? Math.max(0.0D, controlTurnMultiplier) : 1.0D;
     }
@@ -79,7 +96,7 @@ public final class BulletSpawnS2CPacket {
                 buf.readDouble(), buf.readDouble(), buf.readInt(), buf.readFloat(), buf.readList(FriendlyByteBuf::readResourceLocation),
                 buf.readResourceLocation(), buf.readResourceLocation(), readUuid(buf), buf.readBoolean(), buf.readBoolean(), buf.readDouble(), buf.readDouble(), buf.readDouble(), buf.readDouble(),
                 buf.readEnum(BulletSteeringMode.class),
-                TrajectoryRuntime.Snapshot.read(buf), buf.readBoolean(), BulletStickState.Snapshot.read(buf), buf.readDouble());
+                TrajectoryRuntime.Snapshot.read(buf), buf.readBoolean(), BulletStickState.Snapshot.read(buf), buf.readDouble(), buf.readBoolean());
     }
 
     public int epoch() { return epoch; } public int slot() { return slot; } public int generation() { return generation; }
@@ -94,6 +111,7 @@ public final class BulletSpawnS2CPacket {
     public double homingSteer() { return homingSteer; } public double controlRange() { return controlRange; } public double controlSteer() { return controlSteer; }
     public TrajectoryRuntime.Snapshot trajectorySnapshot() { return trajectorySnapshot; }
     public boolean noGravity() { return noGravity; }
+    public boolean fetusKnife() { return fetusKnife; }
     public BulletStickState.Snapshot stickSnapshot() { return stickSnapshot; }
     public double controlTurnMultiplier() { return controlTurnMultiplier; }
 
@@ -109,6 +127,7 @@ public final class BulletSpawnS2CPacket {
         buf.writeBoolean(noGravity);
         stickSnapshot.write(buf);
         buf.writeDouble(controlTurnMultiplier);
+        buf.writeBoolean(fetusKnife);
     }
 
     public void handle(Supplier<NetworkEvent.Context> supplier) {

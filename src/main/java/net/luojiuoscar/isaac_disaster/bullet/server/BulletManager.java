@@ -221,6 +221,7 @@ public final class BulletManager {
                         if (reason != null) bullet.endStick(reason);
                     }
                 }
+                FetusMomsKnifeDamage.sweep(level, bullet, bullet.position(), bullet.position(), entityGrid);
                 if (!bullet.isAlive()) deferRemoval(bullet);
                 continue;
             }
@@ -275,6 +276,7 @@ public final class BulletManager {
                 for (Vec3 segmentEnd : trajectoryMotion.path()) {
                     int revision = bullet.stickState().revision();
                     resolveCollisions(level, segmentStart, segmentEnd, bullet);
+                    FetusMomsKnifeDamage.sweep(level, bullet, segmentStart, bullet.position(), entityGrid);
                     if (!bullet.isAlive() || !bullet.isFlying() || revision != bullet.stickState().revision()
                             || bullet.position().distanceToSqr(segmentEnd) > 1e-10) {
                         double length = segmentStart.distanceTo(segmentEnd);
@@ -292,6 +294,7 @@ public final class BulletManager {
                 }
             } else {
                 resolveCollisions(level, start, end, bullet);
+                FetusMomsKnifeDamage.sweep(level, bullet, start, bullet.position(), entityGrid);
                 if (trajectoryMotion != null && bullet.position().distanceToSqr(end) > 1.0E-10) {
                     double length = start.distanceTo(end);
                     bullet.retainTrajectoryFraction(length > 1.0E-10

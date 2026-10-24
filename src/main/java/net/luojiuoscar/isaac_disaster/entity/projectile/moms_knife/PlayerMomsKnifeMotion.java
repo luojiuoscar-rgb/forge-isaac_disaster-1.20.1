@@ -123,9 +123,14 @@ public final class PlayerMomsKnifeMotion {
     }
 
     public static Blade blade(Vec3 anchor, Vec3 direction) {
+        return blade(anchor, direction, 1);
+    }
+
+    public static Blade blade(Vec3 anchor, Vec3 direction, double scale) {
         direction = unit(direction);
-        return new Blade(anchor, anchor.add(direction.scale(MomKnifePose.BLADE_BASE_DISTANCE)),
-                anchor.add(direction.scale(MomKnifePose.BLADE_TIP_DISTANCE)));
+        scale = Double.isFinite(scale) ? Math.max(0, scale) : 0;
+        return new Blade(anchor, anchor.add(direction.scale(MomKnifePose.BLADE_BASE_DISTANCE * scale)),
+                anchor.add(direction.scale(MomKnifePose.BLADE_TIP_DISTANCE * scale)), MomKnifePose.BLADE_RADIUS * scale);
     }
 
     public static Blade blade(Vec3 idle, float yaw, float pitch, double distance) {
@@ -137,11 +142,12 @@ public final class PlayerMomsKnifeMotion {
 
     /** Samples along the blade as it sweeps, rather than testing only its tip or two diagonals. */
     public static boolean contacts(Blade from, Blade to, AABB target) {
-        AABB expanded = target.inflate(MomKnifePose.BLADE_RADIUS);
+        double radius = Math.max(from.radius(), to.radius());
+        AABB expanded = target.inflate(radius);
         if (SweptCollision.segmentAabb(from.base(), from.tip(), expanded).hit()
                 || SweptCollision.segmentAabb(to.base(), to.tip(), expanded).hit()) return true;
-        int samples = (int) Math.ceil((MomKnifePose.BLADE_TIP_DISTANCE
-                - MomKnifePose.BLADE_BASE_DISTANCE) / MomKnifePose.BLADE_RADIUS);
+        int samples = Math.max(1, (int) Math.ceil(Math.max(from.base().distanceTo(from.tip()), to.base().distanceTo(to.tip()))
+                / Math.max(radius, 1.0E-8)));
         for (int i = 0; i <= samples; i++) {
             double fraction = (double) i / samples;
             if (SweptCollision.segmentAabb(from.base().lerp(from.tip(), fraction),
@@ -150,9 +156,13 @@ public final class PlayerMomsKnifeMotion {
         return false;
     }
 
-    public record Blade(Vec3 anchor, Vec3 base, Vec3 tip) {
+    public record Blade(Vec3 anchor, Vec3 base, Vec3 tip, double radius) {
+        public Blade(Vec3 anchor, Vec3 base, Vec3 tip) {
+            this(anchor, base, tip, MomKnifePose.BLADE_RADIUS);
+        }
+
         public AABB bounds() {
-            return new AABB(base, tip).inflate(MomKnifePose.BLADE_RADIUS);
+            return new AABB(base, tip).inflate(radius);
         }
     }
 }

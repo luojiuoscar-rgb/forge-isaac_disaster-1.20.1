@@ -5,7 +5,7 @@ import org.jetbrains.annotations.Nullable;
 
 /** Mutable base kinematics and lifecycle counters for one projectile. */
 final class BulletMotionState {
-    static final double MIN_VALID_SPEED = 0.1D;
+    static final double MIN_VALID_SPEED = 0.01D;
     private static final double MIN_VALID_SPEED_SQUARED = MIN_VALID_SPEED * MIN_VALID_SPEED;
 
     private Vec3 position;

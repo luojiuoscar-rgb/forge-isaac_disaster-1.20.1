@@ -74,6 +74,7 @@ public final class ClientBulletRuntime {
                     .range(packet.range())
                     .damage(packet.damage())
                     .renderScale(packet.renderScale())
+                    .fetusKnife(packet.fetusKnife())
                     .collisionWidth(packet.collisionWidth())
                     .collisionHeight(packet.collisionHeight())
                     .ownerUuid(packet.ownerUuid())

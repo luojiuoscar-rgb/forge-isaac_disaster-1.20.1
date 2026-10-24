@@ -94,6 +94,18 @@ class BulletStateTest {
     }
 
     @Test
+    void lowPositiveSpeedsRemainAliveDownToOneHundredth() {
+        for (double speed : new double[]{0.07, 0.01}) {
+            BulletState state = BulletState.builder().velocity(new Vec3(speed, 0, 0)).lifetime(10).noGravity(true).build();
+            assertTrue(state.validateRuntimeVelocity(), "A legitimate speed of " + speed + " must be accepted");
+            assertTrue(state.tickPhysics());
+            assertEquals(speed, state.position().x, 1e-12);
+        }
+        BulletState below = BulletState.builder().velocity(new Vec3(0.009999, 0, 0)).lifetime(10).build();
+        assertFalse(below.validateRuntimeVelocity());
+    }
+
+    @Test
     void temporaryLowSpeedGuardRejectsInvalidVelocitiesButKeepsTheBoundary() {
         BulletState state = BulletState.builder().velocity(new Vec3(1, 0, 0)).build();
 

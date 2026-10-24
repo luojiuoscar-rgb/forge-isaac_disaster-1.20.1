@@ -7,6 +7,9 @@ import java.util.*;
 import java.util.function.IntFunction;
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.bullet.core.BulletState;
+import net.luojiuoscar.isaac_disaster.client.model.familiar.mom_knife.MomKnifeModel;
+import net.luojiuoscar.isaac_disaster.entity.projectile.moms_knife.FetusMomsKnifeState;
+import net.luojiuoscar.isaac_disaster.entity.projectile.moms_knife.PlayerMomsKnifeMotion;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.ModAttackTypes;
 import net.luojiuoscar.isaac_disaster.registries.bullet_visual.BulletVisual;
 import net.luojiuoscar.isaac_disaster.registries.bullet_visual.FetusBulletVisual;
@@ -48,6 +51,9 @@ public final class BulletClientRenderer {
     private static PlayerModel<AbstractClientPlayer> fetusWideModel;
     private static PlayerModel<AbstractClientPlayer> fetusSlimModel;
     private static SkeletonModel<Skeleton> skeletonModel;
+    private static final MomKnifeModel<Entity> FETUS_KNIFE_MODEL = new MomKnifeModel<>();
+    private static final ResourceLocation KNIFE_TEXTURE = ResourceLocation.fromNamespaceAndPath(
+            IsaacDisaster.MOD_ID, "textures/entity/familiar/mom_knife.png");
     private static final Map<Set<ResourceLocation>, TearVisual> TEAR_VISUAL_CACHE = new HashMap<>();
     private static final Map<Set<ResourceLocation>, FetusVisual> FETUS_VISUAL_CACHE = new HashMap<>();
 
@@ -71,6 +77,7 @@ public final class BulletClientRenderer {
             Vec3 relative = position.subtract(camera);
             poseStack.translate(relative.x, relative.y, relative.z);
             if (ModAttackTypes.C_SECTION.getId().equals(state.getTypeId())) {
+                if (state.fetusKnife() != null) usedTypes.add(renderFetusKnife(state, position, poseStack, buffers));
                 usedTypes.add(renderFetus(state, position, poseStack, buffers));
             } else {
                 usedTypes.add(renderTear(state, position, poseStack, buffers));
@@ -133,15 +140,27 @@ public final class BulletClientRenderer {
         return renderType;
     }
 
+    /** Draws the attached blade before applying the fetus model's own transforms. */
+    private static RenderType renderFetusKnife(BulletState state, Vec3 position, PoseStack poseStack, MultiBufferSource buffers) {
+        Vec3 direction = state.fetusKnife().facing(state.velocity());
+        var blade = FetusMomsKnifeState.blade(position, direction, state.renderScale(), state.collisionWidth());
+        Vec3 offset = blade.anchor().subtract(position);
+        poseStack.pushPose();
+        poseStack.translate(offset.x, offset.y, offset.z);
+        float scale = (float) FetusMomsKnifeState.scale(state.renderScale());
+        poseStack.scale(scale, scale, scale);
+        MomKnifeModel.applyPose(poseStack, PlayerMomsKnifeMotion.pose(direction, 0));
+        RenderType type = FETUS_KNIFE_MODEL.renderType(KNIFE_TEXTURE);
+        FETUS_KNIFE_MODEL.renderToBuffer(poseStack, buffers.getBuffer(type), lightAt(position),
+                OverlayTexture.NO_OVERLAY, 1, 1, 1, state.alpha());
+        poseStack.popPose();
+        return type;
+    }
+
     /** Draws the default Fetus player-model visual without constructing a projectile entity. */
     private static RenderType renderFetus(BulletState state, Vec3 position, PoseStack poseStack, MultiBufferSource buffers) {
-        Vec3 velocity = state.velocity();
-        if (velocity.lengthSqr() > 1.0E-6D) {
-            poseStack.mulPose(Axis.YP.rotationDegrees((float) Math.toDegrees(Math.atan2(velocity.x, velocity.z))));
-        }
-        poseStack.mulPose(Axis.XP.rotationDegrees(180.0F));
-        float scale = (float) state.renderScale() * 0.35F;
-        poseStack.scale(scale, scale, scale);
+        Vec3 facing = state.fetusKnife() == null ? state.velocity() : state.fetusKnife().facing(state.velocity());
+        applyFetusPose(poseStack, facing, state.renderScale());
         int color = state.color();
         int light = lightAt(position);
         FetusVisual visual = cachedFetusVisual(state.visualIds());
@@ -163,6 +182,16 @@ public final class BulletClientRenderer {
                 visual.acceptsTint() ? ((color >> 8) & 255) / 255.0F : 1.0F,
                 visual.acceptsTint() ? (color & 255) / 255.0F : 1.0F, state.alpha());
         return renderType;
+    }
+
+    static void applyFetusPose(PoseStack poseStack, Vec3 velocity, double renderScale) {
+        poseStack.translate(0, FetusMomsKnifeState.modelCenterOffset(renderScale), 0);
+        if (velocity.lengthSqr() > 1.0E-6D) {
+            poseStack.mulPose(Axis.YP.rotationDegrees((float) Math.toDegrees(Math.atan2(velocity.x, velocity.z))));
+        }
+        poseStack.mulPose(Axis.XP.rotationDegrees(180.0F));
+        float scale = (float) FetusMomsKnifeState.modelScale(renderScale);
+        poseStack.scale(scale, scale, scale);
     }
 
     /** Resolves the highest-priority tear visual that can be drawn by the lightweight renderer. */
