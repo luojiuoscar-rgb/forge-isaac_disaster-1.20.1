@@ -5,12 +5,10 @@ import net.luojiuoscar.isaac_disaster.groundeffect.core.GroundEffectContact;
 import net.luojiuoscar.isaac_disaster.groundeffect.core.GroundEffectContactGeometry;
 import net.luojiuoscar.isaac_disaster.groundeffect.core.GroundEffectCoverage;
 import net.luojiuoscar.isaac_disaster.groundeffect.core.GroundEffectPlacement;
-import net.luojiuoscar.isaac_disaster.groundeffect.impl.WaterPuddleEffect;
 import net.luojiuoscar.isaac_disaster.helper.TrackingTargetRules;
 import net.luojiuoscar.isaac_disaster.registries.ground_effect.GroundEffectType;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
+import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
@@ -18,6 +16,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -31,7 +30,9 @@ import java.util.UUID;
 /** Server-owned collection of transient, non-entity ground effects. */
 public final class GroundEffectManager {
     public static final int MAX_ACTIVE_EFFECTS = 20_000;
+    public static final int MAX_CELLS_PER_EFFECT = 4096;
     public static final int CONTACT_COOLDOWN_TICKS = 10;
+    public static final int EFFECT_COOLDOWN_TICKS = 5;
     private static final int SUPPORT_CHECK_INTERVAL = 10;
     private static final double CELL_SIZE = 2.0D;
     private static final double SURFACE_EPSILON = 1.0E-4D;
@@ -41,7 +42,8 @@ public final class GroundEffectManager {
     private final Map<Integer, Integer> generations = new HashMap<>();
     private final Queue<Integer> freeSlots = new ArrayDeque<>();
     private final Set<Long> pendingDespawns = new HashSet<>();
-    private final Map<ContactKey, Long> nextContactTick = new HashMap<>();
+    private final Map<ContactKey, Long> nextDamageTick = new HashMap<>();
+    private final Map<UUID, Long> nextEffectTick = new HashMap<>();
     private int nextSlot;
     private long nextCreationOrder;
     private long gameTick;
@@ -55,71 +57,60 @@ public final class GroundEffectManager {
     }
 
     @Nullable
-    public WaterPuddleEffect spawnWater(@Nullable ServerPlayer owner, Vec3 position) {
-        return spawnWater(owner == null ? null : owner.getUUID(), position,
-                WaterPuddleEffect.DEFAULT_RADIUS, WaterPuddleEffect.DEFAULT_LIFETIME);
+    public <T extends AbstractGroundEffect> T spawn(GroundEffectType<T> type, @Nullable UUID ownerUuid,
+                                                    Vec3 position, double radius, int lifetime, float damage) {
+        return spawn(type, ownerUuid, position, radius, lifetime, damage, 0);
     }
 
-    @Nullable
-    public WaterPuddleEffect spawnWater(@Nullable UUID ownerUuid, Vec3 position,
-                                        double radius, int lifetime) {
-        return spawn(WaterPuddleEffect.DEFINITION, ownerUuid, position, radius, lifetime);
-    }
-
-    /** Creates an instance through the registered type definition; no registry lookup is needed per tick. */
     @Nullable
     public <T extends AbstractGroundEffect> T spawn(GroundEffectType<T> type, @Nullable UUID ownerUuid,
-                                                    Vec3 position, double radius, int lifetime) {
-        Objects.requireNonNull(type, "type");
+                                                    Vec3 position, double radius, int lifetime, float damage,
+                                                    int animationDurationTicks) {
+        if (type == null || position == null || !Double.isFinite(position.x)
+                || !Double.isFinite(position.y) || !Double.isFinite(position.z)) {
+            IsaacDisaster.LOGGER.warn("Ignoring ground-effect spawn with missing type or invalid position");
+            return null;
+        }
+        animationDurationTicks = Math.max(0, animationDurationTicks);
         if (!(radius > 0.0D) || !Double.isFinite(radius) || lifetime <= 0) return null;
-        Set<Long> nearby = new HashSet<>();
-        for (Cell cell : cells(position, radius)) nearby.addAll(spatialIndex.getOrDefault(cell, Set.of()));
+        if (cellCount(position, radius) > MAX_CELLS_PER_EFFECT) {
+            IsaacDisaster.LOGGER.warn("Ignoring ground-effect spawn exceeding grid budget: radius={}", radius);
+            return null;
+        }
+        float safeDamage = Float.isFinite(damage) ? Math.max(0.0F, damage) : 0.0F;
+        Set<Long> nearby = nearby(position, radius);
         AbstractGroundEffect repaint = null;
         for (long id : nearby) {
             AbstractGroundEffect old = effects.get(id);
             if (old.getType() == type && Objects.equals(ownerUuid, old.ownerUuid())
-                    && old.position().equals(position) && old.radius() == radius && old.lifetime() == lifetime) {
+                    && old.position().equals(position) && old.radius() == radius && old.lifetime() == lifetime
+                    && old.damage() == safeDamage && old.animationDurationTicks() == animationDurationTicks) {
                 repaint = old;
                 break;
             }
         }
+        boolean paintNow = repaint != null ? repaint.isSettled() : animationDurationTicks == 0;
         GroundEffectCoverage brush = repaint == null
                 ? GroundEffectCoverage.puddle(radius, nextCreationOrder) : repaint.footprint();
-        Map<AbstractGroundEffect, GroundEffectCoverage> changed = new LinkedHashMap<>();
-        int erased = 0;
-        for (long id : nearby) {
-            AbstractGroundEffect old = effects.get(id);
-            if (old == repaint || Math.abs(old.position().y - position.y) > SURFACE_EPSILON) continue;
-            double dx = position.x - old.position().x;
-            double dz = position.z - old.position().z;
-            double sum = radius + old.radius();
-            if (dx * dx + dz * dz >= sum * sum) continue;
-            GroundEffectCoverage remainder = old.coverage().subtract(brush, dx, dz);
-            if (remainder == old.coverage()) continue;
-            if (remainder.serializedBytes() > GroundEffectCoverage.MAX_SERIALIZED_BYTES) return null;
-            changed.put(old, remainder);
-            if (remainder.isEmpty()) erased++;
-        }
-        // Admission is transactional: a rejected brush cannot erase any old paint.
-        if (effects.size() - erased + (repaint == null ? 1 : 0) > MAX_ACTIVE_EFFECTS) return null;
+        List<AbstractGroundEffect> erased = paintNow
+                ? fullyCovered(position, radius, brush, repaint, nearby) : List.of();
+        // Growing instances consume capacity now; only immediate paint can reclaim erased instances.
+        if (effects.size() - erased.size() + (repaint == null ? 1 : 0) > MAX_ACTIVE_EFFECTS) return null;
         T created = null;
         if (repaint == null) {
             Identity identity = allocateIdentity();
             try {
                 created = type.create(identity.slot(), identity.generation(), ownerUuid,
-                        position, radius, lifetime, nextCreationOrder);
+                        position, radius, lifetime, safeDamage, nextCreationOrder, animationDurationTicks);
             } finally {
-                // A broken addon factory must neither erase existing paint nor leak a reserved slot.
+                // Validate addon factories before erasing any paint or committing the reserved identity.
                 if (created == null) freeSlots.add(identity.slot());
             }
+            if (created == null) return null;
         }
-        changed.forEach((old, remainder) -> {
-            if (remainder.isEmpty()) remove(old);
-            else old.setCoverage(remainder);
-        });
+        erased.forEach(this::remove);
         if (repaint != null) {
-            repaint.repaint(nextCreationOrder++);
-            // Every instance admitted under a descriptor is constructed by that descriptor's factory.
+            repaint.repaint(paintNow ? nextCreationOrder++ : repaint.creationOrder());
             @SuppressWarnings("unchecked") T refreshed = (T) repaint;
             return refreshed;
         }
@@ -129,16 +120,47 @@ public final class GroundEffectManager {
         return created;
     }
 
+    private Set<Long> nearby(Vec3 position, double radius) {
+        Set<Long> nearby = new HashSet<>();
+        for (Cell cell : cells(position, radius)) nearby.addAll(spatialIndex.getOrDefault(cell, Set.of()));
+        return nearby;
+    }
+
+    private List<AbstractGroundEffect> fullyCovered(Vec3 position, double radius,
+            GroundEffectCoverage brush, @Nullable AbstractGroundEffect repaint, Set<Long> nearby) {
+        List<AbstractGroundEffect> erased = new ArrayList<>();
+        for (long id : nearby) {
+            AbstractGroundEffect old = effects.get(id);
+            if (old == null || old == repaint || !old.isSettled()
+                    || Math.abs(old.position().y - position.y) > SURFACE_EPSILON) continue;
+            double dx = old.position().x - position.x;
+            double dz = old.position().z - position.z;
+            double sum = radius + old.radius();
+            if (dx * dx + dz * dz < sum * sum && brush.covers(old.footprint(), dx, dz)) erased.add(old);
+        }
+        return erased;
+    }
+
     public void tick(ServerLevel level) {
         gameTick++;
-        nextContactTick.entrySet().removeIf(entry -> entry.getValue() <= gameTick);
+        nextDamageTick.entrySet().removeIf(entry -> entry.getValue() <= gameTick);
+        nextEffectTick.entrySet().removeIf(entry -> entry.getValue() <= gameTick);
         List<AbstractGroundEffect> expired = new ArrayList<>();
+        List<AbstractGroundEffect> completed = new ArrayList<>();
         for (AbstractGroundEffect effect : effects.values()) {
-            // Stagger fixed-position probes; a lost support is removed within ten server ticks.
+            // Expiry and support loss win over settlement, including the exact completion tick.
             if (!effect.tick() || (gameTick + effect.slot()) % SUPPORT_CHECK_INTERVAL == 0
                     && !GroundEffectPlacement.hasSupport(level, effect.position())) expired.add(effect);
+            else if (!effect.isSettled() && effect.isAnimationComplete()) completed.add(effect);
         }
         expired.forEach(this::remove);
+        // shapeSeed preserves the original spawn sequence even after lifetime refreshes and repaints.
+        completed.sort(Comparator.comparingLong(AbstractGroundEffect::shapeSeed));
+        for (AbstractGroundEffect effect : completed) {
+            fullyCovered(effect.position(), effect.radius(), effect.footprint(), effect,
+                    nearby(effect.position(), effect.radius())).forEach(this::remove);
+            effect.settle(nextCreationOrder++);
+        }
         applyContacts(level);
     }
 
@@ -155,13 +177,11 @@ public final class GroundEffectManager {
 
     /** Finds effects whose centers lie inside the inclusive three-dimensional visibility radius. */
     public List<AbstractGroundEffect> queryVisible(Vec3 center, double radius) {
-        if (radius < 0 || !Double.isFinite(radius)) return List.of();
+        if (center == null || !Double.isFinite(center.x) || !Double.isFinite(center.y) || !Double.isFinite(center.z)
+                || radius < 0 || !Double.isFinite(radius)) return List.of();
         double radiusSquared = radius * radius;
-        double xCells = Math.floor((center.x + radius) / CELL_SIZE)
-                - Math.floor((center.x - radius) / CELL_SIZE) + 1;
-        double zCells = Math.floor((center.z + radius) / CELL_SIZE)
-                - Math.floor((center.z - radius) / CELL_SIZE) + 1;
-        if (effects.size() < xCells * zCells) {
+        double cells = cellCount(center, radius);
+        if (cells > MAX_CELLS_PER_EFFECT || effects.size() < cells) {
             return effects.values().stream()
                     .filter(effect -> effect.position().distanceToSqr(center) <= radiusSquared).toList();
         }
@@ -187,14 +207,16 @@ public final class GroundEffectManager {
         pendingDespawns.addAll(effects.keySet());
         effects.clear();
         spatialIndex.clear();
-        nextContactTick.clear();
+        nextDamageTick.clear();
+        nextEffectTick.clear();
         freeSlots.clear();
         for (int slot = 0; slot < nextSlot; slot++) freeSlots.add(slot);
     }
 
     private void applyContacts(ServerLevel level) {
         if (effects.isEmpty()) return;
-        Map<ContactKey, List<AbstractGroundEffect>> contacts = new HashMap<>();
+        Map<ContactKey, AbstractGroundEffect> damageContacts = new HashMap<>();
+        Map<UUID, List<AbstractGroundEffect>> effectContacts = new HashMap<>();
         Map<UUID, Set<Long>> tested = new HashMap<>();
         Map<UUID, LivingEntity> resolvedOwners = new HashMap<>();
         Map<ContactKey, Boolean> eligible = new HashMap<>();
@@ -212,47 +234,76 @@ public final class GroundEffectManager {
             AABB query = cell.bounds(minY - GroundEffectContactGeometry.HEIGHT_TOLERANCE - SURFACE_EPSILON,
                     maxY + GroundEffectContactGeometry.HEIGHT_TOLERANCE + SURFACE_EPSILON);
             for (LivingEntity target : level.getEntitiesOfClass(LivingEntity.class, query,
-                    entity -> entity.isAlive() && !entity.isInvulnerable())) {
+                    LivingEntity::isAlive)) {
                 Set<Long> testedEffects = tested.computeIfAbsent(target.getUUID(), ignored -> new HashSet<>());
                 for (Long identity : entry.getValue()) {
                     if (!testedEffects.add(identity)) continue;
                     AbstractGroundEffect effect = effects.get(identity);
                     if (effect == null) continue;
                     ContactKey key = new ContactKey(target.getUUID(), effect.ownerUuid());
-                    if (gameTick < nextContactTick.getOrDefault(key, Long.MIN_VALUE)
+                    boolean damageReady = effect.damage() > 0
+                            && gameTick >= nextDamageTick.getOrDefault(key, Long.MIN_VALUE);
+                    boolean effectReady = gameTick >= nextEffectTick.getOrDefault(target.getUUID(), Long.MIN_VALUE);
+                    if ((!damageReady && !effectReady)
                             || !GroundEffectContactGeometry.touches(effect, target.getBoundingBox())) continue;
                     if (!resolvedOwners.containsKey(effect.ownerUuid())) {
                         resolvedOwners.put(effect.ownerUuid(), resolveOwner(level, effect.ownerUuid()));
                     }
                     LivingEntity owner = resolvedOwners.get(effect.ownerUuid());
-                    if (!eligible.computeIfAbsent(key,
-                            ignored -> owner == null || TrackingTargetRules.eligible(level, owner, target))) continue;
-                    contacts.computeIfAbsent(key, ignored -> new ArrayList<>()).add(effect);
+                    boolean damageEligible = !target.isInvulnerable()
+                            && (effect.ownerUuid() == null || owner != null)
+                            && eligible.computeIfAbsent(key,
+                                    ignored -> owner == null || TrackingTargetRules.eligible(level, owner, target));
+                    if (damageReady && damageEligible) {
+                        damageContacts.merge(key, effect, (current, incoming) ->
+                                incoming.creationOrder() > current.creationOrder() ? incoming : current);
+                    }
+                    if (effectReady && (effect.affectsAllLivingEntities() || damageEligible)) {
+                        effectContacts.computeIfAbsent(target.getUUID(), ignored -> new ArrayList<>()).add(effect);
+                    }
                 }
             }
         }
 
-        for (Map.Entry<ContactKey, List<AbstractGroundEffect>> entry : contacts.entrySet()) {
+        for (var entry : effectContacts.entrySet()) {
+            LivingEntity target = level.getEntity(entry.getKey()) instanceof LivingEntity living ? living : null;
+            if (target == null) continue;
+            for (AbstractGroundEffect effect : entry.getValue()) {
+                invokeContact(effect, new GroundEffectContact(level, target, resolvedOwners.get(effect.ownerUuid())), false);
+            }
+            nextEffectTick.put(entry.getKey(), gameTick + EFFECT_COOLDOWN_TICKS);
+        }
+
+        for (Map.Entry<ContactKey, AbstractGroundEffect> entry : damageContacts.entrySet()) {
             ContactKey key = entry.getKey();
             LivingEntity target = level.getEntity(key.target()) instanceof LivingEntity living ? living : null;
             if (target == null) continue;
             LivingEntity owner = resolvedOwners.get(key.effectOwner());
-            AbstractGroundEffect latest = entry.getValue().get(0);
-            for (AbstractGroundEffect effect : entry.getValue()) {
-                if (effect.creationOrder() > latest.creationOrder()) latest = effect;
+            AbstractGroundEffect effect = entry.getValue();
+            if (invokeContact(effect, new GroundEffectContact(level, target, owner), true)) {
+                nextDamageTick.put(key, gameTick + CONTACT_COOLDOWN_TICKS);
             }
-            ResourceLocation selectedType = latest.typeId();
-            List<AbstractGroundEffect> overlapping = entry.getValue().stream()
-                    .filter(effect -> effect.typeId().equals(selectedType)).toList();
-            latest.onContactEffect(new GroundEffectContact(level, target, owner, overlapping));
-            nextContactTick.put(key, gameTick + CONTACT_COOLDOWN_TICKS);
+        }
+    }
+
+    private boolean invokeContact(AbstractGroundEffect effect, GroundEffectContact contact, boolean damage) {
+        if (!effects.containsKey(effect.identity())) return false;
+        try {
+            if (damage) effect.onContactDamage(contact);
+            else effect.onContactEffect(contact);
+            return true;
+        } catch (RuntimeException failure) {
+            IsaacDisaster.LOGGER.warn("Removing ground effect after contact failure: slot={}", effect.slot(), failure);
+            remove(effect);
+            return false;
         }
     }
 
     @Nullable
     private static LivingEntity resolveOwner(ServerLevel level, @Nullable UUID ownerUuid) {
         if (ownerUuid == null) return null;
-        return level.getEntity(ownerUuid) instanceof LivingEntity living ? living : null;
+        if (level.getEntity(ownerUuid) instanceof LivingEntity living) return living;
+        return level.getServer().getPlayerList().getPlayer(ownerUuid);
     }
 
     private Identity allocateIdentity() {
@@ -287,6 +338,17 @@ public final class GroundEffectManager {
             for (int z = minZ; z <= maxZ; z++) result.add(new Cell(x, z));
         }
         return result;
+    }
+
+    private static double cellCount(Vec3 position, double radius) {
+        double minX = Math.floor((position.x - radius) / CELL_SIZE);
+        double maxX = Math.floor((position.x + radius) / CELL_SIZE);
+        double minZ = Math.floor((position.z - radius) / CELL_SIZE);
+        double maxZ = Math.floor((position.z + radius) / CELL_SIZE);
+        if (!Double.isFinite(minX) || !Double.isFinite(maxX) || !Double.isFinite(minZ) || !Double.isFinite(maxZ)
+                || minX < Integer.MIN_VALUE || maxX >= Integer.MAX_VALUE
+                || minZ < Integer.MIN_VALUE || maxZ >= Integer.MAX_VALUE) return Double.POSITIVE_INFINITY;
+        return (maxX - minX + 1) * (maxZ - minZ + 1);
     }
 
     private record Identity(int slot, int generation) { }

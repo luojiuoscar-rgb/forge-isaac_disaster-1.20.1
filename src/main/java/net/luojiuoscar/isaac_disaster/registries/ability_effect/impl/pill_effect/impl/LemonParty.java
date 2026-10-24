@@ -1,6 +1,7 @@
 package net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.pill_effect.impl;
 
-import net.luojiuoscar.isaac_disaster.entity.custom.LemonEffectCloud;
+import net.luojiuoscar.isaac_disaster.groundeffect.server.GroundEffectRuntime;
+import net.luojiuoscar.isaac_disaster.registries.ground_effect.ModGroundEffects;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ExecutableEffectContext;
@@ -20,13 +21,9 @@ public class LemonParty extends PillEffect {
 
     @Override
     protected boolean pillActive(ServerPlayer player, boolean isHorse, ExecutableEffectContext context) {
-        LemonEffectCloud cloud = LemonEffectCloud.create(player.level(), player.getX(), player.getY(), player.getZ(),
-                player, (float) StatManager.getNearbyRange() * (isHorse ? 0.8f : 0.4f),
-                isHorse ? 400 : 200, 0, 10,
-                (float) StatManager.DAMAGE.getBonus() * (isHorse ? 4f : 2.5f));
-
-        player.level().addFreshEntity(cloud);
-        return true;
+        return GroundEffectRuntime.INSTANCE.spawnOnGround(ModGroundEffects.LEMON.get(), player, player.position(),
+                (float) StatManager.getNearbyRange() * (isHorse ? 0.8f : 0.4f), isHorse ? 400 : 200,
+                (float) StatManager.DAMAGE.getBonus() * (isHorse ? 4f : 2.5f), 10) != null;
     }
 
     @Override

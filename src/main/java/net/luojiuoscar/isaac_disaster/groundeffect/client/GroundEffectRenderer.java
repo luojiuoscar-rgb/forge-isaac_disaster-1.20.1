@@ -22,8 +22,6 @@ import java.util.UUID;
 @Mod.EventBusSubscriber(modid = IsaacDisaster.MOD_ID, value = Dist.CLIENT)
 public final class GroundEffectRenderer {
     private static final RenderType PUDDLE = GroundEffectRenderTypes.puddle();
-    // Temporary visual-test override. Set false to restore hostile-only pulsing.
-    private static final boolean FORCE_PULSE_FOR_VISUAL_TEST = true;
 
     private GroundEffectRenderer() {
     }
@@ -34,7 +32,9 @@ public final class GroundEffectRenderer {
         Minecraft minecraft = Minecraft.getInstance();
         if (minecraft.level == null || minecraft.player == null) return;
 
-        var states = ClientGroundEffectRuntime.INSTANCE.stream().states();
+        var stream = ClientGroundEffectRuntime.INSTANCE.stream();
+        var states = stream.states();
+        double animationTick = stream.localAnimationTick();
         if (states.isEmpty()) return;
 
         MultiBufferSource.BufferSource buffers = minecraft.renderBuffers().bufferSource();
@@ -46,20 +46,21 @@ public final class GroundEffectRenderer {
         Map<UUID, Boolean> hostileOwners = new HashMap<>();
         for (ClientGroundEffectState state : states) {
             // Resolve each owner once per frame, regardless of how many puddles they left behind.
-            boolean flashing = FORCE_PULSE_FOR_VISUAL_TEST || (state.ownerUuid() != null
+            boolean flashing = state.ownerUuid() != null
                     && hostileOwners.computeIfAbsent(state.ownerUuid(), ownerId -> {
                 var owner = minecraft.level.getPlayerByUUID(ownerId);
                 return owner != null && OwnerHostility.isHostile(minecraft.player.getUUID(),
                         minecraft.player.getTeam(), owner.getUUID(), owner.getTeam());
-            }));
+            });
             drawPuddle(vertices, pose, state, state.position().subtract(camera),
-                    flashing ? pulseBrightness : 1.0F);
+                    flashing ? pulseBrightness : 1.0F, state.animationScale(animationTick));
         }
         buffers.endBatch(PUDDLE);
     }
 
     private static void drawPuddle(VertexConsumer vertices, PoseStack pose, ClientGroundEffectState state,
-                                   Vec3 relative, float brightness) {
+                                   Vec3 relative, float brightness, double scale) {
+        if (scale <= 0.0D) return;
         int color = state.getColor();
         float red = GroundEffectAppearance.brightenChannel((color >> 16) & 255, brightness);
         float green = GroundEffectAppearance.brightenChannel((color >> 8) & 255, brightness);
@@ -68,8 +69,8 @@ public final class GroundEffectRenderer {
                 ? Math.max(0.0F, (state.lifetime() - state.age()) / 10.0F)
                 : 0.78F;
         for (var point : state.triangleVertices()) {
-            vertex(vertices, pose, relative.x + point.x(), relative.y,
-                    relative.z + point.z(), red, green, blue, alpha);
+            vertex(vertices, pose, relative.x + point.x() * scale, relative.y,
+                    relative.z + point.z() * scale, red, green, blue, alpha);
         }
     }
 

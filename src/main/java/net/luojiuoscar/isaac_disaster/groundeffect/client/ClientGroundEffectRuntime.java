@@ -3,7 +3,6 @@ package net.luojiuoscar.isaac_disaster.groundeffect.client;
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.networking.packet.groundeffect.GroundEffectDespawnBatchS2CPacket;
 import net.luojiuoscar.isaac_disaster.networking.packet.groundeffect.GroundEffectSnapshotBatchS2CPacket;
-import net.luojiuoscar.isaac_disaster.networking.packet.groundeffect.GroundEffectSnapshotFragmentS2CPacket;
 import net.luojiuoscar.isaac_disaster.networking.packet.groundeffect.GroundEffectSyncS2CPacket;
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.api.distmarker.Dist;
@@ -18,7 +17,6 @@ import net.minecraftforge.fml.common.Mod;
 public final class ClientGroundEffectRuntime {
     public static final ClientGroundEffectRuntime INSTANCE = new ClientGroundEffectRuntime();
     private final GroundEffectStream stream = new GroundEffectStream();
-    private final GroundEffectSnapshotAssembler assembler = new GroundEffectSnapshotAssembler();
 
     private ClientGroundEffectRuntime() {
     }
@@ -30,7 +28,6 @@ public final class ClientGroundEffectRuntime {
         if (level == null || !level.dimension().location().equals(packet.dimension())) return;
         if (packet.reset()) {
             if (!stream.beginSession(packet.epoch())) return;
-            assembler.clear();
         } else if (!stream.acceptEpoch(packet.epoch())) return;
         stream.synchronize(packet.serverTick());
     }
@@ -55,18 +52,9 @@ public final class ClientGroundEffectRuntime {
         }
     }
 
-    public void applySnapshotFragment(GroundEffectSnapshotFragmentS2CPacket packet) {
-        if (!stream.acceptEpoch(packet.epoch())) return;
-        stream.synchronize(packet.serverTick());
-        assembler.accept(packet).ifPresent(result -> {
-            if (result.update()) stream.applyUpdate(result.entry(), result.serverTick());
-            else stream.spawn(result.entry(), result.serverTick());
-        });
-    }
-
-    public void tick() { assembler.expireInactive(); stream.tick(); }
-    public void clear() { assembler.clear(); stream.clear(); }
-    public void clearForWorldUnload() { assembler.clear(); stream.clearForWorldUnload(); }
+    public void tick() { stream.tick(); }
+    public void clear() { stream.clear(); }
+    public void clearForWorldUnload() { stream.clearForWorldUnload(); }
 
     @SubscribeEvent
     public static void onClientTick(TickEvent.ClientTickEvent event) {

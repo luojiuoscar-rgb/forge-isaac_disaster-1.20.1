@@ -7,6 +7,7 @@ import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.network.NetworkEvent;
 
 import java.util.List;
+import java.util.ArrayList;
 import java.util.function.Supplier;
 
 public final class GroundEffectDespawnBatchS2CPacket {
@@ -19,11 +20,28 @@ public final class GroundEffectDespawnBatchS2CPacket {
         this.epoch = epoch;
         this.serverTick = serverTick;
         this.visibilityExit = visibilityExit;
-        this.identities = identities == null ? List.of() : List.copyOf(identities);
+        this.identities = identities == null || identities.stream().anyMatch(id -> id == null) ? List.of() : List.copyOf(identities);
     }
 
     public GroundEffectDespawnBatchS2CPacket(FriendlyByteBuf buf) {
-        this(buf.readVarInt(), buf.readVarInt(), buf.readBoolean(), buf.readList(FriendlyByteBuf::readLong));
+        this(decode(buf));
+    }
+
+    private GroundEffectDespawnBatchS2CPacket(GroundEffectDespawnBatchS2CPacket decoded) {
+        this(decoded.epoch(), decoded.serverTick(), decoded.visibilityExit(), decoded.identities());
+    }
+
+    private static GroundEffectDespawnBatchS2CPacket decode(FriendlyByteBuf buf) {
+        return GroundEffectPacketCodec.decode(buf, input -> {
+            int epoch = input.readVarInt();
+            int tick = input.readVarInt();
+            boolean exit = input.readBoolean();
+            int count = input.readVarInt();
+            if (count < 0 || count > input.readableBytes() / Long.BYTES) return null;
+            List<Long> identities = new ArrayList<>(count);
+            for (int i = 0; i < count; i++) identities.add(input.readLong());
+            return new GroundEffectDespawnBatchS2CPacket(epoch, tick, exit, identities);
+        }, () -> new GroundEffectDespawnBatchS2CPacket(0, 0, false, List.of()));
     }
 
     public int epoch() { return epoch; }

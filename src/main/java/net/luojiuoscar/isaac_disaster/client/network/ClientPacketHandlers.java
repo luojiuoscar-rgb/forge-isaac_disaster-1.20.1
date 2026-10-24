@@ -18,7 +18,6 @@ import net.luojiuoscar.isaac_disaster.networking.packet.bullet.BulletStickBatchS
 import net.luojiuoscar.isaac_disaster.networking.packet.bullet.BulletTrackingBatchS2CPacket;
 import net.luojiuoscar.isaac_disaster.networking.packet.groundeffect.GroundEffectDespawnBatchS2CPacket;
 import net.luojiuoscar.isaac_disaster.networking.packet.groundeffect.GroundEffectSnapshotBatchS2CPacket;
-import net.luojiuoscar.isaac_disaster.networking.packet.groundeffect.GroundEffectSnapshotFragmentS2CPacket;
 import net.luojiuoscar.isaac_disaster.networking.packet.groundeffect.GroundEffectSyncS2CPacket;
 import net.luojiuoscar.isaac_disaster.networking.packet.laser.LaserBeamBatchS2CPacket;
 import net.luojiuoscar.isaac_disaster.networking.packet.laser.RevelationBeamS2CPacket;
@@ -145,9 +144,6 @@ public final class ClientPacketHandlers {
         ClientGroundEffectRuntime.INSTANCE.applySync(packet);
     }
 
-    public static void handleGroundEffectSnapshotFragment(GroundEffectSnapshotFragmentS2CPacket packet) {
-        ClientGroundEffectRuntime.INSTANCE.applySnapshotFragment(packet);
-    }
 
     public static void handleRevelationBeam(RevelationBeamS2CPacket packet) {
         RevelationBeamRenderer.update(packet);

@@ -10,7 +10,6 @@ import net.luojiuoscar.isaac_disaster.networking.packet.FlyUpdateS2CPacket;
 import net.luojiuoscar.isaac_disaster.networking.packet.bullet.*;
 import net.luojiuoscar.isaac_disaster.networking.packet.groundeffect.GroundEffectDespawnBatchS2CPacket;
 import net.luojiuoscar.isaac_disaster.networking.packet.groundeffect.GroundEffectSnapshotBatchS2CPacket;
-import net.luojiuoscar.isaac_disaster.networking.packet.groundeffect.GroundEffectSnapshotFragmentS2CPacket;
 import net.luojiuoscar.isaac_disaster.networking.packet.groundeffect.GroundEffectSyncS2CPacket;
 import net.luojiuoscar.isaac_disaster.networking.packet.laser.LaserBeamBatchS2CPacket;
 import net.luojiuoscar.isaac_disaster.networking.packet.laser.RevelationBeamS2CPacket;
@@ -23,7 +22,7 @@ import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.network.simple.SimpleChannel;
 
 public class ModMessages {
-    private static final String PROTOCOL_VERSION = "5";
+    private static final String PROTOCOL_VERSION = "8";
     private static SimpleChannel INSTANCE;
 
     private static int packetId = 0;
@@ -194,10 +193,6 @@ public class ModMessages {
         net.messageBuilder(GroundEffectSyncS2CPacket.class, id(), NetworkDirection.PLAY_TO_CLIENT)
                 .decoder(GroundEffectSyncS2CPacket::new).encoder(GroundEffectSyncS2CPacket::toBytes)
                 .consumerNetworkThread(GroundEffectSyncS2CPacket::handle).add();
-
-        net.messageBuilder(GroundEffectSnapshotFragmentS2CPacket.class, id(), NetworkDirection.PLAY_TO_CLIENT)
-                .decoder(GroundEffectSnapshotFragmentS2CPacket::new).encoder(GroundEffectSnapshotFragmentS2CPacket::toBytes)
-                .consumerNetworkThread(GroundEffectSnapshotFragmentS2CPacket::handle).add();
 
         net.messageBuilder(GroundEffectDespawnBatchS2CPacket.class, id(), NetworkDirection.PLAY_TO_CLIENT)
                 .decoder(GroundEffectDespawnBatchS2CPacket::new).encoder(GroundEffectDespawnBatchS2CPacket::toBytes)

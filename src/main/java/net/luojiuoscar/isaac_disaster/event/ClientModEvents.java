@@ -22,7 +22,6 @@ import net.luojiuoscar.isaac_disaster.renderer.layer.golden.GoldenLayer;
 import net.luojiuoscar.isaac_disaster.renderer.layer.golden.SlimeGoldenLayer;
 import net.luojiuoscar.isaac_disaster.renderer.layer.petrified.PetrifiedLayer;
 import net.luojiuoscar.isaac_disaster.renderer.layer.petrified.SlimePetrifiedLayer;
-import net.minecraft.client.renderer.entity.NoopRenderer;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.client.renderer.entity.SlimeRenderer;
 import net.minecraft.client.renderer.entity.player.PlayerRenderer;
@@ -53,7 +52,6 @@ public class ClientModEvents {
     public static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
         event.registerEntityRenderer(ModEntities.ISAAC_BOMB.get(), CustomTntRenderer::new);
         event.registerEntityRenderer(ModEntities.GIGA_BOMB.get(), CustomTntRenderer::new);
-        event.registerEntityRenderer(ModEntities.SELECTIVE_EFFECT_CLOUD.get(), NoopRenderer::new);
         event.registerEntityRenderer(ModEntities.MOM_KNIFE.get(), MomKnifeRenderer::new);
         event.registerEntityRenderer(ModEntities.BLUE_FLY.get(), FlyRenderer::new);
 

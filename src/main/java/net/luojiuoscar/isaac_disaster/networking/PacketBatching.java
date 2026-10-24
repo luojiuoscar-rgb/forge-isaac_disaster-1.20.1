@@ -3,7 +3,6 @@ package net.luojiuoscar.isaac_disaster.networking;
 import io.netty.buffer.Unpooled;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -11,7 +10,6 @@ import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.networking.packet.bullet.*;
 import net.luojiuoscar.isaac_disaster.networking.packet.laser.LaserBeamBatchS2CPacket;
 import net.luojiuoscar.isaac_disaster.networking.packet.groundeffect.GroundEffectDespawnBatchS2CPacket;
-import net.luojiuoscar.isaac_disaster.networking.packet.groundeffect.GroundEffectSnapshotFragmentS2CPacket;
 import net.luojiuoscar.isaac_disaster.networking.packet.groundeffect.GroundEffectSnapshotBatchS2CPacket;
 import net.minecraft.network.FriendlyByteBuf;
 
@@ -20,7 +18,6 @@ public final class PacketBatching {
     // Leave ample room below vanilla's 1 MiB custom payload limit. Header budgets
     // include the Forge discriminator and five bytes for each VarInt/list count.
     private static final int MAX_PAYLOAD_BYTES = 512 * 1024;
-    private static final AtomicLong GROUND_EFFECT_TRANSFERS = new AtomicLong();
     private PacketBatching() {}
 
     public static void forEach(Object packet, Consumer<Object> sender) {
@@ -51,65 +48,32 @@ public final class PacketBatching {
         }
     }
 
-    /**
-     * Ground geometry cannot be dropped when a single revised footprint outgrows a normal batch.
-     * Preflight the entire batch before emitting anything, then preserve ordering across batches
-     * and complete-entry fragments. The manager's paint admission keeps runtime geometry below
-     * this protocol ceiling; a directly constructed impossible packet fails explicitly.
-     */
+    /** Preflight bounded metadata sizes before emitting any part of a ground-effect batch. */
     private static void splitGroundEffects(GroundEffectSnapshotBatchS2CPacket batch, Consumer<Object> sender) {
         var entries = batch.entries();
         if (entries.isEmpty()) {
             sender.accept(batch);
             return;
         }
-        // Preflight cached geometry sizes and metadata only; vertices are encoded exactly once on send.
+        // Three worst-case VarInts, the update flag and the Forge discriminator.
+        final int headerBytes = 21;
         int[] sizes = new int[entries.size()];
         for (int i = 0; i < entries.size(); i++) {
             var entry = entries.get(i);
-            long size = entry.serializedBytes();
-            if (size > GroundEffectSnapshotFragmentS2CPacket.MAX_SNAPSHOT_BYTES) {
-                throw new IllegalArgumentException("Ground-effect snapshot exceeds 32 MiB protocol ceiling: slot="
-                        + entry.slot() + ", generation=" + entry.generation() + ", revision=" + entry.revision());
-            }
+            long size = entry == null ? Long.MAX_VALUE : entry.serializedBytes();
+            if (size > MAX_PAYLOAD_BYTES - headerBytes) return;
             sizes[i] = (int) size;
         }
-        // Three worst-case VarInts, the update flag and the Forge discriminator.
-        final int headerBytes = 21;
         List<GroundEffectSnapshotBatchS2CPacket.Entry> part = new ArrayList<>();
         int bytes = headerBytes;
         for (int i = 0; i < entries.size(); i++) {
-            var entry = entries.get(i);
-            int entryBytes = sizes[i];
-            if (entryBytes > MAX_PAYLOAD_BYTES - headerBytes) {
-                if (!part.isEmpty()) {
-                    sender.accept(new GroundEffectSnapshotBatchS2CPacket(batch.epoch(), batch.serverTick(), batch.update(), part));
-                    part.clear();
-                    bytes = headerBytes;
-                }
-                FriendlyByteBuf encoded = new FriendlyByteBuf(Unpooled.buffer(entryBytes, entryBytes));
-                try {
-                    entry.toBytes(encoded);
-                    long transferId = GROUND_EFFECT_TRANSFERS.incrementAndGet();
-                    for (int offset = 0; offset < entryBytes; offset += GroundEffectSnapshotFragmentS2CPacket.MAX_FRAGMENT_BYTES) {
-                        int length = Math.min(GroundEffectSnapshotFragmentS2CPacket.MAX_FRAGMENT_BYTES, entryBytes - offset);
-                        byte[] data = new byte[length];
-                        encoded.getBytes(offset, data);
-                        sender.accept(new GroundEffectSnapshotFragmentS2CPacket(batch.epoch(), batch.serverTick(), batch.update(),
-                                transferId, entryBytes, offset, data));
-                    }
-                } finally {
-                    encoded.release();
-                }
-                continue;
-            }
-            if (bytes + entryBytes > MAX_PAYLOAD_BYTES) {
+            if (bytes + sizes[i] > MAX_PAYLOAD_BYTES) {
                 sender.accept(new GroundEffectSnapshotBatchS2CPacket(batch.epoch(), batch.serverTick(), batch.update(), part));
                 part.clear();
                 bytes = headerBytes;
             }
-            part.add(entry);
-            bytes += entryBytes;
+            part.add(entries.get(i));
+            bytes += sizes[i];
         }
         if (!part.isEmpty()) {
             sender.accept(new GroundEffectSnapshotBatchS2CPacket(batch.epoch(), batch.serverTick(), batch.update(), part));

@@ -11,8 +11,8 @@ import net.luojiuoscar.isaac_disaster.networking.packet.groundeffect.GroundEffec
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.Vec3;
-import net.luojiuoscar.isaac_disaster.groundeffect.core.GroundEffectCoverage;
 import org.junit.jupiter.api.Test;
+import static net.luojiuoscar.isaac_disaster.groundeffect.GroundEffectTestFixtures.*;
 
 import java.util.List;
 import java.util.UUID;
@@ -38,14 +38,13 @@ class GroundEffectPacketTest {
     }
     @Test
     void effectProvidedColorReachesTheClientThroughSpawnAndUpdate() {
-        var type = new GroundEffectType<>(ResourceLocation.fromNamespaceAndPath("isaac_disaster", "test_tint"),
-                TintedEffect::new);
-        var effect = type.create(1, 2, null, Vec3.ZERO, 0.5D, 100, 3);
+        var type = new GroundEffectType<>(TintedEffect::new);
+        var effect = type.create(1, 2, null, Vec3.ZERO, 0.5D, 100, 1.0F, 3);
         var stream = new GroundEffectStream();
         FriendlyByteBuf buffer = new FriendlyByteBuf(Unpooled.buffer());
         try {
             new GroundEffectSnapshotBatchS2CPacket(1, 0, false,
-                    List.of(GroundEffectSnapshotBatchS2CPacket.Entry.from(effect))).toBytes(buffer);
+                    List.of(snapshot(effect))).toBytes(buffer);
             var spawn = new GroundEffectSnapshotBatchS2CPacket(buffer);
             assertEquals(0xA040E0, stream.spawn(spawn.entries().get(0)).getColor());
 
@@ -53,7 +52,7 @@ class GroundEffectPacketTest {
             effect.color = 0x40D080;
             effect.repaint(4);
             new GroundEffectSnapshotBatchS2CPacket(1, 1, true, List.of(
-                    GroundEffectSnapshotBatchS2CPacket.Entry.from(effect))).toBytes(buffer);
+                    snapshot(effect))).toBytes(buffer);
             var update = new GroundEffectSnapshotBatchS2CPacket(buffer);
             assertTrue(stream.applyUpdate(update.entries().get(0)));
             assertEquals(0x40D080, stream.get(1, 2).getColor());
@@ -65,8 +64,8 @@ class GroundEffectPacketTest {
     private static final class TintedEffect extends AbstractGroundEffect {
         private int color = 0xA040E0;
         TintedEffect(GroundEffectType<TintedEffect> type, int slot, int generation, UUID owner,
-                     Vec3 position, double radius, int lifetime, long order) {
-            super(type, slot, generation, owner, position, radius, lifetime, order);
+                     Vec3 position, double radius, int lifetime, float damage, long order, int animationDurationTicks) {
+            super(type, slot, generation, owner, position, radius, lifetime, damage, order, animationDurationTicks);
         }
         @Override public int getColor() { return color; }
         @Override public void onContactEffect(GroundEffectContact contact) { }
@@ -107,9 +106,7 @@ class GroundEffectPacketTest {
                             new GroundEffectSnapshotBatchS2CPacket.Entry(7, 8, new Vec3(9, 10, 11),
                                     0.5D, 0, 100, 3, null,
                                     ResourceLocation.fromNamespaceAndPath("isaac_disaster", "water"),
-                                    0x3C9BE8, 3, 2,
-                                    GroundEffectCoverage.puddle(0.5D, 3).subtract(
-                                            GroundEffectCoverage.puddle(0.25D, 4), 0.1D, 0))));
+                                    0x3C9BE8, 3, 2, 10, 5)));
             update.toBytes(updateBuffer);
             var decodedUpdate = new GroundEffectSnapshotBatchS2CPacket(updateBuffer);
             assertEquals(update.entries(), decodedUpdate.entries());

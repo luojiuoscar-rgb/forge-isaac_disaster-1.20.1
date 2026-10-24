@@ -3,6 +3,7 @@ package net.luojiuoscar.isaac_disaster.groundeffect.client;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.Vec3;
 import net.luojiuoscar.isaac_disaster.groundeffect.core.GroundEffectCoverage;
+import net.luojiuoscar.isaac_disaster.networking.packet.groundeffect.GroundEffectSnapshotBatchS2CPacket;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
@@ -28,25 +29,32 @@ public final class ClientGroundEffectState {
     private int age;
     private final int snapshotAge;
     private long snapshotTick;
+    private final int animationDurationTicks;
+    private final double animationStartTick;
 
-    public ClientGroundEffectState(int slot, int generation, Vec3 position, double radius, int age,
-                                   int lifetime, long creationOrder, @Nullable UUID ownerUuid,
-                                   ResourceLocation typeId, int color, long shapeSeed, int revision,
-                                   GroundEffectCoverage coverage) {
-        this.slot = slot;
-        this.generation = generation;
-        this.position = position;
-        this.radius = radius;
-        this.age = Math.max(0, age);
+    ClientGroundEffectState(GroundEffectSnapshotBatchS2CPacket.Entry entry, double localTick,
+                            @Nullable ClientGroundEffectState previous) {
+        this.animationDurationTicks = previous == null ? entry.animationDurationTicks() : previous.animationDurationTicks;
+        this.animationStartTick = previous == null ? localTick - entry.animationElapsedTicks() : previous.animationStartTick;
+        this.slot = entry.slot();
+        this.generation = entry.generation();
+        this.position = entry.position();
+        this.radius = entry.radius();
+        this.age = Math.max(0, entry.age());
         this.snapshotAge = this.age;
-        this.lifetime = Math.max(0, lifetime);
-        this.creationOrder = creationOrder;
-        this.ownerUuid = ownerUuid;
-        this.typeId = typeId;
-        this.color = color;
-        this.shapeSeed = shapeSeed;
-        this.revision = revision;
-        this.coverage = coverage;
+        this.lifetime = Math.max(0, entry.lifetime());
+        this.creationOrder = entry.creationOrder();
+        this.ownerUuid = entry.ownerUuid();
+        this.typeId = entry.typeId();
+        this.color = entry.color();
+        this.shapeSeed = entry.shapeSeed();
+        this.revision = entry.revision();
+        if (previous != null && previous.radius == radius && previous.shapeSeed == shapeSeed) {
+            this.coverage = previous.coverage;
+            this.triangleVertices = previous.triangleVertices;
+            return;
+        }
+        this.coverage = GroundEffectCoverage.puddle(radius, shapeSeed);
         List<GroundEffectCoverage.Point> triangles = new ArrayList<>();
         for (GroundEffectCoverage.Polygon polygon : coverage.pieces()) {
             for (int i = 1; i < polygon.vertices().size() - 1; i++) {
@@ -72,6 +80,10 @@ public final class ClientGroundEffectState {
     public int revision() { return revision; }
     public GroundEffectCoverage coverage() { return coverage; }
     public List<GroundEffectCoverage.Point> triangleVertices() { return triangleVertices; }
+    public double animationScale(double localTick) {
+        return animationDurationTicks == 0 ? 1.0D : Math.min(1.0D,
+                Math.max(0.0D, localTick - animationStartTick) / animationDurationTicks);
+    }
     public int age() { return age; }
     public boolean isExpired() { return age >= lifetime; }
     public void alignTime(long tick, double estimatedTick) {

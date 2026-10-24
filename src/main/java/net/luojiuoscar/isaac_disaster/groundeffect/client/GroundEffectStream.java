@@ -43,6 +43,7 @@ public final class GroundEffectStream {
     }
 
     public ClientGroundEffectState spawn(GroundEffectSnapshotBatchS2CPacket.Entry entry, int serverTick) {
+        if (entry == null || !entry.isValid()) return null;
         Integer latest = latestGenerations.get(entry.slot());
         if (latest != null && entry.generation() < latest) return null;
         if (latest != null && entry.generation() == latest
@@ -55,7 +56,7 @@ public final class GroundEffectStream {
         latestGenerations.put(entry.slot(), entry.generation());
         long identity = ((long) entry.generation() << 32) | (entry.slot() & 0xFFFFFFFFL);
         states.remove(identity);
-        ClientGroundEffectState state = state(entry);
+        ClientGroundEffectState state = new ClientGroundEffectState(entry, clock.localTicks(), null);
         clock.observe(serverTick);
         state.alignTime(clock.unwrap(serverTick), clock.now());
         states.put(identity, state);
@@ -68,21 +69,16 @@ public final class GroundEffectStream {
     }
 
     public boolean applyUpdate(GroundEffectSnapshotBatchS2CPacket.Entry snapshot, int serverTick) {
+        if (snapshot == null || !snapshot.isValid()) return false;
         long identity = ((long) snapshot.generation() << 32) | (snapshot.slot() & 0xFFFFFFFFL);
         ClientGroundEffectState current = states.get(identity);
         if (current == null || snapshot.revision() <= current.revision()) return false;
         clock.observe(serverTick);
-        ClientGroundEffectState changed = state(snapshot);
+        ClientGroundEffectState changed = new ClientGroundEffectState(snapshot, clock.localTicks(), current);
         changed.alignTime(clock.unwrap(serverTick), clock.now());
         states.put(identity, changed);
         renderOrderDirty = true;
         return true;
-    }
-
-    private static ClientGroundEffectState state(GroundEffectSnapshotBatchS2CPacket.Entry entry) {
-        return new ClientGroundEffectState(entry.slot(), entry.generation(), entry.position(), entry.radius(),
-                entry.age(), entry.lifetime(), entry.creationOrder(), entry.ownerUuid(), entry.typeId(),
-                entry.color(), entry.shapeSeed(), entry.revision(), entry.coverage());
     }
 
     public boolean despawn(long identity) {
@@ -117,6 +113,9 @@ public final class GroundEffectStream {
         clearState();
         awaitingSession = true;
     }
+
+    public double estimatedServerTick() { return clock.now(); }
+    public double localAnimationTick() { return clock.localTicks(); }
 
     public int size() { return states.size(); }
     public int epoch() { return epoch; }

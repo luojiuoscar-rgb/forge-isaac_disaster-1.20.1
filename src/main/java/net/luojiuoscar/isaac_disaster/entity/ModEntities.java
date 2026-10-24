@@ -1,7 +1,6 @@
 package net.luojiuoscar.isaac_disaster.entity;
 
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
-import net.luojiuoscar.isaac_disaster.entity.custom.LemonEffectCloud;
 import net.luojiuoscar.isaac_disaster.entity.familiar.impl.fly.BlueFlyEntity;
 import net.luojiuoscar.isaac_disaster.entity.familiar.impl.mom_knife.MomKnifeEntity;
 import net.luojiuoscar.isaac_disaster.entity.tnt.GigaBomb;
@@ -34,12 +33,6 @@ public class ModEntities {
                     .sized(2.5f, 2.5f) // 碰撞箱大小
                     .build("giga_bomb")
     );
-
-    public static final RegistryObject<EntityType<LemonEffectCloud>> SELECTIVE_EFFECT_CLOUD =
-            MOD_ENTITIES.register("selective_effect_cloud",
-                    () -> EntityType.Builder.<LemonEffectCloud>of(LemonEffectCloud::new, MobCategory.MISC)
-                            .sized(6.0F, 0.5F) // 大概大小
-                            .build("selective_effect_cloud"));
 
     public static final RegistryObject<EntityType<MomKnifeEntity>> MOM_KNIFE =
             MOD_ENTITIES.register("mom_knife",

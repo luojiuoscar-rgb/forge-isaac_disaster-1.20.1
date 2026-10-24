@@ -5,6 +5,8 @@ import java.util.function.LongSupplier;
 /** One calibrated server tick estimate shared by every effect in the current session. */
 public final class GroundEffectClock {
     private final LongSupplier nanos;
+    private final long localOriginNanos;
+    private double localTick;
     private boolean initialized;
     private long sampleTick;
     private long sampleNanos;
@@ -12,7 +14,17 @@ public final class GroundEffectClock {
     private long calibrationNanos;
     private double ticksPerNano = 20.0D / 1_000_000_000.0D;
 
-    public GroundEffectClock(LongSupplier nanos) { this.nanos = nanos; }
+    public GroundEffectClock(LongSupplier nanos) {
+        this.nanos = nanos == null ? System::nanoTime : nanos;
+        localOriginNanos = this.nanos.getAsLong();
+    }
+
+    /** Fixed 20 TPS animation time; server samples and session resets cannot rewind it. */
+    public double localTicks() {
+        localTick = Math.max(localTick, Math.max(0L, nanos.getAsLong() - localOriginNanos)
+                * (20.0D / 1_000_000_000.0D));
+        return localTick;
+    }
 
     public long unwrap(int tick) {
         return initialized ? sampleTick + (int) (tick - (int) sampleTick) : Integer.toUnsignedLong(tick);

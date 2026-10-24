@@ -15,7 +15,6 @@ public final class GroundEffectContactGeometry {
         if (feetY < surface.y - HEIGHT_TOLERANCE || feetY > surface.y + HEIGHT_TOLERANCE) return false;
         double dx = (targetBounds.minX + targetBounds.maxX) * 0.5D - surface.x;
         double dz = (targetBounds.minZ + targetBounds.maxZ) * 0.5D - surface.z;
-        if (dx * dx + dz * dz > effect.radius() * effect.radius()) return false;
-        return effect.coverage().contains(dx, dz);
+        return effect.contains(new Vec3(surface.x + dx, feetY, surface.z + dz));
     }
 }

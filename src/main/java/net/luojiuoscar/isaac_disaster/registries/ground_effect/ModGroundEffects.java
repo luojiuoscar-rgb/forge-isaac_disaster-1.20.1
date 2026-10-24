@@ -2,6 +2,8 @@ package net.luojiuoscar.isaac_disaster.registries.ground_effect;
 
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.groundeffect.impl.WaterPuddleEffect;
+import net.luojiuoscar.isaac_disaster.groundeffect.impl.LemonPuddleEffect;
+import net.luojiuoscar.isaac_disaster.groundeffect.impl.PotionPuddleEffect;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -16,7 +18,13 @@ public final class ModGroundEffects {
             DeferredRegister.create(GROUND_EFFECT_KEY, IsaacDisaster.MOD_ID);
 
     public static final RegistryObject<GroundEffectType<WaterPuddleEffect>> WATER =
-            GROUND_EFFECT_REGISTRY.register(WaterPuddleEffect.TYPE.getPath(), () -> WaterPuddleEffect.DEFINITION);
+            GROUND_EFFECT_REGISTRY.register("water", () -> new GroundEffectType<>(WaterPuddleEffect::new));
+
+    public static final RegistryObject<GroundEffectType<LemonPuddleEffect>> LEMON =
+            GROUND_EFFECT_REGISTRY.register("lemon", () -> new GroundEffectType<>(LemonPuddleEffect::new));
+
+    public static final RegistryObject<GroundEffectType<PotionPuddleEffect>> POTION =
+            GROUND_EFFECT_REGISTRY.register("potion", () -> new GroundEffectType<>(PotionPuddleEffect::new));
 
     private ModGroundEffects() { }
 }

@@ -430,11 +430,11 @@ public class ModExecutableEffects {
 
     public static final RegistryObject<IExecutableEffect> FREE_LEMONADE =
             EXECUTABLE_EFFECT_REGISTRY.register("free_lemonade", () -> new AbilityEffectEntry(
-                    LEMON, ctx -> ctx.set(ContextKeys.DOUBLE, List.of(0.8, 100., 0., 10., 4.))
+                    LEMON, ctx -> ctx.set(ContextKeys.DOUBLE, List.of(0.8, 360., 5.))
             ));
     public static final RegistryObject<IExecutableEffect> LEMON_MISHAP =
             EXECUTABLE_EFFECT_REGISTRY.register("lemon_mishap", () -> new AbilityEffectEntry(
-                    LEMON, ctx -> ctx.set(ContextKeys.DOUBLE, List.of(0.4, 100., 0., 10., 2.5))
+                    LEMON, ctx -> ctx.set(ContextKeys.DOUBLE, List.of(0.4, 200., 4.))
             ));
     public static final RegistryObject<IExecutableEffect> MR_BOOM =
             EXECUTABLE_EFFECT_REGISTRY.register("mr_boom", () -> new AbilityEffectEntry(

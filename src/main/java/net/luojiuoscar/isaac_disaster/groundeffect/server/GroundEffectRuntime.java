@@ -4,6 +4,7 @@ import net.luojiuoscar.isaac_disaster.groundeffect.core.GroundEffectPlacement;
 import net.luojiuoscar.isaac_disaster.groundeffect.core.AbstractGroundEffect;
 import net.luojiuoscar.isaac_disaster.groundeffect.impl.WaterPuddleEffect;
 import net.luojiuoscar.isaac_disaster.registries.ground_effect.ModGroundEffects;
+import net.luojiuoscar.isaac_disaster.registries.ground_effect.GroundEffectType;
 import net.luojiuoscar.isaac_disaster.networking.ModMessages;
 import net.luojiuoscar.isaac_disaster.networking.packet.groundeffect.GroundEffectDespawnBatchS2CPacket;
 import net.luojiuoscar.isaac_disaster.networking.packet.groundeffect.GroundEffectSnapshotBatchS2CPacket;
@@ -11,6 +12,8 @@ import net.luojiuoscar.isaac_disaster.networking.packet.groundeffect.GroundEffec
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
@@ -61,10 +64,26 @@ public final class GroundEffectRuntime {
     @Nullable
     public WaterPuddleEffect spawnWater(ServerPlayer owner) {
         if (owner == null || owner.level().isClientSide()) return null;
-        return GroundEffectPlacement.projectToGround(owner.serverLevel(),
-                        new Vec3(owner.getX(), owner.getY(), owner.getZ()))
-                .map(position -> manager(owner.serverLevel()).spawn(ModGroundEffects.WATER.get(), owner.getUUID(),
-                        position, WaterPuddleEffect.DEFAULT_RADIUS, WaterPuddleEffect.DEFAULT_LIFETIME))
+        return spawnOnGround(ModGroundEffects.WATER.get(), owner, owner.position(),
+                WaterPuddleEffect.DEFAULT_RADIUS, WaterPuddleEffect.DEFAULT_LIFETIME,
+                (float) owner.getAttributeValue(Attributes.ATTACK_DAMAGE));
+    }
+
+    /** Projects a new effect once and snapshots the caller's explicit damage. */
+    @Nullable
+    public <T extends AbstractGroundEffect> T spawnOnGround(GroundEffectType<T> type, LivingEntity owner,
+                                                           Vec3 feet, double radius, int lifetime, float damage) {
+        return spawnOnGround(type, owner, feet, radius, lifetime, damage, 0);
+    }
+
+    @Nullable
+    public <T extends AbstractGroundEffect> T spawnOnGround(GroundEffectType<T> type, LivingEntity owner,
+                                                           Vec3 feet, double radius, int lifetime, float damage,
+                                                           int animationDurationTicks) {
+        if (owner == null || feet == null || !Double.isFinite(feet.x) || !Double.isFinite(feet.y)
+                || !Double.isFinite(feet.z) || !(owner.level() instanceof ServerLevel level)) return null;
+        return GroundEffectPlacement.projectToGround(level, feet)
+                .map(position -> manager(level).spawn(type, owner.getUUID(), position, radius, lifetime, damage, animationDurationTicks))
                 .orElse(null);
     }
 
@@ -116,13 +135,14 @@ public final class GroundEffectRuntime {
             List<GroundEffectSnapshotBatchS2CPacket.Entry> toSpawn = new ArrayList<>();
             List<GroundEffectSnapshotBatchS2CPacket.Entry> toUpdate = new ArrayList<>();
             for (AbstractGroundEffect effect : manager.queryVisible(player.position(), VISIBLE_RADIUS)) {
-                current.put(effect.identity(), effect.revision());
                 Integer lastRevision = previous.get(effect.identity());
-                if (lastRevision == null) {
-                    toSpawn.add(GroundEffectSnapshotBatchS2CPacket.Entry.from(effect));
-                } else if (lastRevision != effect.revision()) {
-                    toUpdate.add(GroundEffectSnapshotBatchS2CPacket.Entry.from(effect));
+                if (lastRevision == null || lastRevision != effect.revision()) {
+                    var snapshot = GroundEffectSnapshotBatchS2CPacket.Entry.from(effect);
+                    if (snapshot == null) continue;
+                    if (lastRevision == null) toSpawn.add(snapshot);
+                    else toUpdate.add(snapshot);
                 }
+                current.put(effect.identity(), effect.revision());
             }
             if (!toSpawn.isEmpty()) {
                 ModMessages.sentToPlayer(new GroundEffectSnapshotBatchS2CPacket(session.epoch(), serverTick, false, toSpawn), player);

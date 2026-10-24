@@ -35,7 +35,7 @@ class GroundEffectPacketBatchingTest {
     }
 
     @Test
-    void twentyThousandUncutSpawnsPreserveEverySnapshotWithinPayloadBudget() {
+    void twentyThousandSpawnsPreserveEverySnapshotWithinPayloadBudget() {
         var entries = IntStream.range(0, 20_000).mapToObj(GroundEffectPacketBatchingTest::entry).toList();
         var parts = split(new GroundEffectSnapshotBatchS2CPacket(8, 123, false, entries));
         assertTrue(parts.size() > 1);
@@ -45,15 +45,18 @@ class GroundEffectPacketBatchingTest {
                     GroundEffectSnapshotBatchS2CPacket::toBytes, GroundEffectSnapshotBatchS2CPacket::new);
             assertEquals(8, decoded.epoch());
             assertEquals(123, decoded.serverTick());
+            assertFalse(decoded.update());
             restored.addAll(decoded.entries());
         }
         assertEquals(entries, restored);
     }
 
     @Test
-    void twentyThousandUncutUpdatesPreserveEveryRevisionWithinPayloadBudget() {
+    void twentyThousandUpdatesPreserveEveryRevisionWithinPayloadBudget() {
         var entries = IntStream.range(0, 20_000).mapToObj(slot ->
-                entry(slot)).toList();
+                new GroundEffectSnapshotBatchS2CPacket.Entry(slot, 3, new Vec3(slot, 2, 4), 0.5D,
+                        7, 120, slot, null, ResourceLocation.parse("isaac_disaster:water"), 0x3C9BE8, slot,
+                        slot + 1, 120, slot % 120)).toList();
         var parts = split(new GroundEffectSnapshotBatchS2CPacket(9, 124, true, entries));
         assertTrue(parts.size() > 1);
         List<GroundEffectSnapshotBatchS2CPacket.Entry> restored = new ArrayList<>();
@@ -62,6 +65,7 @@ class GroundEffectPacketBatchingTest {
                     GroundEffectSnapshotBatchS2CPacket::toBytes, GroundEffectSnapshotBatchS2CPacket::new);
             assertEquals(9, decoded.epoch());
             assertEquals(124, decoded.serverTick());
+            assertTrue(decoded.update());
             restored.addAll(decoded.entries());
         }
         assertEquals(entries, restored);

@@ -5,6 +5,7 @@ import net.luojiuoscar.isaac_disaster.groundeffect.core.GroundEffectContactGeome
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.junit.jupiter.api.Test;
+import static net.luojiuoscar.isaac_disaster.groundeffect.GroundEffectTestFixtures.*;
 
 import java.util.UUID;
 import java.util.List;
@@ -20,10 +21,10 @@ class GroundEffectManagerTest {
     @Test
     void denseQueryUsesTheGridAndRetainsItsInclusiveRadiusBoundary() {
         var manager = new GroundEffectManager();
-        var atCenter = manager.spawnWater(null, Vec3.ZERO, 0.1D, 100);
-        var atBoundary = manager.spawnWater(null, new Vec3(0.5D, 0, 0), 0.1D, 100);
-        manager.spawnWater(null, new Vec3(0.75D, 0, 0), 0.1D, 100);
-        for (int i = 0; i < 10; i++) manager.spawnWater(null, new Vec3(10 + i * 2, 0, 0), 0.1D, 100);
+        var atCenter = water(manager, null, Vec3.ZERO, 0.1D, 100, 1.0F);
+        var atBoundary = water(manager, null, new Vec3(0.5D, 0, 0), 0.1D, 100, 1.0F);
+        water(manager, null, new Vec3(0.75D, 0, 0), 0.1D, 100, 1.0F);
+        for (int i = 0; i < 10; i++) water(manager, null, new Vec3(10 + i * 2, 0, 0), 0.1D, 100, 1.0F);
         var visible = manager.queryVisible(Vec3.ZERO, 0.5D);
         assertEquals(2, visible.size());
         assertTrue(visible.contains(atCenter));
@@ -32,7 +33,7 @@ class GroundEffectManagerTest {
 
     @Test
     void contactRejectsOtherFloorsAndAirborneFeetDespiteHorizontalOverlap() {
-        var effect = new GroundEffectManager().spawnWater(null, new Vec3(0, 64, 0));
+        var effect = water(new GroundEffectManager(), null, new Vec3(0, 64, 0));
         assertFalse(GroundEffectContactGeometry.touches(effect, feetAt(63)));
         assertFalse(GroundEffectContactGeometry.touches(effect, feetAt(65)));
         assertFalse(GroundEffectContactGeometry.touches(effect, feetAt(100)));
@@ -41,7 +42,7 @@ class GroundEffectManagerTest {
 
     @Test
     void contactIncludesBothPointTwoHeightBoundariesButRejectsBeyondThem() {
-        var effect = new GroundEffectManager().spawnWater(null, new Vec3(0, 64, 0));
+        var effect = water(new GroundEffectManager(), null, new Vec3(0, 64, 0));
         assertTrue(GroundEffectContactGeometry.touches(effect, feetAt(63.8D)));
         assertTrue(GroundEffectContactGeometry.touches(effect, feetAt(64.2D)));
         assertFalse(GroundEffectContactGeometry.touches(effect, feetAt(63.799D)));
@@ -49,11 +50,11 @@ class GroundEffectManagerTest {
     }
 
     @Test
-    void contactKeepsTheRemainingCoverageAndHorizontalRadiusRules() {
+    void partialOverlapKeepsBothCompleteContactAreas() {
         GroundEffectManager manager = new GroundEffectManager();
-        var effect = manager.spawnWater(new UUID(1, 1), new Vec3(0, 64, 0), 0.5D, 100);
-        manager.spawnWater(new UUID(2, 2), new Vec3(0.4D, 64, 0), 0.5D, 100);
-        assertFalse(GroundEffectContactGeometry.touches(effect, feetAt(64).move(0.2D, 0, 0)));
+        var effect = water(manager, new UUID(1, 1), new Vec3(0, 64, 0), 0.5D, 100, 1.0F);
+        water(manager, new UUID(2, 2), new Vec3(0.4D, 64, 0), 0.5D, 100, 1.0F);
+        assertTrue(GroundEffectContactGeometry.touches(effect, feetAt(64).move(0.2D, 0, 0)));
         assertTrue(GroundEffectContactGeometry.touches(effect, feetAt(64).move(-0.3D, 0, 0)));
         assertFalse(GroundEffectContactGeometry.touches(effect, feetAt(64).move(-0.6D, 0, 0)));
     }
@@ -61,10 +62,10 @@ class GroundEffectManagerTest {
     @Test
     void visibleQueryUsesAnInclusiveThreeDimensionalCenterDistance() {
         GroundEffectManager manager = new GroundEffectManager();
-        var boundary = manager.spawnWater(null, new Vec3(48, 0, 0));
-        var verticalBoundary = manager.spawnWater(null, new Vec3(0, 48, 0));
-        var outside = manager.spawnWater(null, new Vec3(48.01D, 1, 0));
-        var diagonalOutside = manager.spawnWater(null, new Vec3(40, 40, 0));
+        var boundary = water(manager, null, new Vec3(48, 0, 0));
+        var verticalBoundary = water(manager, null, new Vec3(0, 48, 0));
+        var outside = water(manager, null, new Vec3(48.01D, 1, 0));
+        var diagonalOutside = water(manager, null, new Vec3(40, 40, 0));
         var visible = manager.queryVisible(Vec3.ZERO, 48);
         assertEquals(2, visible.size());
         assertTrue(visible.contains(boundary));
@@ -76,8 +77,8 @@ class GroundEffectManagerTest {
     @Test
     void visibleQueryFindsLargePuddlesOnceAndForgetsRemovedAndClearedEntries() {
         GroundEffectManager manager = new GroundEffectManager();
-        var large = manager.spawnWater(null, new Vec3(47, 0, 0), 12, 100);
-        var small = manager.spawnWater(null, new Vec3(-47, 0, 0));
+        var large = water(manager, null, new Vec3(47, 0, 0), 12, 100, 1.0F);
+        var small = water(manager, null, new Vec3(-47, 0, 0));
         assertEquals(2, manager.queryVisible(Vec3.ZERO, 48).size());
         manager.remove(large);
         assertEquals(List.of(small), manager.queryVisible(Vec3.ZERO, 48));
@@ -94,15 +95,15 @@ class GroundEffectManagerTest {
         GroundEffectManager manager = new GroundEffectManager();
         UUID owner = new UUID(1, 2);
         for (int i = 0; i < GroundEffectManager.MAX_ACTIVE_EFFECTS; i++) {
-            assertNotNull(manager.spawnWater(owner, new Vec3(i * 2.0D, 0, 0), 0.5D, 100));
+            assertNotNull(water(manager, owner, new Vec3(i * 2.0D, 0, 0), 0.5D, 100, 1.0F));
         }
         assertEquals(GroundEffectManager.MAX_ACTIVE_EFFECTS, manager.activeCount());
-        assertNull(manager.spawnWater(owner, new Vec3(40_002, 0, 0), 0.5D, 100));
+        assertNull(water(manager, owner, new Vec3(40_002, 0, 0), 0.5D, 100, 1.0F));
         var first = manager.activeEffects().get(0);
-        assertNull(manager.spawnWater(new UUID(7, 8), new Vec3(0.1D, 0, 0), 0.5D, 100));
+        assertNull(water(manager, new UUID(7, 8), new Vec3(0.1D, 0, 0), 0.5D, 100, 1.0F));
         assertTrue(first.contains(new Vec3(0.2D, 0, 0)), "Rejected paint cannot erase old coverage");
-        assertSame(first, manager.spawnWater(owner, Vec3.ZERO, 0.5D, 100), "Refresh is allowed at capacity");
-        assertNotNull(manager.spawnWater(new UUID(7, 8), Vec3.ZERO, 1.0D, 100),
+        assertSame(first, water(manager, owner, Vec3.ZERO, 0.5D, 100, 1.0F), "Refresh is allowed at capacity");
+        assertNotNull(water(manager, new UUID(7, 8), Vec3.ZERO, 1.0D, 100, 1.0F),
                 "Replacement may reclaim the completely covered slot at capacity");
         assertEquals(GroundEffectManager.MAX_ACTIVE_EFFECTS, manager.activeCount());
     }
@@ -110,10 +111,10 @@ class GroundEffectManagerTest {
     @Test
     void removingAnEffectReleasesItsSlotForAReplacementGeneration() {
         GroundEffectManager manager = new GroundEffectManager();
-        var first = manager.spawnWater(null, Vec3.ZERO);
+        var first = water(manager, null, Vec3.ZERO);
         assertNotNull(first);
         manager.remove(first);
-        var replacement = manager.spawnWater(null, new Vec3(1, 1, 1));
+        var replacement = water(manager, null, new Vec3(1, 1, 1));
         assertNotNull(replacement);
         assertEquals(first.slot(), replacement.slot());
         assertEquals(first.generation() + 1, replacement.generation());
@@ -122,8 +123,8 @@ class GroundEffectManagerTest {
     @Test
     void completelyCoveredWaterIsRemovedRatherThanKeptUntilExpiry() {
         GroundEffectManager manager = new GroundEffectManager();
-        var old = manager.spawnWater(new UUID(1, 1), Vec3.ZERO, 0.5D, 100);
-        var newer = manager.spawnWater(new UUID(2, 2), Vec3.ZERO, 1.0D, 20);
+        var old = water(manager, new UUID(1, 1), Vec3.ZERO, 0.5D, 100, 1.0F);
+        var newer = water(manager, new UUID(2, 2), Vec3.ZERO, 1.0D, 20, 1.0F);
 
         assertNotNull(newer);
         assertEquals(1, manager.activeCount());
@@ -132,26 +133,26 @@ class GroundEffectManagerTest {
     }
 
     @Test
-    void partialOverwritePermanentlyRemovesOnlyTheOverlappedArea() {
+    void partialOverlapDoesNotEraseAnyPartOfEitherPuddle() {
         GroundEffectManager manager = new GroundEffectManager();
-        var old = manager.spawnWater(new UUID(1, 1), Vec3.ZERO, 0.5D, 100);
-        var newer = manager.spawnWater(new UUID(2, 2), new Vec3(0.4D, 0, 0), 0.5D, 20);
+        var old = water(manager, new UUID(1, 1), Vec3.ZERO, 0.5D, 100, 1.0F);
+        var newer = water(manager, new UUID(2, 2), new Vec3(0.4D, 0, 0), 0.5D, 20, 1.0F);
         assertTrue(old.contains(new Vec3(-0.3D, 0, 0)));
-        assertFalse(old.contains(new Vec3(0.2D, 0, 0)));
+        assertTrue(old.contains(new Vec3(0.2D, 0, 0)));
         manager.remove(newer);
 
         assertEquals(1, manager.activeCount());
         assertTrue(old.contains(new Vec3(-0.3D, 0, 0)));
-        assertFalse(old.contains(new Vec3(0.2D, 0, 0)));
+        assertTrue(old.contains(new Vec3(0.2D, 0, 0)));
     }
 
     @Test
     void sameOwnerRepaintingTheSameCircleRefreshesWithoutMovingOrAllocating() {
         GroundEffectManager manager = new GroundEffectManager();
         UUID owner = new UUID(1, 1);
-        var old = manager.spawnWater(owner, Vec3.ZERO, 0.5D, 100);
+        var old = water(manager, owner, Vec3.ZERO, 0.5D, 100, 1.0F);
         for (int i = 0; i < 50; i++) old.tick();
-        var repainted = manager.spawnWater(owner, Vec3.ZERO, 0.5D, 100);
+        var repainted = water(manager, owner, Vec3.ZERO, 0.5D, 100, 1.0F);
 
         assertSame(old, repainted);
         assertEquals(1, manager.activeCount());
@@ -162,19 +163,19 @@ class GroundEffectManagerTest {
     @Test
     void separateFloorsDoNotEraseOneAnother() {
         GroundEffectManager manager = new GroundEffectManager();
-        var old = manager.spawnWater(new UUID(1, 1), Vec3.ZERO, 0.5D, 100);
-        manager.spawnWater(new UUID(2, 2), new Vec3(0, 1, 0), 2.0D, 20);
+        var old = water(manager, new UUID(1, 1), Vec3.ZERO, 0.5D, 100, 1.0F);
+        water(manager, new UUID(2, 2), new Vec3(0, 1, 0), 2.0D, 20, 1.0F);
 
         assertEquals(2, manager.activeCount());
         assertTrue(old.contains(Vec3.ZERO));
     }
 
     @Test
-    void aNewStrokeKeepsOnlyItsLatestOwnerAtAnOverlappedContact() {
+    void partiallyOverlappingOwnersRetainTheirOwnContactAreas() {
         GroundEffectManager manager = new GroundEffectManager();
-        var old = manager.spawnWater(new UUID(1, 1), Vec3.ZERO, 0.5D, 100);
-        var newer = manager.spawnWater(new UUID(2, 2), new Vec3(0.1D, 0, 0), 0.5D, 100);
-        assertFalse(old.contains(new Vec3(0.1D, 0, 0)));
+        var old = water(manager, new UUID(1, 1), Vec3.ZERO, 0.5D, 100, 1.0F);
+        var newer = water(manager, new UUID(2, 2), new Vec3(0.1D, 0, 0), 0.5D, 100, 1.0F);
+        assertTrue(old.contains(new Vec3(0.1D, 0, 0)));
         assertTrue(newer.contains(new Vec3(0.1D, 0, 0)));
         assertEquals(new UUID(2, 2), newer.ownerUuid());
     }
@@ -183,8 +184,8 @@ class GroundEffectManagerTest {
     void movingSlowlyLeavesOldUncoveredPartsBehindInsteadOfMovingOneCircle() {
         GroundEffectManager manager = new GroundEffectManager();
         UUID owner = new UUID(1, 1);
-        var first = manager.spawnWater(owner, Vec3.ZERO, 0.5D, 100);
-        for (int i = 1; i <= 15; i++) manager.spawnWater(owner, new Vec3(i * 0.05D, 0, 0), 0.5D, 100);
+        var first = water(manager, owner, Vec3.ZERO, 0.5D, 100, 1.0F);
+        for (int i = 1; i <= 15; i++) water(manager, owner, new Vec3(i * 0.05D, 0, 0), 0.5D, 100, 1.0F);
         assertTrue(manager.activeCount() > 1);
         assertTrue(first.contains(new Vec3(-0.4D, 0, 0)));
         assertTrue(manager.activeEffects().stream().anyMatch(effect -> effect.contains(new Vec3(0.9D, 0, 0))));
@@ -192,14 +193,14 @@ class GroundEffectManagerTest {
     }
 
     @Test
-    void repaintCanFillItsOldHoleAndEraseTheInterveningNewerPaint() {
+    void repaintCanEraseSmallerInterveningPaintWithoutChangingItsOutline() {
         GroundEffectManager manager = new GroundEffectManager();
         UUID owner = new UUID(1, 1);
-        var original = manager.spawnWater(owner, Vec3.ZERO, 1.0D, 100);
-        var covering = manager.spawnWater(new UUID(2, 2), Vec3.ZERO, 0.25D, 100);
-        assertFalse(original.contains(Vec3.ZERO));
+        var original = water(manager, owner, Vec3.ZERO, 1.0D, 100, 1.0F);
+        var covering = water(manager, new UUID(2, 2), Vec3.ZERO, 0.25D, 100, 1.0F);
+        assertTrue(original.contains(Vec3.ZERO));
         long originalOrder = original.creationOrder();
-        assertSame(original, manager.spawnWater(owner, Vec3.ZERO, 1.0D, 100));
+        assertSame(original, water(manager, owner, Vec3.ZERO, 1.0D, 100, 1.0F));
         assertTrue(original.contains(Vec3.ZERO));
         assertTrue(original.creationOrder() > originalOrder);
         assertEquals(1, manager.activeCount());
@@ -209,9 +210,28 @@ class GroundEffectManagerTest {
     @Test
     void zeroLifetimePaintCannotEraseAnExistingEffect() {
         GroundEffectManager manager = new GroundEffectManager();
-        var original = manager.spawnWater(null, Vec3.ZERO);
-        assertNull(manager.spawnWater(new UUID(1, 1), Vec3.ZERO, 1.0D, 0));
+        var original = water(manager, null, Vec3.ZERO);
+        assertNull(water(manager, new UUID(1, 1), Vec3.ZERO, 1.0D, 0, 1.0F));
         assertTrue(original.contains(Vec3.ZERO));
         assertEquals(1, manager.activeCount());
+    }
+
+    @Test
+    void excessiveGridCoverageIsRejectedBeforeEnumeratingCells() {
+        var manager = new GroundEffectManager();
+        assertNull(water(manager, null, Vec3.ZERO, 399996, 100, 1));
+        assertNull(water(manager, null, new Vec3(Double.MAX_VALUE, 0, 0), 0.5, 100, 1));
+        assertEquals(0, manager.activeCount());
+        assertNotNull(water(manager, null, Vec3.ZERO));
+        assertEquals(1, manager.queryVisible(Vec3.ZERO, Double.MAX_VALUE).size());
+    }
+
+    @Test
+    void gridBudgetAcceptsItsBoundaryAndRefusesTheNextCellBand() {
+        var manager = new GroundEffectManager();
+        var boundary = water(manager, null, Vec3.ZERO, 63.5, 100, 1);
+        assertNotNull(boundary);
+        assertNull(water(manager, null, Vec3.ZERO, 64, 100, 1));
+        assertSame(boundary, manager.activeEffects().get(0));
     }
 }
