@@ -2,6 +2,7 @@ package net.luojiuoscar.isaac_disaster.registries.periodic_module;
 
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.registries.periodic_module.impl.*;
+import net.luojiuoscar.isaac_disaster.registries.familiar.ModFamiliarEntities;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -67,4 +68,20 @@ public class ModPeriodicModules {
 
     public static final RegistryObject<PeriodicModule> ADRENALINE =
             PERIODIC_MODULE_REGISTRY.register("adrenaline", Adrenaline::new);
+
+    public static final RegistryObject<PeriodicModule> LOCUST_OF_WAR =
+            PERIODIC_MODULE_REGISTRY.register("locust_of_war", () ->
+                    new LocustGeneration(ModFamiliarEntities.LOCUST_OF_WAR.getId()));
+    public static final RegistryObject<PeriodicModule> LOCUST_OF_PESTILENCE =
+            PERIODIC_MODULE_REGISTRY.register("locust_of_pestilence", () ->
+                    new LocustGeneration(ModFamiliarEntities.LOCUST_OF_PESTILENCE.getId()));
+    public static final RegistryObject<PeriodicModule> LOCUST_OF_FAMINE =
+            PERIODIC_MODULE_REGISTRY.register("locust_of_famine", () ->
+                    new LocustGeneration(ModFamiliarEntities.LOCUST_OF_FAMINE.getId()));
+    public static final RegistryObject<PeriodicModule> LOCUST_OF_DEATH =
+            PERIODIC_MODULE_REGISTRY.register("locust_of_death", () ->
+                    new LocustGeneration(ModFamiliarEntities.LOCUST_OF_DEATH.getId()));
+    public static final RegistryObject<PeriodicModule> LOCUST_OF_CONQUEST =
+            PERIODIC_MODULE_REGISTRY.register("locust_of_conquest", () ->
+                    new ConquestLocustGeneration(ModFamiliarEntities.LOCUST_OF_CONQUEST.getId()));
 }

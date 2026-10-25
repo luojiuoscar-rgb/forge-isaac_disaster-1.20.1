@@ -20,6 +20,18 @@ import net.minecraft.world.item.ItemStack;
 import java.util.List;
 
 public class PennyTrinket implements IAbilityEffect {
+    public static double getResourceChance() {
+        return 0.25;
+    }
+
+    public static double getHeartOrBatteryChance() {
+        return 1.0 / 8;
+    }
+
+    public static double getCounterfeitChance() {
+        return 1.0 / 3;
+    }
+
     @Override
     public TriggerType getRequiredTriggerType() {
         return ModTriggerTypes.LOOT;
@@ -76,14 +88,11 @@ public class PennyTrinket implements IAbilityEffect {
 
     private ItemStack bloodyPenny(ServerPlayer player, int value, int max) {
 
-        int count = PlayerHelper.getTrinketCount(ModTrinkets.BLOODY_PENNY.getId(), player);
-
-        if (count == 0 || value <= 0) {
+        if (!PlayerHelper.hasTrinket(ModTrinkets.BLOODY_PENNY.getId(), player) || value <= 0) {
             return ItemStack.EMPTY;
         }
 
-        double chance = 1 - (25 * (4 - count)) * 0.01;
-        chance = Mth.clamp(chance, 0.0, 1.0);
+        double chance = getResourceChance();
 
         int result = sampleBinomial(value, chance, player.getRandom());
         result = Mth.clamp(result, 0, Math.min(max, 64));
@@ -100,14 +109,11 @@ public class PennyTrinket implements IAbilityEffect {
 
     private ItemStack burntPenny(ServerPlayer player, int value, int max) {
 
-        int count = PlayerHelper.getTrinketCount(ModTrinkets.BURNT_PENNY.getId(), player);
-
-        if (count == 0 || value <= 0) {
+        if (!PlayerHelper.hasTrinket(ModTrinkets.BURNT_PENNY.getId(), player) || value <= 0) {
             return ItemStack.EMPTY;
         }
 
-        double chance = 1 - (25 * (4 - count)) * 0.01;
-        chance = Mth.clamp(chance, 0.0, 1.0);
+        double chance = getResourceChance();
 
         int result = sampleBinomial(value, chance, player.getRandom());
         result = Mth.clamp(result, 0, Math.min(max, 64));
@@ -124,14 +130,11 @@ public class PennyTrinket implements IAbilityEffect {
 
     private ItemStack flatPenny(ServerPlayer player, int value, int max) {
 
-        int count = PlayerHelper.getTrinketCount(ModTrinkets.FLAT_PENNY.getId(), player);
-
-        if (count == 0 || value <= 0) {
+        if (!PlayerHelper.hasTrinket(ModTrinkets.FLAT_PENNY.getId(), player) || value <= 0) {
             return ItemStack.EMPTY;
         }
 
-        double chance = 1 - (25 * (4 - count)) * 0.01;
-        chance = Mth.clamp(chance, 0.0, 1.0);
+        double chance = getResourceChance();
 
         int result = sampleBinomial(value, chance, player.getRandom());
         result = Mth.clamp(result, 0, Math.min(max, 64));
@@ -148,13 +151,11 @@ public class PennyTrinket implements IAbilityEffect {
 
     private ItemStack blessedPenny(ServerPlayer player, int value, int max) {
 
-        int count = PlayerHelper.getTrinketCount(ModTrinkets.BLESSED_PENNY.getId(), player);
-
-        if (count == 0 || value <= 0) {
+        if (!PlayerHelper.hasTrinket(ModTrinkets.BLESSED_PENNY.getId(), player) || value <= 0) {
             return ItemStack.EMPTY;
         }
 
-        double chance = 1.0 / 8.0;
+        double chance = getHeartOrBatteryChance();
 
         int result = sampleBinomial(value, chance, player.getRandom());
         result = Mth.clamp(result, 0, Math.min(max, 64));
@@ -171,13 +172,11 @@ public class PennyTrinket implements IAbilityEffect {
 
     private ItemStack chargePenny(ServerPlayer player, int value, int max) {
 
-        int count = PlayerHelper.getTrinketCount(ModTrinkets.CHARGED_PENNY.getId(), player);
-
-        if (count == 0 || value <= 0) {
+        if (!PlayerHelper.hasTrinket(ModTrinkets.CHARGED_PENNY.getId(), player) || value <= 0) {
             return ItemStack.EMPTY;
         }
 
-        double chance = 1.0 / 8.0;
+        double chance = getHeartOrBatteryChance();
 
         int result = sampleBinomial(value, chance, player.getRandom());
         result = Mth.clamp(result, 0, Math.min(max, 64));
@@ -202,7 +201,7 @@ public class PennyTrinket implements IAbilityEffect {
             return ItemStack.EMPTY;
         }
 
-        double chance = 1.0 / 3.0;
+        double chance = getCounterfeitChance();
 
         int result = sampleBinomial(value, chance, player.getRandom());
         result = Mth.clamp(result, 0, Math.min(max, 64));

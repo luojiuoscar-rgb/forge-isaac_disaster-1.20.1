@@ -1,6 +1,5 @@
 package net.luojiuoscar.isaac_disaster.registries.ability.trinket.impl;
 
-import net.luojiuoscar.isaac_disaster.helper.DescriptionHelper;
 import net.luojiuoscar.isaac_disaster.item.item.Trinket;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.registries.ability.trinket.TrinketAbility;
@@ -13,7 +12,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
 import java.util.List;
 
 public class HookWorm extends TrinketAbility {
@@ -52,32 +50,15 @@ public class HookWorm extends TrinketAbility {
         }else{
             StatManager.TEARS.apply(player, -0.5);
             StatManager.RANGE.apply(player, -0.5);
-        }        StatManager.addSpectral(player, -1);
-    }
-
-    @Override
-    public List<Component> getDesc(@Nullable ItemStack stack, Player player) {
-        return List.of(
-                Component.translatable("item.isaac_disaster.hook_worm.lore.1"),
-                StatManager.TEARS.description(0.5),
-                Component.translatable("item.isaac_disaster.attribute.spectral_bullet")
-        );
-    }
-
-    @Override
-    public List<Component> getSynergyDesc(@Nullable ItemStack stack, Player player) {
-        List<Component> desc = new ArrayList<>();
-
-        if (stack != null && Trinket.isEnchanted(stack)){
-            desc.addAll(DescriptionHelper.getSynergyDesc(
-                    Component.translatable("item.isaac_disaster.trinket.enchanted"),
-                    List.of(
-                            StatManager.TEARS.description(.5),
-                            StatManager.RANGE.description(.5)
-                    )
-            ));
         }
+        StatManager.addSpectral(player, -1);
+    }
 
-        return desc;
+    @Override
+    public List<Component> getDesc(@Nullable ItemStack stack, @Nullable Player player) {
+        return List.of(Component.translatable("item.isaac_disaster.hook_worm.lore.1"),
+                StatManager.TEARS.dynamicDescription(stack != null && Trinket.isEnchanted(stack) ? 1 : 0.5),
+                StatManager.RANGE.dynamicDescription(stack != null && Trinket.isEnchanted(stack) ? 1 : 0.5),
+                Component.translatable("item.isaac_disaster.attribute.spectral_bullet"));
     }
 }

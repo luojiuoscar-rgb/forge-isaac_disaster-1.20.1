@@ -21,6 +21,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
@@ -245,6 +246,16 @@ public enum StatManager {
                 .append(formatted).withStyle(style);
     }
 
+    /** Uses the stat's configured formatting and highlights only the changing value. */
+    public Component dynamicDescription(double ratio) {
+        var result = description(ratio).copy();
+        var values = result.getSiblings();
+        for (int i = 0; i < values.size(); i++) {
+            values.set(i, values.get(i).copy().withStyle(style -> style.withColor(ColorManager.SYNERGY)));
+        }
+        return result;
+    }
+
     /* ---------------------- STATICS ---------------------- */
 
     /** 根据 UUID 获取枚举实例 */
@@ -430,8 +441,31 @@ public enum StatManager {
     /* ---------------------- 基础属性数值获取 ---------------------- */
 
     public static double getNearbyRange(){return NEARBY_RANGE.get();}
-    /** 返回ticks */
-    public static int getTimeInterval(int ratio){return (int) (BASIC_TIME_INTERVAL.get() * ratio * 20);}
+    /** 按当前基础时间（秒）换算为 ticks，小数部分向下取整，溢出时饱和。 */
+    public static int getTimeInterval(double ratio) {
+        double ticks = normalizeTimeRatio(ratio) * normalizeTimeRatio(BASIC_TIME_INTERVAL.get()) * 20.0D;
+        return (int) Math.min(ticks, Integer.MAX_VALUE);
+    }
+
+    /** 规范化并排序端点，在 [min, max) 连续采样后换算为 ticks；相同端点不消耗随机数。 */
+    public static int getTimeInterval(double minimumRatio, double maximumRatio, RandomSource random) {
+        Objects.requireNonNull(random, "random");
+        double first = normalizeTimeRatio(minimumRatio);
+        double second = normalizeTimeRatio(maximumRatio);
+        double minimum = Math.min(first, second);
+        double maximum = Math.max(first, second);
+        if (minimum == maximum) {
+            return getTimeInterval(minimum);
+        }
+
+        double ratio = minimum + random.nextDouble() * (maximum - minimum);
+        // 浮点加法可能舍入到上端点，保留范围右侧开区间语义。
+        return getTimeInterval(Math.min(ratio, Math.nextDown(maximum)));
+    }
+
+    private static double normalizeTimeRatio(double ratio) {
+        return Double.isFinite(ratio) && ratio > 0.0D ? ratio : 0.0D;
+    }
     public static double getHolyShieldStrength(){return ItemSettings.holyShield().strengthPerStack();}
 
     /* ---------------------- 生命 ---------------------- */
@@ -492,6 +526,16 @@ public enum StatManager {
 
     public static void addBulletVisual(ServerPlayer player, ResourceLocation id, int count) {
         player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY).ifPresent(a -> a.addBulletVisual(id, count));
+    }
+
+    public static void addFamiliarModifier(ServerPlayer player, ResourceLocation id, int count) {
+        player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY)
+                .ifPresent(ability -> ability.getFamiliarModifiers().add(id, count));
+    }
+
+    public static void removeFamiliarModifier(ServerPlayer player, ResourceLocation id, int count) {
+        player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY)
+                .ifPresent(ability -> ability.getFamiliarModifiers().remove(id, count));
     }
 
     public static void addTriggerModule(LivingEntity entity, ResourceLocation rl, int count){

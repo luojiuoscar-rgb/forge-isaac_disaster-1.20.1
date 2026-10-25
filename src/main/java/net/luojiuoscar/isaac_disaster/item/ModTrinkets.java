@@ -177,4 +177,28 @@ public class ModTrinkets {
     public static final RegistryObject<Item> SAFETY_SCISSORS = ITEMS.register("safety_scissors",
             () -> new Trinket(new Item.Properties(), ModTrinketAbilities.SAFETY_SCISSORS));
     static {ItemListManager.TRINKET_LIST.add(SAFETY_SCISSORS);}
+
+    public static final RegistryObject<Item> LOCUST_OF_WAR = ITEMS.register("locust_of_war",
+            () -> new Trinket(new Item.Properties(), ModTrinketAbilities.LOCUST_OF_WAR));
+    static {ItemListManager.TRINKET_LIST.add(LOCUST_OF_WAR);}
+
+    public static final RegistryObject<Item> LOCUST_OF_PESTILENCE = ITEMS.register("locust_of_pestilence",
+            () -> new Trinket(new Item.Properties(), ModTrinketAbilities.LOCUST_OF_PESTILENCE));
+    static {ItemListManager.TRINKET_LIST.add(LOCUST_OF_PESTILENCE);}
+
+    public static final RegistryObject<Item> LOCUST_OF_FAMINE = ITEMS.register("locust_of_famine",
+            () -> new Trinket(new Item.Properties(), ModTrinketAbilities.LOCUST_OF_FAMINE));
+    static {ItemListManager.TRINKET_LIST.add(LOCUST_OF_FAMINE);}
+
+    public static final RegistryObject<Item> LOCUST_OF_DEATH = ITEMS.register("locust_of_death",
+            () -> new Trinket(new Item.Properties(), ModTrinketAbilities.LOCUST_OF_DEATH));
+    static {ItemListManager.TRINKET_LIST.add(LOCUST_OF_DEATH);}
+
+    public static final RegistryObject<Item> LOCUST_OF_CONQUEST = ITEMS.register("locust_of_conquest",
+            () -> new Trinket(new Item.Properties(), ModTrinketAbilities.LOCUST_OF_CONQUEST));
+    static {ItemListManager.TRINKET_LIST.add(LOCUST_OF_CONQUEST);}
+
+    public static final RegistryObject<Item> CRICKET_LEG = ITEMS.register("cricket_leg",
+            () -> new Trinket(new Item.Properties(), ModTrinketAbilities.CRICKET_LEG));
+    static {ItemListManager.TRINKET_LIST.add(CRICKET_LEG);}
 }

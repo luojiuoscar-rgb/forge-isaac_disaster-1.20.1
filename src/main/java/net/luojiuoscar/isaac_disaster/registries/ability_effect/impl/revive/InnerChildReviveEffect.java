@@ -8,6 +8,8 @@ import net.luojiuoscar.isaac_disaster.registries.ability_effect.ExecutableEffect
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ModExecutableEffects;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.profile.PotionProfile;
 import net.luojiuoscar.isaac_disaster.item.ModPassiveItems;
+import net.luojiuoscar.isaac_disaster.system.explosion.ExplosionParameters;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
@@ -33,7 +35,11 @@ public class InnerChildReviveEffect extends ReviveExecutableEffect {
         ModExecutableEffects.STACK_POTION.get().apply(potionContext);
 
         StatManager.healHealth(player, HEAL_AMOUNT);
-        LevelHelper.explodeCustom(player, player.position(), EXPLOSION_POWER, EXPLOSION_DAMAGE, true, false);
+        if (player.level() instanceof ServerLevel level) {
+            LevelHelper.explodeCustom(level, player.position(), level.damageSources().explosion(player, player),
+                    ExplosionParameters.standard(EXPLOSION_POWER, EXPLOSION_DAMAGE)
+                            .withIgnoreFriendly(true).withCausesFire(false));
+        }
     }
 
     @Override

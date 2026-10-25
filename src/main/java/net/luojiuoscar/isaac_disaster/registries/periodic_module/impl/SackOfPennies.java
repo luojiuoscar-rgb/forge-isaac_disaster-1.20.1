@@ -16,7 +16,7 @@ public class SackOfPennies extends PeriodicModule {
     private static final CompositeTrigger TRIGGER = new CompositeTrigger(List.of(
             new SimpleTrigger(ModTriggerTypes.EMTPY, ModExecutableEffects.LOOT_MONEY,
                     ctx -> {
-                        ctx.set(ContextKeys.LOOT_COUNT, ctx.getOrDefault(ContextKeys.AMPLIFIER, 1.).intValue());
+                        ctx.set(ContextKeys.COUNT, ctx.getOrDefault(ContextKeys.AMPLIFIER, 1.).intValue());
                         return true;
                     })
     ));
@@ -32,7 +32,7 @@ public class SackOfPennies extends PeriodicModule {
 
     @Override
     public int getTickInterval(LivingEntity entity, int stacks, PeriodicModuleQueue queue) {
-        return StatManager.getTimeInterval(entity.getRandom().nextInt(6,9));
+        return StatManager.getTimeInterval(6, 8, entity.getRandom());
     }
 
 }

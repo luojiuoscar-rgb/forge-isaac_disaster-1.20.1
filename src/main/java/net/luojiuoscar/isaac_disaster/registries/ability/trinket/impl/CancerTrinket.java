@@ -1,6 +1,5 @@
 package net.luojiuoscar.isaac_disaster.registries.ability.trinket.impl;
 
-import net.luojiuoscar.isaac_disaster.helper.DescriptionHelper;
 import net.luojiuoscar.isaac_disaster.item.item.Trinket;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.registries.ability.trinket.TrinketAbility;
@@ -11,7 +10,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
 import java.util.List;
 
 public class CancerTrinket extends TrinketAbility {
@@ -25,22 +23,8 @@ public class CancerTrinket extends TrinketAbility {
     }
 
     @Override
-    public List<Component> getDesc(@Nullable ItemStack stack, Player player) {
-        return List.of(StatManager.FIRE_RATE.description(1));
-    }
-
-    @Override
-    public List<Component> getSynergyDesc(@Nullable ItemStack stack, Player player) {
-        List<Component> desc = new ArrayList<>();
-
-        if (stack != null && Trinket.isEnchanted(stack)){
-            desc.add(DescriptionHelper.getSynergyDesc(
-                    Component.translatable("item.isaac_disaster.trinket.enchanted"),
-                    Component.translatable("item.isaac_disaster.synergy.description.double")
-            ));
-        }
-
-        return desc;
+    public List<Component> getDesc(@Nullable ItemStack stack, @Nullable Player player) {
+        return List.of(StatManager.FIRE_RATE.dynamicDescription(stack != null && Trinket.isEnchanted(stack) ? 2 : 1));
     }
 
     @Override

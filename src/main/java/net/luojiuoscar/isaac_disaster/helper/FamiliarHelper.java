@@ -9,13 +9,17 @@ import net.luojiuoscar.isaac_disaster.registries.familiar.FamiliarEntityType;
 import net.luojiuoscar.isaac_disaster.registries.familiar.FamiliarLimitGroup;
 import net.luojiuoscar.isaac_disaster.registries.familiar.ModFamiliarEntities;
 import net.luojiuoscar.isaac_disaster.registries.familiar.ModFamiliarLimitGroups;
+import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.registries.IForgeRegistry;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryManager;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -156,8 +160,7 @@ public final class FamiliarHelper {
         try {
             familiar.setFormationIndex(entry.getEntityCount());
             data.registerEntity(entry.getType(), familiar.getUUID());
-            added = player.level().addFreshEntity(familiar) && !familiar.isRemoved()
-                    && data.containsEntity(entry.getType(), familiar.getUUID())
+            added = addFamiliarToLevel(player, data, familiar)
                     && entry.getEntityCount() <= data.getEffectiveCount(entry.getType());
             return added;
         } finally {
@@ -166,6 +169,58 @@ public final class FamiliarHelper {
                 familiar.discardSilently();
             }
         }
+    }
+
+    /**
+     * Immediately spawns new owned familiars at an exact initial feet position, independently of tick admission pacing.
+     * Returns successful entities only; rejected slots and failed world joins never add persistent requirements.
+     * The destination chunk must already be loaded. Existing missing requirements are left to the normal scheduler.
+     */
+    public static List<AbstractIsaacFamiliarEntity> spawnFamiliars(
+            ServerPlayer owner, ResourceLocation typeId, Vec3 position, int count) {
+        if (count <= 0 || owner == null || !owner.isAlive() || owner.isRemoved() || typeId == null || position == null
+                || !Double.isFinite(position.x) || !Double.isFinite(position.y) || !Double.isFinite(position.z)
+                || !isRegisteredFamiliarType(typeId)) return List.of();
+        ServerLevel level = owner.serverLevel();
+        if (!level.hasChunkAt(BlockPos.containing(position))) return List.of();
+        PlayerFamiliarData data = owner.getCapability(PlayerFamiliarDataProvider.PLAYER_FAMILIAR_DATA).resolve().orElse(null);
+        if (data == null) return List.of();
+        discardExcessFamiliars(owner, data);
+
+        List<AbstractIsaacFamiliarEntity> result = new ArrayList<>();
+        int attempts = Math.min(count, getFamiliarType(typeId).getLimit());
+        for (int i = 0; i < attempts; i++) {
+            if (!owner.isAlive() || owner.isRemoved() || owner.level() != level) break;
+            AbstractIsaacFamiliarEntity familiar = createFamiliar(owner, typeId, position);
+            if (familiar == null) break;
+            boolean committed = false;
+            try (var reservation = data.reserveSpawn(typeId, familiar.getUUID())) {
+                if (reservation == null) break;
+                familiar.setFormationIndex(data.getEntry(typeId).map(FamiliarEntry::getEntityCount).orElse(0));
+                if (addFamiliarToLevel(owner, data, familiar) && reservation.commit()) {
+                    committed = true;
+                    discardExcessFamiliars(owner, data);
+                    result.add(familiar);
+                }
+            } finally {
+                if (!committed) {
+                    data.removeEntity(typeId, familiar.getUUID());
+                    familiar.discardSilently();
+                }
+            }
+        }
+        return List.copyOf(result);
+    }
+
+    /** Immediately spawns one familiar without applying type-specific random batch sizes. */
+    public static List<AbstractIsaacFamiliarEntity> spawnFamiliars(ServerPlayer owner, ResourceLocation typeId, Vec3 position) {
+        return spawnFamiliars(owner, typeId, position, 1);
+    }
+
+    private static boolean addFamiliarToLevel(ServerPlayer owner, PlayerFamiliarData data, AbstractIsaacFamiliarEntity familiar) {
+        return owner.level().addFreshEntity(familiar) && !familiar.isRemoved() && familiar.getOwner() == owner
+                && owner.isAlive() && !owner.isRemoved() && familiar.level() == owner.level()
+                && data.containsEntity(familiar.getFamiliarType(), familiar.getUUID());
     }
 
     /** Apply already-decided quota reductions before recalling or admitting another entity. */
@@ -209,8 +264,8 @@ public final class FamiliarHelper {
                         familiar.discardSilently();
                     }
                 }
-                entry.clearEntityIds();
             }
+            data.clearRuntimeEntities();
         });
     }
 
@@ -218,6 +273,10 @@ public final class FamiliarHelper {
      * Creates one familiar entity without registering it in the owner capability or level.
      */
     private static AbstractIsaacFamiliarEntity createFamiliar(ServerPlayer player, ResourceLocation typeId) {
+        return createFamiliar(player, typeId, null);
+    }
+
+    private static AbstractIsaacFamiliarEntity createFamiliar(ServerPlayer player, ResourceLocation typeId, @Nullable Vec3 position) {
         FamiliarEntityType familiarType = getFamiliarType(typeId);
         if (familiarType == null) return null;
 
@@ -233,7 +292,11 @@ public final class FamiliarHelper {
         if (familiar == null) return null;
 
         familiar.setOwner(player);
-        familiar.placeAtOwner();
+        if (position == null) familiar.placeAtOwner();
+        else {
+            familiar.setPos(position);
+            familiar.setDeltaMovement(Vec3.ZERO);
+        }
         return familiar;
     }
 

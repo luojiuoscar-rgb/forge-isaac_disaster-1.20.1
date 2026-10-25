@@ -2,7 +2,7 @@ package net.luojiuoscar.isaac_disaster.registries.ability.active;
 
 import net.luojiuoscar.isaac_disaster.item.ModPassiveItems;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
-import net.luojiuoscar.isaac_disaster.manager.id.ItemId;
+import net.luojiuoscar.isaac_disaster.client.ClientDataManager;
 import net.luojiuoscar.isaac_disaster.registries.ability.IsaacItemAbility;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ExecutableEffectContext;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.CompositeTrigger;
@@ -33,10 +33,17 @@ public abstract class ActiveAbility extends IsaacItemAbility {
     public void onUse(ServerPlayer player, @Nullable InteractionHand hand){
         ItemStack stack = hand != null ? player.getItemInHand(hand) : null;
         ExecutableEffectContext context = getCtx(player, stack, hand,
-                PlayerHelper.hasItem(ModPassiveItems.CAR_BATTERY.getId(), player) // 车载电池
+                hasCarBattery(player)
                         ? getStrongerAmplifier() : getNormalAmplifier());
 
         trigger.fire(context, null);
+    }
+
+    /** Reads Car Battery ownership from server data or the synchronized client item cache. */
+    protected static boolean hasCarBattery(@Nullable Player player) {
+        return player instanceof ServerPlayer serverPlayer
+                ? PlayerHelper.hasItem(ModPassiveItems.CAR_BATTERY.getId(), serverPlayer)
+                : player != null && ClientDataManager.getInstance().getItemCount(ModPassiveItems.CAR_BATTERY.getId()) > 0;
     }
 
     /** 首次使用时触发 */
@@ -69,5 +76,5 @@ public abstract class ActiveAbility extends IsaacItemAbility {
     public void triggerSFX(ServerPlayer player){};
 
     @Override
-    abstract public List<Component> getSynergyDesc(@org.jetbrains.annotations.Nullable ItemStack stack, Player player);
+    abstract public List<Component> getSynergyDesc(@Nullable ItemStack stack, Player player);
 }

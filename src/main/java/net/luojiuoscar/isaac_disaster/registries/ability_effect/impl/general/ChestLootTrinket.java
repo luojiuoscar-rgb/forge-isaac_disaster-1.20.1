@@ -8,7 +8,6 @@ import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.loot.LootGenerationContext;
 import net.luojiuoscar.isaac_disaster.loot.LootGenerationMode;
 import net.luojiuoscar.isaac_disaster.manager.ModLootTables;
-import net.luojiuoscar.isaac_disaster.manager.id.TrinketId;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ContextKeys;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ExecutableEffectContext;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.IAbilityEffect;
@@ -26,6 +25,10 @@ import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.Vec3;
 
 public class ChestLootTrinket implements IAbilityEffect {
+    public static double getChance(boolean enchanted) {
+        return enchanted ? 0.66 : 0.33;
+    }
+
     @Override
     public TriggerType getRequiredTriggerType() {
         return ModTriggerTypes.LOOT;
@@ -51,63 +54,63 @@ public class ChestLootTrinket implements IAbilityEffect {
         ObjectArrayList<ItemStack> newList = new ObjectArrayList<>(objectArrayList);
 
         // lucky toe
-        if (rand.nextDouble() < PlayerHelper.getValueFromTrinket(0.33, 0.66, ModTrinkets.LUCKY_TOE.getId(), player)){
+        if (rand.nextDouble() < PlayerHelper.getValueFromTrinket(getChance(false), getChance(true), ModTrinkets.LUCKY_TOE.getId(), player)){
             newList.addAll(LootHelper.getLoot(level, ModLootTables.RANDOM_COINS,
                     new LootParams.Builder(level)
                             .withParameter(LootContextParams.THIS_ENTITY, player)
                             .withParameter(LootContextParams.ORIGIN, pos)
                             .create(LootContextParamSets.EMPTY),
-                    LootGenerationMode.DERIVED_DROP, Math.max(0, context.getOrDefault(ContextKeys.LOOT_COUNT, 1))));
+                    LootGenerationMode.DERIVED_DROP, Math.max(0, context.getOrDefault(ContextKeys.COUNT, 1))));
         }
 
         // match stick
-        if (rand.nextDouble() < PlayerHelper.getValueFromTrinket(0.33, 0.66, ModTrinkets.MATCH_STICK.getId(), player)){
+        if (rand.nextDouble() < PlayerHelper.getValueFromTrinket(getChance(false), getChance(true), ModTrinkets.MATCH_STICK.getId(), player)){
             newList.addAll(LootHelper.getLoot(level, ModLootTables.RANDOM_BOMBS,
                     new LootParams.Builder(level)
                             .withParameter(LootContextParams.THIS_ENTITY, player)
                             .withParameter(LootContextParams.ORIGIN, pos)
                             .create(LootContextParamSets.EMPTY),
-                    LootGenerationMode.DERIVED_DROP, Math.max(0, context.getOrDefault(ContextKeys.LOOT_COUNT, 1))));
+                    LootGenerationMode.DERIVED_DROP, Math.max(0, context.getOrDefault(ContextKeys.COUNT, 1))));
         }
 
         // childs heart
-        if (rand.nextDouble() < PlayerHelper.getValueFromTrinket(0.33, 0.66, ModTrinkets.CHILDS_HEART.getId(), player)){
+        if (rand.nextDouble() < PlayerHelper.getValueFromTrinket(getChance(false), getChance(true), ModTrinkets.CHILDS_HEART.getId(), player)){
             newList.addAll(LootHelper.getLoot(level, ModLootTables.RANDOM_HEARTS,
                     new LootParams.Builder(level)
                             .withParameter(LootContextParams.THIS_ENTITY, player)
                             .withParameter(LootContextParams.ORIGIN, pos)
                             .create(LootContextParamSets.EMPTY),
-                    LootGenerationMode.DERIVED_DROP, Math.max(0, context.getOrDefault(ContextKeys.LOOT_COUNT, 1))));
+                    LootGenerationMode.DERIVED_DROP, Math.max(0, context.getOrDefault(ContextKeys.COUNT, 1))));
         }
 
         // rusted key
-        if (rand.nextDouble() < PlayerHelper.getValueFromTrinket(0.33, 0.66, ModTrinkets.RUSTED_KEY.getId(), player)){
+        if (rand.nextDouble() < PlayerHelper.getValueFromTrinket(getChance(false), getChance(true), ModTrinkets.RUSTED_KEY.getId(), player)){
             newList.addAll(LootHelper.getLoot(level, ModLootTables.RANDOM_KEYS,
                     new LootParams.Builder(level)
                             .withParameter(LootContextParams.THIS_ENTITY, player)
                             .withParameter(LootContextParams.ORIGIN, pos)
                             .create(LootContextParamSets.EMPTY),
-                    LootGenerationMode.DERIVED_DROP, Math.max(0, context.getOrDefault(ContextKeys.LOOT_COUNT, 1))));
+                    LootGenerationMode.DERIVED_DROP, Math.max(0, context.getOrDefault(ContextKeys.COUNT, 1))));
         }
 
         // ace of spades
-        if (rand.nextDouble() < PlayerHelper.getValueFromTrinket(0.33, 0.66, ModTrinkets.ACE_OF_SPADES_TRINKET.getId(), player)){
+        if (rand.nextDouble() < PlayerHelper.getValueFromTrinket(getChance(false), getChance(true), ModTrinkets.ACE_OF_SPADES_TRINKET.getId(), player)){
             newList.addAll(LootHelper.getLoot(level, ModLootTables.RANDOM_CARDS,
                     new LootParams.Builder(level)
                             .withParameter(LootContextParams.THIS_ENTITY, player)
                             .withParameter(LootContextParams.ORIGIN, pos)
                             .create(LootContextParamSets.EMPTY),
-                    LootGenerationMode.DERIVED_DROP, Math.max(0, context.getOrDefault(ContextKeys.LOOT_COUNT, 1))));
+                    LootGenerationMode.DERIVED_DROP, Math.max(0, context.getOrDefault(ContextKeys.COUNT, 1))));
         }
 
         // safety pin
-        if (rand.nextDouble() < PlayerHelper.getValueFromTrinket(0.33, 0.66, ModTrinkets.SAFETY_CAP.getId(), player)){
+        if (rand.nextDouble() < PlayerHelper.getValueFromTrinket(getChance(false), getChance(true), ModTrinkets.SAFETY_CAP.getId(), player)){
             newList.addAll(LootHelper.getLoot(level, ModLootTables.RANDOM_PILLS,
                     new LootParams.Builder(level)
                             .withParameter(LootContextParams.THIS_ENTITY, player)
                             .withParameter(LootContextParams.ORIGIN, pos)
                             .create(LootContextParamSets.EMPTY),
-                    LootGenerationMode.DERIVED_DROP, Math.max(0, context.getOrDefault(ContextKeys.LOOT_COUNT, 1))));
+                    LootGenerationMode.DERIVED_DROP, Math.max(0, context.getOrDefault(ContextKeys.COUNT, 1))));
         }
 
         // poker chip

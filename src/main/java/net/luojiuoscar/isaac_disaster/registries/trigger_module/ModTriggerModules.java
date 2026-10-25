@@ -207,4 +207,25 @@ public class ModTriggerModules {
     public static final RegistryObject<TriggerModule> SINUS_INFECTION =
             TRIGGER_MODULE_REGISTRY.register("sinus_infection", SinusInfection::new);
 
+    public static final RegistryObject<TriggerModule> CRICKET_LEG =
+            TRIGGER_MODULE_REGISTRY.register("cricket_leg", CricketLeg::new);
+
+    public static final RegistryObject<TriggerModule> INFESTATION =
+            TRIGGER_MODULE_REGISTRY.register("infestation", Infestation::new);
+
+    public static final RegistryObject<TriggerModule> THE_MULLIGAN =
+            TRIGGER_MODULE_REGISTRY.register("the_mulligan", TheMulligan::new);
+
+    public static final RegistryObject<TriggerModule> SPIDER_BABY =
+            TRIGGER_MODULE_REGISTRY.register("spider_baby", SpiderBaby::new);
+
+    public static final RegistryObject<TriggerModule> MOMS_WIG =
+            TRIGGER_MODULE_REGISTRY.register("moms_wig", MomsWig::new);
+
+    public static final RegistryObject<TriggerModule> INFESTATION_2 =
+            TRIGGER_MODULE_REGISTRY.register("infestation_2", Infestation2::new);
+
+    public static final RegistryObject<TriggerModule> CAT =
+            TRIGGER_MODULE_REGISTRY.register("cat", Cat::new);
+
 }

@@ -2,18 +2,18 @@ package net.luojiuoscar.isaac_disaster.helper;
 
 import net.luojiuoscar.isaac_disaster.datapack.gameplay.GameplayConfig;
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
+import net.luojiuoscar.isaac_disaster.system.explosion.CustomExplosion;
+import net.luojiuoscar.isaac_disaster.system.explosion.ExplosionParameters;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.particles.ParticleOptions;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.Item;
@@ -382,55 +382,19 @@ public class LevelHelper {
         });
     }
 
+    /** Executes one server-authoritative explosion with independently configurable damage and blocks. */
+    public static boolean explodeCustom(ServerLevel level, Vec3 center, DamageSource damageSource,
+                                         ExplosionParameters parameters) {
+        return CustomExplosion.explode(level, center, damageSource, parameters);
+    }
+
+    /** Compatibility entry: damage is now the explosion's center damage, without a vanilla damage pass. */
     public static void explodeCustom(LivingEntity source, Vec3 pos, float power,
-                                     float damage, boolean ignoreFriendly, boolean hasFire){
+                                     float damage, boolean ignoreFriendly, boolean hasFire) {
         if (!(source.level() instanceof ServerLevel level)) return;
-        Explosion explosion = new Explosion(
-                level,
-                source,                  // 爆炸来源实体
-                null,                    // DamageSource
-                null,                    // 伤害计算器使用自定义的
-                pos.x, pos.y, pos.z,
-                power,
-                hasFire,
-                Explosion.BlockInteraction.DESTROY // 破坏方块
-        );
-        explosion.explode();
-        explosion.finalizeExplosion(true);
-
-        level.playSound(
-                null,
-                pos.x, pos.y, pos.z,
-                SoundEvents.GENERIC_EXPLODE,
-                SoundSource.BLOCKS,
-                0.8F,
-                (1.0F + (level.random.nextFloat() - level.random.nextFloat()) * 0.2F) * 0.7F
-        );
-
-        for (int i = 0; i < 10; i++) {
-            double offsetX = (level.random.nextDouble() - 0.5) * power * 2;
-            double offsetY = (level.random.nextDouble() - 0.5) * power * 2;
-            double offsetZ = (level.random.nextDouble() - 0.5) * power * 2;
-
-            level.sendParticles(
-                    ParticleTypes.EXPLOSION,
-                    pos.x + offsetX,
-                    pos.y + offsetY,
-                    pos.z + offsetZ,
-                    1,
-                    0.0, 0.0, 0.0,
-                    0.0
-            );
-        }
-
-
-
-        List<LivingEntity> livingEntities = LevelHelper.selectBySquare(source.level(), pos, power + 2);
-
-        for (LivingEntity entity : livingEntities){
-            if (ignoreFriendly && EntityHelper.isFriendly(entity, source)) continue;
-            entity.hurt(source.damageSources().explosion(source, null), damage);
-        }
+        explodeCustom(level, pos, level.damageSources().explosion(source, source),
+                ExplosionParameters.standard(power, damage).withIgnoreFriendly(ignoreFriendly)
+                        .withCausesFire(hasFire).withBlockInteraction(Explosion.BlockInteraction.DESTROY));
     }
 }
 

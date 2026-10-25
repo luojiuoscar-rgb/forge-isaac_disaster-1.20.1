@@ -277,7 +277,7 @@ public final class SpiderBehaviorGameTests {
                 f.owner.getAttribute(Attributes.ATTACK_DAMAGE).setBaseValue(7);
                 helper.assertTrue(f.spider.tryContact(f.owner,from,to),"Actual contact consumes");
                 helper.assertTrue(f.spider.isRemoved()&&f.data.getCount(TYPE)==0,"No replacement requirement remains");
-                helper.assertTrue(Math.abs(target.getHealth()-13)<0.01,"Current panel damage: health="+target.getHealth());
+                helper.assertTrue(Math.abs(target.getHealth()-2.5)<0.01,"Blue spider deals 2.5 times current panel damage: health="+target.getHealth());
                 helper.assertTrue(!f.spider.tryContact(f.owner,from,to),"Cannot contact twice");
             } finally {target.discard();}
         }

@@ -32,6 +32,8 @@ public final class FlyRenderer<T extends AbstractFlyFamiliarEntity> extends Enti
     public void render(@NotNull T entity, float entityYaw, float partialTick,
                        @NotNull PoseStack poses, @NotNull MultiBufferSource buffers, int packedLight) {
         poses.pushPose();
+        float visualScale = entity.getVisualScale();
+        poses.scale(visualScale, visualScale, visualScale);
         poses.mulPose(Axis.YP.rotationDegrees(180.0F - entityYaw));
         poses.scale(-1.0F, -1.0F, 1.0F);
         model.setupAnim(entity, 0.0F, 0.0F, entity.tickCount + partialTick, 0.0F, 0.0F);

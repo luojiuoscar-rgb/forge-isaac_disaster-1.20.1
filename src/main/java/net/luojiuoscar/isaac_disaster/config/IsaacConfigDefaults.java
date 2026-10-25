@@ -60,6 +60,7 @@ public final class IsaacConfigDefaults {
     public static final boolean AUTO_USE_PASSIVE_ITEM = false;
     public static final boolean TIME_STOP_EXCLUDE_FRIENDLY = false;
     public static final boolean ALLOW_SAME_MULTIPLIER_ENTRY_STACKING = false;
+    public static final boolean ALLOW_SAME_FAMILIAR_MODIFIER_ENTRY_STACKING = false;
 
     public static final String COIN_TIER_1_ID = "isaac_disaster:penny";
     public static final String COIN_TIER_2_ID = "isaac_disaster:nickel";

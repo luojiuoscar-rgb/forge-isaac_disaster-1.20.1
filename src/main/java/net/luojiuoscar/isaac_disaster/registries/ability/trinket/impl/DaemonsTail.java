@@ -12,8 +12,9 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
 import java.util.List;
+
+import static net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.normal.DaemonsTail.getRemovalChance;
 
 public class DaemonsTail extends TrinketAbility {
     public DaemonsTail(int id, int level) {
@@ -36,22 +37,9 @@ public class DaemonsTail extends TrinketAbility {
     }
 
     @Override
-    public List<Component> getDesc(@Nullable ItemStack stack, Player player) {
-        return List.of(Component.translatable("item.isaac_disaster.daemons_tail.lore.1"),
+    public List<Component> getDesc(@Nullable ItemStack stack, @Nullable Player player) {
+        return List.of(Component.translatable("item.isaac_disaster.daemons_tail.lore.1",
+                        DescriptionHelper.dynamicNumber(100 * getRemovalChance(stack != null && Trinket.isEnchanted(stack)))),
                 Component.translatable("item.isaac_disaster.daemons_tail.lore.2"));
-    }
-
-    @Override
-    public List<Component> getSynergyDesc(@Nullable ItemStack stack, Player player) {
-        List<Component> desc = new ArrayList<>();
-
-        if (stack != null && Trinket.isEnchanted(stack)){
-            desc.add(DescriptionHelper.getSynergyDesc(
-                    Component.translatable("item.isaac_disaster.trinket.enchanted"),
-                    Component.translatable("item.isaac_disaster.daemons_tail.enchanted.lore.1")
-            ));
-        }
-
-        return desc;
     }
 }

@@ -9,12 +9,15 @@ import net.minecraft.world.item.Item;
 import java.util.List;
 
 public class BlackLipstick extends TransformLootTypesToAnother {
+    public static double getChance(double amplifier) {
+        return Double.isFinite(amplifier) ? Math.min(1, Math.max(0, amplifier) * 0.1) : 0;
+    }
 
     @Override
     protected double getProbability(ExecutableEffectContext context) {
         double amplifier = context.getOrDefault(ContextKeys.AMPLIFIER, 1.);
 
-        return amplifier * 0.1;
+        return getChance(amplifier);
     }
 
     @Override

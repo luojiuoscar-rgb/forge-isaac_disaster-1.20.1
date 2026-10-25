@@ -33,6 +33,8 @@ public final class SpiderRenderer<T extends AbstractSpiderFamiliarEntity> extend
     public void render(@NotNull T entity, float entityYaw, float partialTick,
                        @NotNull PoseStack poses, @NotNull MultiBufferSource buffers, int packedLight) {
         poses.pushPose();
+        float visualScale = entity.getVisualScale();
+        poses.scale(visualScale, visualScale, visualScale);
         applyModelTransform(poses, entity.getRenderYaw(partialTick));
         model.setupAnim(entity, 0, 0, entity.tickCount + partialTick, 0, 0);
         var viewer = Minecraft.getInstance().player;

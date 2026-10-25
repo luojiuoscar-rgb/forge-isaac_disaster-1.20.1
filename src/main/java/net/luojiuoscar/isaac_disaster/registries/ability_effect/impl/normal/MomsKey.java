@@ -56,7 +56,7 @@ public class MomsKey implements IAbilityEffect {
 
         ObjectArrayList<ItemStack> newLoot = new ObjectArrayList<>(LootHelper.getLoot(
                 level, lootId, params, LootGenerationMode.REPLACEMENT_ROLL,
-                Math.max(0, context.getOrDefault(ContextKeys.LOOT_COUNT, 1))));
+                Math.max(0, context.getOrDefault(ContextKeys.COUNT, 1))));
 
         newLoot.addAll(objectArrayList);
 

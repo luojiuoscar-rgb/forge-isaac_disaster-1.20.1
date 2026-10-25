@@ -19,7 +19,7 @@ import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.network.simple.SimpleChannel;
 
 public class ModMessages {
-    private static final String PROTOCOL_VERSION = "4";
+    private static final String PROTOCOL_VERSION = "5";
     private static SimpleChannel INSTANCE;
 
     private static int packetId = 0;
@@ -199,6 +199,12 @@ public class ModMessages {
                 .decoder(GameplaySettingsS2CPacket::new)
                 .encoder(GameplaySettingsS2CPacket::toBytes)
                 .consumerNetworkThread(GameplaySettingsS2CPacket::handle)
+                .add();
+
+        net.messageBuilder(ExplosionKnockbackS2CPacket.class, id(), NetworkDirection.PLAY_TO_CLIENT)
+                .decoder(ExplosionKnockbackS2CPacket::new)
+                .encoder(ExplosionKnockbackS2CPacket::toBytes)
+                .consumerNetworkThread(ExplosionKnockbackS2CPacket::handle)
                 .add();
 
     }

@@ -4,7 +4,6 @@ import net.luojiuoscar.isaac_disaster.registries.ability_effect.ContextKeys;
 import net.luojiuoscar.isaac_disaster.item.ModPassiveItems;
 import net.luojiuoscar.isaac_disaster.client.ClientDataManager;
 import net.luojiuoscar.isaac_disaster.helper.DescriptionHelper;
-import net.luojiuoscar.isaac_disaster.manager.id.ItemId;
 import net.luojiuoscar.isaac_disaster.registries.ability.pickup.TarotAbility;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.CompositeTrigger;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ModExecutableEffects;
@@ -23,7 +22,7 @@ public class Justice extends TarotAbility {
     private static final CompositeTrigger TRIGGER = new CompositeTrigger(List.of(
             new SimpleTrigger(ModTriggerTypes.EMTPY, ModExecutableEffects.JUSTICE,
                     ctx -> {
-                        ctx.set(ContextKeys.LOOT_COUNT, ctx.getOrDefault(ContextKeys.AMPLIFIER, 1.).intValue());
+                        ctx.set(ContextKeys.COUNT, ctx.getOrDefault(ContextKeys.AMPLIFIER, 1.).intValue());
                         return true;
                     })
     ));

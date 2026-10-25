@@ -12,8 +12,9 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
 import java.util.List;
+
+import static net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.general.ChestLootTrinket.getChance;
 
 public class ChildsHeart extends TrinketAbility {
 
@@ -37,21 +38,8 @@ public class ChildsHeart extends TrinketAbility {
     }
 
     @Override
-    public List<Component> getDesc(@Nullable ItemStack stack, Player player) {
-        return List.of(Component.translatable("item.isaac_disaster.childs_heart.lore.1"));
-    }
-
-    @Override
-    public List<Component> getSynergyDesc(@Nullable ItemStack stack, Player player) {
-        List<Component> desc = new ArrayList<>();
-
-        if (stack != null && Trinket.isEnchanted(stack)){
-            desc.add(DescriptionHelper.getSynergyDesc(
-                    Component.translatable("item.isaac_disaster.trinket.enchanted"),
-                    Component.translatable("item.isaac_disaster.synergy.description.higher_prob")
-            ));
-        }
-
-        return desc;
+    public List<Component> getDesc(@Nullable ItemStack stack, @Nullable Player player) {
+        return List.of(Component.translatable("item.isaac_disaster.childs_heart.lore.1",
+                DescriptionHelper.dynamicNumber(100 * getChance(stack != null && Trinket.isEnchanted(stack)))));
     }
 }

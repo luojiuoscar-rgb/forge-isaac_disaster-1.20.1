@@ -9,6 +9,7 @@ import net.luojiuoscar.isaac_disaster.event.custom.misc.ActiveItemUseEvent;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.manager.ColorManager;
 import net.luojiuoscar.isaac_disaster.registries.ability.active.ActiveAbility;
+import net.luojiuoscar.isaac_disaster.registries.ability.trinket.impl.AAABattery;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
@@ -76,13 +77,10 @@ public class ActiveItem extends IsaacItem {
                     List<ItemStack> stackList =
                             playerPassiveItem.getAllTrinketListFromId(player, ModTrinkets.AAA_BATTERY.getId());
                     for (ItemStack stack : stackList){
-                        if (Trinket.isEnchanted(stack)){
-                            count[0] += 2;
-                        }else{
-                            count[0] += 1;
-                        }}});
+                        count[0] += AAABattery.getChargeReductionTicks(Trinket.isEnchanted(stack));
+                    }});
 
-        return Math.max(this.damage_per_use - count[0] * 40, 0);
+        return Math.max(this.damage_per_use - count[0], 0);
     }
 
     public int getOriginalDamagePerUse(){

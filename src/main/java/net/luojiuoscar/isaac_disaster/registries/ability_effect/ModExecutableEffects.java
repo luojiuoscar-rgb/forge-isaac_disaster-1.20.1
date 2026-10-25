@@ -19,6 +19,7 @@ import net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.normal.*;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.pill_effect.impl.*;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.revive.*;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.profile.PotionProfile;
+import net.luojiuoscar.isaac_disaster.registries.familiar.ModFamiliarEntities;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -102,6 +103,9 @@ public class ModExecutableEffects {
             EXECUTABLE_EFFECT_REGISTRY.register("tammys_head", TammysHead::new);
     public static final RegistryObject<IExecutableEffect> SWALLOW_TRINKETS =
             EXECUTABLE_EFFECT_REGISTRY.register("swallow_trinkets", SwallowTrinkets::new);
+    public static final RegistryObject<IExecutableEffect> ADD_FAMILIARS =
+            EXECUTABLE_EFFECT_REGISTRY.register("add_familiars", AddFamiliars::new);
+
     public static final RegistryObject<IExecutableEffect> GIVE_ITEM =
             EXECUTABLE_EFFECT_REGISTRY.register("give_item", GiveItem::new);
     public static final RegistryObject<IExecutableEffect> USE_PILL =
@@ -641,7 +645,7 @@ public class ModExecutableEffects {
             EXECUTABLE_EFFECT_REGISTRY.register("queen_of_heart", () -> new AbilityEffectEntry(
                     GIVE_ITEM_VIA_LOOT, ctx -> {
                 ctx.set(ContextKeys.ITEM, ModItems.RED_HEART.get());
-                ctx.set(ContextKeys.LOOT_COUNT, ctx.getEntity().getRandom().nextInt(1, 21));
+                ctx.set(ContextKeys.COUNT, ctx.getEntity().getRandom().nextInt(1, 21));
             }));
     public static final RegistryObject<IExecutableEffect> REVERSE_TAROTS_BACK =
             EXECUTABLE_EFFECT_REGISTRY.register("reverse_tarots_back", () -> new AbilityEffectEntry(
@@ -730,7 +734,7 @@ public class ModExecutableEffects {
                 double a = amplifier + 1.;
                 double b = amplifier + 2.;
 
-                ctx.set(ContextKeys.LOOT_COUNT, ctx.getEntity().getRandom().nextInt((int) a, (int) b));
+                ctx.set(ContextKeys.COUNT, ctx.getEntity().getRandom().nextInt((int) a, (int) b));
             }));
     public static final RegistryObject<IExecutableEffect> THE_HIEROPHANT_R =
             EXECUTABLE_EFFECT_REGISTRY.register("the_hierophant_r", () -> new AbilityEffectEntry(
@@ -740,7 +744,7 @@ public class ModExecutableEffects {
                 double a = amplifier + 1.;
                 double b = amplifier + 2.;
 
-                ctx.set(ContextKeys.LOOT_COUNT, ctx.getEntity().getRandom().nextInt((int) a, (int) b));
+                ctx.set(ContextKeys.COUNT, ctx.getEntity().getRandom().nextInt((int) a, (int) b));
             }));
     public static final RegistryObject<IExecutableEffect> THE_LOVERS =
             EXECUTABLE_EFFECT_REGISTRY.register("the_lovers", () -> new AbilityEffectEntry(
@@ -750,7 +754,7 @@ public class ModExecutableEffects {
                 double a = amplifier + 1.;
                 double b = amplifier + 2.;
 
-                ctx.set(ContextKeys.LOOT_COUNT, ctx.getEntity().getRandom().nextInt((int) a, (int) b));
+                ctx.set(ContextKeys.COUNT, ctx.getEntity().getRandom().nextInt((int) a, (int) b));
             }));
     public static final RegistryObject<IExecutableEffect> THE_MAGICIAN =
             EXECUTABLE_EFFECT_REGISTRY.register("the_magician", () -> new AbilityEffectEntry(
@@ -898,7 +902,7 @@ public class ModExecutableEffects {
                         }
 
                         double amplifier = ctx.getOrDefault(ContextKeys.AMPLIFIER, 1.);
-                        ctx.set(ContextKeys.LOOT_COUNT, ctx.getEntity().getRandom().nextInt((int) amplifier, (int) amplifier + 1));
+                        ctx.set(ContextKeys.COUNT, ctx.getEntity().getRandom().nextInt((int) amplifier, (int) amplifier + 1));
                     })
             );
     public static final RegistryObject<IExecutableEffect> STEAM_SALE =
@@ -1001,21 +1005,21 @@ public class ModExecutableEffects {
             EXECUTABLE_EFFECT_REGISTRY.register("deck_of_cards", () -> new AbilityEffectEntry(
                     GENERATE_LOOT, ctx -> {
                 ctx.set(ContextKeys.RESOURCE_LOCATIONS, List.of(ModLootTables.RANDOM_CARDS));
-                ctx.set(ContextKeys.LOOT_COUNT, ctx.getOrDefault(ContextKeys.AMPLIFIER, 1.).intValue());
+                ctx.set(ContextKeys.COUNT, ctx.getOrDefault(ContextKeys.AMPLIFIER, 1.).intValue());
             }));
 
     public static final RegistryObject<IExecutableEffect> THE_BOOK_OF_SIN =
             EXECUTABLE_EFFECT_REGISTRY.register("the_book_of_sin", () -> new AbilityEffectEntry(
                     GENERATE_LOOT, ctx -> {
                 ctx.set(ContextKeys.RESOURCE_LOCATIONS, List.of(ModLootTables.BOOK_OF_SIN_PICKUPS));
-                ctx.set(ContextKeys.LOOT_COUNT, ctx.getOrDefault(ContextKeys.AMPLIFIER, 1.).intValue());
+                ctx.set(ContextKeys.COUNT, ctx.getOrDefault(ContextKeys.AMPLIFIER, 1.).intValue());
             }));
 
     public static final RegistryObject<IExecutableEffect> MOMS_BOTTLE_OF_PILLS =
             EXECUTABLE_EFFECT_REGISTRY.register("moms_bottle_of_pills", () -> new AbilityEffectEntry(
                     GENERATE_LOOT, ctx -> {
                 ctx.set(ContextKeys.RESOURCE_LOCATIONS, List.of(ModLootTables.RANDOM_PILLS));
-                ctx.set(ContextKeys.LOOT_COUNT, ctx.getOrDefault(ContextKeys.AMPLIFIER, 1.).intValue());
+                ctx.set(ContextKeys.COUNT, ctx.getOrDefault(ContextKeys.AMPLIFIER, 1.).intValue());
             }));
 
     public static final RegistryObject<IExecutableEffect> MAGIC_FINGERS =
@@ -1125,5 +1129,57 @@ public class ModExecutableEffects {
             EXECUTABLE_EFFECT_REGISTRY.register("sinus_infection_poison", SinusInfectionPoison::new);
     public static final RegistryObject<IExecutableEffect> SINUS_INFECTION_DAMAGE =
             EXECUTABLE_EFFECT_REGISTRY.register("sinus_infection_damage", SinusInfectionDamage::new);
+
+    public static final RegistryObject<IExecutableEffect> CRICKET_LEG =
+            EXECUTABLE_EFFECT_REGISTRY.register("cricket_leg", CricketLeg::new);
+
+    public static final RegistryObject<IExecutableEffect> MOMS_PAD_FLIES =
+            EXECUTABLE_EFFECT_REGISTRY.register("moms_pad_flies", () ->
+                    new SpawnFamiliars(ModFamiliarEntities.BLUE_FLY::getId, 1, 1, true));
+
+    public static final RegistryObject<IExecutableEffect> MOMS_PAD =
+            EXECUTABLE_EFFECT_REGISTRY.register("moms_pad", () -> new AbilityEffectEntry(
+                    APPLY_EFFECT_TO_NEARBY, ctx -> {
+                ctx.set(ContextKeys.EXECUTABLE_EFFECT, POTIONS.get());
+                ctx.set(ContextKeys.BOOLEAN, List.of(true));
+                ctx.set(ContextKeys.POTIONS, List.of(new PotionProfile(ModEffects.PANIC.get(), 80, 0, 0, 0, true)));
+            }));
+
+    public static final RegistryObject<IExecutableEffect> GUPPYS_HEAD =
+            EXECUTABLE_EFFECT_REGISTRY.register("guppys_head", () ->
+                    new SpawnFamiliars(ModFamiliarEntities.BLUE_FLY::getId, 2, 4, true));
+
+    public static final RegistryObject<IExecutableEffect> INFESTATION =
+            EXECUTABLE_EFFECT_REGISTRY.register("infestation", () ->
+                    new SpawnFamiliars(ModFamiliarEntities.BLUE_FLY::getId, 1, 2, false));
+
+    public static final RegistryObject<IExecutableEffect> THE_MULLIGAN =
+            EXECUTABLE_EFFECT_REGISTRY.register("the_mulligan", TheMulligan::new);
+
+    public static final RegistryObject<IExecutableEffect> THE_MULLIGAN_ATTACHMENT =
+            EXECUTABLE_EFFECT_REGISTRY.register("the_mulligan_attachment", TheMulliganAttachment::new);
+
+    public static final RegistryObject<IExecutableEffect> SPIDER_BABY =
+            EXECUTABLE_EFFECT_REGISTRY.register("spider_baby", () ->
+                    new SpawnFamiliars(ModFamiliarEntities.BLUE_SPIDER::getId, 1, 2, false));
+
+    public static final RegistryObject<IExecutableEffect> MOMS_WIG =
+            EXECUTABLE_EFFECT_REGISTRY.register("moms_wig", MomsWig::new);
+
+    public static final RegistryObject<IExecutableEffect> SPAWN_BLUE_SPIDER =
+            EXECUTABLE_EFFECT_REGISTRY.register("spawn_blue_spider", () ->
+                    new SpawnFamiliars(ModFamiliarEntities.BLUE_SPIDER::getId, 1, 1, false));
+
+    public static final RegistryObject<IExecutableEffect> BOX_OF_SPIDERS =
+            EXECUTABLE_EFFECT_REGISTRY.register("box_of_spiders", () ->
+                    new SpawnFamiliars(ModFamiliarEntities.BLUE_SPIDER::getId, 4, 8, true));
+
+    public static final RegistryObject<IExecutableEffect> SPAWN_BLUE_FLY =
+            EXECUTABLE_EFFECT_REGISTRY.register("spawn_blue_fly", () ->
+                    new SpawnFamiliars(ModFamiliarEntities.BLUE_FLY::getId, 1, 1, false));
+
+    public static final RegistryObject<IExecutableEffect> CAT =
+            EXECUTABLE_EFFECT_REGISTRY.register("cat", () -> new AbilityEffectEntry(SPAWN_BLUE_FLY,
+                    ctx -> ctx.set(ContextKeys.TARGET_POSITION, ctx.getEntity().position())));
 
 }

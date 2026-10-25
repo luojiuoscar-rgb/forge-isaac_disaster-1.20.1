@@ -4,6 +4,11 @@ import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.entity.custom.LemonEffectCloud;
 import net.luojiuoscar.isaac_disaster.entity.familiar.impl.spider.BlueSpiderEntity;
 import net.luojiuoscar.isaac_disaster.entity.familiar.impl.fly.BlueFlyEntity;
+import net.luojiuoscar.isaac_disaster.entity.familiar.impl.fly.LocustOfConquestEntity;
+import net.luojiuoscar.isaac_disaster.entity.familiar.impl.fly.LocustOfDeathEntity;
+import net.luojiuoscar.isaac_disaster.entity.familiar.impl.fly.LocustOfFamineEntity;
+import net.luojiuoscar.isaac_disaster.entity.familiar.impl.fly.LocustOfPestilenceEntity;
+import net.luojiuoscar.isaac_disaster.entity.familiar.impl.fly.LocustOfWarEntity;
 import net.luojiuoscar.isaac_disaster.entity.familiar.impl.mom_knife.MomKnifeEntity;
 import net.luojiuoscar.isaac_disaster.entity.tnt.GigaBomb;
 import net.luojiuoscar.isaac_disaster.entity.tnt.IsaacBomb;
@@ -57,6 +62,46 @@ public class ModEntities {
                             .clientTrackingRange(3)
                             .updateInterval(1)
                             .build("blue_fly"));
+
+    public static final RegistryObject<EntityType<LocustOfPestilenceEntity>> LOCUST_OF_PESTILENCE =
+            MOD_ENTITIES.register("locust_of_pestilence",
+                    () -> EntityType.Builder.<LocustOfPestilenceEntity>of(LocustOfPestilenceEntity::new, MobCategory.MISC)
+                            .sized(0.125F, 0.125F)
+                            .clientTrackingRange(3)
+                            .updateInterval(1)
+                            .build("locust_of_pestilence"));
+
+    public static final RegistryObject<EntityType<LocustOfFamineEntity>> LOCUST_OF_FAMINE =
+            MOD_ENTITIES.register("locust_of_famine",
+                    () -> EntityType.Builder.<LocustOfFamineEntity>of(LocustOfFamineEntity::new, MobCategory.MISC)
+                            .sized(0.125F, 0.125F)
+                            .clientTrackingRange(3)
+                            .updateInterval(1)
+                            .build("locust_of_famine"));
+
+    public static final RegistryObject<EntityType<LocustOfDeathEntity>> LOCUST_OF_DEATH =
+            MOD_ENTITIES.register("locust_of_death",
+                    () -> EntityType.Builder.<LocustOfDeathEntity>of(LocustOfDeathEntity::new, MobCategory.MISC)
+                            .sized(0.125F, 0.125F)
+                            .clientTrackingRange(3)
+                            .updateInterval(1)
+                            .build("locust_of_death"));
+
+    public static final RegistryObject<EntityType<LocustOfConquestEntity>> LOCUST_OF_CONQUEST =
+            MOD_ENTITIES.register("locust_of_conquest",
+                    () -> EntityType.Builder.<LocustOfConquestEntity>of(LocustOfConquestEntity::new, MobCategory.MISC)
+                            .sized(0.125F, 0.125F)
+                            .clientTrackingRange(3)
+                            .updateInterval(1)
+                            .build("locust_of_conquest"));
+
+    public static final RegistryObject<EntityType<LocustOfWarEntity>> LOCUST_OF_WAR =
+            MOD_ENTITIES.register("locust_of_war",
+                    () -> EntityType.Builder.<LocustOfWarEntity>of(LocustOfWarEntity::new, MobCategory.MISC)
+                            .sized(0.125F, 0.125F)
+                            .clientTrackingRange(3)
+                            .updateInterval(1)
+                            .build("locust_of_war"));
 
     public static final RegistryObject<EntityType<BlueSpiderEntity>> BLUE_SPIDER =
             MOD_ENTITIES.register("blue_spider",
