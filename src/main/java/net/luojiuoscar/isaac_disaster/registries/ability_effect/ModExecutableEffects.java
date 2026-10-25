@@ -138,8 +138,6 @@ public class ModExecutableEffects {
             EXECUTABLE_EFFECT_REGISTRY.register("laser_plus_fetus", LaserPlusFetus::new);
     public static final RegistryObject<IExecutableEffect> IPECAC =
             EXECUTABLE_EFFECT_REGISTRY.register("ipecac", Ipecac::new);
-    public static final RegistryObject<IExecutableEffect> FIRING_MODIFIER_ATTACK_PLAN =
-            EXECUTABLE_EFFECT_REGISTRY.register("firing_modifier_attack_plan", FiringModifierAttackPlan::new);
     public static final RegistryObject<IExecutableEffect> BRIMSTONE_PLUS_MONSTROS_LUNG =
             EXECUTABLE_EFFECT_REGISTRY.register("brimstone_plus_monstros_lung", BrimstonePlusMonstrosLung::new);
     public static final RegistryObject<IExecutableEffect> LEAD_PENCIL_BURST =

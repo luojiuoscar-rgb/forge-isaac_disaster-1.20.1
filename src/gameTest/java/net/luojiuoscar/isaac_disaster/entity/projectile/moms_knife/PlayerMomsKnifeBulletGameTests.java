@@ -365,7 +365,11 @@ public final class PlayerMomsKnifeBulletGameTests {
         final List<Object> listeners = new ArrayList<>();
         final Map<BlockPos, BlockState> blocks = new HashMap<>();
 
-        Case(GameTestHelper helper) { f = new PlayerMomsKnifeGameTests.Fixture(helper); }
+        Case(GameTestHelper helper) {
+            f = new PlayerMomsKnifeGameTests.Fixture(helper);
+            // Exact-turnaround assertions should not depend on when distant fake-player chunks start ticking.
+            helper.onEachTick(() -> { if (!f.closed) f.main.tick(); });
+        }
 
         AttackContext context(double speed) {
             return AttackContext.builder(f.owner, f.owner).attackType(ModAttackTypes.MOMS_KNIFE.get()).speed(speed).build();

@@ -56,6 +56,12 @@ public final class PlayerMomsKnifeEntity extends Entity implements IBulletObject
 
     private static final EntityDataAccessor<Byte> MODE =
             SynchedEntityData.defineId(PlayerMomsKnifeEntity.class, EntityDataSerializers.BYTE);
+    private static final EntityDataAccessor<Integer> HELD_SLOT =
+            SynchedEntityData.defineId(PlayerMomsKnifeEntity.class, EntityDataSerializers.INT);
+    private static final EntityDataAccessor<Vector3f> LOCAL_OFFSET =
+            SynchedEntityData.defineId(PlayerMomsKnifeEntity.class, EntityDataSerializers.VECTOR3);
+    private static final EntityDataAccessor<Vector3f> BASE_DIRECTION =
+            SynchedEntityData.defineId(PlayerMomsKnifeEntity.class, EntityDataSerializers.VECTOR3);
     private static final EntityDataAccessor<Vector3f> DIRECTION =
             SynchedEntityData.defineId(PlayerMomsKnifeEntity.class, EntityDataSerializers.VECTOR3);
     private static final EntityDataAccessor<Integer> OWNER =
@@ -88,11 +94,51 @@ public final class PlayerMomsKnifeEntity extends Entity implements IBulletObject
     }
 
     public void initialize(ServerPlayer owner) {
+        initialize(owner, 0, Vec3.ZERO, PlayerMomsKnifeMotion.FORWARD);
+    }
+
+    public void initialize(ServerPlayer owner, int slot, Vec3 offset, Vec3 direction) {
         entityData.set(OWNER, owner.getId());
         setPos(PlayerMomsKnifeMotion.idlePosition(owner, 1));
         attack = new PlayerMomsKnifeAttackState(basicContext(owner), position(), owner.getLookAngle(), 0, Vec3.ZERO);
+        configureHeld(slot, offset, direction);
         setYRot(owner.getYRot());
         setXRot(owner.getXRot());
+        setOldPosAndRot();
+    }
+
+    public int getHeldSlot() { return entityData.get(HELD_SLOT); }
+
+    private Vec3 localOffset() {
+        Vector3f value = entityData.get(LOCAL_OFFSET);
+        return new Vec3(value.x, value.y, value.z);
+    }
+
+    private Vec3 baseDirection() {
+        Vector3f value = entityData.get(BASE_DIRECTION);
+        return PlayerMomsKnifeMotion.unit(new Vec3(value.x, value.y, value.z));
+    }
+
+    private Vec3 heldAnchor(Player owner, float partialTick) {
+        return PlayerMomsKnifeMotion.idlePosition(owner, partialTick).add(PlayerMomsKnifeMotion.offsetToWorld(
+                localOffset(), level().isClientSide ? owner.getViewYRot(partialTick) : owner.getYRot(),
+                level().isClientSide ? owner.getViewXRot(partialTick) : owner.getXRot()));
+    }
+
+    public void configureHeld(int slot, Vec3 offset, Vec3 direction) {
+        if (isInFlight()) return;
+        direction = PlayerMomsKnifeMotion.unit(direction);
+        Vector3f nextOffset = new Vector3f((float) offset.x, (float) offset.y, (float) offset.z);
+        Vector3f nextDirection = new Vector3f((float) direction.x, (float) direction.y, (float) direction.z);
+        if (entityData.get(HELD_SLOT) == slot && entityData.get(LOCAL_OFFSET).equals(nextOffset)
+                && entityData.get(BASE_DIRECTION).equals(nextDirection)) return;
+        entityData.set(HELD_SLOT, slot);
+        entityData.set(LOCAL_OFFSET, nextOffset);
+        entityData.set(BASE_DIRECTION, nextDirection);
+        setDirection(direction);
+        Player owner = getOwner();
+        if (owner != null) setPosition(heldAnchor(owner, 1));
+        previous = null;
         setOldPosAndRot();
     }
 
@@ -115,6 +161,7 @@ public final class PlayerMomsKnifeEntity extends Entity implements IBulletObject
         if (!Double.isFinite(origin.lengthSqr()) || !Double.isFinite(aimPoint.lengthSqr())) return false;
         if (context.getOwner() != owner) return false;
         entityData.set(MODE, (byte) Mode.ONE_WAY.ordinal());
+        entityData.set(HELD_SLOT, -1);
         entityData.set(OWNER, owner.getId());
         setPos(origin);
         remainingDistance = range;
@@ -161,13 +208,16 @@ public final class PlayerMomsKnifeEntity extends Entity implements IBulletObject
         Player owner = getOwner();
         if (owner == null || context.getOwner() != owner) return false;
         tracking.clear();
-        setDirection(PlayerMomsKnifeMotion.FORWARD);
+        Vec3 local = PlayerMomsKnifeMotion.toLocal(context.getMainAxis(), owner.getYRot(), owner.getXRot());
+        entityData.set(BASE_DIRECTION, new Vector3f((float) local.x, (float) local.y, (float) local.z));
+        setDirection(local);
         entityData.set(RANGE, (float) Math.min(8, range));
         entityData.set(SPEED, (float) speed);
         entityData.set(LAUNCHED_AT, level().getGameTime());
         previous = frame(owner);
-        Vec3 velocity = PlayerMomsKnifeMotion.unit(owner.getLookAngle()).scale(entityData.get(SPEED));
-        attack = new PlayerMomsKnifeAttackState(context, position(), owner.getLookAngle(), entityData.get(RANGE), velocity);
+        Vec3 world = PlayerMomsKnifeMotion.toWorld(local, owner.getYRot(), owner.getXRot());
+        Vec3 velocity = world.scale(entityData.get(SPEED));
+        attack = new PlayerMomsKnifeAttackState(context, position(), world, entityData.get(RANGE), velocity);
         setDeltaMovement(velocity);
         barrageOnReturn = null;
         if (barrageCount > 0) {
@@ -200,13 +250,15 @@ public final class PlayerMomsKnifeEntity extends Entity implements IBulletObject
                 ? PlayerMomsKnifeMotion.interpolateDirection(renderFrom, renderTo,
                         level().getGameTime() + partialTick - directionUpdatedAt) : direction();
         return getMode() == Mode.RETURNING
-                ? PlayerMomsKnifeMotion.toWorld(direction, owner.getViewYRot(partialTick), owner.getViewXRot(partialTick))
+                ? PlayerMomsKnifeMotion.toWorld(direction,
+                        level().isClientSide ? owner.getViewYRot(partialTick) : owner.getYRot(),
+                        level().isClientSide ? owner.getViewXRot(partialTick) : owner.getXRot())
                 : direction;
     }
 
     public Vec3 getRenderAnchor(Player owner, float partialTick) {
         return getMode() == Mode.RETURNING
-                ? PlayerMomsKnifeMotion.idlePosition(owner, partialTick)
+                ? heldAnchor(owner, partialTick)
                         .add(getRenderDirection(owner, partialTick).scale(getFlightDistance(partialTick)))
                 : getPosition(partialTick);
     }
@@ -225,6 +277,9 @@ public final class PlayerMomsKnifeEntity extends Entity implements IBulletObject
     @Override
     protected void defineSynchedData() {
         entityData.define(MODE, (byte) Mode.RETURNING.ordinal());
+        entityData.define(HELD_SLOT, 0);
+        entityData.define(LOCAL_OFFSET, new Vector3f());
+        entityData.define(BASE_DIRECTION, new Vector3f(0, 0, 1));
         entityData.define(DIRECTION, new Vector3f(0, 0, 1));
         entityData.define(OWNER, -1);
         entityData.define(RANGE, 0.0F);
@@ -246,7 +301,7 @@ public final class PlayerMomsKnifeEntity extends Entity implements IBulletObject
                 || owner.getCapability(PlayerAbilityProvider.PLAYER_ABILITY)
                 .map(ability -> !ability.getAttackTypes().containsKey(ModAttackTypes.MOMS_KNIFE.getId())
                         || getMode() == Mode.RETURNING
-                        && !getUUID().equals(ability.getRuntimeEntities().getId(ModAttackTypes.MOMS_KNIFE.getId())))
+                        && !getUUID().equals(ability.getRuntimeEntities().getId(ModAttackTypes.MOMS_KNIFE.getId(), getHeldSlot())))
                 .orElse(true)) {
             discard();
             return;
@@ -259,17 +314,17 @@ public final class PlayerMomsKnifeEntity extends Entity implements IBulletObject
     }
 
     private void tickReturning(ServerPlayer owner, boolean homing) {
-        Vec3 idle = PlayerMomsKnifeMotion.idlePosition(owner, 1);
+        Vec3 idle = heldAnchor(owner, 1);
         Vec3 local = direction();
         if (isInFlight() && homing) {
             Vec3 world = PlayerMomsKnifeMotion.toWorld(local, owner.getYRot(), owner.getXRot());
             Vec3 point = tracking.targetPoint(owner, idle.add(world.scale(getFlightDistance(0))), world, level().getGameTime());
-            Vec3 desired = point == null || point.distanceToSqr(idle) < 1.0E-12 ? PlayerMomsKnifeMotion.FORWARD
+            Vec3 desired = point == null || point.distanceToSqr(idle) < 1.0E-12 ? baseDirection()
                     : PlayerMomsKnifeMotion.toLocal(point.subtract(idle), owner.getYRot(), owner.getXRot());
             setDirection(PlayerMomsKnifeMotion.steer(local, desired));
         } else {
             tracking.clear();
-            setDirection(PlayerMomsKnifeMotion.FORWARD);
+            setDirection(baseDirection());
         }
 
         Frame current = frame(owner);
@@ -293,7 +348,7 @@ public final class PlayerMomsKnifeEntity extends Entity implements IBulletObject
         }
         if (isInFlight() && elapsed >= duration) {
             entityData.set(RANGE, 0.0F);
-            setDirection(PlayerMomsKnifeMotion.FORWARD);
+            setDirection(baseDirection());
             tracking.clear();
             attack.setVelocity(Vec3.ZERO);
             setDeltaMovement(Vec3.ZERO);
@@ -333,7 +388,7 @@ public final class PlayerMomsKnifeEntity extends Entity implements IBulletObject
     }
 
     private Frame frame(Player owner) {
-        return new Frame(PlayerMomsKnifeMotion.idlePosition(owner, 1), owner.getYRot(), owner.getXRot(), direction(),
+        return new Frame(heldAnchor(owner, 1), owner.getYRot(), owner.getXRot(), direction(),
                 level().getGameTime());
     }
 
@@ -421,7 +476,7 @@ public final class PlayerMomsKnifeEntity extends Entity implements IBulletObject
         barrageOnReturn = null;
         if (!level().isClientSide && owner != null && getMode() == Mode.RETURNING) {
             owner.getCapability(PlayerAbilityProvider.PLAYER_ABILITY).ifPresent(ability ->
-                    ability.getRuntimeEntities().unregister(ModAttackTypes.MOMS_KNIFE.getId(), getUUID()));
+                    ability.getRuntimeEntities().unregister(ModAttackTypes.MOMS_KNIFE.getId(), getHeldSlot(), getUUID()));
         }
         super.remove(reason);
     }
@@ -569,7 +624,8 @@ public final class PlayerMomsKnifeEntity extends Entity implements IBulletObject
     @Override
     public void writeSpawnData(FriendlyByteBuf buffer) {
         new PlayerMomsKnifeSpawnData(entityData.get(MODE), entityData.get(OWNER), direction(),
-                entityData.get(RANGE), entityData.get(SPEED), entityData.get(LAUNCHED_AT), getYRot(), getXRot()).write(buffer);
+                entityData.get(RANGE), entityData.get(SPEED), entityData.get(LAUNCHED_AT), getYRot(), getXRot(),
+                getHeldSlot(), localOffset(), baseDirection()).write(buffer);
     }
 
     @Override
@@ -577,6 +633,9 @@ public final class PlayerMomsKnifeEntity extends Entity implements IBulletObject
         var data = PlayerMomsKnifeSpawnData.read(buffer);
         entityData.set(MODE, data.mode());
         entityData.set(OWNER, data.owner());
+        entityData.set(HELD_SLOT, data.heldSlot());
+        entityData.set(LOCAL_OFFSET, new Vector3f((float) data.localOffset().x, (float) data.localOffset().y, (float) data.localOffset().z));
+        entityData.set(BASE_DIRECTION, new Vector3f((float) data.baseDirection().x, (float) data.baseDirection().y, (float) data.baseDirection().z));
         setDirection(data.direction());
         entityData.set(RANGE, data.range());
         entityData.set(SPEED, data.speed());
@@ -617,7 +676,7 @@ public final class PlayerMomsKnifeEntity extends Entity implements IBulletObject
         Player owner = getOwner();
         if (owner == null) return getBoundingBox().inflate(1);
         double reach = Math.max(0.6, owner.getBbWidth()) + entityData.get(RANGE)
-                + MomKnifePose.BLADE_TIP_DISTANCE + MomKnifePose.BLADE_RADIUS;
+                + localOffset().length() + MomKnifePose.BLADE_TIP_DISTANCE + MomKnifePose.BLADE_RADIUS;
         AABB ownerBounds = owner.getBoundingBox();
         AABB movingOwner = ownerBounds.minmax(ownerBounds.move(owner.getPosition(0).subtract(owner.position())));
         return getBoundingBox().minmax(movingOwner.inflate(reach));

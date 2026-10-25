@@ -46,6 +46,24 @@ class PlayerAbilityRuntimeEntityTest {
     }
 
     @Test
+    void numberedSlotsRemainIndependentAndTheOriginalApiStillAddressesZero() {
+        RuntimeEntityIndex entities = new PlayerAbility().getRuntimeEntities();
+        UUID first = UUID.randomUUID();
+        UUID last = UUID.randomUUID();
+        UUID replacement = UUID.randomUUID();
+        entities.register(KNIFE, first);
+        entities.register(KNIFE, 15, last);
+        entities.register(KNIFE, 15, replacement);
+        assertEquals(first, entities.getId(KNIFE, 0));
+        assertFalse(entities.unregister(KNIFE, 15, last));
+        assertEquals(replacement, entities.getId(KNIFE, 15));
+        assertTrue(entities.unregister(KNIFE, first));
+        assertEquals(replacement, entities.getId(KNIFE, 15));
+        entities.discardAll(null);
+        assertNull(entities.getId(KNIFE, 15));
+    }
+
+    @Test
     void savingAndLoadingPreservesAbilitiesButClearsRuntimeEntities() {
         PlayerAbility ability = new PlayerAbility();
         ability.setPiercing(3);

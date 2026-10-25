@@ -4,7 +4,6 @@ import net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.normal.Bull
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.normal.Callus;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.normal.JumperCables;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.normal.JumperCablesKillCounter;
-import net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.normal.FiringModifierAttackPlan;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.normal.LaserPlusBrimstone;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.normal.RandomHarmfulPotion;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.revive.SimpleReviveEffect;
@@ -29,8 +28,6 @@ class RequiredTriggerTypeTest {
                 new BulletBounceOnBlock().getRequiredTriggerType());
         assertSame(ModTriggerTypes.ON_HURT,
                 new Callus().getRequiredTriggerType());
-        assertSame(ModTriggerTypes.ATTACK_PLAN,
-                new FiringModifierAttackPlan().getRequiredTriggerType());
         assertSame(ModTriggerTypes.BULLET_HIT_ENTITY_BEFORE,
                 new LaserPlusBrimstone().getRequiredTriggerType());
         assertSame(ModTriggerTypes.HIT_ENTITY_RESTRICTED,

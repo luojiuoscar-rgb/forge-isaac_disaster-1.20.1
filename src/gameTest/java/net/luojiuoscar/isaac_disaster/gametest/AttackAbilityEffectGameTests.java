@@ -30,7 +30,6 @@ public final class AttackAbilityEffectGameTests {
     public static void invalidInputsFailAndOrdinarySkipsSucceed(GameTestHelper helper) {
         ServerPlayer player = player(helper);
         List<IAbilityEffect> eventEffects = List.of(new BrimstonePlusMonstrosLung(),
-                new FiringModifierAttackPlan(),
                 new TheWizAttackPlan(), new LeadPencilShotCounter());
         var invalidEntity = new ExecutableEffectContext(new Zombie(helper.getLevel()));
         for (var effect : eventEffects) {
@@ -43,7 +42,6 @@ public final class AttackAbilityEffectGameTests {
         var extraPlan = plan(player, ModAttackTypes.BULLET.get(), AttackOrigin.ABILITY_EXTRA);
         context.set(ContextKeys.EVENT, extraPlan);
         helper.assertTrue(new BrimstonePlusMonstrosLung().applyEffect(context), "Ineligible beam plan is safely skipped");
-        helper.assertTrue(new FiringModifierAttackPlan().applyEffect(context), "Derived plan is safely skipped");
         helper.assertTrue(new TheWizAttackPlan().applyEffect(context), "Missing Wiz status is safely skipped");
         helper.assertTrue(new LeadPencilShotCounter().applyEffect(context), "Derived plan is not counted");
         helper.assertTrue(extraPlan.getExtraContexts().isEmpty(), "Skipped beam effect appends nothing");
@@ -51,7 +49,7 @@ public final class AttackAbilityEffectGameTests {
         helper.assertTrue(!data.hasDouble(LeadPencilShotCounter.DATA_KEY), "Skipped counter does not create progress");
 
         context.set(ContextKeys.EVENT, new Event());
-        for (var effect : List.of(new BrimstonePlusMonstrosLung(), new FiringModifierAttackPlan(),
+        for (var effect : List.of(new BrimstonePlusMonstrosLung(),
                 new TheWizAttackPlan(), new LeadPencilShotCounter())) {
             helper.assertTrue(!effect.applyEffect(context), "Wrong event type fails");
         }
@@ -64,7 +62,6 @@ public final class AttackAbilityEffectGameTests {
         var context = new ExecutableEffectContext(player);
         var primary = plan(player, ModAttackTypes.BULLET.get(), AttackOrigin.PLAYER_PRIMARY);
         context.set(ContextKeys.EVENT, primary);
-        helper.assertTrue(new FiringModifierAttackPlan().applyEffect(context), "Valid multishot execution succeeds");
         helper.assertTrue(primary.getBaseContexts().size() == 1, "No multishot items preserves one projectile");
         helper.assertTrue(new LeadPencilShotCounter().applyEffect(context), "Counting below threshold succeeds");
         var data = player.getCapability(ExtraDataProvider.EXTRA_DATA_CAP).orElseThrow(IllegalStateException::new);

@@ -2,8 +2,7 @@ package net.luojiuoscar.isaac_disaster.registries.attack_type.impl;
 
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerAbilityProvider;
 import net.luojiuoscar.isaac_disaster.effect.ModEffects;
-import net.luojiuoscar.isaac_disaster.entity.ModEntities;
-import net.luojiuoscar.isaac_disaster.entity.projectile.moms_knife.PlayerMomsKnifeEntity;
+import net.luojiuoscar.isaac_disaster.entity.projectile.moms_knife.HeldMomsKnifeGroup;
 import net.luojiuoscar.isaac_disaster.entity.projectile.moms_knife.PlayerMomsKnifeMotion;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.normal.MomsKnifeBarrage;
@@ -18,10 +17,12 @@ import net.luojiuoscar.isaac_disaster.registries.attack_type.tags.BasicAttackTyp
 import net.luojiuoscar.isaac_disaster.registries.attack_type.tags.IChargeableAttack;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import org.jetbrains.annotations.Nullable;
+import net.minecraft.world.phys.Vec3;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public final class MomsKnifeAttack extends AttackType implements BasicAttackType, IChargeableAttack {
@@ -43,36 +44,16 @@ public final class MomsKnifeAttack extends AttackType implements BasicAttackType
 
     @Override
     public boolean isChargeEligible(ServerPlayer player) {
-        if (!isSelectedAndReady(player)) return false;
-        return player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY).map(ability -> {
-            PlayerMomsKnifeEntity knife = ability.getRuntimeEntities()
-                    .getEntity(getId(), player.serverLevel(), PlayerMomsKnifeEntity.class);
-            return knife == null || knife.getOwner() != player || !knife.isInFlight();
-        }).orElse(false);
-    }
-
-    @Nullable
-    private PlayerMomsKnifeEntity getOrCreateKnife(ServerPlayer player) {
-        return player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY).map(ability -> {
-            var entities = ability.getRuntimeEntities();
-            PlayerMomsKnifeEntity knife = entities.getEntity(getId(), player.serverLevel(), PlayerMomsKnifeEntity.class);
-            if (knife != null && (knife.getOwner() != player || knife.getMode() != PlayerMomsKnifeEntity.Mode.RETURNING)) {
-                entities.unregister(getId(), knife.getUUID());
-                knife = null;
-            }
-            if (knife == null && isSelectedAndReady(player)) {
-                knife = new PlayerMomsKnifeEntity(ModEntities.PLAYER_MOMS_KNIFE.get(), player.level());
-                knife.initialize(player);
-                if (!player.serverLevel().addFreshEntity(knife)) return null;
-                entities.register(getId(), knife.getUUID());
-            }
-            return knife;
-        }).orElse(null);
+        return isSelectedAndReady(player) && !HeldMomsKnifeGroup.isInFlight(player);
     }
 
     @Override
     public void onTick(ServerPlayer player) {
-        if (getOrCreateKnife(player) != null) addCharge(player, getChargePerTick(player));
+        if (!isChargeEligible(player)) {
+            clearCharge(player);
+            return;
+        }
+        if (!HeldMomsKnifeGroup.refresh(player).isEmpty()) addCharge(player, getChargePerTick(player));
     }
 
     @Override
@@ -93,28 +74,36 @@ public final class MomsKnifeAttack extends AttackType implements BasicAttackType
 
     @Override
     public List<AttackContext> getAttackContexts(ServerPlayer player, int bulletCount) {
-        return List.of(AttackContext.builder(player, player).attackType(this)
-                .position(PlayerMomsKnifeMotion.idlePosition(player, 1)).mainAxis(player.getLookAngle())
-                .range(getRange(player)).speed(getBulletSpeed(player)).build());
+        if (bulletCount <= 0) return List.of();
+        int count = Mth.clamp(bulletCount, 1, HeldMomsKnifeGroup.MAX_KNIVES);
+        Vec3 idle = PlayerMomsKnifeMotion.idlePosition(player, 1);
+        AttackContext reference = AttackContext.builder(player, player).attackType(this)
+                .position(idle).mainAxis(player.getLookAngle()).range(getRange(player)).speed(getBulletSpeed(player)).build();
+        List<AttackContext> contexts = new ArrayList<>(count);
+        for (int slot = 0; slot < count; slot++) {
+            var layout = HeldMomsKnifeGroup.layout(count, slot, Math.max(0.6, player.getBbWidth()));
+            contexts.add(reference.toBuilder().position(idle.add(PlayerMomsKnifeMotion.offsetToWorld(
+                            layout.offset(), player.getYRot(), player.getXRot())))
+                    .mainAxis(PlayerMomsKnifeMotion.toWorld(layout.direction(), player.getYRot(), player.getXRot())).build());
+        }
+        return contexts;
     }
 
     @Override
     public void performAttack(List<AttackContext> contexts) {
-        if (!contexts.isEmpty()) shoot(contexts.get(0));
-    }
-
-    @Override
-    public void shoot(AttackContext context) {
-        if (!(context.getOwner() instanceof ServerPlayer player) || !isChargeEligible(player)) return;
-        PlayerMomsKnifeEntity knife = getOrCreateKnife(player);
-        if (knife == null) return;
+        if (contexts.isEmpty() || !(contexts.get(0).getOwner() instanceof ServerPlayer player) || !isChargeEligible(player)) return;
         player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY).ifPresent(ability -> {
             double fraction = Math.min(1, (double) Math.max(1, ability.getChargeAmount(getChargeBarId()))
                     / getTotalCharge(player));
             int barrageCount = ability.getAttackTypes().getOrDefault(ModAttackTypes.BRIMSTONE.getId(), 0) > 0
                     ? MomsKnifeBarrage.countForCharge(fraction) : 0;
-            knife.launch(PlayerMomsKnifeMotion.range(context.getBulletRange(), fraction), context.getBulletSpeed(), context, barrageCount);
+            HeldMomsKnifeGroup.launch(player, contexts, fraction, barrageCount);
         });
+    }
+
+    @Override
+    public void shoot(AttackContext context) {
+        performAttack(List.of(context));
     }
 
     @Override

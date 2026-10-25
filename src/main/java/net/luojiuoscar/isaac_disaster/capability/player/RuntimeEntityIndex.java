@@ -12,25 +12,41 @@ import java.util.UUID;
 
 /** Transient entities owned by player abilities; deliberately excluded from saves and respawn copies. */
 public final class RuntimeEntityIndex {
-    private final Map<ResourceLocation, UUID> entityIds = new HashMap<>();
+    private record Slot(ResourceLocation key, int index) {}
+    private final Map<Slot, UUID> entityIds = new HashMap<>();
 
     @Nullable
     public UUID getId(ResourceLocation key) {
-        return entityIds.get(key);
+        return getId(key, 0);
+    }
+
+    @Nullable
+    public UUID getId(ResourceLocation key, int slot) {
+        return entityIds.get(new Slot(key, slot));
     }
 
     public void register(ResourceLocation key, UUID entityId) {
-        entityIds.put(key, entityId);
+        register(key, 0, entityId);
+    }
+
+    public void register(ResourceLocation key, int slot, UUID entityId) {
+        entityIds.put(new Slot(key, slot), entityId);
     }
 
     /** Resolves a slot in the current world, pruning missing, removed or mismatched entities. */
     @Nullable
     public <T extends Entity> T getEntity(ResourceLocation key, ServerLevel level, Class<T> type) {
-        UUID entityId = entityIds.get(key);
+        return getEntity(key, 0, level, type);
+    }
+
+    @Nullable
+    public <T extends Entity> T getEntity(ResourceLocation key, int slot, ServerLevel level, Class<T> type) {
+        Slot identity = new Slot(key, slot);
+        UUID entityId = entityIds.get(identity);
         if (entityId == null) return null;
         Entity entity = level.getEntity(entityId);
         if (entity == null || entity.isRemoved() || !type.isInstance(entity)) {
-            entityIds.remove(key, entityId);
+            entityIds.remove(identity, entityId);
             return null;
         }
         return type.cast(entity);
@@ -38,7 +54,11 @@ public final class RuntimeEntityIndex {
 
     /** An old entity can release its slot without unregistering a newer replacement. */
     public boolean unregister(ResourceLocation key, UUID expectedId) {
-        return entityIds.remove(key, expectedId);
+        return unregister(key, 0, expectedId);
+    }
+
+    public boolean unregister(ResourceLocation key, int slot, UUID expectedId) {
+        return entityIds.remove(new Slot(key, slot), expectedId);
     }
 
     public void clear() {

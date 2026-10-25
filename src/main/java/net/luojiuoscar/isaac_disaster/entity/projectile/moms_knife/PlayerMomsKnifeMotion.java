@@ -55,19 +55,28 @@ public final class PlayerMomsKnifeMotion {
 
     /** Uses a yaw-defined right axis so looking straight up or down does not flip the local frame. */
     public static Vec3 toWorld(Vec3 local, float yaw, float pitch) {
+        return unit(offsetToWorld(local, yaw, pitch));
+    }
+
+    /** Transforms a displacement without normalizing away its magnitude or a zero offset. */
+    public static Vec3 offsetToWorld(Vec3 local, float yaw, float pitch) {
         Vec3 forward = Vec3.directionFromRotation(pitch, yaw).normalize();
         Vec3 right = new Vec3(Math.cos(Math.toRadians(yaw)), 0, Math.sin(Math.toRadians(yaw)));
         right = right.subtract(forward.scale(right.dot(forward))).normalize();
         Vec3 up = forward.cross(right).normalize();
-        return unit(right.scale(local.x).add(up.scale(local.y)).add(forward.scale(local.z)));
+        return right.scale(local.x).add(up.scale(local.y)).add(forward.scale(local.z));
     }
 
     public static Vec3 toLocal(Vec3 world, float yaw, float pitch) {
+        return unit(offsetToLocal(world, yaw, pitch));
+    }
+
+    public static Vec3 offsetToLocal(Vec3 world, float yaw, float pitch) {
         Vec3 forward = Vec3.directionFromRotation(pitch, yaw).normalize();
         Vec3 right = new Vec3(Math.cos(Math.toRadians(yaw)), 0, Math.sin(Math.toRadians(yaw)));
         right = right.subtract(forward.scale(right.dot(forward))).normalize();
         Vec3 up = forward.cross(right).normalize();
-        return unit(new Vec3(world.dot(right), world.dot(up), world.dot(forward)));
+        return new Vec3(world.dot(right), world.dot(up), world.dot(forward));
     }
 
     /** Shortest-arc interpolation remains finite even for exactly opposite directions. */
@@ -94,8 +103,9 @@ public final class PlayerMomsKnifeMotion {
     }
 
     public static Vec3 idlePosition(Player owner, float partialTick) {
+        Vec3 forward = owner.level().isClientSide ? owner.getViewVector(partialTick) : owner.getLookAngle();
         return owner.getEyePosition(partialTick).add(0, -0.15 * owner.getBbHeight(), 0)
-                .add(owner.getViewVector(partialTick).scale(Math.max(0.6, owner.getBbWidth())));
+                .add(forward.scale(Math.max(0.6, owner.getBbWidth())));
     }
 
     public static Vec3 barragePosition(Player owner) {

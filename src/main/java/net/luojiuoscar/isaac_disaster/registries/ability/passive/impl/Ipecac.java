@@ -38,7 +38,6 @@ public class Ipecac extends PassiveAbility {
         StatManager.addMultiplier(player, Multipliers.FIRE_RATE, 1);
         StatManager.addBulletColor(player, ModBulletColors.IPECAC.getId(), 1);
         StatManager.addTriggerModule(player, ModTriggerModules.IPECAC.getId(), 1);
-        StatManager.addTriggerModule(player, ModTriggerModules.FIRING_MODIFIER.getId(), 1);
     }
 
     @Override
@@ -46,7 +45,6 @@ public class Ipecac extends PassiveAbility {
         StatManager.removeMultiplier(player, Multipliers.FIRE_RATE, 1);
         StatManager.addBulletColor(player, ModBulletColors.IPECAC.getId(), -1);
         StatManager.addTriggerModule(player, ModTriggerModules.IPECAC.getId(), -1);
-        StatManager.addTriggerModule(player, ModTriggerModules.FIRING_MODIFIER.getId(), -1);
     }
 
     @Override
