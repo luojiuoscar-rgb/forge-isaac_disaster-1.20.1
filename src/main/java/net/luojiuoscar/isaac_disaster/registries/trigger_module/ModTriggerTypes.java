@@ -49,6 +49,10 @@ public class ModTriggerTypes {
             new TriggerType(ResourceLocation.fromNamespaceAndPath(
                     IsaacDisaster.MOD_ID, "kill_entity"));
 
+    public static final TriggerType DEAL_DAMAGE =
+            new TriggerType(ResourceLocation.fromNamespaceAndPath(
+                    IsaacDisaster.MOD_ID, "deal_damage"));
+
     public static final TriggerType DEATH =
             new TriggerType(ResourceLocation.fromNamespaceAndPath(
                     IsaacDisaster.MOD_ID, "death"));

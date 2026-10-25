@@ -1,6 +1,5 @@
 package net.luojiuoscar.isaac_disaster.registries.ability.passive.impl;
 
-import net.luojiuoscar.isaac_disaster.entity.familiar.impl.fly.LocustOfWarEntity;
 import net.luojiuoscar.isaac_disaster.registries.familiar_modifier.ModFamiliarModifiers;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.registries.ability.passive.PassiveAbility;
@@ -12,7 +11,7 @@ import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
-import java.util.Locale;
+import java.util.ArrayList;
 
 public final class HiveMind extends PassiveAbility {
     public HiveMind(int id, int level) { super(id, level); }
@@ -25,6 +24,7 @@ public final class HiveMind extends PassiveAbility {
         StatManager.addFamiliarModifier(player, ModFamiliarModifiers.HIVE_MIND_ENHANCEMENT.getId(), 1);
         StatManager.addFamiliarModifier(player, ModFamiliarModifiers.HIVE_MIND_VISUAL_SCALE.getId(), 1);
         StatManager.modifySetWithId(player, ModSetAbilities.BEELZEBUB.getId(), 1);
+        StatManager.modifySetWithId(player, ModSetAbilities.SPIDER_BABY.getId(), 1);
     }
 
     @Override
@@ -32,6 +32,7 @@ public final class HiveMind extends PassiveAbility {
         StatManager.removeFamiliarModifier(player, ModFamiliarModifiers.HIVE_MIND_ENHANCEMENT.getId(), 1);
         StatManager.removeFamiliarModifier(player, ModFamiliarModifiers.HIVE_MIND_VISUAL_SCALE.getId(), 1);
         StatManager.modifySetWithId(player, ModSetAbilities.BEELZEBUB.getId(), -1);
+        StatManager.modifySetWithId(player, ModSetAbilities.SPIDER_BABY.getId(), -1);
     }
 
     @Override
@@ -43,11 +44,17 @@ public final class HiveMind extends PassiveAbility {
 
     @Override
     public List<Component> getSynergyDesc(@Nullable ItemStack stack, @Nullable Player player) {
-        return ModSetAbilities.BEELZEBUB.get().getSynergyDesc();
+        List<Component> result = new ArrayList<>(ModSetAbilities.BEELZEBUB.get().getSynergyDesc());
+        result.addAll(ModSetAbilities.SPIDER_BABY.get().getSynergyDesc());
+        return result;
     }
 
     @Override
     public List<Component> getExtraDesc(@Nullable ItemStack stack, @Nullable Player player) {
-        return ModSetAbilities.BEELZEBUB.get().getExtraDesc();
+        List<Component> result = new ArrayList<>();
+        for (var set : List.of(ModSetAbilities.BEELZEBUB.get(), ModSetAbilities.SPIDER_BABY.get())) {
+            for (var line : set.getExtraDesc()) result.add(set.getName().copy().append(": ").append(line));
+        }
+        return result;
     }
 }

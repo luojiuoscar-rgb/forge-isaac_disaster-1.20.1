@@ -179,4 +179,16 @@ public class ModActiveItems {
             () -> new ActiveItem(new Item.Properties(), 12, 12, ModActiveAbilities.D12));
     static {ItemListManager.ACTIVE_ITEM_LIST.add(D12);}
 
+    public static final RegistryObject<Item> MOMS_PAD = ITEMS.register("moms_pad",
+            () -> new ActiveItem(new Item.Properties(), 2, 2, ModActiveAbilities.MOMS_PAD));
+    static {ItemListManager.ACTIVE_ITEM_LIST.add(MOMS_PAD);}
+
+    public static final RegistryObject<Item> GUPPYS_HEAD = ITEMS.register("guppys_head",
+            () -> new ActiveItem(new Item.Properties(), 1, 1, ModActiveAbilities.GUPPYS_HEAD));
+    static {ItemListManager.ACTIVE_ITEM_LIST.add(GUPPYS_HEAD);}
+
+    public static final RegistryObject<Item> BOX_OF_SPIDERS = ITEMS.register("box_of_spiders",
+            () -> new ActiveItem(new Item.Properties(), 2, 2, ModActiveAbilities.BOX_OF_SPIDERS));
+    static {ItemListManager.ACTIVE_ITEM_LIST.add(BOX_OF_SPIDERS);}
+
 }

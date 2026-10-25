@@ -19,6 +19,7 @@ import net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.normal.*;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.pill_effect.impl.*;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.revive.*;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.profile.PotionProfile;
+import net.luojiuoscar.isaac_disaster.registries.familiar.ModFamiliarEntities;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -1131,5 +1132,54 @@ public class ModExecutableEffects {
 
     public static final RegistryObject<IExecutableEffect> CRICKET_LEG =
             EXECUTABLE_EFFECT_REGISTRY.register("cricket_leg", CricketLeg::new);
+
+    public static final RegistryObject<IExecutableEffect> MOMS_PAD_FLIES =
+            EXECUTABLE_EFFECT_REGISTRY.register("moms_pad_flies", () ->
+                    new SpawnFamiliars(ModFamiliarEntities.BLUE_FLY::getId, 1, 1, true));
+
+    public static final RegistryObject<IExecutableEffect> MOMS_PAD =
+            EXECUTABLE_EFFECT_REGISTRY.register("moms_pad", () -> new AbilityEffectEntry(
+                    APPLY_EFFECT_TO_NEARBY, ctx -> {
+                ctx.set(ContextKeys.EXECUTABLE_EFFECT, POTIONS.get());
+                ctx.set(ContextKeys.BOOLEAN, List.of(true));
+                ctx.set(ContextKeys.POTIONS, List.of(new PotionProfile(ModEffects.PANIC.get(), 80, 0, 0, 0, true)));
+            }));
+
+    public static final RegistryObject<IExecutableEffect> GUPPYS_HEAD =
+            EXECUTABLE_EFFECT_REGISTRY.register("guppys_head", () ->
+                    new SpawnFamiliars(ModFamiliarEntities.BLUE_FLY::getId, 2, 4, true));
+
+    public static final RegistryObject<IExecutableEffect> INFESTATION =
+            EXECUTABLE_EFFECT_REGISTRY.register("infestation", () ->
+                    new SpawnFamiliars(ModFamiliarEntities.BLUE_FLY::getId, 1, 2, false));
+
+    public static final RegistryObject<IExecutableEffect> THE_MULLIGAN =
+            EXECUTABLE_EFFECT_REGISTRY.register("the_mulligan", TheMulligan::new);
+
+    public static final RegistryObject<IExecutableEffect> THE_MULLIGAN_ATTACHMENT =
+            EXECUTABLE_EFFECT_REGISTRY.register("the_mulligan_attachment", TheMulliganAttachment::new);
+
+    public static final RegistryObject<IExecutableEffect> SPIDER_BABY =
+            EXECUTABLE_EFFECT_REGISTRY.register("spider_baby", () ->
+                    new SpawnFamiliars(ModFamiliarEntities.BLUE_SPIDER::getId, 1, 2, false));
+
+    public static final RegistryObject<IExecutableEffect> MOMS_WIG =
+            EXECUTABLE_EFFECT_REGISTRY.register("moms_wig", MomsWig::new);
+
+    public static final RegistryObject<IExecutableEffect> SPAWN_BLUE_SPIDER =
+            EXECUTABLE_EFFECT_REGISTRY.register("spawn_blue_spider", () ->
+                    new SpawnFamiliars(ModFamiliarEntities.BLUE_SPIDER::getId, 1, 1, false));
+
+    public static final RegistryObject<IExecutableEffect> BOX_OF_SPIDERS =
+            EXECUTABLE_EFFECT_REGISTRY.register("box_of_spiders", () ->
+                    new SpawnFamiliars(ModFamiliarEntities.BLUE_SPIDER::getId, 4, 8, true));
+
+    public static final RegistryObject<IExecutableEffect> SPAWN_BLUE_FLY =
+            EXECUTABLE_EFFECT_REGISTRY.register("spawn_blue_fly", () ->
+                    new SpawnFamiliars(ModFamiliarEntities.BLUE_FLY::getId, 1, 1, false));
+
+    public static final RegistryObject<IExecutableEffect> CAT =
+            EXECUTABLE_EFFECT_REGISTRY.register("cat", () -> new AbilityEffectEntry(SPAWN_BLUE_FLY,
+                    ctx -> ctx.set(ContextKeys.TARGET_POSITION, ctx.getEntity().position())));
 
 }

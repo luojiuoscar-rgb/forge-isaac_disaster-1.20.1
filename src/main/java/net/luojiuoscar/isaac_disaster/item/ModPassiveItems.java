@@ -795,4 +795,28 @@ public class ModPassiveItems {
             () -> new PassiveItem(new Item.Properties(), ModPassiveAbilities.HIVE_MIND));
     static {ItemListManager.PASSIVE_ITEM_LIST.add(HIVE_MIND);}
 
+    public static final RegistryObject<Item> MOMS_UNDERWEAR = ITEMS.register("moms_underwear",
+            () -> new PassiveItem(new Item.Properties(), ModPassiveAbilities.MOMS_UNDERWEAR));
+    static {ItemListManager.PASSIVE_ITEM_LIST.add(MOMS_UNDERWEAR);}
+
+    public static final RegistryObject<Item> INFESTATION = ITEMS.register("infestation",
+            () -> new PassiveItem(new Item.Properties(), ModPassiveAbilities.INFESTATION));
+    static {ItemListManager.PASSIVE_ITEM_LIST.add(INFESTATION);}
+
+    public static final RegistryObject<Item> THE_MULLIGAN = ITEMS.register("the_mulligan",
+            () -> new PassiveItem(new Item.Properties(), ModPassiveAbilities.THE_MULLIGAN));
+    static {ItemListManager.PASSIVE_ITEM_LIST.add(THE_MULLIGAN);}
+
+    public static final RegistryObject<Item> SPIDER_BABY = ITEMS.register("spider_baby",
+            () -> new PassiveItem(new Item.Properties(), ModPassiveAbilities.SPIDER_BABY));
+    static {ItemListManager.PASSIVE_ITEM_LIST.add(SPIDER_BABY);}
+
+    public static final RegistryObject<Item> MOMS_WIG = ITEMS.register("moms_wig",
+            () -> new PassiveItem(new Item.Properties(), ModPassiveAbilities.MOMS_WIG));
+    static {ItemListManager.PASSIVE_ITEM_LIST.add(MOMS_WIG);}
+
+    public static final RegistryObject<Item> INFESTATION_2 = ITEMS.register("infestation_2",
+            () -> new PassiveItem(new Item.Properties(), ModPassiveAbilities.INFESTATION_2));
+    static {ItemListManager.PASSIVE_ITEM_LIST.add(INFESTATION_2);}
+
 }

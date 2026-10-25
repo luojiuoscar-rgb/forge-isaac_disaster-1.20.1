@@ -235,7 +235,16 @@ public enum ItemId {
     D12(2),
     SINUS_INFECTION(3),
     BFFS(2),
-    HIVE_MIND(2);
+    HIVE_MIND(2),
+    MOMS_UNDERWEAR(1),
+    MOMS_PAD(0),
+    GUPPYS_HEAD(2),
+    INFESTATION(0),
+    THE_MULLIGAN(3),
+    SPIDER_BABY(0),
+    MOMS_WIG(2),
+    INFESTATION_2(3),
+    BOX_OF_SPIDERS(1);
 
 
 

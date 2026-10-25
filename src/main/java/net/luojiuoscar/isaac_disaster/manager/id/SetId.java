@@ -9,7 +9,8 @@ public enum SetId {
     CAT,
     SERAPHIM,
     OH_CRAP,
-    BEELZEBUB;
+    BEELZEBUB,
+    SPIDER_BABY;
 
 
     private final int id;

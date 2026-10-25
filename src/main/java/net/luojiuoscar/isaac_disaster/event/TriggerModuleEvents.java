@@ -31,10 +31,12 @@ import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
+import net.minecraftforge.event.entity.living.LivingDamageEvent;
 import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
 import net.minecraftforge.event.level.BlockEvent;
 import net.minecraftforge.event.level.ExplosionEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.registries.IForgeRegistry;
 import net.minecraftforge.registries.RegistryManager;
@@ -109,6 +111,20 @@ public class TriggerModuleEvents {
         }
 
         dispatch(context, ModTriggerTypes.HIT_ENTITY_RESTRICTED);
+    }
+
+    @SubscribeEvent(priority = EventPriority.LOWEST)
+    public static void onLivingDamage(LivingDamageEvent event) {
+        if (event.isCanceled() || !Float.isFinite(event.getAmount()) || event.getAmount() <= 0) return;
+        if (!(event.getSource().getEntity() instanceof LivingEntity attacker) || attacker.level().isClientSide) return;
+        ExecutableEffectContext context = new ExecutableEffectContext(attacker);
+        context.set(ContextKeys.EVENT, event);
+        context.set(ContextKeys.DOUBLE, List.of((double) event.getAmount()));
+        context.set(ContextKeys.TARGET_POSITION, event.getEntity().position());
+        context.set(ContextKeys.SECONDARY_LIVING_ENTITIES, List.of(event.getEntity()));
+        Entity direct = event.getSource().getDirectEntity();
+        if (direct != null) context.set(ContextKeys.ENTITY, List.of(direct));
+        dispatch(context, ModTriggerTypes.DEAL_DAMAGE);
     }
 
     @SubscribeEvent
