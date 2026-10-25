@@ -1049,6 +1049,11 @@
       "isaac_disaster:laser_shot"
     ]
   },
+  "holy_light_shot": {
+    "sounds": [
+      "isaac_disaster:holy_light_shot"
+    ]
+  },
   "revelation_shot": {
     "sounds": [
       "isaac_disaster:revelation_shot"

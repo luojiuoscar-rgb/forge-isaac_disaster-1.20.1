@@ -990,6 +990,8 @@
   "set.isaac_disaster.seraphim.lore.1": "暂无额外效果",
   "entity.isaac_disaster.blue_fly": "蓝苍蝇",
   "ground_effect.isaac_disaster.potion": "药水水迹",
+  "death.attack.holy_light": "%1$s was struck by holy light",
+  "death.attack.holy_light.player": "%1$s was struck by %2$s's holy light",
   "config.isaac_disaster.title": "以撒的灾难配置",
   "config.isaac_disaster.subtitle": "选择一个配置分类",
   "config.isaac_disaster.domain_selection": "选择客户端或服务端配置",

@@ -16,6 +16,7 @@ public class ModSounds {
     public static final RegistryObject<SoundEvent> TEAR_BULLET_SHOT = registerSoundEvent("tear_bullet_shot");
     public static final RegistryObject<SoundEvent> LASER_SHOT = registerSoundEvent("laser_shot");
     public static final RegistryObject<SoundEvent> REVELATION_SHOT = registerSoundEvent("revelation_shot");
+    public static final RegistryObject<SoundEvent> HOLY_LIGHT_SHOT = registerSoundEvent("holy_light_shot");
     public static final RegistryObject<SoundEvent> BRIMSTONE_SHOT_NORMAL = registerSoundEvent("brimstone_shot.normal");
     public static final RegistryObject<SoundEvent> BRIMSTONE_SHOT_HUGE = registerSoundEvent("brimstone_shot.huge");
     public static final RegistryObject<SoundEvent> C_SECTION_SHOT = registerSoundEvent("c_section_shot");

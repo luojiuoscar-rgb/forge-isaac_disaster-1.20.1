@@ -11,6 +11,7 @@ import net.luojiuoscar.isaac_disaster.networking.packet.bullet.*;
 import net.luojiuoscar.isaac_disaster.networking.packet.groundeffect.GroundEffectDespawnBatchS2CPacket;
 import net.luojiuoscar.isaac_disaster.networking.packet.groundeffect.GroundEffectSnapshotBatchS2CPacket;
 import net.luojiuoscar.isaac_disaster.networking.packet.groundeffect.GroundEffectSyncS2CPacket;
+import net.luojiuoscar.isaac_disaster.networking.packet.holylight.HolyLightSyncS2CPacket;
 import net.luojiuoscar.isaac_disaster.networking.packet.laser.LaserBeamBatchS2CPacket;
 import net.luojiuoscar.isaac_disaster.networking.packet.laser.RevelationBeamS2CPacket;
 import net.minecraft.resources.ResourceLocation;
@@ -22,7 +23,7 @@ import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.network.simple.SimpleChannel;
 
 public class ModMessages {
-    private static final String PROTOCOL_VERSION = "8";
+    private static final String PROTOCOL_VERSION = "11";
     private static SimpleChannel INSTANCE;
 
     private static int packetId = 0;
@@ -216,6 +217,10 @@ public class ModMessages {
                 .encoder(GameplaySettingsS2CPacket::toBytes)
                 .consumerNetworkThread(GameplaySettingsS2CPacket::handle)
                 .add();
+
+        net.messageBuilder(HolyLightSyncS2CPacket.class, id(), NetworkDirection.PLAY_TO_CLIENT)
+                .decoder(HolyLightSyncS2CPacket::new).encoder(HolyLightSyncS2CPacket::toBytes)
+                .consumerNetworkThread(HolyLightSyncS2CPacket::handle).add();
 
     }
 

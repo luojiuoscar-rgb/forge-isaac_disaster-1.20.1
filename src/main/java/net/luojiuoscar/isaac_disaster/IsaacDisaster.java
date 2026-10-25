@@ -6,6 +6,7 @@ import net.luojiuoscar.isaac_disaster.block.ModBlockEntities;
 import net.luojiuoscar.isaac_disaster.block.ModBlocks;
 import net.luojiuoscar.isaac_disaster.bullet.server.BulletRuntime;
 import net.luojiuoscar.isaac_disaster.system.combat_effect.groundeffect.server.GroundEffectRuntime;
+import net.luojiuoscar.isaac_disaster.system.combat_effect.holylight.server.HolyLightRuntime;
 import net.luojiuoscar.isaac_disaster.client.config.IsaacConfigScreenRegistration;
 import net.luojiuoscar.isaac_disaster.config.IsaacClientConfig;
 import net.luojiuoscar.isaac_disaster.commands.gamerule.ModGameRules;
@@ -51,6 +52,7 @@ public class IsaacDisaster
         MinecraftForge.EVENT_BUS.register(this);
         MinecraftForge.EVENT_BUS.register(BulletRuntime.INSTANCE);
         MinecraftForge.EVENT_BUS.register(GroundEffectRuntime.INSTANCE);
+        MinecraftForge.EVENT_BUS.register(HolyLightRuntime.INSTANCE);
 
         ModRegistries.register(modEventBus);
 

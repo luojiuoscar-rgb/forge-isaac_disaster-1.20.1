@@ -39,4 +39,8 @@ public class ModDamageType {
                     Registries.DAMAGE_TYPE,
                     ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "water")
             );
+
+    public static final ResourceKey<DamageType> HOLY_LIGHT =
+            ResourceKey.create(Registries.DAMAGE_TYPE,
+                    ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "holy_light"));
 }

@@ -5,7 +5,7 @@ import net.minecraft.world.phys.Vec3;
 
 /** A fixed-height contact cylinder, clipped by the effect's remaining painted coverage. */
 public final class GroundEffectContactGeometry {
-    public static final double HEIGHT_TOLERANCE = 0.2D;
+    public static final double HEIGHT_TOLERANCE = 0.5D;
 
     private GroundEffectContactGeometry() { }
 

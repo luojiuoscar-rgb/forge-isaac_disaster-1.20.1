@@ -32,6 +32,10 @@ public final class ModDamageSources {
         return new DamageSource(type(level, ModDamageType.WATER), null, owner);
     }
 
+    public static DamageSource holyLight(Level level, Entity caster) {
+        return new DamageSource(type(level, ModDamageType.HOLY_LIGHT), null, caster);
+    }
+
     private static Holder<DamageType> type(Level level, ResourceKey<DamageType> key) {
         return level.registryAccess().registryOrThrow(Registries.DAMAGE_TYPE).getHolderOrThrow(key);
     }

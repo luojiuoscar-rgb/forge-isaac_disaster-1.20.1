@@ -41,12 +41,12 @@ class GroundEffectManagerTest {
     }
 
     @Test
-    void contactIncludesBothPointTwoHeightBoundariesButRejectsBeyondThem() {
+    void contactIncludesBothHalfBlockHeightBoundariesButRejectsBeyondThem() {
         var effect = water(new GroundEffectManager(), null, new Vec3(0, 64, 0));
-        assertTrue(GroundEffectContactGeometry.touches(effect, feetAt(63.8D)));
-        assertTrue(GroundEffectContactGeometry.touches(effect, feetAt(64.2D)));
-        assertFalse(GroundEffectContactGeometry.touches(effect, feetAt(63.799D)));
-        assertFalse(GroundEffectContactGeometry.touches(effect, feetAt(64.201D)));
+        assertTrue(GroundEffectContactGeometry.touches(effect, feetAt(63.5D)));
+        assertTrue(GroundEffectContactGeometry.touches(effect, feetAt(64.5D)));
+        assertFalse(GroundEffectContactGeometry.touches(effect, feetAt(63.499D)));
+        assertFalse(GroundEffectContactGeometry.touches(effect, feetAt(64.501D)));
     }
 
     @Test

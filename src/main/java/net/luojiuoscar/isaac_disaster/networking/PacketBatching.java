@@ -11,6 +11,7 @@ import net.luojiuoscar.isaac_disaster.networking.packet.bullet.*;
 import net.luojiuoscar.isaac_disaster.networking.packet.laser.LaserBeamBatchS2CPacket;
 import net.luojiuoscar.isaac_disaster.networking.packet.groundeffect.GroundEffectDespawnBatchS2CPacket;
 import net.luojiuoscar.isaac_disaster.networking.packet.groundeffect.GroundEffectSnapshotBatchS2CPacket;
+import net.luojiuoscar.isaac_disaster.networking.packet.holylight.HolyLightSyncS2CPacket;
 import net.minecraft.network.FriendlyByteBuf;
 
 /** Dispatches outbound batches through a payload size boundary. */
@@ -43,9 +44,32 @@ public final class PacketBatching {
             splitGroundEffects(batch, sender);
         } else if (packet instanceof GroundEffectDespawnBatchS2CPacket batch) {
             splitGroundDespawns(batch, sender);
+        } else if (packet instanceof HolyLightSyncS2CPacket batch) {
+            splitHolyLights(batch, sender);
         } else {
             sender.accept(packet);
         }
+    }
+
+    private static void splitHolyLights(HolyLightSyncS2CPacket batch, Consumer<Object> sender) {
+        if (batch.reset()) {
+            sender.accept(new HolyLightSyncS2CPacket(batch.epoch(), batch.dimension(), batch.serverTick(),
+                    true, List.of(), List.of()));
+        }
+        // Bounded list counts also keep each payload well below the existing 512 KiB boundary.
+        for (int start = 0; start < batch.entries().size(); start += HolyLightSyncS2CPacket.MAX_ENTRIES) {
+            var entries = batch.entries().subList(start,
+                    Math.min(batch.entries().size(), start + HolyLightSyncS2CPacket.MAX_ENTRIES));
+            sender.accept(new HolyLightSyncS2CPacket(batch.epoch(), batch.dimension(), batch.serverTick(),
+                    false, entries, List.of()));
+        }
+        for (int start = 0; start < batch.removed().size(); start += HolyLightSyncS2CPacket.MAX_REMOVED) {
+            var removed = batch.removed().subList(start,
+                    Math.min(batch.removed().size(), start + HolyLightSyncS2CPacket.MAX_REMOVED));
+            sender.accept(new HolyLightSyncS2CPacket(batch.epoch(), batch.dimension(), batch.serverTick(),
+                    false, List.of(), removed));
+        }
+        if (!batch.reset() && batch.entries().isEmpty() && batch.removed().isEmpty()) sender.accept(batch);
     }
 
     /** Preflight bounded metadata sizes before emitting any part of a ground-effect batch. */
