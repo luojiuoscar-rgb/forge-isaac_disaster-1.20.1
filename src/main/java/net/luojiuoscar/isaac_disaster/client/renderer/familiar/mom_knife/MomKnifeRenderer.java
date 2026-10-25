@@ -28,6 +28,8 @@ public final class MomKnifeRenderer extends EntityRenderer<MomKnifeEntity> {
                        @NotNull PoseStack poses, @NotNull MultiBufferSource buffers, int packedLight) {
         MomKnifePose pose = entity.getRenderPose(partialTick);
         poses.pushPose();
+        float visualScale = entity.getVisualScale();
+        poses.scale(visualScale, visualScale, visualScale);
         MomKnifeModel.applyPose(poses, pose);
         model.setupAnim(entity, 0, 0, entity.tickCount + partialTick, 0, 0);
         model.renderToBuffer(poses, buffers.getBuffer(model.renderType(TEXTURE)),

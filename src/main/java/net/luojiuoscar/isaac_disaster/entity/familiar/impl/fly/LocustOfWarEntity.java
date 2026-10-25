@@ -62,9 +62,14 @@ public final class LocustOfWarEntity extends BlueFlyEntity implements Locust, Bo
     @Override
     protected void onContactHit(ServerPlayer owner, LivingEntity target, Vec3 hitPosition,
                                 float attemptedDamage, boolean damageAccepted) {
-        float centerDamage = (float) (20 * StatManager.DAMAGE.getBonus());
+        float centerDamage = (float) (20 * StatManager.DAMAGE.getBonus()
+                + additionalExplosionDamage(getEnhancement()));
         LevelHelper.explodeCustom(owner.serverLevel(), hitPosition,
                 level().damageSources().explosion(this, owner),
                 ExplosionParameters.standard(4, centerDamage));
+    }
+
+    public static double additionalExplosionDamage(double enhancement) {
+        return 10 * enhancement * StatManager.DAMAGE.getBonus();
     }
 }

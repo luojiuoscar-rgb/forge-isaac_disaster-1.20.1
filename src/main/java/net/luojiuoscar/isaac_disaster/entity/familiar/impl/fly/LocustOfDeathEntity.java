@@ -20,6 +20,6 @@ public final class LocustOfDeathEntity extends BlueFlyEntity implements Locust {
 
     @Override
     protected float getContactDamage(ServerPlayer owner, LivingEntity target) {
-        return (float) (4.0 * owner.getAttributeValue(Attributes.ATTACK_DAMAGE));
+        return (float) (4.0 * owner.getAttributeValue(Attributes.ATTACK_DAMAGE) * Math.max(0, 1 + getEnhancement()));
     }
 }

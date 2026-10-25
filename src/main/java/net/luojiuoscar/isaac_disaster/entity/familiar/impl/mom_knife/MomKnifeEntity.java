@@ -208,7 +208,8 @@ public class MomKnifeEntity extends AbstractIsaacFamiliarEntity {
         LivingEntity target = target();
         if (target == null || hitVictims.contains(target.getUUID()) || !MomKnifeTargeting.validTarget(owner, target)
                 || !MomKnifeAttack.contacts(current, next, launchPose, target.getBoundingBox())) return;
-        float damage = (float) owner.getAttributeValue(Attributes.ATTACK_DAMAGE) * 2;
+        float damage = (float) (owner.getAttributeValue(Attributes.ATTACK_DAMAGE) * 2
+                * Math.max(0, 1 + getEnhancement()));
         if (!isRemoved() && !isRecallPending() && Float.isFinite(damage) && damage > 0
                 && target.hurt(ModDamageSources.familiar(level(), this, owner), damage)) {
             hitVictims.add(target.getUUID());

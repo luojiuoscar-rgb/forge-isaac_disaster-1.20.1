@@ -1,12 +1,15 @@
 package net.luojiuoscar.isaac_disaster.entity.familiar.impl.fly;
 
 import com.mojang.authlib.GameProfile;
-import com.google.gson.JsonObject;
-import net.luojiuoscar.isaac_disaster.datapack.IsaacDatapackData;
-import net.luojiuoscar.isaac_disaster.datapack.IsaacDatapackTypes;
-import net.luojiuoscar.isaac_disaster.datapack.gameplay.GameplaySettings;
+import net.luojiuoscar.isaac_disaster.gametest.GameplayTestSettings;
+import net.luojiuoscar.isaac_disaster.gametest.FamiliarModifiersGameTests;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerFamiliarData;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerFamiliarDataProvider;
+import net.luojiuoscar.isaac_disaster.capability.player.PlayerIsaacItemsProvider;
+import net.luojiuoscar.isaac_disaster.item.ModPassiveItems;
+import net.luojiuoscar.isaac_disaster.item.item.PassiveItem;
+import net.luojiuoscar.isaac_disaster.registries.ability.passive.PassiveAbility;
+import net.luojiuoscar.isaac_disaster.effect.custom.DeadlyPoisonEffect;
 import net.luojiuoscar.isaac_disaster.effect.ModEffects;
 import net.luojiuoscar.isaac_disaster.entity.familiar.AbstractIsaacFamiliarEntity;
 import net.luojiuoscar.isaac_disaster.entity.familiar.impl.spider.AbstractSpiderFamiliarEntity;
@@ -20,7 +23,6 @@ import net.minecraft.server.network.ServerGamePacketListenerImpl;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.damagesource.DamageTypes;
@@ -31,6 +33,8 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.monster.Zombie;
 import net.minecraft.world.entity.animal.Wolf;
 import net.minecraft.world.level.GameType;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.FakePlayerFactory;
@@ -43,7 +47,6 @@ import net.minecraftforge.gametest.PrefixGameTestTemplate;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.HashMap;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
@@ -210,22 +213,7 @@ public final class LocustGameTests {
     }
 
     private static void withDamageBonus(GameTestHelper helper, double bonus, Runnable action) {
-        var server = helper.getLevel().getServer();
-        var original = IsaacDatapackData.forServer(server);
-        JsonObject json = original.gameplay().toJson();
-        json.addProperty("damage_bonus", bonus);
-        var values = new HashMap<>(original.values());
-        values.put(IsaacDatapackTypes.GAMEPLAY, GameplaySettings.parse(json));
-        try {
-            var install = IsaacDatapackData.class.getDeclaredMethod("install", MinecraftServer.class,
-                    IsaacDatapackTypes.Snapshot.class);
-            install.setAccessible(true);
-            install.invoke(null, server, new IsaacDatapackTypes.Snapshot(values));
-            try { action.run(); }
-            finally { install.invoke(null, server, original); }
-        } catch (ReflectiveOperationException failure) {
-            throw new AssertionError(failure);
-        }
+        GameplayTestSettings.with(helper, json -> json.addProperty("damage_bonus", bonus), action);
     }
 
     @GameTest(template = "trajectory_empty", batch = "locust_contact")
@@ -377,6 +365,126 @@ public final class LocustGameTests {
         helper.succeed();
     }
 
+    @GameTest(template = "trajectory_empty", batch = "locust_contact")
+    public static void hiveMindDoublesEachSwarmContactWithoutBffsOrDuplicateOverlap(GameTestHelper helper) {
+        for (String name : List.of("blue_fly", "blue_spider", "locust_of_famine", "locust_of_death", "locust_of_conquest")) {
+            try (Fixture f = new Fixture(helper, name)) {
+                f.owner.getAttribute(Attributes.ATTACK_DAMAGE).setBaseValue(5);
+                grant(f.owner, ModPassiveItems.BFFS.get());
+                grant(f.owner, ModPassiveItems.HIVE_MIND.get());
+                grant(f.owner, ModPassiveItems.HIVE_MIND.get());
+                f.contact();
+                f.assertDamage(name.equals("blue_spider") ? 25 : name.equals("locust_of_death") ? 40 : 20);
+                f.assertConsumed();
+            }
+        }
+        helper.succeed();
+    }
+
+    @GameTest(template = "trajectory_empty", batch = "locust_contact")
+    public static void bffsAloneLeavesSwarmContactAndPoisonUnchanged(GameTestHelper helper) {
+        try (Fixture f = new Fixture(helper, "locust_of_pestilence")) {
+            grant(f.owner, ModPassiveItems.BFFS.get());
+            f.contact();
+            f.assertDamage(2 * DAMAGE);
+            helper.assertTrue(f.target.getEffect(ModEffects.DEADLY_POISON.get()).getAmplifier()
+                    == DeadlyPoisonEffect.amplifierForDamage(DAMAGE), "BFFS cannot boost swarm poison indirectly");
+        }
+        helper.succeed();
+    }
+
+    @GameTest(template = "trajectory_empty", batch = "locust_contact")
+    public static void boostedPoisonUsesTheContactSnapshotExactlyOnce(GameTestHelper helper) {
+        try (Fixture f = new Fixture(helper, "locust_of_pestilence")) {
+            grant(f.owner, ModPassiveItems.HIVE_MIND.get());
+            f.contact();
+            f.assertDamage(4 * DAMAGE);
+            var poison = f.target.getEffect(ModEffects.DEADLY_POISON.get());
+            helper.assertTrue(poison != null && poison.getDuration() == 50
+                    && poison.getAmplifier() == DeadlyPoisonEffect.amplifierForDamage(2 * DAMAGE),
+                    "Hive Mind doubles the poison snapshot without doubling the multiplier twice");
+            f.owner.getCapability(PlayerIsaacItemsProvider.PLAYER_ISAAC_ITEMS).resolve().orElseThrow().removeFromIndex(f.owner, 0);
+            f.owner.getAttribute(Attributes.ATTACK_DAMAGE).setBaseValue(20);
+            for (int tick = 0; tick < 60; tick++) f.target.tick();
+            f.assertDamage(8 * DAMAGE);
+            helper.assertTrue(!f.target.hasEffect(ModEffects.DEADLY_POISON.get()), "The unchanged duration still expires");
+        }
+        helper.succeed();
+    }
+
+    @GameTest(template = "trajectory_empty", batch = "locust_contact")
+    public static void boostedWarAddsTenConfiguredUnitsAndKeepsVanillaCooldown(GameTestHelper helper) {
+        withDamageBonus(helper, 1.7, () -> {
+            try (Fixture f = new Fixture(helper, "locust_of_war")) {
+                grant(f.owner, ModPassiveItems.BFFS.get());
+                grant(f.owner, ModPassiveItems.HIVE_MIND.get());
+                List<Float> blasts = new ArrayList<>();
+                f.listen(event -> {
+                    if (event.getSource().is(DamageTypes.PLAYER_EXPLOSION)) blasts.add(event.getAmount());
+                    else helper.assertTrue(Math.abs(event.getAmount() - 4 * DAMAGE) < 0.001, "Contact doubles once");
+                });
+                f.contact();
+                double expected = expectedWarDamage(30 * StatManager.DAMAGE.getBonus());
+                helper.assertTrue(blasts.size() == 1 && Math.abs(blasts.get(0) - expected) < 0.001,
+                        "One ordinary explosion uses 30 configured damage units: " + blasts);
+                f.assertDamage(expected);
+                f.assertConsumed();
+            }
+        });
+        helper.succeed();
+    }
+
+    @GameTest(template = "trajectory_empty", batch = "locust_contact")
+    public static void enabledDuplicateEntriesGiveSixDamageUnitsAndFortyExplosionUnits(GameTestHelper helper) {
+        GameplayTestSettings.with(helper, json -> json.addProperty("allow_same_familiar_modifier_entry_stacking", true), () -> {
+            try (Fixture f = new Fixture(helper, "blue_fly")) {
+                grant(f.owner, ModPassiveItems.HIVE_MIND.get());
+                grant(f.owner, ModPassiveItems.HIVE_MIND.get());
+                f.familiar.tick();
+                helper.assertTrue(f.familiar.getVisualScale() == 2 && f.familiar.getEnhancement() == 2,
+                        "Two active copies add their visual and enhancement increments");
+                f.contact();
+                f.assertDamage(6 * DAMAGE);
+                f.assertConsumed();
+            }
+            try (Fixture f = new Fixture(helper, "locust_of_war")) {
+                grant(f.owner, ModPassiveItems.HIVE_MIND.get());
+                grant(f.owner, ModPassiveItems.HIVE_MIND.get());
+                List<Float> blasts = new ArrayList<>();
+                f.listen(event -> {
+                    if (event.getSource().is(DamageTypes.PLAYER_EXPLOSION)) blasts.add(event.getAmount());
+                });
+                f.contact();
+                double expected = expectedWarDamage(40 * StatManager.DAMAGE.getBonus());
+                helper.assertTrue(blasts.size() == 1 && Math.abs(blasts.get(0) - expected) < 0.001,
+                        "War independently interprets two enhancement points as ten extra units each");
+                f.assertDamage(Math.max(6 * DAMAGE, expected));
+                f.assertConsumed();
+            }
+        });
+        helper.succeed();
+    }
+
+    @GameTest(template = "trajectory_empty", batch = "locust_contact")
+    public static void anotherRegisteredSourceAddsToHiveMindWithStackingDisabled(GameTestHelper helper) {
+        GameplayTestSettings.with(helper, json -> json.addProperty("allow_same_familiar_modifier_entry_stacking", false), () -> {
+            try (Fixture f = new Fixture(helper, "blue_fly")) {
+                grant(f.owner, ModPassiveItems.HIVE_MIND.get());
+                StatManager.addFamiliarModifier(f.owner, FamiliarModifiersGameTests.EXTRA_ENHANCEMENT, 1);
+                helper.assertTrue(f.familiar.getEnhancement() == 1.5, "Different source IDs add even with duplicate stacking disabled");
+                f.contact();
+                f.assertDamage(5 * DAMAGE);
+            }
+        });
+        helper.succeed();
+    }
+
+    private static void grant(ServerPlayer player, Item item) {
+        ItemStack stack = new ItemStack(item);
+        ((PassiveAbility) ((PassiveItem) item).getAbility()).onObtain(player, stack);
+        player.getCapability(PlayerIsaacItemsProvider.PLAYER_ISAAC_ITEMS).resolve().orElseThrow().addItem(player, stack);
+    }
+
     private static final class Fixture implements AutoCloseable {
         private final GameTestHelper helper;
         private final ServerPlayer owner;
@@ -406,7 +514,8 @@ public final class LocustGameTests {
                 owner = FakePlayerFactory.get(level, profile);
             }
             BlockPos anchor = helper.absolutePos(BlockPos.ZERO);
-            owner.setPos(anchor.getX() + 4, 220 + NEXT_FIXTURE.getAndIncrement() * 12, anchor.getZ() + 4);
+            double y = Math.min(220 + NEXT_FIXTURE.getAndIncrement() * 12, level.getMaxBuildHeight() - 16);
+            owner.setPos(anchor.getX() + 4, y, anchor.getZ() + 4);
             owner.setGameMode(GameType.SURVIVAL);
             owner.setInvulnerable(false);
             owner.getAbilities().invulnerable = false;
@@ -457,7 +566,7 @@ public final class LocustGameTests {
                 var contact = base.getDeclaredMethod("tryContact", ServerPlayer.class, Vec3.class, Vec3.class);
                 contact.setAccessible(true);
                 helper.assertTrue((boolean) contact.invoke(familiar, owner, familiar.position(), familiar.position()),
-                        "A real contact is detected");
+                        "A real contact is detected for " + type + " at " + familiar.position());
             } catch (InvocationTargetException failure) {
                 if (failure.getCause() instanceof RuntimeException runtime) throw runtime;
                 if (failure.getCause() instanceof Error error) throw error;
@@ -480,6 +589,8 @@ public final class LocustGameTests {
         @Override
         public void close() {
             if (listener != null) MinecraftForge.EVENT_BUS.unregister(listener);
+            owner.getCapability(PlayerIsaacItemsProvider.PLAYER_ISAAC_ITEMS)
+                    .ifPresent(items -> items.clearPlayerPassiveItems(owner));
             target.discard();
             FamiliarHelper.discardAllRuntimeFamiliars(owner);
             data.clearRequirements();

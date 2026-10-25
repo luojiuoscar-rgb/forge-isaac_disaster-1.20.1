@@ -3,6 +3,8 @@
     {
       "rolls": 1,
       "entries": [
+        {"type": "minecraft:item", "name": "isaac_disaster:bffs"},
+        {"type": "minecraft:item", "name": "isaac_disaster:hive_mind"},
         {"type": "minecraft:item", "name": "isaac_disaster:jumper_cables"},
         {"type": "minecraft:item", "name": "isaac_disaster:humbleing_bundle"},
         {"type": "minecraft:item", "name": "isaac_disaster:moms_purse"},

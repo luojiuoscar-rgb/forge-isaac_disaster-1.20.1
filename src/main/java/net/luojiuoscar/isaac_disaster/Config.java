@@ -98,6 +98,7 @@ public class Config
     public static ForgeConfigSpec.BooleanValue AUTO_USE_PASSIVE_ITEM;
     public static ForgeConfigSpec.BooleanValue TIME_STOP_EXCLUDE_FRIENDLY;
     public static ForgeConfigSpec.BooleanValue ALLOW_SAME_MULTIPLIER_ENTRY_STACKING;
+    public static ForgeConfigSpec.BooleanValue ALLOW_SAME_FAMILIAR_MODIFIER_ENTRY_STACKING;
 
     // 临时
     public static ForgeConfigSpec.BooleanValue ENABLE_WANDERING_TRADER_SHOP;
@@ -368,6 +369,10 @@ public class Config
                 .comment("Allow every source and copy sharing a multiplier ID to contribute; otherwise use the strongest source.")
                 .define("allow_same_multiplier_entry_stacking",
                         IsaacConfigDefaults.ALLOW_SAME_MULTIPLIER_ENTRY_STACKING);
+        ALLOW_SAME_FAMILIAR_MODIFIER_ENTRY_STACKING = BUILDER
+                .comment("Allow every copy of a familiar modifier entry to contribute; different IDs always add together.")
+                .define("allow_same_familiar_modifier_entry_stacking",
+                        IsaacConfigDefaults.ALLOW_SAME_FAMILIAR_MODIFIER_ENTRY_STACKING);
 
         BUILDER.pop();
     }

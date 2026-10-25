@@ -87,6 +87,14 @@ class GameplayDatapackTest {
         var settings = GameplaySettings.parse(JsonParser.parseString("{\"damage_bonus\": 8.0}"));
         assertEquals(10.0, settings.get(GameplayConfig.HEALTH_BONUS));
         assertEquals(8.0, settings.get(GameplayConfig.DAMAGE_BONUS));
+        assertFalse(settings.get(GameplayConfig.ALLOW_SAME_FAMILIAR_MODIFIER_ENTRY_STACKING));
+    }
+
+    @Test void familiarStackingSettingIsIndependentOfAttributeMultiplierStacking() {
+        var settings = GameplaySettings.parse(JsonParser.parseString(
+                "{\"allow_same_familiar_modifier_entry_stacking\":true,\"allow_same_multiplier_entry_stacking\":false}"));
+        assertTrue(settings.get(GameplayConfig.ALLOW_SAME_FAMILIAR_MODIFIER_ENTRY_STACKING));
+        assertFalse(settings.get(GameplayConfig.ALLOW_SAME_MULTIPLIER_ENTRY_STACKING));
     }
 
     @Test void rejectsWrongTypesRangesUnknownFieldsAndNonfiniteValues() {

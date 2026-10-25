@@ -65,6 +65,7 @@ public final class GameplayConfig {
     public static final ConfigKey<Boolean> AUTO_USE_PASSIVE_ITEM = key("auto_use_passive_item");
     public static final ConfigKey<Boolean> TIME_STOP_EXCLUDE_FRIENDLY = key("time_stop_exclude_friendly");
     public static final ConfigKey<Boolean> ALLOW_SAME_MULTIPLIER_ENTRY_STACKING = key("allow_same_multiplier_entry_stacking");
+    public static final ConfigKey<Boolean> ALLOW_SAME_FAMILIAR_MODIFIER_ENTRY_STACKING = key("allow_same_familiar_modifier_entry_stacking");
     public static final ConfigKey<String> COIN_TIER_1_ID = key("coin_tier_1_id");
     public static final ConfigKey<String> COIN_TIER_2_ID = key("coin_tier_2_id");
     public static final ConfigKey<String> COIN_TIER_3_ID = key("coin_tier_3_id");

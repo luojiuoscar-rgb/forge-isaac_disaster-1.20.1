@@ -528,6 +528,16 @@ public enum StatManager {
         player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY).ifPresent(a -> a.addBulletVisual(id, count));
     }
 
+    public static void addFamiliarModifier(ServerPlayer player, ResourceLocation id, int count) {
+        player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY)
+                .ifPresent(ability -> ability.getFamiliarModifiers().add(id, count));
+    }
+
+    public static void removeFamiliarModifier(ServerPlayer player, ResourceLocation id, int count) {
+        player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY)
+                .ifPresent(ability -> ability.getFamiliarModifiers().remove(id, count));
+    }
+
     public static void addTriggerModule(LivingEntity entity, ResourceLocation rl, int count){
         IForgeRegistry<TriggerModule> reg =
                 RegistryManager.ACTIVE.getRegistry(ModTriggerModules.TRIGGER_MODULE_KEY);
