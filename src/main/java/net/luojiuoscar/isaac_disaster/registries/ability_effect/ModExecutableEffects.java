@@ -158,6 +158,8 @@ public class ModExecutableEffects {
             EXECUTABLE_EFFECT_REGISTRY.register("moms_knife_barrage", MomsKnifeBarrage::new);
     public static final RegistryObject<IExecutableEffect> MOMS_KNIFE_SHOT =
             EXECUTABLE_EFFECT_REGISTRY.register("moms_knife_shot", MomsKnifeShot::new);
+    public static final RegistryObject<IExecutableEffect> LOKIS_HORNS_HELD_KNIVES =
+            EXECUTABLE_EFFECT_REGISTRY.register("lokis_horns_held_knives", LokisHornsHeldKnives::new);
     public static final RegistryObject<IExecutableEffect> BOOK_PLUS_MOMS_KNIFE =
             EXECUTABLE_EFFECT_REGISTRY.register("book_plus_moms_knife", BookPlusMomsKnife::new);
     public static final RegistryObject<IExecutableEffect> MONSTROS_LUNG_PLUS_MOMS_KNIFE =

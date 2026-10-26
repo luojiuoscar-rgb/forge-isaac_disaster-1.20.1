@@ -48,6 +48,17 @@ public abstract class AttackType {
     public ResourceLocation getRootId() { return getId(); }
 
     public abstract List<AttackContext> getAttackContexts(ServerPlayer player, int bulletCount);
+
+    /** Creates the request-local plan before selection and preparation. */
+    public AttackPlan createPlan(AttackRequest request, List<AttackContext> contexts) {
+        return new AttackPlan(request, contexts);
+    }
+
+    /** Executes prepared contexts with their request-local plan data. */
+    public void performAttack(AttackPlan plan, List<AttackContext> contexts, Consumer<AttackContext> onFired) {
+        performAttack(contexts, onFired);
+    }
+
     /** Starts an attack without a pipeline notification, for direct callers. */
     public void performAttack(List<AttackContext> contexts) {
         performAttack(contexts, ignored -> {});

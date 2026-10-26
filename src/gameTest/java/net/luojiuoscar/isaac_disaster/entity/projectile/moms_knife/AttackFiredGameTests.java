@@ -35,6 +35,27 @@ public final class AttackFiredGameTests {
     private static final AtomicInteger NEXT_FIXTURE = new AtomicInteger();
 
     @GameTest(template = "trajectory_empty", batch = "attack_fired")
+    public static void everyPipelineModeExecutesThroughTheAttackTypeWithItsOwnPlan(GameTestHelper helper) {
+        try (Probe p = new Probe(helper)) {
+            var attack = new PlanAwareBulletAttack();
+            for (var mode : AttackPipelineMode.values()) {
+                AttackRequest request = switch (mode) {
+                    case FULL, PLAN_PREPARE_AND_EXECUTE -> AttackRequest.generated(p.f.owner, attack,
+                            AttackOrigin.PLAYER_PRIMARY, mode, false);
+                    case PREPARE_AND_EXECUTE, EXECUTE_ONLY -> AttackRequest.withContexts(p.f.owner, attack,
+                            AttackOrigin.PLAYER_PRIMARY, mode, p.contexts(attack, 1), false);
+                };
+                AttackExecutor.perform(request);
+                helper.assertTrue(attack.lastRequest == request,
+                        "The attack type receives the current request's plan in " + mode);
+            }
+            helper.assertTrue(attack.executions == 4 && p.events.size() == 4 && p.progress() == 4,
+                    "Each pipeline mode executes and counts once through the attack type");
+        }
+        helper.succeed();
+    }
+
+    @GameTest(template = "trajectory_empty", batch = "attack_fired")
     public static void technologyTwoExtraFireAdvancesPencil(GameTestHelper helper) {
         try (Probe p = new Probe(helper)) {
             p.fire(ModAttackTypes.TECHNOLOGY2.get(), 1, AttackOrigin.ABILITY_EXTRA);
@@ -75,7 +96,7 @@ public final class AttackFiredGameTests {
     }
 
     @GameTest(template = "trajectory_empty", batch = "attack_fired")
-    public static void wholeAndPerProjectileCancellationDoNotCount(GameTestHelper helper) {
+    public static void wholeAttackCancellationDoesNotCount(GameTestHelper helper) {
         try (Probe p = new Probe(helper)) {
             Consumer<BeforePerformAttackEvent> whole = e -> { if (e.getEntity() == p.f.owner) e.setCanceled(true); };
             MinecraftForge.EVENT_BUS.addListener(EventPriority.HIGHEST, false, BeforePerformAttackEvent.class, whole);
@@ -83,21 +104,21 @@ public final class AttackFiredGameTests {
                 AttackExecutor.perform(AttackRequest.generated(p.f.owner, ModAttackTypes.BULLET.get(),
                         AttackOrigin.PLAYER_PRIMARY, AttackPipelineMode.FULL, false));
             } finally { MinecraftForge.EVENT_BUS.unregister(whole); }
-            Consumer<AttackContextPrepareEvent> prepare = e -> { if (e.getOwner() == p.f.owner) e.setCanceled(true); };
-            MinecraftForge.EVENT_BUS.addListener(EventPriority.LOWEST, false, AttackContextPrepareEvent.class, prepare);
-            try { p.fire(ModAttackTypes.BULLET.get(), 3, AttackOrigin.PLAYER_PRIMARY); }
-            finally { MinecraftForge.EVENT_BUS.unregister(prepare); }
-            helper.assertTrue(p.events.isEmpty() && p.progress() == 0, "Whole and preparation cancellation leave progress unchanged");
+            helper.assertTrue(p.events.isEmpty() && p.progress() == 0, "Whole-attack cancellation leaves progress unchanged");
         }
         helper.succeed();
     }
 
     @GameTest(template = "trajectory_empty", batch = "attack_fired")
-    public static void partialPreparationAndSpawnSuccessCountOnce(GameTestHelper helper) {
+    public static void preparationIsNonCancelableAndPartialSpawnSuccessCountsOnce(GameTestHelper helper) {
         try (Probe p = new Probe(helper)) {
             AtomicInteger prepared = new AtomicInteger();
             Consumer<AttackContextPrepareEvent> prepare = e -> {
-                if (e.getOwner() == p.f.owner && prepared.getAndIncrement() == 0) e.setCanceled(true);
+                if (e.getOwner() != p.f.owner) return;
+                helper.assertTrue(!e.isCancelable(), "Every attack uses non-cancelable preparation");
+                helper.assertTrue(e.getClass() == AttackContextPrepareEvent.class, "All attacks publish the same preparation event");
+                prepared.incrementAndGet();
+                e.getAttackContext().setBulletScale(0.5, false);
             };
             var attack = new RejectingBulletAttack(1);
             MinecraftForge.EVENT_BUS.addListener(EventPriority.LOWEST, false, AttackContextPrepareEvent.class, prepare);
@@ -105,9 +126,12 @@ public final class AttackFiredGameTests {
             finally {
                 MinecraftForge.EVENT_BUS.unregister(prepare);
             }
-            helper.assertTrue(prepared.get() == 3 && attack.attempts == 2, "One prepare cancellation and one runtime rejection leave a real tear");
+            helper.assertTrue(prepared.get() == 3 && attack.attempts == 3, "All prepared contexts reach runtime, with one rejected spawn");
             helper.assertTrue(p.events.size() == 1 && p.progress() == 1, "Partial success counts exactly once");
-            helper.assertTrue(p.events.get(0).getPreparedContexts().size() == 2, "Cancelled preparation is excluded from the event snapshot");
+            helper.assertTrue(p.events.get(0).getPreparedContexts().size() == 3,
+                    "The fired snapshot retains every prepared context");
+            helper.assertTrue(p.events.get(0).getPreparedContexts().stream().allMatch(c -> c.getBulletScaleModifier() == 0.5),
+                    "Preparation still applies effects to the whole volley");
         }
         helper.succeed();
     }
@@ -262,6 +286,20 @@ public final class AttackFiredGameTests {
                     "Unattributed requests identify their attack backend");
         }
         helper.succeed();
+    }
+
+    private static final class PlanAwareBulletAttack extends BulletAttack {
+        AttackRequest lastRequest;
+        int executions;
+
+        PlanAwareBulletAttack() { super(0); }
+
+        @Override
+        public void performAttack(AttackPlan plan, List<AttackContext> contexts, Consumer<AttackContext> onFired) {
+            lastRequest = plan.getRequest();
+            executions++;
+            super.performAttack(contexts, onFired);
+        }
     }
 
     private static final class RejectingBulletAttack extends BulletAttack {

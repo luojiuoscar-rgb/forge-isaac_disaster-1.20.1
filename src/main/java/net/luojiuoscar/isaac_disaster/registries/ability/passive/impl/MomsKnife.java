@@ -53,6 +53,12 @@ public final class MomsKnife extends PassiveAbility {
                     Component.translatable("item.isaac_disaster.moms_knife.synergy.brimstone.1")
             )));
         }
+        if (ClientDataManager.getInstance().getItemCount(ModPassiveItems.LOKIS_HORNS.getId()) > 0) {
+            description.addAll(DescriptionHelper.getSynergyDesc(Component.translatable("item.isaac_disaster.lokis_horns"), List.of(
+                    Component.translatable("item.isaac_disaster.moms_knife.synergy.lokis_horns.1"),
+                    Component.translatable("item.isaac_disaster.moms_knife.synergy.lokis_horns.2")
+            )));
+        }
         if (ClientDataManager.getInstance().getSetCountFromId(ModSetAbilities.BOOK.get().getId())
                 >= ModSetAbilities.BOOK.get().getRequirementCount()) {
             description.addAll(DescriptionHelper.getSynergyDesc(Component.translatable("set.isaac_disaster.book"), List.of(

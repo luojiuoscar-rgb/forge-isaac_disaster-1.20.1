@@ -6,6 +6,8 @@ import net.minecraft.world.entity.Entity;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -55,6 +57,18 @@ public final class RuntimeEntityIndex {
     /** An old entity can release its slot without unregistering a newer replacement. */
     public boolean unregister(ResourceLocation key, UUID expectedId) {
         return unregister(key, 0, expectedId);
+    }
+
+    /** Resolves all matching entities across sources, pruning stale references in the current world. */
+    public <T extends Entity> List<T> getEntities(ServerLevel level, Class<T> type) {
+        List<T> result = new ArrayList<>();
+        var iterator = entityIds.entrySet().iterator();
+        while (iterator.hasNext()) {
+            Entity entity = level.getEntity(iterator.next().getValue());
+            if (entity == null || entity.isRemoved()) iterator.remove();
+            else if (type.isInstance(entity)) result.add(type.cast(entity));
+        }
+        return List.copyOf(result);
     }
 
     public boolean unregister(ResourceLocation key, int slot, UUID expectedId) {

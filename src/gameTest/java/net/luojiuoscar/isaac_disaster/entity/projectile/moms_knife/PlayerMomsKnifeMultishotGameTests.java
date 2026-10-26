@@ -222,20 +222,25 @@ public final class PlayerMomsKnifeMultishotGameTests {
     }
 
     @GameTest(template = "trajectory_empty", batch = "player_knife")
-    public static void cancellingOnePreparedContextDoesNotCancelOrBlockTheRest(GameTestHelper helper) {
+    public static void confirmedContextsAllPrepareAndLaunchTogether(GameTestHelper helper) {
         try (var f = new PlayerMomsKnifeGameTests.Fixture(helper)) {
             f.owner.getAttribute(ModAttributes.BULLET_COUNT.get()).setBaseValue(3);
             var attack = (MomsKnifeAttack) ModAttackTypes.MOMS_KNIFE.get();
             attack.onTick(f.owner);
             Consumer<AttackContextPrepareEvent> listener = event -> {
-                if (event.getOwner() == f.owner && event.getContextIndex() == 1) event.setCanceled(true);
+                if (event.getOwner() == f.owner) {
+                    helper.assertTrue(!event.isCancelable(), "Confirmed knives cannot be individually cancelled");
+                    event.getAttackContext().setBulletScale(2.5, false);
+                }
             };
             MinecraftForge.EVENT_BUS.addListener(listener);
             try {
                 f.ability.setChargeAmount(attack.getChargeBarId(), attack.getTotalCharge(f.owner));
                 attack.onReleased(f.owner);
-                helper.assertTrue(f.knives().size() == 3 && f.knives().stream().filter(PlayerMomsKnifeEntity::isInFlight).count() == 2,
-                        "Only the cancelled context stays held; the remaining two launch together");
+                helper.assertTrue(f.knives().size() == 3 && f.knives().stream().allMatch(PlayerMomsKnifeEntity::isInFlight),
+                        "All confirmed contexts launch together");
+                helper.assertTrue(f.knives().stream().allMatch(k -> k.getAttackContext().getBulletScaleModifier() == 2.5),
+                        "Non-cancelable preparation still attaches effects to every knife");
             } finally { MinecraftForge.EVENT_BUS.unregister(listener); }
         }
         helper.succeed();

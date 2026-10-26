@@ -11,6 +11,7 @@ import net.luojiuoscar.isaac_disaster.registries.ability_effect.ContextKeys;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ExecutableEffectContext;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ModExecutableEffects;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackContext;
+import net.luojiuoscar.isaac_disaster.entity.projectile.moms_knife.HeldMomsKnifeGroup.Slot;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.IBulletObject;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.util.DamagedEntities;
 import net.luojiuoscar.isaac_disaster.registries.split_module.SplitSequence;
@@ -58,6 +59,8 @@ public final class PlayerMomsKnifeEntity extends Entity implements IBulletObject
             SynchedEntityData.defineId(PlayerMomsKnifeEntity.class, EntityDataSerializers.BYTE);
     private static final EntityDataAccessor<Integer> HELD_SLOT =
             SynchedEntityData.defineId(PlayerMomsKnifeEntity.class, EntityDataSerializers.INT);
+    private static final EntityDataAccessor<String> HELD_SOURCE =
+            SynchedEntityData.defineId(PlayerMomsKnifeEntity.class, EntityDataSerializers.STRING);
     private static final EntityDataAccessor<Vector3f> LOCAL_OFFSET =
             SynchedEntityData.defineId(PlayerMomsKnifeEntity.class, EntityDataSerializers.VECTOR3);
     private static final EntityDataAccessor<Vector3f> BASE_DIRECTION =
@@ -98,6 +101,10 @@ public final class PlayerMomsKnifeEntity extends Entity implements IBulletObject
     }
 
     public void initialize(ServerPlayer owner, int slot, Vec3 offset, Vec3 direction) {
+        initialize(owner, new Slot(ModAttackTypes.MOMS_KNIFE.getId(), slot), offset, direction);
+    }
+
+    void initialize(ServerPlayer owner, Slot slot, Vec3 offset, Vec3 direction) {
         entityData.set(OWNER, owner.getId());
         setPos(PlayerMomsKnifeMotion.idlePosition(owner, 1));
         attack = new PlayerMomsKnifeAttackState(basicContext(owner), position(), owner.getLookAngle(), 0, Vec3.ZERO);
@@ -108,6 +115,10 @@ public final class PlayerMomsKnifeEntity extends Entity implements IBulletObject
     }
 
     public int getHeldSlot() { return entityData.get(HELD_SLOT); }
+    public ResourceLocation getSourceId() { return ResourceLocation.parse(entityData.get(HELD_SOURCE)); }
+    Slot getHeldAttackSlot() {
+        return new Slot(getSourceId(), getHeldSlot());
+    }
 
     private Vec3 localOffset() {
         Vector3f value = entityData.get(LOCAL_OFFSET);
@@ -126,13 +137,18 @@ public final class PlayerMomsKnifeEntity extends Entity implements IBulletObject
     }
 
     public void configureHeld(int slot, Vec3 offset, Vec3 direction) {
+        configureHeld(new Slot(ModAttackTypes.MOMS_KNIFE.getId(), slot), offset, direction);
+    }
+
+    void configureHeld(Slot slot, Vec3 offset, Vec3 direction) {
         if (isInFlight()) return;
         direction = PlayerMomsKnifeMotion.unit(direction);
         Vector3f nextOffset = new Vector3f((float) offset.x, (float) offset.y, (float) offset.z);
         Vector3f nextDirection = new Vector3f((float) direction.x, (float) direction.y, (float) direction.z);
-        if (entityData.get(HELD_SLOT) == slot && entityData.get(LOCAL_OFFSET).equals(nextOffset)
+        if (getHeldAttackSlot().equals(slot) && entityData.get(LOCAL_OFFSET).equals(nextOffset)
                 && entityData.get(BASE_DIRECTION).equals(nextDirection)) return;
-        entityData.set(HELD_SLOT, slot);
+        entityData.set(HELD_SLOT, slot.index());
+        entityData.set(HELD_SOURCE, slot.sourceId().toString());
         entityData.set(LOCAL_OFFSET, nextOffset);
         entityData.set(BASE_DIRECTION, nextDirection);
         setDirection(direction);
@@ -278,6 +294,7 @@ public final class PlayerMomsKnifeEntity extends Entity implements IBulletObject
     protected void defineSynchedData() {
         entityData.define(MODE, (byte) Mode.RETURNING.ordinal());
         entityData.define(HELD_SLOT, 0);
+        entityData.define(HELD_SOURCE, ModAttackTypes.MOMS_KNIFE.getId().toString());
         entityData.define(LOCAL_OFFSET, new Vector3f());
         entityData.define(BASE_DIRECTION, new Vector3f(0, 0, 1));
         entityData.define(DIRECTION, new Vector3f(0, 0, 1));
@@ -301,7 +318,7 @@ public final class PlayerMomsKnifeEntity extends Entity implements IBulletObject
                 || owner.getCapability(PlayerAbilityProvider.PLAYER_ABILITY)
                 .map(ability -> !ability.getAttackTypes().containsKey(ModAttackTypes.MOMS_KNIFE.getId())
                         || getMode() == Mode.RETURNING
-                        && !getUUID().equals(ability.getRuntimeEntities().getId(ModAttackTypes.MOMS_KNIFE.getId(), getHeldSlot())))
+                        && !getUUID().equals(ability.getRuntimeEntities().getId(getSourceId(), getHeldSlot())))
                 .orElse(true)) {
             discard();
             return;
@@ -476,7 +493,7 @@ public final class PlayerMomsKnifeEntity extends Entity implements IBulletObject
         barrageOnReturn = null;
         if (!level().isClientSide && owner != null && getMode() == Mode.RETURNING) {
             owner.getCapability(PlayerAbilityProvider.PLAYER_ABILITY).ifPresent(ability ->
-                    ability.getRuntimeEntities().unregister(ModAttackTypes.MOMS_KNIFE.getId(), getHeldSlot(), getUUID()));
+                    ability.getRuntimeEntities().unregister(getSourceId(), getHeldSlot(), getUUID()));
         }
         super.remove(reason);
     }
@@ -625,7 +642,7 @@ public final class PlayerMomsKnifeEntity extends Entity implements IBulletObject
     public void writeSpawnData(FriendlyByteBuf buffer) {
         new PlayerMomsKnifeSpawnData(entityData.get(MODE), entityData.get(OWNER), direction(),
                 entityData.get(RANGE), entityData.get(SPEED), entityData.get(LAUNCHED_AT), getYRot(), getXRot(),
-                getHeldSlot(), localOffset(), baseDirection()).write(buffer);
+                getHeldSlot(), localOffset(), baseDirection(), getSourceId()).write(buffer);
     }
 
     @Override
@@ -634,6 +651,7 @@ public final class PlayerMomsKnifeEntity extends Entity implements IBulletObject
         entityData.set(MODE, data.mode());
         entityData.set(OWNER, data.owner());
         entityData.set(HELD_SLOT, data.heldSlot());
+        entityData.set(HELD_SOURCE, data.heldSource().toString());
         entityData.set(LOCAL_OFFSET, new Vector3f((float) data.localOffset().x, (float) data.localOffset().y, (float) data.localOffset().z));
         entityData.set(BASE_DIRECTION, new Vector3f((float) data.baseDirection().x, (float) data.baseDirection().y, (float) data.baseDirection().z));
         setDirection(data.direction());

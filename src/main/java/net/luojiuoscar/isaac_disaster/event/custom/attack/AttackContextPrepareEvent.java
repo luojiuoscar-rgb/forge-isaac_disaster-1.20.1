@@ -8,14 +8,12 @@ import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackRequest;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackType;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraftforge.eventbus.api.Cancelable;
 import net.minecraftforge.eventbus.api.Event;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-/** Event fired for each final attack context before it is executed. */
-@Cancelable
-public class AttackContextPrepareEvent extends Event {
+/** Non-cancelable notification for attaching effects to a confirmed attack context. */
+public final class AttackContextPrepareEvent extends Event {
     private final @NotNull AttackRequest request;
     private final @NotNull AttackPlan plan;
     private final @NotNull AttackContext attackContext;

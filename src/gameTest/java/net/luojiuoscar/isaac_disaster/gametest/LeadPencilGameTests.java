@@ -3,6 +3,7 @@ package net.luojiuoscar.isaac_disaster.gametest;
 import com.mojang.authlib.GameProfile;
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.capability.entity.*;
+import net.luojiuoscar.isaac_disaster.bullet.server.BulletRuntime;
 import net.luojiuoscar.isaac_disaster.event.custom.attack.*;
 import net.luojiuoscar.isaac_disaster.registries.ability.passive.ModPassiveAbilities;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ExecutableEffectContext;
@@ -41,15 +42,14 @@ public final class LeadPencilGameTests {
         List<AttackContext> burst = new ArrayList<>();
         Consumer<AttackContextPrepareEvent> listener = event -> {
             if (event.getOwner() != player || event.getOrigin() != AttackOrigin.ABILITY_EXTRA) return;
-            burst.add(event.getAttackContext());
-            event.setCanceled(true);
+            burst.add(event.getAttackContext().copy());
         };
         MinecraftForge.EVENT_BUS.addListener(EventPriority.LOWEST, false, AttackContextPrepareEvent.class, listener);
         try {
             // A standalone burst needs only its owner, without a primary attack-plan event.
             var context = new ExecutableEffectContext(player);
             helper.assertTrue(((IAbilityEffect) ModExecutableEffects.LEAD_PENCIL_BURST.get()).applyEffect(context),
-                    "Cancelled individual tears still complete the burst successfully");
+                    "A direct burst completes without modifying counter state");
             helper.assertTrue(burst.size() == 12, "Direct burst call fires twelve ordinary tears immediately");
             helper.assertTrue(data(player).getDouble(counterKey) == 7, "Burst leaves counting state unchanged");
             data(player).removeDouble(counterKey);
@@ -59,6 +59,7 @@ public final class LeadPencilGameTests {
             helper.assertTrue(!data(player).hasDouble(counterKey), "Burst does not create counting state");
         } finally {
             MinecraftForge.EVENT_BUS.unregister(listener);
+            clearShots(player);
         }
         helper.succeed();
     }
@@ -73,8 +74,7 @@ public final class LeadPencilGameTests {
             if (event.getOwner() == player && event.getOrigin() == AttackOrigin.ABILITY_EXTRA) {
                 helper.assertTrue(event.getAttackType() == ModAttackTypes.BULLET.get(), "Burst always uses ordinary tears");
                 helper.assertTrue(event.getPipelineMode() == AttackPipelineMode.PREPARE_AND_EXECUTE, "Burst prepares each projectile");
-                burst.add(event.getAttackContext());
-                event.setCanceled(true);
+                burst.add(event.getAttackContext().copy());
             }
         };
         MinecraftForge.EVENT_BUS.addListener(EventPriority.LOWEST, false, AttackContextPrepareEvent.class, listener);
@@ -108,6 +108,7 @@ public final class LeadPencilGameTests {
             helper.assertTrue(burst.size() == 24, "No recursive barrage");
         } finally {
             MinecraftForge.EVENT_BUS.unregister(listener);
+            clearShots(player);
         }
         helper.succeed();
     }
@@ -150,8 +151,7 @@ public final class LeadPencilGameTests {
         List<AttackContext> burst = new ArrayList<>();
         Consumer<AttackContextPrepareEvent> listener = event -> {
             if (event.getOwner() != player || event.getOrigin() != AttackOrigin.ABILITY_EXTRA) return;
-            burst.add(event.getAttackContext());
-            event.setCanceled(true);
+            burst.add(event.getAttackContext().copy());
         };
         MinecraftForge.EVENT_BUS.addListener(EventPriority.LOWEST, false, AttackContextPrepareEvent.class, listener);
         try {
@@ -176,12 +176,13 @@ public final class LeadPencilGameTests {
             }
         } finally {
             MinecraftForge.EVENT_BUS.unregister(listener);
+            clearShots(player);
         }
         helper.succeed();
     }
 
     @GameTest(template = "trajectory_empty")
-    public static void wholeAttackAndAllPreparedTearCancellationSkipCount(GameTestHelper helper) {
+    public static void wholeAttackCancellationSkipsCount(GameTestHelper helper) {
         ServerPlayer player = player(helper);
         ModPassiveAbilities.LEAD_PENCIL.get().handleObtain(player, null);
         Consumer<BeforePerformAttackEvent> cancelAttack = event -> {
@@ -195,18 +196,12 @@ public final class LeadPencilGameTests {
         } finally {
             MinecraftForge.EVENT_BUS.unregister(cancelAttack);
         }
-        Consumer<AttackContextPrepareEvent> cancelTear = event -> {
-            if (event.getOwner() == player) event.setCanceled(true);
-        };
-        MinecraftForge.EVENT_BUS.addListener(EventPriority.LOWEST, false, AttackContextPrepareEvent.class, cancelTear);
-        try {
-            AttackExecutor.perform(AttackRequest.generated(player, ModAttackTypes.BULLET.get(),
-                    AttackOrigin.PLAYER_PRIMARY, AttackPipelineMode.FULL, false));
-            helper.assertTrue(!data(player).hasDouble(LeadPencilShotCounter.DATA_KEY), "All prepared tears cancelled means nothing actually fired");
-        } finally {
-            MinecraftForge.EVENT_BUS.unregister(cancelTear);
-        }
         helper.succeed();
+    }
+
+    private static void clearShots(ServerPlayer player) {
+        var manager = BulletRuntime.INSTANCE.manager(player.serverLevel());
+        for (var bullet : manager.activeStates()) if (bullet.getOwner() == player) manager.remove(bullet);
     }
 
     private static void publish(ServerPlayer player, AttackType type, AttackOrigin origin, int count) {

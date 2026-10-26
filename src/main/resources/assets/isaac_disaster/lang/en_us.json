@@ -670,6 +670,8 @@
   "item.isaac_disaster.moms_knife.synergy.brimstone.1": "额外连射2-10把菜刀",
   "item.isaac_disaster.moms_knife.synergy.book.1": "25%概率额外射出一把菜刀",
   "item.isaac_disaster.moms_knife.synergy.monstros_lung.1": "发射时随机散射1-4把菜刀",
+  "item.isaac_disaster.moms_knife.synergy.lokis_horns.1": "额外持有左右后三把菜刀",
+  "item.isaac_disaster.moms_knife.synergy.lokis_horns.2": "按洛基角概率同时投掷",
   "item end": "",
   "trinket": "",
   "item.isaac_disaster.swallowed_penny": "被吞下的硬币",

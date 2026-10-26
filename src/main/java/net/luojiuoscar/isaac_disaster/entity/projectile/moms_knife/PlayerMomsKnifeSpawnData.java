@@ -2,13 +2,17 @@ package net.luojiuoscar.isaac_disaster.entity.projectile.moms_knife;
 
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.phys.Vec3;
+import net.minecraft.resources.ResourceLocation;
+import net.luojiuoscar.isaac_disaster.registries.attack_type.ModAttackTypes;
 
 /** Initial render state is applied atomically instead of interpolating from a default heading. */
 record PlayerMomsKnifeSpawnData(byte mode, int owner, Vec3 direction, float range, float speed,
-                               long launchedAt, float yaw, float pitch, int heldSlot, Vec3 localOffset, Vec3 baseDirection) {
+                               long launchedAt, float yaw, float pitch, int heldSlot, Vec3 localOffset, Vec3 baseDirection,
+                               ResourceLocation heldSource) {
     PlayerMomsKnifeSpawnData(byte mode, int owner, Vec3 direction, float range, float speed,
                             long launchedAt, float yaw, float pitch) {
-        this(mode, owner, direction, range, speed, launchedAt, yaw, pitch, 0, Vec3.ZERO, PlayerMomsKnifeMotion.FORWARD);
+        this(mode, owner, direction, range, speed, launchedAt, yaw, pitch, 0, Vec3.ZERO, PlayerMomsKnifeMotion.FORWARD,
+                ModAttackTypes.MOMS_KNIFE.getId());
     }
 
     PlayerMomsKnifeSpawnData {
@@ -28,6 +32,7 @@ record PlayerMomsKnifeSpawnData(byte mode, int owner, Vec3 direction, float rang
         buffer.writeFloat(yaw);
         buffer.writeFloat(pitch);
         buffer.writeVarInt(heldSlot);
+        buffer.writeResourceLocation(heldSource);
         buffer.writeDouble(localOffset.x);
         buffer.writeDouble(localOffset.y);
         buffer.writeDouble(localOffset.z);
@@ -37,10 +42,18 @@ record PlayerMomsKnifeSpawnData(byte mode, int owner, Vec3 direction, float rang
     }
 
     static PlayerMomsKnifeSpawnData read(FriendlyByteBuf buffer) {
-        return new PlayerMomsKnifeSpawnData(buffer.readByte(), buffer.readVarInt(),
+        byte mode = buffer.readByte();
+        int owner = buffer.readVarInt();
+        Vec3 direction = new Vec3(buffer.readDouble(), buffer.readDouble(), buffer.readDouble());
+        float range = buffer.readFloat();
+        float speed = buffer.readFloat();
+        long launchedAt = buffer.readLong();
+        float yaw = buffer.readFloat();
+        float pitch = buffer.readFloat();
+        int slot = buffer.readVarInt();
+        ResourceLocation source = buffer.readResourceLocation();
+        return new PlayerMomsKnifeSpawnData(mode, owner, direction, range, speed, launchedAt, yaw, pitch, slot,
                 new Vec3(buffer.readDouble(), buffer.readDouble(), buffer.readDouble()),
-                buffer.readFloat(), buffer.readFloat(), buffer.readLong(), buffer.readFloat(), buffer.readFloat(),
-                buffer.readVarInt(), new Vec3(buffer.readDouble(), buffer.readDouble(), buffer.readDouble()),
-                new Vec3(buffer.readDouble(), buffer.readDouble(), buffer.readDouble()));
+                new Vec3(buffer.readDouble(), buffer.readDouble(), buffer.readDouble()), source);
     }
 }

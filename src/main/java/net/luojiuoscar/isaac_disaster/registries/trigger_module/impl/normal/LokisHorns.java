@@ -11,6 +11,7 @@ import java.util.List;
 
 public class LokisHorns extends TriggerModule {
     private static final CompositeTrigger TRIGGER = new CompositeTrigger(List.of(
+            new SimpleTrigger(ModTriggerTypes.COLLECT_HELD_KNIVES, ModExecutableEffects.LOKIS_HORNS_HELD_KNIVES),
             new SimpleTrigger(ModTriggerTypes.ATTACK_PLAN, ModExecutableEffects.LOKIS_HORNS, context ->
                     context.getEntity().getRandom().nextDouble() < getTriggerChance(context.getEntity()))
     ));

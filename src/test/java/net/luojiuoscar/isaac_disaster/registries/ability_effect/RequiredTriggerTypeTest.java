@@ -8,6 +8,7 @@ import net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.normal.Lase
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.normal.LeadPencilShotCounter;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.normal.BookPlusMomsKnife;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.normal.MonstrosLungPlusMomsKnife;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.normal.LokisHornsHeldKnives;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.normal.RandomHarmfulPotion;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.revive.SimpleReviveEffect;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerTypes;
@@ -32,6 +33,7 @@ class RequiredTriggerTypeTest {
 
     @Test
     void explicitlyBoundEffectsExposeTheirRequiredTriggerType() {
+        assertSame(ModTriggerTypes.COLLECT_HELD_KNIVES, new LokisHornsHeldKnives().getRequiredTriggerType());
         assertSame(ModTriggerTypes.ATTACK_FIRED, new BookPlusMomsKnife().getRequiredTriggerType());
         assertSame(ModTriggerTypes.ATTACK_FIRED, new MonstrosLungPlusMomsKnife().getRequiredTriggerType());
         assertSame(ModTriggerTypes.KILL_ENTITY, new JumperCablesKillCounter().getRequiredTriggerType());

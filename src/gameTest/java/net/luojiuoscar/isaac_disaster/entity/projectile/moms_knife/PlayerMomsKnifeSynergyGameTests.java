@@ -388,7 +388,7 @@ public final class PlayerMomsKnifeSynergyGameTests {
     }
 
     @GameTest(template = "trajectory_empty", batch = "knife_synergy")
-    public static void cancelledAttackAndCancelledPrepareNeverTriggerExtras(GameTestHelper helper) {
+    public static void cancelledAttackAndEmptyFiringQueueNeverTriggerExtras(GameTestHelper helper) {
         try (var f = fixture(helper)) {
             StatManager.modifySetWithId(f.owner, ModSetAbilities.BOOK.getId(), 3);
             ModPassiveAbilities.MONSTROS_LUNG.get().handleObtain(f.owner, null);
@@ -396,21 +396,21 @@ public final class PlayerMomsKnifeSynergyGameTests {
             Consumer<BeforePerformAttackEvent> cancelAttack = event -> {
                 if (event.getEntity() == f.owner) event.setCanceled(true);
             };
-            Consumer<AttackContextPrepareEvent> cancelPrepare = event -> {
-                if (event.getOwner() == f.owner) event.setCanceled(true);
+            Consumer<AttackPlanEvent> clearPlan = event -> {
+                if (event.getOwner() == f.owner) event.replaceBaseContexts(List.of());
             };
             for (int phase = 0; phase < 2; phase++) {
                 if (phase == 0) MinecraftForge.EVENT_BUS.addListener(cancelAttack);
-                else MinecraftForge.EVENT_BUS.addListener(cancelPrepare);
+                else MinecraftForge.EVENT_BUS.addListener(clearPlan);
                 try {
                     f.owner.getRandom().setSeed(seedForBook(true));
                     f.ability.setChargeAmount(attack.getChargeBarId(), attack.getTotalCharge(f.owner));
                     attack.onReleased(f.owner);
                     helper.assertTrue(extraCount(f) == 0 && !f.main.isInFlight(),
-                            "Both attack-level and all-prepare cancellation suppress the entire payoff");
+                            "Whole-attack cancellation and an empty pre-preparation queue both suppress payoffs");
                 } finally {
                     MinecraftForge.EVENT_BUS.unregister(cancelAttack);
-                    MinecraftForge.EVENT_BUS.unregister(cancelPrepare);
+                    MinecraftForge.EVENT_BUS.unregister(clearPlan);
                 }
             }
         }
@@ -439,23 +439,23 @@ public final class PlayerMomsKnifeSynergyGameTests {
     }
 
     @GameTest(template = "trajectory_empty", batch = "knife_synergy")
-    public static void cancellingOnePreparedKnifeStillPaysOffOnceForTheRest(GameTestHelper helper) {
+    public static void removingOneConfirmedEntityStillPaysOffOnceForTheRest(GameTestHelper helper) {
         try (var f = fixture(helper)) {
             ModPassiveAbilities.MONSTROS_LUNG.get().handleObtain(f.owner, null);
             f.owner.getAttribute(ModAttributes.BULLET_COUNT.get()).setBaseValue(3);
             var attack = (MomsKnifeAttack) ModAttackTypes.MOMS_KNIFE.get();
             attack.onTick(f.owner);
-            Consumer<AttackContextPrepareEvent> cancelFirst = event -> {
-                if (event.getOwner() == f.owner && event.getContextIndex() == 0) event.setCanceled(true);
+            Consumer<AttackContextPrepareEvent> removeFirst = event -> {
+                if (event.getOwner() == f.owner && event.getContextIndex() == 0) f.main.discard();
             };
-            MinecraftForge.EVENT_BUS.addListener(cancelFirst);
+            MinecraftForge.EVENT_BUS.addListener(removeFirst);
             try {
                 f.ability.setChargeAmount(attack.getChargeBarId(), attack.getTotalCharge(f.owner));
                 attack.onReleased(f.owner);
                 helper.assertTrue(HeldMomsKnifeGroup.knives(f.owner).stream().filter(PlayerMomsKnifeEntity::isInFlight).count() == 2
                                 && extraCount(f) == 4,
-                        "The two surviving prepared main contexts trigger one four-knife payoff");
-            } finally { MinecraftForge.EVENT_BUS.unregister(cancelFirst); }
+                        "The two surviving confirmed main entities trigger one four-knife payoff");
+            } finally { MinecraftForge.EVENT_BUS.unregister(removeFirst); }
         }
         helper.succeed();
     }

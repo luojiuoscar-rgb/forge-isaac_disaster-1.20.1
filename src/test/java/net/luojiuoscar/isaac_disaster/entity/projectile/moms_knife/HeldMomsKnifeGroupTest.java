@@ -1,5 +1,7 @@
 package net.luojiuoscar.isaac_disaster.entity.projectile.moms_knife;
 
+import net.minecraft.resources.ResourceLocation;
+
 import io.netty.buffer.Unpooled;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.phys.Vec3;
@@ -8,6 +10,24 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 class HeldMomsKnifeGroupTest {
+    @Test
+    void slotsKeepSourceIdentityAndNormalizeNegativeIndices() {
+        var source = ResourceLocation.parse("test:first");
+        assertEquals(new HeldMomsKnifeGroup.Slot(source, 0), new HeldMomsKnifeGroup.Slot(source, -3));
+        assertNotEquals(new HeldMomsKnifeGroup.Slot(source, 0),
+                new HeldMomsKnifeGroup.Slot(ResourceLocation.parse("test:second"), 0));
+    }
+
+    @Test
+    void sharedPosesKeepOffsetsAndNormalizeInvalidDirections() {
+        var pose = new HeldMomsKnifeGroup.Pose(new Vec3(0.25, -0.5, 0), new Vec3(0, 7, 0));
+        assertEquals(new Vec3(0.25, -0.5, 0), pose.offset());
+        assertEquals(new Vec3(0, 1, 0), pose.direction());
+        var invalid = new HeldMomsKnifeGroup.Pose(new Vec3(Double.NaN, 0, 0), Vec3.ZERO);
+        assertEquals(Vec3.ZERO, invalid.offset());
+        assertEquals(new Vec3(0, 0, 1), invalid.direction());
+    }
+
     @Test
     void fanHandlesExtendFromThePlayerAlongEachBladesOwnDirection() {
         for (double radius : new double[]{0.6, 1, 2.4})
@@ -60,12 +80,14 @@ class HeldMomsKnifeGroupTest {
             Vec3 current = new Vec3(0, 1, 0);
             Vec3 base = new Vec3(1, 0, 1).normalize();
             var original = new PlayerMomsKnifeSpawnData((byte) 0, 123, current, 8, 0.7f, 100, 27, -30,
-                    slot, new Vec3(0.25, -0.125, 0), base);
+                    slot, new Vec3(0.25, -0.125, 0), base,
+                    ResourceLocation.parse("addon:extra_knives"));
             FriendlyByteBuf buffer = new FriendlyByteBuf(Unpooled.buffer());
             try {
                 original.write(buffer);
                 var copy = PlayerMomsKnifeSpawnData.read(buffer);
                 assertEquals(slot, copy.heldSlot());
+                assertEquals(original.heldSource(), copy.heldSource());
                 assertEquals(original.localOffset(), copy.localOffset());
                 assertTrue(current.distanceTo(copy.direction()) < 1e-12);
                 assertTrue(base.distanceTo(copy.baseDirection()) < 1e-12);
