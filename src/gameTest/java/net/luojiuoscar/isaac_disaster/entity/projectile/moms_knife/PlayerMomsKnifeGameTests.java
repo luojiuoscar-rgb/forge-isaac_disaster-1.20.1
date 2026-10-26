@@ -526,11 +526,14 @@ public final class PlayerMomsKnifeGameTests {
         boolean closed;
 
         Fixture(GameTestHelper helper) {
+            this(helper, NEXT_FIXTURE.getAndIncrement());
+        }
+
+        Fixture(GameTestHelper helper, int fixture) {
             level = helper.getLevel();
             UUID id = UUID.randomUUID();
             owner = FakePlayerFactory.get(level, new GameProfile(id, "pk-" + id.toString().substring(0, 8)));
             BlockPos spawn = level.getSharedSpawnPos();
-            int fixture = NEXT_FIXTURE.getAndIncrement();
             owner.setPos(spawn.getX() + 0.5 + fixture / 10 * 32, 80 + fixture % 10 * 24, spawn.getZ() + 0.5);
             owner.setNoGravity(true);
             owner.setYRot(0);

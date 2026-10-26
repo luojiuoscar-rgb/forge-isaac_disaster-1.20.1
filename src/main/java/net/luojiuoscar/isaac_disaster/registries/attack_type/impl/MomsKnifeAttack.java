@@ -24,6 +24,7 @@ import net.minecraft.world.phys.Vec3;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 public final class MomsKnifeAttack extends AttackType implements BasicAttackType, IChargeableAttack {
     public MomsKnifeAttack(int priorityTier, double priority) {
@@ -90,14 +91,22 @@ public final class MomsKnifeAttack extends AttackType implements BasicAttackType
     }
 
     @Override
-    public void performAttack(List<AttackContext> contexts) {
+    public double getChargeFraction(ServerPlayer player) {
+        int total = getTotalCharge(player);
+        return player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY)
+                .map(ability -> Math.min(1, (double) Math.max(1, ability.getChargeAmount(getChargeBarId())) / total))
+                .orElse(0.0);
+    }
+
+    @Override
+    public void performAttack(List<AttackContext> contexts, Consumer<AttackContext> onFired) {
         if (contexts.isEmpty() || !(contexts.get(0).getOwner() instanceof ServerPlayer player) || !isChargeEligible(player)) return;
         player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY).ifPresent(ability -> {
-            double fraction = Math.min(1, (double) Math.max(1, ability.getChargeAmount(getChargeBarId()))
-                    / getTotalCharge(player));
+            double fraction = getChargeFraction(player);
             int barrageCount = ability.getAttackTypes().getOrDefault(ModAttackTypes.BRIMSTONE.getId(), 0) > 0
                     ? MomsKnifeBarrage.countForCharge(fraction) : 0;
-            HeldMomsKnifeGroup.launch(player, contexts, fraction, barrageCount);
+            AttackContext firstLaunched = HeldMomsKnifeGroup.launch(player, contexts, fraction, barrageCount);
+            if (firstLaunched != null) onFired.accept(firstLaunched);
         });
     }
 

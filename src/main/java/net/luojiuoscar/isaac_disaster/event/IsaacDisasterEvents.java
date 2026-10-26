@@ -19,6 +19,7 @@ import net.luojiuoscar.isaac_disaster.registries.ability.passive.impl.BingeEater
 import net.luojiuoscar.isaac_disaster.registries.ability.passive.impl.EchoChamber;
 import net.luojiuoscar.isaac_disaster.registries.ability.passive.impl.GlitchedCrown;
 import net.luojiuoscar.isaac_disaster.registries.ability.set.ModSetAbilities;
+import net.luojiuoscar.isaac_disaster.registries.attack_type.ModAttackTypes;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -108,7 +109,8 @@ public class IsaacDisasterEvents {
         RandomSource rand = player.getRandom();
         int count = event.getCount();
 
-        if (PlayerHelper.hasSet(ModSetAbilities.BOOK.getId(), player) && rand.nextDouble() < 0.25){
+        if (event.getAttackType() != ModAttackTypes.MOMS_KNIFE.get()
+                && PlayerHelper.hasSet(ModSetAbilities.BOOK.getId(), player) && rand.nextDouble() < 0.25){
             count++;
         }
 

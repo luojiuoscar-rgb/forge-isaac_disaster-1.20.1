@@ -1,6 +1,7 @@
 package net.luojiuoscar.isaac_disaster.registries.attack_type;
 
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -12,6 +13,7 @@ public final class AttackRequest {
     private final @NotNull AttackType attackType;
     private final @NotNull LivingEntity owner;
     private final @NotNull AttackOrigin origin;
+    private final @NotNull ResourceLocation sourceId;
     private final @NotNull AttackPipelineMode pipelineMode;
     private final @NotNull List<AttackContext> providedContexts;
     /** Whether the pipeline should invoke {@link AttackType#makeSound(LivingEntity)} after execution. */
@@ -20,9 +22,17 @@ public final class AttackRequest {
     AttackRequest(@NotNull AttackType attackType, @NotNull LivingEntity owner,
                   @NotNull AttackOrigin origin, @NotNull AttackPipelineMode pipelineMode,
                   @NotNull List<AttackContext> providedContexts, boolean playSound) {
+        this(attackType, owner, origin, pipelineMode, providedContexts, playSound, attackType.getId());
+    }
+
+    private AttackRequest(@NotNull AttackType attackType, @NotNull LivingEntity owner,
+                          @NotNull AttackOrigin origin, @NotNull AttackPipelineMode pipelineMode,
+                          @NotNull List<AttackContext> providedContexts, boolean playSound,
+                          @NotNull ResourceLocation sourceId) {
         this.attackType = Objects.requireNonNull(attackType, "attackType");
         this.owner = Objects.requireNonNull(owner, "owner");
         this.origin = Objects.requireNonNull(origin, "origin");
+        this.sourceId = Objects.requireNonNull(sourceId, "sourceId");
         this.pipelineMode = Objects.requireNonNull(pipelineMode, "pipelineMode");
         this.providedContexts = List.copyOf(Objects.requireNonNull(providedContexts, "providedContexts"));
         this.playSound = playSound;
@@ -95,6 +105,16 @@ public final class AttackRequest {
     /** Returns the source category of this attack. */
     public @NotNull AttackOrigin getOrigin() {
         return origin;
+    }
+
+    /** Identifies the initiating effect, or the attack type when no effect was specified. */
+    public @NotNull ResourceLocation getSourceId() {
+        return sourceId;
+    }
+
+    /** Returns an independent request attributed to the specified initiating effect. */
+    public AttackRequest withSourceId(@NotNull ResourceLocation sourceId) {
+        return new AttackRequest(attackType, owner, origin, pipelineMode, providedContexts, playSound, sourceId);
     }
 
     /** Returns the explicitly selected pipeline stages. */

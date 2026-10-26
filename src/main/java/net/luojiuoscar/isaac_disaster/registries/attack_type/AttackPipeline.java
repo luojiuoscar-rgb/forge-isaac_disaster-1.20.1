@@ -1,16 +1,19 @@
 package net.luojiuoscar.isaac_disaster.registries.attack_type;
 
 import net.luojiuoscar.isaac_disaster.event.custom.attack.AttackContextPrepareEvent;
+import net.luojiuoscar.isaac_disaster.event.custom.attack.AttackFiredEvent;
 import net.luojiuoscar.isaac_disaster.event.custom.attack.AttackPlanEvent;
 import net.luojiuoscar.isaac_disaster.event.custom.attack.BeforePerformAttackEvent;
+import net.luojiuoscar.isaac_disaster.registries.attack_type.tags.IChargeableAttack;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraftforge.common.MinecraftForge;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Consumer;
 
 public final class AttackPipeline {
     private AttackPipeline() {
@@ -75,23 +78,31 @@ public final class AttackPipeline {
         }
 
         preparedContexts.forEach(AttackContext::freeze);
-        request.getAttackType().performAttack(preparedContexts);
-        if (request.shouldPlaySound()) {
-            request.getAttackType().makeSound(request.getOwner());
-        }
+        request.getAttackType().performAttack(preparedContexts, firingCallback(request, preparedContexts));
+        if (request.shouldPlaySound()) request.getAttackType().makeSound(request.getOwner());
         return true;
     }
 
-    /** Executes already-prepared contexts directly without publishing pipeline events. */
+    /** Skips planning and preparation; actual launches still publish AttackFiredEvent. */
     private static boolean executeExecuteOnly(@NotNull AttackRequest request) {
         List<AttackContext> contexts = request.getProvidedContexts().stream()
                 .map(context -> context.bindAttackTypeOrCopy(request.getAttackType())).toList();
         contexts.forEach(AttackContext::freeze);
-        request.getAttackType().performAttack(contexts);
-        if (request.shouldPlaySound()) {
-            request.getAttackType().makeSound(request.getOwner());
-        }
+        request.getAttackType().performAttack(contexts, firingCallback(request, contexts));
+        if (request.shouldPlaySound()) request.getAttackType().makeSound(request.getOwner());
         return true;
+    }
+
+    private static Consumer<AttackContext> firingCallback(AttackRequest request, List<AttackContext> contexts) {
+        List<AttackContext> snapshot = List.copyOf(contexts);
+        ServerPlayer player = request.getPlayer();
+        double chargeFraction = player != null && request.getAttackType() instanceof IChargeableAttack charge
+                ? charge.getChargeFraction(player) : 0;
+        AtomicBoolean fired = new AtomicBoolean();
+        return firstFired -> {
+            if (!fired.compareAndSet(false, true)) return;
+            MinecraftForge.EVENT_BUS.post(new AttackFiredEvent(request, snapshot, firstFired, chargeFraction));
+        };
     }
 
 }

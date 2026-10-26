@@ -19,6 +19,7 @@ import net.minecraftforge.common.MinecraftForge;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 public abstract class AttackType {
     private final int priorityTier;
@@ -47,8 +48,13 @@ public abstract class AttackType {
     public ResourceLocation getRootId() { return getId(); }
 
     public abstract List<AttackContext> getAttackContexts(ServerPlayer player, int bulletCount);
-    /** Starts this type's complete attack; delegating types intentionally do nothing. */
-    public abstract void performAttack(List<AttackContext> ctxList);
+    /** Starts an attack without a pipeline notification, for direct callers. */
+    public void performAttack(List<AttackContext> contexts) {
+        performAttack(contexts, ignored -> {});
+    }
+
+    /** Reports an actually launched context after a successful batch; deferred attacks retain the callback. */
+    public abstract void performAttack(List<AttackContext> contexts, Consumer<AttackContext> onFired);
     public abstract void makeSound(LivingEntity entity);
     public abstract void shoot(AttackContext ctx);
     public void onTick(ServerPlayer player){}
@@ -140,7 +146,7 @@ public abstract class AttackType {
         AttributeInstance bulletCount = player.getAttribute(ModAttributes.BULLET_COUNT.get());
         int count = bulletCount == null ? 1 : (int) bulletCount.getValue();
 
-        IsaacGetBulletCountEvent event = new IsaacGetBulletCountEvent(player, count);
+        IsaacGetBulletCountEvent event = new IsaacGetBulletCountEvent(player, this, count);
         MinecraftForge.EVENT_BUS.post(event);
 
         return Math.min(event.getCount(), 17);

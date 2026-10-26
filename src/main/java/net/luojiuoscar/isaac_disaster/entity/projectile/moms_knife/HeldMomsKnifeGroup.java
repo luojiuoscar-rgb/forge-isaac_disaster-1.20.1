@@ -92,9 +92,10 @@ public final class HeldMomsKnifeGroup {
         }).orElse(null);
     }
 
-    /** The caller checks eligibility and snapshots charge once before any knife enters flight. */
-    public static void launch(ServerPlayer player, List<AttackContext> contexts, double charge, int barrageCount) {
-        boolean launched = false;
+    /** Launches eligible slots after the caller's group check, returning the first success or null. */
+    @Nullable
+    public static AttackContext launch(ServerPlayer player, List<AttackContext> contexts, double charge, int barrageCount) {
+        AttackContext firstLaunched = null;
         Vec3 idle = PlayerMomsKnifeMotion.idlePosition(player, 1);
         for (int slot = 0; slot < Math.min(contexts.size(), MAX_KNIVES); slot++) {
             AttackContext context = contexts.get(slot);
@@ -106,7 +107,10 @@ public final class HeldMomsKnifeGroup {
             if (knife == null) continue;
             knife.configureHeld(slot, layout.offset(), layout.direction());
             if (knife.launch(PlayerMomsKnifeMotion.range(context.getBulletRange(), charge), context.getBulletSpeed(),
-                    context, launched ? 0 : barrageCount)) launched = true;
+                    context, firstLaunched == null ? barrageCount : 0)) {
+                if (firstLaunched == null) firstLaunched = context;
+            }
         }
+        return firstLaunched;
     }
 }

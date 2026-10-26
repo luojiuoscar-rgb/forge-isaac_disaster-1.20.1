@@ -2,6 +2,7 @@ package net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.normal;
 
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ExecutableEffectContext;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.IAbilityEffect;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.ModExecutableEffects;
 import net.luojiuoscar.isaac_disaster.registries.attack_pattern.AttackPatternContext;
 import net.luojiuoscar.isaac_disaster.registries.attack_pattern.impl.MonstrosLungAttackPattern;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.*;
@@ -23,6 +24,7 @@ public final class LeadPencilBurst implements IAbilityEffect {
         reference.addTrajectoryModule(ModTrajectoryModules.GRAVITY.getId(), 1);
         var projectiles = PATTERN.generate(new AttackPatternContext(reference, BURST_COUNT));
         return AttackExecutor.perform(AttackRequest.withContexts(player, bullet, AttackOrigin.ABILITY_EXTRA,
-                AttackPipelineMode.PREPARE_AND_EXECUTE, projectiles, false));
+                AttackPipelineMode.PREPARE_AND_EXECUTE, projectiles, false)
+                .withSourceId(ModExecutableEffects.LEAD_PENCIL_BURST.getId()));
     }
 }

@@ -84,10 +84,11 @@ public class CSectionAttack extends BulletAttack implements IChargeableAttack {
     }
 
     @Override
-    public void shoot(AttackContext ctx) {
-        super.shoot(ctx);
-        if (ctx.getOwner() == null || !(ctx.getOwner().level() instanceof ServerLevel level)) return;
+    protected boolean spawnBullet(AttackContext ctx) {
+        if (!super.spawnBullet(ctx)) return false;
+        ServerLevel level = (ServerLevel) ctx.getOwner().level();
         spawnBloodParticles(level, ctx.getPos(), ctx.getOwner().getLookAngle(), 10, 0.35, 0.35);
+        return true;
     }
 
     private void spawnBloodParticles(ServerLevel level, Vec3 pos, Vec3 direction, int count, double spread, double verticalOffset) {

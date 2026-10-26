@@ -47,10 +47,21 @@ public final class MomsKnife extends PassiveAbility {
     @Override
     public List<Component> getSynergyDesc(@Nullable ItemStack stack, Player player) {
         List<Component> description = new ArrayList<>(ModSetAbilities.MOM.get().getSynergyDesc());
-        if (ClientDataManager.getInstance().getItemCount(ModPassiveItems.BRIMSTONE.getId()) > 0
-                && ClientDataManager.getInstance().getItemCount(ModPassiveItems.C_SECTION.getId()) <= 0) {
+        if (ClientDataManager.getInstance().getItemCount(ModPassiveItems.C_SECTION.getId()) > 0) return description;
+        if (ClientDataManager.getInstance().getItemCount(ModPassiveItems.BRIMSTONE.getId()) > 0) {
             description.addAll(DescriptionHelper.getSynergyDesc(Component.translatable("item.isaac_disaster.brimstone"), List.of(
                     Component.translatable("item.isaac_disaster.moms_knife.synergy.brimstone.1")
+            )));
+        }
+        if (ClientDataManager.getInstance().getSetCountFromId(ModSetAbilities.BOOK.get().getId())
+                >= ModSetAbilities.BOOK.get().getRequirementCount()) {
+            description.addAll(DescriptionHelper.getSynergyDesc(Component.translatable("set.isaac_disaster.book"), List.of(
+                    Component.translatable("item.isaac_disaster.moms_knife.synergy.book.1")
+            )));
+        }
+        if (ClientDataManager.getInstance().getItemCount(ModPassiveItems.MONSTROS_LUNG.getId()) > 0) {
+            description.addAll(DescriptionHelper.getSynergyDesc(Component.translatable("item.isaac_disaster.monstros_lung"), List.of(
+                    Component.translatable("item.isaac_disaster.moms_knife.synergy.monstros_lung.1")
             )));
         }
         return description;

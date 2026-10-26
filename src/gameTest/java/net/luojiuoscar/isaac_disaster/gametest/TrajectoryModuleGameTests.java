@@ -3,6 +3,7 @@ package net.luojiuoscar.isaac_disaster.gametest;
 import com.mojang.authlib.GameProfile;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.UUID;
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.bullet.core.BulletState;
@@ -899,7 +900,7 @@ public final class TrajectoryModuleGameTests {
         }
 
         @Override
-        public void performAttack(List<AttackContext> contexts) {
+        public void performAttack(List<AttackContext> contexts, Consumer<AttackContext> onFired) {
             executed.addAll(contexts);
         }
 

@@ -328,15 +328,17 @@ public abstract class AbstractLaserAttack extends AttackType {
     }
 
     /** Executes a group of already prepared laser contexts under one shared collision batch. */
-    protected final void performLaserBatch(
+    protected final AttackContext performLaserBatch(
         List<AttackContext> ctxList, IntUnaryOperator sequenceIndexProvider) {
-        if (ctxList == null || ctxList.isEmpty()) return;
+        if (ctxList == null || ctxList.isEmpty()) return null;
+        AttackContext firstFired = null;
         if (STRAIGHT_PATH_DEPTH.get() > 0 || !usesCollisionBatch()) {
             for (int index = 0; index < ctxList.size(); index++) {
                 AttackContext ctx = ctxList.get(index);
-                if (ctx != null) shootSingleLaser(ctx, sequenceIndexProvider.applyAsInt(index));
+                if (ctx != null && shootSingleLaser(ctx, sequenceIndexProvider.applyAsInt(index))
+                        && firstFired == null) firstFired = ctx;
             }
-            return;
+            return firstFired;
         }
 
         Map<ServerLevel, LaserCollisionBatch> batches = new IdentityHashMap<>();
@@ -363,7 +365,8 @@ public abstract class AbstractLaserAttack extends AttackType {
         try {
             for (int index = 0; index < ctxList.size(); index++) {
                 AttackContext ctx = ctxList.get(index);
-                if (ctx != null) shootSingleLaser(ctx, sequenceIndexProvider.applyAsInt(index));
+                if (ctx != null && shootSingleLaser(ctx, sequenceIndexProvider.applyAsInt(index))
+                        && firstFired == null) firstFired = ctx;
             }
         } finally {
             if (previousVisualBatch == null) visualBatch.flush();
@@ -372,6 +375,7 @@ public abstract class AbstractLaserAttack extends AttackType {
             if (previousVisualBatch == null) activeVisualBatch.remove();
             else activeVisualBatch.set(previousVisualBatch);
         }
+        return firstFired;
     }
 
     private boolean isStraightPathCandidate(AttackContext context) {
@@ -386,12 +390,14 @@ public abstract class AbstractLaserAttack extends AttackType {
         shootSingleLaser(ctx, 0);
     }
 
-    protected void shootSingleLaser(AttackContext ctx, int attackSequenceIndex) {
+    protected boolean shootSingleLaser(AttackContext ctx, int attackSequenceIndex) {
         LivingEntity entity = ctx.getOwner();
         ServerLevel level = getLaserLevel(entity);
-        if (level == null) return;
+        if (level == null) return false;
 
         Vec3 direction = ctx.getMainAxis();
+        if (!(direction.lengthSqr() > 1.0E-8D) || !Double.isFinite(direction.lengthSqr())
+                || !(ctx.getBulletRange() > 0) || !Double.isFinite(ctx.getBulletRange())) return false;
         double width = getWidth(ctx);
 
         LaserProjectile laser = new LaserProjectile(ctx);
@@ -407,7 +413,7 @@ public abstract class AbstractLaserAttack extends AttackType {
         // straight-path batch recursively.
         if (STRAIGHT_PATH_DEPTH.get() > 0) {
             runSegmentedLaser(laser, level, ctx);
-            return;
+            return true;
         }
 
         LaserCollisionBatch batch = activeBatch(level);
@@ -430,10 +436,11 @@ public abstract class AbstractLaserAttack extends AttackType {
                 if (previousVisualBatch == null) activeVisualBatch.remove();
                 else activeVisualBatch.set(previousVisualBatch);
             }
-            return;
+            return true;
         }
 
         runSegmentedLaser(laser, level, ctx);
+        return true;
     }
 
     private LaserCollisionBatch activeBatch(ServerLevel level) {

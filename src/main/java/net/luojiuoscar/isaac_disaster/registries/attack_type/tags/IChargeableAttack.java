@@ -32,6 +32,14 @@ public interface IChargeableAttack {
 
     int getTotalCharge(Player player);
 
+    /** Normalized charge used by this release, captured before execution for delayed notifications. */
+    default double getChargeFraction(ServerPlayer player) {
+        int total = Math.max(1, getTotalCharge(player));
+        return player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY)
+                .map(ability -> Math.max(0, Math.min(1,
+                        (double) ability.getChargeAmount(getChargeBarId()) / total))).orElse(0.0);
+    }
+
     /** Amount gained on the next tick; custom/manual sources may return zero. */
     default int getChargePerTick(ServerPlayer player) {
         return player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY)

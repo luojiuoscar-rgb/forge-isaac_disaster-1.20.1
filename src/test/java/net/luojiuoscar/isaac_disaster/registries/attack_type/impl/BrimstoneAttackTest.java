@@ -33,9 +33,10 @@ class BrimstoneAttackTest {
         }
 
         @Override
-        protected void shootSingleLaser(AttackContext ctx, int attackSequenceIndex) {
+        protected boolean shootSingleLaser(AttackContext ctx, int attackSequenceIndex) {
             this.lastContext = ctx;
             this.lastSequenceIndex = attackSequenceIndex;
+            return true;
         }
     }
 }

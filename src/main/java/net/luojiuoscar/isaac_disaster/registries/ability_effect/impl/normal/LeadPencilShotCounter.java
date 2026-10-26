@@ -2,12 +2,11 @@ package net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.normal;
 
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.capability.entity.ExtraDataProvider;
-import net.luojiuoscar.isaac_disaster.event.custom.attack.AttackPlanEvent;
+import net.luojiuoscar.isaac_disaster.event.custom.attack.AttackFiredEvent;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ContextKeys;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ExecutableEffectContext;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.IAbilityEffect;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ModExecutableEffects;
-import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackOrigin;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerTypes;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerType;
 import net.minecraft.resources.ResourceLocation;
@@ -20,15 +19,15 @@ public final class LeadPencilShotCounter implements IAbilityEffect {
 
     @Override
     public TriggerType getRequiredTriggerType() {
-        return ModTriggerTypes.ATTACK_PLAN;
+        return ModTriggerTypes.ATTACK_FIRED;
     }
 
     @Override
     public boolean applyEffect(ExecutableEffectContext context) {
         if (!(context.getEntity() instanceof ServerPlayer player)) return false;
-        if (!(context.get(ContextKeys.EVENT) instanceof AttackPlanEvent event)) return false;
+        if (!(context.get(ContextKeys.EVENT) instanceof AttackFiredEvent event)) return false;
         if (event.getOwner() != player) return false;
-        if (event.getOrigin() != AttackOrigin.PLAYER_PRIMARY || event.getBaseContexts().isEmpty()) return true;
+        if (event.getSourceId().equals(ModExecutableEffects.LEAD_PENCIL_BURST.getId())) return true;
 
         return player.getCapability(ExtraDataProvider.EXTRA_DATA_CAP).map(data -> {
             Double saved = data.getDouble(DATA_KEY);

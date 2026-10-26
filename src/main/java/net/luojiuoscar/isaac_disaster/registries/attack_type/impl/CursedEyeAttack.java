@@ -21,6 +21,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.common.MinecraftForge;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 public class CursedEyeAttack extends AttackType implements IChargeableAttack, DelegatingAttackType {
     private static final ResourceLocation SCHEDULE_TYPE =
@@ -45,7 +46,7 @@ public class CursedEyeAttack extends AttackType implements IChargeableAttack, De
     }
 
     @Override
-    public void performAttack(List<AttackContext> ctxList) {
+    public void performAttack(List<AttackContext> ctxList, Consumer<AttackContext> onFired) {
 
     }
 

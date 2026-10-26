@@ -1,14 +1,13 @@
 package net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.normal;
 
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
-import net.luojiuoscar.isaac_disaster.entity.ModEntities;
 import net.luojiuoscar.isaac_disaster.entity.projectile.moms_knife.PlayerMomsKnifeAim;
-import net.luojiuoscar.isaac_disaster.entity.projectile.moms_knife.PlayerMomsKnifeEntity;
 import net.luojiuoscar.isaac_disaster.entity.projectile.moms_knife.PlayerMomsKnifeMotion;
 import net.luojiuoscar.isaac_disaster.helper.ScheduledFuncHelper;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ContextKeys;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ExecutableEffectContext;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.IAbilityEffect;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.ModExecutableEffects;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackContext;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.impl.MomsKnifeAttack;
 import net.minecraft.resources.ResourceLocation;
@@ -46,13 +45,11 @@ public final class MomsKnifeBarrage implements IAbilityEffect {
                 ScheduledFuncHelper.clearByType(SCHEDULE_TYPE, player.getUUID());
                 return;
             }
-            Vec3 origin = PlayerMomsKnifeMotion.scatterOrigin(PlayerMomsKnifeMotion.barragePosition(player),
-                    player.getYRot(), player.getXRot(), player.getRandom().nextDouble() * 2 - 1,
-                    player.getRandom().nextDouble() * 2 - 1);
-            PlayerMomsKnifeEntity knife = new PlayerMomsKnifeEntity(ModEntities.PLAYER_MOMS_KNIFE.get(), level);
-            if (knife.initializeOneWay(player, origin, PlayerMomsKnifeAim.point(player), 24, speed, snapshot)) {
-                level.addFreshEntity(knife);
-            }
+            Vec3 origin = PlayerMomsKnifeMotion.scatterOrigin(player);
+            ExecutableEffectContext shot = new ExecutableEffectContext(player);
+            shot.set(ContextKeys.ATTACK_CONTEXT, snapshot.toBuilder().position(origin)
+                    .mainAxis(PlayerMomsKnifeAim.point(player).subtract(origin)).range(24).build());
+            ModExecutableEffects.MOMS_KNIFE_SHOT.get().apply(shot);
         });
         return true;
     }

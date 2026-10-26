@@ -112,6 +112,11 @@ public final class PlayerMomsKnifeMotion {
         return owner.getEyePosition().subtract(unit(owner.getLookAngle()));
     }
 
+    public static Vec3 scatterOrigin(Player owner) {
+        return scatterOrigin(barragePosition(owner), owner.getYRot(), owner.getXRot(),
+                owner.getRandom().nextDouble() * 2 - 1, owner.getRandom().nextDouble() * 2 - 1);
+    }
+
     /** A square in the view plane, independent of player size and stable at vertical pitch. */
     public static Vec3 scatterOrigin(Vec3 center, float yaw, float pitch, double offsetX, double offsetY) {
         double x = Double.isFinite(offsetX) ? Mth.clamp(offsetX, -1, 1) : 0;

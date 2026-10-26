@@ -14,6 +14,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -127,7 +128,7 @@ class PlayerAttackDispatchTest {
         @Override public ResourceLocation getId() { return id; }
         @Override public ResourceLocation getChargeBarId() { return id; }
         @Override public List<AttackContext> getAttackContexts(ServerPlayer player, int count) { return List.of(); }
-        @Override public void performAttack(List<AttackContext> contexts) { }
+        @Override public void performAttack(List<AttackContext> contexts, Consumer<AttackContext> onFired) { }
         @Override public void makeSound(LivingEntity entity) { }
         @Override public void shoot(AttackContext context) { }
         @Override public int getTotalCharge(Player player) { return 47; }

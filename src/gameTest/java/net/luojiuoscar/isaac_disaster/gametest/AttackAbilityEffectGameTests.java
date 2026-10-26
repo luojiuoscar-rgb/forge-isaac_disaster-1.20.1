@@ -5,6 +5,7 @@ import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.capability.entity.ExtraDataProvider;
 import net.luojiuoscar.isaac_disaster.effect.ModEffects;
 import net.luojiuoscar.isaac_disaster.event.custom.attack.AttackPlanEvent;
+import net.luojiuoscar.isaac_disaster.event.custom.attack.AttackFiredEvent;
 import net.minecraftforge.eventbus.api.Event;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ContextKeys;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ExecutableEffectContext;
@@ -43,10 +44,11 @@ public final class AttackAbilityEffectGameTests {
         context.set(ContextKeys.EVENT, extraPlan);
         helper.assertTrue(new BrimstonePlusMonstrosLung().applyEffect(context), "Ineligible beam plan is safely skipped");
         helper.assertTrue(new TheWizAttackPlan().applyEffect(context), "Missing Wiz status is safely skipped");
-        helper.assertTrue(new LeadPencilShotCounter().applyEffect(context), "Derived plan is not counted");
         helper.assertTrue(extraPlan.getExtraContexts().isEmpty(), "Skipped beam effect appends nothing");
+        context.set(ContextKeys.EVENT, fired(extraPlan));
+        helper.assertTrue(new LeadPencilShotCounter().applyEffect(context), "Derived firing is counted");
         var data = player.getCapability(ExtraDataProvider.EXTRA_DATA_CAP).orElseThrow(IllegalStateException::new);
-        helper.assertTrue(!data.hasDouble(LeadPencilShotCounter.DATA_KEY), "Skipped counter does not create progress");
+        helper.assertTrue(data.getDouble(LeadPencilShotCounter.DATA_KEY) == 1, "Derived firing advances progress once");
 
         context.set(ContextKeys.EVENT, new Event());
         for (var effect : List.of(new BrimstonePlusMonstrosLung(),
@@ -61,13 +63,14 @@ public final class AttackAbilityEffectGameTests {
         ServerPlayer player = player(helper);
         var context = new ExecutableEffectContext(player);
         var primary = plan(player, ModAttackTypes.BULLET.get(), AttackOrigin.PLAYER_PRIMARY);
-        context.set(ContextKeys.EVENT, primary);
+        context.set(ContextKeys.EVENT, fired(primary));
         helper.assertTrue(primary.getBaseContexts().size() == 1, "No multishot items preserves one projectile");
         helper.assertTrue(new LeadPencilShotCounter().applyEffect(context), "Counting below threshold succeeds");
         var data = player.getCapability(ExtraDataProvider.EXTRA_DATA_CAP).orElseThrow(IllegalStateException::new);
         helper.assertTrue(data.getDouble(LeadPencilShotCounter.DATA_KEY) == 1, "One primary round advances progress once");
 
         player.addEffect(new MobEffectInstance(ModEffects.THE_WIZ.get(), 200, 1));
+        context.set(ContextKeys.EVENT, primary);
         helper.assertTrue(new TheWizAttackPlan().applyEffect(context), "Valid Wiz execution succeeds");
         helper.assertTrue(primary.getBaseContexts().size() == 2, "Amplified Wiz retains dual spread");
 
@@ -82,6 +85,12 @@ public final class AttackAbilityEffectGameTests {
     private static AttackPlanEvent plan(ServerPlayer player, AttackType type, AttackOrigin origin) {
         var request = AttackRequest.generated(player, type, origin, AttackPipelineMode.PLAN_PREPARE_AND_EXECUTE, false);
         return new AttackPlanEvent(request, new AttackPlan(request, List.of(type.createAttackContext(player, player))));
+    }
+
+    private static AttackFiredEvent fired(AttackPlanEvent plan) {
+        var contexts = plan.getBaseContexts();
+        contexts.forEach(AttackContext::freeze);
+        return new AttackFiredEvent(plan.getRequest(), contexts, contexts.get(0), 0);
     }
 
     private static ServerPlayer player(GameTestHelper helper) {

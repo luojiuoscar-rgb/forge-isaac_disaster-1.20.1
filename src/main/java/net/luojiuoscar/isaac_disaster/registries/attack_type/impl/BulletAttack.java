@@ -14,6 +14,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 public class BulletAttack extends AbstractBulletAttack implements BasicAttackType {
     private static final BulletAttackPattern PATTERN = new BulletAttackPattern();
@@ -34,10 +35,12 @@ public class BulletAttack extends AbstractBulletAttack implements BasicAttackTyp
     }
 
     @Override
-    public void performAttack(List<AttackContext> ctxList) {
+    public void performAttack(List<AttackContext> ctxList, Consumer<AttackContext> onFired) {
+        AttackContext firstFired = null;
         for (AttackContext context : ctxList) {
-            shoot(context);
+            if (spawnBullet(context) && firstFired == null) firstFired = context;
         }
+        if (firstFired != null) onFired.accept(firstFired);
     }
 
     @Override

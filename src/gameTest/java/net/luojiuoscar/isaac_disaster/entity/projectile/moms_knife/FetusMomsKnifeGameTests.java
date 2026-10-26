@@ -6,7 +6,6 @@ import net.luojiuoscar.isaac_disaster.bullet.server.BulletManager;
 import net.luojiuoscar.isaac_disaster.bullet.server.BulletRuntime;
 import net.luojiuoscar.isaac_disaster.attribute.ModAttributes;
 import net.luojiuoscar.isaac_disaster.event.custom.attack.BeforePerformAttackEvent;
-import net.luojiuoscar.isaac_disaster.event.custom.attack.tear_bullet.TearBulletShootEvent;
 import net.luojiuoscar.isaac_disaster.helper.ScheduledFuncHelper;
 import net.luojiuoscar.isaac_disaster.registries.ability.passive.impl.CSection;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackContext;
@@ -20,9 +19,7 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.gametest.GameTestHolder;
 import net.minecraftforge.gametest.PrefixGameTestTemplate;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Consumer;
 
 @GameTestHolder("isaac_disaster_player_knife")
 @PrefixGameTestTemplate(false)
@@ -156,20 +153,16 @@ public final class FetusMomsKnifeGameTests {
         var f = new PlayerMomsKnifeGameTests.Fixture(helper);
         new CSection(0, 4).handleObtain(f.owner, null);
         f.ability.addAttackType(ModAttackTypes.BRIMSTONE.getId(), 1, f.owner);
-        List<BulletState> shots = new ArrayList<>();
-        Consumer<TearBulletShootEvent> listener = event -> {
-            if (event.getBulletObject() instanceof BulletState bullet && bullet.getOwner() == f.owner
-                    && bullet.getTypeId().equals(ModAttackTypes.C_SECTION.getId())) shots.add(bullet);
-        };
-        MinecraftForge.EVENT_BUS.addListener(listener);
         MinecraftForge.EVENT_BUS.post(new BeforePerformAttackEvent(f.owner, ModAttackTypes.BRIMSTONE.get()));
         helper.runAfterDelay(14, () -> {
+            List<BulletState> shots = BulletRuntime.INSTANCE.manager(f.level).activeStates().stream()
+                    .filter(bullet -> bullet.getOwner() == f.owner
+                            && bullet.getTypeId().equals(ModAttackTypes.C_SECTION.getId())).toList();
             try {
                 helper.assertTrue(shots.size() == 4 && shots.stream().allMatch(b -> b.fetusKnife() != null),
                         "The existing Brimstone/C Section effect emits four armed fetuses: " + shots.size());
                 helper.succeed();
             } finally {
-                MinecraftForge.EVENT_BUS.unregister(listener);
                 shots.forEach(BulletState::discard);
                 ScheduledFuncHelper.clearByType(ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "c_section_attack"),
                         f.owner.getUUID());

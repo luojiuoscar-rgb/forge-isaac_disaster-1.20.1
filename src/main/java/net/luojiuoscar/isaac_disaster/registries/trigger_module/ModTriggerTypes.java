@@ -4,6 +4,10 @@ import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.minecraft.resources.ResourceLocation;
 
 public class ModTriggerTypes {
+    public static final TriggerType ATTACK_FIRED =
+            new TriggerType(ResourceLocation.fromNamespaceAndPath(
+                    IsaacDisaster.MOD_ID, "attack_fired"));
+
     public static final TriggerType ATTACK_PLAN =
             new TriggerType(ResourceLocation.fromNamespaceAndPath(
                     IsaacDisaster.MOD_ID, "attack_plan"));

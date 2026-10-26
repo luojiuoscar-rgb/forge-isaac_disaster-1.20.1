@@ -13,6 +13,7 @@ import net.minecraft.world.entity.LivingEntity;
 import org.joml.Vector3f;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 public class LaserAttack extends AbstractLaserAttack implements BasicAttackType {
     private static final LaserAttackPattern PATTERN = new LaserAttackPattern();
@@ -34,8 +35,9 @@ public class LaserAttack extends AbstractLaserAttack implements BasicAttackType 
     }
 
     @Override
-    public void performAttack(List<AttackContext> ctxList) {
-        performLaserBatch(ctxList, ignored -> 0);
+    public void performAttack(List<AttackContext> ctxList, Consumer<AttackContext> onFired) {
+        AttackContext firstFired = performLaserBatch(ctxList, ignored -> 0);
+        if (firstFired != null) onFired.accept(firstFired);
     }
 
     @Override

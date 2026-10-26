@@ -19,6 +19,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.common.MinecraftForge;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 public class NeptunusAttack extends AttackType implements IChargeableAttack, DelegatingAttackType {
 
@@ -41,7 +42,7 @@ public class NeptunusAttack extends AttackType implements IChargeableAttack, Del
     }
 
     @Override
-    public void performAttack(List<AttackContext> ctxList) {}
+    public void performAttack(List<AttackContext> ctxList, Consumer<AttackContext> onFired) {}
 
     @Override
     public void makeSound(LivingEntity entity) {}

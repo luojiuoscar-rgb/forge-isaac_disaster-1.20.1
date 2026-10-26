@@ -104,7 +104,7 @@ public final class LeadPencilGameTests {
                 publish(player, ModAttackTypes.BULLET.get(), origin, 12);
             }
             publish(player, ModAttackTypes.BULLET.get(), AttackOrigin.PLAYER_PRIMARY, 0);
-            helper.assertTrue(data(player).getDouble(LeadPencilShotCounter.DATA_KEY) == 0, "Derived and empty plans do not count");
+            helper.assertTrue(data(player).getDouble(LeadPencilShotCounter.DATA_KEY) == 4, "Every firing origin counts while empty plans do not");
             helper.assertTrue(burst.size() == 24, "No recursive barrage");
         } finally {
             MinecraftForge.EVENT_BUS.unregister(listener);
@@ -181,7 +181,7 @@ public final class LeadPencilGameTests {
     }
 
     @GameTest(template = "trajectory_empty")
-    public static void wholeAttackCancellationSkipsCountAndPerTearCancellationDoesNot(GameTestHelper helper) {
+    public static void wholeAttackAndAllPreparedTearCancellationSkipCount(GameTestHelper helper) {
         ServerPlayer player = player(helper);
         ModPassiveAbilities.LEAD_PENCIL.get().handleObtain(player, null);
         Consumer<BeforePerformAttackEvent> cancelAttack = event -> {
@@ -202,7 +202,7 @@ public final class LeadPencilGameTests {
         try {
             AttackExecutor.perform(AttackRequest.generated(player, ModAttackTypes.BULLET.get(),
                     AttackOrigin.PLAYER_PRIMARY, AttackPipelineMode.FULL, false));
-            helper.assertTrue(data(player).getDouble(LeadPencilShotCounter.DATA_KEY) == 1, "Per-tear cancellation does not undo the planned round");
+            helper.assertTrue(!data(player).hasDouble(LeadPencilShotCounter.DATA_KEY), "All prepared tears cancelled means nothing actually fired");
         } finally {
             MinecraftForge.EVENT_BUS.unregister(cancelTear);
         }
@@ -213,7 +213,9 @@ public final class LeadPencilGameTests {
         var request = AttackRequest.generated(player, type, origin, AttackPipelineMode.PLAN_PREPARE_AND_EXECUTE, false);
         List<AttackContext> base = new ArrayList<>();
         for (int i = 0; i < count; i++) base.add(type.createAttackContext(player, player));
-        MinecraftForge.EVENT_BUS.post(new AttackPlanEvent(request, new AttackPlan(request, base)));
+        base.forEach(AttackContext::freeze);
+        if (base.isEmpty()) MinecraftForge.EVENT_BUS.post(new AttackPlanEvent(request, new AttackPlan(request, base)));
+        else MinecraftForge.EVENT_BUS.post(new AttackFiredEvent(request, base, base.get(0), 0));
     }
 
     private static ExtraData data(ServerPlayer player) {

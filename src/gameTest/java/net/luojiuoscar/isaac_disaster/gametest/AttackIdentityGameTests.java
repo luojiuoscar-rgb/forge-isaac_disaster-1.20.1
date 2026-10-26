@@ -144,7 +144,7 @@ public final class AttackIdentityGameTests {
         @Override public ResourceLocation getId() { return id; }
         @Override public ResourceLocation getRootId() { return root; }
         @Override public List<AttackContext> getAttackContexts(ServerPlayer player, int count) { return List.of(); }
-        @Override public void performAttack(List<AttackContext> contexts) { executed = List.copyOf(contexts); }
+        @Override public void performAttack(List<AttackContext> contexts, Consumer<AttackContext> onFired) { executed = List.copyOf(contexts); }
         @Override public void makeSound(LivingEntity entity) { }
         @Override public void shoot(AttackContext context) { }
     }

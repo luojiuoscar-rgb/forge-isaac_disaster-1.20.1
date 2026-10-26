@@ -21,6 +21,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.Map;
 import java.util.UUID;
 
@@ -46,7 +47,7 @@ public class BrimstoneAttack extends LaserAttack implements IChargeableAttack {
     // ================== handleAttack ==================
     /** Brimstone schedules its 13 shots, grouping contexts that share an owner. */
     @Override
-    public void performAttack(List<AttackContext> contexts) {
+    public void performAttack(List<AttackContext> contexts, Consumer<AttackContext> onFired) {
         if (contexts == null || contexts.isEmpty()) return;
 
         Map<UUID, List<AttackContext>> contextsByOwner = new LinkedHashMap<>();
@@ -56,17 +57,17 @@ public class BrimstoneAttack extends LaserAttack implements IChargeableAttack {
                     .add(context);
         }
         for (List<AttackContext> ownerContexts : contextsByOwner.values()) {
-            scheduleShots(ownerContexts);
+            scheduleShots(ownerContexts, onFired);
         }
     }
 
     @Override
     public void shoot(AttackContext baseContext) {
         if (baseContext == null) return;
-        scheduleShots(List.of(baseContext));
+        scheduleShots(List.of(baseContext), ignored -> {});
     }
 
-    private void scheduleShots(List<AttackContext> baseContexts) {
+    private void scheduleShots(List<AttackContext> baseContexts, Consumer<AttackContext> onFired) {
         if (baseContexts.isEmpty()) return;
         AttackContext firstContext = baseContexts.get(0);
         List<ShotPlan> shotPlans = baseContexts.stream()
@@ -80,7 +81,8 @@ public class BrimstoneAttack extends LaserAttack implements IChargeableAttack {
             for (ShotPlan shotPlan : shotPlans) {
                 shotContexts.add(shotPlan.createContext());
             }
-            performLaserBatch(shotContexts, ignored -> currentSequenceIndex);
+            AttackContext firstFired = performLaserBatch(shotContexts, ignored -> currentSequenceIndex);
+            if (firstFired != null) onFired.accept(firstFired);
         });
     }
 
