@@ -106,7 +106,8 @@
         {"type": "minecraft:item", "name": "isaac_disaster:crickets_body"},
         {"type": "minecraft:item", "name": "isaac_disaster:compound_fracture"},
         {"type": "minecraft:item", "name": "isaac_disaster:haemolacria"},
-        {"type": "minecraft:item", "name": "isaac_disaster:monstros_lung"}
+        {"type": "minecraft:item", "name": "isaac_disaster:monstros_lung"},
+        {"type": "minecraft:item", "name": "isaac_disaster:crack_the_sky"}
       ]
     }
   ]

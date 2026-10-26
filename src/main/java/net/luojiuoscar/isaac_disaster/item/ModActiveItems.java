@@ -179,4 +179,8 @@ public class ModActiveItems {
             () -> new ActiveItem(new Item.Properties(), 12, 12, ModActiveAbilities.D12));
     static {ItemListManager.ACTIVE_ITEM_LIST.add(D12);}
 
+    public static final RegistryObject<Item> CRACK_THE_SKY = ITEMS.register("crack_the_sky",
+            () -> new ActiveItem(new Item.Properties(), 4, 4, ModActiveAbilities.CRACK_THE_SKY));
+    static {ItemListManager.ACTIVE_ITEM_LIST.add(CRACK_THE_SKY);}
+
 }

@@ -11,11 +11,15 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.animal.Cow;
 import net.minecraft.world.entity.animal.Wolf;
+import net.minecraft.world.entity.monster.Zombie;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.StairBlock;
 import net.minecraft.world.phys.Vec3;
@@ -439,6 +443,51 @@ public final class HolyLightGameTests {
             near(helper, snapshot.position().y, position.y, "The origin keeps its requested height");
             near(helper, snapshot.beamHeight(), .1, "The nearby ceiling still clips the visual beam");
             helper.assertTrue(!snapshot.grounded(), "An overhead block cannot become ground support");
+        }
+        helper.succeed();
+    }
+
+    @GameTest(template = "trajectory_empty", batch = "holy_light", timeoutTicks = 30)
+    public static void undeadMultiplierIsPerTargetAndCapturedUntilFiring(GameTestHelper helper) {
+        Fixture fixture = new Fixture(helper);
+        try {
+            Cow ordinary = fixture.cow(fixture.center.add(-.35, 0, 0));
+            Zombie undead = new Zombie(EntityType.ZOMBIE, fixture.level);
+            undead.getAttribute(Attributes.ARMOR).setBaseValue(0);
+            undead.setItemSlot(EquipmentSlot.HEAD, new ItemStack(Items.CARVED_PUMPKIN));
+            fixture.addMob(undead, fixture.center.add(.35, 0, 0));
+            helper.assertTrue(fixture.manager.spawn(fixture.level, fixture.owner, fixture.center,
+                    4, .8, false, 7, 2), "The strike has five warning ticks and an undead multiplier");
+            HolyLightSnapshot snapshot = fixture.manager.snapshots().get(0);
+            helper.assertTrue(snapshot.warningTicks() == 5, "Warning speed seven produces five ticks");
+            fixture.owner.getAttribute(Attributes.ATTACK_DAMAGE).setBaseValue(1);
+            at(helper, fixture, 4, () -> {
+                fixture.manager.tick(fixture.level);
+                health(helper, ordinary, 20, "The shortened warning is harmless");
+            });
+            at(helper, fixture, 5, () -> {
+                fixture.manager.tick(fixture.level);
+                health(helper, ordinary, 16, "Ordinary targets take the saved base damage");
+                health(helper, undead, 12, "Only undead targets take twice that base damage");
+                fixture.manager.tick(fixture.level);
+                health(helper, undead, 12, "Holding the same beam does not repeat damage");
+                fixture.close();
+                helper.succeed();
+            });
+        } catch (RuntimeException | Error failure) {
+            fixture.close();
+            throw failure;
+        }
+    }
+
+    @GameTest(template = "trajectory_empty", batch = "holy_light", timeoutTicks = 30)
+    public static void oldStrikeOverloadKeepsNormalDamageForUndead(GameTestHelper helper) {
+        try (Fixture fixture = new Fixture(helper)) {
+            Zombie undead = new Zombie(EntityType.ZOMBIE, fixture.level);
+            undead.getAttribute(Attributes.ARMOR).setBaseValue(0);
+            fixture.addMob(undead, fixture.center);
+            helper.assertTrue(fixture.strike(fixture.center, .8, true), "The original overload remains usable");
+            health(helper, undead, 14, "The original overload defaults to multiplier one");
         }
         helper.succeed();
     }

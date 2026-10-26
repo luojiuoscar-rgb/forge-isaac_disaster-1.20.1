@@ -39,7 +39,14 @@ public final class HolyLight {
      */
     public static boolean strike(ServerLevel level, LivingEntity caster, Vec3 position,
                                  float damage, double radius, boolean skipWarning, double warningSpeed) {
+        return strike(level, caster, position, damage, radius, skipWarning, warningSpeed, 1);
+    }
+
+    /** Applies the optional multiplier separately to each undead target when the strike fires. */
+    public static boolean strike(ServerLevel level, LivingEntity caster, Vec3 position,
+                                 float damage, double radius, boolean skipWarning, double warningSpeed,
+                                 double undeadDamageMultiplier) {
         return level != null && HolyLightRuntime.INSTANCE.manager(level)
-                .spawn(level, caster, position, damage, radius, skipWarning, warningSpeed);
+                .spawn(level, caster, position, damage, radius, skipWarning, warningSpeed, undeadDamageMultiplier);
     }
 }

@@ -1119,11 +1119,17 @@ public class ModExecutableEffects {
 
     public static final RegistryObject<IExecutableEffect> SOUL_LOCKET =
             EXECUTABLE_EFFECT_REGISTRY.register("soul_locket", SoulLocket::new);
+
     public static final RegistryObject<IExecutableEffect> SINUS_INFECTION_ATTACHMENT =
             EXECUTABLE_EFFECT_REGISTRY.register("sinus_infection_attachment", SinusInfectionAttachment::new);
+
     public static final RegistryObject<IExecutableEffect> SINUS_INFECTION_POISON =
             EXECUTABLE_EFFECT_REGISTRY.register("sinus_infection_poison", SinusInfectionPoison::new);
+
     public static final RegistryObject<IExecutableEffect> SINUS_INFECTION_DAMAGE =
             EXECUTABLE_EFFECT_REGISTRY.register("sinus_infection_damage", SinusInfectionDamage::new);
+
+    public static final RegistryObject<IExecutableEffect> CRACK_THE_SKY =
+            EXECUTABLE_EFFECT_REGISTRY.register("crack_the_sky", CrackTheSky::new);
 
 }

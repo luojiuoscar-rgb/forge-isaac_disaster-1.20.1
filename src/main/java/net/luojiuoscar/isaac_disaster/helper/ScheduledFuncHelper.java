@@ -93,6 +93,45 @@ public class ScheduledFuncHelper {
         return scheduleInternal(typeId, playerUUID, ticks, initialTick, repeats, override, runnable);
     }
 
+    /**
+     * Appends finite executions without changing an existing task's interval or callback.
+     * New tasks first run on the next scheduler pass; nonpositive counts create no task.
+     * Existing unbounded tasks remain unbounded.
+     */
+    public static int scheduleOrAppendForPlayer(UUID playerUUID, ResourceLocation typeId,
+                                               int ticks, int count, Runnable runnable) {
+        Objects.requireNonNull(playerUUID, "player UUID");
+        Objects.requireNonNull(typeId, "task type");
+        Objects.requireNonNull(runnable, "task callback");
+        if (count <= 0) return 0;
+        ScheduledTask existing = null;
+        for (ScheduledTask task : TASKS.values()) {
+            if (task.typeId.equals(typeId) && playerUUID.equals(task.owner)
+                    && !PENDING_REMOVE.contains(task.taskId)) {
+                existing = task;
+                break;
+            }
+        }
+        if (existing == null) {
+            for (ScheduledTask task : PENDING_ADD) {
+                if (task.typeId.equals(typeId) && playerUUID.equals(task.owner)) {
+                    existing = task;
+                    break;
+                }
+            }
+        }
+        if (existing != null) {
+            if (existing.repeats >= 0) {
+                existing.repeats = (int) Math.min(Integer.MAX_VALUE, (long) existing.repeats + count);
+            }
+            return existing.taskId;
+        }
+        int interval = Math.max(1, ticks);
+        ScheduledTask task = new ScheduledTask(NEXT_TASK_ID++, typeId, playerUUID,
+                interval, interval - 1, count, runnable);
+        return enqueue(task);
+    }
+
     /** 内部调度逻辑 */
     private static int scheduleInternal(ResourceLocation typeId,
                                         UUID owner,
@@ -117,14 +156,18 @@ public class ScheduledFuncHelper {
                 runnable
         );
 
+        return enqueue(task);
+    }
+
+    private static int enqueue(ScheduledTask task) {
         // 延迟加入 TASKS
         PENDING_ADD.add(task);
 
-        if (owner != null) {
-            PLAYER_TASK_INDEX.computeIfAbsent(owner, k -> new HashSet<>()).add(taskId);
+        if (task.owner != null) {
+            PLAYER_TASK_INDEX.computeIfAbsent(task.owner, k -> new HashSet<>()).add(task.taskId);
         }
 
-        return taskId;
+        return task.taskId;
     }
 
     /** ---------------- 清除任务 ---------------- */
@@ -136,7 +179,11 @@ public class ScheduledFuncHelper {
         }
 
         // 避免漏掉 pendingAdd 中的任务
-        PENDING_ADD.removeIf(task -> task.typeId.equals(typeId) && Objects.equals(task.owner, owner));
+        PENDING_ADD.removeIf(task -> {
+            if (!task.typeId.equals(typeId) || !Objects.equals(task.owner, owner)) return false;
+            removeFromPlayerIndex(task);
+            return true;
+        });
     }
 
     public static void clearPlayerTasks(UUID playerUUID) {
@@ -144,7 +191,11 @@ public class ScheduledFuncHelper {
         PENDING_REMOVE.addAll(tasks);
 
         // pendingAdd 中也移除
-        PENDING_ADD.removeIf(task -> playerUUID.equals(task.owner));
+        PENDING_ADD.removeIf(task -> {
+            if (!playerUUID.equals(task.owner)) return false;
+            removeFromPlayerIndex(task);
+            return true;
+        });
     }
 
     /** ---------------- 查询任务 ---------------- */
@@ -154,7 +205,6 @@ public class ScheduledFuncHelper {
 
     /** ---------------- tick ---------------- */
     public static void tick(MinecraftServer server) {
-
         // 延迟加入新任务
         for (ScheduledTask task : PENDING_ADD) {
             TASKS.put(task.taskId, task);
@@ -165,6 +215,7 @@ public class ScheduledFuncHelper {
         Iterator<Map.Entry<Integer, ScheduledTask>> iterator = TASKS.entrySet().iterator();
         while (iterator.hasNext()) {
             ScheduledTask task = iterator.next().getValue();
+            if (PENDING_REMOVE.contains(task.taskId)) continue;
             task.timeLeft--;
 
             if (task.timeLeft <= 0) {
@@ -185,15 +236,17 @@ public class ScheduledFuncHelper {
         // 延迟删除
         for (int taskId : PENDING_REMOVE) {
             ScheduledTask task = TASKS.remove(taskId);
-            if (task != null && task.owner != null) {
-                Set<Integer> playerTasks = PLAYER_TASK_INDEX.get(task.owner);
-                if (playerTasks != null) {
-                    playerTasks.remove(task.taskId);
-                    if (playerTasks.isEmpty()) PLAYER_TASK_INDEX.remove(task.owner);
-                }
-            }
+            if (task != null) removeFromPlayerIndex(task);
         }
         PENDING_REMOVE.clear();
+    }
+
+    private static void removeFromPlayerIndex(ScheduledTask task) {
+        if (task.owner == null) return;
+        Set<Integer> playerTasks = PLAYER_TASK_INDEX.get(task.owner);
+        if (playerTasks == null) return;
+        playerTasks.remove(task.taskId);
+        if (playerTasks.isEmpty()) PLAYER_TASK_INDEX.remove(task.owner);
     }
 
     @SubscribeEvent

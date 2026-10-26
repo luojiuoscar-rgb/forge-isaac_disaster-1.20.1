@@ -30,3 +30,12 @@
 - 更新现有水迹上下边界、圣光下边界及世界坐标查询盒测试。先运行23项几何/管理器测试，旧实现出现3项预期失败；修改后圣光44项、水迹83项JUnit全部通过。
 - compileJava、compileGameTestJava、jar通过；实际Forge GameTest共50项全部通过（圣光20、水迹30）。日志：build/combat-effect-height-validation.log。此次没有重跑客户端画面或完整JUnit套件。
 - 新增到暂存区的水迹几何实现与对应测试均为本次需求范围；未提交代码。
+
+## 短预警爆开漏播排查（2026-10-25）
+
+- 新增2项客户端状态JUnit：5tick预警经校时跨到发射第2/4/14tick仍爆开一次，跨过整个发射阶段则不补播；同时检查重复快照和可见集重入不重播。
+- 修复前实际运行HolyLightClientStateTest：20项中1项按预期失败，明确复现发射第2tick的爆开提示丢失。日志build/holy-light-burst-red.log。
+- 已修改客户端阶段转换处的提示新鲜度判断；保留用户对CrackTheSky散布倍率0.75的未暂存修改，未调整道具参数。
+- 修复后专测未执行：普通沙箱无法加载Gradle原生库，自动权限审核首次超时，按提示重试后审核服务连接中断；不是测试失败。尚未验证修复后的编译、JUnit或客户端画面，未启动游戏世界。
+- 用户进一步确认缺失的是向上鼓起的半球闪光。随后工具审批恢复，实际执行test --tests '*HolyLight*' --offline --no-daemon，BUILD SUCCESSFUL in 39s；编译及46项圣光JUnit通过（失败0、错误0、跳过0），包含新增漏播回归与既有晚加入/防重播检查。日志build/holy-light-burst-green.log。
+- git diff --check通过。修改留在工作区，未提交；本次未运行GameTest或启动客户端，游戏内视觉效果仍需确认。

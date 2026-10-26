@@ -93,6 +93,38 @@ class HolyLightClientStateTest {
     }
 
     @Test
+    void shortWarningStillBurstsWhenClockCorrectionSkipsTheFirstFiringTick() {
+        for (int firingAge : new int[]{2, 4, 14}) {
+            var state = session(100);
+            var entry = state.add(7, 100, 5, true);
+            assertTrue(entry.takeWarningCue());
+            state.synchronize(3, false, 104);
+            assertEquals(HolyLightPhase.WARNING, entry.phase());
+
+            state.synchronize(3, false, 105 + firingAge);
+            assertEquals(HolyLightPhase.FIRING, entry.phase());
+            assertTrue(entry.takeImpactCue(), "An observed warning must burst even after a clock jump");
+            assertFalse(entry.takeWarningCue());
+            assertFalse(entry.takeImpactCue());
+
+            state.synchronize(3, false, 105 + firingAge);
+            assertFalse(entry.takeImpactCue(), "Repeated snapshots cannot repeat the burst");
+            state.remove(7);
+            assertFalse(state.add(7, 100, 5, true).takeImpactCue());
+        }
+    }
+
+    @Test
+    void missingTheEntireFiringPhaseDoesNotReplayAHistoricalBurst() {
+        var state = session(100);
+        var entry = state.add(7, 100, 5, true);
+        assertTrue(entry.takeWarningCue());
+        state.synchronize(3, false, 120);
+        assertEquals(HolyLightPhase.SCORCH, entry.phase());
+        assertFalse(entry.takeImpactCue());
+    }
+
+    @Test
     void returningDuringWarningCannotReplayWarningButCanSeeFreshImpact() {
         var state = session(100);
         assertTrue(state.add(7, 100, 35, true).takeWarningCue());

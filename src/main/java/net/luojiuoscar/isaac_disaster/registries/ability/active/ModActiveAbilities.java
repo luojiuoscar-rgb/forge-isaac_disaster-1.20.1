@@ -176,4 +176,8 @@ public class ModActiveAbilities {
             ACTIVE_ABILITY_REGISTRY.register("d12",
                     () -> new D12(ItemId.D12.getId(), ItemId.D12.getLevel()));
 
+    public static final RegistryObject<ActiveAbility> CRACK_THE_SKY =
+            ACTIVE_ABILITY_REGISTRY.register("crack_the_sky",
+                    () -> new CrackTheSky(ItemId.CRACK_THE_SKY.getId(), ItemId.CRACK_THE_SKY.getLevel()));
+
 }

@@ -174,6 +174,7 @@ public final class HolyLightClientState {
         private void update(double serverNow) {
             lastAge = age(serverNow);
             HolyLightPhase current = HolyLightTimeline.phase(lastAge, seen.warningTicks, seen.grounded);
+            boolean firingFromWarning = phase == HolyLightPhase.WARNING && current == HolyLightPhase.FIRING;
             if (current != phase) {
                 previousPhase = phase == null ? current : phase;
                 phase = current;
@@ -186,7 +187,10 @@ public final class HolyLightClientState {
             if (phase != HolyLightPhase.WARNING && !seen.impacted) {
                 seen.impacted = true;
                 impactCue = phase == HolyLightPhase.FIRING
-                        && HolyLightTimeline.phaseAge(lastAge, seen.warningTicks, seen.grounded) <= 1.0D;
+                        // Clock corrections may skip the opening tick of an already observed warning.
+                        // Only first sightings need the freshness limit to avoid replaying old impacts.
+                        && (firingFromWarning
+                        || HolyLightTimeline.phaseAge(lastAge, seen.warningTicks, seen.grounded) <= 1.0D);
             }
             if (phase == HolyLightPhase.EXPIRED) seen.expired = true;
         }
