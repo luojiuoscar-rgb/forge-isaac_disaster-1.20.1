@@ -782,4 +782,8 @@ public class ModPassiveAbilities {
             PASSIVE_ABILITY_REGISTRY.register("sinus_infection",
                     () -> new SinusInfection(ItemId.SINUS_INFECTION.getId(), ItemId.SINUS_INFECTION.getLevel()));
 
+    public static final RegistryObject<PassiveAbility> HOLY_LIGHT =
+            PASSIVE_ABILITY_REGISTRY.register("holy_light",
+                    () -> new HolyLight(ItemId.HOLY_LIGHT.getId(), ItemId.HOLY_LIGHT.getLevel()));
+
 }

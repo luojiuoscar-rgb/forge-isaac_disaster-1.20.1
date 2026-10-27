@@ -234,7 +234,8 @@ public enum ItemId {
     SOUL_LOCKET(1),
     D12(2),
     SINUS_INFECTION(3),
-    CRACK_THE_SKY(1);
+    CRACK_THE_SKY(1),
+    HOLY_LIGHT(3);
 
 
 

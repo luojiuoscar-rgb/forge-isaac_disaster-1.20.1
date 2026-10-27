@@ -1132,4 +1132,10 @@ public class ModExecutableEffects {
     public static final RegistryObject<IExecutableEffect> CRACK_THE_SKY =
             EXECUTABLE_EFFECT_REGISTRY.register("crack_the_sky", CrackTheSky::new);
 
+    public static final RegistryObject<IExecutableEffect> HOLY_LIGHT_ATTACHMENT =
+            EXECUTABLE_EFFECT_REGISTRY.register("holy_light_attachment", HolyLightAttachment::new);
+
+    public static final RegistryObject<IExecutableEffect> HOLY_LIGHT_IMPACT =
+            EXECUTABLE_EFFECT_REGISTRY.register("holy_light_impact", HolyLightImpact::new);
+
 }

@@ -3,6 +3,7 @@
     {
       "rolls": 1,
       "entries": [
+        {"type": "minecraft:item", "name": "isaac_disaster:holy_light"},
         {"type": "minecraft:item", "name": "isaac_disaster:soul_locket"},
         {"type": "minecraft:item", "name": "isaac_disaster:celtic_cross"},
         {"type": "minecraft:item", "name": "isaac_disaster:blood_of_the_martyr"},

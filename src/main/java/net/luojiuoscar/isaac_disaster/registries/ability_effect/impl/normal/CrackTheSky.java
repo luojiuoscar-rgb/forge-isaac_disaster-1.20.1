@@ -85,7 +85,7 @@ public final class CrackTheSky implements IAbilityEffect {
     }
 
     private static boolean strike(ServerLevel level, ServerPlayer player, Vec3 position, float damage) {
-        return HolyLight.strike(level, player, position, damage, HolyLight.DEFAULT_RADIUS, false, 7, 2);
+        return HolyLight.strike(level, player, position, damage, HolyLight.DEFAULT_RADIUS, false, 7);
     }
 
     private static Vec3 retarget(ServerLevel level, ServerPlayer player, Vec3 ground, Vec3 center,

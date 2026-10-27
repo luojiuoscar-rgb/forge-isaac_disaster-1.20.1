@@ -36,11 +36,6 @@ public final class HolyLightManager {
 
     public boolean spawn(ServerLevel level, LivingEntity caster, Vec3 candidate, float damage,
                          double radius, boolean skipWarning, double warningSpeed) {
-        return spawn(level, caster, candidate, damage, radius, skipWarning, warningSpeed, 1);
-    }
-
-    public boolean spawn(ServerLevel level, LivingEntity caster, Vec3 candidate, float damage,
-                         double radius, boolean skipWarning, double warningSpeed, double undeadDamageMultiplier) {
         if (level == null || caster == null || caster.level() != level || caster.isRemoved()
                 || ownerLevel != null && ownerLevel != level || !Float.isFinite(damage)
                 || !Double.isFinite(radius) || radius <= 0 || nextId <= 0) return false;
@@ -52,8 +47,7 @@ public final class HolyLightManager {
         HolyLightSnapshot snapshot = new HolyLightSnapshot(id, resolved.position(), Math.min(radius, MAX_RADIUS),
                 resolved.beamHeight(), level.getGameTime(), HolyLightTimeline.warningTicks(warningSpeed, skipWarning),
                 resolved.grounded(), level.random.nextLong());
-        double multiplier = Double.isFinite(undeadDamageMultiplier) ? Math.max(0, undeadDamageMultiplier) : 1;
-        Strike strike = new Strike(snapshot, caster.getUUID(), Math.max(0, damage), multiplier);
+        Strike strike = new Strike(snapshot, caster.getUUID(), Math.max(0, damage));
         strikes.put(id, strike);
         if (skipWarning) fire(level, strike);
         return true;
@@ -104,7 +98,7 @@ public final class HolyLightManager {
             Vec3 contact = HolyLightGeometry.closestPoint(source, target.getBoundingBox());
             if (!clearPath(level, caster, source, contact)) continue;
             float damage = target.getMobType() == MobType.UNDEAD
-                    ? (float) Math.min(Float.MAX_VALUE, strike.damage * strike.undeadDamageMultiplier) : strike.damage;
+                    ? (float) Math.min(Float.MAX_VALUE, strike.damage * 2.0) : strike.damage;
             if (damage > 0) target.hurt(ModDamageSources.holyLight(level, caster), damage);
         }
     }
@@ -121,14 +115,12 @@ public final class HolyLightManager {
         private final HolyLightSnapshot snapshot;
         private final UUID caster;
         private final float damage;
-        private final double undeadDamageMultiplier;
         private boolean fired;
 
-        private Strike(HolyLightSnapshot snapshot, UUID caster, float damage, double undeadDamageMultiplier) {
+        private Strike(HolyLightSnapshot snapshot, UUID caster, float damage) {
             this.snapshot = snapshot;
             this.caster = caster;
             this.damage = damage;
-            this.undeadDamageMultiplier = undeadDamageMultiplier;
         }
     }
 }

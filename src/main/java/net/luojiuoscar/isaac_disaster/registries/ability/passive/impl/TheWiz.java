@@ -35,7 +35,8 @@ public class TheWiz extends PassiveAbility {
     @Override
     public List<Component> getDesc(@Nullable ItemStack stack, Player player) {
         return List.of(
-                Component.translatable("item.isaac_disaster.the_wiz.lore.1")
+                Component.translatable("item.isaac_disaster.the_wiz.lore.1"),
+                Component.translatable("item.isaac_disaster.attribute.spectral_bullet")
         );
     }
 }

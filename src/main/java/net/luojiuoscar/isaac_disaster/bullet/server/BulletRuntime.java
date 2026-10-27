@@ -42,7 +42,7 @@ public final class BulletRuntime {
     private final Map<ServerLevel, BulletManager> managers = new WeakHashMap<>();
     private final Map<ServerLevel, Map<UUID, Set<Long>>> visible = new WeakHashMap<>();
     private final Map<ServerLevel, Map<UUID, Set<Long>>> hidden = new WeakHashMap<>();
-    private final Map<ServerLevel, Integer> streamEpochs = new WeakHashMap<>();
+    private final Map<UUID, StreamSession> streamSessions = new HashMap<>();
     private final Map<ServerLevel, TrackingHandleState> trackingHandles = new WeakHashMap<>();
     private final Map<ServerLevel, Map<Long, Integer>> stickRevisions = new WeakHashMap<>();
     private int nextEpoch = 1;
@@ -50,7 +50,7 @@ public final class BulletRuntime {
 
     /** Returns the transient manager associated with one server level. */
     public BulletManager manager(ServerLevel level) {
-        return managers.computeIfAbsent(level, ignored -> new BulletManager(epoch(level)));
+        return managers.computeIfAbsent(level, ignored -> new BulletManager());
     }
 
     /** Returns the number of active optimized bullets across all currently loaded dimensions. */
@@ -87,7 +87,7 @@ public final class BulletRuntime {
                 if (levelVisible != null) playerVisible.addAll(levelVisible.getOrDefault(player.getUUID(), Set.of()));
                 if (levelHidden != null) playerVisible.addAll(levelHidden.getOrDefault(player.getUUID(), Set.of()));
                 if (playerVisible != null && !playerVisible.isEmpty()) {
-                    ModMessages.sentToPlayer(new BulletDespawnBatchS2CPacket(epoch(level), (int) level.getGameTime(), false, new ArrayList<>(playerVisible)), player);
+                    ModMessages.sentToPlayer(new BulletDespawnBatchS2CPacket(epoch(level, player), (int) level.getGameTime(), false, new ArrayList<>(playerVisible)), player);
                 }
             }
         }
@@ -149,7 +149,7 @@ public final class BulletRuntime {
         managers.clear();
         visible.clear();
         hidden.clear();
-        streamEpochs.clear();
+        streamSessions.clear();
         trackingHandles.clear();
         stickRevisions.clear();
     }
@@ -158,13 +158,23 @@ public final class BulletRuntime {
     @SubscribeEvent
     public void onPlayerLoggedOut(PlayerEvent.PlayerLoggedOutEvent event) {
         if (!(event.getEntity() instanceof ServerPlayer player)) return;
-        clearPlayerVisibility(player.getUUID());
+        clearPlayerStream(player.getUUID());
     }
 
     /** Removes stale stream state before a player can later re-enter a previously visited dimension. */
     @SubscribeEvent
     public void onPlayerChangedDimension(PlayerEvent.PlayerChangedDimensionEvent event) {
-        if (event.getEntity() instanceof ServerPlayer player) clearPlayerVisibility(player.getUUID());
+        if (event.getEntity() instanceof ServerPlayer player) clearPlayerStream(player.getUUID());
+    }
+
+    @SubscribeEvent
+    public void onPlayerRespawn(PlayerEvent.PlayerRespawnEvent event) {
+        if (event.getEntity() instanceof ServerPlayer player) clearPlayerStream(player.getUUID());
+    }
+
+    private void clearPlayerStream(UUID playerId) {
+        streamSessions.remove(playerId);
+        clearPlayerVisibility(playerId);
     }
 
     /** Clears one player's visibility cache from all level streams. */
@@ -181,13 +191,15 @@ public final class BulletRuntime {
         if (manager != null) manager.clear();
         visible.remove(level);
         hidden.remove(level);
-        streamEpochs.remove(level);
+        streamSessions.values().removeIf(session -> session.level == level);
         trackingHandles.remove(level);
         stickRevisions.remove(level);
     }
 
     /** Sends only newly visible stream entries and removes entries that left the visibility radius. */
     private void synchronizeVisible(ServerLevel level, BulletManager manager) {
+        // Establish visits before taking map references: a new visit invalidates its old visibility.
+        for (ServerPlayer player : level.players()) epoch(level, player);
         Map<UUID, Set<Long>> levelVisible = visible.computeIfAbsent(level, ignored -> new HashMap<>());
         Map<UUID, Set<Long>> levelHidden = hidden.computeIfAbsent(level, ignored -> new HashMap<>());
         List<BulletState> active = manager.activeStates();
@@ -196,6 +208,7 @@ public final class BulletRuntime {
         // removed during the tick before they can appear in the active snapshot.
         Set<Long> eventDespawns = new HashSet<>(manager.drainDespawns());
         for (ServerPlayer player : level.players()) {
+            int playerEpoch = epoch(level, player);
             Set<Long> previous = levelVisible.computeIfAbsent(player.getUUID(), ignored -> new HashSet<>());
             Set<Long> playerHidden = levelHidden.computeIfAbsent(player.getUUID(), ignored -> new HashSet<>());
             Set<Long> current = new HashSet<>();
@@ -206,7 +219,7 @@ public final class BulletRuntime {
                 current.add(key);
                 // The state may have steered or moved between creation and this end-of-tick broadcast.
                 // A current snapshot keeps newly visible clients in the same kinematic state as the server.
-                if (!previous.contains(key)) toSpawn.add(snapshot(level, state));
+                if (!previous.contains(key)) toSpawn.add(snapshot(level, state, playerEpoch));
             }
             if (!toSpawn.isEmpty()) ModMessages.sentToPlayer(new BulletSpawnBatchS2CPacket(toSpawn), player);
             Set<Long> visibilityExits = new HashSet<>(previous);
@@ -217,10 +230,10 @@ public final class BulletRuntime {
                 if (previous.contains(identity) || playerHidden.contains(identity)) terminal.add(identity);
             }
             if (!visibilityExits.isEmpty()) ModMessages.sentToPlayer(
-                new BulletDespawnBatchS2CPacket(epoch(level), (int) level.getGameTime(), true,
+                new BulletDespawnBatchS2CPacket(playerEpoch, (int) level.getGameTime(), true,
                     new ArrayList<>(visibilityExits)), player);
             if (!terminal.isEmpty()) ModMessages.sentToPlayer(
-                new BulletDespawnBatchS2CPacket(epoch(level), (int) level.getGameTime(), false,
+                new BulletDespawnBatchS2CPacket(playerEpoch, (int) level.getGameTime(), false,
                     new ArrayList<>(terminal)), player);
             playerHidden.addAll(visibilityExits);
             playerHidden.removeAll(current);
@@ -232,13 +245,19 @@ public final class BulletRuntime {
         List<BulletCorrectionS2CPacket> corrections = manager.drainCorrections();
         if (!corrections.isEmpty() || (level.getGameTime() & 3L) == 0L) {
             for (ServerPlayer player : level.players()) {
-            List<BulletCorrectionS2CPacket> visibleCorrections = new ArrayList<>();
-            for (BulletCorrectionS2CPacket correction : corrections) {
+                int playerEpoch = epoch(level, player);
+                List<BulletCorrectionS2CPacket> visibleCorrections = new ArrayList<>();
+                for (BulletCorrectionS2CPacket correction : corrections) {
                     BulletState state = manager.get(correction.slot(), correction.generation());
                     if (state != null && state.isFlying() && player.distanceToSqr(correction.position().x, correction.position().y, correction.position().z)
-                    <= VISIBLE_RADIUS * VISIBLE_RADIUS) visibleCorrections.add(correction);
-            }
-            if (!visibleCorrections.isEmpty()) ModMessages.sentToPlayer(new BulletCorrectionBatchS2CPacket(epoch(level), visibleCorrections), player);
+                            <= VISIBLE_RADIUS * VISIBLE_RADIUS) {
+                        visibleCorrections.add(new BulletCorrectionS2CPacket(playerEpoch,
+                                correction.slot(), correction.generation(), correction.position(), correction.velocity(),
+                                correction.blend(), correction.age(), correction.traveled(), correction.trajectorySnapshot()));
+                    }
+                }
+                if (!visibleCorrections.isEmpty()) ModMessages.sentToPlayer(
+                        new BulletCorrectionBatchS2CPacket(playerEpoch, visibleCorrections), player);
             }
         }
         List<BulletShatterS2CPacket.Entry> shatters = manager.drainShatters();
@@ -248,7 +267,7 @@ public final class BulletRuntime {
                         .filter(entry -> player.distanceToSqr(entry.position().x, entry.position().y, entry.position().z)
                                 <= VISIBLE_RADIUS * VISIBLE_RADIUS).toList();
                 if (!visibleShatters.isEmpty()) ModMessages.sentToPlayer(
-                        new BulletShatterS2CPacket(epoch(level), visibleShatters), player);
+                        new BulletShatterS2CPacket(epoch(level, player), visibleShatters), player);
             }
         }
         synchronizeTracking(level, active);
@@ -281,7 +300,7 @@ public final class BulletRuntime {
                 if (playerVisible.contains(identity(entry.slot(), entry.generation()))) entries.add(entry);
             }
             if (!entries.isEmpty()) ModMessages.sentToPlayer(
-                new BulletStickBatchS2CPacket(epoch(level), (int) level.getGameTime(), entries), player);
+                new BulletStickBatchS2CPacket(epoch(level, player), (int) level.getGameTime(), entries), player);
         }
     }
     /** Publishes one four-tick steering snapshot using anonymous stream-local target handles. */
@@ -309,13 +328,13 @@ public final class BulletRuntime {
             for (Map.Entry<Integer, Vec3> entry : positions.entrySet()) {
                 targets.add(new BulletTrackingBatchS2CPacket.TargetSample(entry.getKey(), entry.getValue()));
             }
-            ModMessages.sentToPlayer(new BulletTrackingBatchS2CPacket(epoch(level), (int) level.getGameTime(), targets, assignments, velocitySamples), player);
+            ModMessages.sentToPlayer(new BulletTrackingBatchS2CPacket(epoch(level, player), (int) level.getGameTime(), targets, assignments, velocitySamples), player);
         }
     }
 
-    private static BulletSpawnS2CPacket snapshot(ServerLevel level, BulletState state) {
+    private static BulletSpawnS2CPacket snapshot(ServerLevel level, BulletState state, int playerEpoch) {
         if (state.isFlying()) TrajectoryEvaluator.initialize(state);
-        return new BulletSpawnS2CPacket(INSTANCE.epoch(level), state.slot(), state.generation(), (int) level.getGameTime(), state.position(),
+        return new BulletSpawnS2CPacket(playerEpoch, state.slot(), state.generation(), (int) level.getGameTime(), state.position(),
                 state.previousPosition(), state.velocity(), state.acceleration(), state.baseSpeed(), state.age(), state.lifetime(), state.traveled(),
                 state.getRange(), state.getDamage(), state.renderScale(),
                 state.collisionWidth(), state.collisionHeight(), state.color(), state.alpha(), new ArrayList<>(state.visualIds()),
@@ -329,10 +348,19 @@ public final class BulletRuntime {
         return ((long) generation << 32) | (slot & 0xFFFFFFFFL);
     }
 
-    /** Allocates a server-session stream epoch lazily for each loaded level. */
-    private int epoch(ServerLevel level) {
-        return streamEpochs.computeIfAbsent(level, ignored -> nextEpoch++);
+    /** A return visit or respawn must be newer than every stream already sent to this player. */
+    private int epoch(ServerLevel level, ServerPlayer player) {
+        UUID playerId = player.getUUID();
+        StreamSession session = streamSessions.get(playerId);
+        if (session == null || session.level != level || session.player != player) {
+            clearPlayerVisibility(playerId);
+            session = new StreamSession(level, player, nextEpoch++);
+            streamSessions.put(playerId, session);
+        }
+        return session.epoch;
     }
+
+    private record StreamSession(ServerLevel level, ServerPlayer player, int epoch) {}
 
     /** Assigns stable anonymous handles to real targets and owner-look control points. */
     private static final class TrackingHandleState {

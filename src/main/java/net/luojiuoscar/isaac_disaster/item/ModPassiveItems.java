@@ -786,4 +786,8 @@ public class ModPassiveItems {
             () -> new PassiveItem(new Item.Properties(), ModPassiveAbilities.SINUS_INFECTION));
     static {ItemListManager.PASSIVE_ITEM_LIST.add(SINUS_INFECTION);}
 
+    public static final RegistryObject<Item> HOLY_LIGHT = ITEMS.register("holy_light",
+            () -> new PassiveItem(new Item.Properties(), ModPassiveAbilities.HOLY_LIGHT));
+    static {ItemListManager.PASSIVE_ITEM_LIST.add(HOLY_LIGHT);}
+
 }

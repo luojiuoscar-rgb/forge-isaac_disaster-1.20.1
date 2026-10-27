@@ -457,7 +457,7 @@ public final class HolyLightGameTests {
             undead.setItemSlot(EquipmentSlot.HEAD, new ItemStack(Items.CARVED_PUMPKIN));
             fixture.addMob(undead, fixture.center.add(.35, 0, 0));
             helper.assertTrue(fixture.manager.spawn(fixture.level, fixture.owner, fixture.center,
-                    4, .8, false, 7, 2), "The strike has five warning ticks and an undead multiplier");
+                    4, .8, false, 7), "The strike has five warning ticks and the shared undead bonus");
             HolyLightSnapshot snapshot = fixture.manager.snapshots().get(0);
             helper.assertTrue(snapshot.warningTicks() == 5, "Warning speed seven produces five ticks");
             fixture.owner.getAttribute(Attributes.ATTACK_DAMAGE).setBaseValue(1);
@@ -481,13 +481,13 @@ public final class HolyLightGameTests {
     }
 
     @GameTest(template = "trajectory_empty", batch = "holy_light", timeoutTicks = 30)
-    public static void oldStrikeOverloadKeepsNormalDamageForUndead(GameTestHelper helper) {
+    public static void everyStrikeOverloadDoublesDamageForUndead(GameTestHelper helper) {
         try (Fixture fixture = new Fixture(helper)) {
             Zombie undead = new Zombie(EntityType.ZOMBIE, fixture.level);
             undead.getAttribute(Attributes.ARMOR).setBaseValue(0);
             fixture.addMob(undead, fixture.center);
             helper.assertTrue(fixture.strike(fixture.center, .8, true), "The original overload remains usable");
-            health(helper, undead, 14, "The original overload defaults to multiplier one");
+            health(helper, undead, 8, "The original overload also applies the shared undead multiplier");
         }
         helper.succeed();
     }

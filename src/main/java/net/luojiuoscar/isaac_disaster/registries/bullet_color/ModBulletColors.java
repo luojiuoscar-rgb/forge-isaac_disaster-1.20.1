@@ -54,6 +54,11 @@ public class ModBulletColors {
 
     public static final RegistryObject<BulletColor> PETRIFIED =
             BULLET_COLOR_REGISTRY.register("petrified", () -> new BulletColor(0xB0B0B0, 1.0f, 20));
+
     public static final RegistryObject<BulletColor> DARK_MATTER =
             BULLET_COLOR_REGISTRY.register("dark_matter", () -> new BulletColor(0x191919, 1.0f, 20));
+
+    public static final RegistryObject<BulletColor> HOLY_LIGHT =
+            BULLET_COLOR_REGISTRY.register("holy_light", () -> new BulletColor(0x99DDFF, 1.0f, 20));
+
 }

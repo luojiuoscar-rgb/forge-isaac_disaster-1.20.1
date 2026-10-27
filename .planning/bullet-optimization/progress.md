@@ -168,3 +168,14 @@
 - Added `BulletSteeringMode`, base-speed state and spawn propagation, source-specific hit-history handling, Fetus direct tracking, ordinary distance braking, and interpolated Fetus corrections.
 - Rechecked the no-target paths and added per-tick controllable fallback for direct steering plus immediate ordinary cruise-speed recovery after target loss.
 - Full Gradle tests and Java compilation pass after the implementation.
+
+## 跨维度死亡重生后子弹不显示修复（2026-10-26）
+
+- 根因：服务端以ServerLevel缓存固定epoch，而客户端跨世界卸载后保留最大epoch并拒绝较小值。主世界→地狱→主世界会重复使用主世界较旧的编号，使新弹丸在客户端创建之前就被过滤；普通往返也受影响。
+- 伴随问题：此前只在退出和换维度时清理UUID可见集，没有处理PlayerRespawnEvent；同UUID的新玩家对象可能沿用旧可见集。
+- 修复集中在BulletRuntime：按玩家UUID、当前ServerLevel和ServerPlayer实例建立临时会话，换维度、重生、重连或玩家实例变化均获得递增epoch。显式清理该玩家在各世界的visible/hidden集合，其他玩家会话保持稳定，世界卸载与服务器停止同步清理会话。
+- 弹丸生成、校正、移除、破碎、附着和追踪包均使用接收玩家的会话epoch；校正批次内各条目也重新标记，避免外层批次通过而内层条目被旧编号过滤。网络结构和客户端旧包过滤逻辑均未改变。
+- 回归先运行4项：旧实现中维度往返、同维度玩家实例替换、显式重生清理3项按预期失败，另一玩家隔离1项通过。日志build/bullet-respawn-red.log。
+- 修复后使用Java17运行`test --tests '*bullet.*' --tests '*Bullet*PacketTest' --tests '*TrajectoryNetworkStateTest' --offline --no-daemon`，126项JUnit全部通过，失败/错误/跳过均为0；其中新增4项生命周期回归。日志build/bullet-respawn-green.log，BUILD SUCCESSFUL in 1m 5s。
+- 差异空白检查及所有发送路径的epoch静态核对通过。未启动客户端、未执行真实死亡/传送的画面验收或Forge GameTest；不将JUnit中的服务器对象和事件模拟视为完整游戏内复现。本次未改资源或注册，无需重新运行runData。
+- 保留本轮开始时已暂存的圣光道具改动；本轮仅追加运行时修复、回归测试和此记录，不提交代码。
