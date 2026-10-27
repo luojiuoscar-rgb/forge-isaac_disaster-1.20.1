@@ -20,10 +20,6 @@ import java.util.List;
 /** Horizontal animated impact rings, a yaw billboard and collision-conforming scorch decals. */
 @Mod.EventBusSubscriber(modid = IsaacDisaster.MOD_ID, value = Dist.CLIENT)
 public final class HolyLightRenderer {
-    private static final int IMPACT_RING_TICKS = 4;
-    private static final int BEAM_EXPAND_TICKS = 2;
-    private static final int BEAM_FADE_TICKS = 2;
-    private static final int BEAM_HOLD_ROW = 10;
     private static final Matrix4f IDENTITY = new Matrix4f();
     private static final List<ClientHolyLightRuntime.Visual> VISIBLE = new ArrayList<>();
 
@@ -84,21 +80,11 @@ public final class HolyLightRenderer {
 
     private static void drawRing(VertexConsumer vertices, HolyLightSnapshot snapshot, Vec3 camera,
                                  HolyLightPhase phase, double age) {
-        int duration = phase == HolyLightPhase.WARNING ? snapshot.warningTicks() : IMPACT_RING_TICKS;
+        int duration = phase == HolyLightPhase.WARNING ? snapshot.warningTicks() : HolyLightVisuals.IMPACT_RING_TICKS;
         if (age >= duration) return;
-        int frame = Math.min(10, (int) (age * 11 / duration));
-        float u0 = (frame * 16 + 0.5F) / 256;
-        float u1 = (frame * 16 + 15.5F) / 256;
-        float v0 = (phase == HolyLightPhase.WARNING ? 0.5F : 16.5F) / 32;
-        float v1 = (phase == HolyLightPhase.WARNING ? 15.5F : 31.5F) / 32;
-        double x = snapshot.position().x - camera.x;
-        double y = snapshot.position().y - camera.y + 0.0125D;
-        double z = snapshot.position().z - camera.z;
-        double radius = snapshot.radius();
-        vertex(vertices, x - radius, y, z - radius, u0, v0, 1);
-        vertex(vertices, x - radius, y, z + radius, u0, v1, 1);
-        vertex(vertices, x + radius, y, z + radius, u1, v1, 1);
-        vertex(vertices, x + radius, y, z - radius, u1, v0, 1);
+        HolyLightVisuals.drawRing(vertices, snapshot.position().subtract(camera).add(0, .0125D, 0),
+                new Vec3(1, 0, 0), new Vec3(0, 0, 1), snapshot.radius(),
+                phase == HolyLightPhase.WARNING, age / duration);
     }
 
     private static void drawBeam(VertexConsumer vertices, HolyLightSnapshot snapshot, Vec3 camera,
@@ -106,31 +92,15 @@ public final class HolyLightRenderer {
         double halfWidth = phase == HolyLightPhase.WARNING
                 ? 2.0D - 1.75D * Math.min(1, age / snapshot.warningTicks()) : 1.0D;
         halfWidth *= snapshot.radius() / 1.6D;
-        double dx = sideX * halfWidth;
-        double dz = sideZ * halfWidth;
-        double x = snapshot.position().x - camera.x;
-        double y = snapshot.position().y - camera.y + 0.016D;
-        double z = snapshot.position().z - camera.z;
-        float u0 = 224.5F / 256;
-        float u1 = 255.5F / 256;
         int row = 0;
         if (phase == HolyLightPhase.FIRING) {
-            double fadeStart = HolyLightTimeline.FIRING_TICKS - BEAM_FADE_TICKS;
-            if (age < BEAM_EXPAND_TICKS) {
-                row = Math.min(BEAM_HOLD_ROW, (int) (age * (BEAM_HOLD_ROW + 1) / BEAM_EXPAND_TICKS));
-            } else if (age < fadeStart) {
-                // Keep the bright, wide profile; the later atlas rows already shrink and fade.
-                row = BEAM_HOLD_ROW;
-            } else {
-                row = Math.min(31, BEAM_HOLD_ROW + (int) ((age - fadeStart) * (32 - BEAM_HOLD_ROW) / BEAM_FADE_TICKS));
-            }
+            row = HolyLightVisuals.firingRow(age,
+                    age - (HolyLightTimeline.FIRING_TICKS - HolyLightVisuals.BEAM_FADE_TICKS));
         }
-        float v = (row + 0.5F) / 32;
         float alpha = phase == HolyLightPhase.WARNING ? 0.55F : 1.0F;
-        vertex(vertices, x - dx, y, z - dz, u0, v, alpha);
-        vertex(vertices, x + dx, y, z + dz, u1, v, alpha);
-        vertex(vertices, x + dx, y + snapshot.beamHeight(), z + dz, u1, v, alpha);
-        vertex(vertices, x - dx, y + snapshot.beamHeight(), z - dz, u0, v, alpha);
+        Vec3 start = snapshot.position().subtract(camera).add(0, .016D, 0);
+        HolyLightVisuals.drawBeam(vertices, start, start.add(0, snapshot.beamHeight(), 0),
+                new Vec3(sideX, 0, sideZ), halfWidth, row, alpha);
     }
 
     private static void drawScorch(VertexConsumer vertices, HolyLightSnapshot snapshot,

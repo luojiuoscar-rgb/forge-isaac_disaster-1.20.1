@@ -176,3 +176,35 @@
 | 目标是什么 | 维护可恢复的终末天启需求、实现、证据与剩余验收 |
 | 已发现什么 | 见 `findings.md`，包含光束独立生命周期、金色十字资源及响度比较 |
 | 已完成什么 | 见本文件执行记录与 `verification.md` |
+## 2026-10-27 Phase 17：圣光特效改造
+
+- 已读取项目约定、道具技能及被动分支，核对当前 feature/feature-c 干净工作区。
+- 已使用 planning-with-files session-catchup；无额外恢复报告。按批准方案继续，不同步主分支，不提交。
+- 红灯：现有金色光晕导致白光回归断言失败（1 项），见 `build/revelation-visual-red.log`。随后该测试改为调用替换后的真实绘制入口，保持白色顶点与实际柱身 UV 断言。
+- 已完成共享绘制工具、任意方向光圈／柱身、轴向端面、专用蓄力视觉包、发射年龄及协议 12。伤害 Schedule、快照、控制、范围及音效未改。
+- Microsoft Java 17.0.11：定向 JUnit 78 项通过，失败／错误／跳过均为 0；其中新增 16 项。实际 Forge GameTest 25 项通过，其中新增终末天启 3 项、原圣光 22 项。日志 `build/revelation-visual-green.log`，Gradle 总计 1m 23s。
+- 单独执行一次 `runData --offline --no-daemon` 通过，耗时 37s，全部 provider 完成，生成文件 written=0；见 `build/revelation-visual-data.log`。没有额外执行独立编译或 build。
+- 初次红灯命令受用户 Gradle 缓存锁权限限制，正常申请授权后完成；补丁工具不接受同一路径同时删除并新增，改为原位写入同一文件。Windows rg 路径通配符检查改用目录筛选。
+- 自动验证完成；第一／第三人称实际画面、双人联机、存档与重载未执行。所有改动保留审查，不提交。
+
+## 2026-10-27 Phase 18：移除预警圈、恢复圆柱体积
+
+- 用户继续授权定向修改：不再显示世界中的白色蓄力预警圈，柱身改成完整圆柱体。保留 HUD、发射瞬间 4 tick 扩散圈、圣光白色材质和全部攻击逻辑。
+- 已核对原柱身只绘制一个 billboard，侧向缺少真实截面；先新增真实顶点断言，确认径向两轴都有几何宽度，再替换为圆柱内芯与柔和光晕。
+- 将移除本轮前一版新增且不再使用的蓄力包和状态；原先暂存的其他工作保留。
+- 已完成：16 面白色圆柱内芯及两端封口、白色柔和外光晕；删除世界预警圈、专用状态与网络包，恢复原始蓄力 tick，协议改为 13。保留 4 tick 发射扩散圈和原先 HUD，不改伤害。
+- 红灯：侧视径向体积断言在原实现失败，9 项中 1 项失败，见 `build/revelation-cylinder-red.log`。修复后的同一侧视回归已通过。
+- 最终命令：Microsoft Java 17.0.11 的定向 `test`、`runGameTestServer`（命名空间 `isaac_disaster_revelation,isaac_disaster_holylight`）与一次 `runData --offline --no-daemon`。76 项 JUnit 全通过，失败／错误／跳过为 0；25 项实际 GameTest 全通过，包含原伤害与圣光回归。`BUILD SUCCESSFUL in 2m 40s`。
+- runData 全部 provider 完成（229 ms），generated written=0。日志 `build/revelation-cylinder-validation.log`；未独立执行 compile/build，未启动客户端或玩家存档。
+- 实际第一／第三人称圆柱观感、多人联机与存档验收未执行。验证结果不代表这些画面验收已通过；改动更新暂存，未提交。
+
+## 2026-10-27 Phase 19：审查发现的边界与测试修复
+
+- 用户确认两项边界都修复，并顺手规范测试命名空间：补有效玩家身份的跟随／转向／脱离测试；允许最后脉冲才进入范围的客户端显示剩余收束阶段。
+- 测试改用实际 ServerPlayer 与可记录服务器发包的无套接字连接，在测试内登记／清理 PlayerList 的列表和 UUID 查询表，不放宽生产身份检查。
+- 先新增客户端末尾首包、远处未见过光束的接收者、离开范围的旧接收者，以及真实锚点生命周期测试；验证失败后再修改发包范围和客户端结束首包处理。
+- 已以每束光的临时已接收者 UUID 集合代替全世界结束广播，不新增 Runtime／Manager。协议改为 14，避免旧服务器的全局结束广播被新客户端误创建为画面。
+- 红灯：客户端首次结束包被丢弃的 JUnit 失败（9 项中 1 项）；服务器向未见过光束的远处玩家发结束包的 GameTest 失败（12 项中 1 项），其余新跟随／脱离及接收边界测试通过。日志 `build/revelation-boundary-red.log`。
+- 绿灯：Microsoft Java 17.0.11，77 项 JUnit 全通过，0 失败／错误／跳过；34 项实际 GameTest 全通过（12 项终末天启、22 项原圣光）。包含新接收者末尾收束、旧接收者离开范围后的清理和六项玩家锚点场景。
+- 本轮一次 runData 通过，全部 provider 203 ms，generated written=0；合并命令 `BUILD SUCCESSFUL in 1m 23s`，日志 `build/revelation-boundary-validation.log`。未独立执行 compile/build，未启动客户端或用户存档。
+- 已完成代码及自动验证，更新记录和暂存，未提交；真实双人客户端同步仍需独立验收。

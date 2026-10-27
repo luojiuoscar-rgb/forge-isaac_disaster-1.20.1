@@ -29,6 +29,8 @@ import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
 
 import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 public class RevelationAttack extends AbstractLaserAttack implements IChargeableAttack, AdditionalAttackType {
@@ -54,6 +56,7 @@ public class RevelationAttack extends AbstractLaserAttack implements IChargeable
         private final ServerLevel level;
         private final AttackContext snapshot;
         private final boolean controllable;
+        private final Set<UUID> viewers = new HashSet<>();
         private Vec3 position;
         private Vec3 direction;
         private boolean followingPlayer = true;
@@ -142,16 +145,17 @@ public class RevelationAttack extends AbstractLaserAttack implements IChargeable
                 beam.visualId, beam.player.getUUID(), beam.player.getId(), beam.level.dimension().location(),
                 beam.position, beam.direction, (float) beam.snapshot.getBulletRange(),
                 (float) getWidth(beam.snapshot), beam.pulses + 1 == HIT_COUNT,
-                beam.followingPlayer, beam.controllable);
+                beam.followingPlayer, beam.controllable, beam.pulses * HIT_INTERVAL);
         Vec3 delta = end.subtract(beam.position);
         double lengthSqr = delta.lengthSqr();
         for (ServerPlayer viewer : beam.level.players()) {
             double fraction = lengthSqr == 0 ? 0 : Math.max(0, Math.min(1,
                     viewer.position().subtract(beam.position).dot(delta) / lengthSqr));
-            // Close visuals for previous viewers even if they have since left the viewing radius.
-            if (packet.finished()
-                    || viewer.position().distanceToSqr(beam.position.add(delta.scale(fraction))) <= 32 * 32) {
+            boolean inRange = viewer.position().distanceToSqr(beam.position.add(delta.scale(fraction))) <= 32 * 32;
+            // End snapshots may now create late visuals, so never broadcast them to unrelated players.
+            if (inRange || packet.finished() && beam.viewers.contains(viewer.getUUID())) {
                 ModMessages.sentToPlayer(packet, viewer);
+                beam.viewers.add(viewer.getUUID());
             }
         }
     }

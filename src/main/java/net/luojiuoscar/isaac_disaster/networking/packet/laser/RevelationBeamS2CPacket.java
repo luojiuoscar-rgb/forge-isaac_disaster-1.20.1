@@ -15,11 +15,11 @@ import java.util.function.Supplier;
 public record RevelationBeamS2CPacket(UUID beamId, UUID ownerId, int ownerEntityId,
                                      ResourceLocation dimension, Vec3 start, Vec3 direction,
                                      float length, float width, boolean finished,
-                                     boolean followingPlayer, boolean controllable) {
+                                     boolean followingPlayer, boolean controllable, int ageTicks) {
     public RevelationBeamS2CPacket(FriendlyByteBuf buf) {
         this(buf.readUUID(), buf.readUUID(), buf.readVarInt(), buf.readResourceLocation(),
                 readVector(buf), readVector(buf), buf.readFloat(), buf.readFloat(),
-                buf.readBoolean(), buf.readBoolean(), buf.readBoolean());
+                buf.readBoolean(), buf.readBoolean(), buf.readBoolean(), buf.readVarInt());
     }
 
     public void toBytes(FriendlyByteBuf buf) {
@@ -34,6 +34,7 @@ public record RevelationBeamS2CPacket(UUID beamId, UUID ownerId, int ownerEntity
         buf.writeBoolean(finished);
         buf.writeBoolean(followingPlayer);
         buf.writeBoolean(controllable);
+        buf.writeVarInt(ageTicks);
     }
 
     public void handle(Supplier<NetworkEvent.Context> supplier) {

@@ -1,5 +1,39 @@
 # 终末天启首版验证记录
 
+## 2026-10-27 Phase 19：末尾显示与有效玩家测试（当前）
+
+- 用户确认修复正文两项边界，并顺手规范命名空间。圆柱视觉、伤害公式、2 tick／15 次、射程、HUD 和音效保持。
+- 结束快照仅发给当前范围内或此前看过该束光的玩家；首次收到的结束快照可创建剩余 2 tick 收束，重复结束快照不延长，末尾不重播扩散圈。协议为 14。
+- 新增客户端实际 update／tick 路径测试覆盖首次结束包、正确年龄、重复包和两 tick 后清理；测试注入无窗口 Minecraft／ClientLevel 并在 finally 恢复单例，未启动客户端。
+- GameTest 改为实际 ServerPlayer，登记 PlayerList 的列表与 UUID 查询表、完成后清理；记录连接捕获真正编码过的服务器快照。补齐六项位置／转向／身份生命周期场景，以及三个接收范围场景；原三项伤害／蓄力回归继续运行。
+- 红灯：1 项 JUnit（首次结束包被忽略）与 1 项 GameTest（远处未见过光束的玩家收到结束包）按预期失败；其余新增测试通过。日志 `build/revelation-boundary-red.log`。
+- **77 项 JUnit 全通过，0 失败／错误／跳过**；**34 项实际 Forge GameTest 全通过**，其中终末天启 12 项、原圣光 22 项。
+- **一次 runData 通过**：全部 provider 203 ms，generated written=0。Microsoft Java 17.0.11，合并命令 `BUILD SUCCESSFUL in 1m 23s`，退出码 0；日志 `build/revelation-boundary-validation.log`。
+- 命令：`gradlew.bat test --tests '*Revelation*Test' --tests '*HolyLight*' --tests '*ChargeBarPredictionTest' runGameTestServer '-PgameTestNamespaces=isaac_disaster_revelation,isaac_disaster_holylight' runData --offline --no-daemon`。未独立执行 compile/build。
+- **未执行**：真实双人客户端连接、网络时延下的画面及真实客户端维度切换、存档与重载。上述集成测试验证服务端行为及客户端状态处理，不冒充真实联机验收。
+
+## 2026-10-27 Phase 18：取消预警圈与圆柱体积（历史，视觉继续沿用）
+
+- 世界中不再绘制白色蓄力预警圈，专用蓄力包及其注册、处理、发送、客户端状态均已删除。原 HUD 与蓄力门槛保持；网络协议为 13。
+- 发射使用完整 16 面白色圆柱侧壁和两端封口，外围保留白色柔光，展开／结束收束各 2 tick；发射瞬间 4 tick 扩散圈仍保留。没有新增半球或焦痕，也没有调用圣光伤害入口。
+- 新增真实侧视径向体积回归先失败（9 项中 1 项），后通过；原端面测试改为验证任意瞄准方向下的圆柱半径、侧壁与两端。已移除被删除预警功能对应的 3 项过时测试。
+- **76 项 JUnit 通过，0 失败／错误／跳过**；**25 项实际 Forge GameTest 通过**（终末天启 3 项、原圣光 22 项），原蓄力释放、2 tick／15 次及伤害快照仍通过回归。
+- **一次 runData 通过**，所有 provider 耗时 229 ms，generated written=0。Microsoft Java 17.0.11，合并验证命令总耗时 2m 40s，退出码 0；日志 `build/revelation-cylinder-validation.log`，红灯日志 `build/revelation-cylinder-red.log`。
+- 验证命令：`gradlew.bat test --tests '*Revelation*Test' --tests '*HolyLight*' --tests '*ChargeBarPredictionTest' runGameTestServer '-PgameTestNamespaces=isaac_disaster_revelation,isaac_disaster_holylight' runData --offline --no-daemon`。未额外执行独立编译或 build。
+- **未执行**：客户端真实画面、第一／第三人称与俯仰下的圆柱观感、双人联机、实际存档与重载。GameTest 使用构建目录的测试世界，未启动用户客户端或玩家存档。
+
+## 2026-10-27 Phase 17：圣光特效改造验证（历史，预警圈与单层柱身已被覆盖）
+
+- 已使用 `isaac-disaster-item-creation` 及被动分支，遵守批准的纯视觉范围；修改位于 feature/feature-c，不同步、不提交。
+- 新增 16 项 JUnit：白色顶点与真实贴图亮芯／柔边、持续柱身与 4 tick 爆圈分离、发射年龄、重复／晚加入快照、2 tick 结束收束、蓄力连续进度／满蓄力保持、玩家隔离／15 tick 超时、世界清理、任意方向几何／轴向平面端面和两个视觉包的序列化。
+- 原金色光晕的回归用例先失败，修复后改用新真实绘制入口通过；未将该红灯结果冒充所有新增用例都执行过红灯。
+- 实际 JUnit 共 **78 项通过，0 失败、0 错误、0 跳过**。原圣光渲染、时序、声音、网络、几何、道具及蓄力预测测试均纳入。
+- 实际 Forge GameTest 共 **25 项通过**：新增终末天启 3 项验证 46 tick 不能发射、47 tick 可发射且维持 2 tick／15 次及原伤害快照、取消下一次预警不影响旧光束；另含共享圣光 22 项。GameTest 使用 `build/gametest`，未启动玩家客户端存档。
+- 命令：`gradlew.bat test --tests '*Revelation*Test' --tests '*HolyLight*' --tests '*ChargeBarPredictionTest' runGameTestServer '-PgameTestNamespaces=isaac_disaster_revelation,isaac_disaster_holylight' --offline --no-daemon`。Microsoft Java 17.0.11，`BUILD SUCCESSFUL in 1m 23s`；日志 `build/revelation-visual-green.log`。
+- **一次 runData 通过**：`gradlew.bat runData --offline --no-daemon`，Microsoft Java 17.0.11，`BUILD SUCCESSFUL in 37s`。全部 provider 耗时 278 ms，generated written=0，无新增模型／标签／池变化；日志 `build/revelation-visual-data.log`。沿用既有 Gradle 弃用及 Forge union 资源警告。
+- **未执行**：真实客户端第一／第三人称、俯仰／轴向观察、移动／可控转向、多束并存、双人联机晚进入可见范围、实际存档与重载验收。几何、UV 与同步逻辑测试不能替代这些画面验收。
+- 共享圣光原材质复用，不新增图片或音效；HUD、说明、物品注册和获得／移除逻辑未改。未执行独立编译或 build。
+
 > 本文件保留初版历史证据，并单列用户后续要求的不可中断光束、金色十字 HUD 和音效修正。历史的中断／白色 HUD／无音效描述已由当前修正规则覆盖。整体阶段见 [task_plan.md](task_plan.md)，当前实现见 [findings.md](findings.md)，执行记录见 [progress.md](progress.md)。
 
 ## 实现
