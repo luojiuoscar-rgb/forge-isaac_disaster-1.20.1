@@ -1,5 +1,6 @@
 package net.luojiuoscar.isaac_disaster.entity.projectile.moms_knife;
 
+import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.bullet.core.TrajectoryEvaluator;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerAbilityProvider;
 import net.luojiuoscar.isaac_disaster.entity.familiar.impl.mom_knife.MomKnifePose;
@@ -41,6 +42,7 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
@@ -48,6 +50,7 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.network.NetworkHooks;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.entity.IEntityAdditionalSpawnData;
+import net.minecraftforge.items.ItemHandlerHelper;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
@@ -89,9 +92,15 @@ public final class PlayerMomsKnifeEntity extends Entity implements IBulletObject
             SynchedEntityData.defineId(PlayerMomsKnifeEntity.class, EntityDataSerializers.FLOAT);
     private static final EntityDataAccessor<Boolean> FAST_MOVING =
             SynchedEntityData.defineId(PlayerMomsKnifeEntity.class, EntityDataSerializers.BOOLEAN);
+    private static final EntityDataAccessor<Boolean> DISCARD_ON_RETURN =
+            SynchedEntityData.defineId(PlayerMomsKnifeEntity.class, EntityDataSerializers.BOOLEAN);
 
     @Nullable private Frame previous;
     @Nullable private ExecutableEffectContext barrageOnReturn;
+    @Nullable private Runnable removalCallback;
+    private ItemStack carriedItem = ItemStack.EMPTY;
+    private int returnSlot = -1;
+    private boolean restoreAsDrop;
     private final PlayerMomsKnifeTracking tracking = new PlayerMomsKnifeTracking();
     private PlayerMomsKnifeAttackState attack = new PlayerMomsKnifeAttackState(null, Vec3.ZERO,
             PlayerMomsKnifeMotion.FORWARD, 0, Vec3.ZERO);
@@ -229,6 +238,64 @@ public final class PlayerMomsKnifeEntity extends Entity implements IBulletObject
 
     public boolean isInFlight() {
         return getMode() == Mode.ONE_WAY || entityData.get(RANGE) > 0;
+    }
+
+    public boolean discardsOnReturn() { return entityData.get(DISCARD_ON_RETURN); }
+
+    /** Transfers an actual item to a standalone knife; loading its snapshot restores a drop, never a flight. */
+    public boolean carryItem(ItemStack stack, int slot) {
+        if (!discardsOnReturn() || isRemoved() || !carriedItem.isEmpty() || stack.isEmpty()) {
+            IsaacDisaster.LOGGER.warn("Rejected item transfer to knife {}: standalone={}, removed={}, occupied={}, empty input={}",
+                    getUUID(), discardsOnReturn(), isRemoved(), !carriedItem.isEmpty(), stack.isEmpty());
+            return false;
+        }
+        carriedItem = stack;
+        returnSlot = Math.max(-1, slot);
+        return true;
+    }
+
+    public boolean hasCarriedItem() { return !carriedItem.isEmpty(); }
+
+    private ItemStack takeCarriedItem() {
+        ItemStack result = carriedItem;
+        carriedItem = ItemStack.EMPTY;
+        return result;
+    }
+
+    private void returnCarriedItem(ServerPlayer owner) {
+        ItemStack stack = takeCarriedItem();
+        if (stack.isEmpty()) return;
+        if (returnSlot >= 0 && returnSlot < owner.getInventory().items.size()
+                && owner.getInventory().getItem(returnSlot).isEmpty()) {
+            owner.getInventory().setItem(returnSlot, stack);
+            owner.getInventory().setChanged();
+        } else {
+            ItemHandlerHelper.giveItemToPlayer(owner, stack);
+        }
+        owner.containerMenu.broadcastChanges();
+    }
+
+    /** A plain standalone throw uses its own source slot and ends when it docks. */
+    public boolean initializeIndependentReturning(ServerPlayer owner, ResourceLocation sourceId, double range, double speed,
+                                                   AttackContext context, Runnable onRemoved) {
+        entityData.set(OWNER, owner.getId());
+        entityData.set(HELD_SOURCE, sourceId.toString());
+        entityData.set(HELD_SLOT, 0);
+        entityData.set(DISCARD_ON_RETURN, true);
+        setPos(PlayerMomsKnifeMotion.idlePosition(owner, 1));
+        if (!launch(range, speed, context)) return false;
+        removalCallback = onRemoved;
+        setOldPosAndRot();
+        return true;
+    }
+
+    private boolean ownerReady(ServerPlayer owner) {
+        if (!owner.isAlive() || owner.isRemoved() || owner.isSpectator() || owner.level() != level()) return false;
+        if (!discardsOnReturn() && !MomsKnifeAttack.isSelectedAndReady(owner)) return false;
+        return owner.getCapability(PlayerAbilityProvider.PLAYER_ABILITY).map(ability ->
+                (discardsOnReturn() || ability.getAttackTypes().containsKey(ModAttackTypes.MOMS_KNIFE.getId()))
+                        && (getMode() == Mode.ONE_WAY
+                        || getUUID().equals(ability.getRuntimeEntities().getId(getSourceId(), getHeldSlot())))).orElse(false);
     }
 
     public boolean launch(double range, double speed) {
@@ -429,10 +496,15 @@ public final class PlayerMomsKnifeEntity extends Entity implements IBulletObject
         entityData.define(RETURNING_TRAJECTORY, "");
         entityData.define(FLIGHT_DURATION, 0.0F);
         entityData.define(FAST_MOVING, false);
+        entityData.define(DISCARD_ON_RETURN, false);
     }
 
     @Override
     public void tick() {
+        if (!level().isClientSide && restoreAsDrop) {
+            discard();
+            return;
+        }
         super.tick();
         if (level().isClientSide) {
             if (getMode() == Mode.ONE_WAY && interpolationTarget != null && interpolationSteps > 0) {
@@ -442,17 +514,12 @@ public final class PlayerMomsKnifeEntity extends Entity implements IBulletObject
             return;
         }
         Player candidate = getOwner();
-        if (!(candidate instanceof ServerPlayer owner) || !MomsKnifeAttack.isSelectedAndReady(owner)
-                || owner.getCapability(PlayerAbilityProvider.PLAYER_ABILITY)
-                .map(ability -> !ability.getAttackTypes().containsKey(ModAttackTypes.MOMS_KNIFE.getId())
-                        || getMode() == Mode.RETURNING
-                        && !getUUID().equals(ability.getRuntimeEntities().getId(getSourceId(), getHeldSlot())))
-                .orElse(true)) {
+        if (!(candidate instanceof ServerPlayer owner) || !ownerReady(owner)) {
             discard();
             return;
         }
 
-        boolean homing = owner.getCapability(PlayerAbilityProvider.PLAYER_ABILITY)
+        boolean homing = !discardsOnReturn() && owner.getCapability(PlayerAbilityProvider.PLAYER_ABILITY)
                 .map(ability -> ability.getHoming() > 0).orElse(false);
         if (getMode() == Mode.ONE_WAY) tickOneWay(owner, homing);
         else tickReturning(owner, homing);
@@ -467,7 +534,7 @@ public final class PlayerMomsKnifeEntity extends Entity implements IBulletObject
     private void tickVisualTrail() {
         Player owner = getOwner();
         if (owner == null || !owner.isAlive() || owner.isSpectator()
-                || !(owner.getMainHandItem().getItem() instanceof IsaacHead) || !isInFlight()) {
+                || !discardsOnReturn() && !(owner.getMainHandItem().getItem() instanceof IsaacHead) || !isInFlight()) {
             attack.trail.clear();
             previous = null;
             previousVisualBlade = null;
@@ -566,6 +633,11 @@ public final class PlayerMomsKnifeEntity extends Entity implements IBulletObject
             if (isRemoved()) return;
         }
         if (isInFlight() && elapsed >= duration) {
+            if (discardsOnReturn()) {
+                returnCarriedItem(owner);
+                discard();
+                return;
+            }
             attack.trail.clear();
             entityData.set(FAST_MOVING, false);
             entityData.set(RANGE, 0.0F);
@@ -699,13 +771,13 @@ public final class PlayerMomsKnifeEntity extends Entity implements IBulletObject
         setDeltaMovement(attack.velocity);
         if (blocks) {
             for (BlockHitResult hit : PlayerMomsKnifeBlockContacts.find(owner.serverLevel(), path, getHitBlockPositions())) {
-                if (isRemoved() || owner.level() != level() || !MomsKnifeAttack.isSelectedAndReady(owner)) return;
+                if (isRemoved() || !ownerReady(owner)) return;
                 if (!markBlockHit(hit.getBlockPos())) continue;
                 setLastBlockHit(hit);
                 MinecraftForge.EVENT_BUS.post(new IsaacAttackHitBlockEvent(this, owner, getTypeId(), getTriggers(), hit));
             }
         }
-        if (!isRemoved() && owner.level() == level() && MomsKnifeAttack.isSelectedAndReady(owner)) {
+        if (!isRemoved() && ownerReady(owner)) {
             damage(owner);
         }
     }
@@ -735,11 +807,17 @@ public final class PlayerMomsKnifeEntity extends Entity implements IBulletObject
         attack.trail.clear();
         entityData.set(FAST_MOVING, false);
         barrageOnReturn = null;
+        if (!level().isClientSide && reason != RemovalReason.UNLOADED_TO_CHUNK && hasCarriedItem()) {
+            spawnAtLocation(takeCarriedItem());
+        }
         if (!level().isClientSide && owner != null && getMode() == Mode.RETURNING) {
             owner.getCapability(PlayerAbilityProvider.PLAYER_ABILITY).ifPresent(ability ->
                     ability.getRuntimeEntities().unregister(getSourceId(), getHeldSlot(), getUUID()));
         }
         super.remove(reason);
+        Runnable callback = removalCallback;
+        removalCallback = null;
+        if (!level().isClientSide && callback != null) callback.run();
     }
 
     @Override
@@ -790,7 +868,7 @@ public final class PlayerMomsKnifeEntity extends Entity implements IBulletObject
     @Override
     public boolean isHoming() {
         Player owner = getOwner();
-        return owner != null && owner.getCapability(PlayerAbilityProvider.PLAYER_ABILITY)
+        return !discardsOnReturn() && owner != null && owner.getCapability(PlayerAbilityProvider.PLAYER_ABILITY)
                 .map(ability -> ability.getHoming() > 0).orElse(false);
     }
 
@@ -893,7 +971,7 @@ public final class PlayerMomsKnifeEntity extends Entity implements IBulletObject
                 entityData.get(RANGE), entityData.get(SPEED), entityData.get(LAUNCHED_AT), getYRot(), getXRot(),
                 getHeldSlot(), localOffset(), baseDirection(), getSourceId(), trajectoryOffset(),
                 vector(entityData.get(TRAJECTORY_DIRECTION)), entityData.get(RETURNING_TRAJECTORY),
-                entityData.get(FLIGHT_DURATION), attack.trail.samples(), isFastMoving()).write(buffer);
+                entityData.get(FLIGHT_DURATION), attack.trail.samples(), isFastMoving(), discardsOnReturn()).write(buffer);
     }
 
     @Override
@@ -912,6 +990,7 @@ public final class PlayerMomsKnifeEntity extends Entity implements IBulletObject
         entityData.set(RETURNING_TRAJECTORY, data.returningTrajectory());
         entityData.set(FLIGHT_DURATION, data.flightDuration());
         entityData.set(FAST_MOVING, data.fastMoving());
+        entityData.set(DISCARD_ON_RETURN, data.discardOnReturn());
         entityData.set(TRAJECTORY_OFFSET, new Vector3f((float) data.trajectoryOffset().x,
                 (float) data.trajectoryOffset().y, (float) data.trajectoryOffset().z));
         entityData.set(TRAJECTORY_DIRECTION, new Vector3f((float) data.trajectoryDirection().x,
@@ -932,13 +1011,19 @@ public final class PlayerMomsKnifeEntity extends Entity implements IBulletObject
     }
 
     @Override
-    protected void readAdditionalSaveData(@NotNull CompoundTag tag) {}
+    protected void readAdditionalSaveData(@NotNull CompoundTag tag) {
+        carriedItem = ItemStack.of(tag.getCompound("CarriedItem"));
+        restoreAsDrop = hasCarriedItem();
+        entityData.set(DISCARD_ON_RETURN, restoreAsDrop);
+    }
 
     @Override
-    protected void addAdditionalSaveData(@NotNull CompoundTag tag) {}
+    protected void addAdditionalSaveData(@NotNull CompoundTag tag) {
+        if (hasCarriedItem()) tag.put("CarriedItem", carriedItem.save(new CompoundTag()));
+    }
 
     @Override
-    public boolean shouldBeSaved() { return false; }
+    public boolean shouldBeSaved() { return hasCarriedItem(); }
 
     @Override
     public boolean isAttackable() { return false; }

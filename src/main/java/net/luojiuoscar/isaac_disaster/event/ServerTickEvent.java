@@ -14,7 +14,7 @@ import net.luojiuoscar.isaac_disaster.helper.LevelHelper;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.helper.ScheduledFuncHelper;
 import net.luojiuoscar.isaac_disaster.item.item.ActiveItem;
-import net.luojiuoscar.isaac_disaster.item.pickup.special.IsaacHead;
+import net.luojiuoscar.isaac_disaster.item.IAttackLauncher;
 import net.luojiuoscar.isaac_disaster.networking.ModMessages;
 import net.luojiuoscar.isaac_disaster.networking.AttributeIndicatorSync;
 import net.luojiuoscar.isaac_disaster.networking.packet.RefreshScaleS2CPacket;
@@ -76,7 +76,7 @@ public class ServerTickEvent {
 
         CurioSlotManager.tick(player);
 
-        IsaacHeadAttack(player);
+        launcherAttack(player);
         recursiveModuleTick(player);
         refreshScaleIfChanged(player);
         AttributeIndicatorSync.tick(player);
@@ -163,13 +163,14 @@ public class ServerTickEvent {
         }
     }
 
-    private static void IsaacHeadAttack(ServerPlayer player){
+    private static void launcherAttack(ServerPlayer player){
         player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY).ifPresent(
                 playerAbility -> {
                     ItemStack stack = player.getMainHandItem();
-                    AttackType attack = playerAbility.getAttackSelection().mainAttack();
                     playerAbility.tickAttacks(player);
-                    if (!(stack.getItem() instanceof IsaacHead)) return;
+                    var selection = IAttackLauncher.selection(player);
+                    if (selection == null) return;
+                    AttackType attack = selection.mainAttack();
 
                     if (playerAbility.isHoldingRightClick()){
                         RightClickTickEvent rcEvent = new RightClickTickEvent(player);

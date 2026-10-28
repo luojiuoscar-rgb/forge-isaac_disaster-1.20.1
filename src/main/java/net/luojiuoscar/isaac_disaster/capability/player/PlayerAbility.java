@@ -1,7 +1,7 @@
 package net.luojiuoscar.isaac_disaster.capability.player;
 
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackType;
-import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
+import net.luojiuoscar.isaac_disaster.item.IAttackLauncher;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackSelection;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackSelectionContext;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackSelector;
@@ -14,6 +14,7 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.registries.IForgeRegistry;
 import net.minecraftforge.registries.RegistryManager;
 
@@ -21,6 +22,8 @@ import java.util.*;
 
 public class PlayerAbility {
     private boolean holdRightClick;
+    private ItemStack launcherStack = ItemStack.EMPTY;
+    private int launcherSlot = -1;
 
     private int piercing;
     private int homing;
@@ -244,6 +247,8 @@ public class PlayerAbility {
         chargeAmounts.clear();
         chargeBarStates.clear();
         holdRightClick = false;
+        launcherStack = ItemStack.EMPTY;
+        launcherSlot = -1;
     }
 
     public AttackSelection getAttackSelection() {
@@ -251,16 +256,29 @@ public class PlayerAbility {
     }
 
     public void tickAttacks(ServerPlayer player) {
-        AttackSelection selection = attackSelection;
+        refreshLauncher(player);
+        AttackSelection selection = IAttackLauncher.selection(player);
+        if (selection == null) return;
         AttackType main = selection.mainAttack();
-        if (main instanceof IChargeableAttack || PlayerHelper.isHoldingIsaacHead(player)) {
-            main.tickAttack(player);
-        }
+        main.tickAttack(player);
         for (AttackType additional : selection.additionalAttacks()) additional.tickAttack(player);
     }
 
+    /** A new held source cannot inherit a previous item's press or partial charge. */
+    public void refreshLauncher(ServerPlayer player) {
+        ItemStack current = player.getMainHandItem();
+        int slot = player.getInventory().selected;
+        if (launcherStack == current && launcherSlot == slot) return;
+        ChargeBarSync.clearAll(player);
+        launcherStack = current;
+        launcherSlot = slot;
+    }
+
     public void handleAttackInput(ServerPlayer player, boolean pressed) {
-        AttackSelection selection = attackSelection;
+        refreshLauncher(player);
+        holdRightClick = pressed;
+        AttackSelection selection = IAttackLauncher.selection(player);
+        if (selection == null) return;
         selection.mainAttack().handleChargeInput(player, pressed);
         for (AttackType additional : selection.additionalAttacks()) {
             additional.handleChargeInput(player, pressed);
@@ -283,14 +301,17 @@ public class PlayerAbility {
 
     private void replaceAttackSelection(AttackSelection selection, ServerPlayer player) {
         AttackSelection previous = attackSelection;
-        if (previous.mainAttack() != selection.mainAttack()
-                && previous.mainAttack() instanceof IChargeableAttack charge) {
-            charge.clearCharge(player);
-        }
-        for (AttackType oldAdditional : previous.additionalAttacks()) {
-            if (!selection.additionalAttacks().contains(oldAdditional)
-                    && oldAdditional instanceof IChargeableAttack charge) {
+        AttackSelection active = player == null ? previous : IAttackLauncher.selection(player);
+        if (active == null || active.equals(previous)) {
+            if (previous.mainAttack() != selection.mainAttack()
+                    && previous.mainAttack() instanceof IChargeableAttack charge) {
                 charge.clearCharge(player);
+            }
+            for (AttackType oldAdditional : previous.additionalAttacks()) {
+                if (!selection.additionalAttacks().contains(oldAdditional)
+                        && oldAdditional instanceof IChargeableAttack charge) {
+                    charge.clearCharge(player);
+                }
             }
         }
         attackSelection = selection;

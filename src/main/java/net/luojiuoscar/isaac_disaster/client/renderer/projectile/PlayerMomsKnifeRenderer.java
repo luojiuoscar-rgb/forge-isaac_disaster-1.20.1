@@ -34,7 +34,7 @@ public final class PlayerMomsKnifeRenderer extends EntityRenderer<PlayerMomsKnif
                        @NotNull PoseStack poses, @NotNull MultiBufferSource buffers, int packedLight) {
         Player owner = entity.getOwner();
         if (owner == null || !owner.isAlive() || owner.isSpectator()
-                || !(owner.getMainHandItem().getItem() instanceof IsaacHead)) return;
+                || !entity.discardsOnReturn() && !(owner.getMainHandItem().getItem() instanceof IsaacHead)) return;
         PlayerMomsKnifeTrail trail = entity.getRenderTrail(owner, partialTick);
         double now = entity.level().getGameTime() + partialTick;
         renderRibbon(entity, trail, now, partialTick, poses, buffers, packedLight);

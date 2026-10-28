@@ -66,7 +66,8 @@ public final class HeldMomsKnifeGroup {
     public static List<PlayerMomsKnifeEntity> knives(ServerPlayer player) {
         return player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY).map(ability ->
                 ability.getRuntimeEntities().getEntities(player.serverLevel(), PlayerMomsKnifeEntity.class).stream()
-                        .filter(knife -> knife.getOwner() == player && knife.getMode() == PlayerMomsKnifeEntity.Mode.RETURNING)
+                        .filter(knife -> knife.getOwner() == player && knife.getMode() == PlayerMomsKnifeEntity.Mode.RETURNING
+                                && !knife.discardsOnReturn())
                         .toList()).orElseGet(List::of);
     }
 

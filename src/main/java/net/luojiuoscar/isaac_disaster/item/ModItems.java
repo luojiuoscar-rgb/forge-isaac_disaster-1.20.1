@@ -6,6 +6,7 @@ import net.luojiuoscar.isaac_disaster.item.block.IdentifierBlockItem;
 import net.luojiuoscar.isaac_disaster.item.block.IsaacChestBlockItem;
 import net.luojiuoscar.isaac_disaster.item.custom.ChestPlaceholder;
 import net.luojiuoscar.isaac_disaster.item.custom.DebugStick;
+import net.luojiuoscar.isaac_disaster.item.weapon.MomsKnifeWeapon;
 import net.luojiuoscar.isaac_disaster.item.pickup.*;
 import net.luojiuoscar.isaac_disaster.item.pickup.special.IsaacHead;
 import net.luojiuoscar.isaac_disaster.item.pickup.special.WildCard;
@@ -328,6 +329,10 @@ public class ModItems {
 
     // pickup end
     // misc
+    public static final RegistryObject<Item> MOMS_KNIFE_WEAPON = ITEMS.register("moms_knife_weapon",
+            () -> new MomsKnifeWeapon(new Item.Properties().rarity(Rarity.EPIC)));
+    static { MISC_LIST.add(MOMS_KNIFE_WEAPON); }
+
     public static final RegistryObject<Item> DEBUG_STICK = ITEMS.register("debug_stick",
             () -> new DebugStick(new Item.Properties()));
     static { MISC_LIST.add(DEBUG_STICK); }

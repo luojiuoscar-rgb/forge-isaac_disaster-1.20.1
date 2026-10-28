@@ -2,6 +2,7 @@ package net.luojiuoscar.isaac_disaster.networking.packet;
 
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerAbilityProvider;
 import net.luojiuoscar.isaac_disaster.event.custom.misc.PlayerRightClickEvent;
+import net.luojiuoscar.isaac_disaster.item.IAttackLauncher;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.common.MinecraftForge;
@@ -32,9 +33,11 @@ public class SetRightClickC2SPacket {
             // On the server
             ServerPlayer player = context.getSender();
             if (player == null) return;
+            if (player.getMainHandItem().getItem() instanceof IAttackLauncher launcher && launcher.usesVanillaItemUse()) return;
 
             player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY).ifPresent(
                     playerAbility -> {
+                        playerAbility.refreshLauncher(player);
                         if (playerAbility.isHoldingRightClick() == isRightClick) return;
                         playerAbility.setHoldRightClick(isRightClick);
                         MinecraftForge.EVENT_BUS.post(new PlayerRightClickEvent(player, isRightClick, !isRightClick));

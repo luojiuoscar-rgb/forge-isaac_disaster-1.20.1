@@ -674,6 +674,8 @@
   "item.isaac_disaster.moms_knife.synergy.lokis_horns.1": "额外持有左右后三把菜刀",
   "item.isaac_disaster.moms_knife.synergy.lokis_horns.2": "按洛基角概率同时投掷",
   "item.isaac_disaster.moms_knife.synergy.tiny_planet.1": "菜刀发射时会环绕玩家",
+  "item.isaac_disaster.moms_knife_weapon": "妈妈的菜刀",
+  "item.isaac_disaster.moms_knife_weapon.lore.1": "右键蓄力投掷一把菜刀",
   "item end": "",
   "trinket": "",
   "item.isaac_disaster.swallowed_penny": "被吞下的硬币",

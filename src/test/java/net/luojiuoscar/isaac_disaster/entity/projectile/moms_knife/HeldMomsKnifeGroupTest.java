@@ -83,7 +83,7 @@ class HeldMomsKnifeGroupTest {
             Vec3 base = new Vec3(1, 0, 1).normalize();
             var original = new PlayerMomsKnifeSpawnData((byte) 0, 123, current, 8, 0.7f, 100, 27, -30,
                     slot, new Vec3(0.25, -0.125, 0), base,
-                    ResourceLocation.parse("addon:extra_knives"), Vec3.ZERO, Vec3.ZERO, "", 0, List.of(), false);
+                    ResourceLocation.parse("addon:extra_knives"), Vec3.ZERO, Vec3.ZERO, "", 0, List.of(), false, false);
             FriendlyByteBuf buffer = new FriendlyByteBuf(Unpooled.buffer());
             try {
                 original.write(buffer);

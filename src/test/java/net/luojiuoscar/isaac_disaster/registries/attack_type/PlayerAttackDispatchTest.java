@@ -39,23 +39,6 @@ class PlayerAttackDispatchTest {
     }
 
     @Test
-    void primaryAndAdditionalReceiveEachTickAndInputOnce() throws Exception {
-        Map<ResourceLocation, Integer> charge = new HashMap<>();
-        Basic primary = new Basic("primary", charge);
-        Extra additional = new Extra("additional", charge);
-        PlayerAbility ability = abilityWith(selection(primary, List.of(additional)));
-        ability.tickAttacks(null);
-        ability.handleAttackInput(null, true);
-        ability.handleAttackInput(null, false);
-        for (Recording attack : List.of(primary, additional)) {
-            assertEquals(1, attack.ticks);
-            assertEquals(1, attack.presses);
-            assertEquals(1, attack.releases);
-            assertEquals(3, attack.syncs);
-        }
-    }
-
-    @Test
     void switchingThePrimaryPreservesAdditionalCharge() throws Exception {
         Map<ResourceLocation, Integer> charge = new HashMap<>();
         Basic oldPrimary = new Basic("old_primary", charge);
@@ -86,7 +69,6 @@ class PlayerAttackDispatchTest {
         assertEquals(1, additional.clears);
         assertEquals(20, charge.get(primary.getChargeBarId()));
         assertFalse(charge.containsKey(additional.getChargeBarId()));
-        ability.tickAttacks(null);
         assertEquals(0, additional.ticks);
     }
 

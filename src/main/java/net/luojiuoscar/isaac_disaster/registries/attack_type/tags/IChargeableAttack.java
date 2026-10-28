@@ -2,7 +2,7 @@ package net.luojiuoscar.isaac_disaster.registries.attack_type.tags;
 
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerAbilityProvider;
 import net.luojiuoscar.isaac_disaster.effect.ModEffects;
-import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
+import net.luojiuoscar.isaac_disaster.item.IAttackLauncher;
 import net.luojiuoscar.isaac_disaster.networking.ChargeBarSync;
 import net.luojiuoscar.isaac_disaster.registries.charge_bar.ModChargeBars;
 import net.minecraft.resources.ResourceLocation;
@@ -17,7 +17,7 @@ public interface IChargeableAttack {
 
     default boolean isChargeEligible(ServerPlayer player) {
         return player.isAlive() && !player.isRemoved() && !player.isSpectator()
-                && PlayerHelper.isHoldingIsaacHead(player)
+                && IAttackLauncher.isHolding(player)
                 && !player.hasEffect(ModEffects.LACRIMAL_HYPOSECRETION.get());
     }
 

@@ -11,7 +11,7 @@ record PlayerMomsKnifeSpawnData(byte mode, int owner, Vec3 direction, float rang
                                long launchedAt, float yaw, float pitch, int heldSlot, Vec3 localOffset, Vec3 baseDirection,
                                ResourceLocation heldSource, Vec3 trajectoryOffset, Vec3 trajectoryDirection,
                                String returningTrajectory, float flightDuration, List<PlayerMomsKnifeTrail.Sample> trail,
-                               boolean fastMoving) {
+                               boolean fastMoving, boolean discardOnReturn) {
     PlayerMomsKnifeSpawnData {
         trail = List.copyOf(trail);
         if (trail.size() > PlayerMomsKnifeTrail.MAX_SAMPLES) throw new IllegalArgumentException("Oversized knife trail");
@@ -55,6 +55,7 @@ record PlayerMomsKnifeSpawnData(byte mode, int owner, Vec3 direction, float rang
         buffer.writeUtf(returningTrajectory);
         buffer.writeFloat(flightDuration);
         buffer.writeBoolean(fastMoving);
+        buffer.writeBoolean(discardOnReturn);
         buffer.writeVarInt(trail.size());
         for (var sample : trail) {
             buffer.writeDouble(sample.time());
@@ -80,6 +81,7 @@ record PlayerMomsKnifeSpawnData(byte mode, int owner, Vec3 direction, float rang
         String trajectory = buffer.readUtf();
         float duration = buffer.readFloat();
         boolean fast = buffer.readBoolean();
+        boolean discard = buffer.readBoolean();
         int size = buffer.readVarInt();
         if (size < 0 || size > PlayerMomsKnifeTrail.MAX_SAMPLES) throw new IllegalArgumentException("Invalid knife trail size");
         List<PlayerMomsKnifeTrail.Sample> trail = new ArrayList<>(size);
@@ -91,7 +93,7 @@ record PlayerMomsKnifeSpawnData(byte mode, int owner, Vec3 direction, float rang
             trail.add(new PlayerMomsKnifeTrail.Sample(time, PlayerMomsKnifeMotion.blade(anchor, facing), connected));
         }
         return new PlayerMomsKnifeSpawnData(mode, owner, direction, range, speed, launchedAt, yaw, pitch, slot,
-                offset, base, source, trajectoryOffset, trajectoryDirection, trajectory, duration, trail, fast);
+                offset, base, source, trajectoryOffset, trajectoryDirection, trajectory, duration, trail, fast, discard);
     }
 
     private static Vec3 readVector(FriendlyByteBuf buffer) {

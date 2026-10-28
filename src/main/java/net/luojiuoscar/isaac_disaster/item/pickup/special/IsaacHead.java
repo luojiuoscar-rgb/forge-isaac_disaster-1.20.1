@@ -1,5 +1,7 @@
 package net.luojiuoscar.isaac_disaster.item.pickup.special;
 
+import net.luojiuoscar.isaac_disaster.item.IAttackLauncher;
+
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
@@ -14,7 +16,7 @@ import org.jetbrains.annotations.NotNull;
 import javax.annotation.Nullable;
 import java.util.List;
 
-public class IsaacHead extends Item {
+public class IsaacHead extends Item implements IAttackLauncher {
     public IsaacHead(Properties pProperties) {
         super(pProperties.stacksTo(1));
     }
