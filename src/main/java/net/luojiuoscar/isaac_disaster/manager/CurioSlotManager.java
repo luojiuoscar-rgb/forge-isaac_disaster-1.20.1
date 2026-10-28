@@ -8,6 +8,7 @@ import net.luojiuoscar.isaac_disaster.capability.player.PlayerIsaacItemsProvider
 import net.luojiuoscar.isaac_disaster.item.item.IIsaacCuriosItem;
 import net.luojiuoscar.isaac_disaster.item.item.Trinket;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.food.Foods;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.entity.player.Player;
@@ -273,6 +274,7 @@ public final class CurioSlotManager {
             handler.getStacks().setStackInSlot(i, ItemStack.EMPTY);
             syncCount(player, items.get(), swallowed);
             count++;
+            player.getFoodData().eat(Foods.BREAD.getNutrition(), Foods.BREAD.getSaturationModifier());
         }
         state.reconcileRequested = true;
         return count;

@@ -1,5 +1,8 @@
 package net.luojiuoscar.isaac_disaster.registries.ability.passive.impl;
 
+import net.luojiuoscar.isaac_disaster.client.ClientDataManager;
+import net.luojiuoscar.isaac_disaster.helper.DescriptionHelper;
+import net.luojiuoscar.isaac_disaster.item.ModPassiveItems;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.registries.ability.passive.PassiveAbility;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerModules;
@@ -34,6 +37,13 @@ public class Terra extends PassiveAbility {
         StatManager.BLOCK_BREAKING.apply(player, -1.5);
         StatManager.addTriggerModule(player, ModTriggerModules.TERRA.getId(), -1);
 
+    }
+
+    @Override
+    public List<Component> getSynergyDesc(@Nullable ItemStack stack, @Nullable Player player) {
+        if (ClientDataManager.getInstance().getItemCount(ModPassiveItems.FIRE_MIND.getId()) <= 0) return List.of();
+        return DescriptionHelper.getSynergyDesc(Component.translatable("item.isaac_disaster.fire_mind"), List.of(
+                Component.translatable("item.isaac_disaster.terra.synergy.fire_mind.1")));
     }
 
     @Override

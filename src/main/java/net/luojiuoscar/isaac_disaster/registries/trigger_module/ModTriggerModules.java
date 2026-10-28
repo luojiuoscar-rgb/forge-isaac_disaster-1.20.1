@@ -207,6 +207,9 @@ public class ModTriggerModules {
     public static final RegistryObject<TriggerModule> SINUS_INFECTION =
             TRIGGER_MODULE_REGISTRY.register("sinus_infection", SinusInfection::new);
 
+    public static final RegistryObject<TriggerModule> FIRE_MIND =
+            TRIGGER_MODULE_REGISTRY.register("fire_mind", FireMind::new);
+
     public static final RegistryObject<TriggerModule> HOLY_LIGHT =
             TRIGGER_MODULE_REGISTRY.register("holy_light", HolyLight::new);
 

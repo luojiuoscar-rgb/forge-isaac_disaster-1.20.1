@@ -782,6 +782,7 @@ public class ModPassiveItems {
     public static final RegistryObject<Item> SOUL_LOCKET = ITEMS.register("soul_locket",
             () -> new PassiveItem(new Item.Properties(), ModPassiveAbilities.SOUL_LOCKET));
     static {ItemListManager.PASSIVE_ITEM_LIST.add(SOUL_LOCKET);}
+
     public static final RegistryObject<Item> SINUS_INFECTION = ITEMS.register("sinus_infection",
             () -> new PassiveItem(new Item.Properties(), ModPassiveAbilities.SINUS_INFECTION));
     static {ItemListManager.PASSIVE_ITEM_LIST.add(SINUS_INFECTION);}
@@ -789,5 +790,9 @@ public class ModPassiveItems {
     public static final RegistryObject<Item> HOLY_LIGHT = ITEMS.register("holy_light",
             () -> new PassiveItem(new Item.Properties(), ModPassiveAbilities.HOLY_LIGHT));
     static {ItemListManager.PASSIVE_ITEM_LIST.add(HOLY_LIGHT);}
+
+    public static final RegistryObject<Item> FIRE_MIND = ITEMS.register("fire_mind",
+            () -> new PassiveItem(new Item.Properties(), ModPassiveAbilities.FIRE_MIND));
+    static {ItemListManager.PASSIVE_ITEM_LIST.add(FIRE_MIND);}
 
 }

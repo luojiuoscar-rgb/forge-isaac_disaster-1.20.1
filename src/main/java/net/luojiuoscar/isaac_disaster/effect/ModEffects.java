@@ -29,6 +29,9 @@ public class ModEffects {
             () -> new CurseOfTheMaze(MobEffectCategory.HARMFUL, 0x512799));
 
     // normal effects
+    public static final RegistryObject<MobEffect> BURNING = MOB_EFFECTS.register(EffectManager.BURNING.getName(),
+            BurningEffect::new);
+
     public static final RegistryObject<MobEffect> DEADLY_POISON = MOB_EFFECTS.register(EffectManager.DEADLY_POISON.getName(),
             () -> new DeadlyPoisonEffect(MobEffectCategory.HARMFUL, 8889187));
 

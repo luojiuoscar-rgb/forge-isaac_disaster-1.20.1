@@ -34,7 +34,8 @@ public enum EffectManager {
     GOLDEN("golden"),
     PETRIFIED("petrified"),
     FROZEN("frozen"),
-    INNER_CHILD("inner_child");
+    INNER_CHILD("inner_child"),
+    BURNING("burning");
 
 
 

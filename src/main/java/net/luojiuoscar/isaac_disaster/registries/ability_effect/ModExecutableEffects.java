@@ -559,7 +559,7 @@ public class ModExecutableEffects {
                     POTIONS, ctx -> ctx.set(ContextKeys.POTIONS, List.of(new PotionProfile(
                             MobEffects.FIRE_RESISTANCE,
                             240,
-                            0)))
+                            0, 0, 0, false)))
             ));
     public static final RegistryObject<IExecutableEffect> THE_RELIC =
             EXECUTABLE_EFFECT_REGISTRY.register("the_relic", () -> new AbilityEffectEntry(
@@ -1131,6 +1131,12 @@ public class ModExecutableEffects {
 
     public static final RegistryObject<IExecutableEffect> CRACK_THE_SKY =
             EXECUTABLE_EFFECT_REGISTRY.register("crack_the_sky", CrackTheSky::new);
+
+    public static final RegistryObject<IExecutableEffect> FIRE_MIND_ATTACHMENT =
+            EXECUTABLE_EFFECT_REGISTRY.register("fire_mind_attachment", FireMindAttachment::new);
+
+    public static final RegistryObject<IExecutableEffect> FIRE_MIND_IMPACT =
+            EXECUTABLE_EFFECT_REGISTRY.register("fire_mind_impact", FireMindImpact::new);
 
     public static final RegistryObject<IExecutableEffect> HOLY_LIGHT_ATTACHMENT =
             EXECUTABLE_EFFECT_REGISTRY.register("holy_light_attachment", HolyLightAttachment::new);
