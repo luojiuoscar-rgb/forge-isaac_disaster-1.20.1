@@ -19,7 +19,7 @@ import org.joml.Quaternionf;
 import net.minecraft.util.Mth;
 
 /** Shared exported Bobby/Maggy rig, rather than a required model for all tear babies. */
-public final class TearBabyModel extends HierarchicalModel<AbstractTearBabyFamiliarEntity> {
+public class TearBabyModel extends HierarchicalModel<AbstractTearBabyFamiliarEntity> {
     public static final ModelLayerLocation LAYER_LOCATION = new ModelLayerLocation(
             ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "tear_baby"), "main");
     private final ModelPart root;

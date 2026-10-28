@@ -46,4 +46,7 @@ public class ModSetAbilities {
     public static final RegistryObject<SetAbility> SPIDER_BABY =
             SET_ABILITY_REGISTRY.register("spider_baby", () -> new SpiderBaby(SetId.SPIDER_BABY.getId()));
 
+    public static final RegistryObject<SetAbility> CONJOINED =
+            SET_ABILITY_REGISTRY.register("conjoined", () -> new Conjoined(SetId.CONJOINED.getId()));
+
 }

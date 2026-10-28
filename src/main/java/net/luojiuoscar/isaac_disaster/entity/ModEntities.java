@@ -13,6 +13,8 @@ import net.luojiuoscar.isaac_disaster.entity.familiar.impl.mom_knife.MomKnifeEnt
 import net.luojiuoscar.isaac_disaster.entity.familiar.impl.brother_bobby.BrotherBobbyEntity;
 import net.luojiuoscar.isaac_disaster.entity.familiar.base.baby.AbstractTearBabyFamiliarEntity;
 import net.luojiuoscar.isaac_disaster.entity.familiar.impl.sister_maggy.SisterMaggyEntity;
+import net.luojiuoscar.isaac_disaster.entity.familiar.impl.ghost_baby.GhostBabyEntity;
+import net.luojiuoscar.isaac_disaster.entity.familiar.impl.harlequin_baby.HarlequinBabyEntity;
 import net.luojiuoscar.isaac_disaster.entity.tnt.GigaBomb;
 import net.luojiuoscar.isaac_disaster.entity.tnt.IsaacBomb;
 import net.minecraft.world.entity.EntityType;
@@ -73,6 +75,20 @@ public class ModEntities {
                             .clientTrackingRange(8)
                             .updateInterval(1)
                             .build("sister_maggy"));
+
+    public static final RegistryObject<EntityType<GhostBabyEntity>> GHOST_BABY =
+            MOD_ENTITIES.register("ghost_baby",
+                    () -> EntityType.Builder.<GhostBabyEntity>of(GhostBabyEntity::new, MobCategory.MISC)
+                            .sized(0.875F * AbstractTearBabyFamiliarEntity.BASE_SCALE, 1.4375F * AbstractTearBabyFamiliarEntity.BASE_SCALE)
+                            .clientTrackingRange(8)
+                            .updateInterval(1)
+                            .build("ghost_baby"));
+
+    public static final RegistryObject<EntityType<HarlequinBabyEntity>> HARLEQUIN_BABY =
+            MOD_ENTITIES.register("harlequin_baby",
+                    () -> EntityType.Builder.<HarlequinBabyEntity>of(HarlequinBabyEntity::new, MobCategory.MISC)
+                            .sized(0.875F * AbstractTearBabyFamiliarEntity.BASE_SCALE, 1.4375F * AbstractTearBabyFamiliarEntity.BASE_SCALE)
+                            .clientTrackingRange(8).updateInterval(1).build("harlequin_baby"));
 
     public static final RegistryObject<EntityType<BlueFlyEntity>> BLUE_FLY =
             MOD_ENTITIES.register("blue_fly",

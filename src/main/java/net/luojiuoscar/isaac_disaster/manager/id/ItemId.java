@@ -244,7 +244,11 @@ public enum ItemId {
     SPIDER_BABY(0),
     MOMS_WIG(2),
     INFESTATION_2(3),
-    BOX_OF_SPIDERS(1);
+    BOX_OF_SPIDERS(1),
+    BROTHER_BOBBY(1),
+    SISTER_MAGGY(1),
+    GHOST_BABY(1),
+    HARLEQUIN_BABY(1);
 
 
 

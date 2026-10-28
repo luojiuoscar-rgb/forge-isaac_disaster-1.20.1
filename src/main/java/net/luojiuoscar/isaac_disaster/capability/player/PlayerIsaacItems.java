@@ -68,11 +68,6 @@ public class PlayerIsaacItems {
         this.trinketCountCache.clear();
     }
 
-    public void clearSetMap(){
-        setCountMap.clear();
-        obtainedSets.clear();
-    }
-
     public List<ItemStack> getPassiveItems(){
         return new ArrayList<>(playerPassiveItems);
     }
@@ -97,8 +92,7 @@ public class PlayerIsaacItems {
     public void clearPlayerPassiveItems(ServerPlayer player){
         // 循环清除最先获取的道具 （用于触发效果）
         while(removeFromIndex(player, 0, false));
-        // 清空哈希表
-        clearSetMap();
+        obtainedSets.clear();
         ForgeEvents.syncItemDataToClient(player);
     }
 
@@ -632,8 +626,7 @@ public class PlayerIsaacItems {
             }
         }
 
-        itemCountCache.clear();
-        trinketCountCache.clear();
+        refreshItemCountCache();
     }
 
 }

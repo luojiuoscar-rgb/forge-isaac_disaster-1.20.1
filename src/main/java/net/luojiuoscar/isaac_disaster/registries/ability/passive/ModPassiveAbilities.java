@@ -815,4 +815,20 @@ public class ModPassiveAbilities {
             PASSIVE_ABILITY_REGISTRY.register("infestation_2",
                     () -> new Infestation2(ItemId.INFESTATION_2.getId(), ItemId.INFESTATION_2.getLevel()));
 
+    public static final RegistryObject<PassiveAbility> BROTHER_BOBBY =
+            PASSIVE_ABILITY_REGISTRY.register("brother_bobby",
+                    () -> new BrotherBobby(ItemId.BROTHER_BOBBY.getId(), ItemId.BROTHER_BOBBY.getLevel()));
+
+    public static final RegistryObject<PassiveAbility> SISTER_MAGGY =
+            PASSIVE_ABILITY_REGISTRY.register("sister_maggy",
+                    () -> new SisterMaggy(ItemId.SISTER_MAGGY.getId(), ItemId.SISTER_MAGGY.getLevel()));
+
+    public static final RegistryObject<PassiveAbility> GHOST_BABY =
+            PASSIVE_ABILITY_REGISTRY.register("ghost_baby",
+                    () -> new GhostBaby(ItemId.GHOST_BABY.getId(), ItemId.GHOST_BABY.getLevel()));
+
+    public static final RegistryObject<PassiveAbility> HARLEQUIN_BABY =
+            PASSIVE_ABILITY_REGISTRY.register("harlequin_baby",
+                    () -> new HarlequinBaby(ItemId.HARLEQUIN_BABY.getId(), ItemId.HARLEQUIN_BABY.getLevel()));
+
 }

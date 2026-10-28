@@ -10,6 +10,7 @@ import net.luojiuoscar.isaac_disaster.client.ModKeyMappings;
 import net.luojiuoscar.isaac_disaster.client.model.creature.FlyModel;
 import net.luojiuoscar.isaac_disaster.client.model.creature.SpiderModel;
 import net.luojiuoscar.isaac_disaster.client.model.familiar.tear_baby.TearBabyModel;
+import net.luojiuoscar.isaac_disaster.client.model.familiar.harlequin_baby.HarlequinBabyModel;
 import net.luojiuoscar.isaac_disaster.client.renderer.familiar.tear_baby.TearBabyRenderer;
 import net.luojiuoscar.isaac_disaster.client.renderer.creature.FlyRenderer;
 import net.luojiuoscar.isaac_disaster.client.renderer.creature.SpiderRenderer;
@@ -52,6 +53,7 @@ public class ClientModEvents {
         event.registerLayerDefinition(FlyModel.LAYER_LOCATION, FlyModel::createBodyLayer);
         event.registerLayerDefinition(SpiderModel.LAYER_LOCATION, SpiderModel::createBodyLayer);
         event.registerLayerDefinition(TearBabyModel.LAYER_LOCATION, TearBabyModel::createBodyLayer);
+        event.registerLayerDefinition(HarlequinBabyModel.LAYER_LOCATION, HarlequinBabyModel::createBodyLayer);
     }
 
     // 订阅实体渲染器注册事件
@@ -65,6 +67,11 @@ public class ClientModEvents {
                 ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "textures/entity/familiar/brother_bobby.png")));
         event.registerEntityRenderer(ModEntities.SISTER_MAGGY.get(), context -> new TearBabyRenderer<>(context,
                 ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "textures/entity/familiar/sister_maggy.png")));
+        event.registerEntityRenderer(ModEntities.GHOST_BABY.get(), context -> new TearBabyRenderer<>(context,
+                ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "textures/entity/familiar/ghost_baby.png")));
+        event.registerEntityRenderer(ModEntities.HARLEQUIN_BABY.get(), context -> new TearBabyRenderer<>(context,
+                ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "textures/entity/familiar/harlequin_baby.png"),
+                new HarlequinBabyModel(context.bakeLayer(HarlequinBabyModel.LAYER_LOCATION))));
         event.registerEntityRenderer(ModEntities.BLUE_FLY.get(), FlyRenderer::new);
         event.registerEntityRenderer(ModEntities.LOCUST_OF_PESTILENCE.get(), FlyRenderer::new);
         event.registerEntityRenderer(ModEntities.LOCUST_OF_FAMINE.get(), FlyRenderer::new);

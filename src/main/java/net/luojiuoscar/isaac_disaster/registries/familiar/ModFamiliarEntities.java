@@ -4,6 +4,8 @@ import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.entity.ModEntities;
 import net.luojiuoscar.isaac_disaster.entity.familiar.impl.brother_bobby.BrotherBobbyEntity;
 import net.luojiuoscar.isaac_disaster.entity.familiar.impl.sister_maggy.SisterMaggyEntity;
+import net.luojiuoscar.isaac_disaster.entity.familiar.impl.ghost_baby.GhostBabyEntity;
+import net.luojiuoscar.isaac_disaster.entity.familiar.impl.harlequin_baby.HarlequinBabyEntity;
 import net.luojiuoscar.isaac_disaster.entity.familiar.impl.fly.BlueFlyEntity;
 import net.luojiuoscar.isaac_disaster.entity.familiar.impl.fly.LocustOfConquestEntity;
 import net.luojiuoscar.isaac_disaster.entity.familiar.impl.fly.LocustOfDeathEntity;
@@ -35,11 +37,19 @@ public final class ModFamiliarEntities {
 
     public static final RegistryObject<FamiliarEntityType> BROTHER_BOBBY =
             FAMILIAR_ENTITY_REGISTRY.register("brother_bobby", () ->
-                    new FamiliarEntityType(ModEntities.BROTHER_BOBBY, BrotherBobbyEntity.class, 64, ModFamiliarLimitGroups.BABIES, 0, false));
+                    new FamiliarEntityType(ModEntities.BROTHER_BOBBY, BrotherBobbyEntity.class, 64, ModFamiliarLimitGroups.BABIES, 0, true));
 
     public static final RegistryObject<FamiliarEntityType> SISTER_MAGGY =
             FAMILIAR_ENTITY_REGISTRY.register("sister_maggy", () ->
-                    new FamiliarEntityType(ModEntities.SISTER_MAGGY, SisterMaggyEntity.class, 64, ModFamiliarLimitGroups.BABIES, 0, false));
+                    new FamiliarEntityType(ModEntities.SISTER_MAGGY, SisterMaggyEntity.class, 64, ModFamiliarLimitGroups.BABIES, 0, true));
+
+    public static final RegistryObject<FamiliarEntityType> GHOST_BABY =
+            FAMILIAR_ENTITY_REGISTRY.register("ghost_baby", () ->
+                    new FamiliarEntityType(ModEntities.GHOST_BABY, GhostBabyEntity.class, 64, ModFamiliarLimitGroups.BABIES, 0, true));
+
+    public static final RegistryObject<FamiliarEntityType> HARLEQUIN_BABY =
+            FAMILIAR_ENTITY_REGISTRY.register("harlequin_baby", () ->
+                    new FamiliarEntityType(ModEntities.HARLEQUIN_BABY, HarlequinBabyEntity.class, 64, ModFamiliarLimitGroups.BABIES, 0, true));
 
     public static final RegistryObject<FamiliarEntityType> BLUE_FLY =
             FAMILIAR_ENTITY_REGISTRY.register("blue_fly", () ->

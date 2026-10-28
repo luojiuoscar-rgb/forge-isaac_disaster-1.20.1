@@ -10,7 +10,8 @@ public enum SetId {
     SERAPHIM,
     OH_CRAP,
     BEELZEBUB,
-    SPIDER_BABY;
+    SPIDER_BABY,
+    CONJOINED;
 
 
     private final int id;

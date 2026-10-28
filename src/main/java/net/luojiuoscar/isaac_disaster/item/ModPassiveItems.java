@@ -819,4 +819,20 @@ public class ModPassiveItems {
             () -> new PassiveItem(new Item.Properties(), ModPassiveAbilities.INFESTATION_2));
     static {ItemListManager.PASSIVE_ITEM_LIST.add(INFESTATION_2);}
 
+    public static final RegistryObject<Item> BROTHER_BOBBY = ITEMS.register("brother_bobby",
+            () -> new PassiveItem(new Item.Properties(), ModPassiveAbilities.BROTHER_BOBBY));
+    static {ItemListManager.PASSIVE_ITEM_LIST.add(BROTHER_BOBBY);}
+
+    public static final RegistryObject<Item> SISTER_MAGGY = ITEMS.register("sister_maggy",
+            () -> new PassiveItem(new Item.Properties(), ModPassiveAbilities.SISTER_MAGGY));
+    static {ItemListManager.PASSIVE_ITEM_LIST.add(SISTER_MAGGY);}
+
+    public static final RegistryObject<Item> GHOST_BABY = ITEMS.register("ghost_baby",
+            () -> new PassiveItem(new Item.Properties(), ModPassiveAbilities.GHOST_BABY));
+    static {ItemListManager.PASSIVE_ITEM_LIST.add(GHOST_BABY);}
+
+    public static final RegistryObject<Item> HARLEQUIN_BABY = ITEMS.register("harlequin_baby",
+            () -> new PassiveItem(new Item.Properties(), ModPassiveAbilities.HARLEQUIN_BABY));
+    static {ItemListManager.PASSIVE_ITEM_LIST.add(HARLEQUIN_BABY);}
+
 }

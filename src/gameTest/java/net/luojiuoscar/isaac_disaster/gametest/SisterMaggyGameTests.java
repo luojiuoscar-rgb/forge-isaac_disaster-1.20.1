@@ -69,15 +69,15 @@ public final class SisterMaggyGameTests {
                 "Maggy is a baby with its own and shared cap of sixty-four");
         try (Fixture f = new Fixture(helper)) {
             f.data.setCount(MAGGY, 100);
-            helper.assertTrue(f.data.getCount(MAGGY) == 64 && f.data.getEffectiveCount(MAGGY) == 64,
+            helper.assertTrue(f.data.getCount(MAGGY) == 100 && f.data.getEffectiveCount(MAGGY) == 64,
                     "Maggy alone cannot exceed its own sixty-four slots");
             f.data.setCount(MAGGY, 0);
             f.data.setCount(BOBBY, 40);
             f.data.setCount(MAGGY, 100);
-            helper.assertTrue(f.data.getCount(MAGGY) == 24 && f.data.getEffectiveCount(MAGGY) == 24,
-                    "Existing Bobby allocation leaves twenty-four slots; babies do not retain overflow requests");
+            helper.assertTrue(f.data.getCount(MAGGY) == 100 && f.data.getEffectiveCount(MAGGY) == 24,
+                    "Existing Bobby allocation leaves twenty-four slots while excess requests wait");
             f.data.setCount(BOBBY, 0);
-            helper.assertTrue(f.data.getEffectiveCount(MAGGY) == 24, "Releasing capacity cannot restore discarded overflow");
+            helper.assertTrue(f.data.getEffectiveCount(MAGGY) == 64, "Releasing capacity activates waiting requests");
             f.data.setCount(MAGGY, 100);
             helper.assertTrue(f.data.getEffectiveCount(MAGGY) == 64, "A new request can use the released capacity");
         }
