@@ -787,13 +787,6 @@ public class ModPassiveItems {
             () -> new PassiveItem(new Item.Properties(), ModPassiveAbilities.SINUS_INFECTION));
     static {ItemListManager.PASSIVE_ITEM_LIST.add(SINUS_INFECTION);}
 
-    public static final RegistryObject<Item> HOLY_LIGHT = ITEMS.register("holy_light",
-            () -> new PassiveItem(new Item.Properties(), ModPassiveAbilities.HOLY_LIGHT));
-    static {ItemListManager.PASSIVE_ITEM_LIST.add(HOLY_LIGHT);}
-
-    public static final RegistryObject<Item> FIRE_MIND = ITEMS.register("fire_mind",
-            () -> new PassiveItem(new Item.Properties(), ModPassiveAbilities.FIRE_MIND));
-    static {ItemListManager.PASSIVE_ITEM_LIST.add(FIRE_MIND);}
     public static final RegistryObject<Item> BFFS = ITEMS.register("bffs",
             () -> new PassiveItem(new Item.Properties(), ModPassiveAbilities.BFFS));
     static {ItemListManager.PASSIVE_ITEM_LIST.add(BFFS);}
@@ -825,5 +818,13 @@ public class ModPassiveItems {
     public static final RegistryObject<Item> INFESTATION_2 = ITEMS.register("infestation_2",
             () -> new PassiveItem(new Item.Properties(), ModPassiveAbilities.INFESTATION_2));
     static {ItemListManager.PASSIVE_ITEM_LIST.add(INFESTATION_2);}
+
+    public static final RegistryObject<Item> HOLY_LIGHT = ITEMS.register("holy_light",
+            () -> new PassiveItem(new Item.Properties(), ModPassiveAbilities.HOLY_LIGHT));
+    static {ItemListManager.PASSIVE_ITEM_LIST.add(HOLY_LIGHT);}
+
+    public static final RegistryObject<Item> FIRE_MIND = ITEMS.register("fire_mind",
+            () -> new PassiveItem(new Item.Properties(), ModPassiveAbilities.FIRE_MIND));
+    static {ItemListManager.PASSIVE_ITEM_LIST.add(FIRE_MIND);}
 
 }
