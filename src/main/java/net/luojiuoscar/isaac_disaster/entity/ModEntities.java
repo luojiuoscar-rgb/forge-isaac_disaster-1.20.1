@@ -11,6 +11,8 @@ import net.luojiuoscar.isaac_disaster.entity.familiar.impl.fly.LocustOfPestilenc
 import net.luojiuoscar.isaac_disaster.entity.familiar.impl.fly.LocustOfWarEntity;
 import net.luojiuoscar.isaac_disaster.entity.familiar.impl.mom_knife.MomKnifeEntity;
 import net.luojiuoscar.isaac_disaster.entity.familiar.impl.brother_bobby.BrotherBobbyEntity;
+import net.luojiuoscar.isaac_disaster.entity.familiar.base.baby.AbstractTearBabyFamiliarEntity;
+import net.luojiuoscar.isaac_disaster.entity.familiar.impl.sister_maggy.SisterMaggyEntity;
 import net.luojiuoscar.isaac_disaster.entity.tnt.GigaBomb;
 import net.luojiuoscar.isaac_disaster.entity.tnt.IsaacBomb;
 import net.minecraft.world.entity.EntityType;
@@ -59,10 +61,18 @@ public class ModEntities {
     public static final RegistryObject<EntityType<BrotherBobbyEntity>> BROTHER_BOBBY =
             MOD_ENTITIES.register("brother_bobby",
                     () -> EntityType.Builder.<BrotherBobbyEntity>of(BrotherBobbyEntity::new, MobCategory.MISC)
-                            .sized(0.875F * BrotherBobbyEntity.BASE_SCALE, 1.4375F * BrotherBobbyEntity.BASE_SCALE)
+                            .sized(0.875F * AbstractTearBabyFamiliarEntity.BASE_SCALE, 1.4375F * AbstractTearBabyFamiliarEntity.BASE_SCALE)
                             .clientTrackingRange(8)
                             .updateInterval(1)
                             .build("brother_bobby"));
+
+    public static final RegistryObject<EntityType<SisterMaggyEntity>> SISTER_MAGGY =
+            MOD_ENTITIES.register("sister_maggy",
+                    () -> EntityType.Builder.<SisterMaggyEntity>of(SisterMaggyEntity::new, MobCategory.MISC)
+                            .sized(0.875F * AbstractTearBabyFamiliarEntity.BASE_SCALE, 1.4375F * AbstractTearBabyFamiliarEntity.BASE_SCALE)
+                            .clientTrackingRange(8)
+                            .updateInterval(1)
+                            .build("sister_maggy"));
 
     public static final RegistryObject<EntityType<BlueFlyEntity>> BLUE_FLY =
             MOD_ENTITIES.register("blue_fly",

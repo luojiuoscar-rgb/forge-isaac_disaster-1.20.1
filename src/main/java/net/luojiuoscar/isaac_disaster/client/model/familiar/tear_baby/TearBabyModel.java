@@ -1,7 +1,7 @@
-package net.luojiuoscar.isaac_disaster.client.model.familiar.brother_bobby;
+package net.luojiuoscar.isaac_disaster.client.model.familiar.tear_baby;
 
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
-import net.luojiuoscar.isaac_disaster.entity.familiar.impl.brother_bobby.BrotherBobbyEntity;
+import net.luojiuoscar.isaac_disaster.entity.familiar.base.baby.AbstractTearBabyFamiliarEntity;
 import net.minecraft.client.animation.KeyframeAnimations;
 import net.minecraft.client.model.HierarchicalModel;
 import net.minecraft.client.model.geom.ModelLayerLocation;
@@ -18,9 +18,10 @@ import org.joml.Vector3f;
 import org.joml.Quaternionf;
 import net.minecraft.util.Mth;
 
-public final class BrotherBobbyModel extends HierarchicalModel<BrotherBobbyEntity> {
+/** Shared exported Bobby/Maggy rig, rather than a required model for all tear babies. */
+public final class TearBabyModel extends HierarchicalModel<AbstractTearBabyFamiliarEntity> {
     public static final ModelLayerLocation LAYER_LOCATION = new ModelLayerLocation(
-            ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "brother_bobby"), "main");
+            ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "tear_baby"), "main");
     private final ModelPart root;
     private final Vector3f animationVector = new Vector3f();
     private final ModelPart body;
@@ -29,7 +30,7 @@ public final class BrotherBobbyModel extends HierarchicalModel<BrotherBobbyEntit
     private final Quaternionf headRotation = new Quaternionf();
     private final Quaternionf composedRotation = new Quaternionf();
 
-    public BrotherBobbyModel(ModelPart root) {
+    public TearBabyModel(ModelPart root) {
         this.root = root;
         body = root.getChild("rig_root").getChild("body");
         head = body.getChild("head");
@@ -70,20 +71,21 @@ public final class BrotherBobbyModel extends HierarchicalModel<BrotherBobbyEntit
     }
 
     @Override
-    public void setupAnim(BrotherBobbyEntity entity, float limbSwing, float limbSwingAmount,
+    public void setupAnim(AbstractTearBabyFamiliarEntity entity, float limbSwing, float limbSwingAmount,
                           float ageInTicks, float netHeadYaw, float headPitch) {
-        float partialTick = entity == null ? 0 : ageInTicks - entity.tickCount;
-        setupPose(ageInTicks, entity == null ? -1 : entity.getAttackAge(partialTick), netHeadYaw, headPitch);
+        float partialTick = ageInTicks - entity.tickCount;
+        setupPose(ageInTicks, entity.getAttackAge(partialTick), netHeadYaw, headPitch);
     }
 
     void setupPose(float ageInTicks, float attackAge, float netHeadYaw, float headPitch) {
         root.getAllParts().forEach(ModelPart::resetPose);
         long timeMillis = (long) ((ageInTicks % 20.0F) * 50.0F);
-        float weight = attackAge < 0 || attackAge >= 10 ? 0 : Mth.clamp(Math.min(attackAge, 10 - attackAge), 0, 1);
+        float duration = AbstractTearBabyFamiliarEntity.ATTACK_DURATION_TICKS;
+        float weight = attackAge < 0 || attackAge >= duration ? 0 : Mth.clamp(Math.min(attackAge, duration - attackAge), 0, 1);
         weight = weight * weight * (3 - 2 * weight);
-        KeyframeAnimations.animate(this, BrotherBobbyAnimations.IDLE, timeMillis, 1 - weight, animationVector);
+        KeyframeAnimations.animate(this, TearBabyAnimations.IDLE, timeMillis, 1 - weight, animationVector);
         if (weight > 0) {
-            KeyframeAnimations.animate(this, BrotherBobbyAnimations.ATTACK, (long) (attackAge * 80), weight, animationVector);
+            KeyframeAnimations.animate(this, TearBabyAnimations.ATTACK, (long) (attackAge * 80), weight, animationVector);
         }
         // Apply gaze in the neutral body frame, preserving the full animated global head rotation.
         bodyRotation.rotationZYX(body.zRot, body.yRot, body.xRot);

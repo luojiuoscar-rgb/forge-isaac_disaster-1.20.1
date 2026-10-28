@@ -23,6 +23,9 @@ public abstract class AbstractBabyFamiliarEntity extends AbstractChainFamiliarEn
 
     protected abstract int attackIntervalTicks();
 
+    /** Called only after a successful attack; concrete babies may start their own animation or sound. */
+    protected void onAttackSucceeded(ServerPlayer owner, Vec3 direction) { }
+
     /** Reference point for position aiming; model-specific familiars may use their neutral head center. */
     protected Vec3 attackOrigin() { return getBoundingBox().getCenter(); }
 
@@ -42,6 +45,7 @@ public abstract class AbstractBabyFamiliarEntity extends AbstractChainFamiliarEn
         if (now == lastAttackTick || now < nextAttackTick || !performAttack(owner, axis)) return false;
         lastAttackTick = now;
         nextAttackTick = now + Math.max(0, attackIntervalTicks());
+        onAttackSucceeded(owner, axis);
         return true;
     }
 

@@ -1,4 +1,4 @@
-package net.luojiuoscar.isaac_disaster.client.model.familiar.brother_bobby;
+package net.luojiuoscar.isaac_disaster.client.model.familiar.tear_baby;
 
 // Exported from Blockbench for Minecraft Forge 1.20.1 (Mojang mappings).
 // Attack Bezier curves are sampled at 60 Hz plus their exact control times.
@@ -8,7 +8,7 @@ import net.minecraft.client.animation.AnimationDefinition;
 import net.minecraft.client.animation.Keyframe;
 import net.minecraft.client.animation.KeyframeAnimations;
 
-public final class BrotherBobbyAnimations {
+public final class TearBabyAnimations {
 	public static final AnimationDefinition IDLE = AnimationDefinition.Builder.withLength(1.0F).looping()
 		.addAnimation("rig_root", new AnimationChannel(AnimationChannel.Targets.POSITION,
 			new Keyframe(0.0F, KeyframeAnimations.posVec(0.0F, 0.0F, 0.0F), AnimationChannel.Interpolations.LINEAR),

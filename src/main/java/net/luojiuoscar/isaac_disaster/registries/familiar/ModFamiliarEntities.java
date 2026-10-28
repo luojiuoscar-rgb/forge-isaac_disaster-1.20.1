@@ -3,6 +3,7 @@ package net.luojiuoscar.isaac_disaster.registries.familiar;
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.entity.ModEntities;
 import net.luojiuoscar.isaac_disaster.entity.familiar.impl.brother_bobby.BrotherBobbyEntity;
+import net.luojiuoscar.isaac_disaster.entity.familiar.impl.sister_maggy.SisterMaggyEntity;
 import net.luojiuoscar.isaac_disaster.entity.familiar.impl.fly.BlueFlyEntity;
 import net.luojiuoscar.isaac_disaster.entity.familiar.impl.fly.LocustOfConquestEntity;
 import net.luojiuoscar.isaac_disaster.entity.familiar.impl.fly.LocustOfDeathEntity;
@@ -35,6 +36,10 @@ public final class ModFamiliarEntities {
     public static final RegistryObject<FamiliarEntityType> BROTHER_BOBBY =
             FAMILIAR_ENTITY_REGISTRY.register("brother_bobby", () ->
                     new FamiliarEntityType(ModEntities.BROTHER_BOBBY, BrotherBobbyEntity.class, 64, ModFamiliarLimitGroups.BABIES, 0, false));
+
+    public static final RegistryObject<FamiliarEntityType> SISTER_MAGGY =
+            FAMILIAR_ENTITY_REGISTRY.register("sister_maggy", () ->
+                    new FamiliarEntityType(ModEntities.SISTER_MAGGY, SisterMaggyEntity.class, 64, ModFamiliarLimitGroups.BABIES, 0, false));
 
     public static final RegistryObject<FamiliarEntityType> BLUE_FLY =
             FAMILIAR_ENTITY_REGISTRY.register("blue_fly", () ->
