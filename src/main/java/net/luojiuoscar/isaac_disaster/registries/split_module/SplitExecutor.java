@@ -41,14 +41,15 @@ public final class SplitExecutor {
      */
     public static void executeAt(@NotNull IBulletObject parent, @NotNull SplitTriggerType triggerType,
                                  @NotNull Vec3 position, @NotNull Vec3 velocity) {
+        // Standalone ordinary tears deliberately have no attack context and nothing to split.
+        SplitSequence sequence = parent.getSplitSequence();
+        if (sequence == null || sequence.isEmpty()) return;
+
         AttackContext parentContext = parent.getAttackContext();
         if (parent.getOwner() == null || parentContext == null) {
             IsaacDisaster.LOGGER.warn("Discarded split request with no owner or attack context");
             return;
         }
-
-        SplitSequence sequence = parent.getSplitSequence();
-        if (sequence == null || sequence.isEmpty()) return;
 
         AttackContext.Builder referenceBuilder = parentContext.toBuilder()
                 .position(position)

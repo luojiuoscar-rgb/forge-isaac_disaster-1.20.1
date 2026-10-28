@@ -7,7 +7,7 @@ import net.luojiuoscar.isaac_disaster.capability.entity.EffectModulesProvider;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerFamiliarData;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerFamiliarDataProvider;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerIsaacItemsProvider;
-import net.luojiuoscar.isaac_disaster.entity.familiar.AbstractIsaacFamiliarEntity;
+import net.luojiuoscar.isaac_disaster.entity.familiar.base.AbstractIsaacFamiliarEntity;
 import net.luojiuoscar.isaac_disaster.effect.ModEffects;
 import net.luojiuoscar.isaac_disaster.entity.fireball.TimedFireball;
 import net.luojiuoscar.isaac_disaster.entity.tnt.BombData;

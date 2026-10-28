@@ -29,7 +29,7 @@ import net.luojiuoscar.isaac_disaster.capability.entity.EffectModulesProvider;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerFamiliarData;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerIsaacItems;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerIsaacItemsProvider;
-import net.luojiuoscar.isaac_disaster.entity.familiar.AbstractIsaacFamiliarEntity;
+import net.luojiuoscar.isaac_disaster.entity.familiar.base.AbstractIsaacFamiliarEntity;
 import net.luojiuoscar.isaac_disaster.effect.ModEffects;
 import net.luojiuoscar.isaac_disaster.event.custom.attack.AttackPlanEvent;
 import net.luojiuoscar.isaac_disaster.event.custom.attack.AttackContextPrepareEvent;

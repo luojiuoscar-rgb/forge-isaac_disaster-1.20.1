@@ -1,6 +1,6 @@
 package net.luojiuoscar.isaac_disaster.registries.trigger_module.impl.normal;
 
-import net.luojiuoscar.isaac_disaster.entity.familiar.AbstractIsaacFamiliarEntity;
+import net.luojiuoscar.isaac_disaster.entity.familiar.base.AbstractIsaacFamiliarEntity;
 import net.luojiuoscar.isaac_disaster.helper.EntityHelper;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.CompositeTrigger;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ContextKeys;

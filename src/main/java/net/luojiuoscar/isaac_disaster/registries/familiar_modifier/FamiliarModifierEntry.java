@@ -1,7 +1,7 @@
 package net.luojiuoscar.isaac_disaster.registries.familiar_modifier;
 
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
-import net.luojiuoscar.isaac_disaster.entity.familiar.AbstractIsaacFamiliarEntity;
+import net.luojiuoscar.isaac_disaster.entity.familiar.base.AbstractIsaacFamiliarEntity;
 
 import java.util.Objects;
 import java.util.function.Predicate;

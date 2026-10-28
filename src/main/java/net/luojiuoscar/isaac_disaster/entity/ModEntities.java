@@ -10,6 +10,7 @@ import net.luojiuoscar.isaac_disaster.entity.familiar.impl.fly.LocustOfFamineEnt
 import net.luojiuoscar.isaac_disaster.entity.familiar.impl.fly.LocustOfPestilenceEntity;
 import net.luojiuoscar.isaac_disaster.entity.familiar.impl.fly.LocustOfWarEntity;
 import net.luojiuoscar.isaac_disaster.entity.familiar.impl.mom_knife.MomKnifeEntity;
+import net.luojiuoscar.isaac_disaster.entity.familiar.impl.brother_bobby.BrotherBobbyEntity;
 import net.luojiuoscar.isaac_disaster.entity.tnt.GigaBomb;
 import net.luojiuoscar.isaac_disaster.entity.tnt.IsaacBomb;
 import net.minecraft.world.entity.EntityType;
@@ -54,6 +55,14 @@ public class ModEntities {
                             .clientTrackingRange(3)
                             .updateInterval(1)
                             .build("mom_knife"));
+
+    public static final RegistryObject<EntityType<BrotherBobbyEntity>> BROTHER_BOBBY =
+            MOD_ENTITIES.register("brother_bobby",
+                    () -> EntityType.Builder.<BrotherBobbyEntity>of(BrotherBobbyEntity::new, MobCategory.MISC)
+                            .sized(0.875F * BrotherBobbyEntity.BASE_SCALE, 1.4375F * BrotherBobbyEntity.BASE_SCALE)
+                            .clientTrackingRange(8)
+                            .updateInterval(1)
+                            .build("brother_bobby"));
 
     public static final RegistryObject<EntityType<BlueFlyEntity>> BLUE_FLY =
             MOD_ENTITIES.register("blue_fly",

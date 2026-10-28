@@ -1,7 +1,7 @@
 package net.luojiuoscar.isaac_disaster.system.familiar;
 
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
-import net.luojiuoscar.isaac_disaster.entity.familiar.AbstractIsaacFamiliarEntity;
+import net.luojiuoscar.isaac_disaster.entity.familiar.base.AbstractIsaacFamiliarEntity;
 import net.luojiuoscar.isaac_disaster.registries.familiar_modifier.FamiliarModifierEntry;
 import net.luojiuoscar.isaac_disaster.registries.familiar_modifier.FamiliarModifierEntry.Parameter;
 import net.luojiuoscar.isaac_disaster.registries.familiar_modifier.ModFamiliarModifiers;

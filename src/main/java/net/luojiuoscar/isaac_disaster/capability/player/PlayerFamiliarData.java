@@ -31,6 +31,7 @@ public class PlayerFamiliarData {
     private final Function<ResourceLocation, FamiliarEntityType> typeResolver;
     private final LinkedHashSet<UUID> pendingRecalls = new LinkedHashSet<>();
     private final Set<UUID> registeredEntityIds = new LinkedHashSet<>();
+    private long runtimeRosterRevision;
     private int nextSpawnIndex;
     private long lastAdmissionTick = Long.MIN_VALUE;
     @Nullable
@@ -101,7 +102,7 @@ public class PlayerFamiliarData {
         if (entry.getEntityCount() >= getEffectiveCount(type))
             throw new IllegalStateException("No allocated familiar slot for " + type);
         entry.addEntity(entityId);
-        registeredEntityIds.add(entityId);
+        if (registeredEntityIds.add(entityId)) runtimeRosterRevision++;
     }
 
     public void removeEntity(ResourceLocation type, UUID entityId) {
@@ -109,7 +110,7 @@ public class PlayerFamiliarData {
         pendingRecalls.remove(entityId);
         FamiliarEntry entry = familiars.get(type);
         if (entry == null) return;
-        if (entry.removeEntity(entityId)) registeredEntityIds.remove(entityId);
+        if (entry.removeEntity(entityId) && registeredEntityIds.remove(entityId)) runtimeRosterRevision++;
         if (entry.getCount() == 0 && entry.hasNoEntities()) familiars.remove(type);
     }
 
@@ -126,11 +127,15 @@ public class PlayerFamiliarData {
         return Collections.unmodifiableSet(registeredEntityIds);
     }
 
+    /** Invalidates formation snapshots even when an unlink/replacement leaves the roster size unchanged. */
+    public long getRuntimeRosterRevision() { return runtimeRosterRevision; }
+
     /** Unlinks all runtime entities after disposal, without changing granted counts. */
     public void clearRuntimeEntities() {
         pendingSpawn = null;
         for (FamiliarEntry entry : familiars.values()) entry.clearEntityIds();
         registeredEntityIds.clear();
+        runtimeRosterRevision++;
         pendingRecalls.clear();
     }
 
@@ -209,6 +214,7 @@ public class PlayerFamiliarData {
         pendingSpawn = null;
         pendingRecalls.clear();
         registeredEntityIds.clear();
+        runtimeRosterRevision++;
         lastAdmissionTick = Long.MIN_VALUE;
         nextSpawnIndex = 0;
         for (FamiliarLimitGroupInstance group : groups.values()) group.clear();

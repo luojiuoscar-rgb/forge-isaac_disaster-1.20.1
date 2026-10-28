@@ -11,7 +11,7 @@ import net.luojiuoscar.isaac_disaster.item.item.PassiveItem;
 import net.luojiuoscar.isaac_disaster.registries.ability.passive.PassiveAbility;
 import net.luojiuoscar.isaac_disaster.effect.custom.DeadlyPoisonEffect;
 import net.luojiuoscar.isaac_disaster.effect.ModEffects;
-import net.luojiuoscar.isaac_disaster.entity.familiar.AbstractIsaacFamiliarEntity;
+import net.luojiuoscar.isaac_disaster.entity.familiar.base.AbstractIsaacFamiliarEntity;
 import net.luojiuoscar.isaac_disaster.entity.familiar.impl.spider.AbstractSpiderFamiliarEntity;
 import net.luojiuoscar.isaac_disaster.helper.FamiliarHelper;
 import net.luojiuoscar.isaac_disaster.manager.ModDamageType;

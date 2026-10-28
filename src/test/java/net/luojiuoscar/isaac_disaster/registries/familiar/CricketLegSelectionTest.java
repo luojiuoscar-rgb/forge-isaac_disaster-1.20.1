@@ -1,6 +1,6 @@
 package net.luojiuoscar.isaac_disaster.registries.familiar;
 
-import net.luojiuoscar.isaac_disaster.entity.familiar.AbstractIsaacFamiliarEntity;
+import net.luojiuoscar.isaac_disaster.entity.familiar.base.AbstractIsaacFamiliarEntity;
 import net.luojiuoscar.isaac_disaster.entity.familiar.Locust;
 import net.luojiuoscar.isaac_disaster.entity.familiar.DisposableFamiliar;
 import net.luojiuoscar.isaac_disaster.entity.familiar.impl.fly.BlueFlyEntity;

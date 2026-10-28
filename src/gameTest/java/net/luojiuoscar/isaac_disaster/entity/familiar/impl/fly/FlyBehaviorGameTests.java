@@ -476,7 +476,7 @@ public final class FlyBehaviorGameTests {
             fly.setOwner(owner);
             fly.setPos(owner.position());
             data.addCount(BLUE_FLY, 1);
-            fly.setFormationIndex(data.getEntry(BLUE_FLY).orElseThrow().getEntityCount());
+            fly.refreshFormationIndex(owner, data.getEntry(BLUE_FLY).orElseThrow().getEntityCount());
             entities.add(fly);
             helper.assertTrue(helper.getLevel().addFreshEntity(fly), "The real server accepts the fly fixture");
             data.registerEntity(BLUE_FLY, fly.getUUID());

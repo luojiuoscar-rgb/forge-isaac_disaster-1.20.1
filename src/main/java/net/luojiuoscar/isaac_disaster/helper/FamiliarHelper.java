@@ -4,7 +4,7 @@ import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.capability.player.FamiliarEntry;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerFamiliarData;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerFamiliarDataProvider;
-import net.luojiuoscar.isaac_disaster.entity.familiar.AbstractIsaacFamiliarEntity;
+import net.luojiuoscar.isaac_disaster.entity.familiar.base.AbstractIsaacFamiliarEntity;
 import net.luojiuoscar.isaac_disaster.registries.familiar.FamiliarEntityType;
 import net.luojiuoscar.isaac_disaster.registries.familiar.FamiliarLimitGroup;
 import net.luojiuoscar.isaac_disaster.registries.familiar.ModFamiliarEntities;
@@ -158,7 +158,7 @@ public final class FamiliarHelper {
         if (familiar == null) return false;
         boolean added = false;
         try {
-            familiar.setFormationIndex(entry.getEntityCount());
+            familiar.refreshFormationIndex(player, entry.getEntityCount());
             data.registerEntity(entry.getType(), familiar.getUUID());
             added = addFamiliarToLevel(player, data, familiar)
                     && entry.getEntityCount() <= data.getEffectiveCount(entry.getType());
@@ -196,7 +196,7 @@ public final class FamiliarHelper {
             boolean committed = false;
             try (var reservation = data.reserveSpawn(typeId, familiar.getUUID())) {
                 if (reservation == null) break;
-                familiar.setFormationIndex(data.getEntry(typeId).map(FamiliarEntry::getEntityCount).orElse(0));
+                familiar.refreshFormationIndex(owner, data.getEntry(typeId).map(FamiliarEntry::getEntityCount).orElse(0));
                 if (addFamiliarToLevel(owner, data, familiar) && reservation.commit()) {
                     committed = true;
                     discardExcessFamiliars(owner, data);
@@ -234,7 +234,7 @@ public final class FamiliarHelper {
     }
 
     /**
-     * Pushes the capability list order into live entities so server-side formation behavior stays deterministic.
+     * Refreshes formation slots using each familiar's own rule.
      */
     public static void syncFormationIndexes(ServerPlayer player, FamiliarEntry entry) {
         for (int i = 0; i < entry.getEntityCount(); i++) {
@@ -242,9 +242,7 @@ public final class FamiliarHelper {
             if (entity instanceof AbstractIsaacFamiliarEntity familiar
                     && familiar.getOwner() == player
                     && entry.getType().equals(familiar.getFamiliarType())) {
-                if (familiar.getFormationIndex() != i) {
-                    familiar.setFormationIndex(i);
-                }
+                familiar.refreshFormationIndex(player, i);
             }
         }
     }

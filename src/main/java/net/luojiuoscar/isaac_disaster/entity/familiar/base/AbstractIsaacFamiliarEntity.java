@@ -1,4 +1,4 @@
-package net.luojiuoscar.isaac_disaster.entity.familiar;
+package net.luojiuoscar.isaac_disaster.entity.familiar.base;
 
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerFamiliarDataProvider;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerAbilityProvider;
@@ -210,11 +210,13 @@ public abstract class AbstractIsaacFamiliarEntity extends Entity {
         entityData.set(VISUAL_SCALE, scale);
     }
 
-    /**
-     * Sets the runtime formation slot assigned by the server.
-     */
-    public void setFormationIndex(int formationIndex) {
-        this.formationIndex = Math.max(0, formationIndex);
+    /** Assigns a slot using this familiar's formation rule instead of caller-side type checks. */
+    public final void refreshFormationIndex(ServerPlayer owner, int typeLocalIndex) {
+        formationIndex = Math.max(0, resolveFormationIndex(owner, Math.max(0, typeLocalIndex)));
+    }
+
+    protected int resolveFormationIndex(ServerPlayer owner, int typeLocalIndex) {
+        return typeLocalIndex;
     }
 
     /**

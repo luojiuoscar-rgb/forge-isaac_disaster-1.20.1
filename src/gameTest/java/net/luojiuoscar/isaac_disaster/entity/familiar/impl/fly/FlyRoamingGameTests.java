@@ -364,7 +364,6 @@ public final class FlyRoamingGameTests {
                 fly.setOwner(owner);
                 fly.setPos(owner.getBoundingBox().getCenter().add(0, -fly.getBbHeight() * 0.5, 0));
                 data.addCount(BLUE_FLY, 1);
-                fly.setFormationIndex(0);
                 entities.add(fly);
                 helper.assertTrue(helper.getLevel().addFreshEntity(fly), "The server accepts the owned roaming fly");
                 data.registerEntity(BLUE_FLY, fly.getUUID());

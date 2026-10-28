@@ -290,7 +290,7 @@ public final class FlyQueueGameTests {
             fly.setOwner(owner);
             fly.setPos(owner.getBoundingBox().getCenter().add(x, -fly.getBbHeight() * 0.5, 0));
             data.addCount(BLUE_FLY, 1);
-            fly.setFormationIndex(order);
+            fly.refreshFormationIndex(owner, data.getEntry(BLUE_FLY).orElseThrow().getEntityCount());
             entities.add(fly);
             helper.assertTrue(helper.getLevel().addFreshEntity(fly), "The queue fly is added");
             data.registerEntity(BLUE_FLY, fly.getUUID());

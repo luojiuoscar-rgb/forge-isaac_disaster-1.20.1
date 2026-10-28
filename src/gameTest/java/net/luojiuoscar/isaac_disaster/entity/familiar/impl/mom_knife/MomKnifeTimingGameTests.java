@@ -264,7 +264,7 @@ public final class MomKnifeTimingGameTests {
             data.addCount(MOM_KNIFE, 1);
             SeededKnife knife = new SeededKnife(helper, seed);
             knife.setOwner(owner);
-            knife.setFormationIndex(data.getEntry(MOM_KNIFE).orElseThrow().getEntityCount());
+            knife.refreshFormationIndex(owner, data.getEntry(MOM_KNIFE).orElseThrow().getEntityCount());
             knife.setPos(owner.position().add(0, owner.getBbHeight() * 0.7, -0.95));
             helper.assertTrue(helper.getLevel().addFreshEntity(knife), "Owned knife enters the level");
             data.registerEntity(MOM_KNIFE, knife.getUUID());

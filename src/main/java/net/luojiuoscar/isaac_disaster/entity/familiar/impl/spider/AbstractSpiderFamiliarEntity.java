@@ -2,7 +2,7 @@ package net.luojiuoscar.isaac_disaster.entity.familiar.impl.spider;
 
 import net.luojiuoscar.isaac_disaster.bullet.collision.SweptCollision;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerFamiliarDataProvider;
-import net.luojiuoscar.isaac_disaster.entity.familiar.AbstractIsaacFamiliarEntity;
+import net.luojiuoscar.isaac_disaster.entity.familiar.base.AbstractIsaacFamiliarEntity;
 import net.luojiuoscar.isaac_disaster.system.damage.ModDamageSources;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
