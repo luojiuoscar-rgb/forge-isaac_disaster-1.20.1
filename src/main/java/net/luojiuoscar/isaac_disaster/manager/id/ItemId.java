@@ -247,7 +247,9 @@ public enum ItemId {
     BOX_OF_SPIDERS(1),
     CRACK_THE_SKY(1),
     HOLY_LIGHT(3),
-    FIRE_MIND(2);
+    FIRE_MIND(2),
+    VIRGO(2),
+    AQUARIUS(2);
 
 
 

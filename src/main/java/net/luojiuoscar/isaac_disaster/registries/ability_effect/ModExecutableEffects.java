@@ -1139,6 +1139,9 @@ public class ModExecutableEffects {
     public static final RegistryObject<IExecutableEffect> FIRE_MIND_ATTACHMENT =
             EXECUTABLE_EFFECT_REGISTRY.register("fire_mind_attachment", FireMindAttachment::new);
 
+    public static final RegistryObject<IExecutableEffect> FIRE_MIND_BURN =
+            EXECUTABLE_EFFECT_REGISTRY.register("fire_mind_burn", FireMindBurn::new);
+
     public static final RegistryObject<IExecutableEffect> FIRE_MIND_IMPACT =
             EXECUTABLE_EFFECT_REGISTRY.register("fire_mind_impact", FireMindImpact::new);
 
@@ -1198,5 +1201,11 @@ public class ModExecutableEffects {
     public static final RegistryObject<IExecutableEffect> CAT =
             EXECUTABLE_EFFECT_REGISTRY.register("cat", () -> new AbilityEffectEntry(SPAWN_BLUE_FLY,
                     ctx -> ctx.set(ContextKeys.TARGET_POSITION, ctx.getEntity().position())));
+
+    public static final RegistryObject<IExecutableEffect> VIRGO =
+            EXECUTABLE_EFFECT_REGISTRY.register("virgo", VirgoShield::new);
+
+    public static final RegistryObject<IExecutableEffect> AQUARIUS =
+            EXECUTABLE_EFFECT_REGISTRY.register("aquarius", Aquarius::new);
 
 }

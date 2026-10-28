@@ -486,6 +486,7 @@ public final class FireMindGameTests {
                     .range(8).speed(2).position(center).mainAxis(new Vec3(1, 0, 0)).color(ModBulletColors.BASE.getId()).build();
             var context = new ExecutableEffectContext(owner);
             context.set(ContextKeys.ATTACK_CONTEXT, attack);
+            context.set(ContextKeys.EFFECT_ATTACHMENT_NODE, attack);
             new FireMindAttachment().apply(context);
             return attack;
         }

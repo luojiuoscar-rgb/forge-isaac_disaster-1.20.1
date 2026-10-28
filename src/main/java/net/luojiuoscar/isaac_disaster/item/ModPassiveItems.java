@@ -827,4 +827,12 @@ public class ModPassiveItems {
             () -> new PassiveItem(new Item.Properties(), ModPassiveAbilities.FIRE_MIND));
     static {ItemListManager.PASSIVE_ITEM_LIST.add(FIRE_MIND);}
 
+    public static final RegistryObject<Item> VIRGO = ITEMS.register("virgo",
+            () -> new PassiveItem(new Item.Properties(), ModPassiveAbilities.VIRGO));
+    static {ItemListManager.PASSIVE_ITEM_LIST.add(VIRGO);}
+
+    public static final RegistryObject<Item> AQUARIUS = ITEMS.register("aquarius",
+            () -> new PassiveItem(new Item.Properties(), ModPassiveAbilities.AQUARIUS));
+    static {ItemListManager.PASSIVE_ITEM_LIST.add(AQUARIUS);}
+
 }

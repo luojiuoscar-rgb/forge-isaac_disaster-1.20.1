@@ -29,6 +29,7 @@ class LeadPencilBurstTest {
         for (int i = 0; i < 1000; i++) {
             AttackContext tear = tear(player, TestAttackTypes.BULLET, ModBulletColors.BASE.getId());
             context.set(ContextKeys.ATTACK_CONTEXT, tear);
+            context.set(ContextKeys.EFFECT_ATTACHMENT_NODE, tear);
             effect.apply(context);
             if (tear.getColorRl().equals(ModBulletColors.BLOOD_TEAR.getId())) red++;
         }
@@ -37,6 +38,7 @@ class LeadPencilBurstTest {
             for (int i = 0; i < 30; i++) {
                 AttackContext projectile = tear(player, type, ModBulletColors.BASE.getId());
                 context.set(ContextKeys.ATTACK_CONTEXT, projectile);
+                context.set(ContextKeys.EFFECT_ATTACHMENT_NODE, projectile);
             effect.apply(context);
                 assertEquals(ModBulletColors.BASE.getId(), projectile.getColorRl());
             }
@@ -44,6 +46,7 @@ class LeadPencilBurstTest {
         for (int i = 0; i < 30; i++) {
             AttackContext poison = tear(player, TestAttackTypes.BULLET, ModBulletColors.POISON.getId());
             context.set(ContextKeys.ATTACK_CONTEXT, poison);
+            context.set(ContextKeys.EFFECT_ATTACHMENT_NODE, poison);
             effect.apply(context);
             assertEquals(ModBulletColors.POISON.getId(), poison.getColorRl());
         }

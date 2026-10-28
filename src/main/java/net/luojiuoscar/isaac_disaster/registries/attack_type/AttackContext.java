@@ -1,6 +1,10 @@
 package net.luojiuoscar.isaac_disaster.registries.attack_type;
 
 import java.util.*;
+import java.util.function.Supplier;
+import net.luojiuoscar.isaac_disaster.system.combat_effect.attachment.EffectAttachmentNode;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.IExecutableEffect;
+import net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerTypes;
 import java.util.HashSet;
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.attribute.ModAttributes;
@@ -22,7 +26,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /** Creation-time data used to construct one attack object. */
-public class AttackContext {
+public class AttackContext implements EffectAttachmentNode {
     public static final double DEFAULT_RANGE = 18.0;
     public static final double DEFAULT_SPEED = 1.0;
     public static final double MIN_RANGE = 1.0;
@@ -107,6 +111,12 @@ public class AttackContext {
     public CompositeTrigger copyTrigger() { return trigger.copy(); }
     public void addSimpleTrigger(SimpleTrigger trigger) { if (ensureMutable("addSimpleTrigger")) this.trigger.add(Objects.requireNonNull(trigger, "trigger")); }
     public void addSimpleTriggers(List<SimpleTrigger> triggers) { if (ensureMutable("addSimpleTriggers")) this.trigger.addAll(Objects.requireNonNull(triggers, "triggers")); }
+
+    @Override
+    public void addStatusEffect(HitPhase phase, Supplier<? extends IExecutableEffect> effect) {
+        addSimpleTrigger(new SimpleTrigger(phase == HitPhase.BEFORE_DAMAGE
+                ? ModTriggerTypes.BULLET_HIT_ENTITY_BEFORE : ModTriggerTypes.BULLET_HIT_ENTITY_AFTER, effect));
+    }
 
     public Vec3 getPos() { return pos; }
     public void setPos(Vec3 pos) { if (ensureMutable("setPos")) this.pos = Objects.requireNonNull(pos, "pos"); }

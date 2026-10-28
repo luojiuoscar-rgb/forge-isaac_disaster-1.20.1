@@ -10,7 +10,7 @@ import java.util.List;
 
 public final class FireMind extends TriggerModule {
     private static final CompositeTrigger TRIGGER = new CompositeTrigger(List.of(
-            new SimpleTrigger(ModTriggerTypes.ATTACK_CONTEXT_PREPARE, ModExecutableEffects.FIRE_MIND_ATTACHMENT),
+            new SimpleTrigger(ModTriggerTypes.EFFECT_ATTACHMENT_PREPARE, ModExecutableEffects.FIRE_MIND_ATTACHMENT),
             new SimpleTrigger(ModTriggerTypes.HIT_ENTITY_RESTRICTED, ModExecutableEffects.FIRE_MIND_IMPACT)
     ));
 

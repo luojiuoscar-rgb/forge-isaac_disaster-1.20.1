@@ -21,7 +21,7 @@ public final class TrajectoryAttachment extends TriggerModule {
     }
 
     private TrajectoryAttachment(TrajectoryAttachmentEffect effect) {
-        super(new CompositeTrigger(List.of(new SimpleTrigger(ModTriggerTypes.ATTACK_CONTEXT_PREPARE,
+        super(new CompositeTrigger(List.of(new SimpleTrigger(ModTriggerTypes.EFFECT_ATTACHMENT_PREPARE,
                 () -> effect))));
     }
 }

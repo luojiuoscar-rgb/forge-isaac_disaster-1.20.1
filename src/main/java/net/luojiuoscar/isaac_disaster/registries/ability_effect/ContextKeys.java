@@ -1,6 +1,7 @@
 package net.luojiuoscar.isaac_disaster.registries.ability_effect;
 
 import java.util.List;
+import net.luojiuoscar.isaac_disaster.system.combat_effect.attachment.EffectAttachmentNode;
 import net.luojiuoscar.isaac_disaster.bullet.core.BulletStickContext;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.profile.PotionProfile;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackContext;
@@ -35,6 +36,7 @@ public final class ContextKeys {
     public static final ContextKey<BulletStickContext> BULLET_STICK = new ContextKey<>();
     public static final ContextKey<ResourceLocation> BULLET_COLOR_ID = new ContextKey<>();
     public static final ContextKey<AttackContext> ATTACK_CONTEXT = new ContextKey<>();
+    public static final ContextKey<EffectAttachmentNode> EFFECT_ATTACHMENT_NODE = new ContextKey<>();
     public static final ContextKey<PeriodicModuleQueue> PERIODIC_MODULE_QUEUE = new ContextKey<>();
     public static final ContextKey<CompositeTriggerView> COMPOSITE_TRIGGER_VIEW = new ContextKey<>();
 

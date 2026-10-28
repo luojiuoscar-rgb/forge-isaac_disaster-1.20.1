@@ -15,6 +15,8 @@ public final class ClientGroundEffectState {
     private final int slot;
     private final int generation;
     private final Vec3 position;
+    private final Vec3 previousRenderPosition;
+    private final double movementStartTick;
     private final double radius;
     private final int lifetime;
     private final long creationOrder;
@@ -39,6 +41,8 @@ public final class ClientGroundEffectState {
         this.slot = entry.slot();
         this.generation = entry.generation();
         this.position = entry.position();
+        this.previousRenderPosition = previous == null ? position : previous.renderPosition(localTick);
+        this.movementStartTick = localTick;
         this.radius = entry.radius();
         this.age = Math.max(0, entry.age());
         this.snapshotAge = this.age;
@@ -70,6 +74,10 @@ public final class ClientGroundEffectState {
     public int slot() { return slot; }
     public int generation() { return generation; }
     public Vec3 position() { return position; }
+    public Vec3 renderPosition(double localTick) {
+        double progress = Math.max(0, Math.min(1, (localTick - movementStartTick) / 2.0D));
+        return previousRenderPosition.lerp(position, progress);
+    }
     public double radius() { return radius; }
     public int lifetime() { return lifetime; }
     public long creationOrder() { return creationOrder; }

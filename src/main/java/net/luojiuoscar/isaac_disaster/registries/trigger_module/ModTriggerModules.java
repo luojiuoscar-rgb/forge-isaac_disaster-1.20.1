@@ -233,4 +233,7 @@ public class ModTriggerModules {
     public static final RegistryObject<TriggerModule> CAT =
             TRIGGER_MODULE_REGISTRY.register("cat", Cat::new);
 
+    public static final RegistryObject<TriggerModule> VIRGO =
+            TRIGGER_MODULE_REGISTRY.register("virgo", Virgo::new);
+
 }

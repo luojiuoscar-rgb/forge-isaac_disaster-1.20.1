@@ -9,7 +9,7 @@ import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerModule;
 
 public final class Haemolacria extends TriggerModule {
     private static final CompositeTrigger TRIGGER = new CompositeTrigger(List.of(
-            new SimpleTrigger(ModTriggerTypes.ATTACK_CONTEXT_PREPARE, ModExecutableEffects.HAEMOLACRIA_ATTACHMENT)
+            new SimpleTrigger(ModTriggerTypes.EFFECT_ATTACHMENT_PREPARE, ModExecutableEffects.HAEMOLACRIA_ATTACHMENT)
     ));
 
     public Haemolacria() {

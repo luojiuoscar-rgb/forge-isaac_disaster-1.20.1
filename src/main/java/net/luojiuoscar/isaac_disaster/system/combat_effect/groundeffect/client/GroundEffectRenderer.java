@@ -52,7 +52,7 @@ public final class GroundEffectRenderer {
                 return owner != null && OwnerHostility.isHostile(minecraft.player.getUUID(),
                         minecraft.player.getTeam(), owner.getUUID(), owner.getTeam());
             });
-            drawPuddle(vertices, pose, state, state.position().subtract(camera),
+            drawPuddle(vertices, pose, state, state.renderPosition(animationTick).subtract(camera),
                     flashing ? pulseBrightness : 1.0F, state.animationScale(animationTick));
         }
         buffers.endBatch(PUDDLE);

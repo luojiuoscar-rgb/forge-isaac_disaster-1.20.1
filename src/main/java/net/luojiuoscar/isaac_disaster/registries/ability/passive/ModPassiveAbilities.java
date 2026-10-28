@@ -822,4 +822,10 @@ public class ModPassiveAbilities {
             PASSIVE_ABILITY_REGISTRY.register("infestation_2",
                     () -> new Infestation2(ItemId.INFESTATION_2.getId(), ItemId.INFESTATION_2.getLevel()));
 
+    public static final RegistryObject<PassiveAbility> VIRGO =
+            PASSIVE_ABILITY_REGISTRY.register("virgo", () -> new Virgo(ItemId.VIRGO.getId(), ItemId.VIRGO.getLevel()));
+
+    public static final RegistryObject<PassiveAbility> AQUARIUS =
+            PASSIVE_ABILITY_REGISTRY.register("aquarius", () -> new Aquarius(ItemId.AQUARIUS.getId(), ItemId.AQUARIUS.getLevel()));
+
 }

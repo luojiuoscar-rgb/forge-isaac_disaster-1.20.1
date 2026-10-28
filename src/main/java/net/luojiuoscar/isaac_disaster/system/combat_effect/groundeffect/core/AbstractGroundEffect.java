@@ -1,11 +1,16 @@
 package net.luojiuoscar.isaac_disaster.system.combat_effect.groundeffect.core;
 
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
 import net.luojiuoscar.isaac_disaster.registries.ground_effect.GroundEffectType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.List;
 import java.util.UUID;
+import java.util.function.Function;
 
 /** Common transient state for a server-owned ground effect instance. */
 public abstract class AbstractGroundEffect {
@@ -14,7 +19,8 @@ public abstract class AbstractGroundEffect {
     private final int generation;
     @Nullable
     private final UUID ownerUuid;
-    private final Vec3 position;
+    private Vec3 position;
+    private boolean pendingPositionSync;
     private final double radius;
     private final int lifetime;
     private final float damage;
@@ -56,6 +62,25 @@ public abstract class AbstractGroundEffect {
     public void onContactEffect(GroundEffectContact contact) { }
 
     public boolean affectsAllLivingEntities() { return false; }
+
+    public boolean canRepaint() { return true; }
+
+    /** Returns the next position, or null to remove an unsupported moving effect. */
+    @Nullable
+    public Vec3 nextPosition(ServerLevel level, Function<AABB, List<LivingEntity>> trackingCandidates) { return position; }
+
+    /** Manager-only relocation; its spatial index must be updated in the same operation. */
+    public final void relocate(Vec3 value) {
+        position = value;
+        pendingPositionSync = true;
+    }
+
+    public final void synchronizePosition() {
+        if (!pendingPositionSync) return;
+        pendingPositionSync = false;
+        markDirty();
+    }
+
 
     public final int slot() {
         return slot;

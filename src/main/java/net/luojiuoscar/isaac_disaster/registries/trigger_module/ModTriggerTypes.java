@@ -8,9 +8,9 @@ public class ModTriggerTypes {
             new TriggerType(ResourceLocation.fromNamespaceAndPath(
                     IsaacDisaster.MOD_ID, "attack_plan"));
 
-    public static final TriggerType ATTACK_CONTEXT_PREPARE =
+    public static final TriggerType EFFECT_ATTACHMENT_PREPARE =
             new TriggerType(ResourceLocation.fromNamespaceAndPath(
-                    IsaacDisaster.MOD_ID, "attack_context_prepare"));
+                    IsaacDisaster.MOD_ID, "effect_attachment_prepare"));
 
     public static final TriggerType BEFORE_PERFORM_ATTACK =
             new TriggerType(ResourceLocation.fromNamespaceAndPath(

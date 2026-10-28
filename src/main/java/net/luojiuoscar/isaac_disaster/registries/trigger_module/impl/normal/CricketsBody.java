@@ -10,7 +10,7 @@ import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerModule;
 /** Attaches Cricket's Body's split behavior during attack preparation. */
 public final class CricketsBody extends TriggerModule {
     private static final CompositeTrigger TRIGGER = new CompositeTrigger(List.of(
-            new SimpleTrigger(ModTriggerTypes.ATTACK_CONTEXT_PREPARE, ModExecutableEffects.CRICKETS_BODY_ATTACHMENT)
+            new SimpleTrigger(ModTriggerTypes.EFFECT_ATTACHMENT_PREPARE, ModExecutableEffects.CRICKETS_BODY_ATTACHMENT)
     ));
     public CricketsBody() {
         super(TRIGGER);

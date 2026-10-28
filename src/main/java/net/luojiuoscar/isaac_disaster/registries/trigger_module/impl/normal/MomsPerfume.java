@@ -11,7 +11,7 @@ import java.util.List;
 
 public class MomsPerfume extends TriggerModule {
     private static final CompositeTrigger TRIGGER = new CompositeTrigger(List.of(
-            new SimpleTrigger(ModTriggerTypes.ATTACK_CONTEXT_PREPARE, ModExecutableEffects.MOMS_PERFUME_ATTACHMENT),
+            new SimpleTrigger(ModTriggerTypes.EFFECT_ATTACHMENT_PREPARE, ModExecutableEffects.MOMS_PERFUME_ATTACHMENT),
             new SimpleTrigger(ModTriggerTypes.HIT_ENTITY_RESTRICTED, ModExecutableEffects.MOMS_PERFUME, context ->
                     context.getEntity().getRandom().nextDouble() < getTriggerChance(context.getEntity()))
     ));

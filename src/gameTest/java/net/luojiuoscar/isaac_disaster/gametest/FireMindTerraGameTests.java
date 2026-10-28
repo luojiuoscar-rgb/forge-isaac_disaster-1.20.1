@@ -236,6 +236,7 @@ public final class FireMindTerraGameTests {
                     .mainAxis(new Vec3(1, 0, 0)).color(ModBulletColors.BASE.getId()).build();
             var preparation = new ExecutableEffectContext(owner);
             preparation.set(ContextKeys.ATTACK_CONTEXT, attack);
+            preparation.set(ContextKeys.EFFECT_ATTACHMENT_NODE, attack);
             new TerraAttachment().apply(preparation);
             if (fireMind) new FireMindAttachment().apply(preparation);
             var bullet = BulletState.from(attack).position(center).velocity(Vec3.ZERO).lifetime(8).build();

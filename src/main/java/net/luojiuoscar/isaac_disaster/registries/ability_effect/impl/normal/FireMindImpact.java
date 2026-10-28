@@ -1,7 +1,5 @@
 package net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.normal;
 
-import net.luojiuoscar.isaac_disaster.effect.ModEffects;
-import net.luojiuoscar.isaac_disaster.effect.custom.BurningEffect;
 import net.luojiuoscar.isaac_disaster.event.custom.attack.IsaacAttackAfterHitEvent;
 import net.luojiuoscar.isaac_disaster.event.custom.attack.IsaacAttackHitBlockEvent;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
@@ -9,12 +7,10 @@ import net.luojiuoscar.isaac_disaster.registries.ability_effect.ContextKeys;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ExecutableEffectContext;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.IAbilityEffect;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ModExecutableEffects;
-import net.luojiuoscar.isaac_disaster.registries.ability_effect.profile.PotionProfile;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.BaseFireBlock;
 import net.minecraftforge.common.util.BlockSnapshot;
@@ -53,17 +49,10 @@ public final class FireMindImpact implements IAbilityEffect {
     }
 
     private static boolean burn(ExecutableEffectContext context, LivingEntity target) {
-        if (!target.isAlive() || target.fireImmune()) return true;
-        var attribute = context.getEntity().getAttribute(Attributes.ATTACK_DAMAGE);
-        int amplifier = BurningEffect.amplifierForDamage(attribute == null ? 0 : attribute.getValue());
-        var existing = target.getEffect(ModEffects.BURNING.get());
-        if (existing != null) amplifier = Math.max(amplifier, existing.getAmplifier());
-        var targetContext = context.copy(target);
-        targetContext.set(ContextKeys.AMPLIFIER, 1.0);
-        targetContext.set(ContextKeys.POTIONS, List.of(new PotionProfile(
-                ModEffects.BURNING.get(), BurningEffect.DURATION, amplifier)));
-        return ModExecutableEffects.POTIONS.get() instanceof IAbilityEffect effect
-                && effect.applyEffect(targetContext);
+        var burnContext = context.copy(context.getEntity());
+        burnContext.set(ContextKeys.SECONDARY_LIVING_ENTITIES, List.of(target));
+        return ModExecutableEffects.FIRE_MIND_BURN.get() instanceof IAbilityEffect effect
+                && effect.applyEffect(burnContext);
     }
 
     private static void placeFire(ServerLevel level, LivingEntity caster, BlockPos position, Direction face) {

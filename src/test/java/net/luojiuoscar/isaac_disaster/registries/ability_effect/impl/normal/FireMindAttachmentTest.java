@@ -94,6 +94,7 @@ class FireMindAttachmentTest {
     private static void prepare(AttackContext attack, double amplifier) {
         var context = new ExecutableEffectContext(attack.getOwner());
         context.set(ContextKeys.ATTACK_CONTEXT, attack);
+        context.set(ContextKeys.EFFECT_ATTACHMENT_NODE, attack);
         context.set(ContextKeys.AMPLIFIER, amplifier);
         new FireMindAttachment().apply(context);
     }

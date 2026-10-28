@@ -9,7 +9,7 @@ import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerModule;
 
 public final class HeadOfTheKeeper extends TriggerModule {
     private static final CompositeTrigger TRIGGER = new CompositeTrigger(List.of(
-            new SimpleTrigger(ModTriggerTypes.ATTACK_CONTEXT_PREPARE, ModExecutableEffects.HEAD_OF_THE_KEEPER_ATTACHMENT)
+            new SimpleTrigger(ModTriggerTypes.EFFECT_ATTACHMENT_PREPARE, ModExecutableEffects.HEAD_OF_THE_KEEPER_ATTACHMENT)
     ));
 
     public HeadOfTheKeeper() { super(TRIGGER); }

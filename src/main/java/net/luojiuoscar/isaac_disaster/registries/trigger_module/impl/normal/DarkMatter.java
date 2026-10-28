@@ -8,7 +8,7 @@ import java.util.List;
 
 public final class DarkMatter extends TriggerModule {
     private static final CompositeTrigger TRIGGER = new CompositeTrigger(List.of(
-            new SimpleTrigger(ModTriggerTypes.ATTACK_CONTEXT_PREPARE, ModExecutableEffects.DARK_MATTER_ATTACHMENT),
+            new SimpleTrigger(ModTriggerTypes.EFFECT_ATTACHMENT_PREPARE, ModExecutableEffects.DARK_MATTER_ATTACHMENT),
             new SimpleTrigger(ModTriggerTypes.HIT_ENTITY_RESTRICTED, ModExecutableEffects.DARK_MATTER,
                     context -> context.getEntity().getRandom().nextDouble() < chance(context.getEntity()))
     ));

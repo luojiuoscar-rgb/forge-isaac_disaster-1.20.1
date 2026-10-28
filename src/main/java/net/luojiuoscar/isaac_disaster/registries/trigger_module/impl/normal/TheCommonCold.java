@@ -9,7 +9,7 @@ import java.util.List;
 
 public class TheCommonCold extends TriggerModule {
     private static final CompositeTrigger TRIGGER = new CompositeTrigger( List.of(
-            new SimpleTrigger(ModTriggerTypes.ATTACK_CONTEXT_PREPARE, ModExecutableEffects.THE_COMMON_COLD_ATTACHMENT),
+            new SimpleTrigger(ModTriggerTypes.EFFECT_ATTACHMENT_PREPARE, ModExecutableEffects.THE_COMMON_COLD_ATTACHMENT),
             new SimpleTrigger(ModTriggerTypes.HIT_ENTITY_RESTRICTED, ModExecutableEffects.THE_COMMON_COLD, context ->
                  context.getEntity().getRandom().nextDouble()
                          < getTriggerChance(context.getEntity()))

@@ -17,6 +17,7 @@ class AttackTypeIdentityTest {
     private static ExecutableEffectContext preparation(AttackContext attack) {
         var context = new ExecutableEffectContext(null);
         context.set(ContextKeys.ATTACK_CONTEXT, attack);
+        context.set(ContextKeys.EFFECT_ATTACHMENT_NODE, attack);
         return context;
     }
 
@@ -53,7 +54,7 @@ class AttackTypeIdentityTest {
         var attachment =
             new TrajectoryAttachment(
                 null, Map.of(type.getRootId(), ResourceLocation.parse("test:laser")));
-        attachment.fire(preparation(context), ModTriggerTypes.ATTACK_CONTEXT_PREPARE);
+        attachment.fire(preparation(context), ModTriggerTypes.EFFECT_ATTACHMENT_PREPARE);
         assertEquals(ResourceLocation.parse("test:laser"), context.getTrajectorySpecs().get(0).id());
         context.freeze();
         context.setAttackType(new BulletAttack(0));
@@ -87,7 +88,7 @@ class AttackTypeIdentityTest {
                     ResourceLocation.parse("test:bullet"),
                     ModAttackTypes.LASER.getId(),
                     ResourceLocation.parse("test:laser")))
-            .fire(preparation(context), ModTriggerTypes.ATTACK_CONTEXT_PREPARE);
+            .fire(preparation(context), ModTriggerTypes.EFFECT_ATTACHMENT_PREPARE);
         assertTrue(context.getTrajectorySpecs().isEmpty());
     }
 

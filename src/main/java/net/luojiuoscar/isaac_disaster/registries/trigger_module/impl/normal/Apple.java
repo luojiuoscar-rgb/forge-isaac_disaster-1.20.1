@@ -10,7 +10,7 @@ import net.minecraft.world.entity.LivingEntity;
 
 public final class Apple extends TriggerModule {
     private static final CompositeTrigger TRIGGER = new CompositeTrigger(List.of(
-            new SimpleTrigger(ModTriggerTypes.ATTACK_CONTEXT_PREPARE, ModExecutableEffects.APPLE_ATTACHMENT)
+            new SimpleTrigger(ModTriggerTypes.EFFECT_ATTACHMENT_PREPARE, ModExecutableEffects.APPLE_ATTACHMENT)
     ));
 
     public Apple() { super(TRIGGER); }

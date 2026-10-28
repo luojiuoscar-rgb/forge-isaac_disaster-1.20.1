@@ -399,8 +399,9 @@ public class TriggerModuleEvents {
         ExecutableEffectContext context = new ExecutableEffectContext(owner);
         context.set(ContextKeys.EVENT, event);
         context.set(ContextKeys.ATTACK_CONTEXT, event.getAttackContext());
+        context.set(ContextKeys.EFFECT_ATTACHMENT_NODE, event.getAttackContext());
         context.set(ContextKeys.TARGET_POSITION, event.getAttackContext().getPos());
-        dispatch(context, ModTriggerTypes.ATTACK_CONTEXT_PREPARE);
+        dispatch(context, ModTriggerTypes.EFFECT_ATTACHMENT_PREPARE);
     }
 
 

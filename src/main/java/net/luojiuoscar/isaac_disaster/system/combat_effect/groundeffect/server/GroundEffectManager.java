@@ -26,6 +26,7 @@ import java.util.Queue;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
+import java.util.function.Function;
 
 /** Server-owned collection of transient, non-entity ground effects. */
 public final class GroundEffectManager {
@@ -44,6 +45,7 @@ public final class GroundEffectManager {
     private final Set<Long> pendingDespawns = new HashSet<>();
     private final Map<ContactKey, Long> nextDamageTick = new HashMap<>();
     private final Map<UUID, Long> nextEffectTick = new HashMap<>();
+    private final Map<TrackingRegion, List<LivingEntity>> trackingQueries = new HashMap<>();
     private int nextSlot;
     private long nextCreationOrder;
     private long gameTick;
@@ -82,7 +84,7 @@ public final class GroundEffectManager {
         AbstractGroundEffect repaint = null;
         for (long id : nearby) {
             AbstractGroundEffect old = effects.get(id);
-            if (old.getType() == type && Objects.equals(ownerUuid, old.ownerUuid())
+            if (old.canRepaint() && old.getType() == type && Objects.equals(ownerUuid, old.ownerUuid())
                     && old.position().equals(position) && old.radius() == radius && old.lifetime() == lifetime
                     && old.damage() == safeDamage && old.animationDurationTicks() == animationDurationTicks) {
                 repaint = old;
@@ -143,6 +145,9 @@ public final class GroundEffectManager {
 
     public void tick(ServerLevel level) {
         gameTick++;
+        trackingQueries.clear();
+        Function<AABB, List<LivingEntity>> trackingCandidates = bounds -> trackingCandidates(bounds,
+                query -> level.getEntitiesOfClass(LivingEntity.class, query, LivingEntity::isAlive));
         nextDamageTick.entrySet().removeIf(entry -> entry.getValue() <= gameTick);
         nextEffectTick.entrySet().removeIf(entry -> entry.getValue() <= gameTick);
         List<AbstractGroundEffect> expired = new ArrayList<>();
@@ -151,8 +156,18 @@ public final class GroundEffectManager {
             // Expiry and support loss win over settlement, including the exact completion tick.
             if (!effect.tick() || (gameTick + effect.slot()) % SUPPORT_CHECK_INTERVAL == 0
                     && !GroundEffectPlacement.hasSupport(level, effect.position())) expired.add(effect);
-            else if (!effect.isSettled() && effect.isAnimationComplete()) completed.add(effect);
+            else {
+                Vec3 next = effect.nextPosition(level, trackingCandidates);
+                if (next == null) {
+                    expired.add(effect);
+                    continue;
+                }
+                relocate(effect, next);
+                if ((gameTick & 1) == 0) effect.synchronizePosition();
+                if (!effect.isSettled() && effect.isAnimationComplete()) completed.add(effect);
+            }
         }
+        trackingQueries.clear();
         expired.forEach(this::remove);
         // shapeSeed preserves the original spawn sequence even after lifetime refreshes and repaints.
         completed.sort(Comparator.comparingLong(AbstractGroundEffect::shapeSeed));
@@ -162,6 +177,23 @@ public final class GroundEffectManager {
             effect.settle(nextCreationOrder++);
         }
         applyContacts(level);
+    }
+
+    // Nearby searches share one section-index query per rounded region, without sharing owner filtering.
+    List<LivingEntity> trackingCandidates(AABB bounds, Function<AABB, List<LivingEntity>> query) {
+        TrackingRegion region = TrackingRegion.covering(bounds);
+        return trackingQueries.computeIfAbsent(region, key -> query.apply(key.bounds()));
+    }
+
+    /** Moves an existing instance without repainting coverage or restarting its lifetime. */
+    public void relocate(AbstractGroundEffect effect, Vec3 position) {
+        if (effect == null || effects.get(effect.identity()) != effect || position == null
+                || !Double.isFinite(position.x) || !Double.isFinite(position.y) || !Double.isFinite(position.z)
+                || effect.position().equals(position)
+                || cellCount(position, effect.radius()) > MAX_CELLS_PER_EFFECT) return;
+        removeFromIndex(effect);
+        effect.relocate(position);
+        addToIndex(effect);
     }
 
     public void remove(AbstractGroundEffect effect) {
@@ -209,6 +241,7 @@ public final class GroundEffectManager {
         spatialIndex.clear();
         nextDamageTick.clear();
         nextEffectTick.clear();
+        trackingQueries.clear();
         freeSlots.clear();
         for (int slot = 0; slot < nextSlot; slot++) freeSlots.add(slot);
     }
@@ -361,4 +394,16 @@ public final class GroundEffectManager {
     }
 
     private record ContactKey(UUID target, @Nullable UUID effectOwner) { }
+
+    private record TrackingRegion(int minX, int minY, int minZ, int maxX, int maxY, int maxZ) {
+        static TrackingRegion covering(AABB bounds) {
+            return new TrackingRegion((int) Math.floor(bounds.minX / 8), (int) Math.floor(bounds.minY),
+                    (int) Math.floor(bounds.minZ / 8), (int) Math.ceil(bounds.maxX / 8),
+                    (int) Math.ceil(bounds.maxY), (int) Math.ceil(bounds.maxZ / 8));
+        }
+
+        AABB bounds() {
+            return new AABB(minX * 8.0, minY, minZ * 8.0, maxX * 8.0, maxY, maxZ * 8.0);
+        }
+    }
 }

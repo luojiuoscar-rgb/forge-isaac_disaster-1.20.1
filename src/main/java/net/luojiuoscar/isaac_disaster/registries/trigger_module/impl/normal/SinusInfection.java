@@ -9,7 +9,7 @@ import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerModule;
 
 public final class SinusInfection extends TriggerModule {
     private static final CompositeTrigger TRIGGER = new CompositeTrigger(List.of(
-            new SimpleTrigger(ModTriggerTypes.ATTACK_CONTEXT_PREPARE,
+            new SimpleTrigger(ModTriggerTypes.EFFECT_ATTACHMENT_PREPARE,
                     ModExecutableEffects.SINUS_INFECTION_ATTACHMENT)));
 
     public SinusInfection() { super(TRIGGER); }

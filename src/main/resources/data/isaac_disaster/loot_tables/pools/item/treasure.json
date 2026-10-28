@@ -3,6 +3,8 @@
     {
       "rolls": 1,
       "entries": [
+        {"type": "minecraft:item", "name": "isaac_disaster:aquarius"},
+        {"type": "minecraft:item", "name": "isaac_disaster:virgo"},
         {"type": "minecraft:item", "name": "isaac_disaster:holy_light"},
         {"type": "minecraft:item", "name": "isaac_disaster:box_of_spiders"},
         {"type": "minecraft:item", "name": "isaac_disaster:infestation_2"},

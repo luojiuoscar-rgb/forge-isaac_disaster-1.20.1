@@ -12,7 +12,7 @@ import java.util.UUID;
 
 /** The first concrete ground effect: a short-lived, damaging water puddle. */
 public final class WaterPuddleEffect extends AbstractGroundEffect {
-    public static final double DEFAULT_RADIUS = 0.5D;
+    public static final double DEFAULT_RADIUS = 0.75D;
     public static final int DEFAULT_LIFETIME = 100;
 
     public WaterPuddleEffect(GroundEffectType<WaterPuddleEffect> type, int slot, int generation,

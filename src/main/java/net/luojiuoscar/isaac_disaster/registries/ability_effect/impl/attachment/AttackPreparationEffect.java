@@ -11,7 +11,7 @@ import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerType;
 public abstract class AttackPreparationEffect implements IExecutableEffect {
     @Override
     public final TriggerType getRequiredTriggerType() {
-        return ModTriggerTypes.ATTACK_CONTEXT_PREPARE;
+        return ModTriggerTypes.EFFECT_ATTACHMENT_PREPARE;
     }
 
     @Override

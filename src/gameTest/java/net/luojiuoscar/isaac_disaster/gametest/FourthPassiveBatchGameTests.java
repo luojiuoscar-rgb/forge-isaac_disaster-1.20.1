@@ -167,7 +167,8 @@ public final class FourthPassiveBatchGameTests {
         double y = attack.getPos().y;
         var context = new ExecutableEffectContext(player);
         context.set(ContextKeys.ATTACK_CONTEXT, attack);
-        TriggerModuleEvents.dispatch(context, ModTriggerTypes.ATTACK_CONTEXT_PREPARE);
+        context.set(ContextKeys.EFFECT_ATTACHMENT_NODE, attack);
+        TriggerModuleEvents.dispatch(context, ModTriggerTypes.EFFECT_ATTACHMENT_PREPARE);
         close(helper, attack.getPos().y, y, "Number One only changes attributes and does not move the launch point");
         equip(player, 2, ModPassiveItems.CRICKETS_BODY.get());
         close(helper, ModAttackTypes.LASER.get().getRange(player), (40 - 2 * StatManager.RANGE.getBonus()) * 0.8 * 0.8, "Range multipliers compose normally for lasers");
@@ -344,7 +345,7 @@ public final class FourthPassiveBatchGameTests {
         var attack = ModAttackTypes.BULLET.get().createAttackContext(player, player);
         var context = new ExecutableEffectContext(player); context.set(ContextKeys.ATTACK_CONTEXT, attack);
         var originalVisuals = attack.getVisualIds();
-        TriggerModuleEvents.dispatch(context, ModTriggerTypes.ATTACK_CONTEXT_PREPARE);
+        TriggerModuleEvents.dispatch(context, ModTriggerTypes.EFFECT_ATTACHMENT_PREPARE);
         helper.assertTrue(attack.getVisualIds().equals(originalVisuals), "Apple keeps the ordinary tear appearance even when its damage effect triggers");
         attack.addSimpleTrigger(new SimpleTrigger(ModTriggerTypes.BULLET_HIT_ENTITY_BEFORE, () -> new IExecutableEffect() {
             @Override
@@ -366,7 +367,7 @@ public final class FourthPassiveBatchGameTests {
         equip(player, 1, ModPassiveItems.TERRA.get());
         var stone = ModAttackTypes.BULLET.get().createAttackContext(player, player);
         var stoneContext = new ExecutableEffectContext(player); stoneContext.set(ContextKeys.ATTACK_CONTEXT, stone);
-        TriggerModuleEvents.dispatch(stoneContext, ModTriggerTypes.ATTACK_CONTEXT_PREPARE);
+        TriggerModuleEvents.dispatch(stoneContext, ModTriggerTypes.EFFECT_ATTACHMENT_PREPARE);
         helper.assertTrue(stone.getVisualIds().contains(ModBulletVisuals.TERRA_ROCK.getId()),
                 "Terra attaches its rock art alongside Apple without losing damage triggers");
         helper.assertTrue(stone.getTrigger().contains(ModExecutableEffects.BREAK_BLOCK_AND_DROP.get()),
@@ -376,7 +377,7 @@ public final class FourthPassiveBatchGameTests {
         equip(player, 1, Items.AIR);
         var ordinary = ModAttackTypes.BULLET.get().createAttackContext(player, player);
         var ordinaryContext = new ExecutableEffectContext(player); ordinaryContext.set(ContextKeys.ATTACK_CONTEXT, ordinary);
-        TriggerModuleEvents.dispatch(ordinaryContext, ModTriggerTypes.ATTACK_CONTEXT_PREPARE);
+        TriggerModuleEvents.dispatch(ordinaryContext, ModTriggerTypes.EFFECT_ATTACHMENT_PREPARE);
         helper.assertTrue(!ordinary.getVisualIds().contains(ModBulletVisuals.TERRA_ROCK.getId()), "Removing Terra restores normal tear visuals");
         target.discard(); helper.succeed();
     }

@@ -206,6 +206,7 @@ public final class HolyLightItemGameTests {
                     .position(f.center.add(-2, .8, 0)).mainAxis(new Vec3(1, 0, 0)).build();
             var preparation = new ExecutableEffectContext(f.owner);
             preparation.set(ContextKeys.ATTACK_CONTEXT, laser);
+            preparation.set(ContextKeys.EFFECT_ATTACHMENT_NODE, laser);
             new HolyLightAttachment().apply(preparation);
             f.owner.getRandom().setSeed(4096);
             ModAttackTypes.TECHNOLOGY2.get().performAttack(List.of(laser));
@@ -232,7 +233,8 @@ public final class HolyLightItemGameTests {
             AttackContext fresh = f.context(ModAttackTypes.BULLET.get());
             var context = new ExecutableEffectContext(f.owner);
             context.set(ContextKeys.ATTACK_CONTEXT, fresh);
-            TriggerModuleEvents.dispatch(context, ModTriggerTypes.ATTACK_CONTEXT_PREPARE);
+            context.set(ContextKeys.EFFECT_ATTACHMENT_NODE, fresh);
+            TriggerModuleEvents.dispatch(context, ModTriggerTypes.EFFECT_ATTACHMENT_PREPARE);
             helper.assertTrue(!fresh.copyTrigger().getView().contains(ModExecutableEffects.HOLY_LIGHT_IMPACT.get()), "New tears no longer gain the effect");
             Cow target = f.cow(f.center);
             f.bullets.spawn(f.bullet(saved, f.center.add(-1.5, .8, 0), new Vec3(2, 0, 0), false));

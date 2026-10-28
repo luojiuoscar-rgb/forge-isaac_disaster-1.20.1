@@ -8,7 +8,7 @@ import java.util.List;
 
 public final class MomsContacts extends TriggerModule {
     private static final CompositeTrigger TRIGGER = new CompositeTrigger(List.of(
-            new SimpleTrigger(ModTriggerTypes.ATTACK_CONTEXT_PREPARE, ModExecutableEffects.MOMS_CONTACTS_ATTACHMENT),
+            new SimpleTrigger(ModTriggerTypes.EFFECT_ATTACHMENT_PREPARE, ModExecutableEffects.MOMS_CONTACTS_ATTACHMENT),
             new SimpleTrigger(ModTriggerTypes.HIT_ENTITY_RESTRICTED, ModExecutableEffects.MOMS_CONTACTS,
                     context -> context.getEntity().getRandom().nextDouble() < chance(context.getEntity()))
     ));

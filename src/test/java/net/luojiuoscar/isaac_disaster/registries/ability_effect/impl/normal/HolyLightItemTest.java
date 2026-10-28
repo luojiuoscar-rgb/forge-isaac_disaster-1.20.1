@@ -76,6 +76,7 @@ class HolyLightItemTest {
             AttackContext tear = tear(player, TestAttackTypes.BULLET, ModBulletColors.BASE.getId());
             var context = new ExecutableEffectContext(player);
             context.set(ContextKeys.ATTACK_CONTEXT, tear);
+            context.set(ContextKeys.EFFECT_ATTACHMENT_NODE, tear);
             context.set(ContextKeys.AMPLIFIER, 100.0);
             effect.apply(context);
             boolean success = i % 2 == 0;
@@ -98,6 +99,7 @@ class HolyLightItemTest {
             AttackContext tear = tear(player, TestAttackTypes.BULLET, color.getId());
             var context = new ExecutableEffectContext(player);
             context.set(ContextKeys.ATTACK_CONTEXT, tear);
+            context.set(ContextKeys.EFFECT_ATTACHMENT_NODE, tear);
             effect.apply(context);
             assertEquals(color.getId(), tear.getColorRl());
             assertEquals(2, triggers(tear).size());
@@ -111,6 +113,7 @@ class HolyLightItemTest {
         AttackContext parent = tear(player, TestAttackTypes.BULLET, ModBulletColors.BASE.getId());
         var context = new ExecutableEffectContext(player);
         context.set(ContextKeys.ATTACK_CONTEXT, parent);
+        context.set(ContextKeys.EFFECT_ATTACHMENT_NODE, parent);
         new HolyLightAttachment().apply(context);
         AttackContext child = parent.toBuilder().damage(3.5).build();
         assertEquals(2, triggers(child).size());
@@ -128,6 +131,7 @@ class HolyLightItemTest {
             AttackContext laser = tear(player, type, ModBulletColors.BLOOD_TEAR.getId());
             var context = new ExecutableEffectContext(player);
             context.set(ContextKeys.ATTACK_CONTEXT, laser);
+            context.set(ContextKeys.EFFECT_ATTACHMENT_NODE, laser);
             effect.apply(context);
             assertEquals(0, player.randomSource.rolls);
             assertEquals(ModBulletColors.BLOOD_TEAR.getId(), laser.getColorRl());

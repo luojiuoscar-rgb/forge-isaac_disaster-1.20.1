@@ -29,7 +29,9 @@ class GroundEffectStateTest {
 
         assertTrue(effect.contains(new Vec3(4.4, 100, -2)));
         assertTrue(effect.contains(new Vec3(4, -50, -2.4)));
-        assertFalse(effect.contains(new Vec3(4.51, 12, -2)));
+        assertEquals(0.75D, effect.radius());
+        assertTrue(effect.contains(new Vec3(4.6, 12, -2)));
+        assertFalse(effect.contains(new Vec3(4 + WaterPuddleEffect.DEFAULT_RADIUS + 0.01, 12, -2)));
     }
 
     @Test

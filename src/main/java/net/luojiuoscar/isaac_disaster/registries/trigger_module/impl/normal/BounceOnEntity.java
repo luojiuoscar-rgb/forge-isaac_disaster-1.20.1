@@ -8,7 +8,7 @@ import java.util.List;
 
 public class BounceOnEntity extends TriggerModule {
     private static final CompositeTrigger TRIGGER = new CompositeTrigger(List.of(
-            new SimpleTrigger(ModTriggerTypes.ATTACK_CONTEXT_PREPARE, ModExecutableEffects.BOUNCE_ON_ENTITY_ATTACHMENT)
+            new SimpleTrigger(ModTriggerTypes.EFFECT_ATTACHMENT_PREPARE, ModExecutableEffects.BOUNCE_ON_ENTITY_ATTACHMENT)
     ));
 
     public BounceOnEntity() {
