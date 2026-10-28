@@ -8,7 +8,6 @@ import net.luojiuoscar.isaac_disaster.registries.attack_type.ModAttackTypes;
 import net.luojiuoscar.isaac_disaster.registries.split_module.SplitSequence;
 import net.luojiuoscar.isaac_disaster.registries.split_module.SplitTriggerCounts;
 import net.luojiuoscar.isaac_disaster.registries.trajectory.TrajectoryRuntime;
-import net.luojiuoscar.isaac_disaster.registries.trajectory.TrajectorySequence;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 
@@ -23,6 +22,8 @@ final class PlayerMomsKnifeAttackState {
     final SplitTriggerCounts splitCounts = new SplitTriggerCounts();
     final BulletCollisionState collisions = new BulletCollisionState(Set.of());
     final TrajectoryRuntime trajectory;
+    final PlayerMomsKnifeTrail trail = new PlayerMomsKnifeTrail();
+    PlayerMomsKnifeTrail.Path contactPath;
     final double range;
     Vec3 velocity;
     Vec3 acceleration = Vec3.ZERO;
@@ -33,6 +34,7 @@ final class PlayerMomsKnifeAttackState {
     PlayerMomsKnifeAttackState(@Nullable AttackContext source, Vec3 origin, Vec3 direction, double range, Vec3 velocity) {
         this.range = range;
         this.velocity = velocity;
+        contactPath = new PlayerMomsKnifeTrail.Path(List.of(PlayerMomsKnifeMotion.blade(origin, direction)));
         triggers = source == null ? new CompositeTrigger() : source.getTrigger().copy();
         if (source == null) context = null;
         else {
@@ -40,10 +42,10 @@ final class PlayerMomsKnifeAttackState {
             triggers.removeAll(ModExecutableEffects.BULLET_BOUNCE_ON_ENTITY.get());
             context = source.toBuilder().attackType(ModAttackTypes.MOMS_KNIFE.get())
                     .position(origin).direction(direction).trigger(triggers)
-                    .splitSequence(new SplitSequence()).trajectorySequence(new TrajectorySequence()).build();
+                    .splitSequence(new SplitSequence()).build();
             context.freeze();
         }
-        trajectory = new TrajectoryRuntime(origin, direction, List.of());
+        trajectory = new TrajectoryRuntime(origin, direction, context == null ? List.of() : context.getTrajectorySpecs());
         trajectory.kinematics().position(origin);
         trajectory.kinematics().velocity(velocity);
     }
@@ -53,6 +55,7 @@ final class PlayerMomsKnifeAttackState {
         lastFrame = now;
         age++;
         collisions.damagedEntities().clear();
+        contactPath = new PlayerMomsKnifeTrail.Path(path);
         Vec3 end = path.get(path.size() - 1).anchor();
         Vec3 next = end.subtract(path.get(0).anchor());
         acceleration = next.subtract(velocity);

@@ -51,6 +51,8 @@ public final class ModTrajectoryModules {
             registerBuiltin("tiny_planet_bullet", TinyPlanetBulletTrajectoryModule::new);
     public static final RegistryObject<TrajectoryModule<?>> TINY_PLANET_LASER =
             registerBuiltin("tiny_planet_laser", TinyPlanetLaserTrajectoryModule::new);
+    public static final RegistryObject<TrajectoryModule<?>> TINY_PLANET_RETURNING_MOMS_KNIFE =
+            registerBuiltin("tiny_planet_returning_moms_knife", TinyPlanetReturningMomsKnifeTrajectoryModule::new);
     public static final RegistryObject<TrajectoryModule<?>> RING_WORM =
             registerBuiltin("ring_worm", RingWormTrajectoryModule::new);
     public static final RegistryObject<TrajectoryModule<?>> OUROBOROS_WORM =

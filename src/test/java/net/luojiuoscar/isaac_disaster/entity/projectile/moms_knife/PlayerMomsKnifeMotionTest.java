@@ -9,6 +9,36 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class PlayerMomsKnifeMotionTest {
     @Test
+    void entityPaddingCatchesGrazingTargetsWithoutFillingTheCircleOrWideningBlocks() {
+        var blade = PlayerMomsKnifeMotion.blade(new Vec3(3, 0, 0), new Vec3(0, 0, 1));
+        var grazing = new AABB(3.19, -0.01, 0.4, 3.21, 0.01, 0.5);
+        assertFalse(PlayerMomsKnifeMotion.contacts(blade, blade, grazing));
+        assertTrue(PlayerMomsKnifeMotion.contacts(blade, blade, grazing, 0.17));
+        assertNull(PlayerMomsKnifeBlockContacts.contact(blade, blade, grazing));
+        assertFalse(PlayerMomsKnifeMotion.contacts(blade, blade,
+                new AABB(3.3, -0.01, 0.4, 3.32, 0.01, 0.5), 0.17));
+        assertFalse(PlayerMomsKnifeMotion.contacts(blade, blade,
+                new AABB(1.4, -0.01, 0.4, 1.6, 0.01, 0.5), 0.17));
+        assertEquals(0.08, blade.radius());
+    }
+
+    @Test
+    void paddedSweepHitsFastGrazesInAnyPlaneWithoutChangingItsPath() {
+        for (float yaw : new float[]{0, 65, 170}) for (float pitch : new float[]{-90, 0, 90}) {
+            Vec3 axis = PlayerMomsKnifeMotion.toWorld(new Vec3(0, 0, 1), yaw, pitch);
+            Vec3 right = PlayerMomsKnifeMotion.toWorld(new Vec3(1, 0, 0), yaw, pitch);
+            Vec3 normal = axis.cross(right).normalize();
+            var from = PlayerMomsKnifeMotion.blade(Vec3.ZERO, axis);
+            var to = PlayerMomsKnifeMotion.blade(right.scale(8), axis);
+            Vec3 center = right.scale(4).add(axis.scale(0.5)).add(normal.scale(0.2));
+            AABB target = new AABB(center, center).inflate(0.005);
+            assertFalse(PlayerMomsKnifeMotion.contacts(from, to, target));
+            assertTrue(PlayerMomsKnifeMotion.contacts(from, to, target, 0.17));
+            assertEquals(right.scale(8), to.anchor());
+        }
+    }
+
+    @Test
     void rangeUsesHalfThePanelRangeBeforeApplyingTheChargeFraction() {
         assertEquals(6, PlayerMomsKnifeMotion.range(12, 1));
         assertEquals(3, PlayerMomsKnifeMotion.range(12, 0.5));

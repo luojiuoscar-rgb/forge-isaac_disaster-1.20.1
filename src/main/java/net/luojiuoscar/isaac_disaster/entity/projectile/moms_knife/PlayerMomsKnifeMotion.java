@@ -11,6 +11,8 @@ import net.minecraft.world.phys.Vec3;
 /** Radial flight and blade geometry shared by authoritative collision and client presentation. */
 public final class PlayerMomsKnifeMotion {
     public static final Vec3 FORWARD = new Vec3(0, 0, 1);
+    public static final double ENTITY_HIT_RADIUS = 0.25;
+    public static final double ENTITY_HIT_PADDING = ENTITY_HIT_RADIUS - MomKnifePose.BLADE_RADIUS;
     private PlayerMomsKnifeMotion() {}
 
     public static double range(double playerRange, double chargeFraction) {
@@ -50,7 +52,7 @@ public final class PlayerMomsKnifeMotion {
 
     public static Vec3 unit(Vec3 direction) {
         return Double.isFinite(direction.lengthSqr()) && direction.lengthSqr() > 1.0E-12
-                ? direction.normalize() : FORWARD;
+                ? direction.scale(1 / Math.sqrt(direction.lengthSqr())) : FORWARD;
     }
 
     /** Uses a yaw-defined right axis so looking straight up or down does not flip the local frame. */
@@ -157,7 +159,12 @@ public final class PlayerMomsKnifeMotion {
 
     /** Samples along the blade as it sweeps, rather than testing only its tip or two diagonals. */
     public static boolean contacts(Blade from, Blade to, AABB target) {
-        double radius = Math.max(from.radius(), to.radius());
+        return contacts(from, to, target, 0);
+    }
+
+    public static boolean contacts(Blade from, Blade to, AABB target, double padding) {
+        padding = Double.isFinite(padding) ? Math.max(0, padding) : 0;
+        double radius = Math.max(from.radius(), to.radius()) + padding;
         AABB expanded = target.inflate(radius);
         if (SweptCollision.segmentAabb(from.base(), from.tip(), expanded).hit()
                 || SweptCollision.segmentAabb(to.base(), to.tip(), expanded).hit()) return true;

@@ -543,7 +543,7 @@ public final class PlayerMomsKnifeSynergyGameTests {
         });
         helper.runAfterDelay(22, () -> {
             try {
-                helper.assertTrue(extraCount(f) == 15, "A single ten-shot Brimstone barrage joins the five immediate extras");
+                helper.assertTrue(extraCount(f) == 10, "A seven-tick wait adds five Brimstone shots to the five immediate extras");
                 helper.assertTrue(countEvents.get() == 1 && HeldMomsKnifeGroup.knives(f.owner).size() == 16,
                         "Extras neither reroll the count nor overwrite held slots");
                 helper.succeed();

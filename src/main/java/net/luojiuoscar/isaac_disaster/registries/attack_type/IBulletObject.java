@@ -52,6 +52,9 @@ public interface IBulletObject {
 
     double getRange();
 
+    /** Remaining path budget for trajectory sampling; time-controlled attacks may be unbounded. */
+    default double getRemainingTrajectoryDistance() { return Math.max(0, getRange() - getTraveled()); }
+
     Vec3 getPosition();
 
     @Nullable

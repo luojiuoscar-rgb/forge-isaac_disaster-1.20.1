@@ -194,7 +194,7 @@ public final class HeldMomsKnifeGroup {
     /** Launches confirmed entities in context order without replacing missing entries. */
     @Nullable
     public static AttackContext launch(ServerPlayer player, List<QueuedKnife> queue, List<AttackContext> contexts,
-                                double charge, int barrageCount) {
+                                double charge, boolean triggerBarrage) {
         if (queue.size() != contexts.size()) throw new IllegalArgumentException("prepared knife queue size changed");
         AttackContext firstLaunched = null;
         for (int index = 0; index < queue.size(); index++) {
@@ -208,7 +208,7 @@ public final class HeldMomsKnifeGroup {
             if (entry == null) continue;
             knife.configureHeld(slot, entry.offset(), entry.direction());
             if (knife.launch(PlayerMomsKnifeMotion.range(context.getBulletRange(), charge), context.getBulletSpeed(),
-                    context, firstLaunched == null ? barrageCount : 0)) {
+                    context, firstLaunched == null && triggerBarrage)) {
                 if (firstLaunched == null) firstLaunched = context;
             }
         }

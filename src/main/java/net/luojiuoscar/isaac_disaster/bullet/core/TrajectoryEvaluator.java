@@ -1,9 +1,13 @@
 package net.luojiuoscar.isaac_disaster.bullet.core;
 
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.IBulletObject;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.ModAttackTypes;
@@ -36,9 +40,9 @@ public final class TrajectoryEvaluator {
     /** Each attached prelude owns its distance once; inherited progress is already completed work. */
     public static double remainingFreeDistance(
         IBulletObject bullet,
-        java.util.function.Function<ResourceLocation, TrajectoryModule<?>> modules) {
+        Function<ResourceLocation, TrajectoryModule<?>> modules) {
         double total = 0;
-        var seen = new java.util.HashSet<ResourceLocation>();
+        var seen = new HashSet<ResourceLocation>();
         List<TrajectorySpec> specs = bullet.getTrajectorySpecs();
         boolean hasPrimary =
             specs.stream()
@@ -67,10 +71,15 @@ public final class TrajectoryEvaluator {
     public static void initialize(IBulletObject bullet) {
         IForgeRegistry<TrajectoryModule<?>> registry =
             RegistryManager.ACTIVE.getRegistry(ModTrajectoryModules.TRAJECTORY_MODULE_KEY);
-        if (registry == null) return;
+        initialize(bullet, id -> registry == null ? null : registry.getValue(id));
+    }
+
+    public static void initialize(
+            IBulletObject bullet,
+            Function<ResourceLocation, TrajectoryModule<?>> modules) {
         for (TrajectorySpec spec : bullet.getTrajectorySpecs()) {
-            TrajectoryModule<?> module = registry.getValue(spec.id());
-            if (module == null) continue;
+            TrajectoryModule<?> module = modules.apply(spec.id());
+            if (module == null || !module.appliesTo(bullet)) continue;
             TrajectoryState state =
                 bullet.getTrajectoryRuntime().ensureState(spec.id(), module);
             module.initialize(
@@ -106,15 +115,16 @@ public final class TrajectoryEvaluator {
         Vec3 baseVelocity,
         double baseProgress,
         double deltaTicks,
-        java.util.function.Function<ResourceLocation, TrajectoryModule<?>> modules) {
+        Function<ResourceLocation, TrajectoryModule<?>> modules) {
         var shot = bullet.getTrajectoryRuntime();
         List<TrajectorySpec> all = shot.specs();
         Map<ResourceLocation, TrajectoryState> states = shot.states();
         Vec3 anchor = shot.anchor();
         List<TrajectorySpec> offsets =
             all.stream()
-                .filter(s -> modules.apply(s.id()) instanceof OffsetTrajectoryModule)
-                .sorted(java.util.Comparator.comparing(s -> s.id().toString()))
+                .filter(s -> modules.apply(s.id()) instanceof OffsetTrajectoryModule<?> module
+                        && module.appliesTo(bullet))
+                .sorted(Comparator.comparing(s -> s.id().toString()))
                 .toList();
         if (offsets.isEmpty())
             return evaluatePrimary(
@@ -175,12 +185,12 @@ public final class TrajectoryEvaluator {
         Vec3 baseVelocity,
         double baseProgress,
         double deltaTicks,
-        java.util.function.Function<ResourceLocation, TrajectoryModule<?>> modules,
+        Function<ResourceLocation, TrajectoryModule<?>> modules,
         TrajectoryKinematics kinematics) {
         Map<ResourceLocation, TrajectoryState> runtimeStates = states;
-        var active = new java.util.ArrayList<>(specs);
+        var active = new ArrayList<>(specs);
         active.sort(
-            java.util.Comparator.comparingInt(
+            Comparator.comparingInt(
                     (TrajectorySpec spec) -> {
                         TrajectoryModule<?> module = modules.apply(spec.id());
                         return module == null ? Integer.MIN_VALUE : module.priority();
@@ -375,7 +385,7 @@ public final class TrajectoryEvaluator {
             .getTrajectoryRuntime()
             .compositionVelocityOffset(hasAbsoluteController ? relativeVelocityResidual : Vec3.ZERO);
         if (gravityApplied) {
-            double remaining = Math.max(0, bullet.getRange() - bullet.getTraveled());
+            double remaining = bullet.getRemainingTrajectoryDistance();
             if (rangeCost > remaining) {
                 desiredPosition = position.lerp(desiredPosition, remaining / rangeCost);
                 rangeCost = remaining;
@@ -383,7 +393,7 @@ public final class TrajectoryEvaluator {
         }
         if (sampledEndpoint != null) {
             Vec3 correction = desiredPosition.subtract(sampledEndpoint);
-            java.util.ArrayList<Vec3> combined = new java.util.ArrayList<>();
+            ArrayList<Vec3> combined = new ArrayList<>();
             for (int i = 0; i < sampledPath.size(); i++) {
                 combined.add(sampledPath.get(i).add(correction.scale((i + 1.0) / sampledPath.size())));
             }

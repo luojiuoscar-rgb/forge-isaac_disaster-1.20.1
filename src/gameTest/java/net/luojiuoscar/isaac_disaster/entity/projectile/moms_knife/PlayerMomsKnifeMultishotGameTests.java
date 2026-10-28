@@ -261,7 +261,7 @@ public final class PlayerMomsKnifeMultishotGameTests {
         helper.runAfterDelay(15, () -> {
             try {
                 long extras = f.knives().stream().filter(k -> k.getMode() == PlayerMomsKnifeEntity.Mode.ONE_WAY).count();
-                helper.assertTrue(extras == 10, "Sixteen main knives must add ten extras, not one hundred sixty: " + extras);
+                helper.assertTrue(extras == 3, "A two-tick wait adds three extras once for the entire group: " + extras);
                 helper.assertTrue(HeldMomsKnifeGroup.knives(f.owner).size() == 16, "Barrage knives never occupy held slots");
                 helper.succeed();
             } finally { f.close(); }

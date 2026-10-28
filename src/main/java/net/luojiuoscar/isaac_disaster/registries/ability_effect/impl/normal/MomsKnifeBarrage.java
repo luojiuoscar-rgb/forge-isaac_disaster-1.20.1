@@ -13,16 +13,14 @@ import net.luojiuoscar.isaac_disaster.registries.attack_type.impl.MomsKnifeAttac
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
 
 public final class MomsKnifeBarrage implements IAbilityEffect {
     public static final ResourceLocation SCHEDULE_TYPE =
             ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "moms_knife_barrage");
 
-    public static int countForCharge(double chargeFraction) {
-        double charge = Double.isFinite(chargeFraction) ? Mth.clamp(chargeFraction, 0, 1) : 0;
-        return 2 + (int) Math.floor(8 * charge);
+    public static int countForWaitTicks(long ticks) {
+        return (int) Math.min(Integer.MAX_VALUE, 2 + Math.max(0, ticks) / 2);
     }
 
     @Override

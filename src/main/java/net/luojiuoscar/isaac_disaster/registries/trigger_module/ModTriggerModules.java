@@ -24,21 +24,16 @@ public class ModTriggerModules {
     public static final RegistryObject<TriggerModule> TINY_PLANET =
         TRIGGER_MODULE_REGISTRY.register(
             "tiny_planet",
-            () ->
-                new TrajectoryAttachment(
-                    null,
-                    Map.of(
+            () -> new TrajectoryAttachment(null, Map.of(
                         ModAttackTypes.BULLET.getId(),
                             ModTrajectoryModules.TINY_PLANET_BULLET.getId(),
                         ModAttackTypes.LASER.getId(),
-                            ModTrajectoryModules.TINY_PLANET_LASER.getId())));
+                            ModTrajectoryModules.TINY_PLANET_LASER.getId(),
+                        ModAttackTypes.MOMS_KNIFE.getId(),
+                            ModTrajectoryModules.TINY_PLANET_RETURNING_MOMS_KNIFE.getId())));
     public static final RegistryObject<TriggerModule> MY_REFLECTION =
         TRIGGER_MODULE_REGISTRY.register(
-            "my_reflection",
-            () ->
-                new TrajectoryAttachment(
-                    null,
-                    Map.of(
+            "my_reflection", () -> new TrajectoryAttachment(null, Map.of(
                         ModAttackTypes.BULLET.getId(),
                             ModTrajectoryModules.MY_REFLECTION_BULLET.getId(),
                         ModAttackTypes.LASER.getId(),

@@ -45,7 +45,7 @@ final class TrajectoryOffsetEvaluator {
             previous = point;
         }
         double sourceCost = main.chargedDistance(sourceLength);
-        double remaining = Math.max(0.0D, bullet.getRange() - bullet.getTraveled());
+        double remaining = bullet.getRemainingTrajectoryDistance();
         double amplitude =
             offsets.stream().mapToDouble(o -> o.module.amplitude(o.amplifier) * 2.0D).sum();
         double resolution = 0.05D / (1.0D + amplitude);

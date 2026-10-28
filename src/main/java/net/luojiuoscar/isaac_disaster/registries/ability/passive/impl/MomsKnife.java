@@ -50,7 +50,8 @@ public final class MomsKnife extends PassiveAbility {
         if (ClientDataManager.getInstance().getItemCount(ModPassiveItems.C_SECTION.getId()) > 0) return description;
         if (ClientDataManager.getInstance().getItemCount(ModPassiveItems.BRIMSTONE.getId()) > 0) {
             description.addAll(DescriptionHelper.getSynergyDesc(Component.translatable("item.isaac_disaster.brimstone"), List.of(
-                    Component.translatable("item.isaac_disaster.moms_knife.synergy.brimstone.1")
+                    Component.translatable("item.isaac_disaster.moms_knife.synergy.brimstone.1"),
+                    Component.translatable("item.isaac_disaster.moms_knife.synergy.brimstone.2")
             )));
         }
         if (ClientDataManager.getInstance().getItemCount(ModPassiveItems.LOKIS_HORNS.getId()) > 0) {
@@ -68,6 +69,11 @@ public final class MomsKnife extends PassiveAbility {
         if (ClientDataManager.getInstance().getItemCount(ModPassiveItems.MONSTROS_LUNG.getId()) > 0) {
             description.addAll(DescriptionHelper.getSynergyDesc(Component.translatable("item.isaac_disaster.monstros_lung"), List.of(
                     Component.translatable("item.isaac_disaster.moms_knife.synergy.monstros_lung.1")
+            )));
+        }
+        if (ClientDataManager.getInstance().getItemCount(ModPassiveItems.TINY_PLANET.getId()) > 0) {
+            description.addAll(DescriptionHelper.getSynergyDesc(Component.translatable("item.isaac_disaster.tiny_planet"), List.of(
+                    Component.translatable("item.isaac_disaster.moms_knife.synergy.tiny_planet.1")
             )));
         }
         return description;

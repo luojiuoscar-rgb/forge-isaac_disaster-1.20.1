@@ -420,7 +420,7 @@ public final class PlayerMomsKnifeGameTests {
     }
 
     @GameTest(template = "trajectory_empty", batch = "player_knife", timeoutTicks = 20)
-    public static void aOneTickTapThrowsTheMainKnifeAndTwoExtraKnives(GameTestHelper helper) {
+    public static void aOneTickTapUsesItsActualWaitForTheBarrage(GameTestHelper helper) {
         Fixture f = new Fixture(helper);
         f.ability.addAttackType(ModAttackTypes.BRIMSTONE.getId(), 1, f.owner);
         MomsKnifeAttack attack = (MomsKnifeAttack) ModAttackTypes.MOMS_KNIFE.get();
@@ -430,11 +430,13 @@ public final class PlayerMomsKnifeGameTests {
                 .position(PlayerMomsKnifeMotion.idlePosition(f.owner, 1)).mainAxis(f.owner.getLookAngle())
                 .range(64).speed(0.25).build());
         helper.assertTrue(f.main.isInFlight(), "A tap still launches the main knife");
+        long waitingTicks = Math.max(1, (long) Math.ceil(f.main.getFlightDuration() / 2));
+        long expected = 2 + waitingTicks / 2;
         helper.runAfterDelay(12, () -> {
             try {
-                helper.assertTrue(f.knives().stream().filter(k -> k.getMode() == PlayerMomsKnifeEntity.Mode.ONE_WAY).count() == 2,
-                        "A tap has exactly two extra knives");
-                helper.assertTrue(ScheduledFuncHelper.getPlayerTasks(f.owner.getUUID()).isEmpty(), "The two-shot barrage has finished scheduling");
+                helper.assertTrue(f.knives().stream().filter(k -> k.getMode() == PlayerMomsKnifeEntity.Mode.ONE_WAY).count() == expected,
+                        "The tap's actual waiting time determines its extra count: " + expected);
+                helper.assertTrue(ScheduledFuncHelper.getPlayerTasks(f.owner.getUUID()).isEmpty(), "The tap barrage has finished scheduling");
                 helper.succeed();
             } finally { f.close(); }
         });

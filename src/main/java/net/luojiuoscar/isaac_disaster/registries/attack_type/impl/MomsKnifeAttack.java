@@ -5,7 +5,6 @@ import net.luojiuoscar.isaac_disaster.effect.ModEffects;
 import net.luojiuoscar.isaac_disaster.entity.projectile.moms_knife.HeldMomsKnifeGroup;
 import net.luojiuoscar.isaac_disaster.entity.projectile.moms_knife.HeldMomsKnifeAttackPlan;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
-import net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.normal.MomsKnifeBarrage;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackContext;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackExecutor;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackOrigin;
@@ -110,10 +109,9 @@ public final class MomsKnifeAttack extends AttackType implements BasicAttackType
                         List<AttackContext> contexts, Consumer<AttackContext> onFired) {
         if (player == null || contexts.isEmpty() || !isChargeEligible(player)) return;
         double charge = getChargeFraction(player);
-        int barrageCount = player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY)
-                .map(ability -> ability.getAttackTypes().getOrDefault(ModAttackTypes.BRIMSTONE.getId(), 0) > 0
-                        ? MomsKnifeBarrage.countForCharge(charge) : 0).orElse(0);
-        AttackContext first = HeldMomsKnifeGroup.launch(player, queue, contexts, charge, barrageCount);
+        boolean triggerBarrage = player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY)
+                .map(ability -> ability.getAttackTypes().getOrDefault(ModAttackTypes.BRIMSTONE.getId(), 0) > 0).orElse(false);
+        AttackContext first = HeldMomsKnifeGroup.launch(player, queue, contexts, charge, triggerBarrage);
         if (first != null) onFired.accept(first);
     }
 

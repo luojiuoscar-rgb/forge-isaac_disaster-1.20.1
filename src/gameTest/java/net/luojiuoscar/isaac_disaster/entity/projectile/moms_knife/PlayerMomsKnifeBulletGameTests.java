@@ -73,8 +73,8 @@ public final class PlayerMomsKnifeBulletGameTests {
         helper.runAfterDelay(11, () -> helper.assertTrue(times.isEmpty(), "No shot during the outward phase"));
         helper.runAfterDelay(25, () -> {
             try {
-                helper.assertTrue(times.equals(LongStream.rangeClosed(start + 12, start + 21).boxed().toList()),
-                        "Ten shots begin exactly when the main knife turns: " + times);
+                helper.assertTrue(times.equals(LongStream.rangeClosed(start + 12, start + 19).boxed().toList()),
+                        "A twelve-tick wait emits eight shots starting exactly at turnaround: " + times);
                 helper.succeed();
             } finally { c.close(); }
         });
@@ -91,9 +91,9 @@ public final class PlayerMomsKnifeBulletGameTests {
         shortFlight.launchAttack(12, 100);
         helper.runAfterDelay(24, () -> {
             try {
-                helper.assertTrue(first.equals(LongStream.rangeClosed(start + 11, start + 20).boxed().toList()),
+                helper.assertTrue(first.equals(LongStream.rangeClosed(start + 11, start + 17).boxed().toList()),
                         "The fractional apex is rounded up: " + first);
-                helper.assertTrue(second.equals(LongStream.rangeClosed(start + 1, start + 10).boxed().toList()),
+                helper.assertTrue(second.equals(LongStream.rangeClosed(start + 1, start + 2).boxed().toList()),
                         "A flight shorter than a tick creates one burst: " + second);
                 helper.succeed();
             } finally { fractional.close(); shortFlight.close(); }
@@ -138,8 +138,8 @@ public final class PlayerMomsKnifeBulletGameTests {
         });
         helper.runAfterDelay(25, () -> {
             try {
-                helper.assertTrue(times.equals(LongStream.rangeClosed(start + 12, start + 21).boxed().toList()),
-                        "The launch snapshot still creates ten shots on return after Brimstone is removed: " + times);
+                helper.assertTrue(times.equals(LongStream.rangeClosed(start + 12, start + 19).boxed().toList()),
+                        "The launch snapshot still emits eight shots after a twelve-tick wait when Brimstone is removed: " + times);
                 helper.assertTrue(ScheduledFuncHelper.getPlayerTasks(c.f.owner.getUUID()).isEmpty(),
                         "The completed burst leaves no scheduled tasks");
                 helper.succeed();
@@ -278,8 +278,10 @@ public final class PlayerMomsKnifeBulletGameTests {
                         "Rubber Cement does not reflect the knife");
                 helper.assertTrue(!knife.getTriggers().contains(ModExecutableEffects.BULLET_BOUNCE_ON_BLOCK.get())
                                 && !knife.getTriggers().contains(ModExecutableEffects.BULLET_BOUNCE_ON_ENTITY.get()), "Both bounce effects are absent");
-                helper.assertTrue(knife.getSplitSequence().isEmpty() && knife.getTrajectorySpecs().isEmpty() && splits.get() == 0,
+                helper.assertTrue(knife.getSplitSequence().isEmpty() && knife.getTrajectoryRuntime().states().isEmpty() && splits.get() == 0,
                         "Neither split nor ordinary trajectory modules execute");
+                helper.assertTrue(knife.getTrajectorySpecs().equals(context.getTrajectorySpecs()),
+                        "Prepared trajectory configuration is retained for explicitly compatible modules");
                 helper.assertTrue(context.getTrigger().contains(ModExecutableEffects.BULLET_BOUNCE_ON_BLOCK.get())
                                 && !context.getSplitSequence().isEmpty(), "The caller's context was not stripped");
                 helper.succeed();
