@@ -47,7 +47,7 @@ public class PetrifiedPoop implements IAbilityEffect {
 
         ObjectArrayList<ItemStack> generatedLoot = new ObjectArrayList<>(LootHelper.getLoot(
                 serverLevel, ModLootTables.PETRIFIED_POOP, params, LootGenerationMode.REPLACEMENT_ROLL,
-                Math.max(0, context.getOrDefault(ContextKeys.LOOT_COUNT, 1))));
+                Math.max(0, context.getOrDefault(ContextKeys.COUNT, 1))));
 
         event.setObjectArrayList(generatedLoot);
         return true;

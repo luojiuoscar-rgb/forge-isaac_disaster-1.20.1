@@ -23,7 +23,7 @@ import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.network.simple.SimpleChannel;
 
 public class ModMessages {
-    private static final String PROTOCOL_VERSION = "14";
+    private static final String PROTOCOL_VERSION = "15";
     private static SimpleChannel INSTANCE;
 
     private static int packetId = 0;
@@ -221,6 +221,11 @@ public class ModMessages {
         net.messageBuilder(HolyLightSyncS2CPacket.class, id(), NetworkDirection.PLAY_TO_CLIENT)
                 .decoder(HolyLightSyncS2CPacket::new).encoder(HolyLightSyncS2CPacket::toBytes)
                 .consumerNetworkThread(HolyLightSyncS2CPacket::handle).add();
+        net.messageBuilder(ExplosionKnockbackS2CPacket.class, id(), NetworkDirection.PLAY_TO_CLIENT)
+                .decoder(ExplosionKnockbackS2CPacket::new)
+                .encoder(ExplosionKnockbackS2CPacket::toBytes)
+                .consumerNetworkThread(ExplosionKnockbackS2CPacket::handle)
+                .add();
 
     }
 

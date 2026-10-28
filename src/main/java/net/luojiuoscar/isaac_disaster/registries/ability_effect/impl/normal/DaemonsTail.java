@@ -6,7 +6,6 @@ import net.luojiuoscar.isaac_disaster.event.custom.misc.GeneralLootModifyEvent;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.item.ModItems;
 import net.luojiuoscar.isaac_disaster.item.pickup.Heart;
-import net.luojiuoscar.isaac_disaster.manager.id.TrinketId;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ContextKeys;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ExecutableEffectContext;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.IAbilityEffect;
@@ -17,6 +16,10 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.ItemStack;
 
 public class DaemonsTail implements IAbilityEffect {
+    public static double getRemovalChance(boolean enchanted) {
+        return enchanted ? 0.35 : 0.7;
+    }
+
     @Override
     public TriggerType getRequiredTriggerType() {
         return ModTriggerTypes.LOOT;
@@ -34,7 +37,8 @@ public class DaemonsTail implements IAbilityEffect {
                 || !PlayerHelper.hasTrinket(ModTrinkets.DAEMONS_TAIL.getId(), player)) return false;
 
         // based on type
-        double threshold = PlayerHelper.getValueFromTrinket(0.7, 0.35, ModTrinkets.DAEMONS_TAIL.getId(), player);
+        double removalChance = PlayerHelper.getValueFromTrinket(getRemovalChance(false), getRemovalChance(true),
+                ModTrinkets.DAEMONS_TAIL.getId(), player);
 
         RandomSource rand = lootContext.getRandom();
         ObjectArrayList<ItemStack> newList = new ObjectArrayList<>();
@@ -45,7 +49,7 @@ public class DaemonsTail implements IAbilityEffect {
                 int originalCount = stack.getCount();
 
                 for (int j = 0; j < originalCount; j++) {
-                    if (rand.nextDouble() < threshold) {
+                    if (rand.nextDouble() >= removalChance) {
                         blackHeartCount++;
                     }
                 }

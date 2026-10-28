@@ -37,11 +37,11 @@ public final class LootCountGameTests {
         context.set(ContextKeys.ITEM, Items.DIAMOND);
         context.set(ContextKeys.DOUBLE, List.of(20.0, 30.0));
         context.set(ContextKeys.AMPLIFIER, 99.0);
-        context.set(ContextKeys.LOOT_COUNT, 3);
+        context.set(ContextKeys.COUNT, 3);
         int before = count(helper, context, Items.DIAMOND);
         helper.assertTrue(new GiveItemViaLoot().applyEffect(context), "Explicit item generation succeeds");
         helper.assertTrue(count(helper, context, Items.DIAMOND) - before == 3, "LOOT_COUNT alone controls amount");
-        context.set(ContextKeys.LOOT_COUNT, 0);
+        context.set(ContextKeys.COUNT, 0);
         before = count(helper, context, Items.DIAMOND);
         new GiveItemViaLoot().applyEffect(context);
         helper.assertTrue(count(helper, context, Items.DIAMOND) == before, "Zero count produces no item");
@@ -56,11 +56,11 @@ public final class LootCountGameTests {
         int before = keys(helper, context);
         new GenerateLoot().applyEffect(context);
         helper.assertTrue(keys(helper, context) - before == 1, "Missing count defaults to one, independently of amplifier");
-        context.set(ContextKeys.LOOT_COUNT, 3);
+        context.set(ContextKeys.COUNT, 3);
         before = keys(helper, context);
         new GenerateLoot().applyEffect(context);
         helper.assertTrue(keys(helper, context) - before == 3, "Table is drawn three times");
-        context.set(ContextKeys.LOOT_COUNT, 0);
+        context.set(ContextKeys.COUNT, 0);
         before = keys(helper, context);
         new GenerateLoot().applyEffect(context);
         helper.assertTrue(keys(helper, context) == before, "Zero does not silently become one");
@@ -71,7 +71,7 @@ public final class LootCountGameTests {
     public static void sourceFreeAndEntityConversionLootHonorExplicitCount(GameTestHelper helper) {
         var context = context(helper);
         context.set(ContextKeys.RESOURCE_LOCATIONS, List.of(ModLootTables.RANDOM_KEYS));
-        context.set(ContextKeys.LOOT_COUNT, 2);
+        context.set(ContextKeys.COUNT, 2);
         int before = keys(helper, context);
         new LootAtPosition().applyEffect(context);
         helper.assertTrue(keys(helper, context) - before == 2, "Source-free loot honors count");
@@ -92,11 +92,11 @@ public final class LootCountGameTests {
         context.set(ContextKeys.AMPLIFIER, 2.0);
         int before = count(helper, context, ModItems.SOUL_HEART.get());
         ModExecutableEffects.THE_HIEROPHANT.get().apply(context);
-        helper.assertTrue(context.get(ContextKeys.LOOT_COUNT) == 3, "Card preparation explicitly supplies three items");
+        helper.assertTrue(context.get(ContextKeys.COUNT) == 3, "Card preparation explicitly supplies three items");
         helper.assertTrue(count(helper, context, ModItems.SOUL_HEART.get()) - before == 3, "Card keeps original amplified amount");
         before = count(helper, context, ModItems.RED_HEART.get());
         ModExecutableEffects.QUEEN_OF_HEART.get().apply(context);
-        int amount = context.get(ContextKeys.LOOT_COUNT);
+        int amount = context.get(ContextKeys.COUNT);
         helper.assertTrue(amount >= 1 && amount <= 20, "Queen of Hearts keeps its original random range");
         helper.assertTrue(count(helper, context, ModItems.RED_HEART.get()) - before == amount,
                 "Resolved random count is passed to the shared consumer");

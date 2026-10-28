@@ -8,6 +8,10 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
 
 public class BlindRage implements IAbilityEffect {
+    public static int getCooldownTicks(int amplifier) {
+        return 25 * Mth.clamp(amplifier, 1, 2);
+    }
+
     @Override
     public double getPriority() {
         return ExecutableEffectPriority.LOWEST.priority;
@@ -19,7 +23,7 @@ public class BlindRage implements IAbilityEffect {
 
 
         LivingEntity entity = context.getEntity();
-        entity.invulnerableTime = Math.min(25 * amplifier, 50);
+        entity.invulnerableTime = getCooldownTicks(amplifier);
         return true;
     }
 }

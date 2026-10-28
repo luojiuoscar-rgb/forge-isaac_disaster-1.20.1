@@ -1,7 +1,8 @@
 package net.luojiuoscar.isaac_disaster.gametest;
 
 import com.mojang.authlib.GameProfile;
-import net.luojiuoscar.isaac_disaster.Config;
+import net.luojiuoscar.isaac_disaster.datapack.GameTestDatapackSettings;
+import net.luojiuoscar.isaac_disaster.datapack.gameplay.GameplayConfig;
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.effect.ModEffects;
 import net.luojiuoscar.isaac_disaster.item.ModItems;
@@ -173,9 +174,8 @@ public final class ItemContextRevisionGameTests {
         helper.assertTrue(!effect.applyEffect(context), "A missing position is invalid");
         var position = helper.absolutePos(new BlockPos(1, 1, 1)).getCenter();
         var area = new AABB(position, position).inflate(0.25);
-        String previousCoinId = Config.COIN_TIER_1_ID.get();
-        try {
-            Config.COIN_TIER_1_ID.set("minecraft:gold_nugget");
+        try (var settings = GameTestDatapackSettings.override(helper)) {
+            settings.set(GameplayConfig.COIN_TIER_1_ID, "minecraft:gold_nugget");
             int before = helper.getLevel().getEntitiesOfClass(ItemEntity.class, area).stream()
                     .filter(item -> item.getItem().is(Items.GOLD_NUGGET)).mapToInt(item -> item.getItem().getCount()).sum();
             int penniesBefore = helper.getLevel().getEntitiesOfClass(ItemEntity.class, area).stream()
@@ -188,8 +188,6 @@ public final class ItemContextRevisionGameTests {
                     .filter(item -> item.getItem().is(ModItems.PENNY.get())).mapToInt(item -> item.getItem().getCount()).sum();
             helper.assertTrue(after - before == 1, "One configured coin appears at the supplied position");
             helper.assertTrue(penniesAfter == penniesBefore, "The configured coin replaces the hardcoded penny");
-        } finally {
-            Config.COIN_TIER_1_ID.set(previousCoinId);
         }
         helper.succeed();
     }

@@ -9,6 +9,7 @@ import net.luojiuoscar.isaac_disaster.registries.attack_type.tags.IChargeableAtt
 import net.luojiuoscar.isaac_disaster.registries.bullet_color.BulletColor;
 import net.luojiuoscar.isaac_disaster.registries.bullet_color.ModBulletColors;
 import net.luojiuoscar.isaac_disaster.networking.ChargeBarSync;
+import net.luojiuoscar.isaac_disaster.system.familiar.FamiliarModifiers;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
@@ -26,6 +27,7 @@ public class PlayerAbility {
     private int homing;
     private int spectral;
     private int controllable;
+    private final FamiliarModifiers familiarModifiers = new FamiliarModifiers();
 
     private final Map<ResourceLocation, Integer> chargeAmounts = new HashMap<>();
     private final Map<ResourceLocation, ChargeBarSync.State> chargeBarStates = new HashMap<>();
@@ -49,6 +51,7 @@ public class PlayerAbility {
         homing = 0;
         spectral = 0;
         controllable = 0;
+        familiarModifiers.clear();
         clearChargeStates();
 
         bestBulletColor = ModBulletColors.BASE.getId();
@@ -64,6 +67,7 @@ public class PlayerAbility {
         this.homing = source.homing;
         this.spectral = source.spectral;
         this.controllable = source.controllable;
+        familiarModifiers.copyFrom(source.familiarModifiers);
         this.bestBulletColor = source.bestBulletColor;
 
         this.attackType.clear();
@@ -81,6 +85,7 @@ public class PlayerAbility {
         nbt.putInt("homing", homing);
         nbt.putInt("spectral", spectral);
         nbt.putInt("controllable", controllable);
+        nbt.put("familiar_modifiers", familiarModifiers.save());
         nbt.putString("best_bullet_color", bestBulletColor.toString());
 
         ListTag bulletTypeList = new ListTag();
@@ -116,6 +121,7 @@ public class PlayerAbility {
         this.piercing = nbt.getInt("piercing");
         this.homing = nbt.getInt("homing");
         this.controllable = nbt.getInt("controllable");
+        familiarModifiers.load(nbt.getCompound("familiar_modifiers"));
         this.bestBulletColor = ResourceLocation.parse(nbt.getString("best_bullet_color"));
 
         attackType.clear();
@@ -158,6 +164,10 @@ public class PlayerAbility {
 
         clearChargeStates();
         attackSelection = AttackSelector.select(attackType);
+    }
+
+    public FamiliarModifiers getFamiliarModifiers() {
+        return familiarModifiers;
     }
 
     public boolean isHoldingRightClick() {

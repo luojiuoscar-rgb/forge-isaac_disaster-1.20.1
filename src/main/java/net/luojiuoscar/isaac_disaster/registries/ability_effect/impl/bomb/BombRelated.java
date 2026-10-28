@@ -1,7 +1,7 @@
 package net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.bomb;
 
 import net.luojiuoscar.isaac_disaster.entity.tnt.GigaBomb;
-import net.luojiuoscar.isaac_disaster.entity.tnt.IsaacBomb;
+import net.luojiuoscar.isaac_disaster.system.explosion.BombEffectSource;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ContextKeys;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ExecutableEffectContext;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.IAbilityEffect;
@@ -13,7 +13,7 @@ public abstract class BombRelated implements IAbilityEffect {
     @Override
     public boolean applyEffect(ExecutableEffectContext context) {
         if (!context.has(ContextKeys.ENTITY) || context.get(ContextKeys.ENTITY).isEmpty()) return false;
-        if (!(context.get(ContextKeys.ENTITY).get(0) instanceof IsaacBomb bomb)) return false;
+        if (!(context.get(ContextKeys.ENTITY).get(0) instanceof BombEffectSource bomb)) return false;
         if (!(context.getEntity() instanceof ServerPlayer player)) return true;
 
         Level level = player.level();
@@ -23,9 +23,9 @@ public abstract class BombRelated implements IAbilityEffect {
 
     protected abstract boolean customEffect(ExecutableEffectContext context,
                                              ServerPlayer player,
-                                             Level level, Vec3 pos, IsaacBomb bomb);
+                                             Level level, Vec3 pos, BombEffectSource bomb);
 
-    protected boolean isValidOrigin(IsaacBomb bomb) {
-        return bomb != null && bomb.isOriginal() && !(bomb instanceof GigaBomb);
+    protected boolean isValidOrigin(BombEffectSource bomb) {
+        return bomb != null && bomb.isOriginal() && !(bomb.getBombEffectEntity() instanceof GigaBomb);
     }
 }

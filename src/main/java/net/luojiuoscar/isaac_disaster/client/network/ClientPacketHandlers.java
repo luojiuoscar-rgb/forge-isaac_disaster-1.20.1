@@ -10,6 +10,7 @@ import net.luojiuoscar.isaac_disaster.system.combat_effect.groundeffect.client.C
 import net.luojiuoscar.isaac_disaster.system.combat_effect.holylight.client.ClientHolyLightRuntime;
 import net.luojiuoscar.isaac_disaster.networking.packet.holylight.HolyLightSyncS2CPacket;
 import net.luojiuoscar.isaac_disaster.networking.packet.ChargeBarUpdateS2CPacket;
+import net.luojiuoscar.isaac_disaster.networking.packet.ExplosionKnockbackS2CPacket;
 import net.luojiuoscar.isaac_disaster.networking.packet.bullet.BulletCorrectionBatchS2CPacket;
 import net.luojiuoscar.isaac_disaster.networking.packet.bullet.BulletCorrectionS2CPacket;
 import net.luojiuoscar.isaac_disaster.networking.packet.bullet.BulletDespawnBatchS2CPacket;
@@ -49,6 +50,13 @@ public final class ClientPacketHandlers {
     public static void handleAttributeIndicatorUpdate(AttributeSnapshot snapshot, boolean baseline) {
         if (Minecraft.getInstance().player != null) {
             AttributeIndicatorHudOverlay.update(snapshot, baseline);
+        }
+    }
+
+    public static void handleExplosionKnockback(ExplosionKnockbackS2CPacket packet) {
+        Minecraft minecraft = Minecraft.getInstance();
+        if (minecraft.player != null) {
+            minecraft.player.setDeltaMovement(packet.applyTo(minecraft.player.getDeltaMovement()));
         }
     }
 

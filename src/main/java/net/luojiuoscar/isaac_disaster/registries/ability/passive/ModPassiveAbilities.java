@@ -778,6 +778,7 @@ public class ModPassiveAbilities {
     public static final RegistryObject<PassiveAbility> SOUL_LOCKET =
             PASSIVE_ABILITY_REGISTRY.register("soul_locket",
                     () -> new SoulLocket(ItemId.SOUL_LOCKET.getId(), ItemId.SOUL_LOCKET.getLevel()));
+
     public static final RegistryObject<PassiveAbility> SINUS_INFECTION =
             PASSIVE_ABILITY_REGISTRY.register("sinus_infection",
                     () -> new SinusInfection(ItemId.SINUS_INFECTION.getId(), ItemId.SINUS_INFECTION.getLevel()));
@@ -789,5 +790,36 @@ public class ModPassiveAbilities {
     public static final RegistryObject<PassiveAbility> HOLY_LIGHT =
             PASSIVE_ABILITY_REGISTRY.register("holy_light",
                     () -> new HolyLight(ItemId.HOLY_LIGHT.getId(), ItemId.HOLY_LIGHT.getLevel()));
+    public static final RegistryObject<PassiveAbility> BFFS =
+            PASSIVE_ABILITY_REGISTRY.register("bffs",
+                    () -> new Bffs(ItemId.BFFS.getId(), ItemId.BFFS.getLevel()));
+
+    public static final RegistryObject<PassiveAbility> HIVE_MIND =
+            PASSIVE_ABILITY_REGISTRY.register("hive_mind",
+                    () -> new HiveMind(ItemId.HIVE_MIND.getId(), ItemId.HIVE_MIND.getLevel()));
+
+    public static final RegistryObject<PassiveAbility> MOMS_UNDERWEAR =
+            PASSIVE_ABILITY_REGISTRY.register("moms_underwear",
+                    () -> new MomsUnderwear(ItemId.MOMS_UNDERWEAR.getId(), ItemId.MOMS_UNDERWEAR.getLevel()));
+
+    public static final RegistryObject<PassiveAbility> INFESTATION =
+            PASSIVE_ABILITY_REGISTRY.register("infestation",
+                    () -> new Infestation(ItemId.INFESTATION.getId(), ItemId.INFESTATION.getLevel()));
+
+    public static final RegistryObject<PassiveAbility> THE_MULLIGAN =
+            PASSIVE_ABILITY_REGISTRY.register("the_mulligan",
+                    () -> new TheMulligan(ItemId.THE_MULLIGAN.getId(), ItemId.THE_MULLIGAN.getLevel()));
+
+    public static final RegistryObject<PassiveAbility> SPIDER_BABY =
+            PASSIVE_ABILITY_REGISTRY.register("spider_baby",
+                    () -> new SpiderBaby(ItemId.SPIDER_BABY.getId(), ItemId.SPIDER_BABY.getLevel()));
+
+    public static final RegistryObject<PassiveAbility> MOMS_WIG =
+            PASSIVE_ABILITY_REGISTRY.register("moms_wig",
+                    () -> new MomsWig(ItemId.MOMS_WIG.getId(), ItemId.MOMS_WIG.getLevel()));
+
+    public static final RegistryObject<PassiveAbility> INFESTATION_2 =
+            PASSIVE_ABILITY_REGISTRY.register("infestation_2",
+                    () -> new Infestation2(ItemId.INFESTATION_2.getId(), ItemId.INFESTATION_2.getLevel()));
 
 }

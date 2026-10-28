@@ -12,7 +12,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
 import java.util.List;
 
 public class Callus extends TrinketAbility {
@@ -36,23 +35,10 @@ public class Callus extends TrinketAbility {
     }
 
     @Override
-    public List<Component> getDesc(@Nullable ItemStack stack, Player player) {
+    public List<Component> getDesc(@Nullable ItemStack stack, @Nullable Player player) {
         return List.of(
-                Component.translatable("item.isaac_disaster.callus.lore.1")
+                Component.translatable("item.isaac_disaster.callus.lore.1",
+                        DescriptionHelper.dynamicNumber(stack != null && Trinket.isEnchanted(stack) ? 2 : 1))
         );
-    }
-
-    @Override
-    public List<Component> getSynergyDesc(@Nullable ItemStack stack, Player player) {
-        List<Component> desc = new ArrayList<>();
-
-        if (stack != null && Trinket.isEnchanted(stack)){
-            desc.add(DescriptionHelper.getSynergyDesc(
-                    Component.translatable("item.isaac_disaster.trinket.enchanted"),
-                    Component.translatable("item.isaac_disaster.callus.lore.1")
-            ));
-        }
-
-        return desc;
     }
 }

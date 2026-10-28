@@ -179,5 +179,16 @@ public class ModActiveAbilities {
     public static final RegistryObject<ActiveAbility> CRACK_THE_SKY =
             ACTIVE_ABILITY_REGISTRY.register("crack_the_sky",
                     () -> new CrackTheSky(ItemId.CRACK_THE_SKY.getId(), ItemId.CRACK_THE_SKY.getLevel()));
+    public static final RegistryObject<ActiveAbility> MOMS_PAD =
+            ACTIVE_ABILITY_REGISTRY.register("moms_pad",
+                    () -> new MomsPad(ItemId.MOMS_PAD.getId(), ItemId.MOMS_PAD.getLevel()));
+
+    public static final RegistryObject<ActiveAbility> GUPPYS_HEAD =
+            ACTIVE_ABILITY_REGISTRY.register("guppys_head",
+                    () -> new GuppysHead(ItemId.GUPPYS_HEAD.getId(), ItemId.GUPPYS_HEAD.getLevel()));
+
+    public static final RegistryObject<ActiveAbility> BOX_OF_SPIDERS =
+            ACTIVE_ABILITY_REGISTRY.register("box_of_spiders",
+                    () -> new BoxOfSpiders(ItemId.BOX_OF_SPIDERS.getId(), ItemId.BOX_OF_SPIDERS.getLevel()));
 
 }

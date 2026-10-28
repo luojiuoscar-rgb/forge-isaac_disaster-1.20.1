@@ -39,4 +39,11 @@ public class ModSetAbilities {
 
     public static final RegistryObject<SetAbility> OH_CRAP =
             SET_ABILITY_REGISTRY.register("oh_crap", () -> new OhCrap(SetId.OH_CRAP.getId()));
+
+    public static final RegistryObject<SetAbility> BEELZEBUB =
+            SET_ABILITY_REGISTRY.register("beelzebub", () -> new Beelzebub(SetId.BEELZEBUB.getId()));
+
+    public static final RegistryObject<SetAbility> SPIDER_BABY =
+            SET_ABILITY_REGISTRY.register("spider_baby", () -> new SpiderBaby(SetId.SPIDER_BABY.getId()));
+
 }

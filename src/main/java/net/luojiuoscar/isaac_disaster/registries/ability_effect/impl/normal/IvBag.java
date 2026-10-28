@@ -14,25 +14,23 @@ public class IvBag implements IAbilityEffect {
     public boolean applyEffect(ExecutableEffectContext context) {
         if (!(context.getEntity() instanceof Player player)) return false;
 
-        if (player.invulnerableTime > 0) return true;
+        if (!player.isCreative()) {
+            float health = player.getHealth();
+            float damage = (float) (StatManager.MAX_HEALTH.getBonus() * 0.5);
 
-        float health = player.getHealth();
-        float damage = (float) (StatManager.MAX_HEALTH.getBonus() * 0.5);
-
-        // 红心足够时，优先扣除红心
-        if (health > damage){
-            player.setHealth(health - damage);
-            // 虚假伤害效果
-            player.hurt(PlayerHelper.getSelfDamageSource(player), 0.01f);
+            // 红心足够时，优先扣除红心
+            if (health > damage){
+                player.setHealth(health - damage);
+                // 虚假伤害效果
+                player.hurt(PlayerHelper.getSelfDamageSource(player), 0.01f);
+            }
+            // 不足时，直接伤害（扣除黄心或直接致死）
+            else{
+                player.hurt(PlayerHelper.getSelfDamageSource(player), damage);
+            }
         }
-        // 不足时，直接伤害（扣除黄心或直接致死）
-        else{
-            player.hurt(PlayerHelper.getSelfDamageSource(player), damage);
-        }
 
-        // 缩短受伤冷却时间
-        player.invulnerableTime = 10;
-        LootHelper.spawnLootAtPos(player, player.position(), ModLootTables.RANDOM_COINS, Math.max(0, context.getOrDefault(ContextKeys.LOOT_COUNT, 1)));
+        LootHelper.spawnLootAtPos(player, player.position(), ModLootTables.RANDOM_COINS, Math.max(0, context.getOrDefault(ContextKeys.COUNT, 1)));
         return true;
     }
 }

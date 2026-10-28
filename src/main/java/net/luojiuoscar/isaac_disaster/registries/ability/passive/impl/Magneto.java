@@ -2,7 +2,7 @@ package net.luojiuoscar.isaac_disaster.registries.ability.passive.impl;
 
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.registries.ability.passive.PassiveAbility;
-import net.luojiuoscar.isaac_disaster.registries.recursive_module.ModRecursiveModules;
+import net.luojiuoscar.isaac_disaster.registries.periodic_module.ModPeriodicModules;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
@@ -22,14 +22,14 @@ public class Magneto extends PassiveAbility {
 
     @Override
     public void handleObtain(ServerPlayer player, @Nullable ItemStack stack) {
-        StatManager.addRecursiveModule(player, ModRecursiveModules.ATTRACT_ITEM.getId(), 1);
-        StatManager.addRecursiveModule(player, ModRecursiveModules.MAGNETO.getId(), 1);
+        StatManager.addPeriodicModule(player, ModPeriodicModules.ATTRACT_ITEM.getId(), 1);
+        StatManager.addPeriodicModule(player, ModPeriodicModules.MAGNETO.getId(), 1);
     }
 
     @Override
     public void handleRemove(ServerPlayer player, @Nullable ItemStack stack) {
-        StatManager.addRecursiveModule(player, ModRecursiveModules.ATTRACT_ITEM.getId(), -1);
-        StatManager.addRecursiveModule(player, ModRecursiveModules.MAGNETO.getId(), -1);
+        StatManager.addPeriodicModule(player, ModPeriodicModules.ATTRACT_ITEM.getId(), -1);
+        StatManager.addPeriodicModule(player, ModPeriodicModules.MAGNETO.getId(), -1);
     }
 
     @Override

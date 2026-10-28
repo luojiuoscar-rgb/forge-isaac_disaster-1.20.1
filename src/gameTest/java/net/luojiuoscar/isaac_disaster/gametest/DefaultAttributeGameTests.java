@@ -1,7 +1,8 @@
 package net.luojiuoscar.isaac_disaster.gametest;
 
 import com.mojang.authlib.GameProfile;
-import net.luojiuoscar.isaac_disaster.Config;
+import net.luojiuoscar.isaac_disaster.datapack.GameTestDatapackSettings;
+import net.luojiuoscar.isaac_disaster.datapack.gameplay.GameplayConfig;
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.attribute.ModAttributes;
 import net.luojiuoscar.isaac_disaster.manager.DefaultAttributeManager;
@@ -41,16 +42,13 @@ public final class DefaultAttributeGameTests {
     public static void rangeIncrementUsesConfiguredBonusFromFreshDefault(GameTestHelper helper) {
         ServerPlayer player = player(helper);
         assertValue(helper, player, ModAttributes.BULLET_RANGE.get(), 12.0);
-        double originalBonus = Config.RANGE_BONUS.get();
-        try {
-            Config.RANGE_BONUS.set(3.0);
+        try (var settings = GameTestDatapackSettings.override(helper)) {
+            settings.set(GameplayConfig.RANGE_BONUS, 3.0);
             StatManager.RANGE.apply(player, 1.0);
             assertValue(helper, player, ModAttributes.BULLET_RANGE.get(), 15.0);
-            Config.RANGE_BONUS.set(5.0);
+            settings.set(GameplayConfig.RANGE_BONUS, 5.0);
             StatManager.RANGE.apply(player, 1.0);
             assertValue(helper, player, ModAttributes.BULLET_RANGE.get(), 20.0);
-        } finally {
-            Config.RANGE_BONUS.set(originalBonus);
         }
         helper.succeed();
     }
@@ -58,15 +56,12 @@ public final class DefaultAttributeGameTests {
     @GameTest(template = "trajectory_empty", batch = "default_attributes")
     public static void configuredDefaultsPreserveItemAndExternalModifiersOnReapplication(GameTestHelper helper) {
         ServerPlayer player = player(helper);
-        double originalRange = Config.DEFAULT_BULLET_RANGE.get();
-        double originalReach = Config.DEFAULT_BLOCK_REACH.get();
-        double originalBonus = Config.RANGE_BONUS.get();
         var range = player.getAttribute(ModAttributes.BULLET_RANGE.get());
         UUID externalId = UUID.randomUUID();
-        try {
-            Config.DEFAULT_BULLET_RANGE.set(24.0);
-            Config.DEFAULT_BLOCK_REACH.set(6.0);
-            Config.RANGE_BONUS.set(3.0);
+        try (var settings = GameTestDatapackSettings.override(helper)) {
+            settings.set(GameplayConfig.DEFAULT_BULLET_RANGE, 24.0);
+            settings.set(GameplayConfig.DEFAULT_BLOCK_REACH, 6.0);
+            settings.set(GameplayConfig.RANGE_BONUS, 3.0);
             StatManager.RANGE.apply(player, 1.0);
             range.addPermanentModifier(new AttributeModifier(externalId, "external test bonus", 2.0,
                     AttributeModifier.Operation.ADDITION));
@@ -74,16 +69,12 @@ public final class DefaultAttributeGameTests {
             DefaultAttributeManager.apply(player);
             assertValue(helper, player, ModAttributes.BULLET_RANGE.get(), 29.0);
             assertValue(helper, player, ForgeMod.BLOCK_REACH.get(), 6.0);
-            Config.DEFAULT_BULLET_RANGE.set(12.0);
-            Config.DEFAULT_BLOCK_REACH.set(4.5);
+            settings.set(GameplayConfig.DEFAULT_BULLET_RANGE, 12.0);
+            settings.set(GameplayConfig.DEFAULT_BLOCK_REACH, 4.5);
             DefaultAttributeManager.apply(player);
             assertValue(helper, player, ModAttributes.BULLET_RANGE.get(), 17.0);
             assertValue(helper, player, ForgeMod.BLOCK_REACH.get(), 4.5);
             helper.assertTrue(range.getModifier(externalId) != null, "External modifiers remain installed");
-        } finally {
-            Config.DEFAULT_BULLET_RANGE.set(originalRange);
-            Config.DEFAULT_BLOCK_REACH.set(originalReach);
-            Config.RANGE_BONUS.set(originalBonus);
         }
         helper.succeed();
     }

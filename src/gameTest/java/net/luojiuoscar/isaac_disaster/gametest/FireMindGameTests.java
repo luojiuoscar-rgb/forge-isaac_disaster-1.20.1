@@ -17,7 +17,7 @@ import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackContext;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackType;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.ModAttackTypes;
 import net.luojiuoscar.isaac_disaster.registries.bullet_color.ModBulletColors;
-import net.luojiuoscar.isaac_disaster.registries.recursive_module.ModRecursiveModules;
+import net.luojiuoscar.isaac_disaster.registries.periodic_module.ModPeriodicModules;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerModules;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -376,9 +376,9 @@ public final class FireMindGameTests {
             helper.assertTrue(modules.getTriggerModules().contains(ModTriggerModules.FIRE_MIND.getId()), "One copy retains the attachment module");
             ability.handleRemove(f.owner, null);
             helper.assertTrue(!modules.getTriggerModules().contains(ModTriggerModules.FIRE_MIND.getId()), "Removing the last copy removes the module");
-            helper.assertTrue(modules.getRecursiveModuleQueue().getQueue().stream()
-                    .anyMatch(entry -> entry.id.equals(ModRecursiveModules.FIRE_RESISTANCE.getId()) && entry.stacks == 1), "Hot Bomb still owns fire resistance");
-            modules.getRecursiveModuleQueue().tickAll(f.owner);
+            helper.assertTrue(modules.getPeriodicModuleQueue().getQueue().stream()
+                    .anyMatch(entry -> entry.id.equals(ModPeriodicModules.FIRE_RESISTANCE.getId()) && entry.stacks == 1), "Hot Bomb still owns fire resistance");
+            modules.getPeriodicModuleQueue().tickAll(f.owner);
             helper.assertTrue(f.owner.hasEffect(MobEffects.FIRE_RESISTANCE), "The retained module grants resistance");
             Cow target = f.cow(f.center.add(0, 4, 0));
             helper.assertTrue(f.impact(saved, target) && target.hasEffect(ModEffects.BURNING.get()), "Previously fired attachments survive item removal");

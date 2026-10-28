@@ -1,10 +1,13 @@
 package net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.normal;
 
 import net.luojiuoscar.isaac_disaster.helper.LevelHelper;
+import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ExecutableEffectContext;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ContextKeys;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.IAbilityEffect;
+import net.luojiuoscar.isaac_disaster.system.explosion.ExplosionParameters;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.LivingEntity;
 
 public class Kamikaze implements IAbilityEffect {
@@ -22,7 +25,10 @@ public class Kamikaze implements IAbilityEffect {
     }
 
     private void explode(LivingEntity entity, float power, float damage){
-        LevelHelper.explodeCustom(entity, entity.position(), power, damage, true, false);
-        entity.hurt(entity.damageSources().genericKill(), (float) StatManager.MAX_HEALTH.getBonus());
+        if (entity.level() instanceof ServerLevel level) {
+            LevelHelper.explodeCustom(level, entity.position(), level.damageSources().explosion(entity, entity),
+                    ExplosionParameters.standard(power, damage).withIgnoreFriendly(true).withCausesFire(false));
+        }
+        entity.hurt(PlayerHelper.getSelfDamageSource(entity), (float) StatManager.MAX_HEALTH.getBonus());
     }
 }

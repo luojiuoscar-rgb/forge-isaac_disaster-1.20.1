@@ -7,7 +7,7 @@ import net.luojiuoscar.isaac_disaster.effect.custom.PanicEffect;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ExecutableEffectContext;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ModExecutableEffects;
-import net.luojiuoscar.isaac_disaster.registries.recursive_module.ModRecursiveModules;
+import net.luojiuoscar.isaac_disaster.registries.periodic_module.ModPeriodicModules;
 import net.luojiuoscar.isaac_disaster.registries.visual.ModVisualLayers;
 import net.luojiuoscar.isaac_disaster.system.freeze.state.EntityVisualState;
 import net.minecraft.core.BlockPos;
@@ -159,13 +159,13 @@ public final class PanicAndRingGameTests {
     public static void ringVisualRemainsUntilTheLastCopyIsRemoved(GameTestHelper helper) {
         var player = FakePlayerFactory.get(helper.getLevel(), new GameProfile(UUID.randomUUID(), "ring_visual"));
         player.setPos(helper.absolutePos(new BlockPos(1, 1, 1)).getCenter());
-        StatManager.addRecursiveModule(player, ModRecursiveModules.DADS_RING.getId(), 2);
+        StatManager.addPeriodicModule(player, ModPeriodicModules.DADS_RING.getId(), 2);
         ModExecutableEffects.DADS_RING.get().apply(new ExecutableEffectContext(player));
         helper.assertTrue(EntityVisualState.hasLayer(player, ModVisualLayers.DADS_RING.getId()), "The active ring has a visual state");
         helper.assertTrue(!EntityVisualState.isFrozen(player), "The aura does not freeze its owner");
-        StatManager.addRecursiveModule(player, ModRecursiveModules.DADS_RING.getId(), -1);
+        StatManager.addPeriodicModule(player, ModPeriodicModules.DADS_RING.getId(), -1);
         helper.assertTrue(EntityVisualState.hasLayer(player, ModVisualLayers.DADS_RING.getId()), "One remaining copy preserves the ring");
-        StatManager.addRecursiveModule(player, ModRecursiveModules.DADS_RING.getId(), -1);
+        StatManager.addPeriodicModule(player, ModPeriodicModules.DADS_RING.getId(), -1);
         helper.assertTrue(!EntityVisualState.hasLayer(player, ModVisualLayers.DADS_RING.getId()), "The last removal immediately clears the ring");
         helper.succeed();
     }

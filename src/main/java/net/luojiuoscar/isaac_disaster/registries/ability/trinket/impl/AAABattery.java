@@ -10,10 +10,13 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
 import java.util.List;
 
 public class AAABattery extends TrinketAbility {
+    public static int getChargeReductionTicks(boolean enchanted) {
+        return enchanted ? 80 : 40;
+    }
+
     public AAABattery(int id, int level) {
         super(id, level);
     }
@@ -34,21 +37,8 @@ public class AAABattery extends TrinketAbility {
     }
 
     @Override
-    public List<Component> getDesc(@Nullable ItemStack stack, Player player) {
-        return List.of(Component.translatable("item.isaac_disaster.aaa_battery.lore.1"));
-    }
-
-    @Override
-    public List<Component> getSynergyDesc(@Nullable ItemStack stack, Player player) {
-        List<Component> desc = new ArrayList<>();
-
-        if (stack != null && Trinket.isEnchanted(stack)){
-            desc.add(DescriptionHelper.getSynergyDesc(
-                    Component.translatable("item.isaac_disaster.trinket.enchanted"),
-                    Component.translatable("item.isaac_disaster.aaa_battery.enchanted.lore.1")
-            ));
-        }
-
-        return desc;
+    public List<Component> getDesc(@Nullable ItemStack stack, @Nullable Player player) {
+        return List.of(Component.translatable("item.isaac_disaster.aaa_battery.lore.1",
+                DescriptionHelper.dynamicNumber(getChargeReductionTicks(stack != null && Trinket.isEnchanted(stack)) / 20)));
     }
 }

@@ -10,6 +10,12 @@ public class ModDamageType {
     private ModDamageType() {
     }
 
+    public static final ResourceKey<DamageType> SELF_DAMAGE =
+            ResourceKey.create(
+                    Registries.DAMAGE_TYPE,
+                    ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "self_damage")
+            );
+
     public static final ResourceKey<DamageType> TEAR =
             ResourceKey.create(
                     Registries.DAMAGE_TYPE,

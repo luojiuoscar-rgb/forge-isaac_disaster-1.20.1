@@ -6,14 +6,16 @@ import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.registries.ability.trinket.TrinketAbility;
 import net.luojiuoscar.isaac_disaster.registries.ability.trinket.TrinketAbilityContext;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerModules;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
 import java.util.List;
+
+import static net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.normal.Cartridge.getChance;
 
 public class Cartridge extends TrinketAbility {
 
@@ -45,23 +47,12 @@ public class Cartridge extends TrinketAbility {
     }
 
     @Override
-    public List<Component> getDesc(@Nullable ItemStack stack, Player player) {
-        return List.of(Component.translatable("item.isaac_disaster.cartridge.lore.1"));
+    public List<Component> getDesc(@Nullable ItemStack stack, @Nullable Player player) {
+        double luck = player == null ? 0 : player.getAttributeValue(Attributes.LUCK);
+        return List.of(Component.translatable("item.isaac_disaster.cartridge.lore.1",
+                        DescriptionHelper.dynamicNumber(100 * getChance(stack != null && Trinket.isEnchanted(stack) ? 2 : 1, luck))),
+                Component.translatable("item.isaac_disaster.cartridge.lore.2"),
+                Component.translatable("item.isaac_disaster.special.stackable"));
     }
-
-    @Override
-    public List<Component> getSynergyDesc(@Nullable ItemStack stack, Player player) {
-        List<Component> desc = new ArrayList<>();
-
-        if (stack != null && Trinket.isEnchanted(stack)){
-            desc.add(DescriptionHelper.getSynergyDesc(
-                    Component.translatable("item.isaac_disaster.trinket.enchanted"),
-                    Component.translatable("item.isaac_disaster.synergy.description.no_effect")
-            ));
-        }
-
-        return desc;
-    }
-
 
 }

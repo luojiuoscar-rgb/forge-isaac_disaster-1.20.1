@@ -4,6 +4,13 @@
       "rolls": 1,
       "entries": [
         {"type": "minecraft:item", "name": "isaac_disaster:holy_light"},
+        {"type": "minecraft:item", "name": "isaac_disaster:box_of_spiders"},
+        {"type": "minecraft:item", "name": "isaac_disaster:infestation_2"},
+        {"type": "minecraft:item", "name": "isaac_disaster:moms_wig"},
+        {"type": "minecraft:item", "name": "isaac_disaster:spider_baby"},
+        {"type": "minecraft:item", "name": "isaac_disaster:the_mulligan"},
+        {"type": "minecraft:item", "name": "isaac_disaster:infestation"},
+        {"type": "minecraft:item", "name": "isaac_disaster:moms_pad"},
         {"type": "minecraft:item", "name": "isaac_disaster:sinus_infection"},
         {"type": "minecraft:item", "name": "isaac_disaster:adrenaline"},
         {"type": "minecraft:item", "name": "isaac_disaster:dead_tooth"},

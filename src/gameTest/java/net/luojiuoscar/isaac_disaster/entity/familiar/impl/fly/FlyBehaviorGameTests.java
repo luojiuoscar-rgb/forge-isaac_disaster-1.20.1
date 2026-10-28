@@ -217,7 +217,7 @@ public final class FlyBehaviorGameTests {
             fly.tickFamiliar();
             helper.assertTrue(fly.hooks == 1 && fly.hitTarget == victim && fly.accepted,
                     "A real contact delivers one accepted attempt to the subclass hook" + fixture.describe(fly));
-            near(helper, fly.attemptedDamage, 7, 0.00001, "Damage reads the owner's current attack at contact time");
+            near(helper, fly.attemptedDamage, 14, 0.00001, "Blue fly deals twice the owner's current attack at contact time");
             helper.assertTrue(victim.getHealth() < victim.getMaxHealth()
                             && victim.getLastDamageSource() != null
                             && victim.getLastDamageSource().is(ModDamageType.FAMILIAR)
@@ -330,6 +330,70 @@ public final class FlyBehaviorGameTests {
         }
     }
 
+    @GameTest(template = "trajectory_empty", batch = "fly_behavior")
+    public static void differentFlyVariantsShareLeadershipAndQueueAdmission(GameTestHelper helper) {
+        for (boolean variantLeads : new boolean[]{true, false}) {
+            try (var f = new Fixture(helper)) {
+                var other = f.register(new OtherColorFly(helper));
+                other.setPos(f.owner.position().add(variantLeads ? 1 : -1, 0, 0));
+                var blue = f.fly();
+                blue.setPos(f.owner.position().add(variantLeads ? -1 : 1, 0, 0));
+                var target = f.mob(EntityType.ZOMBIE, f.owner.position().add(2, 0, 0));
+                AbstractFlyFamiliarEntity leader = variantLeads ? other : blue;
+                AbstractFlyFamiliarEntity follower = variantLeads ? blue : other;
+                var frame = FlyOwnerFrame.get(f.owner);
+                long tick = helper.getLevel().getGameTime();
+                frame.refresh(f.owner, tick);
+                helper.assertTrue(frame.attackTarget(f.owner, leader, tick) == target,
+                        "The nearest fly can initiate and lead regardless of variant");
+                helper.assertTrue(frame.attackTarget(f.owner, follower, tick) == null,
+                        "The second fly still obeys one admission per tick");
+                for (int delta = 1; delta <= 4; delta++) {
+                    frame.refresh(f.owner, tick + delta);
+                    helper.assertTrue(frame.attackTarget(f.owner, leader, tick + delta) == target,
+                            "Either variant stays in the shared queue as leader");
+                    helper.assertTrue(frame.attackTarget(f.owner, follower, tick + delta) == target,
+                            "Either variant joins the same queue as follower");
+                }
+            }
+        }
+        helper.succeed();
+    }
+
+    @GameTest(template = "trajectory_empty", batch = "fly_behavior")
+    public static void otherFlyVariantsUseTheirOwnContactDamageAndEffect(GameTestHelper helper) {
+        try (var f = new Fixture(helper)) {
+            var fly = f.register(new OtherColorFly(helper));
+            var target = f.contactVictim(fly);
+            target.setItemSlot(EquipmentSlot.HEAD, ItemStack.EMPTY);
+            target.getAttribute(Attributes.ARMOR).setBaseValue(0);
+            float before = target.getHealth();
+            fly.tickFamiliar();
+            helper.assertTrue(target.getHealth() == before - 4 && fly.hooks == 1 && fly.damage == 4,
+                    "A direct abstract-base subclass applies its own damage and effect");
+            helper.assertTrue(fly.isRemoved() && f.data.getCount(BLUE_FLY) == 0
+                            && !f.data.containsEntity(BLUE_FLY, fly.getUUID()),
+                    "The shared contact behavior consumes the variant once");
+            fly.tickFamiliar();
+            helper.assertTrue(fly.hooks == 1, "A consumed variant cannot apply its effect again");
+        }
+        helper.succeed();
+    }
+
+    private static final class OtherColorFly extends AbstractFlyFamiliarEntity {
+        int hooks;
+        float damage;
+
+        OtherColorFly(GameTestHelper helper) { super(ModEntities.BLUE_FLY.get(), helper.getLevel()); }
+        @Override public int getBodyColor() { return 0xD04030; }
+        @Override protected float getContactDamage(ServerPlayer owner, LivingEntity target) { return 4; }
+        @Override protected void onContactHit(ServerPlayer owner, LivingEntity target, Vec3 hit,
+                                             float damage, boolean accepted) {
+            hooks++;
+            this.damage = damage;
+        }
+    }
+
     private static void assertConsumed(GameTestHelper helper, Fixture fixture, ObservedFly fly) {
         helper.assertTrue(fly.isRemoved() && fixture.data.getCount(BLUE_FLY) == 0
                         && !fixture.data.containsEntity(BLUE_FLY, fly.getUUID()),
@@ -365,7 +429,10 @@ public final class FlyBehaviorGameTests {
             // A batch runs nearby templates concurrently. Give every owner a separate eight-block sphere.
             int isolatedHeight = 100 + NEXT_FIXTURE.getAndIncrement() * 14;
             Vec3 horizontalAnchor = Vec3.atCenterOf(helper.absolutePos(new BlockPos(1, 1, 1)));
-            owner.setPos(horizontalAnchor.x, isolatedHeight, horizontalAnchor.z);
+            // Keep the initial orbit inside one chunk. Cross-boundary sections may still be HIDDEN
+            // during GameTest setup, so UUID lookups would temporarily shrink a 64-fly roster.
+            owner.setPos(Math.floor(horizontalAnchor.x / 16) * 16 + 8.5, isolatedHeight,
+                    Math.floor(horizontalAnchor.z / 16) * 16 + 8.5);
             data = owner.getCapability(PlayerFamiliarDataProvider.PLAYER_FAMILIAR_DATA).resolve().orElseThrow();
             // The GameTest world can contain mountains above the tiny template. Prepare actual air.
             try {
@@ -405,7 +472,7 @@ public final class FlyBehaviorGameTests {
             return register(new ObservedFly(helper));
         }
 
-        private <T extends BlueFlyEntity> T register(T fly) {
+        private <T extends AbstractFlyFamiliarEntity> T register(T fly) {
             fly.setOwner(owner);
             fly.setPos(owner.position());
             data.addCount(BLUE_FLY, 1);
@@ -416,7 +483,7 @@ public final class FlyBehaviorGameTests {
             return fly;
         }
 
-        private Zombie contactVictim(BlueFlyEntity fly) {
+        private Zombie contactVictim(AbstractFlyFamiliarEntity fly) {
             Zombie victim = mob(EntityType.ZOMBIE, owner.position().add(3, 0, 0));
             fly.setPos(victim.getBoundingBox().getCenter().add(-0.5, -fly.getBbHeight() * 0.5, 0));
             return victim;

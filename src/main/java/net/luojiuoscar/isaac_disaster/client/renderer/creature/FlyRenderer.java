@@ -13,8 +13,8 @@ import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.scores.Team;
 import org.jetbrains.annotations.NotNull;
+import net.minecraft.world.scores.Team;
 
 import java.util.UUID;
 
@@ -33,23 +33,28 @@ public final class FlyRenderer<T extends AbstractFlyFamiliarEntity> extends Enti
     public void render(@NotNull T entity, float entityYaw, float partialTick,
                        @NotNull PoseStack poses, @NotNull MultiBufferSource buffers, int packedLight) {
         poses.pushPose();
+        float visualScale = entity.getVisualScale();
+        poses.scale(visualScale, visualScale, visualScale);
         poses.mulPose(Axis.YP.rotationDegrees(180.0F - entityYaw));
         poses.scale(-1.0F, -1.0F, 1.0F);
         model.setupAnim(entity, 0.0F, 0.0F, entity.tickCount + partialTick, 0.0F, 0.0F);
-        int color = entity.getBodyColor();
         var viewer = Minecraft.getInstance().player;
         var owner = entity.getOwner();
-        if (viewer != null && owner != null) {
-            boolean flashing = shouldFlash(viewer.getUUID(), viewer.getTeam(), owner.getUUID(), owner.getTeam());
-            double seconds = (Util.getNanos() % 1_000_000_000L) / 1_000_000_000.0;
-            color = color(color, flashing, seconds);
-        }
+        double seconds = (Util.getNanos() % 1_000_000_000L) / 1_000_000_000.0;
+        int color = renderColor(entity.getBodyColor(),
+                viewer == null ? null : viewer.getUUID(), viewer == null ? null : viewer.getTeam(),
+                owner == null ? null : owner.getUUID(), owner == null ? null : owner.getTeam(), seconds);
         model.renderToBuffer(poses, buffers.getBuffer(model.renderType(TEXTURE)),
                 packedLight, OverlayTexture.NO_OVERLAY,
                 ((color >> 16) & 255) / 255.0F, ((color >> 8) & 255) / 255.0F,
                 (color & 255) / 255.0F, 1.0F);
         poses.popPose();
         super.render(entity, entityYaw, partialTick, poses, buffers, packedLight);
+    }
+
+    static int renderColor(int bodyColor, UUID viewer, Team viewerTeam,
+                           UUID owner, Team ownerTeam, double seconds) {
+        return color(bodyColor, shouldFlash(viewer, viewerTeam, owner, ownerTeam), seconds);
     }
 
     static boolean shouldFlash(UUID viewer, Team viewerTeam, UUID owner, Team ownerTeam) {

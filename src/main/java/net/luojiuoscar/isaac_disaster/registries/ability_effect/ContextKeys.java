@@ -5,7 +5,7 @@ import net.luojiuoscar.isaac_disaster.bullet.core.BulletStickContext;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.profile.PotionProfile;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackContext;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.IBulletObject;
-import net.luojiuoscar.isaac_disaster.registries.recursive_module.RecursiveModuleQueue;
+import net.luojiuoscar.isaac_disaster.registries.periodic_module.PeriodicModuleQueue;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
@@ -21,7 +21,7 @@ public final class ContextKeys {
     public static final ContextKey<InteractionHand> HAND = new ContextKey<>();
     public static final ContextKey<Double> AMPLIFIER = new ContextKey<>();
     public static final ContextKey<Item> ITEM = new ContextKey<>();
-    public static final ContextKey<Integer> LOOT_COUNT = new ContextKey<>();
+    public static final ContextKey<Integer> COUNT = new ContextKey<>();
 
     // 药水相关
     public static final ContextKey<List<PotionProfile>> POTIONS = new ContextKey<>();
@@ -35,7 +35,7 @@ public final class ContextKeys {
     public static final ContextKey<BulletStickContext> BULLET_STICK = new ContextKey<>();
     public static final ContextKey<ResourceLocation> BULLET_COLOR_ID = new ContextKey<>();
     public static final ContextKey<AttackContext> ATTACK_CONTEXT = new ContextKey<>();
-    public static final ContextKey<RecursiveModuleQueue> RECURSIVE_MODULE_QUEUE = new ContextKey<>();
+    public static final ContextKey<PeriodicModuleQueue> PERIODIC_MODULE_QUEUE = new ContextKey<>();
     public static final ContextKey<CompositeTriggerView> COMPOSITE_TRIGGER_VIEW = new ContextKey<>();
 
 

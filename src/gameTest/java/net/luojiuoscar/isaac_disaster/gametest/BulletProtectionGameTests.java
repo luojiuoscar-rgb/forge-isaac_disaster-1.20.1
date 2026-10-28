@@ -1,7 +1,8 @@
 package net.luojiuoscar.isaac_disaster.gametest;
 
 import com.mojang.authlib.GameProfile;
-import net.luojiuoscar.isaac_disaster.Config;
+import net.luojiuoscar.isaac_disaster.datapack.GameTestDatapackSettings;
+import net.luojiuoscar.isaac_disaster.datapack.gameplay.GameplayConfig;
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.bullet.core.BulletState;
 import net.luojiuoscar.isaac_disaster.bullet.server.BulletRuntime;
@@ -28,11 +29,10 @@ public final class BulletProtectionGameTests {
         var runtime = BulletRuntime.INSTANCE;
         ServerLevel level = helper.getLevel();
         ServerLevel other = level.getServer().getLevel(Level.NETHER);
-        int originalLimit = Config.MAX_ACTIVE_BULLETS.get();
         int baseline = runtime.activeCount(level.getServer());
         BulletState first = null, second = null, replacement = null, rejected = null;
-        try {
-            Config.MAX_ACTIVE_BULLETS.set(baseline + 2);
+        try (var settings = GameTestDatapackSettings.override(helper)) {
+            settings.set(GameplayConfig.MAX_ACTIVE_BULLETS, baseline + 2);
             first = runtime.spawn(level, state(helper));
             second = runtime.spawn(other, state(helper));
             helper.assertTrue(first != null && second != null, "Available capacity can be used across dimensions");
@@ -42,7 +42,7 @@ public final class BulletProtectionGameTests {
             runtime.manager(level).remove(first);
             replacement = runtime.spawn(other, state(helper));
             helper.assertTrue(replacement != null, "Removing a bullet immediately restores capacity");
-            Config.MAX_ACTIVE_BULLETS.set(1);
+            settings.set(GameplayConfig.MAX_ACTIVE_BULLETS, 1);
             helper.assertTrue(runtime.activeCount(level.getServer()) == baseline + 2, "Lowering the cap keeps existing bullets");
             BulletState afterLowering = runtime.spawn(level, state(helper));
             if (afterLowering != null) runtime.manager(level).remove(afterLowering);
@@ -52,7 +52,6 @@ public final class BulletProtectionGameTests {
             if (second != null) runtime.manager(other).remove(second);
             if (replacement != null) runtime.manager(other).remove(replacement);
             if (rejected != null) runtime.manager(level).remove(rejected);
-            Config.MAX_ACTIVE_BULLETS.set(originalLimit);
         }
         helper.succeed();
     }
@@ -61,7 +60,6 @@ public final class BulletProtectionGameTests {
     public static void cappedAttackSkipsStateConstruction(GameTestHelper helper) {
         var runtime = BulletRuntime.INSTANCE;
         ServerLevel level = helper.getLevel();
-        int originalLimit = Config.MAX_ACTIVE_BULLETS.get();
         BulletState live = runtime.spawn(level, state(helper));
         var owner = FakePlayerFactory.get(level, new GameProfile(UUID.randomUUID(), "bullet_cap"));
         var attack = new BulletAttack(0) {
@@ -70,12 +68,11 @@ public final class BulletProtectionGameTests {
                 return null;
             }
         };
-        try {
-            Config.MAX_ACTIVE_BULLETS.set(runtime.activeCount(level.getServer()));
+        try (var settings = GameTestDatapackSettings.override(helper)) {
+            settings.set(GameplayConfig.MAX_ACTIVE_BULLETS, runtime.activeCount(level.getServer()));
             attack.shoot(AttackContext.builder(owner, owner).build());
         } finally {
             if (live != null) runtime.manager(level).remove(live);
-            Config.MAX_ACTIVE_BULLETS.set(originalLimit);
         }
         helper.succeed();
     }

@@ -36,11 +36,11 @@ Blockbench 动画作为调节参考保存，游戏中的动画由 `FlyModel.setu
 游戏中使用：
 
 ```mcfunction
-/isd familiar add @s isaac_disaster:blue_fly 1
+/isd familiar @s add isaac_disaster:blue_fly 1
 ```
 
 可用 F3+B 查看实体身体碰撞箱。实际尺寸很小，建议近距离查看。
-测试结束后使用 `/isd familiar remove @s isaac_disaster:blue_fly 1` 减少需求并清理实体。
+测试结束后使用 `/isd familiar @s remove isaac_disaster:blue_fly 1` 减少需求并清理实体。
 蓝苍蝇实体不单独存档，由玩家保存的跟班需求重新生成。直接 `/summon` 的无主苍蝇会在 20～40 tick 内被清理。
 仅移除实体而不减少需求时，跟班系统会补生；正常接触攻击会同时减少需求，不会补生。
 同维度内，所有跟班离主人超过 16 格时暂停行为并排入玩家的运行时召回队列。
@@ -145,3 +145,10 @@ tear 携带命中时不可变的速度快照，不为伤害归属创建假实体
 
 菜刀继续使用自己的攻击伤害类型。护甲、抗性、盾牌和苍蝇接触后无论伤害是否成功都消耗一次的规则保持原样。
 主体染色计算已合并到 `FlyRenderer`，保持当前浅灰白闪烁和翅膀原色。
+
+All AbstractFlyFamiliarEntity variants share orbiting, following, the same attack
+queue, contact consumption and hostile-view flashing. Different colors can lead
+and join one mixed queue. Variants supply getBodyColor(), getContactDamage() and
+onContactHit(); BlueFlyEntity only defines its color, panel damage and empty effect.
+TrackingTargetRules.eligibleFlyOrSpider supplies the shared target policy for
+both fly and spider families.

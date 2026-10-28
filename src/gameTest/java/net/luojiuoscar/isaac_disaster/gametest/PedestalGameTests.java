@@ -6,7 +6,8 @@ import net.luojiuoscar.isaac_disaster.block.block_entity.PedestalPrice;
 import net.luojiuoscar.isaac_disaster.block.custom.PedestalBlock;
 import net.luojiuoscar.isaac_disaster.block.ModBlocks;
 import net.luojiuoscar.isaac_disaster.commands.gamerule.ModGameRules;
-import net.luojiuoscar.isaac_disaster.Config;
+import net.luojiuoscar.isaac_disaster.datapack.GameTestDatapackSettings;
+import net.luojiuoscar.isaac_disaster.datapack.gameplay.GameplayConfig;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.item.ModPassiveItems;
@@ -232,14 +233,14 @@ public final class PedestalGameTests {
         PedestalBlockEntity pedestal = place(helper, 1);
         ServerPlayer player = player(helper);
         pedestal.setItem(new ItemStack(Items.STICK));
-        int coinValue = Config.COIN_TIER_1_VALUE.get();
+        int coinValue = GameplayConfig.COIN_TIER_1_VALUE.get();
         player.setPos(pedestal.getBlockPos().getCenter());
         pedestal.setPrice(PedestalPrice.money(coinValue * 3));
         pedestal.interact(player, InteractionHand.MAIN_HAND);
         helper.assertTrue(!pedestal.getItem().isEmpty() && player.getMainHandItem().isEmpty(),
                 "Insufficient money keeps the item on its pedestal");
         player.getInventory().setItem(1, new ItemStack(ForgeRegistries.ITEMS.getValue(
-                ResourceLocation.parse(Config.COIN_TIER_1_ID.get())), 8));
+                ResourceLocation.parse(GameplayConfig.COIN_TIER_1_ID.get())), 8));
         int moneyBefore = PlayerHelper.countMoney(player);
         pedestal.interact(player, InteractionHand.MAIN_HAND);
         helper.assertTrue(pedestal.getItem().isEmpty() && player.getMainHandItem().is(Items.STICK),
@@ -462,11 +463,9 @@ public final class PedestalGameTests {
     public static void manualTakingDoesNotAutoUseUnlessExplicitlyConfigured(GameTestHelper helper) {
         PedestalBlockEntity pedestal = place(helper, 1);
         ServerPlayer player = player(helper);
-        boolean previous = Config.AUTO_USE_PASSIVE_ITEM.get();
-        boolean previousBackpack = Config.EXTRA_PASSIVE_ITEM_BACKPACK.get();
-        Config.AUTO_USE_PASSIVE_ITEM.set(true);
-        Config.EXTRA_PASSIVE_ITEM_BACKPACK.set(true);
-        try {
+        try (var settings = GameTestDatapackSettings.override(helper)) {
+            settings.set(GameplayConfig.AUTO_USE_PASSIVE_ITEM, true);
+            settings.set(GameplayConfig.EXTRA_PASSIVE_ITEM_BACKPACK, true);
             pedestal.setItem(new ItemStack(ModPassiveItems.BREAKFAST.get()));
             pedestal.interact(player, InteractionHand.MAIN_HAND);
             helper.assertTrue(player.getMainHandItem().is(ModPassiveItems.BREAKFAST.get()),
@@ -476,9 +475,6 @@ public final class PedestalGameTests {
             pedestal.setItem(new ItemStack(ModPassiveItems.BREAKFAST.get()));
             pedestal.interact(player, InteractionHand.MAIN_HAND);
             helper.assertTrue(player.getMainHandItem().isEmpty(), "Explicit auto use follows the global auto-use setting");
-        } finally {
-            Config.AUTO_USE_PASSIVE_ITEM.set(previous);
-            Config.EXTRA_PASSIVE_ITEM_BACKPACK.set(previousBackpack);
         }
         helper.succeed();
     }

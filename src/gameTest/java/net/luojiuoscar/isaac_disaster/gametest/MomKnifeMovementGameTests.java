@@ -484,6 +484,9 @@ public final class MomKnifeMovementGameTests {
         Fixture f = new Fixture(helper);
         f.populateKnives(knifeCount);
         f.spawnTarget();
+        // Every populated knife attacks this target; it must survive until the observed knife launches.
+        f.target.getAttribute(Attributes.MAX_HEALTH).setBaseValue(200);
+        f.target.setHealth(200);
         f.target.setPos(f.owner.position().add(0, 0, -targetDistance));
         Vec3[] launch = {null};
         float health = f.target.getHealth();

@@ -2,6 +2,7 @@ package net.luojiuoscar.isaac_disaster.gametest;
 
 import com.mojang.authlib.GameProfile;
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
+import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ContextKeys;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ExecutableEffectContext;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ModExecutableEffects;
@@ -73,12 +74,21 @@ public final class EternalHeartGameTests {
     public static void expiredWhiteHeartConvertsToMaxHealth(GameTestHelper helper) {
         ServerPlayer player = player(helper);
         double maxHealth = player.getMaxHealth();
-        player.addEffect(new MobEffectInstance(ModEffects.ETERNAL_HEART.get(), 1, 0));
+        player.addEffect(new MobEffectInstance(ModEffects.ETERNAL_HEART.get(), 11, 0));
 
-        player.tick();
+        // FakePlayer.tick() is empty; doTick() advances the inherited living-entity effects.
+        player.doTick();
+        MobEffectInstance pending = player.getEffect(ModEffects.ETERNAL_HEART.get());
+        helper.assertTrue(pending != null && pending.getDuration() == 10,
+                "White heart remains until its final scheduled effect tick");
+        helper.assertTrue(player.getMaxHealth() == maxHealth,
+                "White heart does not convert before its final scheduled effect tick");
+
+        player.doTick();
 
         helper.assertTrue(player.getEffect(ModEffects.ETERNAL_HEART.get()) == null, "The expired white heart is removed");
-        helper.assertTrue(player.getMaxHealth() > maxHealth, "The expired white heart grants a permanent health unit");
+        helper.assertTrue(Math.abs(player.getMaxHealth() - maxHealth - StatManager.MAX_HEALTH.getBonus()) < 0.01,
+                "The expired white heart grants exactly one permanent health unit");
         helper.succeed();
     }
 

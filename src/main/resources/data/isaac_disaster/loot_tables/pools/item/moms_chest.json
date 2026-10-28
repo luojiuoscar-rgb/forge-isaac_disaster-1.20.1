@@ -3,6 +3,9 @@
     {
       "rolls": 1,
       "entries": [
+        {"type": "minecraft:item", "name": "isaac_disaster:moms_wig"},
+        {"type": "minecraft:item", "name": "isaac_disaster:moms_pad"},
+        {"type": "minecraft:item", "name": "isaac_disaster:moms_underwear"},
         {"type": "minecraft:item", "name": "isaac_disaster:moms_purse"},
         {"type": "minecraft:item", "name": "isaac_disaster:moms_contacts"},
         {"type": "minecraft:item", "name": "isaac_disaster:moms_pearls"},

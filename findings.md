@@ -26,7 +26,7 @@ feature history belongs in `.planning/<task-id>/`.
 
 - `IsaacDisaster.java` is the composition root. `ModRegistries.java` creates the
   add-on-facing registries for abilities, effects, attack types, trajectories,
-  bullet colors, trigger modules/rules, recursive modules, familiar descriptors,
+  bullet colors, trigger modules/rules, periodic modules, familiar descriptors,
   and related systems.
 - Built-in numeric IDs derived from enum ordinals must be appended, never
   reordered. New passive items must also be added to the corresponding
@@ -37,7 +37,7 @@ feature history belongs in `.planning/<task-id>/`.
 - Passive items delegate lifecycle behavior to registered `PassiveAbility`
   instances. Obtain/remove operations must be symmetric; one-time behavior
   belongs to first-obtain handling.
-- Active, pickup, trinket, set, trigger-module, recursive-module, and executable
+- Active, pickup, trinket, set, trigger-module, periodic-module, and executable
   effect registries define the extension boundaries. Prefer existing managers,
   context keys, and lifecycle APIs over direct capability mutation.
 - `StatManager` is the common interface for persistent stat changes and module,
@@ -67,7 +67,7 @@ feature history belongs in `.planning/<task-id>/`.
   rules. A matching rule can reject a module before its full `fire()` call;
   rules must not mutate queues or contexts. Concrete item synergies generally
   remain in effect/module logic unless they prevent an unsafe module combination.
-- Recursive-module interactions are separate from trigger-module rules and
+- Periodic-module interactions are separate from trigger-module rules and
   require their own design when migrated.
 
 ### Attack And Projectile Pipeline

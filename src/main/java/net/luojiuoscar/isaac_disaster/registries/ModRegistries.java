@@ -16,7 +16,8 @@ import net.luojiuoscar.isaac_disaster.registries.charge_bar.ModChargeBars;
 import net.luojiuoscar.isaac_disaster.registries.familiar.ModFamiliarEntities;
 import net.luojiuoscar.isaac_disaster.registries.familiar.ModFamiliarLimitGroups;
 import net.luojiuoscar.isaac_disaster.registries.ground_effect.ModGroundEffects;
-import net.luojiuoscar.isaac_disaster.registries.recursive_module.ModRecursiveModules;
+import net.luojiuoscar.isaac_disaster.registries.familiar_modifier.ModFamiliarModifiers;
+import net.luojiuoscar.isaac_disaster.registries.periodic_module.ModPeriodicModules;
 import net.luojiuoscar.isaac_disaster.registries.revive_module.ModReviveModules;
 import net.luojiuoscar.isaac_disaster.registries.split_module.ModSplitModules;
 import net.luojiuoscar.isaac_disaster.registries.trajectory.ModTrajectoryModules;
@@ -41,8 +42,8 @@ public class ModRegistries {
         registerRegistry(ModTriggerModules.TRIGGER_MODULE_REGISTRY, ModTriggerModules.TRIGGER_MODULE_KEY.location(), modEventBus);
         registerRegistry(ModTriggerModuleRules.TRIGGER_MODULE_RULE_REGISTRY, ModTriggerModuleRules.TRIGGER_MODULE_RULE_KEY.location(), modEventBus);
         registerRegistry(ModVisualLayers.VISUAL_LAYER_REGISTRY, ModVisualLayers.VISUAL_LAYER_KEY.location(), modEventBus);
-        registerRegistry(ModRecursiveModules.RECURSIVE_MODULE_REGISTRY, ModRecursiveModules.RECURSIVE_MODULE_KEY.location(), modEventBus);
-        registerRegistry(ModReviveModules.REVIVE_MODULE_REGISTRY, ModRecursiveModules.RECURSIVE_MODULE_KEY.location(), modEventBus);
+        registerRegistry(ModPeriodicModules.PERIODIC_MODULE_REGISTRY, ModPeriodicModules.PERIODIC_MODULE_KEY.location(), modEventBus);
+        registerRegistry(ModReviveModules.REVIVE_MODULE_REGISTRY, ModPeriodicModules.PERIODIC_MODULE_KEY.location(), modEventBus);
         registerRegistry(ModSplitModules.SPLIT_MODULE_REGISTRY, ModSplitModules.SPLIT_MODULE_KEY.location(), modEventBus);
         registerRegistry(ModPassiveAbilities.PASSIVE_ABILITY_REGISTRY, ModPassiveAbilities.PASSIVE_ABILITY_KEY.location(), modEventBus);
         registerRegistry(ModActiveAbilities.ACTIVE_ABILITY_REGISTRY, ModActiveAbilities.ACTIVE_ABILITY_KEY.location(), modEventBus);
@@ -55,6 +56,7 @@ public class ModRegistries {
         registerRegistry(ModFamiliarEntities.FAMILIAR_ENTITY_REGISTRY, ModFamiliarEntities.FAMILIAR_ENTITY_KEY.location(), modEventBus);
         registerRegistry(ModFamiliarLimitGroups.FAMILIAR_LIMIT_GROUP_REGISTRY, ModFamiliarLimitGroups.FAMILIAR_LIMIT_GROUP_KEY.location(), modEventBus);
         registerRegistry(ModGroundEffects.GROUND_EFFECT_REGISTRY, ModGroundEffects.GROUND_EFFECT_KEY.location(), modEventBus);
+        registerRegistry(ModFamiliarModifiers.FAMILIAR_MODIFIER_REGISTRY, ModFamiliarModifiers.FAMILIAR_MODIFIER_KEY.location(), modEventBus);
         registerRegistry(ModExecutableEffects.EXECUTABLE_EFFECT_REGISTRY, ModExecutableEffects.EXECUTABLE_EFFECT_KEY.location(), modEventBus);
     }
 

@@ -2,7 +2,8 @@ package net.luojiuoscar.isaac_disaster.gametest;
 
 import com.mojang.authlib.GameProfile;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import net.luojiuoscar.isaac_disaster.Config;
+import net.luojiuoscar.isaac_disaster.datapack.GameTestDatapackSettings;
+import net.luojiuoscar.isaac_disaster.datapack.gameplay.GameplayConfig;
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.attribute.ModAttributes;
 import net.luojiuoscar.isaac_disaster.capability.entity.EffectModulesProvider;
@@ -89,8 +90,8 @@ public final class FourthPassiveBatchGameTests {
         return stack;
     }
 
-    private static void recursive(ServerPlayer player) {
-        player.getCapability(EffectModulesProvider.EFFECT_MODULES).resolve().orElseThrow().getRecursiveModuleQueue().tickAll(player);
+    private static void tickPeriodicModules(ServerPlayer player) {
+        player.getCapability(EffectModulesProvider.EFFECT_MODULES).resolve().orElseThrow().getPeriodicModuleQueue().tickAll(player);
     }
 
     private static void close(GameTestHelper helper, double actual, double expected, String message) {
@@ -108,13 +109,13 @@ public final class FourthPassiveBatchGameTests {
             var before = new EnumMap<StatManager, Double>(StatManager.class);
             for (var stat : StatManager.values()) before.put(stat, player.getAttributeValue(stat.getAttribute()));
             ItemStack equipped = equip(player, 0, item);
-            recursive(player);
+            tickPeriodicModules(player);
             CurioSlotManager.requestReconcile(player);
             CurioSlotManager.tick(player);
             equip(player, 0, Items.AIR);
             for (var stat : StatManager.values()) close(helper, player.getAttributeValue(stat.getAttribute()), before.get(stat), item + " removes " + stat);
             helper.assertTrue(player.getCapability(EffectModulesProvider.EFFECT_MODULES).resolve().orElseThrow()
-                    .getRecursiveModuleQueue().getQueue().isEmpty(), "No recursive modules remain after " + item);
+                    .getPeriodicModuleQueue().getQueue().isEmpty(), "No periodic modules remain after " + item);
             helper.assertTrue(!equipped.isEmpty(), "Physical equipment is retained by the caller");
         }
         helper.succeed();
@@ -127,7 +128,7 @@ public final class FourthPassiveBatchGameTests {
                 ModPassiveItems.APPLE.get(), ModPassiveItems.DEAD_TOOTH.get(), ModPassiveItems.ADRENALINE.get(),
                 ModPassiveItems.JUMPER_CABLES.get(), ModPassiveItems.SOUL_LOCKET.get())) {
             var original = player(helper);
-            equip(original, 0, item); recursive(original);
+            equip(original, 0, item); tickPeriodicModules(original);
             PlayerHelper.refreshFireRateBaseValue(original);
             var expected = new EnumMap<StatManager, Double>(StatManager.class);
             for (var stat : StatManager.values()) expected.put(stat, original.getAttributeValue(stat.getAttribute()));
@@ -140,7 +141,7 @@ public final class FourthPassiveBatchGameTests {
                 CurioSlotManager.tick(restored);
                 new CuriosEventHandler().tick(new LivingEvent.LivingTickEvent(restored));
             }
-            recursive(restored); PlayerHelper.refreshFireRateBaseValue(restored);
+            tickPeriodicModules(restored); PlayerHelper.refreshFireRateBaseValue(restored);
             for (var stat : StatManager.values()) close(helper, restored.getAttributeValue(stat.getAttribute()), expected.get(stat), item + " persists " + stat);
             helper.assertTrue(helper.getLevel().getEntitiesOfClass(ItemEntity.class,
                     new AABB(original.position(), original.position()).inflate(2)).stream().mapToInt(s -> s.getItem().getCount()).sum() == rewards,
@@ -177,9 +178,8 @@ public final class FourthPassiveBatchGameTests {
     public static void bundlePairsOnlyEligibleLootAndUsesConfiguredCoin(GameTestHelper helper) {
         var player = player(helper);
         equip(player, 0, ModPassiveItems.HUMBLEING_BUNDLE.get());
-        String previous = Config.COIN_TIER_1_ID.get();
-        Config.COIN_TIER_1_ID.set("minecraft:gold_nugget");
-        try {
+        try (var settings = GameTestDatapackSettings.override(helper)) {
+            settings.set(GameplayConfig.COIN_TIER_1_ID, "minecraft:gold_nugget");
             var entries = new ObjectArrayList<ItemStack>();
             var configuredCoin = new ItemStack(Items.GOLD_NUGGET, 256);
             configuredCoin.getOrCreateTag().putBoolean("bundle_test", true);
@@ -202,7 +202,7 @@ public final class FourthPassiveBatchGameTests {
             var bombs = new ObjectArrayList<ItemStack>(); bombs.add(new ItemStack(ModItems.BOMB.get(), 32));
             TriggerModuleEvents.onLoot(new GeneralLootModifyEvent(player, event.getLootContext(), bombs));
             helper.assertTrue(bombs.size() == 1 && bombs.get(0).is(ModItems.DOUBLE_BOMB.get()) && bombs.get(0).getCount() == 32, "Bogo pairing is not doubled a second time");
-        } finally { Config.COIN_TIER_1_ID.set(previous); }
+        }
         helper.succeed();
     }
 
@@ -299,10 +299,10 @@ public final class FourthPassiveBatchGameTests {
         double damage = player.getAttributeValue(Attributes.ATTACK_DAMAGE);
         equip(player, 0, ModPassiveItems.DARK_PRINCES_CROWN.get());
         equip(player, 1, ModPassiveItems.ADRENALINE.get());
-        recursive(player);
+        tickPeriodicModules(player);
         close(helper, player.getAttributeValue(ModAttributes.FIRE_RATE.get()), rate + 2 * StatManager.FIRE_RATE.getBonus(), "Crown grants fire rate rather than Tears");
         helper.assertTrue(player.getAttributeValue(Attributes.ATTACK_DAMAGE) > damage, "Missing complete hearts grant adrenaline damage");
-        player.setHealth(player.getMaxHealth()); recursive(player);
+        player.setHealth(player.getMaxHealth()); tickPeriodicModules(player);
         close(helper, player.getAttributeValue(ModAttributes.FIRE_RATE.get()), rate, "Crown bonus disappears above one red heart");
         close(helper, player.getAttributeValue(Attributes.ATTACK_DAMAGE), damage, "Healing removes adrenaline damage");
         double unit = StatManager.MAX_HEALTH.getBonus();
@@ -310,7 +310,7 @@ public final class FourthPassiveBatchGameTests {
         for (double missingUnits : new double[]{0.01, 0.1, 0.5, 0.99, 1, 1.01, 1.5, 2}) {
             player.setHealth((float) (player.getMaxHealth() - unit * missingUnits));
             player.setAbsorptionAmount(10);
-            recursive(player);
+            tickPeriodicModules(player);
             close(helper, player.getAttributeValue(Attributes.ATTACK_DAMAGE) - damage, oneUnitDamage * missingUnits,
                     "Adrenaline scales linearly even below one missing heart and across its boundary");
         }
@@ -320,17 +320,17 @@ public final class FourthPassiveBatchGameTests {
                         && TextColor.fromRgb(ColorManager.SYNERGY).equals(number.getStyle().getColor()),
                 "Adrenaline presents its current bonus through the yellow dynamic component");
         equip(player, 2, ModPassiveItems.ADRENALINE.get());
-        recursive(player);
+        tickPeriodicModules(player);
         close(helper, player.getAttributeValue(Attributes.ATTACK_DAMAGE) - damage, oneUnitDamage * 2,
                 "A second Adrenaline does not increase its damage contribution");
         equip(player, 1, Items.AIR);
-        recursive(player);
+        tickPeriodicModules(player);
         close(helper, player.getAttributeValue(Attributes.ATTACK_DAMAGE) - damage, oneUnitDamage * 2,
                 "Removing one copy preserves the one-copy bonus");
         equip(player, 2, Items.AIR);
         close(helper, player.getAttributeValue(Attributes.ATTACK_DAMAGE), damage,
                 "Removing the last Adrenaline immediately removes its bonus");
-        player.setHealth((float) StatManager.MAX_HEALTH.getBonus()); recursive(player);
+        player.setHealth((float) StatManager.MAX_HEALTH.getBonus()); tickPeriodicModules(player);
         equip(player, 0, Items.AIR); equip(player, 1, Items.AIR);
         close(helper, player.getAttributeValue(ModAttributes.FIRE_RATE.get()), rate, "Unequip removes conditional fire rate");
         close(helper, player.getAttributeValue(Attributes.ATTACK_DAMAGE), damage, "Unequip removes conditional damage");
@@ -396,18 +396,18 @@ public final class FourthPassiveBatchGameTests {
         scoreboard.addPlayerToTeam(friendly.getScoreboardName(), team);
         try {
             player.addEffect(new MobEffectInstance(ModEffects.LACRIMAL_HYPOSECRETION.get(), 100));
-            for (int i = 0; i < 12; i++) recursive(player);
+            for (int i = 0; i < 12; i++) tickPeriodicModules(player);
             var poison = target.getEffect(ModEffects.DEADLY_POISON.get());
             helper.assertTrue(poison != null && poison.getAmplifier() == 14 && poison.getDuration() == 120, "At 2.4 blocks the aura encodes full panel damage and caps linger");
             helper.assertTrue(!outside.hasEffect(ModEffects.DEADLY_POISON.get()), "Targets beyond 2.5 blocks are excluded");
             helper.assertTrue(!friendly.hasEffect(ModEffects.DEADLY_POISON.get()), "Allied targets inside range are excluded");
             target.removeEffect(ModEffects.DEADLY_POISON.get());
             player.getAttribute(Attributes.ATTACK_DAMAGE).setBaseValue(10);
-            for (int i = 0; i < 4; i++) recursive(player);
+            for (int i = 0; i < 4; i++) tickPeriodicModules(player);
             helper.assertTrue(target.getEffect(ModEffects.DEADLY_POISON.get()).getAmplifier() == 18, "Idle aura without IsaacHead also runs while firing is disabled and snapshots current damage");
             target.removeEffect(ModEffects.DEADLY_POISON.get());
             equip(player, 0, Items.AIR);
-            for (int i = 0; i < 4; i++) recursive(player);
+            for (int i = 0; i < 4; i++) tickPeriodicModules(player);
             helper.assertTrue(!target.hasEffect(ModEffects.DEADLY_POISON.get()), "Unequip removes the unconditional aura");
         } finally {
             scoreboard.removePlayerTeam(team);
@@ -499,7 +499,7 @@ public final class FourthPassiveBatchGameTests {
             context.set(ContextKeys.DOUBLE, List.of(6.8));
             effect.get().apply(context);
             int amount = effect == ModExecutableEffects.HABIT ? 100
-                    : effect == ModExecutableEffects.VOLT45 ? Math.max(6 * (Config.ACTIVE_ITEM_DURABILITY_RESTORE_RATE.get() / 2), 1)
+                    : effect == ModExecutableEffects.VOLT45 ? Math.max(6 * (GameplayConfig.ACTIVE_ITEM_DURABILITY_RESTORE_RATE.get() / 2), 1)
                     : effect == ModExecutableEffects.SMALL_BATTERY ? 400
                     : effect == ModExecutableEffects.BATTERY ? 1200 : 2400;
             helper.assertTrue(effect == ModExecutableEffects.MEGA_BATTERY || selected.getDamageValue() == Math.max(0, 500 - amount),

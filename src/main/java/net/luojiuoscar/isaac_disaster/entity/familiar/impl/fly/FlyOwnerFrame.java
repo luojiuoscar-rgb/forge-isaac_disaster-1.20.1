@@ -46,13 +46,11 @@ final class FlyOwnerFrame {
         flies.clear();
         slots.clear();
         owner.getCapability(PlayerFamiliarDataProvider.PLAYER_FAMILIAR_DATA).ifPresent(data -> {
-            for (var entry : data.getEntries()) {
-                for (UUID id : entry.getEntityIds()) {
-                    if (owner.serverLevel().getEntity(id) instanceof AbstractFlyFamiliarEntity fly
-                            && !fly.isRemoved() && fly.getOwner() == owner) {
-                        slots.put(id, flies.size());
-                        flies.add(fly);
-                    }
+            for (UUID id : data.getEntityIdsInAdmissionOrder()) {
+                if (owner.serverLevel().getEntity(id) instanceof AbstractFlyFamiliarEntity fly
+                        && !fly.isRemoved() && fly.getOwner() == owner) {
+                    slots.put(id, flies.size());
+                    flies.add(fly);
                 }
             }
         });
@@ -71,7 +69,7 @@ final class FlyOwnerFrame {
     static boolean validTarget(ServerPlayer owner, LivingEntity target) {
         return target.level() == owner.level() && !target.isRemoved()
                 && target.getBoundingBox().getCenter().distanceToSqr(owner.getBoundingBox().getCenter()) <= 64
-                && TrackingTargetRules.eligibleFly(owner.serverLevel(), owner, target);
+                && TrackingTargetRules.eligibleFlyOrSpider(owner.serverLevel(), owner, target);
     }
 
     /** Decisions share expensive qualification; damage attempts still perform a fresh check. */

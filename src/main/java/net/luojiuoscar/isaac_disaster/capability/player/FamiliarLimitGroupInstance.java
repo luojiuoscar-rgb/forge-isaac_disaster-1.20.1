@@ -24,6 +24,13 @@ final class FamiliarLimitGroupInstance {
 
     int getQuota(ResourceLocation type) { return quotas.getOrDefault(type, 0); }
 
+    FamiliarLimitGroupInstance copy() {
+        FamiliarLimitGroupInstance result = new FamiliarLimitGroupInstance(definition);
+        result.quotas.putAll(quotas);
+        result.used = used;
+        return result;
+    }
+
     void clear() {
         quotas.clear();
         used = 0;

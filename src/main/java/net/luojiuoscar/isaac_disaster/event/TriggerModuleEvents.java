@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.capability.entity.EffectModulesProvider;
-import net.luojiuoscar.isaac_disaster.entity.tnt.IsaacBomb;
+import net.luojiuoscar.isaac_disaster.system.explosion.BombEffectSource;
 import net.luojiuoscar.isaac_disaster.event.custom.attack.*;
 import net.luojiuoscar.isaac_disaster.event.custom.attack.tear_bullet.*;
 import net.luojiuoscar.isaac_disaster.event.custom.misc.*;
@@ -31,10 +31,12 @@ import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
+import net.minecraftforge.event.entity.living.LivingDamageEvent;
 import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
 import net.minecraftforge.event.level.BlockEvent;
 import net.minecraftforge.event.level.ExplosionEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.registries.IForgeRegistry;
 import net.minecraftforge.registries.RegistryManager;
@@ -109,6 +111,20 @@ public class TriggerModuleEvents {
         }
 
         dispatch(context, ModTriggerTypes.HIT_ENTITY_RESTRICTED);
+    }
+
+    @SubscribeEvent(priority = EventPriority.LOWEST)
+    public static void onLivingDamage(LivingDamageEvent event) {
+        if (event.isCanceled() || !Float.isFinite(event.getAmount()) || event.getAmount() <= 0) return;
+        if (!(event.getSource().getEntity() instanceof LivingEntity attacker) || attacker.level().isClientSide) return;
+        ExecutableEffectContext context = new ExecutableEffectContext(attacker);
+        context.set(ContextKeys.EVENT, event);
+        context.set(ContextKeys.DOUBLE, List.of((double) event.getAmount()));
+        context.set(ContextKeys.TARGET_POSITION, event.getEntity().position());
+        context.set(ContextKeys.SECONDARY_LIVING_ENTITIES, List.of(event.getEntity()));
+        Entity direct = event.getSource().getDirectEntity();
+        if (direct != null) context.set(ContextKeys.ENTITY, List.of(direct));
+        dispatch(context, ModTriggerTypes.DEAL_DAMAGE);
     }
 
     @SubscribeEvent
@@ -328,13 +344,15 @@ public class TriggerModuleEvents {
      */
     @SubscribeEvent
     public static void onTntSpawn(EntityJoinLevelEvent event) {
-        if (!(event.getEntity() instanceof IsaacBomb bomb)) return;
+        if (event.getLevel().isClientSide()) return;
+        if (!(event.getEntity() instanceof BombEffectSource bomb)) return;
         if (bomb.getOwner() == null) return;
+        if (!bomb.markEffectsInitialized()) return;
 
         ExecutableEffectContext context = new ExecutableEffectContext(bomb.getOwner());
         context.set(ContextKeys.EVENT, event);
-        context.set(ContextKeys.ENTITY, List.of(bomb));
-        context.set(ContextKeys.TARGET_POSITION, bomb.position());
+        context.set(ContextKeys.ENTITY, List.of(event.getEntity()));
+        context.set(ContextKeys.TARGET_POSITION, event.getEntity().position());
 
         dispatch(context, ModTriggerTypes.TNT_SPAWNED);
     }
@@ -342,12 +360,13 @@ public class TriggerModuleEvents {
     /** 在产生爆炸的时候，根据炸弹自身的TriggerModule来触发对应效果 */
     @SubscribeEvent
     public static void onExplosion(ExplosionEvent.Detonate event) {
-        if (!(event.getExplosion().getDirectSourceEntity() instanceof IsaacBomb bomb)) return;
+        if (event.getLevel().isClientSide()) return;
+        if (!(event.getExplosion().getDirectSourceEntity() instanceof BombEffectSource bomb)) return;
         if (bomb.getOwner() == null) return;
 
         ExecutableEffectContext context = new ExecutableEffectContext(bomb.getOwner());
-        context.set(ContextKeys.TARGET_POSITION, bomb.position());
-        context.set(ContextKeys.ENTITY, List.of(bomb));
+        context.set(ContextKeys.TARGET_POSITION, event.getExplosion().getPosition());
+        context.set(ContextKeys.ENTITY, List.of(bomb.getBombEffectEntity()));
         context.set(ContextKeys.SECONDARY_LIVING_ENTITIES,
                 event.getAffectedEntities().stream()
                         .filter(LivingEntity.class::isInstance)

@@ -5,8 +5,8 @@ import net.luojiuoscar.isaac_disaster.item.block.IsaacChestBlockItem;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ExecutableEffectContext;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ContextKeys;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.IAbilityEffect;
-import net.luojiuoscar.isaac_disaster.registries.recursive_module.ModRecursiveModules;
-import net.luojiuoscar.isaac_disaster.registries.recursive_module.RecursiveModuleQueue;
+import net.luojiuoscar.isaac_disaster.registries.periodic_module.ModPeriodicModules;
+import net.luojiuoscar.isaac_disaster.registries.periodic_module.PeriodicModuleQueue;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -20,9 +20,9 @@ public class GildedKey implements IAbilityEffect {
 
         if (!(context.getEntity() instanceof Player player)) return false;
         // 左断手大于等于自身时不触发
-        RecursiveModuleQueue queue = context.get(ContextKeys.RECURSIVE_MODULE_QUEUE);
+        PeriodicModuleQueue queue = context.get(ContextKeys.PERIODIC_MODULE_QUEUE);
         int amplifier = context.getOrDefault(ContextKeys.AMPLIFIER, 1.).intValue();
-        if (queue != null && queue.get(ModRecursiveModules.GILDED_KEY.getId()).stacks >= amplifier) return true;
+        if (queue != null && queue.get(ModPeriodicModules.GILDED_KEY.getId()).stacks >= amplifier) return true;
         // 如果queue不存在，则绕过判定直接尝试触发
 
         List<ItemStack> items = new ArrayList<>();

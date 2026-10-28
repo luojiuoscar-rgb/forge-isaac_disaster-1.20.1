@@ -58,8 +58,8 @@ The following table proposes project ratios from original-game effects. It does 
 | Luck | +1 luck | +1 |
 | Size | +0.2 size | +1; use additive scaling |
 | Range | +1.5 range | +1 |
-| Fire rate | +0.7 fire rate | +1 |
-| Fire-rate modifier | +1 modifier | +1 |
+| Original Isaac “射速” | +0.7 tears | +1 to `TEARS` |
+| Original Isaac “射速修正” | +1 fire-rate correction | +1 to `fire_rate` |
 | Shot speed | +0.2 shot speed | +1 |
 | Pill quality | better / worse pills | +1 / -1 |
 | Flight time | flight effect description | +1 |
@@ -72,7 +72,7 @@ The following table proposes project ratios from original-game effects. It does 
 - For fixed attribute bonuses added through `StatManager.<STAT>.apply(...)`, write the confirmed ratio directly as a numeric literal, e.g. `StatManager.DAMAGE.apply(player, 1)`. Do not introduce an extra scalar variable or constant solely to hold that fixed number. Use the matching literal in descriptions and, for removable bonuses, its negative in removal. This rule concerns fixed bonuses; genuinely dynamic calculations may use the existing calculated value.
 
 - Gameplay values still require confirmation. Ask about entity/block reach, attack speed, block breaking, knockback, projectile size, multiplicative size, and unlisted durations, cooldowns, chances, or spawn counts.
-- Fire rate maps to `TEARS`; fire-rate modifier maps to `TEARS_CORRECTION`. Never equate, merge, or substitute them.
+- Keep the two original Isaac attributes separate. An original description labeled “射速” maps to `StatManager.TEARS` / `ModAttributes.TEARS`. An original description labeled “射速修正” maps to the mod's `fire_rate` attribute through `StatManager.FIRE_RATE` / `ModAttributes.FIRE_RATE`. Do not translate “射速修正” as “射速”, and do not map it to the removed or unrelated `TEARS_CORRECTION` name.
 - Use `StatManager.<STAT>.description(...)` for stat text and `StatManager.healHealthDescription(ratio)` for health recovery. Keep displayed values tied to actual server configuration through existing methods or placeholders.
 - Use concise wording and minimal punctuation. Show known probabilities as percentages. Never invent missing values or hardcode dynamic values in translations.
 - Describe one copy by default. If the game or current project explicitly exposes a stacking mechanic, identify it and confirm whether the stacking effect should be shown; do not apply the passive rule blindly to active items.
@@ -82,11 +82,11 @@ The following table proposes project ratios from original-game effects. It does 
 ## Common Modules, Synergies, And Code Reuse
 
 - Existing code is evidence of interfaces and call relationships, not the sole authority for intended behavior. Before adopting a reference, check consistency between events, effect execution, consumption, sound, use records, and return values. Report contradictions with the concrete call path, actual behavior, and proposed correction; confirm unresolved semantics rather than preserving a historical defect as a skill requirement. State the impact of any shared-flow repair and include it in the approved plan. Descriptions of current call order are observations to verify, not mandatory ordering rules for new implementations.
-- Use direct stat changes for persistent stats, trigger modules for events, and recursive modules for repeated behavior. Confirm scope, event/cadence, conditions, targets, values, chance/cooldown/duration, amplification, lifecycle/cleanup, side, and projectile interaction.
+- Use direct stat changes for persistent stats, trigger modules for events, and periodic modules for repeated behavior. Confirm scope, event/cadence, conditions, targets, values, chance/cooldown/duration, amplification, lifecycle/cleanup, side, and projectile interaction.
 - Judge Event dependence by semantics: retain concrete Event checks for attack-plan, loot-generation, and hurt-only effects; allow entity/player/target effects to run from other events when their required context is present. Do not replace required Event data with ContextKeys merely to decouple code.
 - Separate count-based proc progress from the reusable payoff effect, as in `LeadPencilShotCounter` / `LeadPencilBurst` and `JumperCablesKillCounter` / `JumperCables`. The counter owns event eligibility, source checks, persisted progress, threshold/reset logic, and progress cleanup. The payoff owns only its actual effect and required inputs; do not require the original event, item ownership, or counter state unless the effect itself semantically requires them. Reset progress before invoking the payoff, propagate its execution result, and verify that direct or cross-event invocation does not advance or consume progress.
 - Add a ContextKey only for data with real cross-event meaning. Remove keys that merely mirror one specific Event. Do not force extra helpers, profile factories, or copy abstractions when callers can construct the value directly.
-- New trigger or recursive modules define `private static final CompositeTrigger TRIGGER = ...;` at class level and have constructors call `super(TRIGGER);`.
+- New trigger or periodic modules define `private static final CompositeTrigger TRIGGER = ...;` at class level and have constructors call `super(TRIGGER);`.
 - For effect strength carried by `ContextKeys.AMPLIFIER`, prefer `amplifier` over `stacks` or `stack` in new identifiers.
 - Before creating an `IExecutableEffect`, inspect existing trigger types and reuse them by default. Ask before introducing a new trigger type.
 - Plan each new `IAbilityEffect.applyEffect(...)` boolean contract. `true` means safe completion, including an approved no-op; `false` means a required context, entity, target, nested effect, or safe condition is invalid or missing. A missed chance is not an execution error. Do not swallow unexpected exceptions as `false`; inspect the current caller before claiming fallback behavior.

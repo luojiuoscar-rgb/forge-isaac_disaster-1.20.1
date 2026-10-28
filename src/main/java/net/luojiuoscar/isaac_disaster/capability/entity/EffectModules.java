@@ -1,6 +1,6 @@
 package net.luojiuoscar.isaac_disaster.capability.entity;
 
-import net.luojiuoscar.isaac_disaster.registries.recursive_module.RecursiveModuleQueue;
+import net.luojiuoscar.isaac_disaster.registries.periodic_module.PeriodicModuleQueue;
 import net.luojiuoscar.isaac_disaster.registries.revive_module.ReviveSequence;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerModuleQueue;
 import net.minecraft.nbt.CompoundTag;
@@ -11,25 +11,25 @@ import net.minecraft.nbt.Tag;
  * */
 public class EffectModules {
     private final TriggerModuleQueue triggerModuleQueue;
-    private final RecursiveModuleQueue recursiveModuleQueue;
+    private final PeriodicModuleQueue periodicModuleQueue;
     private final ReviveSequence reviveSequence;
 
     public EffectModules() {
         triggerModuleQueue = new TriggerModuleQueue();
-        recursiveModuleQueue = new RecursiveModuleQueue();
+        periodicModuleQueue = new PeriodicModuleQueue();
         reviveSequence = new ReviveSequence();
         init();
     }
 
     public void init() {
         triggerModuleQueue.clear();
-        recursiveModuleQueue.clear();
+        periodicModuleQueue.clear();
         reviveSequence.clear();
     }
 
     public void copyFrom(EffectModules source) {
         triggerModuleQueue.copyFrom(source.triggerModuleQueue);
-        recursiveModuleQueue.copyFrom(source.recursiveModuleQueue);
+        periodicModuleQueue.copyFrom(source.periodicModuleQueue);
 
         reviveSequence.copyFrom(source.reviveSequence);
     }
@@ -38,8 +38,8 @@ public class EffectModules {
         /* ---------- Trigger Modules ---------- */
         nbt.put("trigger_modules", triggerModuleQueue.saveNBTData());
 
-        /* ---------- Recursive Modules ---------- */
-        nbt.put("recursive_modules", recursiveModuleQueue.saveNBTData());
+        /* ---------- Periodic Modules ---------- */
+        nbt.put("periodic_modules", periodicModuleQueue.saveNBTData());
 
         /* ---------- Revive Sequence ---------- */
         CompoundTag reviveTag = new CompoundTag();
@@ -50,7 +50,7 @@ public class EffectModules {
 
     public void loadNBTData(CompoundTag nbt) {
         triggerModuleQueue.clear();
-        recursiveModuleQueue.clear();
+        periodicModuleQueue.clear();
         reviveSequence.clear();
 
         /* ---------- Trigger Modules ---------- */
@@ -58,9 +58,9 @@ public class EffectModules {
             triggerModuleQueue.loadNBTData(nbt.getList("trigger_modules", Tag.TAG_COMPOUND));
         }
 
-        /* ---------- Recursive Modules ---------- */
-        if (nbt.contains("recursive_modules", Tag.TAG_LIST)) {
-            recursiveModuleQueue.loadNBTData(nbt.getList("recursive_modules", Tag.TAG_COMPOUND));
+        /* ---------- Periodic Modules ---------- */
+        if (nbt.contains("periodic_modules", Tag.TAG_LIST)) {
+            periodicModuleQueue.loadNBTData(nbt.getList("periodic_modules", Tag.TAG_COMPOUND));
         }
 
         /* ---------- Revive Sequence ---------- */
@@ -74,8 +74,8 @@ public class EffectModules {
         return triggerModuleQueue;
     }
 
-    public RecursiveModuleQueue getRecursiveModuleQueue(){
-        return recursiveModuleQueue;
+    public PeriodicModuleQueue getPeriodicModuleQueue(){
+        return periodicModuleQueue;
     }
 
     public ReviveSequence getReviveSequence() {

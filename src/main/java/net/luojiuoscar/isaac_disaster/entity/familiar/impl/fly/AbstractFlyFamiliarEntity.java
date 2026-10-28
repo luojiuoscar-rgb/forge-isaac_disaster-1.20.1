@@ -8,7 +8,6 @@ import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.util.Mth;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -17,7 +16,7 @@ import net.minecraft.world.phys.Vec3;
 
 import java.util.List;
 
-/** Base for owner-managed flies; subclasses supply their body color and behavior. */
+/** Shared flight, attack queue and contact lifecycle; variants supply color, damage and contact effects. */
 public abstract class AbstractFlyFamiliarEntity extends AbstractIsaacFamiliarEntity {
     public enum FlyState { ORBIT, CHASE, RETURN, ROAM }
 
@@ -26,9 +25,7 @@ public abstract class AbstractFlyFamiliarEntity extends AbstractIsaacFamiliarEnt
     private final FlyRoaming roaming = new FlyRoaming(this, random);
     private FlyOwnerFrame ownerFrame;
     private boolean consumed;
-    private int lerpSteps;
-    private double lerpX, lerpY, lerpZ;
-    private float lerpYaw, lerpPitch;
+    private final FlyClientInterpolation interpolation = new FlyClientInterpolation();
     private long nextOrbitCheck = Long.MIN_VALUE;
 
     protected AbstractFlyFamiliarEntity(EntityType<? extends AbstractFlyFamiliarEntity> type, Level level) {
@@ -196,25 +193,17 @@ public abstract class AbstractFlyFamiliarEntity extends AbstractIsaacFamiliarEnt
 
     @Override
     public void lerpTo(double x, double y, double z, float yaw, float pitch, int steps, boolean teleport) {
-        if (teleport || !level().isClientSide) {
+        if (!level().isClientSide || !interpolation.update(position(), new Vec3(x, y, z), yaw, pitch, steps, teleport)) {
             super.lerpTo(x, y, z, yaw, pitch, steps, teleport);
-            lerpSteps = 0;
-            return;
+            interpolation.clear();
         }
-        lerpX = x;
-        lerpY = y;
-        lerpZ = z;
-        lerpYaw = yaw;
-        lerpPitch = pitch;
-        lerpSteps = Math.max(1, steps);
     }
 
     private void tickClientInterpolation() {
-        if (lerpSteps <= 0) return;
-        setPos(getX() + (lerpX - getX()) / lerpSteps,
-                getY() + (lerpY - getY()) / lerpSteps, getZ() + (lerpZ - getZ()) / lerpSteps);
-        setYRot(getYRot() + Mth.wrapDegrees(lerpYaw - getYRot()) / lerpSteps);
-        setXRot(getXRot() + (lerpPitch - getXRot()) / lerpSteps);
-        lerpSteps--;
+        FlyClientInterpolation.Pose next = interpolation.tick(position(), getYRot(), getXRot());
+        if (next == null) return;
+        setPos(next.position());
+        setYRot(next.yaw());
+        setXRot(next.pitch());
     }
 }

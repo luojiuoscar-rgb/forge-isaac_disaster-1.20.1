@@ -3,12 +3,18 @@ package net.luojiuoscar.isaac_disaster.entity.tnt;
 import net.luojiuoscar.isaac_disaster.item.ModPassiveItems;
 import net.luojiuoscar.isaac_disaster.effect.ModEffects;
 import net.luojiuoscar.isaac_disaster.helper.EntityHelper;
+import net.luojiuoscar.isaac_disaster.helper.LevelHelper;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
-import net.luojiuoscar.isaac_disaster.manager.id.ItemId;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.CompositeExecutableEffect;
+import net.luojiuoscar.isaac_disaster.system.explosion.BombEffectSource;
+import net.luojiuoscar.isaac_disaster.system.explosion.ExplosionParameters;
+import net.luojiuoscar.isaac_disaster.system.explosion.ExplosionParameters.BlockDestructionMode;
+import net.luojiuoscar.isaac_disaster.system.explosion.ExplosionParameters.EntityImpactMode;
+import net.luojiuoscar.isaac_disaster.system.explosion.ExplosionParameters.FeedbackMode;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.EntityType;
@@ -22,7 +28,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-public class IsaacBomb extends PrimedTnt {
+public class IsaacBomb extends PrimedTnt implements BombEffectSource {
     private static final EntityDataAccessor<Float> SCALE =
             SynchedEntityData.defineId(IsaacBomb.class, EntityDataSerializers.FLOAT);
 
@@ -36,6 +42,7 @@ public class IsaacBomb extends PrimedTnt {
     private float blockPower = BombData.DEFAULT.blockPower();
     private float blockResistanceMultiplier = BombData.DEFAULT.blockResistanceMultiplier();
     private final CompositeExecutableEffect cachedEffect = new CompositeExecutableEffect();
+    private boolean effectsInitialized;
 
     /**
      * Creates an Isaac bomb with explicit legacy power and render scale values.
@@ -104,7 +111,19 @@ public class IsaacBomb extends PrimedTnt {
 
     @Override
     protected void explode() {
-        IsaacBombExplosion.explode(this);
+        if (!(level() instanceof ServerLevel level)) return;
+
+        Vec3 center = new Vec3(getX(), getY(0.0625D), getZ());
+        LevelHelper.explodeCustom(level, center, level.damageSources().explosion(this, getOwner()),
+                getExplosionParameters());
+    }
+
+    /** Captures current mutable values before detonation callbacks can change this bomb. */
+    private ExplosionParameters getExplosionParameters() {
+        return new ExplosionParameters(getPower(), getCenterDamage(), getDamageRadius() * 2.0F,
+                getBlockPower(), getBlockResistanceMultiplier(),
+                BlockDestructionMode.RESISTANCE, EntityImpactMode.STANDARD, false,
+                profile.causesFire(), profile.blockInteraction(), FeedbackMode.STANDARD);
     }
 
     /**
@@ -137,7 +156,7 @@ public class IsaacBomb extends PrimedTnt {
     }
 
     /**
-     * Returns a snapshot profile for the bomb's current explosion parameters.
+     * Returns the built-in profile identifying this bomb's category.
      *
      * <p>The built-in profile enum still identifies the bomb category, while mutable fields such as
      * center damage, damage radius, and block power allow item effects to alter one axis without
@@ -276,6 +295,18 @@ public class IsaacBomb extends PrimedTnt {
 
     public CompositeExecutableEffect getCachedEffect() {
         return cachedEffect;
+    }
+
+    @Override
+    public IsaacBomb getBombEffectEntity() {
+        return this;
+    }
+
+    @Override
+    public boolean markEffectsInitialized() {
+        if (effectsInitialized) return false;
+        effectsInitialized = true;
+        return true;
     }
 
     // 不保存到世界

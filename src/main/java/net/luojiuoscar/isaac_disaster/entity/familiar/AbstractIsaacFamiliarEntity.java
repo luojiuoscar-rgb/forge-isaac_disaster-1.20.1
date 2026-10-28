@@ -1,6 +1,8 @@
 package net.luojiuoscar.isaac_disaster.entity.familiar;
 
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerFamiliarDataProvider;
+import net.luojiuoscar.isaac_disaster.capability.player.PlayerAbilityProvider;
+import net.luojiuoscar.isaac_disaster.datapack.gameplay.GameplayConfig;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
@@ -33,6 +35,8 @@ public abstract class AbstractIsaacFamiliarEntity extends Entity {
     private static final int MAX_VALIDITY_CHECK_INTERVAL = 40;
     private static final EntityDataAccessor<Optional<UUID>> OWNER_UUID =
             SynchedEntityData.defineId(AbstractIsaacFamiliarEntity.class, EntityDataSerializers.OPTIONAL_UUID);
+    private static final EntityDataAccessor<Float> VISUAL_SCALE =
+            SynchedEntityData.defineId(AbstractIsaacFamiliarEntity.class, EntityDataSerializers.FLOAT);
 
     protected UUID ownerUUID;
     protected Player cachedOwner;
@@ -50,11 +54,11 @@ public abstract class AbstractIsaacFamiliarEntity extends Entity {
     @Override
     public void tick() {
         super.tick();
-        this.noPhysics = true;
-        this.setNoGravity(true);
+        configurePhysics();
 
         if (!level().isClientSide) {
             Player owner = getOwner();
+            updateVisualScale(owner instanceof ServerPlayer serverPlayer ? serverPlayer : null);
             if (owner instanceof ServerPlayer && owner.isAlive() && !owner.isRemoved()
                     && owner.level() != level()) {
                 // Cross-dimension and unavailable entities retain the replacement fallback.
@@ -91,6 +95,23 @@ public abstract class AbstractIsaacFamiliarEntity extends Entity {
      * Runs the concrete familiar behavior after base ownership checks pass.
      */
     protected abstract void tickFamiliar();
+
+    /** Airborne familiars retain their defaults; grounded variants opt into world physics. */
+    protected void configurePhysics() {
+        noPhysics = true;
+        setNoGravity(true);
+    }
+
+    protected Vec3 ownerPlacement(Player owner) {
+        return owner.position().add(0, owner.getBbHeight() * 0.55, 0);
+    }
+    /** Shared by first admission and recall so ground variants use the same placement rules. */
+    public final void placeAtOwner() {
+        Player owner = getOwner();
+        if (owner == null) return;
+        setPos(ownerPlacement(owner));
+        setDeltaMovement(Vec3.ZERO);
+    }
 
     /**
      * Checks whether this familiar is still accepted by its owner capability.
@@ -131,8 +152,8 @@ public abstract class AbstractIsaacFamiliarEntity extends Entity {
     /** Called only by the owner's shared admission scheduler. */
     public final boolean recallToOwner() {
         if (!recallPending || !isValidFamiliar()) return false;
-        Player owner = getOwner();
-        teleportTo(owner.getX(), owner.getY() + owner.getBbHeight() * 0.55, owner.getZ());
+        Vec3 position = ownerPlacement(getOwner());
+        teleportTo(position.x, position.y, position.z);
         setDeltaMovement(Vec3.ZERO);
         recallPending = false;
         resetValidityCheckDelay();
@@ -167,6 +188,26 @@ public abstract class AbstractIsaacFamiliarEntity extends Entity {
         this.cachedOwner = owner;
         this.ownerUUID = owner == null ? null : owner.getUUID();
         entityData.set(OWNER_UUID, Optional.ofNullable(ownerUUID));
+        if (!level().isClientSide) updateVisualScale(owner);
+    }
+
+    public final float getVisualScale() {
+        return entityData.get(VISUAL_SCALE);
+    }
+
+    /** Starts with 0 */
+    public final double getEnhancement() {
+        if (!(getOwner() instanceof ServerPlayer owner)) return 0;
+        return owner.getCapability(PlayerAbilityProvider.PLAYER_ABILITY)
+                .map(ability -> ability.getFamiliarModifiers().enhancement(this,
+                        GameplayConfig.ALLOW_SAME_FAMILIAR_MODIFIER_ENTRY_STACKING.get())).orElse(0.0);
+    }
+
+    private void updateVisualScale(@Nullable ServerPlayer owner) {
+        float scale = owner == null ? 1 : owner.getCapability(PlayerAbilityProvider.PLAYER_ABILITY)
+                .map(ability -> ability.getFamiliarModifiers().visualScale(this,
+                        GameplayConfig.ALLOW_SAME_FAMILIAR_MODIFIER_ENTRY_STACKING.get())).orElse(1.0F);
+        entityData.set(VISUAL_SCALE, scale);
     }
 
     /**
@@ -224,6 +265,7 @@ public abstract class AbstractIsaacFamiliarEntity extends Entity {
     @Override
     protected void defineSynchedData() {
         entityData.define(OWNER_UUID, Optional.empty());
+        entityData.define(VISUAL_SCALE, 1.0F);
     }
 
     @Override

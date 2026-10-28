@@ -11,6 +11,12 @@ public class DescriptionHelper {
     private DescriptionHelper() {
     }
 
+    /** Creates a yellow dynamic integer without decimal places. */
+    public static Component dynamicNumber(int currentValue) {
+        return Component.literal(Integer.toString(currentValue))
+                .withStyle(style -> style.withColor(ColorManager.SYNERGY));
+    }
+
     /**
      * Creates a yellow dynamic description value rounded to two decimal places.
      *

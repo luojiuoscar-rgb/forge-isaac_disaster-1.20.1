@@ -9,6 +9,8 @@ import net.luojiuoscar.isaac_disaster.registries.ability_effect.ContextKeys;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.IAbilityEffect;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ModExecutableEffects;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.profile.PotionProfile;
+import net.luojiuoscar.isaac_disaster.system.explosion.ExplosionParameters;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.phys.Vec3;
@@ -37,7 +39,10 @@ public class Ipecac implements IAbilityEffect {
 
         float power = powerFromDamage(damage);
 
-        LevelHelper.explodeCustom(attacker, pos, power, damage, false, false);
+        if (attacker.level() instanceof ServerLevel level) {
+            LevelHelper.explodeCustom(level, pos, level.damageSources().explosion(attacker, attacker),
+                    ExplosionParameters.standard(power, damage).withIgnoreFriendly(false).withCausesFire(false));
+        }
 
         List<LivingEntity> livingEntities = LevelHelper.selectBySquare(attacker.level(), pos, power + 2);
         var attribute = attacker.getAttribute(Attributes.ATTACK_DAMAGE);

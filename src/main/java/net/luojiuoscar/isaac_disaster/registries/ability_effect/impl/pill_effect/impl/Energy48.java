@@ -27,7 +27,7 @@ public class Energy48 extends PillEffect {
             PlayerHelper.chargeAll(player, null, true);
         }
 
-        int lootCount = Math.max(0, context.has(ContextKeys.LOOT_COUNT) ? context.get(ContextKeys.LOOT_COUNT)
+        int lootCount = Math.max(0, context.has(ContextKeys.COUNT) ? context.get(ContextKeys.COUNT)
                 : isHorse ? player.getRandom().nextInt(3, 5) : player.getRandom().nextInt(1, 3));
 
         LootHelper.spawnItemViaLoot(player, player.position(), ModItems.SMALL_BATTERY.get(), lootCount);
