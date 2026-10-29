@@ -23,6 +23,9 @@ public class ModAttributes {
     public static final RegistryObject<Attribute> BULLET_SPEED = MOD_ATTRIBUTE.register("bullet_speed",
             () -> new RangedAttribute("attribute.isaac_disaster.bullet_speed", IsaacConfigDefaults.DEFAULT_BULLET_SPEED, -1024.0D, 1024.0D).setSyncable(true));
 
+    public static final RegistryObject<Attribute> BULLET_KNOCKBACK = MOD_ATTRIBUTE.register("bullet_knockback",
+            () -> new RangedAttribute("attribute.isaac_disaster.bullet_knockback", IsaacConfigDefaults.DEFAULT_BULLET_KNOCKBACK, 0.0D, 1024.0D).setSyncable(true));
+
     public static final RegistryObject<Attribute> BULLET_RANGE = MOD_ATTRIBUTE.register("bullet_range",
             () -> new RangedAttribute("attribute.isaac_disaster.bullet_range", IsaacConfigDefaults.DEFAULT_BULLET_RANGE, -1024.0D, 1024.0D).setSyncable(true));
 

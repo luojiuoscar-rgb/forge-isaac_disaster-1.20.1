@@ -34,6 +34,7 @@ public class ModEvents {
                 event.add(EntityType.PLAYER, ModAttributes.FIRE_RATE.get());
                 event.add(EntityType.PLAYER, ModAttributes.BLOCK_BREAKING_SPEED.get());
                 event.add(EntityType.PLAYER, ModAttributes.BULLET_COUNT.get());
+                event.add(EntityType.PLAYER, ModAttributes.BULLET_KNOCKBACK.get());
                 event.add(EntityType.PLAYER, ModAttributes.COLLISION_DAMAGE.get());
                 event.add(EntityType.PLAYER, ModAttributes.FLY_TIME.get());
                 event.add(EntityType.PLAYER, ModAttributes.PILL_QUALITY.get());

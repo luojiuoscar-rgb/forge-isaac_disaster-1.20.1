@@ -5,6 +5,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
+import net.luojiuoscar.isaac_disaster.system.damage.HurtKnockback;
 import net.luojiuoscar.isaac_disaster.bullet.tracking.TrackingProfile;
 import net.luojiuoscar.isaac_disaster.event.custom.attack.tear_bullet.BulletStickEndEvent;
 import net.luojiuoscar.isaac_disaster.event.custom.attack.tear_bullet.BulletStickStartEvent;
@@ -50,6 +51,7 @@ public final class BulletState implements IBulletObject {
     private final BulletStickState stickState;
     private final BulletTrajectoryState trajectoryState;
     private float damage;
+    private final double bulletKnockback;
     private final BulletProfile profile;
     private final boolean noGravity;
     private boolean spectral;
@@ -87,6 +89,9 @@ public final class BulletState implements IBulletObject {
         this.noGravity = b.noGravity;
         AttackContext attackContext =
             b.attackContext == null ? null : b.attackContext.copyConfiguration();
+        this.bulletKnockback = attackContext != null ? attackContext.getBulletKnockback()
+                : b.bulletKnockback == null ? HurtKnockback.captureMultiplier(b.owner)
+                : HurtKnockback.normalizeMultiplier(b.bulletKnockback);
         List<TrajectorySpec> specs =
             b.trajectorySpecs.isEmpty()
                 ? attackContext == null ? List.of() : attackContext.getTrajectorySpecs()
@@ -139,6 +144,8 @@ public final class BulletState implements IBulletObject {
     public static Builder builder() {
         return new Builder();
     }
+
+    public double getBulletKnockback() { return bulletKnockback; }
 
     /** Defers trajectory initialization until the final position and velocity are known. */
     public static Builder from(AttackContext context) {
@@ -821,6 +828,7 @@ public final class BulletState implements IBulletObject {
         private Integer stickDurationTicks;
         private double range;
         private float damage = 1.0f;
+        private Double bulletKnockback;
         private double renderScale = 1.0D, collisionWidth = 0.125D, collisionHeight = 0.125D;
         private int color = 0xFFFFFF;
         private float alpha = 1.0F;
@@ -848,6 +856,11 @@ public final class BulletState implements IBulletObject {
 
         public Builder position(Vec3 v) {
             position = v;
+            return this;
+        }
+
+        public Builder bulletKnockback(double value) {
+            bulletKnockback = value;
             return this;
         }
 

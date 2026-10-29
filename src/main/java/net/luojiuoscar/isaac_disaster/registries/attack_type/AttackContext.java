@@ -3,6 +3,7 @@ package net.luojiuoscar.isaac_disaster.registries.attack_type;
 import java.util.*;
 import java.util.function.Supplier;
 import net.luojiuoscar.isaac_disaster.system.combat_effect.attachment.EffectAttachmentNode;
+import net.luojiuoscar.isaac_disaster.system.damage.HurtKnockback;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.IExecutableEffect;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerTypes;
 import java.util.HashSet;
@@ -45,6 +46,7 @@ public class AttackContext implements EffectAttachmentNode {
     private double bulletScale;
     private final double bulletRange;
     private final double bulletSpeed;
+    private final double bulletKnockback;
     private SplitSequence splitSequence;
     private boolean useFixedLaunchTransform;
     private int stickDurationTicks;
@@ -79,6 +81,8 @@ public class AttackContext implements EffectAttachmentNode {
         this.bulletScale = resolveBulletScale(damage, bulletScaleModifier);
         this.bulletRange = sanitizeRange(builder.range);
         this.bulletSpeed = sanitizeSpeed(builder.speed);
+        this.bulletKnockback = builder.bulletKnockback == null ? HurtKnockback.captureMultiplier(owner)
+                : HurtKnockback.normalizeMultiplier(builder.bulletKnockback);
         this.splitSequence = builder.splitSequence == null ? new SplitSequence() : builder.splitSequence.copy();
         this.useFixedLaunchTransform = builder.useFixedLaunchTransform;
         this.stickDurationTicks = builder.stickDurationTicks;
@@ -94,7 +98,7 @@ public class AttackContext implements EffectAttachmentNode {
     public Builder toBuilder() {
         return Builder.from(this).color(colorRl).visuals(visualIds).trigger(trigger).trajectorySequence(trajectorySequence)
                 .position(pos).attackType(attackType).mainAxis(mainAxis).damage((double) damage).range(bulletRange)
-                .speed(bulletSpeed).bulletScaleModifier(bulletScaleModifier).splitSequence(splitSequence)
+                .speed(bulletSpeed).bulletKnockback(bulletKnockback).bulletScaleModifier(bulletScaleModifier).splitSequence(splitSequence)
                 .useFixedLaunchTransform(useFixedLaunchTransform).stickDurationTicks(stickDurationTicks).hitBlockPositions(hitBlockPositions)
                 .inheritTrajectorySnapshot(inheritedTrajectorySnapshot);
     }
@@ -143,6 +147,7 @@ public class AttackContext implements EffectAttachmentNode {
     public float getDamage() { return damage; }
     public double getBulletRange() { return bulletRange; }
     public double getBulletSpeed() { return bulletSpeed; }
+    public double getBulletKnockback() { return bulletKnockback; }
     public int getStickDurationTicks() { return stickDurationTicks; }
     /**
      * Requests a shared attachment lifetime during preparation. Repeated requests retain the
@@ -279,6 +284,7 @@ public class AttackContext implements EffectAttachmentNode {
         this.bulletScale = source.bulletScale;
         this.bulletRange = source.bulletRange;
         this.bulletSpeed = source.bulletSpeed;
+        this.bulletKnockback = source.bulletKnockback;
         this.splitSequence = source.splitSequence.copy();
         this.useFixedLaunchTransform = source.useFixedLaunchTransform;
         this.stickDurationTicks = source.stickDurationTicks;
@@ -304,6 +310,8 @@ public class AttackContext implements EffectAttachmentNode {
         this.bulletScale = resolveBulletScale(damage, bulletScaleModifier);
         this.bulletRange = sanitizeRange(builder.range);
         this.bulletSpeed = sanitizeSpeed(builder.speed);
+        this.bulletKnockback = builder.bulletKnockback == null ? source.bulletKnockback
+                : HurtKnockback.normalizeMultiplier(builder.bulletKnockback);
         this.splitSequence = builder.splitSequence == null ? new SplitSequence() : builder.splitSequence.copy();
         this.useFixedLaunchTransform = builder.useFixedLaunchTransform;
         this.stickDurationTicks = builder.stickDurationTicks;
@@ -326,6 +334,7 @@ public class AttackContext implements EffectAttachmentNode {
         private Vec3 direction;
         private Double damage;
         private Double bulletScaleModifier;
+        private Double bulletKnockback;
         private double range = DEFAULT_RANGE;
         private double speed = DEFAULT_SPEED;
         private SplitSequence splitSequence;
@@ -378,6 +387,7 @@ public class AttackContext implements EffectAttachmentNode {
         public Builder bulletScaleModifier(@Nullable Double modifier) { this.bulletScaleModifier = modifier; return this; }
         public Builder range(double range) { this.range = range; return this; }
         public Builder speed(double speed) { this.speed = speed; return this; }
+        public Builder bulletKnockback(double value) { this.bulletKnockback = value; return this; }
         public Builder stickDurationTicks(int ticks) {
             if (ticks < 0) ticks = 0;
             this.stickDurationTicks = Math.max(this.stickDurationTicks, ticks);

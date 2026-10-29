@@ -16,8 +16,8 @@ public final class ModDamageSources {
     private ModDamageSources() {
     }
 
-    public static DamageSource tear(Level level, @Nullable Entity owner, Vec3 velocity) {
-        return new TearDamageSource(type(level, ModDamageType.TEAR), owner, velocity);
+    public static DamageSource tear(Level level, @Nullable Entity owner, Vec3 velocity, double knockbackMultiplier) {
+        return new TearDamageSource(type(level, ModDamageType.TEAR), owner, velocity, knockbackMultiplier);
     }
 
     public static DamageSource laser(Level level, @Nullable Entity owner) {
@@ -43,10 +43,12 @@ public final class ModDamageSources {
     static final class TearDamageSource extends DamageSource {
         // Vec3 is immutable, so retaining this value cannot follow later bullet changes.
         final Vec3 velocity;
+        final double knockbackMultiplier;
 
-        private TearDamageSource(Holder<DamageType> type, @Nullable Entity owner, Vec3 velocity) {
+        private TearDamageSource(Holder<DamageType> type, @Nullable Entity owner, Vec3 velocity, double knockbackMultiplier) {
             super(type, null, owner);
             this.velocity = velocity;
+            this.knockbackMultiplier = HurtKnockback.normalizeMultiplier(knockbackMultiplier);
         }
     }
 }

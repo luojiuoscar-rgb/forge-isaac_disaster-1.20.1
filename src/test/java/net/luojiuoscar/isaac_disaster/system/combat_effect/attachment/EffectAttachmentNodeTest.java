@@ -21,7 +21,7 @@ class EffectAttachmentNodeTest {
         var field = unsafe.getDeclaredField("theUnsafe");
         field.setAccessible(true);
         var owner = (ServerPlayer) unsafe.getMethod("allocateInstance", Class.class).invoke(field.get(null), ServerPlayer.class);
-        return AttackContext.builder(owner, owner).damage(4.0).bulletScaleModifier(0.0)
+        return AttackContext.builder(owner, owner).damage(4.0).bulletScaleModifier(0.0).bulletKnockback(0.2)
                 .position(Vec3.ZERO).mainAxis(new Vec3(1, 0, 0)).build();
     }
 

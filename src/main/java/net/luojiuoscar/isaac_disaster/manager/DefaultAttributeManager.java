@@ -88,6 +88,11 @@ public final class DefaultAttributeManager {
                     () -> GameplayConfig.DEFAULT_BLOCK_BREAKING_SPEED.get()
             ),
             new DefaultAttributeSpec(
+                    "default_bullet_knockback",
+                    ModAttributes.BULLET_KNOCKBACK.get(),
+                    () -> GameplayConfig.DEFAULT_BULLET_KNOCKBACK.get()
+            ),
+            new DefaultAttributeSpec(
                     "default_attack_knockback",
                     Attributes.ATTACK_KNOCKBACK,
                     () -> GameplayConfig.DEFAULT_ATTACK_KNOCKBACK.get()

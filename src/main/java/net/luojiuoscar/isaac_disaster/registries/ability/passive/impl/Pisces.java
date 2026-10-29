@@ -26,6 +26,7 @@ public class Pisces extends PassiveAbility {
         StatManager.FIRE_RATE.apply(player, 1);
         StatManager.BULLET_SCALE.apply(player, 2);
         StatManager.ATTACK_KNOCKBACK.apply(player, 1);
+        StatManager.BULLET_KNOCKBACK.apply(player, 3);
     }
 
     @Override
@@ -34,6 +35,7 @@ public class Pisces extends PassiveAbility {
         StatManager.FIRE_RATE.apply(player, -1);
         StatManager.BULLET_SCALE.apply(player, -2);
         StatManager.ATTACK_KNOCKBACK.apply(player, -1);
+        StatManager.BULLET_KNOCKBACK.apply(player, -3);
     }
 
     @Override
@@ -42,7 +44,8 @@ public class Pisces extends PassiveAbility {
                 Component.translatable("item.isaac_disaster.attribute.piercing_bullet"),
                 StatManager.FIRE_RATE.description(1),
                 Component.translatable("attribute.isaac_disaster.bullet_scale_up"),
-                StatManager.ATTACK_KNOCKBACK.description(1)
+                StatManager.ATTACK_KNOCKBACK.description(1),
+                StatManager.BULLET_KNOCKBACK.description(3)
         );
     }
 }

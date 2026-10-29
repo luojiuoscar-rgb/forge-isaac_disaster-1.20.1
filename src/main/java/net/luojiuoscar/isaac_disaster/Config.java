@@ -56,6 +56,7 @@ public class Config
     public static ForgeConfigSpec.DoubleValue DEFAULT_ATTACK_SPEED;
     public static ForgeConfigSpec.DoubleValue DEFAULT_BLOCK_BREAKING_SPEED;
     public static ForgeConfigSpec.DoubleValue DEFAULT_ATTACK_KNOCKBACK;
+    public static ForgeConfigSpec.DoubleValue DEFAULT_BULLET_KNOCKBACK;
     public static ForgeConfigSpec.DoubleValue DEFAULT_BULLET_SCALE;
     public static ForgeConfigSpec.DoubleValue DEFAULT_BULLET_COUNT;
     public static ForgeConfigSpec.DoubleValue DEFAULT_PILL_QUALITY;
@@ -80,6 +81,7 @@ public class Config
     public static ForgeConfigSpec.DoubleValue ATTACK_SPEED_BONUS;
     public static ForgeConfigSpec.DoubleValue BLOCK_BREAKING_SPEED_BONUS;
     public static ForgeConfigSpec.DoubleValue ATTACK_KNOCKBACK_BONUS;
+    public static ForgeConfigSpec.DoubleValue BULLET_KNOCKBACK_BONUS;
     public static ForgeConfigSpec.DoubleValue BULLET_SCALE_BONUS;
 
     // 其他可配置项目
@@ -178,6 +180,10 @@ public class Config
         DEFAULT_BULLET_SCALE = BUILDER
                 .comment("Default player bullet scale.")
                 .defineInRange("default_bullet_scale", IsaacConfigDefaults.DEFAULT_BULLET_SCALE, -1024.0, 1024.0);
+
+        DEFAULT_BULLET_KNOCKBACK = BUILDER
+                .comment("Default player tear knockback multiplier.")
+                .defineInRange("default_bullet_knockback", IsaacConfigDefaults.DEFAULT_BULLET_KNOCKBACK, 0.0, 1024.0);
 
         DEFAULT_BULLET_COUNT = BUILDER
                 .comment("Default player bullet count.")
@@ -290,6 +296,10 @@ public class Config
         ATTACK_KNOCKBACK_BONUS = BUILDER
                 .comment("Base value of attack knockback increment")
                 .defineInRange("attack_knockback_bonus", IsaacConfigDefaults.ATTACK_KNOCKBACK_BONUS, 0.0, 99999.0);
+
+        BULLET_KNOCKBACK_BONUS = BUILDER
+                .comment("Tear knockback multiplier increment per project unit.")
+                .defineInRange("bullet_knockback_bonus", IsaacConfigDefaults.BULLET_KNOCKBACK_BONUS, 0.0, 1024.0);
 
         // 周围（定义周围的范围）  默认12
         NEARBY_RANGE = BUILDER

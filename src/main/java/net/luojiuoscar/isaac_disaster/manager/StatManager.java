@@ -105,6 +105,8 @@ public enum StatManager {
             () -> GameplayConfig.BLOCK_BREAKING_SPEED_BONUS.get(), 0.0, null),
     ATTACK_KNOCKBACK("attack_knockback", Attributes.ATTACK_KNOCKBACK, 0, false,
             () -> GameplayConfig.ATTACK_KNOCKBACK_BONUS.get(), null, null),
+    BULLET_KNOCKBACK("bullet_knockback", ModAttributes.BULLET_KNOCKBACK.get(), 0, false,
+            () -> GameplayConfig.BULLET_KNOCKBACK_BONUS.get(), null, null),
     BULLET_SCALE("bullet_scale", ModAttributes.BULLET_SCALE.get(), 0, false,
             () -> GameplayConfig.BULLET_SCALE_BONUS.get(), null, null),
     BULLET_COUNT("bullet_count", ModAttributes.BULLET_COUNT.get(), 0, false,

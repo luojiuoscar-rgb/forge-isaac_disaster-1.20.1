@@ -105,7 +105,7 @@ class FireMindAttachmentTest {
         field.setAccessible(true);
         var player = (ServerPlayer) unsafe.getMethod("allocateInstance", Class.class)
                 .invoke(field.get(null), ServerPlayer.class);
-        return AttackContext.builder(player, player).attackType(type).damage(7.0).bulletScaleModifier(0.0)
+        return AttackContext.builder(player, player).attackType(type).damage(7.0).bulletScaleModifier(0.0).bulletKnockback(0.2)
                 .range(24).speed(1.5).position(Vec3.ZERO).mainAxis(new Vec3(0, 0, 1)).color(color).build();
     }
 

@@ -287,7 +287,7 @@ public final class SwarmItemGameTests {
             long next = reference.nextLong();
             f.owner.getRandom().setSeed(successSeed());
             MinecraftForge.EVENT_BUS.post(new LivingAttackEvent(target,
-                    ModDamageSources.tear(helper.getLevel(), f.owner, new Vec3(1, 0, 0)), 2));
+                    ModDamageSources.tear(helper.getLevel(), f.owner, new Vec3(1, 0, 0), 0.2D), 2));
             f.hit(prepared(f, ModAttackTypes.BULLET.get()), 2, false);
             helper.assertTrue(f.count("blue_fly") == 1 && f.owner.getRandom().nextLong() == next,
                     "The tear damage source does not add an extra restricted probability roll");
@@ -724,7 +724,7 @@ public final class SwarmItemGameTests {
                 MinecraftForge.EVENT_BUS.post(new LivingDamageEvent(target, ModDamageSources.familiar(helper.getLevel(), familiar, f.owner), 2));
                 helper.assertTrue(f.count("blue_fly") == before, "All familiar direct sources are excluded: " + type);
             }
-            for (DamageSource source : List.of(ModDamageSources.tear(helper.getLevel(), f.owner, new Vec3(1, 0, 0)),
+            for (DamageSource source : List.of(ModDamageSources.tear(helper.getLevel(), f.owner, new Vec3(1, 0, 0), 0.2D),
                     ModDamageSources.laser(helper.getLevel(), f.owner), f.owner.damageSources().explosion(f.owner, f.owner))) {
                 f.reset();
                 target.invulnerableTime = 0;

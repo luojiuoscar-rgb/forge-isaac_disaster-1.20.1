@@ -21,7 +21,7 @@ public abstract class LivingEntityKnockbackMixin {
     private void isaacDisaster$scopeHurtKnockback(LivingEntity entity, double strength,
                                                       double x, double z, Operation<Void> original,
                                                       @Local(argsOnly = true) DamageSource source) {
-        HurtKnockback.withSource(entity, source, () -> original.call(entity, strength, x, z));
+        HurtKnockback.withSource(entity, source, strength, () -> original.call(entity, strength, x, z));
     }
 
     @WrapOperation(method = "knockback", at = @At(value = "INVOKE",

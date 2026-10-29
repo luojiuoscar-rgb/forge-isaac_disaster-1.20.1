@@ -42,6 +42,7 @@ public final class PatternTestSupport {
         setObject(unsafe, context, "attackType", TestAttackTypes.BULLET);
         setDouble(unsafe, context, "bulletRange", DEFAULT_RANGE);
         setDouble(unsafe, context, "bulletSpeed", DEFAULT_SPEED);
+        setDouble(unsafe, context, "bulletKnockback", 0.2D);
         setObject(unsafe, context, "splitSequence", new SplitSequence());
         setBoolean(unsafe, context, "useFixedLaunchTransform", false);
         setObject(unsafe, context, "shooter", new Object());

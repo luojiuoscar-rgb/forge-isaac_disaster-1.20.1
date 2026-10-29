@@ -18,6 +18,7 @@ public final class IsaacConfigDefaults {
     public static final double DEFAULT_ATTACK_SPEED = 4.0;
     public static final double DEFAULT_BLOCK_BREAKING_SPEED = 0.0;
     public static final double DEFAULT_ATTACK_KNOCKBACK = 0.0;
+    public static final double DEFAULT_BULLET_KNOCKBACK = 0.2;
     public static final double DEFAULT_BULLET_SCALE = 0.0;
     public static final double DEFAULT_BULLET_COUNT = 1.0;
     public static final double DEFAULT_PILL_QUALITY = 0.0;
@@ -43,6 +44,7 @@ public final class IsaacConfigDefaults {
     public static final double BLOCK_BREAKING_SPEED_BONUS = 5.0;
     public static final double BULLET_SCALE_BONUS = 0.1;
     public static final double ATTACK_KNOCKBACK_BONUS = 0.5;
+    public static final double BULLET_KNOCKBACK_BONUS = 0.1;
     public static final double NEARBY_RANGE = 12.0;
     public static final double BASIC_TIME_INTERVAL = 10.0;
 

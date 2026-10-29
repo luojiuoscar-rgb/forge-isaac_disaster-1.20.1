@@ -1,6 +1,8 @@
 package net.luojiuoscar.isaac_disaster.system.damage;
 
 import net.luojiuoscar.isaac_disaster.manager.ModDamageType;
+import net.luojiuoscar.isaac_disaster.attribute.ModAttributes;
+import net.luojiuoscar.isaac_disaster.datapack.gameplay.GameplayConfig;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -15,9 +17,9 @@ public final class HurtKnockback {
     private HurtKnockback() {
     }
 
-    public static void withSource(LivingEntity target, DamageSource source, Runnable knockback) {
+    public static void withSource(LivingEntity target, DamageSource source, double strength, Runnable knockback) {
         Frame previous = CURRENT.get();
-        CURRENT.set(new Frame(target, response(source)));
+        CURRENT.set(new Frame(target, response(source, strength)));
         try {
             knockback.run();
         } finally {
@@ -34,10 +36,22 @@ public final class HurtKnockback {
         return frame.response;
     }
 
-    private static @Nullable Response response(DamageSource source) {
+    /** Captures the owning entity's multiplier once; non-player sources use the configured default. */
+    public static double captureMultiplier(@Nullable LivingEntity owner) {
+        var attribute = owner == null ? null : owner.getAttribute(ModAttributes.BULLET_KNOCKBACK.get());
+        return normalizeMultiplier(attribute == null ? GameplayConfig.DEFAULT_BULLET_KNOCKBACK.get() : attribute.getValue());
+    }
+
+    public static double normalizeMultiplier(double value) {
+        return Double.isFinite(value) ? Math.max(0, Math.min(1024, value)) : 0;
+    }
+
+    private static @Nullable Response response(DamageSource source, double strength) {
         if (source.is(ModDamageType.TEAR)) {
             Vec3 velocity = source instanceof ModDamageSources.TearDamageSource tear ? tear.velocity : Vec3.ZERO;
-            return new Response(true, 0.10F, -velocity.x, -velocity.z);
+            double multiplier = source instanceof ModDamageSources.TearDamageSource tear ? tear.knockbackMultiplier : 0;
+            float scaled = Double.isFinite(strength) ? (float) (Math.max(0, strength) * multiplier) : 0;
+            return new Response(true, scaled, -velocity.x, -velocity.z);
         }
         if (source.is(ModDamageType.LASER)
                 || source.is(ModDamageType.FAMILIAR)

@@ -25,6 +25,7 @@ public final class GameplayConfig {
     public static final ConfigKey<Double> DEFAULT_ATTACK_SPEED = key("default_attack_speed");
     public static final ConfigKey<Double> DEFAULT_BLOCK_BREAKING_SPEED = key("default_block_breaking_speed");
     public static final ConfigKey<Double> DEFAULT_ATTACK_KNOCKBACK = key("default_attack_knockback");
+    public static final ConfigKey<Double> DEFAULT_BULLET_KNOCKBACK = key("default_bullet_knockback");
     public static final ConfigKey<Double> DEFAULT_BULLET_SCALE = key("default_bullet_scale");
     public static final ConfigKey<Double> DEFAULT_BULLET_COUNT = key("default_bullet_count");
     public static final ConfigKey<Double> DEFAULT_PILL_QUALITY = key("default_pill_quality");
@@ -49,6 +50,7 @@ public final class GameplayConfig {
     public static final ConfigKey<Double> ATTACK_SPEED_BONUS = key("attack_speed_bonus");
     public static final ConfigKey<Double> BLOCK_BREAKING_SPEED_BONUS = key("block_breaking_speed_bonus");
     public static final ConfigKey<Double> ATTACK_KNOCKBACK_BONUS = key("attack_knockback_bonus");
+    public static final ConfigKey<Double> BULLET_KNOCKBACK_BONUS = key("bullet_knockback_bonus");
     public static final ConfigKey<Double> BULLET_SCALE_BONUS = key("bullet_scale_bonus");
     public static final ConfigKey<Integer> MAX_ACTIVE_BULLETS = key("max_active_bullets");
     public static final ConfigKey<Integer> PASSIVE_ITEM_LIMIT = key("passive_item_limit");

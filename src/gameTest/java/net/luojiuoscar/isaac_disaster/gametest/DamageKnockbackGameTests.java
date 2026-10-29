@@ -93,7 +93,7 @@ public final class DamageKnockbackGameTests {
             target.setOnGround(true);
             target.setDeltaMovement(initial);
             target.getAttribute(Attributes.KNOCKBACK_RESISTANCE).setBaseValue(0.25);
-            DamageSource source = ModDamageSources.tear(helper.getLevel(), owner, new Vec3(3, 2, 4));
+            DamageSource source = ModDamageSources.tear(helper.getLevel(), owner, new Vec3(3, 2, 4), 0.25D);
             helper.assertTrue(source.is(ModDamageType.TEAR) && source.getDirectEntity() == null
                     && source.getEntity() == owner, "Tear preserves registered type and owner without a fake entity");
             owner.setDeltaMovement(-100, 0, 0);
@@ -125,7 +125,7 @@ public final class DamageKnockbackGameTests {
                 event.setStrength(0.4F);
                 event.setRatioX(0);
                 event.setRatioZ(2);
-            }, () -> target.hurt(ModDamageSources.tear(helper.getLevel(), owner, new Vec3(1, 0, 0)), 1));
+            }, () -> target.hurt(ModDamageSources.tear(helper.getLevel(), owner, new Vec3(1, 0, 0), 0.25D), 1));
             vector(helper, target.getDeltaMovement(), new Vec3(0.2, 0.37, -0.4),
                     "Final Forge direction and strength control the additive tear impulse");
             close(helper, observed[0].getStrength(), 0.4, "Event strength is retained after strategy");
@@ -139,7 +139,7 @@ public final class DamageKnockbackGameTests {
             Vec3 initial = new Vec3(0.2, 0.37, -0.1);
             target.setDeltaMovement(initial);
             listen(target, event -> event.setCanceled(true),
-                    () -> target.hurt(ModDamageSources.tear(helper.getLevel(), owner, new Vec3(1, 0, 0)), 1));
+                    () -> target.hurt(ModDamageSources.tear(helper.getLevel(), owner, new Vec3(1, 0, 0), 0.25D), 1));
             vector(helper, target.getDeltaMovement(), initial, "Canceled tear event cannot apply its impulse");
         });
     }
@@ -152,7 +152,7 @@ public final class DamageKnockbackGameTests {
             int[] calls = {0};
             listen(target, event -> {
                 if (++calls[0] == 1) target.knockback(0.4, 1, 0);
-            }, () -> target.hurt(ModDamageSources.tear(helper.getLevel(), owner, new Vec3(1, 0, 0)), 1));
+            }, () -> target.hurt(ModDamageSources.tear(helper.getLevel(), owner, new Vec3(1, 0, 0), 0.25D), 1));
             helper.assertTrue(calls[0] == 2, "Callback direct knockback dispatches its own event");
             vector(helper, target.getDeltaMovement(), new Vec3(-0.3, 0.4, 0),
                     "Context is claimed before dispatch so callback knockback remains native");
@@ -169,7 +169,7 @@ public final class DamageKnockbackGameTests {
                     close(helper, event.getStrength(), 0.1, "Outer event is a tear");
                     target.hurt(ModDamageSources.familiar(helper.getLevel(), owner, owner), 1);
                 } else close(helper, event.getStrength(), 0, "Nested event owns the familiar policy");
-            }, () -> target.hurt(ModDamageSources.tear(helper.getLevel(), owner, new Vec3(1, 0, 0)), 1));
+            }, () -> target.hurt(ModDamageSources.tear(helper.getLevel(), owner, new Vec3(1, 0, 0), 0.25D), 1));
             helper.assertTrue(calls[0] == 2, "Both nested hurt calls dispatch");
             vector(helper, target.getDeltaMovement(), new Vec3(0.1, 0, 0), "Nested suppression preserves outer tear impulse");
         });
@@ -178,13 +178,13 @@ public final class DamageKnockbackGameTests {
     @GameTest(template = "trajectory_empty", batch = "damage_knockback")
     public static void rejectedHitAndThrowingScopeCannotLeaveStaleContext(GameTestHelper helper) {
         pair(helper, (owner, target) -> {
-            DamageSource tear = ModDamageSources.tear(helper.getLevel(), owner, new Vec3(1, 0, 0));
+            DamageSource tear = ModDamageSources.tear(helper.getLevel(), owner, new Vec3(1, 0, 0), 0.25D);
             target.setInvulnerable(true);
             helper.assertTrue(!target.hurt(tear, 1), "Invulnerable victim rejects the hit before knockback");
             target.setInvulnerable(false);
             IllegalStateException expected = new IllegalStateException("intentional knockback-scope failure");
             try {
-                HurtKnockback.withSource(target, tear, () -> { throw expected; });
+                HurtKnockback.withSource(target, tear, 0.4, () -> { throw expected; });
                 helper.fail("Scope must propagate the failure");
             } catch (IllegalStateException failure) {
                 helper.assertTrue(failure == expected, "Original failure is preserved");
@@ -202,7 +202,7 @@ public final class DamageKnockbackGameTests {
         pair(helper, (owner, target) -> {
             owner.setOnGround(true);
             owner.setDeltaMovement(Vec3.ZERO);
-            HurtKnockback.withSource(target, ModDamageSources.tear(helper.getLevel(), owner, new Vec3(1, 0, 0)),
+            HurtKnockback.withSource(target, ModDamageSources.tear(helper.getLevel(), owner, new Vec3(1, 0, 0), 0.25D), 0.4,
                     () -> owner.knockback(0.4, 1, 0));
             vector(helper, owner.getDeltaMovement(), new Vec3(-0.4, 0.4, 0),
                     "A different entity cannot claim the target's pending source context");
@@ -215,7 +215,7 @@ public final class DamageKnockbackGameTests {
             RuntimeException expected = new RuntimeException("intentional Forge callback failure");
             try {
                 listen(target, event -> { throw expected; },
-                        () -> target.hurt(ModDamageSources.tear(helper.getLevel(), owner, new Vec3(1, 0, 0)), 1));
+                        () -> target.hurt(ModDamageSources.tear(helper.getLevel(), owner, new Vec3(1, 0, 0), 0.25D), 1));
                 helper.fail("Forge callback failure must propagate");
             } catch (RuntimeException failure) {
                 helper.assertTrue(failure == expected, "The original event callback failure propagates");
@@ -240,7 +240,7 @@ public final class DamageKnockbackGameTests {
                     helper.assertTrue(target.hurt(target.damageSources().mobAttack(owner), 1),
                             "Nested ordinary damage is accepted");
                 } else close(helper, event.getStrength(), 0.4, "Nested ordinary event retains native strength");
-            }, () -> target.hurt(ModDamageSources.tear(helper.getLevel(), owner, new Vec3(1, 0, 0)), 1));
+            }, () -> target.hurt(ModDamageSources.tear(helper.getLevel(), owner, new Vec3(1, 0, 0), 0.25D), 1));
             helper.assertTrue(calls[0] == 2, "Nested ordinary hit and outer tear both dispatch");
             vector(helper, target.getDeltaMovement(), new Vec3(0.5, 0.4, 0),
                     "Nested native impulse finishes before additive outer tear impulse");
@@ -314,7 +314,7 @@ public final class DamageKnockbackGameTests {
             target.addEffect(new MobEffectInstance(ModEffects.PETRIFIED.get(), 100));
             target.setDeltaMovement(initial);
             canceledEvent(helper, target,
-                    () -> target.hurt(ModDamageSources.tear(helper.getLevel(), owner, new Vec3(1, 0, 0)), 1));
+                    () -> target.hurt(ModDamageSources.tear(helper.getLevel(), owner, new Vec3(1, 0, 0), 0.25D), 1));
             vector(helper, target.getDeltaMovement(), initial, "Petrified Forge listener prevents tear movement");
             var player = helper.makeMockSurvivalPlayer();
             try {
@@ -322,7 +322,7 @@ public final class DamageKnockbackGameTests {
                 player.addEffect(new MobEffectInstance(ModEffects.HOLY_SHIELD.get(), 100));
                 player.setDeltaMovement(initial);
                 canceledEvent(helper, player,
-                        () -> player.hurt(ModDamageSources.tear(helper.getLevel(), owner, new Vec3(1, 0, 0)), 1));
+                        () -> player.hurt(ModDamageSources.tear(helper.getLevel(), owner, new Vec3(1, 0, 0), 0.25D), 1));
                 vector(helper, player.getDeltaMovement(), initial, "Holy shield Forge listener prevents tear movement");
             } finally {
                 player.discard();
