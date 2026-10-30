@@ -38,7 +38,7 @@ public final class MonstrosLungPlusMomsKnife implements IAbilityEffect {
         if (firstFired.getOwner() != player) return false;
         if (!(ModExecutableEffects.MOMS_KNIFE_SHOT.get() instanceof IAbilityEffect effect)) return false;
 
-        var reference = firstFired.toBuilder().mainAxis(player.getLookAngle()).range(24).build();
+        var reference = firstFired.toBuilder().mainAxis(player.getLookAngle()).build();
         int count = countForCharge(event.getChargeFraction());
         boolean allSucceeded = true;
         for (var attack : PATTERN.generate(new AttackPatternContext(reference, count))) {

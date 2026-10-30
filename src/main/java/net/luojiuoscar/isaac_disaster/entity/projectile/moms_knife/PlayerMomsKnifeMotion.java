@@ -106,8 +106,11 @@ public final class PlayerMomsKnifeMotion {
 
     public static Vec3 idlePosition(Player owner, float partialTick) {
         Vec3 forward = owner.level().isClientSide ? owner.getViewVector(partialTick) : owner.getLookAngle();
-        return owner.getEyePosition(partialTick).add(0, -0.15 * owner.getBbHeight(), 0)
-                .add(forward.scale(Math.max(0.6, owner.getBbWidth())));
+        return center(owner, partialTick).add(forward.scale(Math.max(0.6, owner.getBbWidth())));
+    }
+
+    public static Vec3 center(Player owner, float partialTick) {
+        return owner.getEyePosition(partialTick).add(0, -0.15 * owner.getBbHeight(), 0);
     }
 
     public static Vec3 barragePosition(Player owner) {

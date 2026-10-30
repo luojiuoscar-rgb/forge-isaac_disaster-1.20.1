@@ -46,7 +46,7 @@ public final class MomsKnifeBarrage implements IAbilityEffect {
             Vec3 origin = PlayerMomsKnifeMotion.scatterOrigin(player);
             ExecutableEffectContext shot = new ExecutableEffectContext(player);
             shot.set(ContextKeys.ATTACK_CONTEXT, snapshot.toBuilder().position(origin)
-                    .mainAxis(PlayerMomsKnifeAim.point(player).subtract(origin)).range(24).build());
+                    .mainAxis(PlayerMomsKnifeAim.point(player).subtract(origin)).build());
             ModExecutableEffects.MOMS_KNIFE_SHOT.get().apply(shot);
         });
         return true;

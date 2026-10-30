@@ -136,6 +136,8 @@ public class ModExecutableEffects {
             EXECUTABLE_EFFECT_REGISTRY.register("laser_plus_brimstone", LaserPlusBrimstone::new);
     public static final RegistryObject<IExecutableEffect> LASER_PLUS_FETUS =
             EXECUTABLE_EFFECT_REGISTRY.register("laser_plus_fetus", LaserPlusFetus::new);
+    public static final RegistryObject<IExecutableEffect> LASER_PLUS_MOMS_KNIFE =
+            EXECUTABLE_EFFECT_REGISTRY.register("laser_plus_moms_knife", LaserPlusMomsKnife::new);
     public static final RegistryObject<IExecutableEffect> IPECAC =
             EXECUTABLE_EFFECT_REGISTRY.register("ipecac", Ipecac::new);
     public static final RegistryObject<IExecutableEffect> BRIMSTONE_PLUS_MONSTROS_LUNG =

@@ -59,8 +59,8 @@ public final class PlayerMomsKnifeSynergyGameTests {
             f.owner.getRandom().setSeed(seedForBook(true));
             AttackExecutor.perform(AttackRequest.withContexts(f.owner, attack, AttackOrigin.ABILITY_EXTRA,
                     AttackPipelineMode.EXECUTE_ONLY, contexts, false));
-            helper.assertTrue(f.main.isInFlight(), "The derived request really launches the main knife");
-            helper.assertTrue(extraCount(f) == 0, "Derived attacks do not recursively trigger source-owned synergies");
+            helper.assertTrue(!f.main.isInFlight(), "A derived request leaves the held main knife alone");
+            helper.assertTrue(extraCount(f) == 1, "The explicit single shot does not recursively trigger book or lung");
         }
         helper.succeed();
     }

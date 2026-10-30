@@ -15,7 +15,8 @@ public final class LaserAttachment extends AttackPreparationEffect {
 
     private static final List<SimpleTrigger> bullet_triggers = List.of(
             new SimpleTrigger(ModTriggerTypes.BULLET_HIT_ENTITY_BEFORE, ModExecutableEffects.LASER_PLUS_BRIMSTONE),
-            new SimpleTrigger(ModTriggerTypes.BULLET_TICK, ModExecutableEffects.LASER_PLUS_FETUS)
+            new SimpleTrigger(ModTriggerTypes.BULLET_TICK, ModExecutableEffects.LASER_PLUS_FETUS),
+            new SimpleTrigger(ModTriggerTypes.BULLET_TICK, ModExecutableEffects.LASER_PLUS_MOMS_KNIFE)
     );
 
     @Override

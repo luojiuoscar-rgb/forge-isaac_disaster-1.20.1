@@ -26,7 +26,7 @@ class PlayerMomsKnifeAttackStateTest {
     }
 
     @Test
-    void blockMemoryLastsForTheThrowWhileEntityDamageMemoryResetsEachTick() {
+    void blockAndFirstContactMemoryLastForTheWholeThrow() {
         var state = state();
         UUID target = UUID.randomUUID();
         BlockPos block = new BlockPos(1, 2, 3);
@@ -35,7 +35,10 @@ class PlayerMomsKnifeAttackStateTest {
         state.collisions.damagedEntities().add(target);
         var blade = PlayerMomsKnifeMotion.blade(Vec3.ZERO, PlayerMomsKnifeMotion.FORWARD);
         state.advance(List.of(blade, blade), 1);
-        assertEquals(0, state.collisions.damagedEntities().size());
+        assertTrue(state.collisions.damagedEntities().contains(target));
+        state.advance(List.of(blade, blade), 2);
+        assertTrue(state.collisions.damagedEntities().contains(target));
+        assertEquals(0, state().collisions.damagedEntities().size());
         assertTrue(state.collisions.hitBlockPositions().contains(block));
         assertThrows(UnsupportedOperationException.class, () -> state.collisions.hitBlockPositions().clear());
         assertTrue(state().collisions.markBlockHit(block));

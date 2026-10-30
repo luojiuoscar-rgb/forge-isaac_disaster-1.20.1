@@ -155,7 +155,7 @@ public abstract class AttackType {
 
     public int getBulletCount(Player player){
         AttributeInstance bulletCount = player.getAttribute(ModAttributes.BULLET_COUNT.get());
-        int count = bulletCount == null ? 1 : (int) bulletCount.getValue();
+        int count = bulletCount == null ? 1 : (int) Math.floor(bulletCount.getValue());
 
         IsaacGetBulletCountEvent event = new IsaacGetBulletCountEvent(player, this, count);
         MinecraftForge.EVENT_BUS.post(event);

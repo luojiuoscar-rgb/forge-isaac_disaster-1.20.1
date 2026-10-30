@@ -676,6 +676,8 @@
   "item.isaac_disaster.moms_knife.synergy.tiny_planet.1": "菜刀发射时会环绕玩家",
   "item.isaac_disaster.moms_knife_weapon": "妈妈的菜刀",
   "item.isaac_disaster.moms_knife_weapon.lore.1": "右键蓄力投掷一把菜刀",
+  "item.isaac_disaster.moms_knife.synergy.technology.1": "同时发射连接玩家与菜刀的激光",
+  "item.isaac_disaster.moms_knife.synergy.technology.2": "激光造成20%面板帧伤",
   "item end": "",
   "trinket": "",
   "item.isaac_disaster.swallowed_penny": "被吞下的硬币",

@@ -14,11 +14,11 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 import java.util.Set;
 
-/** One throw's interface state, without the ordinary bullet simulation or split lifecycle. */
+/** One throw's interface state, without the ordinary bullet simulation. */
 final class PlayerMomsKnifeAttackState {
     @Nullable final AttackContext context;
     final CompositeTrigger triggers;
-    final SplitSequence splits = new SplitSequence();
+    final SplitSequence splits;
     final SplitTriggerCounts splitCounts = new SplitTriggerCounts();
     final BulletCollisionState collisions = new BulletCollisionState(Set.of());
     final TrajectoryRuntime trajectory;
@@ -36,13 +36,13 @@ final class PlayerMomsKnifeAttackState {
         this.velocity = velocity;
         contactPath = new PlayerMomsKnifeTrail.Path(List.of(PlayerMomsKnifeMotion.blade(origin, direction)));
         triggers = source == null ? new CompositeTrigger() : source.getTrigger().copy();
+        splits = source == null ? new SplitSequence() : source.copySplitSequence();
         if (source == null) context = null;
         else {
             triggers.removeAll(ModExecutableEffects.BULLET_BOUNCE_ON_BLOCK.get());
             triggers.removeAll(ModExecutableEffects.BULLET_BOUNCE_ON_ENTITY.get());
             context = source.toBuilder().attackType(ModAttackTypes.MOMS_KNIFE.get())
-                    .position(origin).direction(direction).trigger(triggers)
-                    .splitSequence(new SplitSequence()).build();
+                    .position(origin).direction(direction).trigger(triggers).build();
             context.freeze();
         }
         trajectory = new TrajectoryRuntime(origin, direction, context == null ? List.of() : context.getTrajectorySpecs());
@@ -54,7 +54,6 @@ final class PlayerMomsKnifeAttackState {
         if (lastFrame == now) return;
         lastFrame = now;
         age++;
-        collisions.damagedEntities().clear();
         contactPath = new PlayerMomsKnifeTrail.Path(path);
         Vec3 end = path.get(path.size() - 1).anchor();
         Vec3 next = end.subtract(path.get(0).anchor());

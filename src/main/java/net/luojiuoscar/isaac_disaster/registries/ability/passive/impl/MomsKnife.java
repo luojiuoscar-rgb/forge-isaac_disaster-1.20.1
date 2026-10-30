@@ -3,7 +3,6 @@ package net.luojiuoscar.isaac_disaster.registries.ability.passive.impl;
 import net.luojiuoscar.isaac_disaster.client.ClientDataManager;
 import net.luojiuoscar.isaac_disaster.helper.DescriptionHelper;
 import net.luojiuoscar.isaac_disaster.item.ModPassiveItems;
-import net.luojiuoscar.isaac_disaster.item.ModItems;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.registries.ability.passive.PassiveAbility;
 import net.luojiuoscar.isaac_disaster.registries.ability.set.ModSetAbilities;
@@ -13,7 +12,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
-import net.minecraftforge.items.ItemHandlerHelper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -50,6 +48,12 @@ public final class MomsKnife extends PassiveAbility {
     public List<Component> getSynergyDesc(@Nullable ItemStack stack, Player player) {
         List<Component> description = new ArrayList<>(ModSetAbilities.MOM.get().getSynergyDesc());
         if (ClientDataManager.getInstance().getItemCount(ModPassiveItems.C_SECTION.getId()) > 0) return description;
+        if (ClientDataManager.getInstance().getItemCount(ModPassiveItems.TECHNOLOGY.getId()) > 0) {
+            description.addAll(DescriptionHelper.getSynergyDesc(Component.translatable("item.isaac_disaster.technology"), List.of(
+                    Component.translatable("item.isaac_disaster.moms_knife.synergy.technology.1"),
+                    Component.translatable("item.isaac_disaster.moms_knife.synergy.technology.2")
+            )));
+        }
         if (ClientDataManager.getInstance().getItemCount(ModPassiveItems.BRIMSTONE.getId()) > 0) {
             description.addAll(DescriptionHelper.getSynergyDesc(Component.translatable("item.isaac_disaster.brimstone"), List.of(
                     Component.translatable("item.isaac_disaster.moms_knife.synergy.brimstone.1"),

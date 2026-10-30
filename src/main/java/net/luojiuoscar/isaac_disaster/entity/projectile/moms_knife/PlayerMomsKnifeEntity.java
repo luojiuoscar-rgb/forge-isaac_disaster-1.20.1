@@ -9,6 +9,9 @@ import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.item.ModPassiveItems;
 import net.luojiuoscar.isaac_disaster.item.pickup.special.IsaacHead;
 import net.luojiuoscar.isaac_disaster.event.custom.attack.IsaacAttackHitBlockEvent;
+import net.luojiuoscar.isaac_disaster.event.custom.attack.IsaacAttackBeforeHitEntityEvent;
+import net.luojiuoscar.isaac_disaster.event.custom.attack.IsaacAttackAfterHitEvent;
+import net.luojiuoscar.isaac_disaster.event.custom.attack.tear_bullet.BulletTickEvent;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.CompositeTrigger;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ContextKeys;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ExecutableEffectContext;
@@ -19,6 +22,7 @@ import net.luojiuoscar.isaac_disaster.entity.projectile.moms_knife.HeldMomsKnife
 import net.luojiuoscar.isaac_disaster.registries.attack_type.IBulletObject;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.util.DamagedEntities;
 import net.luojiuoscar.isaac_disaster.registries.split_module.SplitSequence;
+import net.luojiuoscar.isaac_disaster.registries.split_module.SplitExecutor;
 import net.luojiuoscar.isaac_disaster.registries.split_module.SplitTriggerCounts;
 import net.luojiuoscar.isaac_disaster.registries.split_module.SplitTriggerType;
 import net.luojiuoscar.isaac_disaster.registries.trajectory.TrajectoryRuntime;
@@ -38,6 +42,7 @@ import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -46,6 +51,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.network.NetworkHooks;
 import net.minecraftforge.common.MinecraftForge;
@@ -60,6 +66,7 @@ import java.util.List;
 import java.util.Set;
 
 public final class PlayerMomsKnifeEntity extends Entity implements IBulletObject, IEntityAdditionalSpawnData {
+    private static final double ONE_WAY_RANGE = 24;
     public enum Mode { RETURNING, ONE_WAY }
 
     private static final EntityDataAccessor<Byte> MODE =
@@ -107,6 +114,7 @@ public final class PlayerMomsKnifeEntity extends Entity implements IBulletObject
     private double remainingDistance;
     private double oneWaySpeed;
     private long lastDamageTick = Long.MIN_VALUE;
+    private long lastBulletTick = Long.MIN_VALUE;
     private Vec3 renderFrom = PlayerMomsKnifeMotion.FORWARD;
     private Vec3 renderTo = PlayerMomsKnifeMotion.FORWARD;
     private long directionUpdatedAt;
@@ -191,32 +199,32 @@ public final class PlayerMomsKnifeEntity extends Entity implements IBulletObject
         return AttackContext.builder(owner, owner).attackType(ModAttackTypes.MOMS_KNIFE.get()).build();
     }
 
-    public boolean initializeOneWay(ServerPlayer owner, double range, double speed) {
+    public boolean initializeOneWay(ServerPlayer owner, double speed) {
         Vec3 origin = PlayerMomsKnifeMotion.idlePosition(owner, 1);
-        return initializeOneWay(owner, origin, origin.add(owner.getLookAngle()), range, speed);
+        return initializeOneWay(owner, origin, origin.add(owner.getLookAngle()), speed);
     }
 
-    public boolean initializeOneWay(ServerPlayer owner, Vec3 origin, Vec3 aimPoint, double range, double speed) {
-        return initializeOneWay(owner, origin, aimPoint, range, speed, basicContext(owner));
+    public boolean initializeOneWay(ServerPlayer owner, Vec3 origin, Vec3 aimPoint, double speed) {
+        return initializeOneWay(owner, origin, aimPoint, speed, basicContext(owner));
     }
 
-    public boolean initializeOneWay(ServerPlayer owner, Vec3 origin, Vec3 aimPoint, double range, double speed,
+    public boolean initializeOneWay(ServerPlayer owner, Vec3 origin, Vec3 aimPoint, double speed,
                                     AttackContext context) {
-        if (!Double.isFinite(range) || !Double.isFinite(speed) || range <= 0 || speed <= 0) return false;
+        if (!Double.isFinite(speed) || speed <= 0) return false;
         if (!Double.isFinite(origin.lengthSqr()) || !Double.isFinite(aimPoint.lengthSqr())) return false;
         if (context.getOwner() != owner) return false;
         entityData.set(MODE, (byte) Mode.ONE_WAY.ordinal());
         entityData.set(HELD_SLOT, -1);
         entityData.set(OWNER, owner.getId());
         setPos(origin);
-        remainingDistance = range;
+        remainingDistance = ONE_WAY_RANGE;
         oneWaySpeed = speed;
-        entityData.set(RANGE, (float) range);
+        entityData.set(RANGE, (float) ONE_WAY_RANGE);
         entityData.set(SPEED, (float) speed);
         Vec3 direction = aimPoint.subtract(origin);
         if (direction.lengthSqr() < 1.0E-12) direction = owner.getLookAngle();
         setDirection(direction);
-        attack = new PlayerMomsKnifeAttackState(context, origin, direction, range,
+        attack = new PlayerMomsKnifeAttackState(context.toBuilder().range(ONE_WAY_RANGE).build(), origin, direction, ONE_WAY_RANGE,
                 PlayerMomsKnifeMotion.unit(direction).scale(speed));
         TrajectoryEvaluator.initialize(this);
         setDeltaMovement(attack.velocity);
@@ -291,6 +299,7 @@ public final class PlayerMomsKnifeEntity extends Entity implements IBulletObject
 
     private boolean ownerReady(ServerPlayer owner) {
         if (!owner.isAlive() || owner.isRemoved() || owner.isSpectator() || owner.level() != level()) return false;
+        if (getMode() == Mode.ONE_WAY) return true;
         if (!discardsOnReturn() && !MomsKnifeAttack.isSelectedAndReady(owner)) return false;
         return owner.getCapability(PlayerAbilityProvider.PLAYER_ABILITY).map(ability ->
                 (discardsOnReturn() || ability.getAttackTypes().containsKey(ModAttackTypes.MOMS_KNIFE.getId()))
@@ -534,7 +543,8 @@ public final class PlayerMomsKnifeEntity extends Entity implements IBulletObject
     private void tickVisualTrail() {
         Player owner = getOwner();
         if (owner == null || !owner.isAlive() || owner.isSpectator()
-                || !discardsOnReturn() && !(owner.getMainHandItem().getItem() instanceof IsaacHead) || !isInFlight()) {
+                || getMode() == Mode.RETURNING && !discardsOnReturn()
+                && !(owner.getMainHandItem().getItem() instanceof IsaacHead) || !isInFlight()) {
             attack.trail.clear();
             previous = null;
             previousVisualBlade = null;
@@ -780,6 +790,11 @@ public final class PlayerMomsKnifeEntity extends Entity implements IBulletObject
         if (!isRemoved() && ownerReady(owner)) {
             damage(owner);
         }
+        if (!isRemoved() && ownerReady(owner) && isInFlight() && !discardsOnReturn()
+                && lastBulletTick != level().getGameTime()) {
+            lastBulletTick = level().getGameTime();
+            MinecraftForge.EVENT_BUS.post(new BulletTickEvent(this));
+        }
     }
 
     private void damage(ServerPlayer owner) {
@@ -794,8 +809,33 @@ public final class PlayerMomsKnifeEntity extends Entity implements IBulletObject
                 target -> target.isAlive() && !target.isRemoved() && !target.isSpectator()
                         && !EntityHelper.isFriendly(target, owner))) {
             if (attack.contactPath.contacts(target.getBoundingBox()) || attack.trail.contacts(target.getBoundingBox())) {
-                if (target.hurt(ModDamageSources.momsKnife(level(), this, owner), damage)) getDamagedEntities().add(target.getUUID());
-                if (isRemoved()) return;
+                boolean firstContact = isInFlight() && !discardsOnReturn()
+                        && !getDamagedEntities().contains(target.getUUID());
+                EntityHitResult hit = new EntityHitResult(target, target.getBoundingBox().getCenter());
+                float hitDamage = damage;
+                if (firstContact) {
+                    // Remember before callbacks: an explosion or another nested hit must not retry this contact.
+                    getDamagedEntities().add(target.getUUID());
+                    var event = new IsaacAttackBeforeHitEntityEvent(this, owner, getTypeId(), getTriggers(), hit, damage);
+                    boolean cancelled = MinecraftForge.EVENT_BUS.post(event);
+                    if (isRemoved() || !ownerReady(owner)) return;
+                    if (cancelled || !target.isAlive() || target.isRemoved()) continue;
+                    hitDamage = (float) event.getDamage();
+                }
+                if (!Float.isFinite(hitDamage) || hitDamage <= 0) continue;
+                DamageSource source = ModDamageSources.momsKnife(level(), this, owner);
+                boolean hurt = target.hurt(source, hitDamage);
+                if (isRemoved() || !ownerReady(owner)) return;
+                if (firstContact && hurt) {
+                    MinecraftForge.EVENT_BUS.post(new IsaacAttackAfterHitEvent(this, owner, getTypeId(), getTriggers(),
+                            hit, hitDamage, target.getHealth()));
+                    if (isRemoved() || !ownerReady(owner)) return;
+                    if (attack.splitCounts.getEntityHits() == 0) {
+                        recordSplitTrigger(SplitTriggerType.ENTITY);
+                        SplitExecutor.executeAt(this, SplitTriggerType.ENTITY, hit.getLocation(), getVelocity());
+                        if (isRemoved() || !ownerReady(owner)) return;
+                    }
+                }
             }
         }
     }
@@ -833,10 +873,10 @@ public final class PlayerMomsKnifeEntity extends Entity implements IBulletObject
     public ResourceLocation getRootTypeId() { return getTypeId(); }
 
     @Override
-    public SplitTriggerCounts getSplitTriggerCounts() { return attack.splitCounts; }
+    public SplitTriggerCounts getSplitTriggerCounts() { return attack.splitCounts.copy(); }
 
     @Override
-    public void recordSplitTrigger(SplitTriggerType type) {}
+    public void recordSplitTrigger(SplitTriggerType type) { attack.splitCounts.increment(type); }
 
     @Override
     public float getDamage() {

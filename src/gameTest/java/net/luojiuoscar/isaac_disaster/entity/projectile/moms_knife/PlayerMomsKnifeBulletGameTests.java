@@ -11,6 +11,7 @@ import net.luojiuoscar.isaac_disaster.registries.ability_effect.ContextKeys;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ExecutableEffectContext;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ModExecutableEffects;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.SimpleTrigger;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.normal.MomsKnifeShot;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackContext;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.IBulletObject;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.ModAttackTypes;
@@ -44,6 +45,30 @@ import java.util.stream.LongStream;
 @GameTestHolder("isaac_disaster_player_knife")
 @PrefixGameTestTemplate(false)
 public final class PlayerMomsKnifeBulletGameTests {
+    @GameTest(template = "trajectory_empty", batch = "player_knife", timeoutTicks = 15)
+    public static void everyOneWayShotHasTwentyFourBlocksRegardlessOfThePreparedRange(GameTestHelper helper) {
+        Case c = new Case(helper);
+        List<PlayerMomsKnifeEntity> shots = new ArrayList<>();
+        for (double range : new double[]{0.5, 64}) {
+            AttackContext source = c.context(10).toBuilder().range(range).build();
+            helper.assertTrue(MomsKnifeShot.spawn(source), "The public shot effect accepts the prepared context");
+            PlayerMomsKnifeEntity knife = c.f.knives().stream()
+                    .filter(k -> k.getMode() == PlayerMomsKnifeEntity.Mode.ONE_WAY && !shots.contains(k))
+                    .findFirst().orElseThrow();
+            helper.assertTrue(knife.getRange() == 24 && knife.getAttackContext().getBulletRange() == 24,
+                    "The runtime and its context both use the knife's fixed range");
+            helper.assertTrue(source.getBulletRange() == range, "Initializing a knife does not modify its caller's context");
+            shots.add(knife);
+        }
+        helper.runAfterDelay(5, () -> {
+            try {
+                helper.assertTrue(shots.stream().allMatch(k -> k.isRemoved() && Math.abs(k.getTraveled() - 24) < 1e-5),
+                        "Both shots clip the final movement to exactly twenty-four blocks");
+                helper.succeed();
+            } finally { c.close(); }
+        });
+    }
+
     @GameTest(template = "trajectory_empty", batch = "player_knife")
     public static void theRearSpawnUsesTheCurrentViewEvenWhenHeadYawDiffers(GameTestHelper helper) {
         try (Case c = new Case(helper)) {
@@ -150,7 +175,7 @@ public final class PlayerMomsKnifeBulletGameTests {
     @GameTest(template = "trajectory_empty", batch = "player_knife", timeoutTicks = 40)
     public static void controlCanBeGainedAndRemovedWithoutChangingSpeedOrTwentyFourBlockTravel(GameTestHelper helper) {
         Case c = new Case(helper);
-        PlayerMomsKnifeEntity knife = c.f.oneWay(24, 1);
+        PlayerMomsKnifeEntity knife = c.f.oneWay(1);
         Vec3 start = knife.position();
         Vec3[] locked = new Vec3[1];
         helper.runAfterDelay(2, () -> {
@@ -181,7 +206,7 @@ public final class PlayerMomsKnifeBulletGameTests {
         c.f.cow(anchor.add(2, 0, 2));
         c.f.ability.setHoming(1);
         c.f.ability.setControllable(1);
-        PlayerMomsKnifeEntity knife = c.f.oneWay(24, 0.25);
+        PlayerMomsKnifeEntity knife = c.f.oneWay(0.25);
         c.f.owner.setYRot(90);
         helper.runAfterDelay(4, () -> {
             try {
@@ -197,12 +222,12 @@ public final class PlayerMomsKnifeBulletGameTests {
         Case c = new Case(helper);
         Vec3 origin = PlayerMomsKnifeMotion.idlePosition(c.f.owner, 1);
         BlockPos base = BlockPos.containing(origin);
-        List<BlockPos> walls = List.of(base.offset(0, 0, 1), base.offset(0, 0, 3), base.offset(0, 0, 6));
+        List<BlockPos> walls = List.of(base.offset(0, 0, 1), base.offset(0, 0, 3), base.offset(0, 0, 24));
         for (BlockPos wall : walls) c.place(wall, Blocks.STONE.defaultBlockState());
-        PlayerMomsKnifeEntity knife = c.f.oneWay(6, 10);
+        PlayerMomsKnifeEntity knife = c.f.oneWay(10);
         List<BlockPos> reported = new ArrayList<>();
         c.watchBlocks(event -> { if (event.getBulletObject() == knife) reported.add(event.getHitResult().getBlockPos()); });
-        helper.runAfterDelay(3, () -> {
+        helper.runAfterDelay(5, () -> {
             try {
                 helper.assertTrue(reported.equals(walls), "Every wall is reported in path order, including the final tip: " + reported);
                 helper.assertTrue(knife.isRemoved() && knife.getHitBlockPositions().equals(Set.copyOf(walls)), "Hits survive range expiry");
@@ -253,7 +278,7 @@ public final class PlayerMomsKnifeBulletGameTests {
     }
 
     @GameTest(template = "trajectory_empty", batch = "player_knife", timeoutTicks = 15)
-    public static void terraWorksWhileBounceSplitAndTrajectoryModulesAreExcluded(GameTestHelper helper) {
+    public static void terraWorksWhileBounceAndOrdinaryTrajectoryModulesAreExcluded(GameTestHelper helper) {
         Case c = new Case(helper);
         Vec3 origin = PlayerMomsKnifeMotion.idlePosition(c.f.owner, 1);
         BlockPos wall = BlockPos.containing(origin).offset(0, 0, 2);
@@ -266,20 +291,21 @@ public final class PlayerMomsKnifeBulletGameTests {
                 .trigger(triggers).speed(10).build();
         context.addSplitModule(ModSplitModules.CRICKETS_BODY.getId(), 1);
         context.addTrajectoryModule(ModTrajectoryModules.GRAVITY.getId(), 1);
-        PlayerMomsKnifeEntity knife = c.oneWay(origin, 6, 10, context);
+        PlayerMomsKnifeEntity knife = c.oneWay(origin, 10, context);
         AtomicInteger splits = new AtomicInteger();
         Consumer<BulletSplitEvent> listener = event -> { if (event.getParent() == knife) splits.incrementAndGet(); };
         MinecraftForge.EVENT_BUS.addListener(listener);
         c.listeners.add(listener);
-        helper.runAfterDelay(3, () -> {
+        helper.runAfterDelay(5, () -> {
             try {
                 helper.assertTrue(c.f.level.getBlockState(wall).isAir(), "The inherited Terra block trigger executes");
-                helper.assertTrue(knife.isRemoved() && Math.abs(knife.getZ() - origin.z - 6) < 1e-6,
+                helper.assertTrue(knife.isRemoved() && Math.abs(knife.getZ() - origin.z - 24) < 1e-6,
                         "Rubber Cement does not reflect the knife");
                 helper.assertTrue(!knife.getTriggers().contains(ModExecutableEffects.BULLET_BOUNCE_ON_BLOCK.get())
                                 && !knife.getTriggers().contains(ModExecutableEffects.BULLET_BOUNCE_ON_ENTITY.get()), "Both bounce effects are absent");
-                helper.assertTrue(knife.getSplitSequence().isEmpty() && knife.getTrajectoryRuntime().states().isEmpty() && splits.get() == 0,
-                        "Neither split nor ordinary trajectory modules execute");
+                helper.assertTrue(knife.getSplitSequence().contains(ModSplitModules.CRICKETS_BODY.getId())
+                                && knife.getTrajectoryRuntime().states().isEmpty() && splits.get() == 0,
+                        "Prepared splits are retained but blocks do not trigger them; ordinary trajectory modules stay inactive");
                 helper.assertTrue(knife.getTrajectorySpecs().equals(context.getTrajectorySpecs()),
                         "Prepared trajectory configuration is retained for explicitly compatible modules");
                 helper.assertTrue(context.getTrigger().contains(ModExecutableEffects.BULLET_BOUNCE_ON_BLOCK.get())
@@ -297,8 +323,8 @@ public final class PlayerMomsKnifeBulletGameTests {
         c.place(base.offset(0, 0, 2), Blocks.OAK_SLAB.defaultBlockState());
         c.place(base.offset(0, 0, 3), Blocks.WATER.defaultBlockState());
         Vec3 origin = new Vec3(idle.x, base.getY() + 0.8, idle.z);
-        PlayerMomsKnifeEntity knife = c.oneWay(origin, 5, 10, c.context(10));
-        helper.runAfterDelay(3, () -> {
+        PlayerMomsKnifeEntity knife = c.oneWay(origin, 10, c.context(10));
+        helper.runAfterDelay(5, () -> {
             try {
                 helper.assertTrue(knife.isRemoved() && knife.getHitBlockPositions().isEmpty(),
                         "The blade passes above the slab and through the empty water collision shape");
@@ -315,7 +341,7 @@ public final class PlayerMomsKnifeBulletGameTests {
         c.place(base.offset(0, 0, 1), Blocks.STONE.defaultBlockState());
         c.place(base.offset(0, 0, 3), Blocks.STONE.defaultBlockState());
         var target = c.f.cow(origin.add(0, 0, 4));
-        PlayerMomsKnifeEntity knife = c.f.oneWay(6, 10);
+        PlayerMomsKnifeEntity knife = c.f.oneWay(10);
         AtomicInteger hits = new AtomicInteger();
         c.watchBlocks(event -> {
             if (event.getBulletObject() == knife) {
@@ -336,7 +362,7 @@ public final class PlayerMomsKnifeBulletGameTests {
         try (Case c = new Case(helper)) {
             c.f.owner.setYRot(135);
             c.f.owner.setXRot(-45);
-            PlayerMomsKnifeEntity original = c.f.oneWay(24, 0.7);
+            PlayerMomsKnifeEntity original = c.f.oneWay(0.7);
             FriendlyByteBuf buffer = new FriendlyByteBuf(Unpooled.buffer());
             PlayerMomsKnifeEntity copy = new PlayerMomsKnifeEntity(ModEntities.PLAYER_MOMS_KNIFE.get(), c.f.level);
             try {
@@ -354,7 +380,13 @@ public final class PlayerMomsKnifeBulletGameTests {
                                 && Math.abs(copy.getRange() - 24) < 1e-6, "Initial direction and range are independent of the new owner view");
                 helper.assertTrue(copy.yRotO == copy.getYRot() && copy.xRotO == copy.getXRot(), "The initial pose has no default-angle interpolation");
                 for (SplitTriggerType type : SplitTriggerType.values()) original.recordSplitTrigger(type);
-                helper.assertTrue(original.getSplitTriggerCounts().getBlockHits() == 0, "Explicit split recording is also disabled");
+                helper.assertTrue(original.getSplitTriggerCounts().getBlockHits() == 1
+                                && original.getSplitTriggerCounts().getEntityHits() == 1
+                                && original.getSplitTriggerCounts().getEndOfLife() == 1,
+                        "The bullet interface preserves explicit split counters");
+                original.getSplitTriggerCounts().increment(SplitTriggerType.BLOCK);
+                helper.assertTrue(original.getSplitTriggerCounts().getBlockHits() == 1,
+                        "Reading split counters returns a snapshot rather than mutable ownership");
                 var runtime = original.getTrajectoryRuntime();
                 helper.assertTrue(runtime == original.getTrajectoryRuntime(), "The runtime getter never creates a transient copy");
                 helper.succeed();
@@ -408,9 +440,9 @@ public final class PlayerMomsKnifeBulletGameTests {
             f.level.setBlockAndUpdate(pos, state);
         }
 
-        PlayerMomsKnifeEntity oneWay(Vec3 origin, double range, double speed, AttackContext context) {
+        PlayerMomsKnifeEntity oneWay(Vec3 origin, double speed, AttackContext context) {
             PlayerMomsKnifeEntity knife = new PlayerMomsKnifeEntity(ModEntities.PLAYER_MOMS_KNIFE.get(), f.level);
-            if (!knife.initializeOneWay(f.owner, origin, origin.add(0, 0, 1), range, speed, context)
+            if (!knife.initializeOneWay(f.owner, origin, origin.add(0, 0, 1), speed, context)
                     || !f.level.addFreshEntity(knife)) throw new IllegalStateException("Failed to spawn a knife fixture");
             return knife;
         }

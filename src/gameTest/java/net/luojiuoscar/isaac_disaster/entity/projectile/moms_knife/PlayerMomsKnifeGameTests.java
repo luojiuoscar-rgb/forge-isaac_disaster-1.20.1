@@ -98,7 +98,7 @@ public final class PlayerMomsKnifeGameTests {
     @GameTest(template = "trajectory_empty", batch = "player_knife", timeoutTicks = 30)
     public static void detachedFlightIgnoresLaterPlayerTurnsAndTravelsPastEightBlocks(GameTestHelper helper) {
         Fixture f = new Fixture(helper);
-        PlayerMomsKnifeEntity knife = f.oneWay(12, 1);
+        PlayerMomsKnifeEntity knife = f.oneWay(1);
         Vec3 start = knife.position();
         helper.runAfterDelay(3, () -> {
             f.owner.setYRot(90);
@@ -108,10 +108,10 @@ public final class PlayerMomsKnifeGameTests {
             helper.assertTrue(!knife.isRemoved() && knife.getZ() - start.z > 8, "Detached knife is not capped at eight blocks");
             helper.assertTrue(Math.abs(knife.getX() - start.x) < 1e-6, "Turning and moving do not drag a detached knife");
         });
-        helper.runAfterDelay(16, () -> {
+        helper.runAfterDelay(28, () -> {
             try {
                 helper.assertTrue(knife.isRemoved(), "The detached knife expires instead of returning");
-                helper.assertTrue(Math.abs(knife.position().distanceTo(start) - 12) < 1e-5, "The final movement is clipped to range");
+                helper.assertTrue(Math.abs(knife.position().distanceTo(start) - 24) < 1e-5, "The final movement is clipped to range");
                 helper.succeed();
             } finally { f.close(); }
         });
@@ -121,7 +121,7 @@ public final class PlayerMomsKnifeGameTests {
     public static void twoKnivesStackDamageEveryTickThroughVanillaHurtCooldown(GameTestHelper helper) {
         Fixture f = new Fixture(helper);
         f.cow(PlayerMomsKnifeMotion.idlePosition(f.owner, 1).add(0, 0, 0.4));
-        f.oneWay(16, 0.01);
+        f.oneWay(0.01);
         float[] before = new float[1];
         helper.runAfterDelay(3, () -> before[0] = f.targets.get(0).getHealth());
         helper.runAfterDelay(6, () -> {
@@ -188,15 +188,15 @@ public final class PlayerMomsKnifeGameTests {
     public static void theFinalClippedSweepDamagesThroughAnUnbrokenWall(GameTestHelper helper) {
         Fixture f = new Fixture(helper);
         Vec3 anchor = PlayerMomsKnifeMotion.idlePosition(f.owner, 1);
-        Cow target = f.cow(anchor.add(0, 0, 2.8));
-        BlockPos wall = BlockPos.containing(anchor.add(0, 0, 1));
+        Cow target = f.cow(anchor.add(0, 0, 24.8));
+        BlockPos wall = BlockPos.containing(anchor.add(0, 0, 23));
         BlockState original = f.level.getBlockState(wall);
         f.level.setBlockAndUpdate(wall, Blocks.STONE.defaultBlockState());
-        PlayerMomsKnifeEntity knife = f.oneWay(2, 10);
-        helper.runAfterDelay(3, () -> {
+        PlayerMomsKnifeEntity knife = f.oneWay(10);
+        helper.runAfterDelay(5, () -> {
             try {
-                helper.assertTrue(knife.isRemoved(), "A sub-tick one-way flight ends");
-                helper.assertTrue(Math.abs(knife.position().distanceTo(anchor) - 2) < 1e-5, "There is no endpoint overshoot");
+                helper.assertTrue(knife.isRemoved(), "The final partial tick ends the one-way flight");
+                helper.assertTrue(Math.abs(knife.position().distanceTo(anchor) - 24) < 1e-5, "There is no endpoint overshoot");
                 helper.assertTrue(target.getHealth() == 998, "The final blade sweep still damages once");
                 helper.assertTrue(f.level.getBlockState(wall).is(Blocks.STONE), "The wall is not destroyed");
                 helper.succeed();
@@ -234,30 +234,33 @@ public final class PlayerMomsKnifeGameTests {
     }
 
     @GameTest(template = "trajectory_empty", batch = "player_knife")
-    public static void switchingAwayRemovesBothModesWithoutLosingTheMainSlotEarly(GameTestHelper helper) {
+    public static void switchingAwayRemovesOnlyTheMainKnifeAndLeavesOneWayShotsIndependent(GameTestHelper helper) {
         try (Fixture f = new Fixture(helper)) {
-            PlayerMomsKnifeEntity detached = f.oneWay(32, 1);
+            PlayerMomsKnifeEntity detached = f.oneWay(1);
             detached.discard();
             helper.assertTrue(f.main.getUUID().equals(f.ability.getRuntimeEntities().getId(ModAttackTypes.MOMS_KNIFE.getId())),
                     "Removing a detached knife leaves the main slot intact");
-            detached = f.oneWay(32, 1);
+            detached = f.oneWay(1);
             f.owner.setItemInHand(InteractionHand.MAIN_HAND, ItemStack.EMPTY);
+            f.ability.addAttackType(ModAttackTypes.MOMS_KNIFE.getId(), -1, f.owner);
+            Vec3 before = detached.position();
             f.main.tick();
             detached.tick();
-            helper.assertTrue(f.main.isRemoved() && detached.isRemoved(), "Both modes enforce holding eligibility");
+            helper.assertTrue(f.main.isRemoved() && !detached.isRemoved() && detached.position().distanceTo(before) > 0.9,
+                    "One-way shots keep moving without the head, passive or selected attack");
             helper.assertTrue(f.ability.getRuntimeEntities().getId(ModAttackTypes.MOMS_KNIFE.getId()) == null,
                     "Removing the main knife unregisters its slot");
         }
         helper.succeed();
     }
 
-    @GameTest(template = "trajectory_empty", batch = "player_knife", timeoutTicks = 30)
+    @GameTest(template = "trajectory_empty", batch = "player_knife", timeoutTicks = 60)
     public static void detachedHomingAndLosingHomingKeepSpeedAndTotalTravel(GameTestHelper helper) {
         Fixture f = new Fixture(helper);
         f.ability.setHoming(1);
         Vec3 start = PlayerMomsKnifeMotion.idlePosition(f.owner, 1);
         f.cow(start.add(2, 0, 2));
-        PlayerMomsKnifeEntity knife = f.oneWay(6, 0.5);
+        PlayerMomsKnifeEntity knife = f.oneWay(0.5);
         Vec3[] previous = {start};
         double[] traveled = {0};
         AtomicBoolean deflected = new AtomicBoolean();
@@ -275,9 +278,9 @@ public final class PlayerMomsKnifeGameTests {
                 previous[0] = current;
                 long age = f.level.getGameTime() - launched;
                 if (age >= 4) f.ability.setHoming(0);
-                if (age >= 16) {
+                if (age >= 52) {
                     helper.assertTrue(deflected.get(), "The detached knife actually tracked before the ability was removed");
-                    helper.assertTrue(knife.isRemoved() && Math.abs(traveled[0] - 6) < 1e-5,
+                    helper.assertTrue(knife.isRemoved() && Math.abs(traveled[0] - 24) < 1e-5,
                             "Losing homing neither resets range nor extends travel: " + traveled[0]);
                     helper.succeed();
                     f.close();
@@ -294,7 +297,7 @@ public final class PlayerMomsKnifeGameTests {
         try (Fixture f = new Fixture(helper)) {
             f.owner.setYRot(35);
             f.owner.setXRot(-90);
-            PlayerMomsKnifeEntity knife = f.oneWay(8, 1);
+            PlayerMomsKnifeEntity knife = f.oneWay(1);
             f.owner.setYRot(135);
             knife.tick();
             helper.assertTrue(Math.abs(knife.getYRot() - 35) < 1e-4, "A vertical detached knife keeps its launch heading");
@@ -350,7 +353,7 @@ public final class PlayerMomsKnifeGameTests {
                 Vec3 origin = PlayerMomsKnifeMotion.scatterOrigin(PlayerMomsKnifeMotion.idlePosition(f.owner, 1),
                         37, pitch, 1, -1);
                 PlayerMomsKnifeEntity knife = new PlayerMomsKnifeEntity(ModEntities.PLAYER_MOMS_KNIFE.get(), f.level);
-                helper.assertTrue(knife.initializeOneWay(f.owner, origin, aim, 24, 1), "A scattered knife initializes");
+                helper.assertTrue(knife.initializeOneWay(f.owner, origin, aim, 1), "A scattered knife initializes");
                 helper.assertTrue(knife.getRenderDirection(f.owner, 1).distanceTo(aim.subtract(origin).normalize()) < 1e-6,
                         "The scattered knife converges onto the eye ray rather than its own parallel ray");
                 knife.discard();
@@ -509,7 +512,9 @@ public final class PlayerMomsKnifeGameTests {
         helper.runAfterDelay(3, () -> f.owner.setItemInHand(InteractionHand.MAIN_HAND, ItemStack.EMPTY));
         helper.runAfterDelay(8, () -> {
             try {
-                helper.assertTrue(f.knives().isEmpty(), "Main and detached knives clean themselves up");
+                helper.assertTrue(!f.knives().isEmpty()
+                                && f.knives().stream().allMatch(knife -> knife.getMode() == PlayerMomsKnifeEntity.Mode.ONE_WAY),
+                        "Switching removes the held group while emitted one-way knives finish independently");
                 helper.assertTrue(ScheduledFuncHelper.getPlayerTasks(f.owner.getUUID()).isEmpty(), "Invalid ownership stops the burst");
                 helper.succeed();
             } finally { f.close(); }
@@ -561,9 +566,9 @@ public final class PlayerMomsKnifeGameTests {
             }
         }
 
-        PlayerMomsKnifeEntity oneWay(double range, double speed) {
+        PlayerMomsKnifeEntity oneWay(double speed) {
             PlayerMomsKnifeEntity knife = new PlayerMomsKnifeEntity(ModEntities.PLAYER_MOMS_KNIFE.get(), level);
-            if (!knife.initializeOneWay(owner, range, speed) || !level.addFreshEntity(knife)) {
+            if (!knife.initializeOneWay(owner, speed) || !level.addFreshEntity(knife)) {
                 throw new IllegalStateException("One-way fixture creation failed");
             }
             return knife;

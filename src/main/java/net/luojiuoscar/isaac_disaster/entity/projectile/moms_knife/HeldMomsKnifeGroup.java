@@ -1,13 +1,17 @@
 package net.luojiuoscar.isaac_disaster.entity.projectile.moms_knife;
 
-import net.luojiuoscar.isaac_disaster.attribute.ModAttributes;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerAbilityProvider;
+import net.luojiuoscar.isaac_disaster.capability.player.PlayerIsaacItemsProvider;
+import net.luojiuoscar.isaac_disaster.attribute.ModAttributes;
+import net.luojiuoscar.isaac_disaster.item.ModPassiveItems;
 import net.luojiuoscar.isaac_disaster.entity.ModEntities;
 import net.luojiuoscar.isaac_disaster.event.custom.attack.CollectHeldKnivesEvent;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackContext;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.ModAttackTypes;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.impl.MomsKnifeAttack;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.resources.ResourceLocation;
@@ -59,8 +63,17 @@ public final class HeldMomsKnifeGroup {
         return new Pose(direction.subtract(PlayerMomsKnifeMotion.FORWARD).scale(radius), direction);
     }
 
-    public static int heldCount(ServerPlayer player) {
-        return Mth.clamp((int) player.getAttributeValue(ModAttributes.BULLET_COUNT.get()), 1, MAX_KNIVES);
+    public static int heldCount(Player player) {
+        AttributeInstance attribute = player.getAttribute(ModAttributes.BULLET_COUNT.get());
+        int baseCount = attribute == null ? 1 : (int) Math.floor(attribute.getValue());
+        int copies = player.getCapability(PlayerIsaacItemsProvider.PLAYER_ISAAC_ITEMS)
+                .map(items -> items.getItemCountFromAll(ModPassiveItems.MOMS_KNIFE.getId())).orElse(0);
+        return countWithCopies(baseCount, copies);
+    }
+
+    static int countWithCopies(int baseCount, int copies) {
+        long count = (long) baseCount + Math.max(0L, (long) copies - 1);
+        return (int) Math.max(1, Math.min(count, MAX_KNIVES));
     }
 
     public static List<PlayerMomsKnifeEntity> knives(ServerPlayer player) {

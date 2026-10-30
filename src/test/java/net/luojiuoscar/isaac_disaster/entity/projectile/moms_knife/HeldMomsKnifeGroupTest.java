@@ -13,6 +13,24 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class HeldMomsKnifeGroupTest {
     @Test
+    void firstCopyKeepsTheBaseAndEveryFurtherCopyAddsOne() {
+        assertEquals(1, HeldMomsKnifeGroup.countWithCopies(1, 0));
+        assertEquals(1, HeldMomsKnifeGroup.countWithCopies(1, 1));
+        assertEquals(2, HeldMomsKnifeGroup.countWithCopies(1, 2));
+        assertEquals(5, HeldMomsKnifeGroup.countWithCopies(3, 3));
+        assertEquals(4, HeldMomsKnifeGroup.countWithCopies(4, 1));
+    }
+
+    @Test
+    void countIsBoundedWithoutOverflowOrASecondMultishotBonus() {
+        assertEquals(16, HeldMomsKnifeGroup.countWithCopies(15, 2));
+        assertEquals(16, HeldMomsKnifeGroup.countWithCopies(16, 10));
+        assertEquals(16, HeldMomsKnifeGroup.countWithCopies(Integer.MAX_VALUE, Integer.MAX_VALUE));
+        assertEquals(1, HeldMomsKnifeGroup.countWithCopies(Integer.MIN_VALUE, Integer.MIN_VALUE));
+        assertEquals(4, HeldMomsKnifeGroup.countWithCopies(4, -1));
+    }
+
+    @Test
     void slotsKeepSourceIdentityAndNormalizeNegativeIndices() {
         var source = ResourceLocation.parse("test:first");
         assertEquals(new HeldMomsKnifeGroup.Slot(source, 0), new HeldMomsKnifeGroup.Slot(source, -3));

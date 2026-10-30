@@ -90,7 +90,7 @@ public final class PlayerMomsKnifeTrajectoryGameTests {
         var knife = new PlayerMomsKnifeEntity(ModEntities.PLAYER_MOMS_KNIFE.get(), f.level);
         Vec3 origin = f.main.position();
         var target = f.cow(origin.add(1, 0, 1.5));
-        helper.assertTrue(knife.initializeOneWay(f.owner, origin, origin.add(0, 0, 1), 24, 1, context(f, SHIFT))
+        helper.assertTrue(knife.initializeOneWay(f.owner, origin, origin.add(0, 0, 1), 1, context(f, SHIFT))
                 && f.level.addFreshEntity(knife), "A detached knife retains its prepared trajectory");
         tickWhenNeeded(helper, f, knife);
         helper.runAfterDelay(3, () -> helper.assertTrue(target.getHealth() < 1000 && knife.getX() > origin.x + 1,

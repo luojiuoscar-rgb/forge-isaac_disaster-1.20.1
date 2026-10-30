@@ -93,7 +93,7 @@ public final class TinyPlanetReturningMomsKnifeGameTests {
         Vec3 origin = c.f.main.position();
         Cow target = grazingCow(c, origin.add(0, 0, 0.4), 0.2);
         var oneWay = new PlayerMomsKnifeEntity(ModEntities.PLAYER_MOMS_KNIFE.get(), c.f.level);
-        helper.assertTrue(oneWay.initializeOneWay(c.f.owner, origin, origin.add(0, 0, 1), 24, 0.1,
+        helper.assertTrue(oneWay.initializeOneWay(c.f.owner, origin, origin.add(0, 0, 1), 0.1,
                 c.prepare(origin, 24, 0.1)) && c.f.level.addFreshEntity(oneWay), "One-way control enters the world");
         c.drive(oneWay);
         AtomicInteger idleHits = new AtomicInteger(), oneWayHits = new AtomicInteger();
@@ -125,7 +125,7 @@ public final class TinyPlanetReturningMomsKnifeGameTests {
         new TinyPlanet(0, 0).handleRemove(c.f.owner, null);
         Vec3 origin = c.f.main.position();
         var fast = new PlayerMomsKnifeEntity(ModEntities.PLAYER_MOMS_KNIFE.get(), c.f.level);
-        helper.assertTrue(fast.initializeOneWay(c.f.owner, origin, origin.add(0, 0, 1), 24, 2,
+        helper.assertTrue(fast.initializeOneWay(c.f.owner, origin, origin.add(0, 0, 1), 2,
                 c.prepare(origin, 24, 2)) && c.f.level.addFreshEntity(fast), "Fast knife enters the world");
         c.drive(fast);
         Cow[] target = new Cow[1];
@@ -289,7 +289,7 @@ public final class TinyPlanetReturningMomsKnifeGameTests {
                 "Idle and charging knives do not execute the orbit");
         var detached = new PlayerMomsKnifeEntity(ModEntities.PLAYER_MOMS_KNIFE.get(), c.f.level);
         Vec3 start = c.f.main.position();
-        helper.assertTrue(detached.initializeOneWay(c.f.owner, start, start.add(0, 0, 1), 24, 1, prepared)
+        helper.assertTrue(detached.initializeOneWay(c.f.owner, start, start.add(0, 0, 1), 1, prepared)
                 && c.f.level.addFreshEntity(detached), "The same prepared specs can create a one-way knife");
         c.drive(detached);
         helper.assertTrue(c.f.main.launch(2, 1, prepared) && c.f.main.getFlightDuration() == 15,

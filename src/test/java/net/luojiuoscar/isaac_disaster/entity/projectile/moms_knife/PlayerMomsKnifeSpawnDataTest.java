@@ -57,6 +57,13 @@ class PlayerMomsKnifeSpawnDataTest {
         checkRoundTrip(source);
     }
 
+    @Test
+    void aOneWayKnifeOnlyNeedsItsMovementModeOnTheClient() {
+        checkRoundTrip(new PlayerMomsKnifeSpawnData((byte) 1, 42, new Vec3(1, 0, 0), 24, 1, 0, 90, 0,
+                -1, Vec3.ZERO, PlayerMomsKnifeMotion.FORWARD, ModAttackTypes.MOMS_KNIFE.getId(),
+                Vec3.ZERO, Vec3.ZERO, "", 0, List.of(), false, false));
+    }
+
     private static void checkRoundTrip(PlayerMomsKnifeSpawnData source) {
         FriendlyByteBuf buffer = new FriendlyByteBuf(Unpooled.buffer());
         try {

@@ -5,6 +5,8 @@ import net.luojiuoscar.isaac_disaster.effect.ModEffects;
 import net.luojiuoscar.isaac_disaster.entity.projectile.moms_knife.HeldMomsKnifeGroup;
 import net.luojiuoscar.isaac_disaster.entity.projectile.moms_knife.HeldMomsKnifeAttackPlan;
 import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
+import net.luojiuoscar.isaac_disaster.event.custom.misc.IsaacGetBulletCountEvent;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.normal.MomsKnifeShot;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackContext;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackExecutor;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackOrigin;
@@ -19,6 +21,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraftforge.common.MinecraftForge;
 
 import java.util.List;
 import java.util.function.Consumer;
@@ -76,6 +79,13 @@ public final class MomsKnifeAttack extends AttackType implements BasicAttackType
     }
 
     @Override
+    public int getBulletCount(Player player) {
+        IsaacGetBulletCountEvent event = new IsaacGetBulletCountEvent(player, this, HeldMomsKnifeGroup.heldCount(player));
+        MinecraftForge.EVENT_BUS.post(event);
+        return Math.min(event.getCount(), 17);
+    }
+
+    @Override
     public double getChargeFraction(ServerPlayer player) {
         int total = getTotalCharge(player);
         return player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY)
@@ -85,11 +95,20 @@ public final class MomsKnifeAttack extends AttackType implements BasicAttackType
 
     @Override
     public AttackPlan createPlan(AttackRequest request, List<AttackContext> contexts) {
+        if (request.getOrigin() == AttackOrigin.ABILITY_EXTRA) return new AttackPlan(request, contexts);
         return new HeldMomsKnifeAttackPlan(request, contexts);
     }
 
     @Override
     public void performAttack(AttackPlan plan, List<AttackContext> contexts, Consumer<AttackContext> onFired) {
+        if (plan.getRequest().getOrigin() == AttackOrigin.ABILITY_EXTRA) {
+            AttackContext firstFired = null;
+            for (AttackContext context : contexts) {
+                if (MomsKnifeShot.spawn(context) && firstFired == null) firstFired = context;
+            }
+            if (firstFired != null) onFired.accept(firstFired);
+            return;
+        }
         if (!(plan instanceof HeldMomsKnifeAttackPlan knifePlan)) {
             throw new IllegalArgumentException("Mom's Knife requires its held knife plan");
         }

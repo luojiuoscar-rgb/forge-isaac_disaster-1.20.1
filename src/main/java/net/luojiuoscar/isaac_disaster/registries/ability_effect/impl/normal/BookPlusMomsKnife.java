@@ -33,7 +33,7 @@ public final class BookPlusMomsKnife implements IAbilityEffect {
         Vec3 origin = PlayerMomsKnifeMotion.scatterOrigin(player);
         ExecutableEffectContext shot = new ExecutableEffectContext(player);
         shot.set(ContextKeys.ATTACK_CONTEXT, reference.toBuilder().position(origin)
-                .mainAxis(PlayerMomsKnifeAim.point(player).subtract(origin)).range(24).build());
+                .mainAxis(PlayerMomsKnifeAim.point(player).subtract(origin)).build());
         return ModExecutableEffects.MOMS_KNIFE_SHOT.get() instanceof IAbilityEffect effect && effect.applyEffect(shot);
     }
 }

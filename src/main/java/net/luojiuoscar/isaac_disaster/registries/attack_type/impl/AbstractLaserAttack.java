@@ -390,6 +390,25 @@ public abstract class AbstractLaserAttack extends AttackType {
         shootSingleLaser(ctx, 0);
     }
 
+    /** Fires an exact-length, wall-piercing connection through the ordinary laser collision and visual pipeline. */
+    public boolean shootBetween(AttackContext context) {
+        LivingEntity owner = context.getOwner();
+        ServerLevel level = getLaserLevel(owner);
+        Vec3 start = context.getPos();
+        double width = getWidth(context);
+        if (level == null || !owner.isAlive() || owner.isRemoved()
+                || !Double.isFinite(start.lengthSqr()) || !Double.isFinite(context.getMainAxis().lengthSqr())
+                || context.getMainAxis().lengthSqr() < 1e-12 || context.getBulletRange() <= 0
+                || !Double.isFinite(width) || width <= 0) return false;
+
+        LaserProjectile laser = new LaserProjectile(context);
+        laser.setWidth(width);
+        laser.setStep(Math.max(0.5, width * 2));
+        laser.setSpectral(true);
+        laser.setHoming(false);
+        return shootLaser(laser, level, context);
+    }
+
     protected boolean shootSingleLaser(AttackContext ctx, int attackSequenceIndex) {
         LivingEntity entity = ctx.getOwner();
         ServerLevel level = getLaserLevel(entity);
@@ -407,7 +426,10 @@ public abstract class AbstractLaserAttack extends AttackType {
         laser.setHoming(isHoming(entity));
         laser.setSpectral(isSpectral(entity));
         laser.setAttackSequenceIndex(attackSequenceIndex);
+        return shootLaser(laser, level, ctx);
+    }
 
+    private boolean shootLaser(LaserProjectile laser, ServerLevel level, AttackContext ctx) {
         // Child lasers created during a split share the outer traversal's thread-local state.
         // They must use the compatibility path instead of rebuilding or consuming the parent's
         // straight-path batch recursively.
@@ -417,10 +439,10 @@ public abstract class AbstractLaserAttack extends AttackType {
         }
 
         LaserCollisionBatch batch = activeBatch(level);
-        if (batch == null && usesCollisionBatch() && isStraightPathCandidate(ctx)) {
+        if (batch == null && usesCollisionBatch() && canUseStraightPath(laser)) {
             batch = new LaserCollisionBatch();
             batch.addSweep(laser.position,
-                laser.position.add(laser.direction.normalize().scale(laser.range)), width);
+                laser.position.add(laser.direction.normalize().scale(laser.range)), laser.width);
             batch.rebuild(level);
         }
 
@@ -462,7 +484,13 @@ public abstract class AbstractLaserAttack extends AttackType {
         int steps = 0;
         while (laser.traveled < laser.range && steps < MAX_LASER_STEPS) {
             steps++;
-            stepLaser(laser, level, context);
+            double step = laser.step;
+            if (canUseStraightPath(laser)) laser.step = Math.min(step, laser.range - laser.traveled);
+            try {
+                stepLaser(laser, level, context);
+            } finally {
+                laser.step = step;
+            }
         }
         if (laser.traveled < laser.range) laser.traveled = laser.range;
     }
