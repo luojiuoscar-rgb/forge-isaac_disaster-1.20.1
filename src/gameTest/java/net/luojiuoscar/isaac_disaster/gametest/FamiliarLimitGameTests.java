@@ -18,6 +18,7 @@ import java.util.UUID;
 @GameTestHolder("isaac_disaster_blue_fly")
 @PrefixGameTestTemplate(false)
 public final class FamiliarLimitGameTests {
+    private static final ResourceLocation FAMILIAR_SOURCE = ResourceLocation.parse("isaac_disaster:command");
     private static final ResourceLocation BLUE_FLY = ResourceLocation.fromNamespaceAndPath("isaac_disaster", "blue_fly");
     private static final ResourceLocation MOM_KNIFE = ResourceLocation.fromNamespaceAndPath("isaac_disaster", "mom_knife");
 
@@ -43,31 +44,36 @@ public final class FamiliarLimitGameTests {
             helper.assertTrue(entry.getEntityCount() == 64 && data.getEffectiveCount(BLUE_FLY) == 64,
                     "Exactly 64 UUIDs and shared quota slots are accepted");
             var earliest = entry.getEntityId(0);
-            data.setCount(BLUE_FLY, 63);
+            data.setCount(BLUE_FLY, FAMILIAR_SOURCE, 63);
             var last = level.getEntity(entry.getEntityId(63));
             FamiliarHelper.maintainExistingFamiliars(player);
             helper.assertTrue(last != null && last.isRemoved() && entry.getEntityId(0).equals(earliest),
                     "Reconciliation discards the last entity while retaining the earliest order");
-            data.addCount(BLUE_FLY, 100);
+            data.addCount(BLUE_FLY, FAMILIAR_SOURCE, 100);
             helper.assertTrue(data.getCount(BLUE_FLY) == 64, "Further overflow is dropped");
-            data.addCount(BLUE_FLY, -1);
+            data.addCount(BLUE_FLY, FAMILIAR_SOURCE, -1);
             helper.assertTrue(!FamiliarHelper.spawnNextMissingFamiliar(player), "Dropped overflow cannot respawn later");
 
             var copy = new PlayerFamiliarData();
             copy.copyFrom(data);
-            copy.setCount(BLUE_FLY, 128);
+            copy.setCount(BLUE_FLY, FAMILIAR_SOURCE, 128);
             helper.assertTrue(copy.getCount(BLUE_FLY) == 64 && copy.getEffectiveCount(BLUE_FLY) == 64,
                     "Copied requests honor the own limit and reconstruct shared allocations immediately");
-            copy.setCount(MOM_KNIFE, 128);
+            copy.setCount(MOM_KNIFE, FAMILIAR_SOURCE, 128);
             helper.assertTrue(copy.getCount(MOM_KNIFE) == 27 && copy.getEffectiveCount(MOM_KNIFE) == 27,
                     "Knives have an independent three-layer limit of 27");
             var unknown = ResourceLocation.fromNamespaceAndPath("pending_addon", "familiar");
-            copy.setCount(unknown, 128);
+            copy.setCount(unknown, FAMILIAR_SOURCE, 128);
             helper.assertTrue(copy.getCount(unknown) == 128 && copy.getEffectiveCount(unknown) == 0,
                     "Unknown addon requirements are retained without granting runtime capacity");
             CompoundTag overLimitEntry = new CompoundTag();
             overLimitEntry.putString("Type", BLUE_FLY.toString());
-            overLimitEntry.putInt("Count", 128);
+            CompoundTag sourceRequirement = new CompoundTag();
+        sourceRequirement.putString("Source", FAMILIAR_SOURCE.toString());
+        sourceRequirement.putInt("Count", 128);
+        ListTag requirements = new ListTag();
+        requirements.add(sourceRequirement);
+        overLimitEntry.put("Requirements", requirements);
             ListTag savedEntries = new ListTag();
             savedEntries.add(overLimitEntry);
             CompoundTag savedData = new CompoundTag();
@@ -105,8 +111,8 @@ public final class FamiliarLimitGameTests {
                     "Scheduler refuses a 28th knife");
             var earliest = entry.getEntityId(0);
             var last = level.getEntity(entry.getEntityId(26));
-            data.addCount(MOM_KNIFE, 100);
-            data.addCount(MOM_KNIFE, -1);
+            data.addCount(MOM_KNIFE, FAMILIAR_SOURCE, 100);
+            data.addCount(MOM_KNIFE, FAMILIAR_SOURCE, -1);
             FamiliarHelper.maintainExistingFamiliars(player);
             helper.assertTrue(data.getCount(MOM_KNIFE) == 26 && entry.getEntityCount() == 26
                             && last != null && last.isRemoved() && entry.getEntityId(0).equals(earliest)
@@ -114,7 +120,7 @@ public final class FamiliarLimitGameTests {
                     "Overflow is discarded; removing one knife preserves order and never replaces it");
             var copy = new PlayerFamiliarData();
             copy.copyFrom(data);
-            copy.addCount(MOM_KNIFE, 100);
+            copy.addCount(MOM_KNIFE, FAMILIAR_SOURCE, 100);
             CompoundTag savedData = new CompoundTag();
             copy.saveNBTData(savedData);
             var loaded = new PlayerFamiliarData();

@@ -78,6 +78,7 @@ import java.util.function.Consumer;
 @GameTestHolder("isaac_disaster_cricket_leg")
 @PrefixGameTestTemplate(false)
 public final class CricketLegGameTests {
+    private static final ResourceLocation FAMILIAR_SOURCE = ResourceLocation.parse("isaac_disaster:command");
     @GameTest(template = "trajectory_empty")
     public static void cricketLegIsARegisteredTrinket(GameTestHelper helper) {
         var item = ForgeRegistries.ITEMS.getValue(id("cricket_leg"));
@@ -119,14 +120,14 @@ public final class CricketLegGameTests {
                 f.data.clearRequirements();
                 int expected = RandomSource.create(seed).nextInt(4) + 1;
                 helper.assertTrue(ModFamiliarEntities.LOCUST_OF_CONQUEST.get().addEntry(f.owner,
-                        ModFamiliarEntities.LOCUST_OF_CONQUEST.getId(), RandomSource.create(seed)), "Conquest batch is added");
+                        ModFamiliarEntities.LOCUST_OF_CONQUEST.getId(), FAMILIAR_SOURCE, RandomSource.create(seed)), "Conquest batch is added");
                 helper.assertTrue(f.total() == expected && f.data.getEntries().stream().allMatch(e -> e.hasNoEntities()),
                         "Conquest draws 1–4 from the caller's RNG and queues requirements without creating entities");
             }
             f.data.clearRequirements();
-            f.data.addCount(ModFamiliarEntities.BLUE_FLY.getId(), 64);
+            f.data.addCount(ModFamiliarEntities.BLUE_FLY.getId(), FAMILIAR_SOURCE, 64);
             helper.assertTrue(ModFamiliarEntities.LOCUST_OF_WAR.get().addEntry(f.owner,
-                    ModFamiliarEntities.LOCUST_OF_WAR.getId(), f.owner.getRandom()), "Default batch is added");
+                    ModFamiliarEntities.LOCUST_OF_WAR.getId(), FAMILIAR_SOURCE, f.owner.getRandom()), "Default batch is added");
             helper.assertTrue(f.total() == 64 && f.data.getCount(ModFamiliarEntities.BLUE_FLY.getId()) == 63
                             && f.data.getCount(ModFamiliarEntities.LOCUST_OF_WAR.getId()) == 1,
                     "One default locust replaces one blue fly and preserves the shared limit");
@@ -173,6 +174,7 @@ public final class CricketLegGameTests {
         try (Fixture f = new Fixture(helper)) {
             CricketLeg effect = new CricketLeg();
             var context = new ExecutableEffectContext(f.owner);
+            context.set(ContextKeys.SOURCE, ModTriggerModules.CRICKET_LEG.getId());
             helper.assertTrue(!effect.applyEffect(context), "A kill effect requires the real death event");
             var death = new LivingDeathEvent(f.victim(EntityType.HUSK), f.owner.damageSources().playerAttack(f.owner));
             death.setCanceled(true);
@@ -206,6 +208,7 @@ public final class CricketLegGameTests {
             var victim = f.victim(EntityType.HUSK);
             victim.setPos(f.owner.position().add(5, 1, 3));
             var context = new ExecutableEffectContext(f.owner);
+            context.set(ContextKeys.SOURCE, ModTriggerModules.CRICKET_LEG.getId());
             context.set(ContextKeys.EVENT, new LivingDeathEvent(victim, f.owner.damageSources().playerAttack(f.owner)));
             context.set(ContextKeys.AMPLIFIER, 1.0);
             f.owner.getRandom().setSeed(seed);
@@ -227,6 +230,7 @@ public final class CricketLegGameTests {
         try (Fixture f = new Fixture(helper)) {
             var victim = f.victim(EntityType.HUSK);
             var context = new ExecutableEffectContext(f.owner);
+            context.set(ContextKeys.SOURCE, ModTriggerModules.CRICKET_LEG.getId());
             context.set(ContextKeys.EVENT, new LivingDeathEvent(victim, f.owner.damageSources().playerAttack(f.owner)));
             context.set(ContextKeys.AMPLIFIER, 1.0);
             long seed = 0;
@@ -253,8 +257,9 @@ public final class CricketLegGameTests {
     @GameTest(template = "trajectory_empty")
     public static void aFullLocustQuotaMakesKillRewardsASafeNoOp(GameTestHelper helper) {
         try (Fixture f = new Fixture(helper)) {
-            f.data.setCount(ModFamiliarEntities.LOCUST_OF_FAMINE.getId(), 64);
+            f.data.setCount(ModFamiliarEntities.LOCUST_OF_FAMINE.getId(), FAMILIAR_SOURCE, 64);
             var context = new ExecutableEffectContext(f.owner);
+            context.set(ContextKeys.SOURCE, ModTriggerModules.CRICKET_LEG.getId());
             context.set(ContextKeys.EVENT, new LivingDeathEvent(f.victim(EntityType.HUSK), f.owner.damageSources().playerAttack(f.owner)));
             context.set(ContextKeys.AMPLIFIER, 1.0);
             long seed = 0;
@@ -271,6 +276,7 @@ public final class CricketLegGameTests {
     public static void killChanceUsesEntityRandomAndSelectsExactlyOneBatch(GameTestHelper helper) {
         try (Fixture f = new Fixture(helper)) {
             var context = new ExecutableEffectContext(f.owner);
+            context.set(ContextKeys.SOURCE, ModTriggerModules.CRICKET_LEG.getId());
             context.set(ContextKeys.EVENT,
                     new LivingDeathEvent(f.victim(EntityType.HUSK), f.owner.damageSources().playerAttack(f.owner)));
             context.set(ContextKeys.AMPLIFIER, 1.0);
@@ -299,6 +305,7 @@ public final class CricketLegGameTests {
     public static void extraCopiesCannotRaiseChancePastTwoContributions(GameTestHelper helper) {
         try (Fixture f = new Fixture(helper)) {
             var context = new ExecutableEffectContext(f.owner);
+            context.set(ContextKeys.SOURCE, ModTriggerModules.CRICKET_LEG.getId());
             context.set(ContextKeys.EVENT,
                     new LivingDeathEvent(f.victim(EntityType.HUSK), f.owner.damageSources().playerAttack(f.owner)));
             var effect = new CricketLeg();
@@ -659,7 +666,7 @@ public final class CricketLegGameTests {
 
         private AbstractIsaacFamiliarEntity spawn(String name) {
             ResourceLocation type = id(name);
-            data.addCount(type, 1);
+            data.addCount(type, FAMILIAR_SOURCE, 1);
             helper.assertTrue(FamiliarHelper.spawnNextMissingFamiliar(owner), "Familiar is admitted: " + name);
             var entry = data.getEntry(type).orElseThrow();
             return (AbstractIsaacFamiliarEntity) helper.getLevel().getEntity(entry.getEntityId(entry.getEntityCount() - 1));

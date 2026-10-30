@@ -108,15 +108,23 @@ public final class FamiliarHelper {
     public static void discardExtraEntities(ServerPlayer player, FamiliarEntry entry) {
         PlayerFamiliarData data = player.getCapability(PlayerFamiliarDataProvider.PLAYER_FAMILIAR_DATA)
                 .resolve().orElseThrow();
-        while (entry.getEntityCount() > data.getEffectiveCount(entry.getType())) {
-            UUID entityId = entry.getEntityId(entry.getEntityCount() - 1);
-            data.removeEntity(entry.getType(), entityId);
-            Entity entity = player.serverLevel().getEntity(entityId);
-            if (entity instanceof AbstractIsaacFamiliarEntity familiar
-                    && familiar.getOwner() == player
-                    && entry.getType().equals(familiar.getFamiliarType())) {
-                familiar.discardSilently();
-            }
+        for (int i = entry.getEntityCount() - 1; i >= 0; i--) {
+            UUID entityId = entry.getEntityId(i);
+            ResourceLocation source = entry.getEntitySource(entityId);
+            if (entry.getEntityCount(source) <= entry.getCount(source)) continue;
+            discardRegisteredEntity(player, data, entry, entityId);
+        }
+        while (entry.getEntityCount() > data.getEffectiveCount(entry.getType()))
+            discardRegisteredEntity(player, data, entry, entry.getEntityId(entry.getEntityCount() - 1));
+    }
+
+    private static void discardRegisteredEntity(ServerPlayer player, PlayerFamiliarData data, FamiliarEntry entry, UUID entityId) {
+        data.removeEntity(entry.getType(), entityId);
+        Entity entity = player.serverLevel().getEntity(entityId);
+        if (entity instanceof AbstractIsaacFamiliarEntity familiar
+                && familiar.getOwner() == player
+                && entry.getType().equals(familiar.getFamiliarType())) {
+            familiar.discardSilently();
         }
     }
 
@@ -154,14 +162,21 @@ public final class FamiliarHelper {
     private static boolean spawnNextMissingFamiliar(ServerPlayer player, PlayerFamiliarData data) {
         FamiliarEntry entry = data.getNextIncompleteEntry().orElse(null);
         if (entry == null) return false;
+        ResourceLocation source = entry.getIncompleteSource().orElse(null);
+        if (source == null) return false;
         AbstractIsaacFamiliarEntity familiar = createFamiliar(player, entry.getType());
         if (familiar == null) return false;
+        if (!player.serverLevel().hasChunkAt(familiar.blockPosition())) {
+            familiar.discardSilently();
+            return false;
+        }
         boolean added = false;
         try {
             familiar.refreshFormationIndex(player, entry.getEntityCount());
-            data.registerEntity(entry.getType(), familiar.getUUID());
+            data.registerEntity(entry.getType(), source, familiar.getUUID());
             added = addFamiliarToLevel(player, data, familiar)
-                    && entry.getEntityCount() <= data.getEffectiveCount(entry.getType());
+                    && entry.getEntityCount() <= data.getEffectiveCount(entry.getType())
+                    && entry.getEntityCount(source) <= entry.getCount(source);
             return added;
         } finally {
             if (!added) {
@@ -177,8 +192,8 @@ public final class FamiliarHelper {
      * The destination chunk must already be loaded. Existing missing requirements are left to the normal scheduler.
      */
     public static List<AbstractIsaacFamiliarEntity> spawnFamiliars(
-            ServerPlayer owner, ResourceLocation typeId, Vec3 position, int count) {
-        if (count <= 0 || owner == null || !owner.isAlive() || owner.isRemoved() || typeId == null || position == null
+            ServerPlayer owner, ResourceLocation typeId, ResourceLocation source, Vec3 position, int count) {
+        if (count <= 0 || owner == null || !owner.isAlive() || owner.isRemoved() || typeId == null || source == null || position == null
                 || !Double.isFinite(position.x) || !Double.isFinite(position.y) || !Double.isFinite(position.z)
                 || !isRegisteredFamiliarType(typeId)) return List.of();
         ServerLevel level = owner.serverLevel();
@@ -194,7 +209,7 @@ public final class FamiliarHelper {
             AbstractIsaacFamiliarEntity familiar = createFamiliar(owner, typeId, position);
             if (familiar == null) break;
             boolean committed = false;
-            try (var reservation = data.reserveSpawn(typeId, familiar.getUUID())) {
+            try (var reservation = data.reserveSpawn(typeId, source, familiar.getUUID())) {
                 if (reservation == null) break;
                 familiar.refreshFormationIndex(owner, data.getEntry(typeId).map(FamiliarEntry::getEntityCount).orElse(0));
                 if (addFamiliarToLevel(owner, data, familiar) && reservation.commit()) {
@@ -213,8 +228,8 @@ public final class FamiliarHelper {
     }
 
     /** Immediately spawns one familiar without applying type-specific random batch sizes. */
-    public static List<AbstractIsaacFamiliarEntity> spawnFamiliars(ServerPlayer owner, ResourceLocation typeId, Vec3 position) {
-        return spawnFamiliars(owner, typeId, position, 1);
+    public static List<AbstractIsaacFamiliarEntity> spawnFamiliars(ServerPlayer owner, ResourceLocation typeId, ResourceLocation source, Vec3 position) {
+        return spawnFamiliars(owner, typeId, source, position, 1);
     }
 
     private static boolean addFamiliarToLevel(ServerPlayer owner, PlayerFamiliarData data, AbstractIsaacFamiliarEntity familiar) {
@@ -226,7 +241,6 @@ public final class FamiliarHelper {
     /** Apply already-decided quota reductions before recalling or admitting another entity. */
     private static void discardExcessFamiliars(ServerPlayer player, PlayerFamiliarData data) {
         for (FamiliarEntry entry : new ArrayList<>(data.getEntries())) {
-            if (entry.getEntityCount() <= data.getEffectiveCount(entry.getType())) continue;
             discardExtraEntities(player, entry);
             syncFormationIndexes(player, entry);
         }

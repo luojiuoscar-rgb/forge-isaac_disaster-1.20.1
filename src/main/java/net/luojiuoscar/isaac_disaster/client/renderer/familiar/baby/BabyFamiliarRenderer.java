@@ -1,9 +1,9 @@
-package net.luojiuoscar.isaac_disaster.client.renderer.familiar.tear_baby;
+package net.luojiuoscar.isaac_disaster.client.renderer.familiar.baby;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import net.luojiuoscar.isaac_disaster.client.model.familiar.tear_baby.TearBabyModel;
-import net.luojiuoscar.isaac_disaster.entity.familiar.base.baby.AbstractTearBabyFamiliarEntity;
+import net.luojiuoscar.isaac_disaster.entity.familiar.base.baby.AbstractBabyFamiliarEntity;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRenderer;
@@ -13,15 +13,15 @@ import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
 
 /** Optional renderer with Bobby/Maggy transforms by default; other rigs supply their own model and transforms. */
-public class TearBabyRenderer<T extends AbstractTearBabyFamiliarEntity> extends EntityRenderer<T> {
+public class BabyFamiliarRenderer<T extends AbstractBabyFamiliarEntity> extends EntityRenderer<T> {
     private final ResourceLocation texture;
     protected final EntityModel<? super T> model;
 
-    public TearBabyRenderer(EntityRendererProvider.Context context, ResourceLocation texture) {
+    public BabyFamiliarRenderer(EntityRendererProvider.Context context, ResourceLocation texture) {
         this(context, texture, new TearBabyModel(context.bakeLayer(TearBabyModel.LAYER_LOCATION)));
     }
 
-    public TearBabyRenderer(EntityRendererProvider.Context context, ResourceLocation texture, EntityModel<? super T> model) {
+    public BabyFamiliarRenderer(EntityRendererProvider.Context context, ResourceLocation texture, EntityModel<? super T> model) {
         super(context);
         this.texture = texture;
         this.model = model;

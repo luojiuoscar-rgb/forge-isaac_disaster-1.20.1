@@ -3,6 +3,10 @@
     {
       "rolls": 1,
       "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "isaac_disaster:rotten_baby"
+        },
         {"type": "minecraft:item", "name": "isaac_disaster:brother_bobby"},
         {"type": "minecraft:item", "name": "isaac_disaster:sister_maggy"},
         {"type": "minecraft:item", "name": "isaac_disaster:ghost_baby"},

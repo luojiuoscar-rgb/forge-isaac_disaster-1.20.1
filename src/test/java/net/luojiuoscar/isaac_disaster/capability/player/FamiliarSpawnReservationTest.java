@@ -12,18 +12,19 @@ import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.*;
 
 class FamiliarSpawnReservationTest {
+    private static final ResourceLocation FAMILIAR_SOURCE = ResourceLocation.parse("test:source");
     private static final ResourceLocation BLUE = ResourceLocation.parse("test:blue");
     private static final ResourceLocation HIGH = ResourceLocation.parse("test:high");
 
     @Test
     void abandoningAReplacementNeverChangesGrantedCountsOrRuntimeOrder() {
         PlayerFamiliarData data = data(false);
-        data.setCount(BLUE, 2);
+        data.setCount(BLUE, FAMILIAR_SOURCE, 2);
         UUID first = UUID.randomUUID(), tail = UUID.randomUUID(), incoming = UUID.randomUUID();
-        data.registerEntity(BLUE, first);
-        data.registerEntity(BLUE, tail);
+        data.registerEntity(BLUE, FAMILIAR_SOURCE, first);
+        data.registerEntity(BLUE, FAMILIAR_SOURCE, tail);
         data.queueRecall(tail);
-        try (var reservation = data.reserveSpawn(HIGH, incoming)) {
+        try (var reservation = data.reserveSpawn(HIGH, FAMILIAR_SOURCE, incoming)) {
             assertNotNull(reservation);
             assertTrue(data.containsEntity(HIGH, incoming));
             assertEquals(2, data.getCount(BLUE));
@@ -38,9 +39,9 @@ class FamiliarSpawnReservationTest {
     @Test
     void commitAddsExactlyOneRequirementAndAppendsItsUuid() {
         PlayerFamiliarData data = data(false);
-        data.setCount(BLUE, 2);
+        data.setCount(BLUE, FAMILIAR_SOURCE, 2);
         UUID incoming = UUID.randomUUID();
-        try (var reservation = data.reserveSpawn(HIGH, incoming)) {
+        try (var reservation = data.reserveSpawn(HIGH, FAMILIAR_SOURCE, incoming)) {
             assertNotNull(reservation);
             assertTrue(reservation.commit());
             assertFalse(reservation.commit());
@@ -54,11 +55,11 @@ class FamiliarSpawnReservationTest {
     @Test
     void storedOverflowDoesNotTurnAnImmediateRequestIntoAMissingEntityRepair() {
         PlayerFamiliarData data = data(true);
-        data.setCount(BLUE, 5);
+        data.setCount(BLUE, FAMILIAR_SOURCE, 5);
         assertEquals(2, data.getEffectiveCount(BLUE));
-        assertNull(data.reserveSpawn(BLUE, UUID.randomUUID()));
+        assertNull(data.reserveSpawn(BLUE, FAMILIAR_SOURCE, UUID.randomUUID()));
         assertEquals(5, data.getCount(BLUE));
-        try (var reservation = data.reserveSpawn(HIGH, UUID.randomUUID())) {
+        try (var reservation = data.reserveSpawn(HIGH, FAMILIAR_SOURCE, UUID.randomUUID())) {
             assertNotNull(reservation);
             assertTrue(reservation.commit());
         }
@@ -69,9 +70,9 @@ class FamiliarSpawnReservationTest {
     @Test
     void aChangedAllocationIsRecheckedWithoutUndoingTheListener() {
         PlayerFamiliarData data = data(false);
-        try (var reservation = data.reserveSpawn(BLUE, UUID.randomUUID())) {
+        try (var reservation = data.reserveSpawn(BLUE, FAMILIAR_SOURCE, UUID.randomUUID())) {
             assertNotNull(reservation);
-            data.setCount(HIGH, 2);
+            data.setCount(HIGH, FAMILIAR_SOURCE, 2);
             assertFalse(reservation.commit());
         }
         assertEquals(2, data.getCount(HIGH));
@@ -81,20 +82,20 @@ class FamiliarSpawnReservationTest {
     @Test
     void explicitRemovalAndClearingInvalidatePendingSpawns() {
         PlayerFamiliarData data = data(false);
-        try (var reservation = data.reserveSpawn(HIGH, UUID.randomUUID())) {
+        try (var reservation = data.reserveSpawn(HIGH, FAMILIAR_SOURCE, UUID.randomUUID())) {
             assertNotNull(reservation);
             data.clearRequirements();
             assertFalse(reservation.commit());
         }
         UUID incoming = UUID.randomUUID();
-        try (var reservation = data.reserveSpawn(HIGH, incoming)) {
+        try (var reservation = data.reserveSpawn(HIGH, FAMILIAR_SOURCE, incoming)) {
             assertNotNull(reservation);
             data.removeEntity(HIGH, incoming);
             assertFalse(reservation.commit());
         }
-        try (var reservation = data.reserveSpawn(HIGH, UUID.randomUUID())) {
+        try (var reservation = data.reserveSpawn(HIGH, FAMILIAR_SOURCE, UUID.randomUUID())) {
             assertNotNull(reservation);
-            data.setCount(HIGH, 1);
+            data.setCount(HIGH, FAMILIAR_SOURCE, 1);
             assertFalse(reservation.commit());
         }
         assertEquals(1, data.getCount(HIGH));
@@ -103,12 +104,12 @@ class FamiliarSpawnReservationTest {
     @Test
     void nestedSpawnAndUnknownTypeCannotReserveAnotherSlot() {
         PlayerFamiliarData data = data(false);
-        assertNull(data.reserveSpawn(ResourceLocation.parse("test:unknown"), UUID.randomUUID()));
-        try (var reservation = data.reserveSpawn(BLUE, UUID.randomUUID())) {
+        assertNull(data.reserveSpawn(ResourceLocation.parse("test:unknown"), FAMILIAR_SOURCE, UUID.randomUUID()));
+        try (var reservation = data.reserveSpawn(BLUE, FAMILIAR_SOURCE, UUID.randomUUID())) {
             assertNotNull(reservation);
-            assertNull(data.reserveSpawn(HIGH, UUID.randomUUID()));
+            assertNull(data.reserveSpawn(HIGH, FAMILIAR_SOURCE, UUID.randomUUID()));
         }
-        try (var reservation = data.reserveSpawn(HIGH, UUID.randomUUID())) {
+        try (var reservation = data.reserveSpawn(HIGH, FAMILIAR_SOURCE, UUID.randomUUID())) {
             assertNotNull(reservation);
         }
     }
@@ -116,11 +117,11 @@ class FamiliarSpawnReservationTest {
     @Test
     void staleOverQuotaRuntimeEntitiesCannotMakeCommitThrowAfterGrantingOwnership() {
         PlayerFamiliarData data = data(false);
-        data.setCount(BLUE, 2);
-        data.registerEntity(BLUE, UUID.randomUUID());
-        data.registerEntity(BLUE, UUID.randomUUID());
-        data.setCount(BLUE, 0);
-        assertNull(data.reserveSpawn(BLUE, UUID.randomUUID()));
+        data.setCount(BLUE, FAMILIAR_SOURCE, 2);
+        data.registerEntity(BLUE, FAMILIAR_SOURCE, UUID.randomUUID());
+        data.registerEntity(BLUE, FAMILIAR_SOURCE, UUID.randomUUID());
+        data.setCount(BLUE, FAMILIAR_SOURCE, 0);
+        assertNull(data.reserveSpawn(BLUE, FAMILIAR_SOURCE, UUID.randomUUID()));
         assertEquals(0, data.getCount(BLUE));
     }
 

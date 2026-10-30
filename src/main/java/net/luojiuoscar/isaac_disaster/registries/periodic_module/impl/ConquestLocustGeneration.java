@@ -4,8 +4,8 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 
 public final class ConquestLocustGeneration extends LocustGeneration {
-    public ConquestLocustGeneration(ResourceLocation familiar) {
-        super(familiar);
+    public ConquestLocustGeneration(ResourceLocation familiar, ResourceLocation source) {
+        super(familiar, source);
     }
 
     @Override

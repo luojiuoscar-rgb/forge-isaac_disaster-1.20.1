@@ -21,6 +21,7 @@ import java.util.UUID;
 @GameTestHolder("isaac_disaster_blue_spider")
 @PrefixGameTestTemplate(false)
 public final class BlueSpiderGameTests {
+    private static final ResourceLocation FAMILIAR_SOURCE = ResourceLocation.parse("isaac_disaster:command");
     private static final ResourceLocation SPIDER=ResourceLocation.parse("isaac_disaster:blue_spider");
     private static final ResourceLocation FLY=ResourceLocation.parse("isaac_disaster:blue_fly");
     @GameTest(template="trajectory_empty",batch="blue_spider",timeoutTicks=70)
@@ -42,7 +43,7 @@ public final class BlueSpiderGameTests {
         try {
             int result=helper.getLevel().getServer().getCommands().performPrefixedCommand(owner.createCommandSourceStack().withPermission(4).withSuppressedOutput(),
                     "isd familiar @s add isaac_disaster:blue_spider 128");
-            data.setCount(FLY,64);
+            data.setCount(FLY, FAMILIAR_SOURCE,64);
             helper.assertTrue(result==1&&data.getCount(SPIDER)==64&&data.getEffectiveCount(SPIDER)==64,"Spider request capped at64");
             helper.assertTrue(data.getEffectiveCount(FLY)==64,"Fly quota independent");
             helper.assertTrue(ModFamiliarEntities.BLUE_SPIDER.get().getGroup()==ModFamiliarLimitGroups.SPIDERS.get(),"Spider uses shared spiders group");

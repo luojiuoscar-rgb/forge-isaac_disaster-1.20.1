@@ -29,6 +29,7 @@ import java.util.UUID;
 @GameTestHolder("isaac_disaster_blue_fly")
 @PrefixGameTestTemplate(false)
 public final class FamiliarRecallGameTests {
+    private static final ResourceLocation FAMILIAR_SOURCE = ResourceLocation.parse("isaac_disaster:command");
     private static final ResourceLocation BLUE_FLY =
             ResourceLocation.fromNamespaceAndPath("isaac_disaster", "blue_fly");
     private static final ResourceLocation MOM_KNIFE =
@@ -128,7 +129,7 @@ public final class FamiliarRecallGameTests {
             knife.tick();
             fixture.assertLinked(BLUE_FLY, fly);
             fixture.assertLinked(MOM_KNIFE, knife);
-            fixture.data.addCount(BLUE_FLY, 1);
+            fixture.data.addCount(BLUE_FLY, FAMILIAR_SOURCE, 1);
             fixture.admit();
             helper.assertTrue(fly.distanceToSqr(fixture.owner) < 4 && knife.distanceToSqr(fixture.owner) > 256,
                     "The first tick recalls just the first queued entity across familiar types");
@@ -212,7 +213,7 @@ public final class FamiliarRecallGameTests {
         }
 
         private AbstractIsaacFamiliarEntity spawn(ResourceLocation type) {
-            data.addCount(type, 1);
+            data.addCount(type, FAMILIAR_SOURCE, 1);
             helper.assertTrue(FamiliarHelper.spawnNextMissingFamiliar(owner), "Scheduler creates fixture " + type);
             var entry = data.getEntry(type).orElseThrow();
             var familiar = (AbstractIsaacFamiliarEntity) helper.getLevel().getEntity(entry.getEntityId(entry.getEntityCount() - 1));

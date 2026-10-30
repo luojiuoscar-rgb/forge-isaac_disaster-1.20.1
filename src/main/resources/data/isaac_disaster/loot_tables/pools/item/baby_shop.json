@@ -5,6 +5,10 @@
       "entries": [
         {
           "type": "minecraft:item",
+          "name": "isaac_disaster:rotten_baby"
+        },
+        {
+          "type": "minecraft:item",
           "name": "isaac_disaster:brother_bobby"
         },
         {

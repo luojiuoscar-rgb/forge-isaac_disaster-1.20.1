@@ -1,5 +1,6 @@
 package net.luojiuoscar.isaac_disaster.registries.ability.passive.impl;
 
+import net.luojiuoscar.isaac_disaster.item.ModPassiveItems;
 import net.luojiuoscar.isaac_disaster.registries.ability.passive.PassiveAbility;
 import net.luojiuoscar.isaac_disaster.registries.ability.set.ModSetAbilities;
 import net.luojiuoscar.isaac_disaster.registries.familiar.ModFamiliarEntities;
@@ -20,7 +21,7 @@ public final class MomsUnderwear extends PassiveAbility {
 
     @Override
     public void handleFirstObtain(ServerPlayer player, @Nullable ItemStack stack) {
-        FamiliarHelper.spawnFamiliars(player, ModFamiliarEntities.BLUE_FLY.getId(), player.position(),
+        FamiliarHelper.spawnFamiliars(player, ModFamiliarEntities.BLUE_FLY.getId(), ModPassiveItems.MOMS_UNDERWEAR.getId(), player.position(),
                 player.getRandom().nextInt(MAXIMUM_COUNT - MINIMUM_COUNT + 1) + MINIMUM_COUNT);
     }
 

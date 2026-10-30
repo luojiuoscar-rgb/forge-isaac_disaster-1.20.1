@@ -46,6 +46,7 @@ import java.util.UUID;
 @GameTestHolder("isaac_disaster_sister_maggy")
 @PrefixGameTestTemplate(false)
 public final class SisterMaggyGameTests {
+    private static final ResourceLocation FAMILIAR_SOURCE = ResourceLocation.parse("isaac_disaster:command");
     private static final ResourceLocation MAGGY = ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "sister_maggy");
     private static final ResourceLocation BOBBY = ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "brother_bobby");
     private static final ResourceLocation WEAKENING = ResourceLocation.fromNamespaceAndPath("sister_maggy_test", "weakening");
@@ -68,17 +69,17 @@ public final class SisterMaggyGameTests {
                         && descriptor.getGroup() == ModFamiliarLimitGroups.BABIES.get(),
                 "Maggy is a baby with its own and shared cap of sixty-four");
         try (Fixture f = new Fixture(helper)) {
-            f.data.setCount(MAGGY, 100);
+            f.data.setCount(MAGGY, FAMILIAR_SOURCE, 100);
             helper.assertTrue(f.data.getCount(MAGGY) == 100 && f.data.getEffectiveCount(MAGGY) == 64,
                     "Maggy alone cannot exceed its own sixty-four slots");
-            f.data.setCount(MAGGY, 0);
-            f.data.setCount(BOBBY, 40);
-            f.data.setCount(MAGGY, 100);
+            f.data.setCount(MAGGY, FAMILIAR_SOURCE, 0);
+            f.data.setCount(BOBBY, FAMILIAR_SOURCE, 40);
+            f.data.setCount(MAGGY, FAMILIAR_SOURCE, 100);
             helper.assertTrue(f.data.getCount(MAGGY) == 100 && f.data.getEffectiveCount(MAGGY) == 24,
                     "Existing Bobby allocation leaves twenty-four slots while excess requests wait");
-            f.data.setCount(BOBBY, 0);
+            f.data.setCount(BOBBY, FAMILIAR_SOURCE, 0);
             helper.assertTrue(f.data.getEffectiveCount(MAGGY) == 64, "Releasing capacity activates waiting requests");
-            f.data.setCount(MAGGY, 100);
+            f.data.setCount(MAGGY, FAMILIAR_SOURCE, 100);
             helper.assertTrue(f.data.getEffectiveCount(MAGGY) == 64, "A new request can use the released capacity");
         }
         helper.succeed();
@@ -125,7 +126,7 @@ public final class SisterMaggyGameTests {
             maggy.tick();
             helper.assertTrue(maggy.getDeltaMovement().x > 0, "Maggy approaches Bobby rather than its nearby player");
             first.discardAndUnlink();
-            f.data.addCount(BOBBY, -1);
+            f.data.addCount(BOBBY, FAMILIAR_SOURCE, -1);
             FamiliarHelper.maintainExistingFamiliars(f.owner);
             helper.assertTrue(maggy.getFormationIndex() == 0 && last.getFormationIndex() == 1,
                     "Removing a predecessor compacts both types' slots");
@@ -373,7 +374,7 @@ public final class SisterMaggyGameTests {
 
         AbstractTearBabyFamiliarEntity add(ResourceLocation type) {
             helper.assertTrue(FamiliarHelper.isRegisteredFamiliarType(type), "Familiar must be registered: " + type);
-            data.addCount(type, 1);
+            data.addCount(type, FAMILIAR_SOURCE, 1);
             helper.assertTrue(FamiliarHelper.spawnNextMissingFamiliar(owner), "Normal admission creates " + type);
             var entry = data.getEntry(type).orElseThrow();
             return (AbstractTearBabyFamiliarEntity) owner.serverLevel().getEntity(entry.getEntityId(entry.getEntityCount() - 1));

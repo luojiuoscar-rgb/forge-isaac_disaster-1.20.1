@@ -1,5 +1,6 @@
 package net.luojiuoscar.isaac_disaster.registries.ability.active.impl;
 
+import net.luojiuoscar.isaac_disaster.item.ModActiveItems;
 import net.luojiuoscar.isaac_disaster.registries.ability.active.ActiveAbility;
 import net.luojiuoscar.isaac_disaster.registries.ability.set.ModSetAbilities;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.CompositeTrigger;
@@ -22,7 +23,8 @@ import java.util.List;
 public final class MomsPad extends ActiveAbility {
     private static final CompositeTrigger TRIGGER = new CompositeTrigger(List.of(
             new SimpleTrigger(ModTriggerTypes.EMTPY, ModExecutableEffects.MOMS_PAD),
-            new SimpleTrigger(ModTriggerTypes.EMTPY, ModExecutableEffects.MOMS_PAD_FLIES)));
+            new SimpleTrigger(ModTriggerTypes.EMTPY, ModExecutableEffects.MOMS_PAD_FLIES,
+                    null, ModActiveItems.MOMS_PAD.getId())));
 
     public MomsPad(int id, int level) { super(TRIGGER, id, level); }
 

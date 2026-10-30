@@ -30,10 +30,10 @@ public final class ContextKeys {
     public static final ContextKey<IExecutableEffect> EXECUTABLE_EFFECT = new ContextKey<>();
 
     // 事件触发相关
+    public static final ContextKey<ResourceLocation> SOURCE = new ContextKey<>();
     public static final ContextKey<Event> EVENT = new ContextKey<>();
     public static final ContextKey<IBulletObject> BULLET = new ContextKey<>();
     public static final ContextKey<BulletStickContext> BULLET_STICK = new ContextKey<>();
-    public static final ContextKey<ResourceLocation> BULLET_COLOR_ID = new ContextKey<>();
     public static final ContextKey<AttackContext> ATTACK_CONTEXT = new ContextKey<>();
     public static final ContextKey<PeriodicModuleQueue> PERIODIC_MODULE_QUEUE = new ContextKey<>();
     public static final ContextKey<CompositeTriggerView> COMPOSITE_TRIGGER_VIEW = new ContextKey<>();

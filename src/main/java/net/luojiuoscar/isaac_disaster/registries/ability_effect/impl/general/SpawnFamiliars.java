@@ -37,6 +37,8 @@ public final class SpawnFamiliars implements IAbilityEffect {
     @Override
     public boolean applyEffect(ExecutableEffectContext context) {
         if (!(context.getEntity() instanceof ServerPlayer player)) return false;
+        ResourceLocation source = context.get(ContextKeys.SOURCE);
+        if (source == null) return false;
         if (!player.getCapability(PlayerFamiliarDataProvider.PLAYER_FAMILIAR_DATA).isPresent()) return false;
         ResourceLocation typeId = type.get();
         if (!FamiliarHelper.isRegisteredFamiliarType(typeId)) return false;
@@ -47,7 +49,7 @@ public final class SpawnFamiliars implements IAbilityEffect {
         }
         var position = context.getOrDefault(ContextKeys.TARGET_POSITION, player.position());
         for (int i = 0; i < repetitions; i++) {
-            FamiliarHelper.spawnFamiliars(player, typeId, position, sampleCount(player.getRandom()));
+            FamiliarHelper.spawnFamiliars(player, typeId, source, position, sampleCount(player.getRandom()));
         }
         return true;
     }

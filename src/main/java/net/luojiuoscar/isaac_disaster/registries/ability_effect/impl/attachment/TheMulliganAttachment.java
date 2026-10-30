@@ -1,6 +1,7 @@
 package net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.attachment;
 
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ExecutableEffectContext;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.ContextKeys;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ModExecutableEffects;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.SimpleTrigger;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackContext;
@@ -15,9 +16,11 @@ public final class TheMulliganAttachment extends AttackPreparationEffect {
                 || attackContext.getShooter() != player) return;
         if (!ModAttackTypes.BULLET.getId().equals(attackContext.getRootTypeId())
                 && !attackContext.isLaserAttack()) return;
+        var source = context.get(ContextKeys.SOURCE);
+        if (source == null) return;
         if (!attackContext.getTrigger().contains(ModExecutableEffects.THE_MULLIGAN.get())) {
             attackContext.addSimpleTrigger(new SimpleTrigger(ModTriggerTypes.BULLET_HIT_ENTITY_AFTER,
-                    ModExecutableEffects.THE_MULLIGAN));
+                    ModExecutableEffects.THE_MULLIGAN, null, source));
         }
     }
 }

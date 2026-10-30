@@ -1,5 +1,6 @@
 package net.luojiuoscar.isaac_disaster.entity.familiar.impl.fly;
 
+import net.minecraft.resources.ResourceLocation;
 import com.mojang.authlib.GameProfile;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerFamiliarData;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerFamiliarDataProvider;
@@ -21,6 +22,7 @@ import java.util.UUID;
 @GameTestHolder("isaac_disaster_fly_stability")
 @PrefixGameTestTemplate(false)
 public final class FlyOrbitOrderGameTests {
+    private static final ResourceLocation FAMILIAR_SOURCE = ResourceLocation.parse("isaac_disaster:command");
     @GameTest(template = "trajectory_empty", batch = "fly_orbit_order")
     public static void newMemberOfAnExistingTypeJoinsTheTail(GameTestHelper helper) {
         try (Fixture f = new Fixture(helper)) {
@@ -71,7 +73,7 @@ public final class FlyOrbitOrderGameTests {
             long tick = helper.getLevel().getGameTime();
             f.refresh(tick);
             f.data.removeEntity(first.getFamiliarType(), first.getUUID());
-            f.data.registerEntity(first.getFamiliarType(), first.getUUID());
+            f.data.registerEntity(first.getFamiliarType(), FAMILIAR_SOURCE, first.getUUID());
             f.refresh(tick + 1);
             f.assertOrder(List.of(second, third, first));
         }
@@ -129,14 +131,14 @@ public final class FlyOrbitOrderGameTests {
         }
 
         void admit(AbstractFlyFamiliarEntity fly) {
-            data.addCount(fly.getFamiliarType(), 1);
-            data.registerEntity(fly.getFamiliarType(), fly.getUUID());
+            data.addCount(fly.getFamiliarType(), FAMILIAR_SOURCE, 1);
+            data.registerEntity(fly.getFamiliarType(), FAMILIAR_SOURCE, fly.getUUID());
             helper.assertTrue(helper.getLevel().addFreshEntity(fly), "The mixed fly is admitted");
         }
 
         void remove(AbstractFlyFamiliarEntity fly) {
             data.removeEntity(fly.getFamiliarType(), fly.getUUID());
-            data.addCount(fly.getFamiliarType(), -1);
+            data.addCount(fly.getFamiliarType(), FAMILIAR_SOURCE, -1);
             fly.discardSilently();
         }
 

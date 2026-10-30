@@ -1,5 +1,6 @@
 package net.luojiuoscar.isaac_disaster.registries.ability.set.impl;
 
+import net.luojiuoscar.isaac_disaster.registries.ability.set.ModSetAbilities;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.registries.familiar.ModFamiliarEntities;
 import net.luojiuoscar.isaac_disaster.registries.ability.set.SetAbility;
@@ -20,12 +21,12 @@ public class Mom extends SetAbility {
 
     @Override
     public void onObtainEffect(Player player) {
-        StatManager.addFamiliar(player, ModFamiliarEntities.MOM_KNIFE.getId(), 1);
+        StatManager.addFamiliar(player, ModFamiliarEntities.MOM_KNIFE.getId(), ModSetAbilities.MOM.getId(), 1);
     }
 
     @Override
     public void onRemoveEffect(Player player) {
-        StatManager.addFamiliar(player, ModFamiliarEntities.MOM_KNIFE.getId(), -1);
+        StatManager.addFamiliar(player, ModFamiliarEntities.MOM_KNIFE.getId(), ModSetAbilities.MOM.getId(), -1);
     }
 
     @Override

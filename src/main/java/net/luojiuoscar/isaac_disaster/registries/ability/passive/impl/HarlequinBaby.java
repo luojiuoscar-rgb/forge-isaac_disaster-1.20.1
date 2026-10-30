@@ -22,13 +22,13 @@ public final class HarlequinBaby extends PassiveAbility {
     public void handleObtain(ServerPlayer player, @Nullable ItemStack stack) {
         var familiarId = ModFamiliarEntities.HARLEQUIN_BABY.getId();
         StatManager.modifySetWithId(player, ModSetAbilities.CONJOINED.getId(), 1);
-        StatManager.addFamiliar(player, familiarId, 1);
+        StatManager.addFamiliar(player, familiarId, familiarId, 1);
     }
 
     @Override
     public void handleRemove(ServerPlayer player, @Nullable ItemStack stack) {
         var familiarId = ModFamiliarEntities.HARLEQUIN_BABY.getId();
-        StatManager.addFamiliar(player, familiarId, -1);
+        StatManager.addFamiliar(player, familiarId, familiarId, -1);
         StatManager.modifySetWithId(player, ModSetAbilities.CONJOINED.getId(), -1);
     }
 

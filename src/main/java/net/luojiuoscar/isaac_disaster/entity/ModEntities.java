@@ -11,10 +11,11 @@ import net.luojiuoscar.isaac_disaster.entity.familiar.impl.fly.LocustOfPestilenc
 import net.luojiuoscar.isaac_disaster.entity.familiar.impl.fly.LocustOfWarEntity;
 import net.luojiuoscar.isaac_disaster.entity.familiar.impl.mom_knife.MomKnifeEntity;
 import net.luojiuoscar.isaac_disaster.entity.familiar.impl.brother_bobby.BrotherBobbyEntity;
-import net.luojiuoscar.isaac_disaster.entity.familiar.base.baby.AbstractTearBabyFamiliarEntity;
+import net.luojiuoscar.isaac_disaster.entity.familiar.base.baby.AbstractBabyFamiliarEntity;
 import net.luojiuoscar.isaac_disaster.entity.familiar.impl.sister_maggy.SisterMaggyEntity;
 import net.luojiuoscar.isaac_disaster.entity.familiar.impl.ghost_baby.GhostBabyEntity;
 import net.luojiuoscar.isaac_disaster.entity.familiar.impl.harlequin_baby.HarlequinBabyEntity;
+import net.luojiuoscar.isaac_disaster.entity.familiar.impl.rotten_baby.RottenBabyEntity;
 import net.luojiuoscar.isaac_disaster.entity.tnt.GigaBomb;
 import net.luojiuoscar.isaac_disaster.entity.tnt.IsaacBomb;
 import net.minecraft.world.entity.EntityType;
@@ -63,7 +64,7 @@ public class ModEntities {
     public static final RegistryObject<EntityType<BrotherBobbyEntity>> BROTHER_BOBBY =
             MOD_ENTITIES.register("brother_bobby",
                     () -> EntityType.Builder.<BrotherBobbyEntity>of(BrotherBobbyEntity::new, MobCategory.MISC)
-                            .sized(0.875F * AbstractTearBabyFamiliarEntity.BASE_SCALE, 1.4375F * AbstractTearBabyFamiliarEntity.BASE_SCALE)
+                            .sized(0.875F * AbstractBabyFamiliarEntity.BASE_SCALE, 1.4375F * AbstractBabyFamiliarEntity.BASE_SCALE)
                             .clientTrackingRange(8)
                             .updateInterval(1)
                             .build("brother_bobby"));
@@ -71,7 +72,7 @@ public class ModEntities {
     public static final RegistryObject<EntityType<SisterMaggyEntity>> SISTER_MAGGY =
             MOD_ENTITIES.register("sister_maggy",
                     () -> EntityType.Builder.<SisterMaggyEntity>of(SisterMaggyEntity::new, MobCategory.MISC)
-                            .sized(0.875F * AbstractTearBabyFamiliarEntity.BASE_SCALE, 1.4375F * AbstractTearBabyFamiliarEntity.BASE_SCALE)
+                            .sized(0.875F * AbstractBabyFamiliarEntity.BASE_SCALE, 1.4375F * AbstractBabyFamiliarEntity.BASE_SCALE)
                             .clientTrackingRange(8)
                             .updateInterval(1)
                             .build("sister_maggy"));
@@ -79,7 +80,7 @@ public class ModEntities {
     public static final RegistryObject<EntityType<GhostBabyEntity>> GHOST_BABY =
             MOD_ENTITIES.register("ghost_baby",
                     () -> EntityType.Builder.<GhostBabyEntity>of(GhostBabyEntity::new, MobCategory.MISC)
-                            .sized(0.875F * AbstractTearBabyFamiliarEntity.BASE_SCALE, 1.4375F * AbstractTearBabyFamiliarEntity.BASE_SCALE)
+                            .sized(0.875F * AbstractBabyFamiliarEntity.BASE_SCALE, 1.4375F * AbstractBabyFamiliarEntity.BASE_SCALE)
                             .clientTrackingRange(8)
                             .updateInterval(1)
                             .build("ghost_baby"));
@@ -87,8 +88,14 @@ public class ModEntities {
     public static final RegistryObject<EntityType<HarlequinBabyEntity>> HARLEQUIN_BABY =
             MOD_ENTITIES.register("harlequin_baby",
                     () -> EntityType.Builder.<HarlequinBabyEntity>of(HarlequinBabyEntity::new, MobCategory.MISC)
-                            .sized(0.875F * AbstractTearBabyFamiliarEntity.BASE_SCALE, 1.4375F * AbstractTearBabyFamiliarEntity.BASE_SCALE)
+                            .sized(0.875F * AbstractBabyFamiliarEntity.BASE_SCALE, 1.4375F * AbstractBabyFamiliarEntity.BASE_SCALE)
                             .clientTrackingRange(8).updateInterval(1).build("harlequin_baby"));
+
+    public static final RegistryObject<EntityType<RottenBabyEntity>> ROTTEN_BABY =
+            MOD_ENTITIES.register("rotten_baby",
+                    () -> EntityType.Builder.<RottenBabyEntity>of(RottenBabyEntity::new, MobCategory.MISC)
+                            .sized(0.875F * AbstractBabyFamiliarEntity.BASE_SCALE, 1.4375F * AbstractBabyFamiliarEntity.BASE_SCALE)
+                            .clientTrackingRange(8).updateInterval(1).build("rotten_baby"));
 
     public static final RegistryObject<EntityType<BlueFlyEntity>> BLUE_FLY =
             MOD_ENTITIES.register("blue_fly",

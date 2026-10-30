@@ -9,8 +9,10 @@ import java.util.List;
 
 public final class TheMulligan extends TriggerModule {
     private static final CompositeTrigger TRIGGER = new CompositeTrigger(List.of(
-            new SimpleTrigger(ModTriggerTypes.ATTACK_CONTEXT_PREPARE, ModExecutableEffects.THE_MULLIGAN_ATTACHMENT),
-            new SimpleTrigger(ModTriggerTypes.HIT_ENTITY_RESTRICTED, ModExecutableEffects.THE_MULLIGAN)));
+            new SimpleTrigger(ModTriggerTypes.ATTACK_CONTEXT_PREPARE, ModExecutableEffects.THE_MULLIGAN_ATTACHMENT,
+                    null, ModExecutableEffects.THE_MULLIGAN.getId()),
+            new SimpleTrigger(ModTriggerTypes.HIT_ENTITY_RESTRICTED, ModExecutableEffects.THE_MULLIGAN,
+                    null, ModExecutableEffects.THE_MULLIGAN.getId())));
 
     public TheMulligan() { super(TRIGGER); }
 }

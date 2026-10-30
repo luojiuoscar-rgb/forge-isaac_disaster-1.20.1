@@ -22,13 +22,13 @@ public final class SisterMaggy extends PassiveAbility {
     public void handleObtain(ServerPlayer player, @Nullable ItemStack stack) {
         var familiarId = ModFamiliarEntities.SISTER_MAGGY.getId();
         StatManager.modifySetWithId(player, ModSetAbilities.CONJOINED.getId(), 1);
-        StatManager.addFamiliar(player, familiarId, 1);
+        StatManager.addFamiliar(player, familiarId, familiarId, 1);
     }
 
     @Override
     public void handleRemove(ServerPlayer player, @Nullable ItemStack stack) {
         var familiarId = ModFamiliarEntities.SISTER_MAGGY.getId();
-        StatManager.addFamiliar(player, familiarId, -1);
+        StatManager.addFamiliar(player, familiarId, familiarId, -1);
         StatManager.modifySetWithId(player, ModSetAbilities.CONJOINED.getId(), -1);
     }
 

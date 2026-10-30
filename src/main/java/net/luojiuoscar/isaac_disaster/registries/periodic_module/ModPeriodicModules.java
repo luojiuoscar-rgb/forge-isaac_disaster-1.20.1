@@ -1,5 +1,6 @@
 package net.luojiuoscar.isaac_disaster.registries.periodic_module;
 
+import net.luojiuoscar.isaac_disaster.registries.ability.trinket.ModTrinketAbilities;
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.registries.periodic_module.impl.*;
 import net.luojiuoscar.isaac_disaster.registries.familiar.ModFamiliarEntities;
@@ -71,17 +72,17 @@ public class ModPeriodicModules {
 
     public static final RegistryObject<PeriodicModule> LOCUST_OF_WAR =
             PERIODIC_MODULE_REGISTRY.register("locust_of_war", () ->
-                    new LocustGeneration(ModFamiliarEntities.LOCUST_OF_WAR.getId()));
+                    new LocustGeneration(ModFamiliarEntities.LOCUST_OF_WAR.getId(), ModTrinketAbilities.LOCUST_OF_WAR.getId()));
     public static final RegistryObject<PeriodicModule> LOCUST_OF_PESTILENCE =
             PERIODIC_MODULE_REGISTRY.register("locust_of_pestilence", () ->
-                    new LocustGeneration(ModFamiliarEntities.LOCUST_OF_PESTILENCE.getId()));
+                    new LocustGeneration(ModFamiliarEntities.LOCUST_OF_PESTILENCE.getId(), ModTrinketAbilities.LOCUST_OF_PESTILENCE.getId()));
     public static final RegistryObject<PeriodicModule> LOCUST_OF_FAMINE =
             PERIODIC_MODULE_REGISTRY.register("locust_of_famine", () ->
-                    new LocustGeneration(ModFamiliarEntities.LOCUST_OF_FAMINE.getId()));
+                    new LocustGeneration(ModFamiliarEntities.LOCUST_OF_FAMINE.getId(), ModTrinketAbilities.LOCUST_OF_FAMINE.getId()));
     public static final RegistryObject<PeriodicModule> LOCUST_OF_DEATH =
             PERIODIC_MODULE_REGISTRY.register("locust_of_death", () ->
-                    new LocustGeneration(ModFamiliarEntities.LOCUST_OF_DEATH.getId()));
+                    new LocustGeneration(ModFamiliarEntities.LOCUST_OF_DEATH.getId(), ModTrinketAbilities.LOCUST_OF_DEATH.getId()));
     public static final RegistryObject<PeriodicModule> LOCUST_OF_CONQUEST =
             PERIODIC_MODULE_REGISTRY.register("locust_of_conquest", () ->
-                    new ConquestLocustGeneration(ModFamiliarEntities.LOCUST_OF_CONQUEST.getId()));
+                    new ConquestLocustGeneration(ModFamiliarEntities.LOCUST_OF_CONQUEST.getId(), ModTrinketAbilities.LOCUST_OF_CONQUEST.getId()));
 }

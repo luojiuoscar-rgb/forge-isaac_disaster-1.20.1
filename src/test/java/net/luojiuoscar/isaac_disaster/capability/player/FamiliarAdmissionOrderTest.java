@@ -11,6 +11,7 @@ import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.*;
 
 class FamiliarAdmissionOrderTest {
+    private static final ResourceLocation FAMILIAR_SOURCE = ResourceLocation.parse("test:source");
     private static final ResourceLocation BLUE = ResourceLocation.parse("test:blue");
     private static final ResourceLocation GREEN = ResourceLocation.parse("test:green");
 
@@ -18,12 +19,12 @@ class FamiliarAdmissionOrderTest {
     void orderSpansTypesAndSurvivesDuplicateRegistrationAndRecall() {
         PlayerFamiliarData data = data();
         UUID first = UUID.randomUUID(), second = UUID.randomUUID(), third = UUID.randomUUID();
-        data.setCount(BLUE, 2);
-        data.setCount(GREEN, 1);
-        data.registerEntity(BLUE, first);
-        data.registerEntity(GREEN, second);
-        data.registerEntity(BLUE, third);
-        data.registerEntity(BLUE, first);
+        data.setCount(BLUE, FAMILIAR_SOURCE, 2);
+        data.setCount(GREEN, FAMILIAR_SOURCE, 1);
+        data.registerEntity(BLUE, FAMILIAR_SOURCE, first);
+        data.registerEntity(GREEN, FAMILIAR_SOURCE, second);
+        data.registerEntity(BLUE, FAMILIAR_SOURCE, third);
+        data.registerEntity(BLUE, FAMILIAR_SOURCE, first);
         data.queueRecall(first);
         assertEquals(first, data.pollRecall());
         assertEquals(List.of(first, second, third), List.copyOf(data.getEntityIdsInAdmissionOrder()));
@@ -33,12 +34,12 @@ class FamiliarAdmissionOrderTest {
     void anUnlinkedEntityMustJoinAfterSurvivorsIfRegisteredAgain() {
         PlayerFamiliarData data = data();
         UUID first = UUID.randomUUID(), second = UUID.randomUUID();
-        data.setCount(BLUE, 2);
-        data.registerEntity(BLUE, first);
-        data.registerEntity(BLUE, second);
+        data.setCount(BLUE, FAMILIAR_SOURCE, 2);
+        data.registerEntity(BLUE, FAMILIAR_SOURCE, first);
+        data.registerEntity(BLUE, FAMILIAR_SOURCE, second);
         data.removeEntity(BLUE, first);
         assertEquals(List.of(second), List.copyOf(data.getEntityIdsInAdmissionOrder()));
-        data.registerEntity(BLUE, first);
+        data.registerEntity(BLUE, FAMILIAR_SOURCE, first);
         assertEquals(List.of(second, first), List.copyOf(data.getEntityIdsInAdmissionOrder()));
     }
 
@@ -46,8 +47,8 @@ class FamiliarAdmissionOrderTest {
     void disposalSaveAndPlayerCopyPreserveRequirementsWithoutOldRuntimeOrder() {
         PlayerFamiliarData source = data();
         UUID old = UUID.randomUUID();
-        source.setCount(BLUE, 2);
-        source.registerEntity(BLUE, old);
+        source.setCount(BLUE, FAMILIAR_SOURCE, 2);
+        source.registerEntity(BLUE, FAMILIAR_SOURCE, old);
         CompoundTag saved = new CompoundTag();
         source.saveNBTData(saved);
         PlayerFamiliarData loaded = data();
@@ -63,7 +64,7 @@ class FamiliarAdmissionOrderTest {
             assertTrue(data.getEntityIdsInAdmissionOrder().isEmpty());
             assertNull(data.pollRecall());
             UUID fresh = UUID.randomUUID();
-            data.registerEntity(BLUE, fresh);
+            data.registerEntity(BLUE, FAMILIAR_SOURCE, fresh);
             assertEquals(List.of(fresh), List.copyOf(data.getEntityIdsInAdmissionOrder()));
         }
     }

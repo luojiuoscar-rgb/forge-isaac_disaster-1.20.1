@@ -11,6 +11,7 @@ import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.*;
 
 class FamiliarAdmissionTest {
+    private static final ResourceLocation FAMILIAR_SOURCE = ResourceLocation.parse("test:source");
     private static final ResourceLocation TYPE = ResourceLocation.fromNamespaceAndPath("test", "familiar");
 
     @Test
@@ -27,11 +28,11 @@ class FamiliarAdmissionTest {
     @Test
     void recallsAreDeduplicatedOrderedAndCanceledWhenAnEntityIsUnlinked() {
         PlayerFamiliarData data = data();
-        data.setCount(TYPE, 2);
+        data.setCount(TYPE, FAMILIAR_SOURCE, 2);
         UUID first = UUID.randomUUID();
         UUID second = UUID.randomUUID();
-        data.registerEntity(TYPE, first);
-        data.registerEntity(TYPE, second);
+        data.registerEntity(TYPE, FAMILIAR_SOURCE, first);
+        data.registerEntity(TYPE, FAMILIAR_SOURCE, second);
         data.queueRecall(first);
         data.queueRecall(first);
         data.queueRecall(second);
@@ -49,8 +50,8 @@ class FamiliarAdmissionTest {
     void saveAndPlayerCopyRebuildQuotaAndResetRuntimeAdmissionState() {
         PlayerFamiliarData source = data();
         UUID old = UUID.randomUUID();
-        source.setCount(TYPE, 2);
-        source.registerEntity(TYPE, old);
+        source.setCount(TYPE, FAMILIAR_SOURCE, 2);
+        source.registerEntity(TYPE, FAMILIAR_SOURCE, old);
         source.queueRecall(old);
         source.beginAdmission(100);
         PlayerFamiliarData restored = data();

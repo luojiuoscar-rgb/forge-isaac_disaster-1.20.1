@@ -55,6 +55,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 @GameTestHolder("isaac_disaster_harlequin_baby")
 @PrefixGameTestTemplate(false)
 public final class HarlequinBabyGameTests {
+    private static final ResourceLocation FAMILIAR_SOURCE = ResourceLocation.parse("isaac_disaster:command");
     private static final AtomicInteger FIXTURE = new AtomicInteger();
     private static final ResourceLocation HARLEQUIN = id("harlequin_baby");
     private static final ResourceLocation BOBBY = id("brother_bobby");
@@ -80,14 +81,14 @@ public final class HarlequinBabyGameTests {
         var bobby = ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "brother_bobby");
         var ghost = ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "ghost_baby");
         try {
-            data.setCount(bobby, 64);
-            data.setCount(ghost, 100);
+            data.setCount(bobby, FAMILIAR_SOURCE, 64);
+            data.setCount(ghost, FAMILIAR_SOURCE, 100);
             helper.assertTrue(data.getCount(ghost) == 100 && data.getEffectiveCount(ghost) == 0,
                     "Full capacity must preserve waiting baby requests");
-            data.addCount(bobby, -1);
+            data.addCount(bobby, FAMILIAR_SOURCE, -1);
             helper.assertTrue(data.getEffectiveCount(bobby) == 63 && data.getEffectiveCount(ghost) == 1,
                     "Freeing one slot activates a waiting ghost");
-            data.addCount(ghost, -1);
+            data.addCount(ghost, FAMILIAR_SOURCE, -1);
             helper.assertTrue(data.getCount(ghost) == 99 && data.getEffectiveCount(ghost) == 1,
                     "Removing a waiting copy cannot remove an admitted baby");
         } finally { data.clearRequirements(); owner.discard(); }
@@ -257,7 +258,7 @@ public final class HarlequinBabyGameTests {
             f.items.removeFromId(f.owner, BOBBY);
             helper.assertTrue(f.data.getCount(BOBBY) == 0 && f.items.getSetCountFromId(ModSetAbilities.CONJOINED.getId()) == 3,
                     "移除第三份波比后，套装计数继续减少到三");
-            f.data.addCount(BOBBY, 4);
+            f.data.addCount(BOBBY, FAMILIAR_SOURCE, 4);
             helper.assertTrue(f.items.getSetCountFromId(ModSetAbilities.CONJOINED.getId()) == 3, "Command-granted babies do not count as collectibles");
             f.items.clearPlayerPassiveItems(f.owner);
             helper.assertTrue(f.data.getCount(BOBBY) == 4 && f.data.getCount(MAGGY) == 0 && f.data.getCount(GHOST) == 0
@@ -304,13 +305,13 @@ public final class HarlequinBabyGameTests {
     @GameTest(template = "trajectory_empty")
     public static void removingAnUnallocatedItemPreservesOtherBabiesAndFreedCapacityRefills(GameTestHelper helper) {
         try (Fixture f = new Fixture(helper)) {
-            f.data.setCount(BOBBY, 64);
+            f.data.setCount(BOBBY, FAMILIAR_SOURCE, 64);
             f.absorb(GHOST); f.absorb(GHOST);
             helper.assertTrue(f.data.getCount(GHOST) == 2 && f.data.getEffectiveCount(GHOST) == 0, "Full capacity retains both item requests");
             f.items.removeFromId(f.owner, GHOST);
             helper.assertTrue(f.data.getCount(GHOST) == 1 && f.data.getEffectiveCount(BOBBY) == 64,
                     "Removing a waiting copy cannot subtract an unrelated granted baby");
-            f.data.addCount(BOBBY, -1);
+            f.data.addCount(BOBBY, FAMILIAR_SOURCE, -1);
             helper.assertTrue(f.data.getEffectiveCount(GHOST) == 1 && f.data.getEffectiveCount(BOBBY) == 63,
                     "A released slot immediately grants the waiting type quota");
             helper.assertTrue(FamiliarHelper.spawnNextMissingFamiliar(f.owner) && FamiliarHelper.spawnNextMissingFamiliar(f.owner), "The normal scheduler fills missing requests");
@@ -344,7 +345,7 @@ public final class HarlequinBabyGameTests {
             helper.assertTrue(original.data.getCount(BOBBY) == 2 && original.data.getCount(MAGGY) == 1
                     && original.data.getCount(HARLEQUIN) == 1 && original.items.getSetCountFromId(ModSetAbilities.CONJOINED.getId()) == 4,
                     "实际装备的四份道具各增加一次跟班需求和套装计数");
-            original.data.setCount(GHOST, 100);
+            original.data.setCount(GHOST, FAMILIAR_SOURCE, 100);
             CompoundTag saved = original.owner.saveWithoutId(new CompoundTag());
             restored.owner.load(saved);
             DefaultAttributeManager.apply(restored.owner);
@@ -410,7 +411,7 @@ public final class HarlequinBabyGameTests {
     public static void actualDeathCopyPreservesAbsorbedRequestsAndIndependentRemoval(GameTestHelper helper) {
         try (Fixture original = new Fixture(helper); Fixture clone = new Fixture(helper)) {
             original.absorb(BOBBY); original.absorb(BOBBY); original.absorb(GHOST); original.absorb(HARLEQUIN);
-            original.data.setCount(MAGGY, 100);
+            original.data.setCount(MAGGY, FAMILIAR_SOURCE, 100);
             ForgeEvents.onPlayerCloned(new PlayerEvent.Clone(clone.owner, original.owner, true));
             original.owner.reviveCaps();
             helper.assertTrue(clone.data.getCount(BOBBY) == 2 && clone.data.getCount(GHOST) == 1 && clone.data.getCount(HARLEQUIN) == 1
@@ -449,7 +450,7 @@ public final class HarlequinBabyGameTests {
         }
 
         AbstractTearBabyFamiliarEntity add(ResourceLocation type) {
-            data.addCount(type, 1);
+            data.addCount(type, FAMILIAR_SOURCE, 1);
             helper.assertTrue(FamiliarHelper.spawnNextMissingFamiliar(owner), "The normal scheduler admits " + type);
             var entry = data.getEntry(type).orElseThrow();
             return (AbstractTearBabyFamiliarEntity) owner.serverLevel().getEntity(entry.getEntityId(entry.getEntityCount() - 1));

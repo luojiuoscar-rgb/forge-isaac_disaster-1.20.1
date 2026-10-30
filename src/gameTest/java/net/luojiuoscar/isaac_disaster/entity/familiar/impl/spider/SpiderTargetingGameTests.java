@@ -32,6 +32,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 @GameTestHolder("isaac_disaster_blue_spider")
 @PrefixGameTestTemplate(false)
 public final class SpiderTargetingGameTests {
+    private static final ResourceLocation FAMILIAR_SOURCE = ResourceLocation.parse("isaac_disaster:command");
     private static final ResourceLocation TYPE = ResourceLocation.parse("isaac_disaster:blue_spider");
     private static final AtomicInteger NEXT_FIXTURE = new AtomicInteger();
 
@@ -174,12 +175,12 @@ public final class SpiderTargetingGameTests {
     public static void differentSpiderVariantsShareTargetingAndUseTheirOwnContactEffects(GameTestHelper helper) {
         try (var f = new Fixture(helper, 1)) {
             f.prepareContactArena();
-            f.data.setCount(TYPE, 2);
+            f.data.setCount(TYPE, FAMILIAR_SOURCE, 2);
             var spider = new OtherColorSpider(f.level);
             spider.setOwner(f.owner);
             spider.setPos(f.start);
             f.level.addFreshEntity(spider);
-            f.data.registerEntity(TYPE, spider.getUUID());
+            f.data.registerEntity(TYPE, FAMILIAR_SOURCE, spider.getUUID());
             f.targets.add(spider);
             var blue = f.spiders.get(0);
             var target = f.zombie(f.start.add(1, 0, 0));
@@ -264,13 +265,13 @@ public final class SpiderTargetingGameTests {
             owner.getAbilities().invulnerable = false;
             owner.setPos(start);
             data = owner.getCapability(PlayerFamiliarDataProvider.PLAYER_FAMILIAR_DATA).resolve().orElseThrow();
-            data.setCount(TYPE, count);
+            data.setCount(TYPE, FAMILIAR_SOURCE, count);
             for (int i = 0; i < count; i++) {
                 var spider = ModEntities.BLUE_SPIDER.get().create(level);
                 spider.setOwner(owner);
                 spider.setPos(start);
                 level.addFreshEntity(spider);
-                data.registerEntity(TYPE, spider.getUUID());
+                data.registerEntity(TYPE, FAMILIAR_SOURCE, spider.getUUID());
                 spiders.add(spider);
             }
         }

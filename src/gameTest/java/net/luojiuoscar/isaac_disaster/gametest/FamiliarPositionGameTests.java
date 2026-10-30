@@ -35,13 +35,14 @@ import java.util.function.Consumer;
 @GameTestHolder("isaac_disaster_familiar_position")
 @PrefixGameTestTemplate(false)
 public final class FamiliarPositionGameTests {
+    private static final ResourceLocation FAMILIAR_SOURCE = ResourceLocation.parse("isaac_disaster:command");
     private static final ResourceLocation BLUE = id("blue_fly");
     private static final ResourceLocation WAR = id("locust_of_war");
 
     @GameTest(template = "trajectory_empty")
     public static void explicitPositionAddsNewOwnershipWithoutFillingOldDeficits(GameTestHelper helper) {
         try (Fixture f = new Fixture(helper)) {
-            f.data.setCount(BLUE, 5);
+            f.data.setCount(BLUE, FAMILIAR_SOURCE, 5);
             f.restore(3);
             Vec3 position = f.owner.position().add(3.25, 1.5, 2.75);
             var spawned = spawn(f.owner, BLUE, position, 1);
@@ -61,14 +62,14 @@ public final class FamiliarPositionGameTests {
     @GameTest(template = "trajectory_empty")
     public static void directSpawnsNeitherConsumeNorObeyTheTickAdmissionBudget(GameTestHelper helper) {
         try (Fixture f = new Fixture(helper)) {
-            f.data.setCount(BLUE, 2);
+            f.data.setCount(BLUE, FAMILIAR_SOURCE, 2);
             helper.assertTrue(FamiliarHelper.tickFamiliarAdmissions(f.owner), "The normal scheduler spends this tick's admission");
             helper.assertTrue(spawn(f.owner, BLUE, f.owner.position().add(2, 1, 0), 3).size() == 3,
                     "Direct spawning admits a whole batch after the tick budget is spent");
             helper.assertTrue(!FamiliarHelper.tickFamiliarAdmissions(f.owner), "A direct batch does not reset the spent budget");
         }
         try (Fixture f = new Fixture(helper)) {
-            f.data.setCount(BLUE, 1);
+            f.data.setCount(BLUE, FAMILIAR_SOURCE, 1);
             spawn(f.owner, BLUE, f.owner.position().add(2, 1, 0), 1);
             helper.assertTrue(FamiliarHelper.tickFamiliarAdmissions(f.owner), "Direct spawning leaves an unused scheduler budget available");
         }
@@ -78,7 +79,7 @@ public final class FamiliarPositionGameTests {
     @GameTest(template = "trajectory_empty")
     public static void canceledReplacementPreservesOldCountsEntitiesAndRecallOrder(GameTestHelper helper) {
         try (Fixture f = new Fixture(helper)) {
-            f.data.setCount(BLUE, 64);
+            f.data.setCount(BLUE, FAMILIAR_SOURCE, 64);
             f.restore(64);
             var original = List.copyOf(f.data.getEntityIdsInAdmissionOrder());
             UUID tail = original.get(63);
@@ -109,7 +110,7 @@ public final class FamiliarPositionGameTests {
     @GameTest(template = "trajectory_empty")
     public static void successfulReplacementKeepsTheEarliestBlueFlies(GameTestHelper helper) {
         try (Fixture f = new Fixture(helper)) {
-            f.data.setCount(BLUE, 64);
+            f.data.setCount(BLUE, FAMILIAR_SOURCE, 64);
             f.restore(64);
             var original = List.copyOf(f.data.getEntityIdsInAdmissionOrder());
             var spawned = spawn(f.owner, WAR, f.owner.position().add(2, 1, 0), 2);
@@ -127,7 +128,7 @@ public final class FamiliarPositionGameTests {
     @GameTest(template = "trajectory_empty")
     public static void fullEqualPriorityAndPartialBatchesDoNotCreateHiddenRequirements(GameTestHelper helper) {
         try (Fixture f = new Fixture(helper)) {
-            f.data.setCount(WAR, 63);
+            f.data.setCount(WAR, FAMILIAR_SOURCE, 63);
             var spawned = spawn(f.owner, id("locust_of_conquest"), f.owner.position().add(2, 1, 0), 4);
             helper.assertTrue(spawned.size() == 1 && f.data.getCount(id("locust_of_conquest")) == 1,
                     "Only one free slot is accepted; an explicit count is never randomized");
@@ -141,7 +142,7 @@ public final class FamiliarPositionGameTests {
     @GameTest(template = "trajectory_empty")
     public static void clearedRequirementsInsideJoinAreNotRestoredByFailureCleanup(GameTestHelper helper) {
         try (Fixture f = new Fixture(helper)) {
-            f.data.setCount(BLUE, 3);
+            f.data.setCount(BLUE, FAMILIAR_SOURCE, 3);
             Consumer<EntityJoinLevelEvent> listener = event -> {
                 if (event.getEntity() instanceof AbstractIsaacFamiliarEntity familiar && familiar.getOwner() == f.owner) {
                     f.data.clearRequirements();
@@ -205,7 +206,7 @@ public final class FamiliarPositionGameTests {
                 f.data.clearRequirements();
                 int expected = RandomSource.create(seed * 1_000_003L).nextInt(4) + 1;
                 var spawned = ModFamiliarEntities.LOCUST_OF_CONQUEST.get().spawnEntry(f.owner,
-                        ModFamiliarEntities.LOCUST_OF_CONQUEST.getId(), position, RandomSource.create(seed * 1_000_003L));
+                        ModFamiliarEntities.LOCUST_OF_CONQUEST.getId(), FAMILIAR_SOURCE, position, RandomSource.create(seed * 1_000_003L));
                 helper.assertTrue(spawned.size() == expected && spawned.stream().allMatch(e -> e.position().equals(position)),
                         "The type-defined one-to-four batch draws from the supplied random source once");
             }
@@ -218,7 +219,7 @@ public final class FamiliarPositionGameTests {
         try (Fixture f = new Fixture(helper)) {
             ResourceLocation spider = id("blue_spider");
             Vec3 position = f.owner.position().add(4, 2, 0);
-            var spawned = FamiliarHelper.spawnFamiliars(f.owner, spider, position);
+            var spawned = FamiliarHelper.spawnFamiliars(f.owner, spider, FAMILIAR_SOURCE, position);
             helper.assertTrue(spawned.size() == 1 && spawned.get(0).position().equals(position),
                     "The explicit feet position is honored even for grounded familiars");
             FamiliarHelper.discardAllRuntimeFamiliars(f.owner);
@@ -259,7 +260,7 @@ public final class FamiliarPositionGameTests {
         try (Fixture f = new Fixture(helper)) {
             Consumer<EntityJoinLevelEvent> listener = event -> {
                 if (event.getEntity() instanceof AbstractIsaacFamiliarEntity familiar && familiar.getOwner() == f.owner) {
-                    f.data.setCount(WAR, 64);
+                    f.data.setCount(WAR, FAMILIAR_SOURCE, 64);
                 }
             };
             MinecraftForge.EVENT_BUS.addListener(EventPriority.HIGHEST, false, EntityJoinLevelEvent.class, listener);
@@ -279,10 +280,10 @@ public final class FamiliarPositionGameTests {
     @GameTest(template = "trajectory_empty")
     public static void alreadyReducedRequirementsAreReconciledBeforeImmediateAdmission(GameTestHelper helper) {
         try (Fixture f = new Fixture(helper)) {
-            f.data.setCount(BLUE, 5);
+            f.data.setCount(BLUE, FAMILIAR_SOURCE, 5);
             f.restore(5);
             UUID first = f.data.getEntry(BLUE).orElseThrow().getEntityId(0);
-            f.data.setCount(BLUE, 1);
+            f.data.setCount(BLUE, FAMILIAR_SOURCE, 1);
             helper.assertTrue(spawn(f.owner, BLUE, f.owner.position().add(2, 1, 0), 1).size() == 1
                             && f.data.getCount(BLUE) == 2 && f.data.getEntry(BLUE).orElseThrow().getEntityCount() == 2
                             && f.data.getEntry(BLUE).orElseThrow().getEntityId(0).equals(first),
@@ -306,7 +307,7 @@ public final class FamiliarPositionGameTests {
     }
 
     private static List<AbstractIsaacFamiliarEntity> spawn(ServerPlayer owner, ResourceLocation type, Vec3 pos, int count) {
-        return FamiliarHelper.spawnFamiliars(owner, type, pos, count);
+        return FamiliarHelper.spawnFamiliars(owner, type, FAMILIAR_SOURCE, pos, count);
     }
 
     private static ResourceLocation id(String name) {

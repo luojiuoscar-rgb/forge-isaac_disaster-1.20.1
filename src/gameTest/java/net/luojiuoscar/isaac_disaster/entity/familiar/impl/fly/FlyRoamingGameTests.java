@@ -34,6 +34,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 @GameTestHolder("isaac_disaster_blue_fly")
 @PrefixGameTestTemplate(false)
 public final class FlyRoamingGameTests {
+    private static final ResourceLocation FAMILIAR_SOURCE = ResourceLocation.parse("isaac_disaster:command");
     private static final ResourceLocation BLUE_FLY =
             ResourceLocation.fromNamespaceAndPath("isaac_disaster", "blue_fly");
     private static final AtomicInteger NEXT_FIXTURE = new AtomicInteger();
@@ -363,10 +364,10 @@ public final class FlyRoamingGameTests {
                 if (hugeOwner) ScaleUtils.setScale(owner, 8);
                 fly.setOwner(owner);
                 fly.setPos(owner.getBoundingBox().getCenter().add(0, -fly.getBbHeight() * 0.5, 0));
-                data.addCount(BLUE_FLY, 1);
+                data.addCount(BLUE_FLY, FAMILIAR_SOURCE, 1);
                 entities.add(fly);
                 helper.assertTrue(helper.getLevel().addFreshEntity(fly), "The server accepts the owned roaming fly");
-                data.registerEntity(BLUE_FLY, fly.getUUID());
+                data.registerEntity(BLUE_FLY, FAMILIAR_SOURCE, fly.getUUID());
             } catch (RuntimeException | Error failure) {
                 close();
                 throw failure;

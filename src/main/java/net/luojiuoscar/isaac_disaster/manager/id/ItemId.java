@@ -248,7 +248,8 @@ public enum ItemId {
     BROTHER_BOBBY(1),
     SISTER_MAGGY(1),
     GHOST_BABY(1),
-    HARLEQUIN_BABY(1);
+    HARLEQUIN_BABY(1),
+    ROTTEN_BABY(3);
 
 
 

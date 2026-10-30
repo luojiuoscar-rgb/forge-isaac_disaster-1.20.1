@@ -180,8 +180,7 @@ public abstract class AbstractFlyFamiliarEntity extends AbstractIsaacFamiliarEnt
         try {
             // Consume ownership before hurt callbacks can replace this fly or add new requirements.
             // Keep the entity alive through hurt so direct-source attribution and shields still work.
-            data.removeEntity(type, getUUID());
-            data.addCount(type, -1);
+            data.consumeEntity(type, getUUID());
             accepted = first.hurt(source, damage);
         } finally {
             discardSilently();

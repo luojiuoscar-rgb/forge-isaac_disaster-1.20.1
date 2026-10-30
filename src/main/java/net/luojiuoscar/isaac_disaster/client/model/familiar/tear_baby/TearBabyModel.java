@@ -1,7 +1,7 @@
 package net.luojiuoscar.isaac_disaster.client.model.familiar.tear_baby;
 
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
-import net.luojiuoscar.isaac_disaster.entity.familiar.base.baby.AbstractTearBabyFamiliarEntity;
+import net.luojiuoscar.isaac_disaster.entity.familiar.base.baby.AbstractBabyFamiliarEntity;
 import net.minecraft.client.animation.KeyframeAnimations;
 import net.minecraft.client.model.HierarchicalModel;
 import net.minecraft.client.model.geom.ModelLayerLocation;
@@ -19,7 +19,7 @@ import org.joml.Quaternionf;
 import net.minecraft.util.Mth;
 
 /** Shared exported Bobby/Maggy rig, rather than a required model for all tear babies. */
-public class TearBabyModel extends HierarchicalModel<AbstractTearBabyFamiliarEntity> {
+public class TearBabyModel extends HierarchicalModel<AbstractBabyFamiliarEntity> {
     public static final ModelLayerLocation LAYER_LOCATION = new ModelLayerLocation(
             ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "tear_baby"), "main");
     private final ModelPart root;
@@ -71,7 +71,7 @@ public class TearBabyModel extends HierarchicalModel<AbstractTearBabyFamiliarEnt
     }
 
     @Override
-    public void setupAnim(AbstractTearBabyFamiliarEntity entity, float limbSwing, float limbSwingAmount,
+    public void setupAnim(AbstractBabyFamiliarEntity entity, float limbSwing, float limbSwingAmount,
                           float ageInTicks, float netHeadYaw, float headPitch) {
         float partialTick = ageInTicks - entity.tickCount;
         setupPose(ageInTicks, entity.getAttackAge(partialTick), netHeadYaw, headPitch);
@@ -80,7 +80,7 @@ public class TearBabyModel extends HierarchicalModel<AbstractTearBabyFamiliarEnt
     void setupPose(float ageInTicks, float attackAge, float netHeadYaw, float headPitch) {
         root.getAllParts().forEach(ModelPart::resetPose);
         long timeMillis = (long) ((ageInTicks % 20.0F) * 50.0F);
-        float duration = AbstractTearBabyFamiliarEntity.ATTACK_DURATION_TICKS;
+        float duration = AbstractBabyFamiliarEntity.ATTACK_DURATION_TICKS;
         float weight = attackAge < 0 || attackAge >= duration ? 0 : Mth.clamp(Math.min(attackAge, duration - attackAge), 0, 1);
         weight = weight * weight * (3 - 2 * weight);
         KeyframeAnimations.animate(this, TearBabyAnimations.IDLE, timeMillis, 1 - weight, animationVector);

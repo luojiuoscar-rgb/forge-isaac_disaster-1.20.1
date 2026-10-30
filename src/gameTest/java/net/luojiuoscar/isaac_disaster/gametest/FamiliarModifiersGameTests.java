@@ -63,6 +63,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 @GameTestHolder("isaac_disaster_familiar_modifiers")
 @PrefixGameTestTemplate(false)
 public final class FamiliarModifiersGameTests {
+    private static final ResourceLocation FAMILIAR_SOURCE = ResourceLocation.parse("isaac_disaster:command");
     private static final AtomicInteger NEXT_FIXTURE = new AtomicInteger();
     public static final ResourceLocation EXTRA_ENHANCEMENT = id("extra_enhancement");
     private static final ResourceLocation EXTRA_VISUAL = id("extra_visual");
@@ -422,7 +423,7 @@ public final class FamiliarModifiersGameTests {
         }
 
         private AbstractIsaacFamiliarEntity spawn(ResourceLocation type) {
-            var spawned = FamiliarHelper.spawnFamiliars(owner, type, owner.position());
+            var spawned = FamiliarHelper.spawnFamiliars(owner, type, FAMILIAR_SOURCE, owner.position());
             helper.assertTrue(spawned.size() == 1, "Factory admits familiar " + type);
             familiars.addAll(spawned);
             return spawned.get(0);

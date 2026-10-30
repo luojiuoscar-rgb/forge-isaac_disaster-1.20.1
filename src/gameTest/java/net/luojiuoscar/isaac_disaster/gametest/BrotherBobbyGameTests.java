@@ -20,6 +20,7 @@ import java.util.UUID;
 @GameTestHolder("isaac_disaster_brother_bobby")
 @PrefixGameTestTemplate(false)
 public final class BrotherBobbyGameTests {
+    private static final ResourceLocation FAMILIAR_SOURCE = ResourceLocation.parse("isaac_disaster:command");
     private static final ResourceLocation BOBBY = ResourceLocation.fromNamespaceAndPath("isaac_disaster", "brother_bobby");
 
     @GameTest(template = "trajectory_empty")
@@ -47,7 +48,7 @@ public final class BrotherBobbyGameTests {
     @GameTest(template = "trajectory_empty")
     public static void realEntityContinuouslyFollowsAndMaintainsOneBlockVerticalDistance(GameTestHelper helper) {
         try (Fixture f = new Fixture(helper)) {
-            f.data.addCount(BOBBY, 1);
+            f.data.addCount(BOBBY, FAMILIAR_SOURCE, 1);
             BrotherBobbyEntity bobby = f.spawn();
             Vec3 target = f.hover();
             bobby.setPos(target.add(0, 2, 0));
@@ -77,7 +78,7 @@ public final class BrotherBobbyGameTests {
     @GameTest(template = "trajectory_empty")
     public static void movementFacesTheOwnerAndStoppingKeepsTheHeading(GameTestHelper helper) {
         try (Fixture f = new Fixture(helper)) {
-            f.data.addCount(BOBBY, 1);
+            f.data.addCount(BOBBY, FAMILIAR_SOURCE, 1);
             BrotherBobbyEntity bobby = f.spawn();
             bobby.setPos(f.hover().add(5, 0, 0));
             bobby.tick();
@@ -91,7 +92,7 @@ public final class BrotherBobbyGameTests {
     @GameTest(template = "trajectory_empty")
     public static void recallPreservesTheEntityAndResetsPursuit(GameTestHelper helper) {
         try (Fixture f = new Fixture(helper)) {
-            f.data.addCount(BOBBY, 1);
+            f.data.addCount(BOBBY, FAMILIAR_SOURCE, 1);
             BrotherBobbyEntity bobby = f.spawn();
             UUID original = bobby.getUUID();
             bobby.setPos(f.hover().add(0, 5, 0));

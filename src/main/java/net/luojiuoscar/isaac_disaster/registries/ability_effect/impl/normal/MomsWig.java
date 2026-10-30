@@ -33,9 +33,12 @@ public final class MomsWig implements IAbilityEffect {
                 || event.getBaseContexts().isEmpty()) return true;
         var data = player.getCapability(PlayerFamiliarDataProvider.PLAYER_FAMILIAR_DATA).resolve().orElse(null);
         if (data == null) return false;
+        var source = context.get(ContextKeys.SOURCE);
+        if (source == null) return false;
         var type = ModFamiliarEntities.BLUE_SPIDER.getId();
         int limit = generationLimit(PlayerHelper.hasItem(ModPassiveItems.HIVE_MIND.getId(), player));
-        if (data.getCount(type) >= limit || player.getRandom().nextDouble() >= chance(getLuck(player))) return true;
+        if (data.getCount(type, source) >= limit
+                || player.getRandom().nextDouble() >= chance(getLuck(player))) return true;
         var generationContext = context.copy(null);
         generationContext.set(ContextKeys.TARGET_POSITION, player.position());
         return ((IAbilityEffect) ModExecutableEffects.SPAWN_BLUE_SPIDER.get()).applyEffect(generationContext);

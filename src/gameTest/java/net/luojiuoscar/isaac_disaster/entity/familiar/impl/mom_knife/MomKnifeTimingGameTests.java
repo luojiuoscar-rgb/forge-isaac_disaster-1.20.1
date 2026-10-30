@@ -25,6 +25,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 @GameTestHolder("isaac_disaster_mom_knife")
 @PrefixGameTestTemplate(false)
 public final class MomKnifeTimingGameTests {
+    private static final ResourceLocation FAMILIAR_SOURCE = ResourceLocation.parse("isaac_disaster:command");
     private static final ResourceLocation MOM_KNIFE =
             ResourceLocation.fromNamespaceAndPath("isaac_disaster", "mom_knife");
     private static final AtomicInteger NEXT_FIXTURE = new AtomicInteger();
@@ -261,13 +262,13 @@ public final class MomKnifeTimingGameTests {
         }
 
         SeededKnife knife(long seed) {
-            data.addCount(MOM_KNIFE, 1);
+            data.addCount(MOM_KNIFE, FAMILIAR_SOURCE, 1);
             SeededKnife knife = new SeededKnife(helper, seed);
             knife.setOwner(owner);
             knife.refreshFormationIndex(owner, data.getEntry(MOM_KNIFE).orElseThrow().getEntityCount());
             knife.setPos(owner.position().add(0, owner.getBbHeight() * 0.7, -0.95));
             helper.assertTrue(helper.getLevel().addFreshEntity(knife), "Owned knife enters the level");
-            data.registerEntity(MOM_KNIFE, knife.getUUID());
+            data.registerEntity(MOM_KNIFE, FAMILIAR_SOURCE, knife.getUUID());
             return knife;
         }
 

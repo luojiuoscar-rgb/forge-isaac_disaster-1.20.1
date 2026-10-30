@@ -39,6 +39,7 @@ import java.util.function.Consumer;
 @GameTestHolder("isaac_disaster_blue_fly")
 @PrefixGameTestTemplate(false)
 public final class FamiliarQuotaGameTests {
+    private static final ResourceLocation FAMILIAR_SOURCE = ResourceLocation.parse("isaac_disaster:command");
     private static final ResourceLocation LOW_DROP = id("low_drop");
     private static final ResourceLocation LOW_RETAIN = id("low_retain");
     private static final ResourceLocation HIGH = id("high");
@@ -84,14 +85,14 @@ public final class FamiliarQuotaGameTests {
     @GameTest(template = "trajectory_empty", batch = "familiar_quota")
     public static void canceledWorldJoinKeepsGrantedReplacementWaitingForRetry(GameTestHelper helper) {
         try (Fixture fixture = new Fixture(helper)) {
-            fixture.data.setCount(LOW_DROP, 2);
+            fixture.data.setCount(LOW_DROP, FAMILIAR_SOURCE, 2);
             fixture.spawn(LOW_DROP);
             fixture.spawn(LOW_DROP);
             List<UUID> original = fixture.ids(LOW_DROP);
             AbstractIsaacFamiliarEntity first = fixture.entity(original.get(0));
             AbstractIsaacFamiliarEntity tail = fixture.entity(original.get(1));
             fixture.data.queueRecall(tail.getUUID());
-            fixture.data.setCount(HIGH, 1);
+            fixture.data.setCount(HIGH, FAMILIAR_SOURCE, 1);
             helper.assertTrue(fixture.data.getCount(LOW_DROP) == 1 && fixture.data.getEffectiveCount(LOW_DROP) == 1
                             && fixture.data.getCount(HIGH) == 1 && fixture.data.getEffectiveCount(HIGH) == 1,
                     "The high-priority requirement immediately replaces one non-retained low-priority slot");
@@ -137,15 +138,15 @@ public final class FamiliarQuotaGameTests {
     @GameTest(template = "trajectory_empty", batch = "familiar_quota")
     public static void replacementUsesLatestEqualPriorityTypeAndRetainedRecordsCanReturn(GameTestHelper helper) {
         try (Fixture fixture = new Fixture(helper)) {
-            fixture.data.setCount(LOW_DROP, 1);
+            fixture.data.setCount(LOW_DROP, FAMILIAR_SOURCE, 1);
             fixture.spawn(LOW_DROP);
-            fixture.data.setCount(LOW_RETAIN, 1);
+            fixture.data.setCount(LOW_RETAIN, FAMILIAR_SOURCE, 1);
             fixture.spawn(LOW_RETAIN);
             AbstractIsaacFamiliarEntity earlyType = fixture.entity(fixture.ids(LOW_DROP).get(0));
             AbstractIsaacFamiliarEntity latestType = fixture.entity(fixture.ids(LOW_RETAIN).get(0));
-            fixture.data.setCount(LOW_RETAIN, 8);
+            fixture.data.setCount(LOW_RETAIN, FAMILIAR_SOURCE, 8);
             fixture.data.queueRecall(latestType.getUUID());
-            fixture.data.setCount(HIGH, 1);
+            fixture.data.setCount(HIGH, FAMILIAR_SOURCE, 1);
             helper.assertTrue(fixture.data.getEffectiveCount(LOW_RETAIN) == 0
                             && fixture.data.getEffectiveCount(LOW_DROP) == 1
                             && fixture.data.getEffectiveCount(HIGH) == 1,
@@ -155,11 +156,11 @@ public final class FamiliarQuotaGameTests {
                     "The latest registered lowest-priority type yields first and loses its stale recall");
             helper.assertTrue(fixture.data.getCount(LOW_RETAIN) == 8 && fixture.data.getEffectiveCount(LOW_RETAIN) == 0,
                     "A retained victim keeps recorded overflow after losing its runtime allocation");
-            fixture.data.setCount(HIGH, 2);
+            fixture.data.setCount(HIGH, FAMILIAR_SOURCE, 2);
             fixture.spawn(HIGH);
             helper.assertTrue(earlyType.isRemoved() && fixture.data.getCount(LOW_DROP) == 0,
                     "A displaced non-retained type permanently loses its recorded quantity");
-            fixture.data.setCount(HIGH, 0);
+            fixture.data.setCount(HIGH, FAMILIAR_SOURCE, 0);
             FamiliarHelper.maintainExistingFamiliars(fixture.owner);
             fixture.spawn(LOW_RETAIN);
             fixture.spawn(LOW_RETAIN);
@@ -175,7 +176,7 @@ public final class FamiliarQuotaGameTests {
     public static void allocationsArePerPlayerAndMissingEntitiesReuseTheirGrantedSlot(GameTestHelper helper) {
         try (Fixture first = new Fixture(helper); Fixture second = new Fixture(helper)) {
             for (Fixture fixture : List.of(first, second)) {
-                fixture.data.setCount(LOW_RETAIN, 8);
+                fixture.data.setCount(LOW_RETAIN, FAMILIAR_SOURCE, 8);
                 helper.assertTrue(fixture.data.getEffectiveCount(LOW_RETAIN) == 2 && fixture.ids(LOW_RETAIN).isEmpty(),
                         "Each player receives the registered group's full capacity before any entity joins");
                 fixture.spawn(LOW_RETAIN);

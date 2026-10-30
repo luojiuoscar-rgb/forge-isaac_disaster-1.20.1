@@ -1,5 +1,6 @@
 package net.luojiuoscar.isaac_disaster.registries.ability_effect;
 
+import net.minecraft.resources.ResourceLocation;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -10,6 +11,38 @@ import java.util.function.Predicate;
 import static org.junit.jupiter.api.Assertions.*;
 
 class ExecutableEffectBatchTest {
+    @Test
+    void sourceBindingIsGenericAndScopedToItsTrigger() {
+        var outer = ResourceLocation.fromNamespaceAndPath("test", "outer");
+        var first = ResourceLocation.fromNamespaceAndPath("test", "first");
+        var second = ResourceLocation.fromNamespaceAndPath("test", "second");
+        var context = new ExecutableEffectContext(null);
+        context.set(ContextKeys.SOURCE, outer);
+        context.set(ContextKeys.AMPLIFIER, 3.0);
+        var sources = new ArrayList<ResourceLocation>();
+        IExecutableEffect readSource = execution -> {
+            assertEquals(3.0, execution.get(ContextKeys.AMPLIFIER));
+            sources.add(execution.get(ContextKeys.SOURCE));
+        };
+        new CompositeTriggerView(List.of(
+                new SimpleTrigger(null, () -> readSource, null, first),
+                new SimpleTrigger(null, () -> readSource, null, second),
+                new SimpleTrigger(null, () -> readSource)))
+                .fire(context, null);
+        assertEquals(List.of(first, second, outer), sources);
+        assertEquals(outer, context.get(ContextKeys.SOURCE));
+    }
+
+    @Test
+    void rejectedTriggerDoesNotResolveOrInvokeItsEffect() {
+        var context = new ExecutableEffectContext(null);
+        new SimpleTrigger(null, () -> {
+            fail("A rejected trigger must not resolve its effect");
+            return IExecutableEffect.EMPTY;
+        }, ignored -> false, ResourceLocation.fromNamespaceAndPath("test", "source")).fire(context);
+        assertFalse(context.has(ContextKeys.SOURCE));
+    }
+
     private static SimpleTrigger trigger(double priority, Consumer<ExecutableEffectContext> action,
                                          Predicate<ExecutableEffectContext> condition) {
         return new SimpleTrigger(null, () -> new IExecutableEffect() {

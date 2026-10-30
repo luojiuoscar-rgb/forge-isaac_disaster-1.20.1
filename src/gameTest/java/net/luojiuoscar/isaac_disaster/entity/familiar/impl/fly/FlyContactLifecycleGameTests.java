@@ -30,6 +30,7 @@ import java.util.function.Consumer;
 @GameTestHolder("isaac_disaster_blue_fly")
 @PrefixGameTestTemplate(false)
 public final class FlyContactLifecycleGameTests {
+    private static final ResourceLocation FAMILIAR_SOURCE = ResourceLocation.parse("isaac_disaster:command");
     private static final ResourceLocation LOW = ResourceLocation.parse("familiar_quota_test:low_drop");
     private static final ResourceLocation HIGH = ResourceLocation.parse("familiar_quota_test:high");
     private static final AtomicInteger NEXT_FIXTURE = new AtomicInteger();
@@ -38,7 +39,7 @@ public final class FlyContactLifecycleGameTests {
     public static void damageCallbackReplacementDoesNotConsumeTheSurvivingFly(GameTestHelper helper) {
         try (Fixture fixture = new Fixture(helper)) {
             fixture.onAttack(event -> {
-                fixture.data.setCount(HIGH, 1);
+                fixture.data.setCount(HIGH, FAMILIAR_SOURCE, 1);
                 FamiliarHelper.maintainExistingFamiliars(fixture.owner);
             });
             fixture.contact();
@@ -59,7 +60,7 @@ public final class FlyContactLifecycleGameTests {
             fixture.onAttack(event -> {
                 fixture.data.clearRequirements();
                 FamiliarHelper.maintainExistingFamiliars(fixture.owner);
-                fixture.data.addCount(LOW, 1);
+                fixture.data.addCount(LOW, FAMILIAR_SOURCE, 1);
             });
             fixture.contact();
             helper.assertTrue(fixture.data.getCount(LOW) == 1 && fixture.data.getEffectiveCount(LOW) == 1,
@@ -111,7 +112,7 @@ public final class FlyContactLifecycleGameTests {
             owner.getAttribute(Attributes.ATTACK_DAMAGE).setBaseValue(4);
             owner.setHealth(owner.getMaxHealth());
             data = owner.getCapability(PlayerFamiliarDataProvider.PLAYER_FAMILIAR_DATA).resolve().orElseThrow();
-            data.setCount(LOW, 2);
+            data.setCount(LOW, FAMILIAR_SOURCE, 2);
             helper.assertTrue(FamiliarHelper.spawnNextMissingFamiliar(owner), "First registered low fly generated");
             helper.assertTrue(FamiliarHelper.spawnNextMissingFamiliar(owner), "Tail registered low fly generated");
             var entry = data.getEntry(LOW).orElseThrow();

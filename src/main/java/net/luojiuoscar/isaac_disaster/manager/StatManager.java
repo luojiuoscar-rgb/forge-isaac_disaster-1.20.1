@@ -580,9 +580,9 @@ public enum StatManager {
         }
     }
 
-    public static void addFamiliar(Player player, ResourceLocation rl, int count) {
+    public static void addFamiliar(Player player, ResourceLocation rl, ResourceLocation source, int count) {
         player.getCapability(PlayerFamiliarDataProvider.PLAYER_FAMILIAR_DATA).ifPresent(
-                familiarData -> familiarData.addCount(rl, count)
+                familiarData -> familiarData.addCount(rl, source, count)
         );
     }
     /* ---------------------- 道具套装 ---------------------- */

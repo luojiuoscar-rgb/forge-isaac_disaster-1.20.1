@@ -33,9 +33,12 @@ public final class TheMulligan implements IAbilityEffect {
         } else return false;
         var data = player.getCapability(PlayerFamiliarDataProvider.PLAYER_FAMILIAR_DATA).resolve().orElse(null);
         if (data == null) return false;
+        var source = context.get(ContextKeys.SOURCE);
+        if (source == null) return false;
         var type = ModFamiliarEntities.BLUE_FLY.getId();
-        if (data.getCount(type) >= GENERATION_LIMIT || player.getRandom().nextDouble() >= chance()) return true;
-        FamiliarHelper.spawnFamiliars(player, type, player.position());
+        if (data.getCount(type, source) >= GENERATION_LIMIT
+                || player.getRandom().nextDouble() >= chance()) return true;
+        FamiliarHelper.spawnFamiliars(player, type, source, player.position());
         return true;
     }
 }

@@ -48,6 +48,7 @@ import java.util.function.Consumer;
 @GameTestHolder("isaac_disaster_blue_fly")
 @PrefixGameTestTemplate(false)
 public final class FlyBehaviorGameTests {
+    private static final ResourceLocation FAMILIAR_SOURCE = ResourceLocation.parse("isaac_disaster:command");
     private static final ResourceLocation BLUE_FLY =
             ResourceLocation.fromNamespaceAndPath("isaac_disaster", "blue_fly");
     private static final AtomicInteger NEXT_FIXTURE = new AtomicInteger();
@@ -66,7 +67,7 @@ public final class FlyBehaviorGameTests {
         int count = Math.min(requested, 64);
         Fixture fixture = new Fixture(helper);
         try {
-            fixture.data.setCount(BLUE_FLY, requested);
+            fixture.data.setCount(BLUE_FLY, FAMILIAR_SOURCE, requested);
             helper.assertTrue(fixture.data.getCount(BLUE_FLY) == count, "Blue fly requests honor the per-type limit");
             List<BlueFlyEntity> flies = new ArrayList<>();
             for (int i = 0; i < count; i++) {
@@ -475,11 +476,11 @@ public final class FlyBehaviorGameTests {
         private <T extends AbstractFlyFamiliarEntity> T register(T fly) {
             fly.setOwner(owner);
             fly.setPos(owner.position());
-            data.addCount(BLUE_FLY, 1);
+            data.addCount(BLUE_FLY, FAMILIAR_SOURCE, 1);
             fly.refreshFormationIndex(owner, data.getEntry(BLUE_FLY).orElseThrow().getEntityCount());
             entities.add(fly);
             helper.assertTrue(helper.getLevel().addFreshEntity(fly), "The real server accepts the fly fixture");
-            data.registerEntity(BLUE_FLY, fly.getUUID());
+            data.registerEntity(BLUE_FLY, FAMILIAR_SOURCE, fly.getUUID());
             return fly;
         }
 

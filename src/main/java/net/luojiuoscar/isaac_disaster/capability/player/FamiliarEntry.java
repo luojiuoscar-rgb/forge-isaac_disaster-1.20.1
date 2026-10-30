@@ -1,14 +1,16 @@
 package net.luojiuoscar.isaac_disaster.capability.player;
 
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
+import java.util.Objects;
 import java.util.UUID;
 
 /**
@@ -16,23 +18,15 @@ import java.util.UUID;
  */
 public class FamiliarEntry {
     private final ResourceLocation type;
-    private int count;
+    private final FamiliarRequirements requirements = new FamiliarRequirements();
     private final List<UUID> entityIds;
     private final List<UUID> entityIdsView;
-    private final Set<UUID> entityMembership = new HashSet<>();
+    private final Map<UUID, ResourceLocation> entitySources = new LinkedHashMap<>();
 
     public FamiliarEntry(ResourceLocation type) {
-        this(type, 0, new ArrayList<>());
-    }
-
-    public FamiliarEntry(ResourceLocation type, int count, List<UUID> entityIds) {
         this.type = type;
-        setCount(count);
         this.entityIds = new ArrayList<>();
         this.entityIdsView = Collections.unmodifiableList(this.entityIds);
-        for (UUID entityId : entityIds) {
-            addEntity(entityId);
-        }
     }
 
     public ResourceLocation getType() {
@@ -40,11 +34,22 @@ public class FamiliarEntry {
     }
 
     public int getCount() {
-        return count;
+        return requirements.getTotal();
     }
 
-    void setCount(int count) {
-        this.count = Math.max(0, count);
+    public int getCount(ResourceLocation source) { return requirements.getCount(source); }
+
+    FamiliarRequirements requirements() { return requirements; }
+
+    public ResourceLocation getEntitySource(UUID entityId) { return entitySources.get(entityId); }
+
+    public int getEntityCount(ResourceLocation source) {
+        return (int) entitySources.values().stream().filter(source::equals).count();
+    }
+
+    public Optional<ResourceLocation> getIncompleteSource() {
+        return requirements.getSources().keySet().stream()
+                .filter(source -> getEntityCount(source) < getCount(source)).findFirst();
     }
 
     /**
@@ -67,14 +72,14 @@ public class FamiliarEntry {
     }
 
     public boolean containsEntity(UUID entityId) {
-        return entityMembership.contains(entityId);
+        return entitySources.containsKey(entityId);
     }
 
     /**
      * Adds an entity UUID if it is not already recorded.
      */
-    public void addEntity(UUID entityId) {
-        if (entityId == null || !entityMembership.add(entityId)) return;
+    public void addEntity(UUID entityId, ResourceLocation source) {
+        if (entityId == null || entitySources.putIfAbsent(entityId, Objects.requireNonNull(source)) != null) return;
         entityIds.add(entityId);
     }
 
@@ -82,7 +87,7 @@ public class FamiliarEntry {
      * Removes an entity UUID from this entry.
      */
     public boolean removeEntity(UUID entityId) {
-        if (!entityMembership.remove(entityId)) return false;
+        if (entitySources.remove(entityId) == null) return false;
         return entityIds.remove(entityId);
     }
 
@@ -91,7 +96,7 @@ public class FamiliarEntry {
      */
     public void clearEntityIds() {
         entityIds.clear();
-        entityMembership.clear();
+        entitySources.clear();
     }
 
     /**
@@ -100,7 +105,7 @@ public class FamiliarEntry {
     public CompoundTag saveNBT() {
         CompoundTag tag = new CompoundTag();
         tag.putString("Type", type.toString());
-        tag.putInt("Count", getCount());
+        tag.put("Requirements", requirements.saveNBT());
         return tag;
     }
 
@@ -111,7 +116,8 @@ public class FamiliarEntry {
         ResourceLocation type = ResourceLocation.tryParse(tag.getString("Type"));
         if (type == null) return Optional.empty();
 
-        int count = tag.getInt("Count");
-        return Optional.of(new FamiliarEntry(type, count, List.of()));
+        FamiliarEntry entry = new FamiliarEntry(type);
+        entry.requirements.loadNBT(tag.getList("Requirements", Tag.TAG_COMPOUND));
+        return Optional.of(entry);
     }
 }

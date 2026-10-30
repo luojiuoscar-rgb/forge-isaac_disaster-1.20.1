@@ -9,7 +9,8 @@ import java.util.List;
 
 public final class MomsWig extends TriggerModule {
     private static final CompositeTrigger TRIGGER = new CompositeTrigger(List.of(
-            new SimpleTrigger(ModTriggerTypes.ATTACK_PLAN, ModExecutableEffects.MOMS_WIG)));
+            new SimpleTrigger(ModTriggerTypes.ATTACK_PLAN, ModExecutableEffects.MOMS_WIG,
+                    null, ModExecutableEffects.MOMS_WIG.getId())));
 
     public MomsWig() { super(TRIGGER); }
 }

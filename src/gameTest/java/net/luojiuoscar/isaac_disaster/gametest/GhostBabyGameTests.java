@@ -46,6 +46,7 @@ import java.util.UUID;
 @GameTestHolder("isaac_disaster_ghost_baby")
 @PrefixGameTestTemplate(false)
 public final class GhostBabyGameTests {
+    private static final ResourceLocation FAMILIAR_SOURCE = ResourceLocation.parse("isaac_disaster:command");
     private static final ResourceLocation GHOST = ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "ghost_baby");
     private static final ResourceLocation BOBBY = ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "brother_bobby");
     private static final ResourceLocation MAGGY = ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "sister_maggy");
@@ -69,12 +70,12 @@ public final class GhostBabyGameTests {
         helper.assertTrue(descriptor.getLimit() == 64 && descriptor.hasEntityTag(AbstractBabyFamiliarEntity.class)
                 && descriptor.getGroup() == ModFamiliarLimitGroups.BABIES.get(), "Ghost Baby belongs to the shared baby category");
         try (Fixture f = new Fixture(helper)) {
-            f.data.setCount(GHOST, 100);
+            f.data.setCount(GHOST, FAMILIAR_SOURCE, 100);
             helper.assertTrue(f.data.getEffectiveCount(GHOST) == 64, "Ghost Baby alone has a sixty-four cap");
-            f.data.setCount(GHOST, 0);
-            f.data.setCount(BOBBY, 20);
-            f.data.setCount(MAGGY, 20);
-            f.data.setCount(GHOST, 100);
+            f.data.setCount(GHOST, FAMILIAR_SOURCE, 0);
+            f.data.setCount(BOBBY, FAMILIAR_SOURCE, 20);
+            f.data.setCount(MAGGY, FAMILIAR_SOURCE, 20);
+            f.data.setCount(GHOST, FAMILIAR_SOURCE, 100);
             helper.assertTrue(f.data.getCount(GHOST) == 100 && f.data.getEffectiveCount(GHOST) == 24,
                     "All three types share sixty-four slots while excess requests wait");
         }
@@ -94,7 +95,7 @@ public final class GhostBabyGameTests {
             ghost.tick();
             helper.assertTrue(ghost.getDeltaMovement().x > 0, "Ghost Baby follows Maggy rather than the nearby player");
             maggy.discardAndUnlink();
-            f.data.addCount(MAGGY, -1);
+            f.data.addCount(MAGGY, FAMILIAR_SOURCE, -1);
             FamiliarHelper.maintainExistingFamiliars(f.owner);
             helper.assertTrue(ghost.getFormationIndex() == 1, "Removing a middle member compacts the ghost's slot");
             var appended = f.add(MAGGY);
@@ -328,7 +329,7 @@ public final class GhostBabyGameTests {
 
         AbstractTearBabyFamiliarEntity add(ResourceLocation type) {
             helper.assertTrue(FamiliarHelper.isRegisteredFamiliarType(type), "Familiar must be registered: " + type);
-            data.addCount(type, 1);
+            data.addCount(type, FAMILIAR_SOURCE, 1);
             helper.assertTrue(FamiliarHelper.spawnNextMissingFamiliar(owner), "Normal admission creates " + type);
             var entry = data.getEntry(type).orElseThrow();
             return (AbstractTearBabyFamiliarEntity) owner.serverLevel().getEntity(entry.getEntityId(entry.getEntityCount() - 1));

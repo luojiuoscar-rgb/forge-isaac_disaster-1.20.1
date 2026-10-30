@@ -36,6 +36,7 @@ import java.util.UUID;
 @GameTestHolder("isaac_disaster_blue_spider")
 @PrefixGameTestTemplate(false)
 public final class SpiderBehaviorGameTests {
+    private static final ResourceLocation FAMILIAR_SOURCE = ResourceLocation.parse("isaac_disaster:command");
     private static final ResourceLocation TYPE=ResourceLocation.parse("isaac_disaster:blue_spider");
     @GameTest(template="trajectory_empty",batch="spider_controller")
     public static void diagonalGoalTurnsBeforeMovingAndKeepsItsTravelBudget(GameTestHelper helper) {
@@ -716,7 +717,7 @@ public final class SpiderBehaviorGameTests {
             owner=FakePlayerFactory.get(level,new GameProfile(UUID.randomUUID(),"spider_fixture"));
             owner.setGameMode(GameType.SURVIVAL);owner.setHealth(owner.getMaxHealth());owner.setInvulnerable(false);owner.getAbilities().invulnerable=false;owner.setPos(start);
             data=owner.getCapability(PlayerFamiliarDataProvider.PLAYER_FAMILIAR_DATA).resolve().orElseThrow();
-            data.setCount(TYPE,1);FamiliarHelper.spawnNextMissingFamiliar(owner);
+            data.setCount(TYPE, FAMILIAR_SOURCE,1);FamiliarHelper.spawnNextMissingFamiliar(owner);
             spider=(BlueSpiderEntity)level.getEntity(data.getEntry(TYPE).orElseThrow().getEntityId(0));
             try {var field=AbstractSpiderFamiliarEntity.class.getDeclaredField("movement");field.setAccessible(true);movement=(SpiderMotionController)field.get(spider);}
             catch(ReflectiveOperationException e){throw new AssertionError(e);}

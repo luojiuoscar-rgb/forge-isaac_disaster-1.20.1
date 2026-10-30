@@ -38,6 +38,7 @@ import java.util.UUID;
 @GameTestHolder("isaac_disaster_baby_familiar")
 @PrefixGameTestTemplate(false)
 public final class BabyFamiliarGameTests {
+    private static final ResourceLocation FAMILIAR_SOURCE = ResourceLocation.parse("isaac_disaster:command");
     private static final ResourceLocation BOBBY = ModEntities.BROTHER_BOBBY.getId();
     private static final ResourceLocation OTHER = ResourceLocation.fromNamespaceAndPath("baby_test", "other_baby");
     private static final ResourceLocation CHAIN_ONLY = ResourceLocation.fromNamespaceAndPath("baby_test", "chain_only");
@@ -50,7 +51,7 @@ public final class BabyFamiliarGameTests {
             helper.assertTrue(first.getFormationIndex() == 0 && second.getFormationIndex() == 1,
                     "Admission assigns slots through each familiar's formation rule");
             first.discardAndUnlink();
-            f.data.addCount(BOBBY, -1);
+            f.data.addCount(BOBBY, FAMILIAR_SOURCE, -1);
             helper.assertTrue(FamiliarChain.link(f.owner, second).slot() == 0 && second.getFormationIndex() == 1,
                     "Removal invalidates the snapshot without query-time assignments");
             FamiliarHelper.maintainExistingFamiliars(f.owner);
@@ -59,7 +60,7 @@ public final class BabyFamiliarGameTests {
             var third = f.add(BOBBY);
             helper.assertTrue(third.getFormationIndex() == 1, "A newcomer joins the refreshed chain's end");
             second.discardAndUnlink();
-            f.data.addCount(OTHER, -1);
+            f.data.addCount(OTHER, FAMILIAR_SOURCE, -1);
             helper.assertTrue(FamiliarChain.link(f.owner, third).slot() == 0 && third.getFormationIndex() == 1,
                     "A fresh query leaves the surviving familiar's assigned slot unchanged");
             third.tick();
@@ -96,6 +97,7 @@ public final class BabyFamiliarGameTests {
         int interval = 4;
         boolean reject;
         Vec3 lastDirection;
+        @Override protected Vec3 attackOrigin() { return getBoundingBox().getCenter(); }
         @Override protected int attackIntervalTicks() { return interval; }
         @Override protected boolean performAttack(ServerPlayer owner, Vec3 direction) {
             if (reject) return false;
@@ -121,7 +123,7 @@ public final class BabyFamiliarGameTests {
             follower.tick();
             helper.assertTrue(follower.getDeltaMovement().x > 0,
                     "A pure chain follower inherits movement toward the preceding chain member");
-            f.data.setCount(BOBBY, 64);
+            f.data.setCount(BOBBY, FAMILIAR_SOURCE, 64);
             helper.assertTrue(f.data.getEffectiveCount(BOBBY) == 64 && f.data.getEffectiveCount(CHAIN_ONLY) == 1,
                     "The baby group retains all sixty-four slots alongside a non-baby chain follower");
         }
@@ -208,18 +210,18 @@ public final class BabyFamiliarGameTests {
                     "Bobby is a baby familiar with an own limit of 64");
             helper.assertTrue(descriptor.getGroup() == ModFamiliarLimitGroups.BABIES.get()
                     && descriptor.getGroup().getLimit() == 64, "Babies share 64 slots");
-            f.data.setCount(BOBBY, 40);
-            f.data.setCount(OTHER, 40);
+            f.data.setCount(BOBBY, FAMILIAR_SOURCE, 40);
+            f.data.setCount(OTHER, FAMILIAR_SOURCE, 40);
             helper.assertTrue(f.data.getEffectiveCount(BOBBY) == 40 && f.data.getEffectiveCount(OTHER) == 24,
                     "Different baby types compete for the same 64 slots: bobby=" + f.data.getEffectiveCount(BOBBY)
                             + " other=" + f.data.getEffectiveCount(OTHER) + " descriptor=" + FamiliarHelper.getFamiliarType(OTHER)
                             + " entity=" + ForgeRegistries.ENTITY_TYPES.getKey(BabyFamiliarTestRegistration.other)
                             + " types=" + FamiliarHelper.getRegisteredFamiliarTypeIds().toList());
-            f.data.setCount(ModEntities.BLUE_FLY.getId(), 64);
+            f.data.setCount(ModEntities.BLUE_FLY.getId(), FAMILIAR_SOURCE, 64);
             helper.assertTrue(f.data.getEffectiveCount(ModEntities.BLUE_FLY.getId()) == 64
                     && f.data.getEffectiveCount(BOBBY) + f.data.getEffectiveCount(OTHER) == 64, "Flies keep separate capacity");
-            f.data.setCount(BOBBY, 0);
-            f.data.setCount(OTHER, 100);
+            f.data.setCount(BOBBY, FAMILIAR_SOURCE, 0);
+            f.data.setCount(OTHER, FAMILIAR_SOURCE, 100);
             helper.assertTrue(f.data.getCount(OTHER) == 64 && f.data.getEffectiveCount(OTHER) == 64,
                     "Each individual baby type also caps at 64");
         }
@@ -229,7 +231,7 @@ public final class BabyFamiliarGameTests {
     @GameTest(template = "trajectory_empty")
     public static void sixtyFourBabiesSpawnOneApartAndTailDoesNotRecallToPlayer(GameTestHelper helper) {
         try (Fixture f = new Fixture(helper)) {
-            f.data.setCount(BOBBY, 128);
+            f.data.setCount(BOBBY, FAMILIAR_SOURCE, 128);
             for (int i = 0; i < 64; i++) helper.assertTrue(FamiliarHelper.spawnNextMissingFamiliar(f.owner), "Admit baby " + i);
             helper.assertTrue(!FamiliarHelper.spawnNextMissingFamiliar(f.owner), "No 65th baby");
             List<UUID> ids = List.copyOf(f.data.getEntityIdsInAdmissionOrder());
@@ -274,7 +276,7 @@ public final class BabyFamiliarGameTests {
             last.tick();
             helper.assertTrue(last.getDeltaMovement().x > 0, "Bobby actually moves toward the preceding other baby");
             middle.discardAndUnlink();
-            f.data.addCount(OTHER, -1);
+            f.data.addCount(OTHER, FAMILIAR_SOURCE, -1);
             helper.assertTrue(FamiliarChain.link(f.owner, last).slot() == 1
                     && FamiliarChain.link(f.owner, last).target().equals(first.position()), "Removal closes the gap immediately");
             var appended = f.add(OTHER);
@@ -287,9 +289,9 @@ public final class BabyFamiliarGameTests {
     @GameTest(template = "trajectory_empty")
     public static void immediateSpawnsAlsoReturnTheirGlobalSlots(GameTestHelper helper) {
         try (Fixture f = new Fixture(helper)) {
-            var first = FamiliarHelper.spawnFamiliars(f.owner, BOBBY, f.hover()).get(0);
-            var second = FamiliarHelper.spawnFamiliars(f.owner, OTHER, f.hover().add(0, 0, -1.5)).get(0);
-            var third = FamiliarHelper.spawnFamiliars(f.owner, BOBBY, f.hover().add(0, 0, -3)).get(0);
+            var first = FamiliarHelper.spawnFamiliars(f.owner, BOBBY, FAMILIAR_SOURCE, f.hover()).get(0);
+            var second = FamiliarHelper.spawnFamiliars(f.owner, OTHER, FAMILIAR_SOURCE, f.hover().add(0, 0, -1.5)).get(0);
+            var third = FamiliarHelper.spawnFamiliars(f.owner, BOBBY, FAMILIAR_SOURCE, f.hover().add(0, 0, -3)).get(0);
             helper.assertTrue(first.getFormationIndex() == 0 && second.getFormationIndex() == 1 && third.getFormationIndex() == 2,
                     "Immediate explicit-position admission uses the same cross-type slot order");
         }
@@ -307,7 +309,7 @@ public final class BabyFamiliarGameTests {
             var replacement = ModEntities.BROTHER_BOBBY.get().create(f.owner.serverLevel());
             replacement.setOwner(f.owner);
             replacement.setPos(f.hover().add(2, 0, 0));
-            f.data.registerEntity(BOBBY, replacement.getUUID());
+            f.data.registerEntity(BOBBY, FAMILIAR_SOURCE, replacement.getUUID());
             helper.assertTrue(f.owner.serverLevel().addFreshEntity(replacement), "Replacement enters the level");
             helper.assertTrue(FamiliarChain.link(f.owner, middle).slot() == 0
                     && FamiliarChain.link(f.owner, last).slot() == 1
@@ -346,7 +348,7 @@ public final class BabyFamiliarGameTests {
         }
         Vec3 hover() { return owner.position().add(0, owner.getBbHeight() * 0.55, 0); }
         AbstractIsaacFamiliarEntity add(ResourceLocation type) {
-            data.addCount(type, 1);
+            data.addCount(type, FAMILIAR_SOURCE, 1);
             helper.assertTrue(FamiliarHelper.spawnNextMissingFamiliar(owner), "Spawn " + type
                     + " count=" + data.getCount(type) + " effective=" + data.getEffectiveCount(type)
                     + " descriptor=" + FamiliarHelper.getFamiliarType(type));

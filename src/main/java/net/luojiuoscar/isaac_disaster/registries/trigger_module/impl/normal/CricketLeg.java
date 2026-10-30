@@ -10,7 +10,8 @@ import java.util.List;
 
 public final class CricketLeg extends TriggerModule {
     private static final CompositeTrigger TRIGGER = new CompositeTrigger(List.of(
-            new SimpleTrigger(ModTriggerTypes.KILL_ENTITY, ModExecutableEffects.CRICKET_LEG)));
+            new SimpleTrigger(ModTriggerTypes.KILL_ENTITY, ModExecutableEffects.CRICKET_LEG,
+                    null, ModExecutableEffects.CRICKET_LEG.getId())));
 
     public CricketLeg() {
         super(TRIGGER);

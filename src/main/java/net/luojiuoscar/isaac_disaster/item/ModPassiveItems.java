@@ -835,4 +835,8 @@ public class ModPassiveItems {
             () -> new PassiveItem(new Item.Properties(), ModPassiveAbilities.HARLEQUIN_BABY));
     static {ItemListManager.PASSIVE_ITEM_LIST.add(HARLEQUIN_BABY);}
 
+    public static final RegistryObject<Item> ROTTEN_BABY = ITEMS.register("rotten_baby",
+            () -> new PassiveItem(new Item.Properties(), ModPassiveAbilities.ROTTEN_BABY));
+    static {ItemListManager.PASSIVE_ITEM_LIST.add(ROTTEN_BABY);}
+
 }

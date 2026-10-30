@@ -1178,8 +1178,5 @@ public class ModExecutableEffects {
             EXECUTABLE_EFFECT_REGISTRY.register("spawn_blue_fly", () ->
                     new SpawnFamiliars(ModFamiliarEntities.BLUE_FLY::getId, 1, 1, false));
 
-    public static final RegistryObject<IExecutableEffect> CAT =
-            EXECUTABLE_EFFECT_REGISTRY.register("cat", () -> new AbilityEffectEntry(SPAWN_BLUE_FLY,
-                    ctx -> ctx.set(ContextKeys.TARGET_POSITION, ctx.getEntity().position())));
 
 }

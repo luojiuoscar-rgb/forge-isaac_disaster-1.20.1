@@ -46,6 +46,10 @@ import net.luojiuoscar.isaac_disaster.registries.ability_effect.ContextKeys;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ExecutableEffectContext;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ModExecutableEffects;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.IAbilityEffect;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.SimpleTrigger;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.CompositeTrigger;
+import net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerTypes;
+import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerModule;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.normal.TheMulligan;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackContext;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackOrigin;
@@ -85,6 +89,7 @@ import top.theillusivec4.curios.common.event.CuriosEventHandler;
 @GameTestHolder("isaac_disaster_swarm_items")
 @PrefixGameTestTemplate(false)
 public final class SwarmItemGameTests {
+    private static final ResourceLocation FAMILIAR_SOURCE = ResourceLocation.parse("isaac_disaster:command");
     @GameTest(template = "trajectory_empty")
     public static void underwearAddsConfiguredRangeAndOwnedFliesOnFirstAcquisition(GameTestHelper helper) {
         var item = ForgeRegistries.ITEMS.getValue(id("moms_underwear"));
@@ -175,17 +180,17 @@ public final class SwarmItemGameTests {
             f.plan(AttackOrigin.PLAYER_PRIMARY, 0);
             helper.assertTrue(f.count("blue_spider") == 1, "Empty, split, derived and extra plans do not roll");
             f.reset();
-            f.data.setCount(id("blue_spider"), 4);
+            f.data.setCount(id("blue_spider"), id("moms_wig"), 4);
             f.plan(AttackOrigin.PLAYER_PRIMARY, 1);
             f.plan(AttackOrigin.PLAYER_PRIMARY, 1);
             helper.assertTrue(f.count("blue_spider") == 5, "Desired count 4 becomes 5 then stops despite missing entities");
             f.grant("hive_mind");
             f.grant("hive_mind");
-            f.data.setCount(id("blue_spider"), 9);
+            f.data.setCount(id("blue_spider"), id("moms_wig"), 9);
             f.plan(AttackOrigin.PLAYER_PRIMARY, 1);
             f.plan(AttackOrigin.PLAYER_PRIMARY, 1);
             helper.assertTrue(f.count("blue_spider") == 10, "Hive Mind raises the cap to ten only once");
-            f.data.setCount(id("blue_spider"), 12);
+            f.data.setCount(id("blue_spider"), id("moms_wig"), 12);
             f.plan(AttackOrigin.PLAYER_PRIMARY, 1);
             helper.assertTrue(f.count("blue_spider") == 12, "Already over the threshold does not produce more spiders");
         }
@@ -210,7 +215,7 @@ public final class SwarmItemGameTests {
             f.prepare(later);
             helper.assertTrue(!later.getTrigger().contains(ModExecutableEffects.THE_MULLIGAN.get()),
                     "Removing the last copy stops new attachments");
-            f.data.setCount(id("blue_fly"), 29);
+            f.data.setCount(id("blue_fly"), id("the_mulligan"), 29);
             f.owner.getRandom().setSeed(successSeed());
             f.hit(child, 1, false);
             helper.assertTrue(f.count("blue_fly") == 30, "Previously fired child still generates at desired 29");
@@ -218,12 +223,12 @@ public final class SwarmItemGameTests {
             f.hit(child, 1, false);
             helper.assertTrue(f.count("blue_fly") == 30, "Desired count thirty blocks further generation");
             f.reset();
-            f.data.setCount(id("locust_of_death"), 31);
+            f.data.setCount(id("locust_of_death"), FAMILIAR_SOURCE, 31);
             f.owner.getRandom().setSeed(successSeed());
             f.hit(child, 1, false);
             helper.assertTrue(f.count("blue_fly") == 1, "Other locusts do not count toward the Mulligan threshold");
             f.reset();
-            f.data.setCount(id("locust_of_death"), 64);
+            f.data.setCount(id("locust_of_death"), FAMILIAR_SOURCE, 64);
             f.owner.getRandom().setSeed(successSeed());
             f.hit(child, 1, false);
             helper.assertTrue(f.count("blue_fly") == 0, "Shared quota failure does not add a phantom demand");
@@ -275,7 +280,7 @@ public final class SwarmItemGameTests {
             canceled.setCanceled(true);
             MinecraftForge.EVENT_BUS.post(canceled);
             helper.assertTrue(f.count("blue_fly") == 0, "Canceled restricted attacks are not dispatched");
-            f.data.setCount(id("blue_fly"), 29);
+            f.data.setCount(id("blue_fly"), id("the_mulligan"), 29);
             f.owner.getRandom().setSeed(successSeed());
             MinecraftForge.EVENT_BUS.post(new LivingAttackEvent(target, f.owner.damageSources().playerAttack(f.owner), 2));
             f.owner.getRandom().setSeed(successSeed());
@@ -302,6 +307,7 @@ public final class SwarmItemGameTests {
             var position = f.owner.position().add(4, 1, 2);
             ctx.set(ContextKeys.TARGET_POSITION, position);
             ctx.set(ContextKeys.AMPLIFIER, 9.0);
+            ctx.set(ContextKeys.SOURCE, id("infestation_2"));
             var effect = (IAbilityEffect) ModExecutableEffects.SPAWN_BLUE_SPIDER.get();
             helper.assertTrue(effect.applyEffect(ctx) && f.count("blue_spider") == 1,
                     "The reusable one-spider payoff needs no kill event, item or amplifier");
@@ -325,7 +331,7 @@ public final class SwarmItemGameTests {
             f.grant("infestation_2");
             for (String type : List.of("blue_spider", "blue_fly", "locust_of_war", "mom_knife")) {
                 f.reset();
-                var direct = FamiliarHelper.spawnFamiliars(f.owner, id(type), f.owner.position()).get(0);
+                var direct = FamiliarHelper.spawnFamiliars(f.owner, id(type), FAMILIAR_SOURCE, f.owner.position()).get(0);
                 Mob victim = f.mob(EntityType.HUSK, f.owner.position().add(4, 1, 2));
                 victim.setHealth(1);
                 int before = f.count("blue_spider");
@@ -350,7 +356,7 @@ public final class SwarmItemGameTests {
             Mob discarded = f.mob(EntityType.HUSK, f.owner.position());
             discarded.discard();
             helper.assertTrue(f.count("blue_spider") == 0, "Direct removal does not publish a kill");
-            f.data.setCount(id("blue_spider"), 64);
+            f.data.setCount(id("blue_spider"), FAMILIAR_SOURCE, 64);
             Mob victim = f.mob(EntityType.HUSK, f.owner.position().add(2, 0, 0));
             victim.hurt(f.owner.damageSources().explosion(f.owner, f.owner), 1000);
             helper.assertTrue(f.count("blue_spider") == 64, "A full quota adds no unfulfilled requirement");
@@ -430,13 +436,13 @@ public final class SwarmItemGameTests {
         try (Fixture f = new Fixture(helper)) {
             String[] names = {"moms_pad", "guppys_head", "box_of_spiders"};
             String[] sets = {"mom", "cat", "spider_baby"};
-            int[] costs = {200, 100, 200};
             for (int i = 0; i < names.length; i++) {
                 f.reset();
                 ActiveItem item = (ActiveItem) ForgeRegistries.ITEMS.getValue(id(names[i]));
+                int cost = item.getOriginalDamagePerUse();
                 ItemStack stack = new ItemStack(item);
                 f.owner.setItemInHand(InteractionHand.MAIN_HAND, stack);
-                stack.setDamageValue(costs[i]);
+                stack.setDamageValue(cost);
                 item.use(helper.getLevel(), f.owner, InteractionHand.MAIN_HAND);
                 helper.assertTrue(f.count("blue_fly") + f.count("blue_spider") == 0
                         && !ActiveItem.hasBeenUsed(stack), "Insufficient charge has no effect or first-use membership");
@@ -447,10 +453,12 @@ public final class SwarmItemGameTests {
                 finally { MinecraftForge.EVENT_BUS.unregister(cancel); }
                 helper.assertTrue(stack.getDamageValue() == 0 && !ActiveItem.hasBeenUsed(stack),
                         "Canceled use preserves charge and first-use state");
-                f.data.setCount(id(names[i].equals("box_of_spiders") ? "blue_spider" : "blue_fly"), 64);
+                f.data.setCount(id(names[i].equals("box_of_spiders") ? "blue_spider" : "blue_fly"), FAMILIAR_SOURCE, 64);
                 item.use(helper.getLevel(), f.owner, InteractionHand.MAIN_HAND);
-                helper.assertTrue(stack.getDamageValue() == costs[i] && stack.getMaxDamage() == costs[i]
-                        && f.owner.getCooldowns().isOnCooldown(item), "Full quota still consumes normal charge and gives cooldown");
+                helper.assertTrue(stack.getDamageValue() == cost && stack.getMaxDamage() == cost
+                        && f.owner.getCooldowns().isOnCooldown(item), "Full quota still consumes normal charge and gives cooldown: "
+                        + names[i] + " damage=" + stack.getDamageValue() + " max=" + stack.getMaxDamage()
+                        + " cooldown=" + f.owner.getCooldowns().isOnCooldown(item));
                 helper.assertTrue(f.items.getSetCountFromId(id(sets[i])) == 1, "First use registers its set");
                 ActiveItem.fullCharge(stack, false);
                 f.owner.getCooldowns().removeCooldown(item);
@@ -718,7 +726,7 @@ public final class SwarmItemGameTests {
             for (String type : List.of("blue_fly", "blue_spider", "locust_of_war", "locust_of_pestilence", "locust_of_famine",
                     "locust_of_death", "locust_of_conquest", "mom_knife")) {
                 f.reset();
-                var familiar = FamiliarHelper.spawnFamiliars(f.owner, id(type), f.owner.position()).get(0);
+                var familiar = FamiliarHelper.spawnFamiliars(f.owner, id(type), FAMILIAR_SOURCE, f.owner.position()).get(0);
                 int before = f.count("blue_fly");
                 f.owner.getRandom().setSeed(successSeed());
                 MinecraftForge.EVENT_BUS.post(new LivingDamageEvent(target, ModDamageSources.familiar(helper.getLevel(), familiar, f.owner), 2));
@@ -733,7 +741,7 @@ public final class SwarmItemGameTests {
                 helper.assertTrue(f.count("blue_fly") == 1, "An actual owned damage source can proc: " + source.getMsgId());
             }
             f.reset();
-            f.data.setCount(id("blue_fly"), 64);
+            f.data.setCount(id("blue_fly"), FAMILIAR_SOURCE, 64);
             f.owner.getRandom().setSeed(successSeed());
             MinecraftForge.EVENT_BUS.post(new LivingDamageEvent(target, f.owner.damageSources().playerAttack(f.owner), 2));
             helper.assertTrue(f.count("blue_fly") == 64, "A full shared quota does not accumulate unfulfilled demands");
@@ -760,6 +768,87 @@ public final class SwarmItemGameTests {
                     && ctx.get(ContextKeys.DOUBLE).equals(List.of(2.0))
                     && ctx.get(ContextKeys.TARGET_POSITION).equals(target.position())
                     && ctx.get(ContextKeys.ENTITY).equals(List.of(f.owner)), "Reusable damage context preserves victim, final amount, position and direct source");
+        }
+        helper.succeed();
+    }
+
+    @GameTest(template = "trajectory_empty")
+    public static void wigAndMulliganCapsCountOnlyTheirOwnSourcesAndRemovalKeepsChildren(GameTestHelper helper) {
+        try (Fixture f = new Fixture(helper)) {
+            f.grant("moms_wig"); f.grant("moms_wig");
+            f.owner.getAttribute(Attributes.LUCK).setBaseValue(9.5);
+            f.data.setCount(id("blue_spider"), FAMILIAR_SOURCE, 12);
+            for (int i = 0; i < 8; i++) f.plan(AttackOrigin.PLAYER_PRIMARY, 1);
+            helper.assertTrue(f.data.getCount(id("blue_spider"), id("moms_wig")) == 5
+                    && f.data.getCount(id("blue_spider"), FAMILIAR_SOURCE) == 12, "其他来源不占假发五只门槛，重复道具不叠加上限");
+            var spiders = f.data.getEntry(id("blue_spider")).orElseThrow().getEntityIds().stream()
+                    .map(f.owner.serverLevel()::getEntity).toList();
+            f.items.removeFromId(f.owner, id("moms_wig")); f.items.removeFromId(f.owner, id("moms_wig"));
+            FamiliarHelper.maintainExistingFamiliars(f.owner);
+            helper.assertTrue(f.data.getCount(id("blue_spider"), id("moms_wig")) == 5
+                    && spiders.stream().noneMatch(Entity::isRemoved), "移除假发不撤销已生成蜘蛛");
+            f.grant("the_mulligan"); f.grant("the_mulligan");
+            f.data.setCount(id("blue_fly"), FAMILIAR_SOURCE, 31);
+            var hit = prepared(f, ModAttackTypes.BULLET.get());
+            for (int i = 0; i < 33; i++) { f.owner.getRandom().setSeed(successSeed()); f.hit(hit, 1, false); }
+            helper.assertTrue(f.data.getCount(id("blue_fly"), id("the_mulligan")) == 30
+                    && f.data.getCount(id("blue_fly"), FAMILIAR_SOURCE) == 31, "其他来源不占虫群复击三十只门槛，重复道具不叠加上限");
+            f.items.removeFromId(f.owner, id("the_mulligan")); f.items.removeFromId(f.owner, id("the_mulligan"));
+            FamiliarHelper.maintainExistingFamiliars(f.owner);
+            helper.assertTrue(f.data.getCount(id("blue_fly"), id("the_mulligan")) == 30, "移除虫群复击不撤销已生成苍蝇");
+        }
+        helper.succeed();
+    }
+
+    @GameTest(template = "trajectory_empty")
+    public static void sharedSpawnEffectRequiresAndRecordsExplicitSourceWithoutLeakingIt(GameTestHelper helper) {
+        try (Fixture f = new Fixture(helper)) {
+            var context = new ExecutableEffectContext(f.owner);
+            var spawn = (IAbilityEffect) ModExecutableEffects.SPAWN_BLUE_FLY.get();
+            helper.assertTrue(!spawn.applyEffect(context) && f.count("blue_fly") == 0, "缺来源时明确拒绝，不写入通用效果名");
+            context.set(ContextKeys.SOURCE, id("guppys_head"));
+            helper.assertTrue(spawn.applyEffect(context), "显式来源可直接复用效果");
+            var generation = new SimpleTrigger(null, ModExecutableEffects.SPAWN_BLUE_FLY, null, id("cat_set"));
+            helper.assertTrue(generation.getPriority() == ModExecutableEffects.SPAWN_BLUE_FLY.get().getPriority(),
+                    "来源绑定保留共享效果的优先级");
+            new SimpleTrigger(null, ModExecutableEffects.SPAWN_BLUE_FLY, ignored -> false, id("cat_set")).fire(context);
+            helper.assertTrue(f.count("blue_fly") == 1, "条件不满足时不生成");
+            generation.fire(context);
+            new SimpleTrigger(null, ModExecutableEffects.SPAWN_BLUE_FLY).fire(context);
+            helper.assertTrue(f.data.getCount(id("blue_fly"), id("guppys_head")) == 2
+                    && f.data.getCount(id("blue_fly"), id("cat_set")) == 1
+                    && context.get(ContextKeys.SOURCE).equals(id("guppys_head")),
+                    "同效果按触发器来源归属，无来源覆盖时继承上下文且不污染外层来源");
+        }
+        helper.succeed();
+    }
+
+    @GameTest(template = "trajectory_empty")
+    public static void reusedEffectsCarryModuleSourceThroughNestedGenerationAndProjectileHits(GameTestHelper helper) {
+        try (Fixture f = new Fixture(helper)) {
+            var source = id("random_module");
+            TriggerModule module = new TriggerModule(new CompositeTrigger(List.of(
+                    new SimpleTrigger(ModTriggerTypes.ATTACK_PLAN, ModExecutableEffects.MOMS_WIG, null, source),
+                    new SimpleTrigger(ModTriggerTypes.ATTACK_CONTEXT_PREPARE,
+                            ModExecutableEffects.THE_MULLIGAN_ATTACHMENT, null, source)))) {};
+            f.owner.getAttribute(Attributes.LUCK).setBaseValue(100);
+            var context = new ExecutableEffectContext(f.owner);
+            var request = AttackRequest.generated(f.owner, ModAttackTypes.BULLET.get(),
+                    AttackOrigin.PLAYER_PRIMARY, AttackPipelineMode.FULL, false);
+            var attack = f.attack(ModAttackTypes.BULLET.get());
+            context.set(ContextKeys.EVENT, new AttackPlanEvent(request, new AttackPlan(request, List.of(attack))));
+            module.fire(context, ModTriggerTypes.ATTACK_PLAN);
+            helper.assertTrue(f.data.getCount(id("blue_spider"), source) == 1
+                    && f.data.getCount(id("blue_spider"), id("moms_wig")) == 0,
+                    "复用假发效果时，嵌套生成沿用模块来源");
+            context.set(ContextKeys.ATTACK_CONTEXT, attack);
+            module.fire(context, ModTriggerTypes.ATTACK_CONTEXT_PREPARE);
+            f.owner.getRandom().setSeed(successSeed());
+            f.hit(attack, 1, false);
+            helper.assertTrue(f.data.getCount(id("blue_fly"), source) == 1
+                    && f.data.getCount(id("blue_fly"), id("the_mulligan")) == 0
+                    && !context.has(ContextKeys.SOURCE),
+                    "子弹命中时保留发射前绑定来源，不写死为原道具，也不污染外层上下文");
         }
         helper.succeed();
     }

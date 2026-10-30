@@ -16,13 +16,11 @@ import net.minecraft.world.entity.LivingEntity;
 import java.util.List;
 
 public class LocustGeneration extends PeriodicModule {
-    private static final CompositeTrigger TRIGGER = new CompositeTrigger(List.of(
-            new SimpleTrigger(ModTriggerTypes.EMTPY, ModExecutableEffects.ADD_FAMILIARS)));
-
     private final ResourceLocation familiar;
 
-    public LocustGeneration(ResourceLocation familiar) {
-        super(TRIGGER);
+    public LocustGeneration(ResourceLocation familiar, ResourceLocation source) {
+        super(new CompositeTrigger(List.of(new SimpleTrigger(ModTriggerTypes.EMTPY,
+                ModExecutableEffects.ADD_FAMILIARS, null, source))));
         this.familiar = familiar;
     }
 

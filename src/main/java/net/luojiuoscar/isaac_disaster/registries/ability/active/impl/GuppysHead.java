@@ -1,5 +1,6 @@
 package net.luojiuoscar.isaac_disaster.registries.ability.active.impl;
 
+import net.luojiuoscar.isaac_disaster.item.ModActiveItems;
 import net.luojiuoscar.isaac_disaster.registries.ability.active.ActiveAbility;
 import net.luojiuoscar.isaac_disaster.registries.ability.set.ModSetAbilities;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.CompositeTrigger;
@@ -21,7 +22,8 @@ import java.util.List;
 
 public final class GuppysHead extends ActiveAbility {
     private static final CompositeTrigger TRIGGER = new CompositeTrigger(List.of(
-            new SimpleTrigger(ModTriggerTypes.EMTPY, ModExecutableEffects.GUPPYS_HEAD)));
+            new SimpleTrigger(ModTriggerTypes.EMTPY, ModExecutableEffects.GUPPYS_HEAD,
+                    null, ModActiveItems.GUPPYS_HEAD.getId())));
 
     public GuppysHead(int id, int level) { super(TRIGGER, id, level); }
 

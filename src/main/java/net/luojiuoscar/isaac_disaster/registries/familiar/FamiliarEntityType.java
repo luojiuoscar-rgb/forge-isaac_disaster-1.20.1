@@ -1,11 +1,8 @@
 package net.luojiuoscar.isaac_disaster.registries.familiar;
 
 import net.luojiuoscar.isaac_disaster.entity.familiar.base.AbstractIsaacFamiliarEntity;
+import net.luojiuoscar.isaac_disaster.capability.player.PlayerFamiliarDataProvider;
 import net.luojiuoscar.isaac_disaster.helper.FamiliarHelper;
-import net.luojiuoscar.isaac_disaster.registries.ability_effect.ContextKeys;
-import net.luojiuoscar.isaac_disaster.registries.ability_effect.ExecutableEffectContext;
-import net.luojiuoscar.isaac_disaster.registries.ability_effect.IAbilityEffect;
-import net.luojiuoscar.isaac_disaster.registries.ability_effect.ModExecutableEffects;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.RandomSource;
@@ -83,13 +80,12 @@ public class FamiliarEntityType {
     }
 
     /** Adds one type-defined batch through the normal familiar quota and admission system. */
-    public boolean addEntry(ServerPlayer player, ResourceLocation typeId, RandomSource random) {
+    public boolean addEntry(ServerPlayer player, ResourceLocation typeId, ResourceLocation source, RandomSource random) {
         if (FamiliarHelper.getFamiliarType(typeId) != this) return false;
-        ExecutableEffectContext context = new ExecutableEffectContext(player);
-        context.set(ContextKeys.RESOURCE_LOCATIONS, List.of(typeId));
-        context.set(ContextKeys.COUNT, Math.max(0, getAdditionCount(random)));
-        return ModExecutableEffects.ADD_FAMILIARS.get() instanceof IAbilityEffect effect
-                && effect.applyEffect(context);
+        var data = player.getCapability(PlayerFamiliarDataProvider.PLAYER_FAMILIAR_DATA).resolve().orElse(null);
+        if (data == null) return false;
+        data.addCount(typeId, source, Math.max(0, getAdditionCount(random)));
+        return true;
     }
 
     protected int getAdditionCount(RandomSource random) {
@@ -97,9 +93,9 @@ public class FamiliarEntityType {
     }
 
     /** Immediately spawns one type-defined batch at an explicit position using the caller's random source. */
-    public List<AbstractIsaacFamiliarEntity> spawnEntry(ServerPlayer player, ResourceLocation typeId, Vec3 position, RandomSource random) {
+    public List<AbstractIsaacFamiliarEntity> spawnEntry(ServerPlayer player, ResourceLocation typeId, ResourceLocation source, Vec3 position, RandomSource random) {
         if (FamiliarHelper.getFamiliarType(typeId) != this) return List.of();
-        return FamiliarHelper.spawnFamiliars(player, typeId, position, Math.max(0, getAdditionCount(random)));
+        return FamiliarHelper.spawnFamiliars(player, typeId, source, position, Math.max(0, getAdditionCount(random)));
     }
 
     /**

@@ -1,5 +1,6 @@
 package net.luojiuoscar.isaac_disaster.commands.familiar;
 
+import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
@@ -25,6 +26,7 @@ import java.util.Collection;
  * Debug commands for adding and removing Isaac familiars from player capability data.
  */
 public class FamiliarCmd {
+    private static final ResourceLocation SOURCE = ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "command");
     private static final DynamicCommandExceptionType INVALID_FAMILIAR =
             new DynamicCommandExceptionType(id -> Component.literal("Invalid familiar type: " + id));
 
@@ -75,7 +77,8 @@ public class FamiliarCmd {
                     .resolve().orElse(null);
             if (data == null) continue;
             int previousCount = data.getCount(type);
-            data.addCount(type, delta);
+            if (delta >= 0) data.addCount(type, SOURCE, delta);
+            else data.removeCount(type, SOURCE, -delta);
             changedCount += Math.abs((long) data.getCount(type) - previousCount);
             FamiliarHelper.maintainExistingFamiliars(player);
             recordedCount += data.getCount(type);

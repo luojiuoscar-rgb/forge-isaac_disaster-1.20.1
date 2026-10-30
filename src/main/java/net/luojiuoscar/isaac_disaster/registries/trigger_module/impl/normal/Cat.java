@@ -2,6 +2,9 @@ package net.luojiuoscar.isaac_disaster.registries.trigger_module.impl.normal;
 
 import net.luojiuoscar.isaac_disaster.entity.familiar.base.AbstractIsaacFamiliarEntity;
 import net.luojiuoscar.isaac_disaster.helper.EntityHelper;
+import net.luojiuoscar.isaac_disaster.IsaacDisaster;
+import net.minecraft.resources.ResourceLocation;
+import net.luojiuoscar.isaac_disaster.registries.ability_effect.AbilityEffectEntry;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.CompositeTrigger;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ContextKeys;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ExecutableEffectContext;
@@ -15,8 +18,13 @@ import net.minecraftforge.event.entity.living.LivingDamageEvent;
 import java.util.List;
 
 public final class Cat extends TriggerModule {
+    private static final ResourceLocation CAT_SET = ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "cat_set");
+    private static final AbilityEffectEntry GENERATION = new AbilityEffectEntry(
+            ModExecutableEffects.SPAWN_BLUE_FLY, context -> {
+                context.set(ContextKeys.TARGET_POSITION, context.getEntity().position());
+            });
     private static final CompositeTrigger TRIGGER = new CompositeTrigger(List.of(
-            new SimpleTrigger(ModTriggerTypes.DEAL_DAMAGE, ModExecutableEffects.CAT, Cat::shouldGenerate)));
+            new SimpleTrigger(ModTriggerTypes.DEAL_DAMAGE, () -> GENERATION, Cat::shouldGenerate, CAT_SET)));
 
     public Cat() { super(TRIGGER); }
 

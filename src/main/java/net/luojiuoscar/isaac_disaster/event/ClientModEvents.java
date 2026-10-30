@@ -11,7 +11,8 @@ import net.luojiuoscar.isaac_disaster.client.model.creature.FlyModel;
 import net.luojiuoscar.isaac_disaster.client.model.creature.SpiderModel;
 import net.luojiuoscar.isaac_disaster.client.model.familiar.tear_baby.TearBabyModel;
 import net.luojiuoscar.isaac_disaster.client.model.familiar.harlequin_baby.HarlequinBabyModel;
-import net.luojiuoscar.isaac_disaster.client.renderer.familiar.tear_baby.TearBabyRenderer;
+import net.luojiuoscar.isaac_disaster.client.model.familiar.rotten_baby.RottenBabyModel;
+import net.luojiuoscar.isaac_disaster.client.renderer.familiar.baby.BabyFamiliarRenderer;
 import net.luojiuoscar.isaac_disaster.client.renderer.creature.FlyRenderer;
 import net.luojiuoscar.isaac_disaster.client.renderer.creature.SpiderRenderer;
 import net.luojiuoscar.isaac_disaster.client.gui.charge_bar.ChargeBarHudOverlay;
@@ -54,6 +55,7 @@ public class ClientModEvents {
         event.registerLayerDefinition(SpiderModel.LAYER_LOCATION, SpiderModel::createBodyLayer);
         event.registerLayerDefinition(TearBabyModel.LAYER_LOCATION, TearBabyModel::createBodyLayer);
         event.registerLayerDefinition(HarlequinBabyModel.LAYER_LOCATION, HarlequinBabyModel::createBodyLayer);
+        event.registerLayerDefinition(RottenBabyModel.LAYER_LOCATION, RottenBabyModel::createBodyLayer);
     }
 
     // 订阅实体渲染器注册事件
@@ -63,15 +65,18 @@ public class ClientModEvents {
         event.registerEntityRenderer(ModEntities.GIGA_BOMB.get(), CustomTntRenderer::new);
         event.registerEntityRenderer(ModEntities.SELECTIVE_EFFECT_CLOUD.get(), NoopRenderer::new);
         event.registerEntityRenderer(ModEntities.MOM_KNIFE.get(), MomKnifeRenderer::new);
-        event.registerEntityRenderer(ModEntities.BROTHER_BOBBY.get(), context -> new TearBabyRenderer<>(context,
+        event.registerEntityRenderer(ModEntities.BROTHER_BOBBY.get(), context -> new BabyFamiliarRenderer<>(context,
                 ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "textures/entity/familiar/brother_bobby.png")));
-        event.registerEntityRenderer(ModEntities.SISTER_MAGGY.get(), context -> new TearBabyRenderer<>(context,
+        event.registerEntityRenderer(ModEntities.SISTER_MAGGY.get(), context -> new BabyFamiliarRenderer<>(context,
                 ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "textures/entity/familiar/sister_maggy.png")));
-        event.registerEntityRenderer(ModEntities.GHOST_BABY.get(), context -> new TearBabyRenderer<>(context,
+        event.registerEntityRenderer(ModEntities.GHOST_BABY.get(), context -> new BabyFamiliarRenderer<>(context,
                 ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "textures/entity/familiar/ghost_baby.png")));
-        event.registerEntityRenderer(ModEntities.HARLEQUIN_BABY.get(), context -> new TearBabyRenderer<>(context,
+        event.registerEntityRenderer(ModEntities.HARLEQUIN_BABY.get(), context -> new BabyFamiliarRenderer<>(context,
                 ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "textures/entity/familiar/harlequin_baby.png"),
                 new HarlequinBabyModel(context.bakeLayer(HarlequinBabyModel.LAYER_LOCATION))));
+        event.registerEntityRenderer(ModEntities.ROTTEN_BABY.get(), context -> new BabyFamiliarRenderer<>(context,
+                ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "textures/entity/familiar/rotten_baby.png"),
+                new RottenBabyModel(context.bakeLayer(RottenBabyModel.LAYER_LOCATION))));
         event.registerEntityRenderer(ModEntities.BLUE_FLY.get(), FlyRenderer::new);
         event.registerEntityRenderer(ModEntities.LOCUST_OF_PESTILENCE.get(), FlyRenderer::new);
         event.registerEntityRenderer(ModEntities.LOCUST_OF_FAMINE.get(), FlyRenderer::new);

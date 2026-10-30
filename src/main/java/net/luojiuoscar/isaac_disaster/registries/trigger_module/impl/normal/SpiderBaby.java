@@ -1,5 +1,6 @@
 package net.luojiuoscar.isaac_disaster.registries.trigger_module.impl.normal;
 
+import net.luojiuoscar.isaac_disaster.item.ModPassiveItems;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.CompositeTrigger;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ModExecutableEffects;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.SimpleTrigger;
@@ -17,7 +18,7 @@ public final class SpiderBaby extends TriggerModule {
                         var luck = entity.getAttribute(Attributes.LUCK);
                         double probability = chance(luck == null ? 0 : luck.getValue());
                         return probability > 0 && entity.getRandom().nextDouble() < probability;
-                    })));
+                    }, ModPassiveItems.SPIDER_BABY.getId())));
 
     public SpiderBaby() { super(TRIGGER); }
 }

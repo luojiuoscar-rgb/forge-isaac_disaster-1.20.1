@@ -27,6 +27,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 @GameTestHolder("isaac_disaster_mom_knife")
 @PrefixGameTestTemplate(false)
 public final class MomKnifeMovementGameTests {
+    private static final ResourceLocation FAMILIAR_SOURCE = ResourceLocation.parse("isaac_disaster:command");
     private static final AtomicInteger NEXT_FIXTURE = new AtomicInteger();
     private static final ResourceLocation MOM_KNIFE =
             ResourceLocation.fromNamespaceAndPath("isaac_disaster", "mom_knife");
@@ -436,7 +437,7 @@ public final class MomKnifeMovementGameTests {
     @GameTest(template = "trajectory_empty", batch = "mom_knife_movement", timeoutTicks = 50)
     public static void knivesKeepIndependentHitRecordsForTheSameVictim(GameTestHelper helper) {
         Fixture f = new Fixture(helper, 180);
-        f.data.addCount(MOM_KNIFE, 1);
+        f.data.addCount(MOM_KNIFE, FAMILIAR_SOURCE, 1);
         helper.assertTrue(FamiliarHelper.spawnNextMissingFamiliar(f.owner), "The second knife is created");
         MomKnifeEntity second = (MomKnifeEntity) helper.getLevel().getEntity(
                 f.data.getEntry(MOM_KNIFE).orElseThrow().getEntityId(1));
@@ -518,7 +519,7 @@ public final class MomKnifeMovementGameTests {
     @GameTest(template = "trajectory_empty", batch = "mom_knife_movement")
     public static void queuedKnivesDoNotIncreaseThePopulatedFormationRange(GameTestHelper helper) {
         try (Fixture f = new Fixture(helper, 300)) {
-            f.data.setCount(MOM_KNIFE, 15);
+            f.data.setCount(MOM_KNIFE, FAMILIAR_SOURCE, 15);
             f.spawnTarget();
             f.target.setPos(f.owner.position().add(0, 0, -6.3));
             f.knife.tick();
@@ -620,7 +621,7 @@ public final class MomKnifeMovementGameTests {
                     anchor.getZ() + 0.5);
             owner.setYRot(0);
             data = owner.getCapability(PlayerFamiliarDataProvider.PLAYER_FAMILIAR_DATA).resolve().orElseThrow();
-            data.addCount(MOM_KNIFE, 1);
+            data.addCount(MOM_KNIFE, FAMILIAR_SOURCE, 1);
             helper.assertTrue(FamiliarHelper.spawnNextMissingFamiliar(owner), "Scheduler creates knife");
             knife = (MomKnifeEntity) helper.getLevel().getEntity(data.getEntry(MOM_KNIFE).orElseThrow().getEntityId(0));
             helper.assertTrue(knife != null, "Knife is registered");
@@ -628,7 +629,7 @@ public final class MomKnifeMovementGameTests {
         }
 
         void populateKnives(int count) {
-            data.setCount(MOM_KNIFE, count);
+            data.setCount(MOM_KNIFE, FAMILIAR_SOURCE, count);
             while (data.getEntry(MOM_KNIFE).orElseThrow().getEntityCount() < count) {
                 helper.assertTrue(FamiliarHelper.spawnNextMissingFamiliar(owner), "A requested knife is spawned");
             }

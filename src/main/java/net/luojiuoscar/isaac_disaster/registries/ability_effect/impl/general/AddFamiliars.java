@@ -14,6 +14,8 @@ public final class AddFamiliars implements IAbilityEffect {
     @Override
     public boolean applyEffect(ExecutableEffectContext context) {
         if (!(context.getEntity() instanceof ServerPlayer player)) return false;
+        ResourceLocation source = context.get(ContextKeys.SOURCE);
+        if (source == null) return false;
         List<ResourceLocation> types = context.get(ContextKeys.RESOURCE_LOCATIONS);
         if (types == null || types.isEmpty() || types.stream().anyMatch(type -> !FamiliarHelper.isRegisteredFamiliarType(type))) {
             return false;
@@ -21,7 +23,7 @@ public final class AddFamiliars implements IAbilityEffect {
         var data = player.getCapability(PlayerFamiliarDataProvider.PLAYER_FAMILIAR_DATA).resolve();
         if (data.isEmpty()) return false;
         int count = Math.max(0, context.getOrDefault(ContextKeys.COUNT, 1));
-        for (ResourceLocation type : types) data.get().addCount(type, count);
+        for (ResourceLocation type : types) data.get().addCount(type, source, count);
         return true;
     }
 }

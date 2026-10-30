@@ -123,8 +123,7 @@ public abstract class AbstractSpiderFamiliarEntity extends AbstractIsaacFamiliar
         if (!Float.isFinite(damage) || damage < 0) damage = 0;
         boolean accepted;
         try {
-            data.removeEntity(type, getUUID());
-            data.addCount(type, -1);
+            data.consumeEntity(type, getUUID());
             accepted = first.hurt(ModDamageSources.familiar(level(), this, owner), damage);
         } finally {
             discardSilently();

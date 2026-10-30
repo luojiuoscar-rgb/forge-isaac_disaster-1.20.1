@@ -27,12 +27,14 @@ public final class CricketLeg implements IAbilityEffect {
         if (!player.getCapability(PlayerFamiliarDataProvider.PLAYER_FAMILIAR_DATA).isPresent()) return false;
         double chance = getChance(context.getOrDefault(ContextKeys.AMPLIFIER, 1.0));
         if (chance <= 0 || player.getRandom().nextDouble() >= chance) return true;
+        var source = context.get(ContextKeys.SOURCE);
+        if (source == null) return false;
 
         var candidates = FamiliarHelper.getRegisteredFamiliarTypeIds()
                 .filter(id -> isEligibleType(FamiliarHelper.getFamiliarType(id))).toList();
         if (candidates.isEmpty()) return true;
         var selected = candidates.get(player.getRandom().nextInt(candidates.size()));
-        FamiliarHelper.getFamiliarType(selected).spawnEntry(player, selected, event.getEntity().position(), player.getRandom());
+        FamiliarHelper.getFamiliarType(selected).spawnEntry(player, selected, source, event.getEntity().position(), player.getRandom());
         return true;
     }
 

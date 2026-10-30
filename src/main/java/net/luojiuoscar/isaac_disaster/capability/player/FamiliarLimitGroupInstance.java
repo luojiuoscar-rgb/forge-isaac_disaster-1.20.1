@@ -62,13 +62,9 @@ final class FamiliarLimitGroupInstance {
                 ResourceLocation victimId = victim.entry.getType();
                 int displaced = Math.min(needed, getQuota(victimId));
                 setQuota(victimId, getQuota(victimId) - displaced);
-                if (!victim.type.retainOverflow()) victim.entry.setCount(victim.entry.getCount() - displaced);
                 setQuota(id, getQuota(id) + displaced);
                 needed -= displaced;
             }
-        }
-        for (Member member : members) {
-            if (!member.type.retainOverflow()) member.entry.setCount(getQuota(member.entry.getType()));
         }
     }
 

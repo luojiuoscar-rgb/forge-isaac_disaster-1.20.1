@@ -55,6 +55,7 @@ import java.util.function.Consumer;
 @GameTestHolder("isaac_disaster_locust")
 @PrefixGameTestTemplate(false)
 public final class LocustGameTests {
+    private static final ResourceLocation FAMILIAR_SOURCE = ResourceLocation.parse("isaac_disaster:command");
     private static final AtomicInteger NEXT_FIXTURE = new AtomicInteger();
     private static final double DAMAGE = 3.5;
 
@@ -333,7 +334,7 @@ public final class LocustGameTests {
     @GameTest(template = "trajectory_empty", batch = "locust_contact")
     public static void variantsShareTheFlyLimitAndRemainIndependentlyAddressable(GameTestHelper helper) {
         try (Fixture fixture = new Fixture(helper, "blue_fly")) {
-            fixture.data.setCount(fixture.type, 64);
+            fixture.data.setCount(fixture.type, FAMILIAR_SOURCE, 64);
             for (String name : List.of("locust_of_pestilence", "locust_of_famine", "locust_of_death", "locust_of_conquest", "locust_of_war")) {
                 ResourceLocation type = ResourceLocation.fromNamespaceAndPath("isaac_disaster", name);
                 int result = helper.getLevel().getServer().getCommands().performPrefixedCommand(
@@ -342,7 +343,7 @@ public final class LocustGameTests {
                 helper.assertTrue(result == 1 && fixture.data.getEffectiveCount(type) == 1,
                         "Command accepts an independent locust descriptor: " + name);
             }
-            fixture.data.addCount(fixture.type, 1);
+            fixture.data.addCount(fixture.type, FAMILIAR_SOURCE, 1);
             helper.assertTrue(fixture.data.getEffectiveCount(fixture.type) == 59 && fixture.data.getCount(fixture.type) == 59,
                     "Five higher-priority locusts replace five ordinary flies within the shared 64 slots");
         }
@@ -352,10 +353,10 @@ public final class LocustGameTests {
     @GameTest(template = "trajectory_empty", batch = "locust_contact")
     public static void equalPriorityLocustsDoNotPreemptExistingLocusts(GameTestHelper helper) {
         try (Fixture fixture = new Fixture(helper, "locust_of_pestilence")) {
-            fixture.data.setCount(fixture.type, 64);
+            fixture.data.setCount(fixture.type, FAMILIAR_SOURCE, 64);
             for (String name : List.of("locust_of_famine", "locust_of_death", "locust_of_conquest", "locust_of_war", "blue_fly")) {
                 ResourceLocation incoming = ResourceLocation.fromNamespaceAndPath("isaac_disaster", name);
-                fixture.data.addCount(incoming, 1);
+                fixture.data.addCount(incoming, FAMILIAR_SOURCE, 1);
                 helper.assertTrue(fixture.data.getCount(incoming) == 0 && fixture.data.getEffectiveCount(incoming) == 0,
                         "Equal or lower priority cannot replace an admitted locust or retain overflow: " + name);
             }
@@ -524,7 +525,7 @@ public final class LocustGameTests {
             data = owner.getCapability(PlayerFamiliarDataProvider.PLAYER_FAMILIAR_DATA).resolve().orElseThrow();
             type = ResourceLocation.fromNamespaceAndPath("isaac_disaster", name);
             helper.assertTrue(FamiliarHelper.isRegisteredFamiliarType(type), "Registered familiar descriptor: " + type);
-            data.setCount(type, 1);
+            data.setCount(type, FAMILIAR_SOURCE, 1);
             helper.assertTrue(FamiliarHelper.spawnNextMissingFamiliar(owner), "Scheduler creates " + type);
             familiar = (AbstractIsaacFamiliarEntity) level.getEntity(data.getEntry(type).orElseThrow().getEntityId(0));
             helper.assertTrue(familiar != null && familiar.getOwner() == owner && familiar.isValidFamiliar(),
