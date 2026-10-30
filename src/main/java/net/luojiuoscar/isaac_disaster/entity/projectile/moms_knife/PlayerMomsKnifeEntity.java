@@ -303,8 +303,7 @@ public final class PlayerMomsKnifeEntity extends Entity implements IBulletObject
         if (!discardsOnReturn() && !MomsKnifeAttack.isSelectedAndReady(owner)) return false;
         return owner.getCapability(PlayerAbilityProvider.PLAYER_ABILITY).map(ability ->
                 (discardsOnReturn() || ability.getAttackTypes().containsKey(ModAttackTypes.MOMS_KNIFE.getId()))
-                        && (getMode() == Mode.ONE_WAY
-                        || getUUID().equals(ability.getRuntimeEntities().getId(getSourceId(), getHeldSlot())))).orElse(false);
+                        && getUUID().equals(ability.getRuntimeEntities().getId(getSourceId(), getHeldSlot()))).orElse(false);
     }
 
     public boolean launch(double range, double speed) {

@@ -14,6 +14,7 @@ import net.luojiuoscar.isaac_disaster.registries.attack_type.ModAttackTypes;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.impl.MomsKnifeAttack;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.impl.LaserAttack;
 import net.luojiuoscar.isaac_disaster.networking.packet.laser.LaserBeamBatchS2CPacket;
+import net.luojiuoscar.isaac_disaster.networking.ModMessages;
 import net.minecraft.core.BlockPos;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
@@ -46,6 +47,62 @@ import java.util.function.Consumer;
 @GameTestHolder("isaac_disaster_player_knife")
 @PrefixGameTestTemplate(false)
 public final class PlayerMomsKnifeLaserGameTests {
+    @GameTest(template = "trajectory_empty", batch = "knife_laser", timeoutTicks = 10)
+    public static void nineteenKnifeLinksShareOneVisualPacketAtTheEndOfTheTick(GameTestHelper helper) {
+        var f = fixture(helper);
+        f.owner.setPos(f.owner.position().add(0, 512, 0));
+        f.main.initialize(f.owner);
+        ModPassiveAbilities.TECHNOLOGY.get().handleObtain(f.owner, null);
+        ModPassiveAbilities.LOKIS_HORNS.get().handleObtain(f.owner, null);
+        f.owner.getAttribute(ModAttributes.BULLET_COUNT.get()).setBaseValue(16);
+        f.owner.getAttribute(Attributes.LUCK).setBaseValue(100);
+        var attack = (MomsKnifeAttack) ModAttackTypes.MOMS_KNIFE.get();
+        f.ability.setChargeAmount(attack.getChargeBarId(), attack.getTotalCharge(f.owner));
+        attack.onReleased(f.owner);
+        var knives = HeldMomsKnifeGroup.knives(f.owner);
+        PacketRecorder recorder = new PacketRecorder(f.owner);
+        knives.forEach(PlayerMomsKnifeEntity::tick);
+        List<Vec3> endpoints = knives.stream().map(PlayerMomsKnifeEntity::position).toList();
+        try {
+            helper.assertTrue(knives.size() == 19, "The main and Loki knives all participate");
+            helper.assertTrue(recorder.payloads.isEmpty(), "Connection visuals wait until the server tick ends");
+        } catch (RuntimeException | Error failure) { f.close(); throw failure; }
+        helper.runAfterDelay(1, () -> {
+            try {
+                helper.assertTrue(recorder.payloads.size() == 1,
+                        "All nineteen links share one visual packet: " + recorder.payloads.size());
+                FriendlyByteBuf buffer = recorder.payloads.get(0).getData();
+                try {
+                    buffer.readVarInt();
+                    var beams = new LaserBeamBatchS2CPacket(buffer).entries();
+                    helper.assertTrue(beams.size() == 19 && endpoints.stream().allMatch(end -> beams.stream()
+                                    .anyMatch(beam -> beam.end().distanceTo(end) < 1e-5)),
+                            "Batching retains the separate knife endpoints");
+                } finally { buffer.release(); }
+                helper.succeed();
+            } finally { f.close(); }
+        });
+    }
+
+    @GameTest(template = "trajectory_empty", batch = "knife_laser")
+    public static void ordinaryAndConnectingLasersRejectTheSameInvalidInputs(GameTestHelper helper) {
+        try (var f = fixture(helper)) {
+            SegmentProbe laser = new SegmentProbe();
+            AttackContext context = AttackContext.builder(f.owner, f.main).attackType(ModAttackTypes.LASER.get())
+                    .position(center(f)).direction(new Vec3(0, 0, 1)).range(0.65).damage(0.2).build();
+            for (double width : new double[]{0, Double.NaN, Double.POSITIVE_INFINITY}) {
+                laser.widthMultiplier = width;
+                helper.assertTrue(!laser.fireOrdinary(context), "Ordinary lasers reject invalid collision widths");
+                helper.assertTrue(!laser.shootBetween(context), "Connections use the same width validation");
+            }
+            laser.widthMultiplier = 1;
+            AttackContext invalidPosition = context.toBuilder().position(new Vec3(Double.NaN, 0, 0)).build();
+            helper.assertTrue(!laser.fireOrdinary(invalidPosition) && !laser.shootBetween(invalidPosition),
+                    "Both entries reject invalid positions before collision traversal");
+        }
+        helper.succeed();
+    }
+
     @GameTest(template = "trajectory_empty", batch = "knife_laser")
     public static void aShortLinkStopsAtItsEndpointAfterHittingAnEnemy(GameTestHelper helper) {
         try (var f = fixture(helper)) {
@@ -66,14 +123,18 @@ public final class PlayerMomsKnifeLaserGameTests {
 
     @GameTest(template = "trajectory_empty", batch = "knife_laser")
     public static void theLinkUsesTheSameVisualPacketsAsOrdinaryLaserAttack(GameTestHelper helper) {
-        try (var f = fixture(helper)) {
-            PacketRecorder recorder = new PacketRecorder(f.owner);
+        var f = fixture(helper);
+        f.owner.setPos(f.owner.position().add(0, 768, 0));
+        f.main.initialize(f.owner);
+        PacketRecorder recorder = new PacketRecorder(f.owner);
+        final int discriminator;
+        final Vec3 endpoint;
+        try {
             ModAttackTypes.LASER.get().shoot(AttackContext.builder(f.owner, f.owner)
                     .attackType(ModAttackTypes.LASER.get()).position(center(f)).direction(new Vec3(0, 0, 1))
                     .range(3).damage(0.2).build());
             helper.assertTrue(recorder.payloads.size() == 1, "An ordinary laser sends its existing visual packet: " + recorder.payloads.size());
             FriendlyByteBuf ordinary = recorder.payloads.get(0).getData();
-            int discriminator;
             try {
                 discriminator = ordinary.readVarInt();
                 helper.assertTrue(!new LaserBeamBatchS2CPacket(ordinary).entries().isEmpty(),
@@ -86,19 +147,25 @@ public final class PlayerMomsKnifeLaserGameTests {
             attack.onReleased(f.owner);
             recorder.payloads.clear();
             f.main.tick();
-            helper.assertTrue(recorder.payloads.size() == 1, "The knife tick sends the existing laser visual packet");
-            FriendlyByteBuf linked = recorder.payloads.get(0).getData();
+            endpoint = f.main.position();
+            helper.assertTrue(recorder.payloads.isEmpty(), "Only the connection waits for the end-of-tick visual batch");
+        } catch (RuntimeException | Error failure) { f.close(); throw failure; }
+        helper.runAfterDelay(1, () -> {
             try {
-                helper.assertTrue(linked.readVarInt() == discriminator, "The link uses the ordinary laser packet type");
-                var beams = new LaserBeamBatchS2CPacket(linked).entries();
-                helper.assertTrue(beams.size() == 1 && beams.get(0).start().distanceTo(center(f)) < 1e-5
-                                && beams.get(0).end().distanceTo(f.main.position()) < 1e-5,
-                        "The ordinary laser visual runs exactly from the player to the knife");
-                helper.assertTrue(beams.get(0).color() == 0xFF0000 && beams.get(0).width() > 0,
-                        "The link uses the ordinary laser appearance");
-            } finally { linked.release(); }
-        }
-        helper.succeed();
+                helper.assertTrue(recorder.payloads.size() == 1, "The connection uses one existing laser visual packet");
+                FriendlyByteBuf linked = recorder.payloads.get(0).getData();
+                try {
+                    helper.assertTrue(linked.readVarInt() == discriminator, "The link uses the ordinary laser packet type");
+                    var beams = new LaserBeamBatchS2CPacket(linked).entries();
+                    helper.assertTrue(beams.size() == 1 && beams.get(0).start().distanceTo(center(f)) < 1e-5
+                                    && beams.get(0).end().distanceTo(endpoint) < 1e-5,
+                            "The ordinary laser visual runs exactly from the player to the knife");
+                    helper.assertTrue(beams.get(0).color() == 0xFF0000 && beams.get(0).width() > 0,
+                            "The link uses the ordinary laser appearance");
+                } finally { linked.release(); }
+                helper.succeed();
+            } finally { f.close(); }
+        });
     }
 
     @GameTest(template = "trajectory_empty", batch = "knife_laser", timeoutTicks = 30)
@@ -279,10 +346,16 @@ public final class PlayerMomsKnifeLaserGameTests {
 
     private static final class PacketRecorder extends Connection {
         final List<ClientboundCustomPayloadPacket> payloads = new ArrayList<>();
+        private int laserDiscriminator = -1;
 
         PacketRecorder(ServerPlayer player) {
             super(PacketFlow.SERVERBOUND);
             new ServerGamePacketListenerImpl(player.server, this, player);
+            ModMessages.sentToPlayer(new LaserBeamBatchS2CPacket(List.of(
+                    new LaserBeamBatchS2CPacket.Beam(Vec3.ZERO, new Vec3(0, 0, 1), 0.25f, 0xFF0000))), player);
+            FriendlyByteBuf calibration = payloads.get(0).getData();
+            try { laserDiscriminator = calibration.readVarInt(); }
+            finally { calibration.release(); payloads.clear(); }
         }
 
         @Override public void send(Packet<?> packet) { record(packet); }
@@ -290,14 +363,23 @@ public final class PlayerMomsKnifeLaserGameTests {
 
         private void record(Packet<?> packet) {
             if (packet instanceof ClientboundCustomPayloadPacket payload
-                    && payload.getIdentifier().getNamespace().equals("isaac_disaster")) payloads.add(payload);
+                    && payload.getIdentifier().getNamespace().equals("isaac_disaster")) {
+                var peek = new FriendlyByteBuf(payload.getData().duplicate());
+                if (laserDiscriminator < 0 || peek.readVarInt() == laserDiscriminator) payloads.add(payload);
+            }
         }
     }
 
     private static final class SegmentProbe extends LaserAttack {
         Vec3 lastPosition;
+        double widthMultiplier = 1;
 
         SegmentProbe() { super(0); }
+
+        boolean fireOrdinary(AttackContext context) { return shootSingleLaser(context, 0); }
+
+        @Override
+        protected double getWidth(AttackContext context) { return super.getWidth(context) * widthMultiplier; }
 
         @Override
         protected void stepLaser(LaserProjectile laser, ServerLevel level, AttackContext context) {

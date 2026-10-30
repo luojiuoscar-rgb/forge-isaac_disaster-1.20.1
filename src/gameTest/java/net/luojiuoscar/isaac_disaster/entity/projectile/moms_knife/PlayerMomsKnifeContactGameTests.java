@@ -21,6 +21,7 @@ import net.luojiuoscar.isaac_disaster.registries.attack_pattern.ModAttackPattern
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackContext;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackExecutor;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackOrigin;
+import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackPlan;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackPipelineMode;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackRequest;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.ModAttackTypes;
@@ -349,8 +350,10 @@ public final class PlayerMomsKnifeContactGameTests {
         var context = new ExecutableEffectContext(f.owner);
         context.set(ContextKeys.AMPLIFIER, 2.0);
         ModExecutableEffects.TAMMYS_HEAD.get().apply(context);
-        helper.runAfterDelay(4, () -> helper.assertTrue(emitted.isEmpty(),
-                "No shot before the fifth tick: start=" + start + ", times=" + times));
+        helper.runAfterDelay(1, () -> helper.assertTrue(emitted.size() == 12,
+                "The first round fires at the first scheduler pass: start=" + start + ", times=" + times));
+        helper.runAfterDelay(4, () -> helper.assertTrue(emitted.size() == 12,
+                "Only the later rounds wait for their five-tick interval"));
         helper.onEachTick(() -> {
             for (int i = 0; i < emitted.size(); i++) {
                 var knife = emitted.get(i);
@@ -362,8 +365,8 @@ public final class PlayerMomsKnifeContactGameTests {
             try {
                 helper.assertTrue(emitted.size() == 24 && fired.size() == 2,
                         "Two rounds each emit twelve shots and one event: shots=" + emitted.size() + ", fired=" + fired.size());
-                helper.assertTrue(times.subList(0, 12).stream().allMatch(t -> t == start + 5)
-                                && times.subList(12, 24).stream().allMatch(t -> t == start + 10),
+                helper.assertTrue(times.subList(0, 12).stream().allMatch(t -> t == start)
+                                && times.subList(12, 24).stream().allMatch(t -> t == start + 5),
                         "The five-tick schedule is preserved: start=" + start + ", times=" + times);
                 for (var knife : emitted) helper.assertTrue(knife.isRemoved() && Math.abs(knife.getTraveled() - 24) < 1e-5,
                         "Each independent knife completes all 24 blocks after switching and removing the passive");
@@ -494,19 +497,20 @@ public final class PlayerMomsKnifeContactGameTests {
     }
 
     @GameTest(template = "trajectory_empty", batch = "knife_contact", timeoutTicks = 10)
-    public static void cricketsBodyEnhancesThePreparedBoneBurstToEightWithoutEnablingOtherSplits(GameTestHelper helper) {
+    public static void cricketsBodyAndEnhancedBoneTearsBothSurviveTheFullPreparationFlow(GameTestHelper helper) {
         var f = fixture(helper);
         var items = f.owner.getCapability(PlayerIsaacItemsProvider.PLAYER_ISAAC_ITEMS).orElseThrow(IllegalStateException::new);
         ModPassiveAbilities.CRICKETS_BODY.get().handleObtain(f.owner, null);
+        ModPassiveAbilities.COMPOUND_FRACTURE.get().handleObtain(f.owner, null);
         items.addItem(f.owner, new ItemStack(ModPassiveItems.CRICKETS_BODY.get()));
         f.cow(PlayerMomsKnifeMotion.idlePosition(f.owner, 1).add(0, 0, 0.3));
         AttackContext attack = shotContext(f);
-        attach(f, attack, false);
+        prepare(f, attack);
         helper.assertTrue(attack.getSplitSequence().contains(ModSplitModules.COMPOUND_FRACTURE_ENHANCED.getId()),
                 "The enhancement is selected during preparation");
         items.removeFromIndex(f.owner, 0);
         AttackContext next = shotContext(f);
-        attach(f, next, false);
+        prepare(f, next);
         helper.assertTrue(next.getSplitSequence().contains(ModSplitModules.COMPOUND_FRACTURE.getId())
                         && !next.getSplitSequence().contains(ModSplitModules.COMPOUND_FRACTURE_ENHANCED.getId()),
                 "Removing Cricket's Body affects the next throw rather than the already prepared one");
@@ -526,7 +530,10 @@ public final class PlayerMomsKnifeContactGameTests {
             try {
                 helper.assertTrue(bursts.size() == 1, "Continuous contact still triggers one prepared burst");
                 var children = bursts.get(0).getPreparedContexts();
-                helper.assertTrue(children.size() == 8, "The prepared three-item synergy emits eight bone tears: " + children.size());
+                long bones = children.stream().filter(child -> child.getVisualIds()
+                        .contains(ModBulletVisuals.COMPOUND_FRACTURE_BONE_TEAR.getId())).count();
+                helper.assertTrue(children.size() == 12 && bones == 8,
+                        "The real preparation chain emits eight bone tears and four ordinary tears: " + children.size());
                 for (var child : children) helper.assertTrue(child.getDamage() == 1 && child.getSplitSequence().isEmpty(),
                         "Enhanced children keep half damage without Cricket's Body or bone recursion");
                 helper.succeed();
@@ -539,14 +546,14 @@ public final class PlayerMomsKnifeContactGameTests {
     }
 
     @GameTest(template = "trajectory_empty", batch = "knife_contact")
-    public static void cricketsBodyAttachesNormallyButItsSplitModuleRejectsKnives(GameTestHelper helper) {
+    public static void cricketsBodyAloneSplitsAKnifeIntoFourHalfDamageTears(GameTestHelper helper) {
         try (var f = fixture(helper)) {
             ModPassiveAbilities.CRICKETS_BODY.get().handleObtain(f.owner, null);
             f.cow(PlayerMomsKnifeMotion.idlePosition(f.owner, 1).add(0, 0, 1));
             AttackContext attack = shotContext(f);
+            prepare(f, attack);
             var preparation = new ExecutableEffectContext(f.owner);
             preparation.set(ContextKeys.ATTACK_CONTEXT, attack);
-            ModExecutableEffects.CRICKETS_BODY_ATTACHMENT.get().apply(preparation);
             helper.assertTrue(attack.getSplitSequence().contains(ModSplitModules.CRICKETS_BODY.getId()),
                     "Preparation consistently attaches Cricket's Body; the module decides its supported types");
             for (var type : List.of(ModAttackTypes.BULLET.get(), ModAttackTypes.LASER.get())) {
@@ -556,10 +563,14 @@ public final class PlayerMomsKnifeContactGameTests {
                 helper.assertTrue(ordinary.getSplitSequence().contains(ModSplitModules.CRICKETS_BODY.getId()),
                         "Ordinary bullets and lasers retain their existing Cricket's Body attachment");
             }
-            f.main.launch(0.2, 0.01, attack);
-            f.main.tick();
-            helper.assertTrue(BulletRuntime.INSTANCE.manager(f.level).activeStates().stream().noneMatch(b -> b.getOwner() == f.owner),
-                    "Cricket's Body alone emits no knife hit children");
+            try {
+                f.main.launch(0.2, 0.01, attack);
+                f.main.tick();
+                var children = BulletRuntime.INSTANCE.manager(f.level).activeStates().stream()
+                        .filter(b -> b.getOwner() == f.owner).toList();
+                helper.assertTrue(children.size() == 4 && children.stream().allMatch(child -> child.getDamage() == 1),
+                        "Cricket's Body alone emits four half-damage tears on the first successful contact");
+            } finally { cleanupBullets(f); }
         }
         helper.succeed();
     }
@@ -646,6 +657,12 @@ public final class PlayerMomsKnifeContactGameTests {
     private static void cleanupBullets(PlayerMomsKnifeGameTests.Fixture f) {
         BulletRuntime.INSTANCE.manager(f.level).activeStates().stream().filter(b -> b.getOwner() == f.owner)
                 .toList().forEach(BulletState::discard);
+    }
+
+    private static void prepare(PlayerMomsKnifeGameTests.Fixture f, AttackContext attack) {
+        var request = AttackRequest.withContexts(f.owner, ModAttackTypes.MOMS_KNIFE.get(), AttackOrigin.ABILITY_EXTRA,
+                AttackPipelineMode.PREPARE_AND_EXECUTE, List.of(attack), false);
+        MinecraftForge.EVENT_BUS.post(new AttackContextPrepareEvent(request, new AttackPlan(request, List.of(attack)), attack, 0));
     }
 
     private static AttackContext shotContext(PlayerMomsKnifeGameTests.Fixture f) {
