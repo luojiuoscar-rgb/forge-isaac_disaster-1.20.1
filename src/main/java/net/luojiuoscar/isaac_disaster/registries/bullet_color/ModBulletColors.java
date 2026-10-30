@@ -64,4 +64,7 @@ public class ModBulletColors {
     public static final RegistryObject<BulletColor> HOLY_LIGHT =
             BULLET_COLOR_REGISTRY.register("holy_light", () -> new BulletColor(0x99DDFF, 1.0f, 20));
 
+    public static final RegistryObject<BulletColor> URANUS =
+            BULLET_COLOR_REGISTRY.register("uranus", () -> new BulletColor(0xA7E8FF, 1.0f, 30));
+
 }

@@ -31,6 +31,7 @@ public final class ContextKeys {
     public static final ContextKey<IExecutableEffect> EXECUTABLE_EFFECT = new ContextKey<>();
 
     // 事件触发相关
+    public static final ContextKey<ResourceLocation> SOURCE = new ContextKey<>();
     public static final ContextKey<Event> EVENT = new ContextKey<>();
     public static final ContextKey<IBulletObject> BULLET = new ContextKey<>();
     public static final ContextKey<BulletStickContext> BULLET_STICK = new ContextKey<>();

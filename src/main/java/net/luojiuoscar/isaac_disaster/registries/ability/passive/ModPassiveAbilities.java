@@ -828,4 +828,7 @@ public class ModPassiveAbilities {
     public static final RegistryObject<PassiveAbility> AQUARIUS =
             PASSIVE_ABILITY_REGISTRY.register("aquarius", () -> new Aquarius(ItemId.AQUARIUS.getId(), ItemId.AQUARIUS.getLevel()));
 
+    public static final RegistryObject<PassiveAbility> URANUS =
+            PASSIVE_ABILITY_REGISTRY.register("uranus", () -> new Uranus(ItemId.URANUS.getId(), ItemId.URANUS.getLevel()));
+
 }

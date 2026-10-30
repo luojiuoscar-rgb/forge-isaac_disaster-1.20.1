@@ -1211,4 +1211,11 @@ public class ModExecutableEffects {
     public static final RegistryObject<IExecutableEffect> D10 =
             EXECUTABLE_EFFECT_REGISTRY.register("d10", D10::new);
 
+    public static final RegistryObject<IExecutableEffect> URANUS_ATTACHMENT =
+            EXECUTABLE_EFFECT_REGISTRY.register("uranus_attachment", UranusAttachment::new);
+    public static final RegistryObject<IExecutableEffect> URANUS_SLOW =
+            EXECUTABLE_EFFECT_REGISTRY.register("uranus_slow", UranusSlow::new);
+    public static final RegistryObject<IExecutableEffect> URANUS_FREEZE_ON_KILL =
+            EXECUTABLE_EFFECT_REGISTRY.register("uranus_freeze_on_kill", UranusFreezeOnKill::new);
+
 }

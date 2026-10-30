@@ -57,4 +57,8 @@ public final class ModBulletVisuals {
             "sinus_infection_tear", () -> new TearBulletVisual(2.0D,
                     ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "textures/particle/sinus_infection_tear.png"), false));
 
+    public static final RegistryObject<TearBulletVisual> URANUS_ICE_TEAR = BULLET_VISUAL_REGISTRY.register(
+            "uranus_ice_tear", () -> new TearBulletVisual(3.0D,
+                    ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "textures/particle/uranus_ice_tear.png"), false));
+
 }

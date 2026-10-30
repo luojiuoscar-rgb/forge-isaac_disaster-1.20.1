@@ -835,4 +835,8 @@ public class ModPassiveItems {
             () -> new PassiveItem(new Item.Properties(), ModPassiveAbilities.AQUARIUS));
     static {ItemListManager.PASSIVE_ITEM_LIST.add(AQUARIUS);}
 
+    public static final RegistryObject<Item> URANUS = ITEMS.register("uranus",
+            () -> new PassiveItem(new Item.Properties(), ModPassiveAbilities.URANUS));
+    static {ItemListManager.PASSIVE_ITEM_LIST.add(URANUS);}
+
 }

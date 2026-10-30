@@ -8,6 +8,7 @@ import net.luojiuoscar.isaac_disaster.system.combat_effect.groundeffect.core.Gro
 import net.luojiuoscar.isaac_disaster.helper.TrackingTargetRules;
 import net.luojiuoscar.isaac_disaster.registries.ground_effect.GroundEffectType;
 import net.minecraft.server.level.ServerLevel;
+import net.luojiuoscar.isaac_disaster.effect.ModEffects;
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.AABB;
@@ -147,7 +148,7 @@ public final class GroundEffectManager {
         gameTick++;
         trackingQueries.clear();
         Function<AABB, List<LivingEntity>> trackingCandidates = bounds -> trackingCandidates(bounds,
-                query -> level.getEntitiesOfClass(LivingEntity.class, query, LivingEntity::isAlive));
+                query -> level.getEntitiesOfClass(LivingEntity.class, query, target -> target.isAlive() && !target.hasEffect(ModEffects.FROZEN.get())));
         nextDamageTick.entrySet().removeIf(entry -> entry.getValue() <= gameTick);
         nextEffectTick.entrySet().removeIf(entry -> entry.getValue() <= gameTick);
         List<AbstractGroundEffect> expired = new ArrayList<>();
@@ -266,8 +267,7 @@ public final class GroundEffectManager {
             if (minY > maxY) continue;
             AABB query = cell.bounds(minY - GroundEffectContactGeometry.HEIGHT_TOLERANCE - SURFACE_EPSILON,
                     maxY + GroundEffectContactGeometry.HEIGHT_TOLERANCE + SURFACE_EPSILON);
-            for (LivingEntity target : level.getEntitiesOfClass(LivingEntity.class, query,
-                    LivingEntity::isAlive)) {
+            for (LivingEntity target : level.getEntitiesOfClass(LivingEntity.class, query, LivingEntity::isAlive)) {
                 Set<Long> testedEffects = tested.computeIfAbsent(target.getUUID(), ignored -> new HashSet<>());
                 for (Long identity : entry.getValue()) {
                     if (!testedEffects.add(identity)) continue;
@@ -283,7 +283,7 @@ public final class GroundEffectManager {
                         resolvedOwners.put(effect.ownerUuid(), resolveOwner(level, effect.ownerUuid()));
                     }
                     LivingEntity owner = resolvedOwners.get(effect.ownerUuid());
-                    boolean damageEligible = !target.isInvulnerable()
+                    boolean damageEligible = !target.isInvulnerable() && !target.hasEffect(ModEffects.FROZEN.get())
                             && (effect.ownerUuid() == null || owner != null)
                             && eligible.computeIfAbsent(key,
                                     ignored -> owner == null || TrackingTargetRules.eligible(level, owner, target));
@@ -310,7 +310,7 @@ public final class GroundEffectManager {
         for (Map.Entry<ContactKey, AbstractGroundEffect> entry : damageContacts.entrySet()) {
             ContactKey key = entry.getKey();
             LivingEntity target = level.getEntity(key.target()) instanceof LivingEntity living ? living : null;
-            if (target == null) continue;
+            if (target == null || target.hasEffect(ModEffects.FROZEN.get())) continue;
             LivingEntity owner = resolvedOwners.get(key.effectOwner());
             AbstractGroundEffect effect = entry.getValue();
             if (invokeContact(effect, new GroundEffectContact(level, target, owner), true)) {
@@ -335,8 +335,9 @@ public final class GroundEffectManager {
     @Nullable
     private static LivingEntity resolveOwner(ServerLevel level, @Nullable UUID ownerUuid) {
         if (ownerUuid == null) return null;
-        if (level.getEntity(ownerUuid) instanceof LivingEntity living) return living;
-        return level.getServer().getPlayerList().getPlayer(ownerUuid);
+        LivingEntity owner = level.getEntity(ownerUuid) instanceof LivingEntity living ? living
+                : level.getServer().getPlayerList().getPlayer(ownerUuid);
+        return owner != null && owner.isAlive() && owner.level() == level ? owner : null;
     }
 
     private Identity allocateIdentity() {

@@ -5,6 +5,7 @@ import java.util.List;
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.capability.entity.EffectModulesProvider;
 import net.luojiuoscar.isaac_disaster.system.explosion.BombEffectSource;
+import net.luojiuoscar.isaac_disaster.system.damage.ModDamageSources;
 import net.luojiuoscar.isaac_disaster.event.custom.attack.*;
 import net.luojiuoscar.isaac_disaster.event.custom.attack.tear_bullet.*;
 import net.luojiuoscar.isaac_disaster.event.custom.misc.*;
@@ -251,6 +252,20 @@ public class TriggerModuleEvents {
     /**
      * 死亡事件和击杀事件本质是同一事件，但是触发主体不同
      * */
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
+    public static void onBulletKilledEntity(LivingDeathEvent event) {
+        if (event.getEntity().level().isClientSide) return;
+        IBulletObject projectile = ModDamageSources.projectile(event.getSource());
+        if (projectile == null || projectile.getOwner() == null
+                || projectile.getBulletLevel() != event.getEntity().level()) return;
+        var context = new ExecutableEffectContext(projectile.getOwner());
+        context.set(ContextKeys.EVENT, event);
+        context.set(ContextKeys.BULLET, projectile);
+        context.set(ContextKeys.SECONDARY_LIVING_ENTITIES, List.of(event.getEntity()));
+        context.set(ContextKeys.TARGET_POSITION, event.getEntity().position());
+        dispatchBullet(context, ModTriggerTypes.KILL_ENTITY);
+    }
+
     @SubscribeEvent
     public static void onKilledEntity(LivingDeathEvent event) {
         Entity attacker = event.getSource().getEntity();

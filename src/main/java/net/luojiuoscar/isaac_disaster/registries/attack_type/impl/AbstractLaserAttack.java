@@ -732,7 +732,7 @@ public abstract class AbstractLaserAttack extends AttackType {
             || !containsInclusive(
                 target.getBoundingBox().inflate(laser.width * 0.5D), hitPosition)) return;
         float actualDamage = (float) beforeHit.getDamage();
-        if (!applyDamage(laser.owner, target, actualDamage)) return;
+        if (!applyDamage(laser, laser.owner, target, actualDamage)) return;
         laser.damagedEntities.add(target.getUUID());
         laser.recordSplitTrigger(SplitTriggerType.ENTITY);
         SplitExecutor.executeAt(laser, SplitTriggerType.ENTITY, hitPosition, laser.direction);
@@ -991,7 +991,7 @@ public abstract class AbstractLaserAttack extends AttackType {
                 && !EntityHelper.isFriendly(target, laser.owner)
                 && containsInclusive(target.getBoundingBox().inflate(width * 0.5D), hitPositions.get(target))) {
                 double actualDamage = beforeHit.getDamage();
-                if (!applyDamage(laser.owner, target, (float) actualDamage)) {
+                if (!applyDamage(laser, laser.owner, target, (float) actualDamage)) {
                     continue;
                 }
                 laser.damagedEntities.add(target.getUUID());
@@ -1014,14 +1014,14 @@ public abstract class AbstractLaserAttack extends AttackType {
         }
     }
 
-    protected boolean applyDamage(LivingEntity source, LivingEntity target, float damage) {
-        return target.hurt(getDamageSource(source), damage);
+    protected boolean applyDamage(IBulletObject projectile, LivingEntity source, LivingEntity target, float damage) {
+        return target.hurt(getDamageSource(projectile, source), damage);
     }
 
-    protected DamageSource getDamageSource(LivingEntity source) {
+    protected DamageSource getDamageSource(IBulletObject projectile, LivingEntity source) {
         ServerLevel level = getLaserLevel(source);
         if (level == null) return source.damageSources().generic();
-        return ModDamageSources.laser(level, source);
+        return ModDamageSources.laser(level, source, projectile);
     }
 
     /** Resolves the world for collision, damage and visuals; persistent beams may pin it at release. */

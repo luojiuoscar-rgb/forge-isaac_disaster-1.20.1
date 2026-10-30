@@ -250,7 +250,8 @@ public enum ItemId {
     FIRE_MIND(2),
     VIRGO(2),
     AQUARIUS(2),
-    D10(1);
+    D10(1),
+    URANUS(3);
 
 
 

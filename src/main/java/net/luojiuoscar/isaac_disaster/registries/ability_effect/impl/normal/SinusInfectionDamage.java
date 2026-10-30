@@ -21,7 +21,7 @@ public final class SinusInfectionDamage implements IAbilityEffect {
         if (target == null || !target.isAlive() || target.isRemoved()
                 || target.level() != bullet.getBulletLevel()) return false;
         if (stick.elapsedTicks() <= 0 || stick.elapsedTicks() % 20 != 0) return true;
-        target.hurt(ModDamageSources.tear(target.level(), bullet.getOwner(), Vec3.ZERO, 0), bullet.getDamage());
+        target.hurt(ModDamageSources.tear(target.level(), bullet.getOwner(), Vec3.ZERO, 0, bullet), bullet.getDamage());
         return true;
     }
 }

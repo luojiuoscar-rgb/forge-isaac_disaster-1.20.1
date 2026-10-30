@@ -1,6 +1,9 @@
 package net.luojiuoscar.isaac_disaster.event.effect;
 
 import net.luojiuoscar.isaac_disaster.effect.ModEffects;
+import net.luojiuoscar.isaac_disaster.bullet.server.BulletRuntime;
+import net.luojiuoscar.isaac_disaster.helper.ScheduledFuncHelper;
+import net.minecraft.resources.ResourceLocation;
 import net.luojiuoscar.isaac_disaster.effect.custom.FrozenEffect;
 import net.luojiuoscar.isaac_disaster.effect.custom.GoldenEffect;
 import net.luojiuoscar.isaac_disaster.effect.custom.PetrifiedEffect;
@@ -28,6 +31,8 @@ import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
+import net.minecraftforge.event.entity.living.LivingHealEvent;
+import net.minecraftforge.event.entity.living.MobEffectEvent;
 import net.minecraftforge.event.entity.living.LivingKnockBackEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.level.LevelEvent;
@@ -42,6 +47,7 @@ import static net.luojiuoscar.isaac_disaster.IsaacDisaster.MOD_ID;
 @Mod.EventBusSubscriber(modid = MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public final class FreezeEffectEvents {
     private static final float FROZEN_HIT_PUSH_SPEED = 0.8F;
+    private static final ResourceLocation FROZEN_SHARDS = ResourceLocation.fromNamespaceAndPath(MOD_ID, "frozen_shards");
 
     private FreezeEffectEvents() {
     }
@@ -124,7 +130,7 @@ public final class FreezeEffectEvents {
         }
 
         Mob attacker = resolveMobAttacker(event.getSource());
-        if (attacker != null && EntityFreezeRules.shouldFreeze(attacker)) {
+        if (attacker != null && attacker.isAlive() && EntityFreezeRules.shouldFreeze(attacker)) {
             event.setCanceled(true);
             return;
         }
@@ -163,6 +169,47 @@ public final class FreezeEffectEvents {
         }
     }
 
+    @SubscribeEvent(priority = EventPriority.LOWEST)
+    public static void onFrozenDeath(LivingDeathEvent event) {
+        if (!(event.getEntity() instanceof Mob mob) || !(mob.level() instanceof ServerLevel level)
+                || !EntityVisualState.isEligible(mob) || !mob.hasEffect(ModEffects.FROZEN.get())) return;
+        var origin = mob.getBoundingBox().getCenter();
+        var source = FrozenEffect.sourceUuid(mob);
+        int deathTick = level.getServer().getTickCount();
+        Runnable burst = () -> {
+            if (event.isCanceled() || !mob.isDeadOrDying() || mob.level() != level
+                    || level.getServer().getLevel(level.dimension()) != level) return;
+            FrozenEffect.clearLifecycle(mob);
+            var player = FrozenEffect.resolvePlayer(level, source);
+            for (var shard : FrozenEffect.createShards(player == null ? mob : player, origin)) {
+                BulletRuntime.INSTANCE.spawn(level, shard);
+            }
+        };
+        ScheduledFuncHelper.schedule(FROZEN_SHARDS, 1, 0, 1, false, () -> {
+            // The scheduler runs at END and may consume a new task in the death's own tick.
+            if (level.getServer().getTickCount() == deathTick) {
+                ScheduledFuncHelper.schedule(FROZEN_SHARDS, 1, 0, 1, false, burst);
+            } else burst.run();
+        });
+    }
+
+    @SubscribeEvent(priority = EventPriority.LOWEST)
+    public static void onFrozenAdded(MobEffectEvent.Added event) {
+        if (event.getEffectInstance().getEffect() == ModEffects.FROZEN.get()
+                && event.getOldEffectInstance() == null && event.getEntity() instanceof Mob mob
+                && !mob.level().isClientSide && EntityVisualState.isEligible(mob)) {
+            FrozenEffect.begin(mob, event.getEffectSource());
+        }
+    }
+
+    @SubscribeEvent(priority = EventPriority.LOWEST)
+    public static void onIceStatueHeal(LivingHealEvent event) {
+        var entity = event.getEntity();
+        if (!entity.level().isClientSide && entity.hasEffect(ModEffects.FROZEN.get()) && FrozenEffect.isIceStatue(entity)) {
+            event.setAmount(Math.min(event.getAmount(), Math.max(0, 1 - entity.getHealth())));
+        }
+    }
+
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public static void onFrozenLivingTick(LivingEvent.LivingTickEvent event) {
         LivingEntity entity = event.getEntity();
@@ -172,11 +219,14 @@ public final class FreezeEffectEvents {
         if (!EntityVisualState.isFrozen(mob)) {
             if (!mob.level().isClientSide) {
                 FrozenImpactState.clear(mob);
+                FrozenEffect.clearLifecycle(mob);
             }
             return;
         }
 
         if (!mob.level().isClientSide) {
+            if (!mob.hasEffect(ModEffects.FROZEN.get())) FrozenEffect.clearLifecycle(mob);
+            FrozenEffect.tickFrozen(mob);
             FrozenImpactState.tick(mob);
             if (mob.isRemoved()) {
                 return;

@@ -15,6 +15,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.luojiuoscar.isaac_disaster.registries.attack_type.IBulletObject;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
@@ -65,8 +66,8 @@ public class Technology2Attack extends AbstractLaserAttack implements Additional
     }
 
     @Override
-    protected boolean applyDamage(LivingEntity source, LivingEntity target, float damage) {
-        return target.hurt(getDamageSource(source), damage * DAMAGE_PERCENTAGE);
+    protected boolean applyDamage(IBulletObject projectile, LivingEntity source, LivingEntity target, float damage) {
+        return target.hurt(getDamageSource(projectile, source), damage * DAMAGE_PERCENTAGE);
     }
 
     @Override

@@ -14,6 +14,7 @@ public class Potions implements IAbilityEffect {
 
         int multiplier = context.getOrDefault(ContextKeys.AMPLIFIER, 1.).intValue() - 1;
         LivingEntity entity = context.getEntity();
+        if (entity == null) return false;
 
         for (var potion : potions){
             int finalDuration = potion.resolveDuration(multiplier);

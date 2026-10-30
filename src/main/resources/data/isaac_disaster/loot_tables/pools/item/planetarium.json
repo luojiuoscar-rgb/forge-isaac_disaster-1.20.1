@@ -6,7 +6,8 @@
         {"type": "minecraft:item", "name": "isaac_disaster:pluto"},
         {"type": "minecraft:item", "name": "isaac_disaster:neptunus"},
         {"type": "minecraft:item", "name": "isaac_disaster:terra"},
-        {"type": "minecraft:item", "name": "isaac_disaster:venus"}
+        {"type": "minecraft:item", "name": "isaac_disaster:venus"},
+        {"type": "minecraft:item", "name": "isaac_disaster:uranus"}
       ]
     }
   ]

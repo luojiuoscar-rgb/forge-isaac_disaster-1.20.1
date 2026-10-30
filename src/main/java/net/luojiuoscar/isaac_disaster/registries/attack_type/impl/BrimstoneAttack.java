@@ -160,8 +160,8 @@ public class BrimstoneAttack extends LaserAttack implements IChargeableAttack {
     }
 
     @Override
-    protected boolean applyDamage(LivingEntity source, LivingEntity target, float damage) {
-        return target.hurt(getDamageSource(source), damage * DAMAGE_PERCENTAGE);
+    protected boolean applyDamage(IBulletObject projectile, LivingEntity source, LivingEntity target, float damage) {
+        return target.hurt(getDamageSource(projectile, source), damage * DAMAGE_PERCENTAGE);
     }
 
     @Override

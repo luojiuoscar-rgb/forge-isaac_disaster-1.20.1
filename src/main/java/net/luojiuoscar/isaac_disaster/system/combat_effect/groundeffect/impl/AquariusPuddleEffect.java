@@ -17,6 +17,7 @@ import net.luojiuoscar.isaac_disaster.system.damage.ModDamageSources;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
+import net.luojiuoscar.isaac_disaster.effect.ModEffects;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.phys.AABB;
@@ -138,7 +139,7 @@ public final class AquariusPuddleEffect extends AbstractGroundEffect implements 
     }
 
     private boolean validTrackingTarget(ServerLevel level, LivingEntity owner, @Nullable LivingEntity candidate) {
-        if (candidate == null || candidate.isRemoved() || candidate.level() != level || !candidate.onGround()
+        if (candidate == null || candidate.hasEffect(ModEffects.FROZEN.get()) || candidate.isRemoved() || candidate.level() != level || !candidate.onGround()
                 || Math.abs(candidate.getY() - position().y) > 0.51) return false;
         double dx = candidate.getX() - position().x;
         double dz = candidate.getZ() - position().z;

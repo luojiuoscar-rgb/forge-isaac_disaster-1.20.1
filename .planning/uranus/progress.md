@@ -1,0 +1,22 @@
+# 进度
+
+- 2026-10-30：已核对feature/feature-c，开始时工作区干净。读取道具技能及被动分支、规划技能和项目约定；完成冻结/伤害/水迹入口调查。
+- 已接入道具注册、减速/死亡附件、来源NBT、碎裂环形弹、共享水迹与过滤；图标下载验证32×32 PNG。原生图像工具没有返回可用产物，使用用户原图无损去灰底后最近邻缩放，保留原轮廓。
+- 首次Gradle自动审批超时，重试成功启动。测试前置编译发现激光普通路径遗漏一个实际弹丸参数，已修复；JUnit、GameTest与runData当时尚未执行。没有运行客户端。
+- 定向JUnit的4项测试已通过。GameTest编译暴露测试误用私有Builder重载，已改用既有公开无参数入口；不扩大生产API。
+- 实际GameTest首轮12项中11项通过。水迹生命周期测试在解冻后故意推进80tick，期间目标已受到合法残留水迹伤害，后续断言错误地仍使用原HP；已在重新冻结前恢复测试生命。取消死亡、致死转换、普通/批处理激光、科技2、硫磺火、鼻窦炎、死亡来源弹和NBT回读均已运行通过。runData因GameTest失败尚未执行。
+- 修复夹具后，12项真实GameTest全部通过；相关定向JUnit通过；runData已成功执行唯一一次，生成模型与被动标签。
+- 独立只读审查确认两项边界：全局过滤误阻止独立药水地面接触；schedule(1)可能在死亡tick的END直接执行。已把冻结排除限制为伤害/追踪，并在相同tick的调度回调重新延后一次；新增独立药水接触、毒伤及真实ServerTick.END时序回归。后续不再运行runData，仅测试。
+- 审查修复后的JUnit 29项通过；GameTest 14项中13项通过。真实tick测试被同批其他测试的手动全局scheduler推进干扰，现拆到独立batch，与真实tick验证隔离。另收紧水迹owner解析：死亡或跨世界来源按无效处理，已有有主水迹不会使用失效玩家造成伤害。
+- 最终回归成功：35项定向JUnit（0失败/0跳过），15项真实GameTest全部通过，包含独立batch中的真实下一tick发射；独立审查复核通过。日志：build/uranus-regression.log；唯一一次数据生成成功记录：build/uranus-validation.log。
+- 注册、ID追加、仅星象池、32×32 PNG、透明弹丸贴图、条件synergy、真实翻译解析和静态分行均已检查。模型与被动标签在src/generated生成，遵守现有.gitignore不强行加入版本管理；协议仍15。
+- 核心文件：effect/custom/FrozenEffect.java与event/effect/FreezeEffectEvents.java复用共享冻结生命周期；UranusAttachment/UranusSlow/UranusFreezeOnKill负责附件；ModDamageSources与激光/泪弹入口携带实际弹丸；GroundEffectManager与AquariusPuddleEffect负责水迹过滤。没有新增Runtime/State/Manager、旧版兼容或额外网络字段。
+- 未运行客户端、多人画面或完整存档退出重进；GameTest已验证实体NBT保存/回读，不等同完整存档验收。未执行独立compile/build命令，未提交代码。
+- 后续贴图调整：用户改为要求背景不透明，现将冰弹轮廓外296个透明像素恢复为原图深灰色#444444；保持728个冰块/轮廓像素与32×32尺寸不变，验证全部1024像素alpha=255。本次只修改素材，未重复运行代码测试或runData，未做游戏内画面验收。
+- 死亡行为核对：首次天王星转换取消标准LivingDeathEvent并设1血；真正碎裂沿用hurt→die→tickDeath→remove。Forge 1.20.1-47.4.9源码中史莱姆在remove里判断服务端、size>1和isDeadOrDying，生成2–4个半尺寸子体；本项目未拦截该逻辑。跨模组无法仅靠取消统一事件阻断任意die/remove覆写中的副作用，保持真正死亡流程符合当前需求。
+- 冰弹大小调整：普通tear_bullet在32×32画布中的主体包围框30×30、717像素（70.02%）；冰弹原为26×28、728像素（71.09%），虽然面积接近但轮廓偏小。以最近邻将冰弹主体放大为30×32、960像素（93.75%），保持32×32画布与深灰不透明底。验证宽度、高度、主体面积占比均不小于普通泪弹，全部1024像素alpha=255；已查看成品，未进行游戏内画面验收。本次仅素材修改，未运行Gradle。
+- 用户澄清此前“不透明背景”为口误，实际要求透明背景。现移除轮廓外64个深灰底色像素，设alpha=0；逐像素验证其余960个冰块/黑边像素完全不变且alpha=255。维持32×32 PNG、30×32主体包围框与93.75%主体占比。此条取代此前实底要求；未运行Gradle或游戏内画面验收。
+- 来源接口对齐：只读核对feature-b e60df89e（工作区干净），在feature-c原样接入其SimpleTrigger第四参数与ContextKeys.SOURCE(ResourceLocation)，SimpleTrigger及通用批处理测试文件均与B字节一致。EFFECT_SOURCE(Entity)保留用于药水施加者，无法与注册ID混用；新增真实GameTest验证注册ID绑定后仍能正确记录冻结玩家且不污染父上下文。验证运行中，未修改feature-b或重复runData。
+- 来源对齐最终验证通过：12项定向JUnit、16项真实GameTest全通过，build/uranus-source-alignment.log显示BUILD SUCCESSFUL；差异检查通过。新增来源绑定测试确认注册ID覆盖仅作用于本次触发，外层ID保留，实体来源及冻结UUID归属不受影响。再次核对feature-b仍干净，SimpleTrigger与通用批处理测试文件均与B的SHA256一致。未提交、未新增兼容别名、未重复数据生成；未执行客户端验收。
+- 按用户新确认精简：UranusFreezeOnKill直接addEffect(instance, source)，删除额外ContextKey与通用POTIONS的实体来源支持，减速恢复普通POTIONS。替换旧测试为实际致死冰弹测试，验证SOURCE注册ID即使绑定为不同模块也不改变冻结者及首片水迹归属；全src无EFFECT_SOURCE残留，SimpleTrigger仍与feature-b哈希一致。
+- 精简最终验证：15项定向JUnit、16项真实GameTest全部通过，build/uranus-direct-freeze.log显示BUILD SUCCESSFUL，差异检查通过。未重复runData，未运行独立compile/build，未进行客户端/完整存档验收，未提交。
