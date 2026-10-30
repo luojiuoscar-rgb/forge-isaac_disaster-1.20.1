@@ -379,6 +379,22 @@ public class TriggerModuleEvents {
     }
 
     @SubscribeEvent
+    public static void onAttackFired(AttackFiredEvent event) {
+        ExecutableEffectContext context = new ExecutableEffectContext(event.getOwner());
+        context.set(ContextKeys.EVENT, event);
+        context.set(ContextKeys.ATTACK_CONTEXT, event.getFirstFiredContext());
+        context.set(ContextKeys.TARGET_POSITION, event.getFirstFiredContext().getPos());
+        dispatch(context, ModTriggerTypes.ATTACK_FIRED);
+    }
+
+    @SubscribeEvent
+    public static void onCollectHeldKnives(CollectHeldKnivesEvent event) {
+        ExecutableEffectContext context = new ExecutableEffectContext(event.getPlayer());
+        context.set(ContextKeys.EVENT, event);
+        dispatch(context, ModTriggerTypes.COLLECT_HELD_KNIVES);
+    }
+
+    @SubscribeEvent
     public static void onAttackPlan(AttackPlanEvent event) {
         LivingEntity owner = event.getOwner();
         if (owner == null) return;

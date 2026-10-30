@@ -2,7 +2,7 @@ package net.luojiuoscar.isaac_disaster.registries.attack_type.tags;
 
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerAbilityProvider;
 import net.luojiuoscar.isaac_disaster.effect.ModEffects;
-import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
+import net.luojiuoscar.isaac_disaster.item.IAttackLauncher;
 import net.luojiuoscar.isaac_disaster.networking.ChargeBarSync;
 import net.luojiuoscar.isaac_disaster.registries.charge_bar.ModChargeBars;
 import net.minecraft.resources.ResourceLocation;
@@ -17,7 +17,7 @@ public interface IChargeableAttack {
 
     default boolean isChargeEligible(ServerPlayer player) {
         return player.isAlive() && !player.isRemoved() && !player.isSpectator()
-                && PlayerHelper.isHoldingIsaacHead(player)
+                && IAttackLauncher.isHolding(player)
                 && !player.hasEffect(ModEffects.LACRIMAL_HYPOSECRETION.get());
     }
 
@@ -31,6 +31,14 @@ public interface IChargeableAttack {
     }
 
     int getTotalCharge(Player player);
+
+    /** Normalized charge used by this release, captured before execution for delayed notifications. */
+    default double getChargeFraction(ServerPlayer player) {
+        int total = Math.max(1, getTotalCharge(player));
+        return player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY)
+                .map(ability -> Math.max(0, Math.min(1,
+                        (double) ability.getChargeAmount(getChargeBarId()) / total))).orElse(0.0);
+    }
 
     /** Amount gained on the next tick; custom/manual sources may return zero. */
     default int getChargePerTick(ServerPlayer player) {

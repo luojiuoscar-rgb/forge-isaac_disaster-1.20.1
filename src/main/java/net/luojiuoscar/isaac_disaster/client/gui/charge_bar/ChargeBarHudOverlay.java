@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import net.luojiuoscar.isaac_disaster.client.ClientDataManager;
-import net.luojiuoscar.isaac_disaster.item.pickup.special.IsaacHead;
+import net.luojiuoscar.isaac_disaster.item.IAttackLauncher;
 import net.luojiuoscar.isaac_disaster.registries.charge_bar.ChargeBarType;
 import net.luojiuoscar.isaac_disaster.registries.charge_bar.ModChargeBars;
 import net.minecraft.Util;
@@ -21,7 +21,7 @@ public class ChargeBarHudOverlay {
                 var minecraft = Minecraft.getInstance();
                 var player = minecraft.player;
                 if (player == null || minecraft.options.hideGui) return;
-                if (!(player.getMainHandItem().getItem() instanceof IsaacHead)) return;
+                if (!IAttackLauncher.isHolding(player)) return;
                 IForgeRegistry<ChargeBarType> registry = RegistryManager.ACTIVE.getRegistry(
                         ModChargeBars.CHARGE_BAR_KEY.location());
                 if (registry == null) return;

@@ -34,6 +34,10 @@ public class ModDamageType {
                     ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "familiar")
             );
 
+    public static final ResourceKey<DamageType> MOMS_KNIFE =
+            ResourceKey.create(Registries.DAMAGE_TYPE,
+                    ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "moms_knife"));
+
     public static final ResourceKey<DamageType> FROZEN_SHATTER =
             ResourceKey.create(
                     Registries.DAMAGE_TYPE,

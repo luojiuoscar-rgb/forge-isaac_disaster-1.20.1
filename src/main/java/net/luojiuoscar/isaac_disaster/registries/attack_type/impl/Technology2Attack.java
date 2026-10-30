@@ -20,6 +20,7 @@ import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 public class Technology2Attack extends AbstractLaserAttack implements AdditionalAttackType {
     public static final float DAMAGE_PERCENTAGE = 0.1f;
@@ -36,8 +37,9 @@ public class Technology2Attack extends AbstractLaserAttack implements Additional
     @Override public ResourceLocation getId() { return ModAttackTypes.TECHNOLOGY2.getId(); }
 
     @Override
-    public void performAttack(List<AttackContext> contexts) {
-        performLaserBatch(contexts, ignored -> 0);
+    public void performAttack(List<AttackContext> contexts, Consumer<AttackContext> onFired) {
+        AttackContext firstFired = performLaserBatch(contexts, ignored -> 0);
+        if (firstFired != null) onFired.accept(firstFired);
     }
 
     @Override

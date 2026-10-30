@@ -22,9 +22,10 @@ import net.luojiuoscar.isaac_disaster.commands.trinket.TrinketClearSwallowedCmd;
 import net.luojiuoscar.isaac_disaster.commands.trinket.TrinketSetEnchanted;
 import net.luojiuoscar.isaac_disaster.effect.ModEffects;
 import net.luojiuoscar.isaac_disaster.manager.CurioSlotManager;
+import net.luojiuoscar.isaac_disaster.manager.MultishotCountManager;
 import net.luojiuoscar.isaac_disaster.item.ModItems;
 import net.luojiuoscar.isaac_disaster.item.item.IsaacItem;
-import net.luojiuoscar.isaac_disaster.item.pickup.special.IsaacHead;
+import net.luojiuoscar.isaac_disaster.item.IAttackLauncher;
 import net.luojiuoscar.isaac_disaster.manager.DefaultAttributeManager;
 import net.luojiuoscar.isaac_disaster.manager.PillEffectManager;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
@@ -42,6 +43,7 @@ import net.luojiuoscar.isaac_disaster.system.rockbottom.RockBottomState;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -99,6 +101,7 @@ public class ForgeEvents {
         CurioSlotManager.tick(player);
         player.getCapability(PlayerIsaacItemsProvider.PLAYER_ISAAC_ITEMS)
                 .ifPresent(PlayerIsaacItems::refreshItemCountCache);
+        MultishotCountManager.update(player);
         syncAllDataToClient(player);
         player.refreshDimensions();
         ModMessages.sentToPlayer(new RefreshScaleS2CPacket(), player);
@@ -122,6 +125,7 @@ public class ForgeEvents {
         CurioSlotManager.tick(player);
         player.getCapability(PlayerIsaacItemsProvider.PLAYER_ISAAC_ITEMS)
                 .ifPresent(PlayerIsaacItems::refreshItemCountCache);
+        MultishotCountManager.update(player);
         player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY).ifPresent(
                 ability -> ability.updateAttackSelection(player));
         syncAllDataToClient(player);
@@ -389,30 +393,26 @@ public class ForgeEvents {
 
     @SubscribeEvent
     public static void onRightClickBlock(PlayerInteractEvent.RightClickBlock event) {
-        if (isHoldingIsaacHead(event.getEntity())) {
+        if (event.getEntity().getMainHandItem().getItem() instanceof IAttackLauncher launcher) {
             event.setCanceled(true);
-            event.setCancellationResult(net.minecraft.world.InteractionResult.FAIL);
+            event.setCancellationResult(launcher.usesVanillaItemUse() ? InteractionResult.PASS : InteractionResult.FAIL);
         }
     }
 
     @SubscribeEvent
     public static void onRightClickEntity(PlayerInteractEvent.EntityInteract event) {
-        if (isHoldingIsaacHead(event.getEntity())) {
+        if (IAttackLauncher.isHolding(event.getEntity())) {
             event.setCanceled(true);
-            event.setCancellationResult(net.minecraft.world.InteractionResult.FAIL);
+            event.setCancellationResult(InteractionResult.FAIL);
         }
     }
 
     @SubscribeEvent
     public static void onRightClickEntitySpecific(PlayerInteractEvent.EntityInteractSpecific event) {
-        if (isHoldingIsaacHead(event.getEntity())) {
+        if (IAttackLauncher.isHolding(event.getEntity())) {
             event.setCanceled(true);
-            event.setCancellationResult(net.minecraft.world.InteractionResult.FAIL);
+            event.setCancellationResult(InteractionResult.FAIL);
         }
-    }
-
-    private static boolean isHoldingIsaacHead(Player player) {
-        return player.getMainHandItem().getItem() instanceof IsaacHead;
     }
 
     @SubscribeEvent

@@ -19,6 +19,7 @@ import net.minecraftforge.common.MinecraftForge;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.Map;
 
 public final class MonstrosLungAttack extends AttackType implements IChargeableAttack, DelegatingAttackType {
@@ -48,7 +49,7 @@ public final class MonstrosLungAttack extends AttackType implements IChargeableA
     }
 
     @Override
-    public void performAttack(List<AttackContext> contexts) {}
+    public void performAttack(List<AttackContext> contexts, Consumer<AttackContext> onFired) {}
 
     @Override
     public void makeSound(LivingEntity entity) {}

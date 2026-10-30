@@ -60,24 +60,32 @@ public final class BulletTrackingBatchS2CPacket {
         private final int generation;
         private final Vec3 velocity;
         private final Vec3 acceleration;
+        private final double controlTurnMultiplier;
 
         public VelocitySample(int slot, int generation, Vec3 velocity, Vec3 acceleration) {
+            this(slot, generation, velocity, acceleration, 1.0D);
+        }
+
+        public VelocitySample(int slot, int generation, Vec3 velocity, Vec3 acceleration, double controlTurnMultiplier) {
             this.slot = slot;
             this.generation = generation;
             this.velocity = velocity == null ? Vec3.ZERO : velocity;
             this.acceleration = acceleration == null ? Vec3.ZERO : acceleration;
+            this.controlTurnMultiplier = Double.isFinite(controlTurnMultiplier) ? Math.max(0.0D, controlTurnMultiplier) : 1.0D;
         }
 
         public int slot() { return slot; }
         public int generation() { return generation; }
         public Vec3 velocity() { return velocity; }
         public Vec3 acceleration() { return acceleration; }
+        public double controlTurnMultiplier() { return controlTurnMultiplier; }
 
         public void toBytes(FriendlyByteBuf buf) {
             buf.writeVarInt(slot);
             buf.writeVarInt(generation);
             writeVec(buf, velocity);
             writeVec(buf, acceleration);
+            buf.writeDouble(controlTurnMultiplier);
         }
     }
 
@@ -105,7 +113,7 @@ public final class BulletTrackingBatchS2CPacket {
         this(buf.readVarInt(), buf.readVarInt(),
                 buf.readList(value -> new TargetSample(value.readVarInt(), readVec(value))),
                 buf.readList(value -> new Assignment(value.readVarInt(), value.readVarInt(), value.readVarInt(), value.readBoolean())),
-                buf.readList(value -> new VelocitySample(value.readVarInt(), value.readVarInt(), readVec(value), readVec(value))));
+                buf.readList(value -> new VelocitySample(value.readVarInt(), value.readVarInt(), readVec(value), readVec(value), value.readDouble())));
     }
 
     public int epoch() { return epoch; }

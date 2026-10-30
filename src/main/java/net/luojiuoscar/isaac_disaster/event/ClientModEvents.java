@@ -19,6 +19,7 @@ import net.luojiuoscar.isaac_disaster.entity.ModEntities;
 import net.luojiuoscar.isaac_disaster.entity.tnt.CustomTntRenderer;
 import net.luojiuoscar.isaac_disaster.renderer.InvincibleChargeLayer;
 import net.luojiuoscar.isaac_disaster.client.renderer.familiar.mom_knife.MomKnifeRenderer;
+import net.luojiuoscar.isaac_disaster.client.renderer.projectile.PlayerMomsKnifeRenderer;
 import net.luojiuoscar.isaac_disaster.renderer.layer.frozen.FrozenShellLayer;
 import net.luojiuoscar.isaac_disaster.renderer.layer.golden.GoldenLayer;
 import net.luojiuoscar.isaac_disaster.renderer.layer.golden.SlimeGoldenLayer;
@@ -58,6 +59,7 @@ public class ClientModEvents {
         event.registerEntityRenderer(ModEntities.GIGA_BOMB.get(), CustomTntRenderer::new);
         event.registerEntityRenderer(ModEntities.SELECTIVE_EFFECT_CLOUD.get(), NoopRenderer::new);
         event.registerEntityRenderer(ModEntities.MOM_KNIFE.get(), MomKnifeRenderer::new);
+        event.registerEntityRenderer(ModEntities.PLAYER_MOMS_KNIFE.get(), PlayerMomsKnifeRenderer::new);
         event.registerEntityRenderer(ModEntities.BLUE_FLY.get(), FlyRenderer::new);
         event.registerEntityRenderer(ModEntities.LOCUST_OF_PESTILENCE.get(), FlyRenderer::new);
         event.registerEntityRenderer(ModEntities.LOCUST_OF_FAMINE.get(), FlyRenderer::new);

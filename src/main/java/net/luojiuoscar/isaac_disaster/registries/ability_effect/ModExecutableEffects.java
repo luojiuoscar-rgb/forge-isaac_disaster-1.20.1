@@ -140,10 +140,10 @@ public class ModExecutableEffects {
             EXECUTABLE_EFFECT_REGISTRY.register("laser_plus_brimstone", LaserPlusBrimstone::new);
     public static final RegistryObject<IExecutableEffect> LASER_PLUS_FETUS =
             EXECUTABLE_EFFECT_REGISTRY.register("laser_plus_fetus", LaserPlusFetus::new);
+    public static final RegistryObject<IExecutableEffect> LASER_PLUS_MOMS_KNIFE =
+            EXECUTABLE_EFFECT_REGISTRY.register("laser_plus_moms_knife", LaserPlusMomsKnife::new);
     public static final RegistryObject<IExecutableEffect> IPECAC =
             EXECUTABLE_EFFECT_REGISTRY.register("ipecac", Ipecac::new);
-    public static final RegistryObject<IExecutableEffect> FIRING_MODIFIER_ATTACK_PLAN =
-            EXECUTABLE_EFFECT_REGISTRY.register("firing_modifier_attack_plan", FiringModifierAttackPlan::new);
     public static final RegistryObject<IExecutableEffect> BRIMSTONE_PLUS_MONSTROS_LUNG =
             EXECUTABLE_EFFECT_REGISTRY.register("brimstone_plus_monstros_lung", BrimstonePlusMonstrosLung::new);
     public static final RegistryObject<IExecutableEffect> LEAD_PENCIL_BURST =
@@ -160,6 +160,16 @@ public class ModExecutableEffects {
             EXECUTABLE_EFFECT_REGISTRY.register("cursed_eye", CursedEye::new);
     public static final RegistryObject<IExecutableEffect> BRIMSTONE_PLUS_C_SECTION =
             EXECUTABLE_EFFECT_REGISTRY.register("brimstone_plus_c_section", BrimstonePlusCSection::new);
+    public static final RegistryObject<IExecutableEffect> MOMS_KNIFE_BARRAGE =
+            EXECUTABLE_EFFECT_REGISTRY.register("moms_knife_barrage", MomsKnifeBarrage::new);
+    public static final RegistryObject<IExecutableEffect> MOMS_KNIFE_SHOT =
+            EXECUTABLE_EFFECT_REGISTRY.register("moms_knife_shot", MomsKnifeShot::new);
+    public static final RegistryObject<IExecutableEffect> LOKIS_HORNS_HELD_KNIVES =
+            EXECUTABLE_EFFECT_REGISTRY.register("lokis_horns_held_knives", LokisHornsHeldKnives::new);
+    public static final RegistryObject<IExecutableEffect> BOOK_PLUS_MOMS_KNIFE =
+            EXECUTABLE_EFFECT_REGISTRY.register("book_plus_moms_knife", BookPlusMomsKnife::new);
+    public static final RegistryObject<IExecutableEffect> MONSTROS_LUNG_PLUS_MOMS_KNIFE =
+            EXECUTABLE_EFFECT_REGISTRY.register("monstros_lung_plus_moms_knife", MonstrosLungPlusMomsKnife::new);
     public static final RegistryObject<IExecutableEffect> CHARM_OF_THE_VAMPIRE =
             EXECUTABLE_EFFECT_REGISTRY.register("charm_of_the_vampire", CharmOfTheVampire::new);
     public static final RegistryObject<IExecutableEffect> CARTRIDGE =

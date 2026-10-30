@@ -10,6 +10,7 @@
         {"type": "minecraft:item", "name": "isaac_disaster:the_mulligan"},
         {"type": "minecraft:item", "name": "isaac_disaster:infestation"},
         {"type": "minecraft:item", "name": "isaac_disaster:moms_pad"},
+        {"type": "minecraft:item", "name": "isaac_disaster:moms_knife"},
         {"type": "minecraft:item", "name": "isaac_disaster:sinus_infection"},
         {"type": "minecraft:item", "name": "isaac_disaster:adrenaline"},
         {"type": "minecraft:item", "name": "isaac_disaster:dead_tooth"},
@@ -131,7 +132,8 @@
         {"type": "minecraft:item", "name": "isaac_disaster:crickets_body"},
         {"type": "minecraft:item", "name": "isaac_disaster:compound_fracture"},
         {"type": "minecraft:item", "name": "isaac_disaster:haemolacria"},
-        {"type": "minecraft:item", "name": "isaac_disaster:monstros_lung"}
+        {"type": "minecraft:item", "name": "isaac_disaster:monstros_lung"},
+        {"type": "minecraft:item", "name": "isaac_disaster:tractor_beam"}
       ]
     }
   ]

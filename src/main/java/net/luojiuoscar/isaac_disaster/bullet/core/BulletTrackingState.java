@@ -16,6 +16,7 @@ public final class BulletTrackingState {
     private final double maxSpeedChange;
     private final double controlRange;
     private final double controlSteer;
+    private double controlTurnMultiplier = 1.0D;
 
     private Vec3 desiredVelocity;
     private Vec3 steeringAcceleration = Vec3.ZERO;
@@ -86,6 +87,14 @@ public final class BulletTrackingState {
 
     public double controlSteer() {
         return controlSteer;
+    }
+
+    public double controlTurnMultiplier() {
+        return controlTurnMultiplier;
+    }
+
+    public void setControlTurnMultiplier(double value) {
+        controlTurnMultiplier = Double.isFinite(value) ? Math.max(0.0D, value) : 1.0D;
     }
 
     @Nullable
@@ -165,11 +174,20 @@ public final class BulletTrackingState {
         double limitedSpeed = approach(currentSpeed, desiredSpeed, maxSpeedChange);
         Vec3 limitedTarget = desiredVelocity.normalize().scale(limitedSpeed);
         Vec3 delta = limitedTarget.subtract(velocity);
-        if (delta.lengthSqr() > maxSteeringAcceleration * maxSteeringAcceleration) {
-            delta = delta.normalize().scale(maxSteeringAcceleration);
+        double steeringLimit = maxSteeringAcceleration * (trackingUsesControl ? controlTurnMultiplier : 1.0D);
+        if (delta.lengthSqr() > steeringLimit * steeringLimit) {
+            delta = delta.normalize().scale(steeringLimit);
         }
         steeringAcceleration = delta;
-        return velocity.add(delta);
+        Vec3 result = velocity.add(delta);
+        double minimumSpeedSquared = BulletMotionState.MIN_VALID_SPEED * BulletMotionState.MIN_VALID_SPEED;
+        if (trackingUsesControl && result.lengthSqr() < minimumSpeedSquared
+                && limitedTarget.lengthSqr() >= minimumSpeedSquared) {
+            // A reverse control turn must not cancel speed and trip the projectile's stall guard.
+            steeringAcceleration = limitedTarget.subtract(velocity);
+            return limitedTarget;
+        }
+        return result;
     }
 
     /** Points the velocity at a target and returns the new velocity. */

@@ -16,7 +16,9 @@ import net.luojiuoscar.isaac_disaster.event.custom.attack.IsaacAttackHitBlockEve
 import net.luojiuoscar.isaac_disaster.event.custom.attack.tear_bullet.BulletTickEvent;
 import net.luojiuoscar.isaac_disaster.event.custom.attack.tear_bullet.TearBulletEndOfLifeEvent;
 import net.luojiuoscar.isaac_disaster.helper.EntityHelper;
+import net.luojiuoscar.isaac_disaster.helper.PlayerHelper;
 import net.luojiuoscar.isaac_disaster.helper.TrackingTargetRules;
+import net.luojiuoscar.isaac_disaster.item.ModPassiveItems;
 import net.luojiuoscar.isaac_disaster.networking.packet.bullet.BulletCorrectionS2CPacket;
 import net.luojiuoscar.isaac_disaster.networking.packet.bullet.BulletShatterS2CPacket;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.ModAttackTypes;
@@ -26,6 +28,7 @@ import net.luojiuoscar.isaac_disaster.registries.trajectory.TrajectoryMotion;
 import net.luojiuoscar.isaac_disaster.system.damage.ModDamageSources;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -218,6 +221,7 @@ public final class BulletManager {
                         if (reason != null) bullet.endStick(reason);
                     }
                 }
+                FetusMomsKnifeDamage.sweep(level, bullet, bullet.position(), bullet.position(), entityGrid);
                 if (!bullet.isAlive()) deferRemoval(bullet);
                 continue;
             }
@@ -272,6 +276,7 @@ public final class BulletManager {
                 for (Vec3 segmentEnd : trajectoryMotion.path()) {
                     int revision = bullet.stickState().revision();
                     resolveCollisions(level, segmentStart, segmentEnd, bullet);
+                    FetusMomsKnifeDamage.sweep(level, bullet, segmentStart, bullet.position(), entityGrid);
                     if (!bullet.isAlive() || !bullet.isFlying() || revision != bullet.stickState().revision()
                             || bullet.position().distanceToSqr(segmentEnd) > 1e-10) {
                         double length = segmentStart.distanceTo(segmentEnd);
@@ -289,6 +294,7 @@ public final class BulletManager {
                 }
             } else {
                 resolveCollisions(level, start, end, bullet);
+                FetusMomsKnifeDamage.sweep(level, bullet, start, bullet.position(), entityGrid);
                 if (trajectoryMotion != null && bullet.position().distanceToSqr(end) > 1.0E-10) {
                     double length = start.distanceTo(end);
                     bullet.retainTrajectoryFraction(length > 1.0E-10
@@ -307,6 +313,7 @@ public final class BulletManager {
     }
 
     private void updateTracking(BulletState bullet, boolean allowSearch) {
+        bullet.setControlTurnMultiplier(1.0D);
         bullet.setSteeringTarget(null, false);
         TrackingProfile profile = TrackingProfile.forBullet(bullet);
         LivingEntity target = bullet.trackingTarget();
@@ -344,6 +351,8 @@ public final class BulletManager {
             bullet.setDesiredVelocity(profile.desiredVelocity(bullet, targetPosition, false));
         } else if (bullet.isControllable() && bullet.getOwner() != null) {
             LivingEntity owner = bullet.getOwner();
+            if (owner instanceof ServerPlayer player && PlayerHelper.hasItem(ModPassiveItems.TRACTOR_BEAM.getId(), player))
+                bullet.setControlTurnMultiplier(5.0D);
             Vec3 controlPoint =
                 owner.getEyePosition().add(owner.getLookAngle().scale(bullet.controlRange()));
             bullet.setSteeringTarget(controlPoint, true);
@@ -358,7 +367,7 @@ public final class BulletManager {
      * tick.
      */
     private static void applySteering(BulletState bullet) {
-        if (bullet.steeringMode() != BulletSteeringMode.DIRECT
+        if (!bullet.trackingUsesControl() && bullet.steeringMode() != BulletSteeringMode.DIRECT
             && (bullet.trackingTarget() == null || !bullet.trackingTarget().isAlive())) {
             // A lost homing target should not leave the last slowed desired velocity
             // active until the next four-tick search pass.

@@ -60,12 +60,17 @@ public record TrackingProfile(double range, double steer, double forwardBias, do
 
     /** Computes controllable steering while preserving the current speed magnitude. */
     public Vec3 controlVelocity(BulletState bullet, Vec3 target) {
-        Vec3 toTarget = target.subtract(bullet.position());
-        if (toTarget.lengthSqr() < 1.0E-8D || bullet.velocity().lengthSqr() < 1.0E-8D) return bullet.velocity();
-        Vec3 current = bullet.velocity().normalize();
-        double adaptiveStrength = bullet.controlSteer() * Math.min(1.0D, toTarget.length());
+        return controlVelocity(bullet.position(), bullet.velocity(), target, bullet.controlSteer());
+    }
+
+    /** Shared control geometry for entity-backed attacks and lightweight bullets. */
+    public static Vec3 controlVelocity(Vec3 position, Vec3 velocity, Vec3 target, double steer) {
+        Vec3 toTarget = target.subtract(position);
+        if (toTarget.lengthSqr() < 1.0E-8D || velocity.lengthSqr() < 1.0E-8D) return velocity;
+        Vec3 current = velocity.normalize();
+        double adaptiveStrength = steer * Math.min(1.0D, toTarget.length());
         Vec3 direction = current.add(toTarget.normalize().subtract(current).scale(adaptiveStrength));
-        return direction.normalize().scale(bullet.velocity().length());
+        return direction.normalize().scale(velocity.length());
     }
 
     /** Restores the creation-time cruise velocity along the current heading. */

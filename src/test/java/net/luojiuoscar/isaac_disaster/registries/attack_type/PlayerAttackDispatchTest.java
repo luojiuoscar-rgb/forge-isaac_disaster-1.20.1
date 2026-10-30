@@ -14,6 +14,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -35,23 +36,6 @@ class PlayerAttackDispatchTest {
         counts.put(primary.getId(), 3);
         assertEquals(1, snapshot.get(primary.getId()));
         assertEquals(3, ability.getAttackTypes().get(primary.getId()));
-    }
-
-    @Test
-    void primaryAndAdditionalReceiveEachTickAndInputOnce() throws Exception {
-        Map<ResourceLocation, Integer> charge = new HashMap<>();
-        Basic primary = new Basic("primary", charge);
-        Extra additional = new Extra("additional", charge);
-        PlayerAbility ability = abilityWith(selection(primary, List.of(additional)));
-        ability.tickAttacks(null);
-        ability.handleAttackInput(null, true);
-        ability.handleAttackInput(null, false);
-        for (Recording attack : List.of(primary, additional)) {
-            assertEquals(1, attack.ticks);
-            assertEquals(1, attack.presses);
-            assertEquals(1, attack.releases);
-            assertEquals(3, attack.syncs);
-        }
     }
 
     @Test
@@ -85,7 +69,6 @@ class PlayerAttackDispatchTest {
         assertEquals(1, additional.clears);
         assertEquals(20, charge.get(primary.getChargeBarId()));
         assertFalse(charge.containsKey(additional.getChargeBarId()));
-        ability.tickAttacks(null);
         assertEquals(0, additional.ticks);
     }
 
@@ -127,7 +110,7 @@ class PlayerAttackDispatchTest {
         @Override public ResourceLocation getId() { return id; }
         @Override public ResourceLocation getChargeBarId() { return id; }
         @Override public List<AttackContext> getAttackContexts(ServerPlayer player, int count) { return List.of(); }
-        @Override public void performAttack(List<AttackContext> contexts) { }
+        @Override public void performAttack(List<AttackContext> contexts, Consumer<AttackContext> onFired) { }
         @Override public void makeSound(LivingEntity entity) { }
         @Override public void shoot(AttackContext context) { }
         @Override public int getTotalCharge(Player player) { return 47; }

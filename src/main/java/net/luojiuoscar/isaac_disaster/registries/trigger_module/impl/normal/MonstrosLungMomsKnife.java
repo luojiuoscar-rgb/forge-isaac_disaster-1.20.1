@@ -8,13 +8,12 @@ import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerModule;
 
 import java.util.List;
 
-public class FiringModifier extends TriggerModule {
+public final class MonstrosLungMomsKnife extends TriggerModule {
     private static final CompositeTrigger TRIGGER = new CompositeTrigger(List.of(
-            new SimpleTrigger(ModTriggerTypes.ATTACK_PLAN, ModExecutableEffects.FIRING_MODIFIER_ATTACK_PLAN)
+            new SimpleTrigger(ModTriggerTypes.ATTACK_FIRED, ModExecutableEffects.MONSTROS_LUNG_PLUS_MOMS_KNIFE)
     ));
 
-    public FiringModifier() {
+    public MonstrosLungMomsKnife() {
         super(TRIGGER);
     }
-
 }

@@ -1,22 +1,21 @@
 package net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.normal;
 
 import net.luojiuoscar.isaac_disaster.event.custom.attack.AttackPlanEvent;
-import net.luojiuoscar.isaac_disaster.helper.GeometryHelper;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ContextKeys;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ExecutableEffectContext;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.IAbilityEffect;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackContext;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackOrigin;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.ModAttackTypes;
+import net.luojiuoscar.isaac_disaster.registries.attack_pattern.AttackPatternContext;
+import net.luojiuoscar.isaac_disaster.registries.attack_pattern.impl.ViewPlaneRandomAttackPattern;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerTypes;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerType;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.phys.Vec3;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public final class BrimstonePlusMonstrosLung implements IAbilityEffect {
+    private static final ViewPlaneRandomAttackPattern PATTERN = new ViewPlaneRandomAttackPattern();
+
     @Override
     public TriggerType getRequiredTriggerType() {
         return ModTriggerTypes.ATTACK_PLAN;
@@ -31,17 +30,9 @@ public final class BrimstonePlusMonstrosLung implements IAbilityEffect {
 
         AttackContext reference = event.getAttackType().createAttackContext(player, player);
         if (reference == null) return false;
-        Vec3 axis = reference.getMainAxis();
-        Vec3 lateral = GeometryHelper.lateralAxis(axis);
         int count = 3 + player.getRandom().nextInt(3);
-        List<AttackContext> extraContexts = new ArrayList<>(count);
-        for (int i = 0; i < count; i++) {
-            double angle = player.getRandom().nextDouble() * Math.PI * 2.0;
-            Vec3 direction = axis.scale(Math.cos(angle)).add(lateral.scale(Math.sin(angle)));
-            // Copy a fresh, unprepared context; each beam rolls its own effects later.
-            extraContexts.add(reference.toBuilder().mainAxis(direction).useFixedLaunchTransform().build());
-        }
-        event.appendExtraContexts(extraContexts);
+        reference.useFixedLaunchTransform();
+        event.appendExtraContexts(PATTERN.generate(new AttackPatternContext(reference, count)));
         return true;
     }
 }

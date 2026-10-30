@@ -24,21 +24,16 @@ public class ModTriggerModules {
     public static final RegistryObject<TriggerModule> TINY_PLANET =
         TRIGGER_MODULE_REGISTRY.register(
             "tiny_planet",
-            () ->
-                new TrajectoryAttachment(
-                    null,
-                    Map.of(
+            () -> new TrajectoryAttachment(null, Map.of(
                         ModAttackTypes.BULLET.getId(),
                             ModTrajectoryModules.TINY_PLANET_BULLET.getId(),
                         ModAttackTypes.LASER.getId(),
-                            ModTrajectoryModules.TINY_PLANET_LASER.getId())));
+                            ModTrajectoryModules.TINY_PLANET_LASER.getId(),
+                        ModAttackTypes.MOMS_KNIFE.getId(),
+                            ModTrajectoryModules.TINY_PLANET_RETURNING_MOMS_KNIFE.getId())));
     public static final RegistryObject<TriggerModule> MY_REFLECTION =
         TRIGGER_MODULE_REGISTRY.register(
-            "my_reflection",
-            () ->
-                new TrajectoryAttachment(
-                    null,
-                    Map.of(
+            "my_reflection", () -> new TrajectoryAttachment(null, Map.of(
                         ModAttackTypes.BULLET.getId(),
                             ModTrajectoryModules.MY_REFLECTION_BULLET.getId(),
                         ModAttackTypes.LASER.getId(),
@@ -75,8 +70,6 @@ public class ModTriggerModules {
         TRIGGER_MODULE_REGISTRY.register("blind_rage", BlindRage::new);
     public static final RegistryObject<TriggerModule> IPECAC =
         TRIGGER_MODULE_REGISTRY.register("ipecac", Ipecac::new);
-    public static final RegistryObject<TriggerModule> FIRING_MODIFIER =
-        TRIGGER_MODULE_REGISTRY.register("firing_modifier", FiringModifier::new);
     public static final RegistryObject<TriggerModule> BOUNCE_ON_BLOCK =
         TRIGGER_MODULE_REGISTRY.register("bounce_on_block", BounceOnBlock::new);
     public static final RegistryObject<TriggerModule> BOUNCE_ON_ENTITY =
@@ -165,6 +158,10 @@ public class ModTriggerModules {
         TRIGGER_MODULE_REGISTRY.register("brimstone_monstros_lung", BrimstoneMonstrosLung::new);
     public static final RegistryObject<TriggerModule> LEAD_PENCIL =
         TRIGGER_MODULE_REGISTRY.register("lead_pencil", LeadPencil::new);
+    public static final RegistryObject<TriggerModule> BOOK_MOMS_KNIFE =
+        TRIGGER_MODULE_REGISTRY.register("book_moms_knife", BookMomsKnife::new);
+    public static final RegistryObject<TriggerModule> MONSTROS_LUNG_MOMS_KNIFE =
+        TRIGGER_MODULE_REGISTRY.register("monstros_lung_moms_knife", MonstrosLungMomsKnife::new);
 
     public static final RegistryObject<TriggerModule> MOMS_CONTACTS =
             TRIGGER_MODULE_REGISTRY.register("moms_contacts", MomsContacts::new);

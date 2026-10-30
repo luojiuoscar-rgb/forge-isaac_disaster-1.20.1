@@ -106,7 +106,7 @@ public final class BulletRuntime {
             return null;
         }
         if (!canSpawn(level)) return null;
-        double speed = Math.max(0.1D, context.getBulletSpeed());
+        double speed = Math.max(BulletState.MIN_VALID_SPEED, context.getBulletSpeed());
         int lifetime = (int) Math.min(Math.max(1.0D, context.getBulletRange() / speed), 200.0D);
         return spawn(level, BulletState.from(context).lifetime(lifetime).build());
     }
@@ -301,7 +301,7 @@ public final class BulletRuntime {
                 assignments.add(new BulletTrackingBatchS2CPacket.Assignment(state.slot(), state.generation(), handle,
                         state.trackingUsesControl()));
                 velocitySamples.add(new BulletTrackingBatchS2CPacket.VelocitySample(state.slot(), state.generation(),
-                        state.velocity(), state.acceleration()));
+                        state.velocity(), state.acceleration(), state.controlTurnMultiplier()));
                 if (handle != 0 && state.trackingPosition() != null) positions.put(handle, state.trackingPosition());
             }
             if (assignments.isEmpty()) continue;
@@ -322,7 +322,8 @@ public final class BulletRuntime {
                 state.getTypeId(), state.getRootTypeId(),
                 state.ownerUuid(), state.isHoming(), state.isControllable(), state.homingRange(), state.homingSteer(),
                  state.controlRange(), state.controlSteer(), state.steeringMode(),
-                 state.getTrajectoryRuntime().snapshot(), state.noGravity(), state.stickState().snapshot());
+                 state.getTrajectoryRuntime().snapshot(), state.noGravity(), state.stickState().snapshot(), state.controlTurnMultiplier(),
+                 state.fetusKnife() != null);
     }
 
     private static long identity(int slot, int generation) {

@@ -4,6 +4,7 @@
       "rolls": 1,
       "entries": [
         {"type": "minecraft:item", "name": "isaac_disaster:guppys_head"},
+        {"type": "minecraft:item", "name": "isaac_disaster:moms_knife"},
         {"type": "minecraft:item", "name": "isaac_disaster:dark_princes_crown"},
         {"type": "minecraft:item", "name": "isaac_disaster:dark_matter"},
         {"type": "minecraft:item", "name": "isaac_disaster:two_spooky"},

@@ -1,6 +1,8 @@
 package net.luojiuoscar.isaac_disaster.registries.ability.set.impl;
 
+import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.registries.ability.set.SetAbility;
+import net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerModules;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 
@@ -17,10 +19,12 @@ public class Book extends SetAbility {
 
     @Override
     public void onObtainEffect(Player player) {
+        StatManager.addTriggerModule(player, ModTriggerModules.BOOK_MOMS_KNIFE.getId(), 1);
     }
 
     @Override
     public void onRemoveEffect(Player player) {
+        StatManager.addTriggerModule(player, ModTriggerModules.BOOK_MOMS_KNIFE.getId(), -1);
     }
 
     @Override

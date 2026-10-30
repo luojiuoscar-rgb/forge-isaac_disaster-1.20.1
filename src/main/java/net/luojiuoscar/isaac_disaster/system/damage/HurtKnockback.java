@@ -39,7 +39,8 @@ public final class HurtKnockback {
             Vec3 velocity = source instanceof ModDamageSources.TearDamageSource tear ? tear.velocity : Vec3.ZERO;
             return new Response(true, 0.10F, -velocity.x, -velocity.z);
         }
-        if (source.is(ModDamageType.LASER) || source.is(ModDamageType.FAMILIAR)) {
+        if (source.is(ModDamageType.LASER) || source.is(ModDamageType.FAMILIAR)
+                || source.is(ModDamageType.MOMS_KNIFE)) {
             return new Response(false, 0, 0, 0);
         }
         return null;

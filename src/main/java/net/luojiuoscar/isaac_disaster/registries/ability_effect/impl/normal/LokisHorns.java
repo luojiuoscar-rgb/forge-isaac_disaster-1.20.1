@@ -2,6 +2,7 @@ package net.luojiuoscar.isaac_disaster.registries.ability_effect.impl.normal;
 
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerAbilityProvider;
 import net.luojiuoscar.isaac_disaster.event.custom.attack.AttackPlanEvent;
+import net.luojiuoscar.isaac_disaster.entity.projectile.moms_knife.HeldMomsKnifeAttackPlan;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.CompositeTrigger;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ContextKeys;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ExecutableEffectContext;
@@ -15,6 +16,8 @@ import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackOrigin;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackPipelineMode;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackRequest;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackType;
+import net.luojiuoscar.isaac_disaster.registries.attack_type.ModAttackTypes;
+import net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerModules;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
@@ -31,6 +34,13 @@ public class LokisHorns implements IAbilityEffect {
     }
 
     private void shoot(Player player, ExecutableEffectContext context){
+        if (context.get(ContextKeys.EVENT) instanceof AttackPlanEvent event
+                && event.getAttackType() == ModAttackTypes.MOMS_KNIFE.get()) {
+            if (event.getOrigin() != AttackOrigin.PLAYER_PRIMARY) return;
+            if (event.getPlan() instanceof HeldMomsKnifeAttackPlan plan) plan.includeSource(ModTriggerModules.LOKIS_HORNS.getId());
+            return;
+        }
+
         player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY).ifPresent(
                 playerAbility -> {
                     AttackType attack = playerAbility.getAttackSelection().baseAttack();

@@ -16,11 +16,11 @@ import org.jetbrains.annotations.NotNull;
 public final class MomKnifeRenderer extends EntityRenderer<MomKnifeEntity> {
     private static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath(
             IsaacDisaster.MOD_ID, "textures/entity/familiar/mom_knife.png");
-    private final MomKnifeModel model;
+    private final MomKnifeModel<MomKnifeEntity> model;
 
     public MomKnifeRenderer(EntityRendererProvider.Context context) {
         super(context);
-        this.model = new MomKnifeModel();
+        this.model = new MomKnifeModel<>();
     }
 
     @Override

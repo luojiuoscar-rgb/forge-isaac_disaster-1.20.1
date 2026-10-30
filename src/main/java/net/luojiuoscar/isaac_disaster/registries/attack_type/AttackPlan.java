@@ -7,7 +7,7 @@ import java.util.Objects;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public final class AttackPlan {
+public class AttackPlan {
     private final @NotNull AttackRequest request;
     private final @NotNull List<AttackContext> originalBaseContexts;
     private @NotNull List<AttackContext> currentBaseContexts;
@@ -66,7 +66,7 @@ public final class AttackPlan {
         return frozenContexts != null;
     }
 
-    private void ensureNotFrozen() {
+    protected final void ensureNotFrozen() {
         if (isFrozen()) {
             throw new IllegalStateException("attack plan is already frozen");
         }

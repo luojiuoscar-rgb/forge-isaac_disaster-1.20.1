@@ -1,9 +1,10 @@
 package net.luojiuoscar.isaac_disaster.registries.ability.passive.impl;
 
 import net.luojiuoscar.isaac_disaster.attribute.ModAttributes;
+import net.luojiuoscar.isaac_disaster.item.ModPassiveItems;
+import net.luojiuoscar.isaac_disaster.manager.MultishotCountManager;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.registries.ability.passive.PassiveAbility;
-import net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerModules;
 import net.luojiuoscar.isaac_disaster.system.stat_multiplier.MultiplierEntry;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
@@ -32,13 +33,13 @@ public class TheInnerEye extends PassiveAbility {
     @Override
     public void handleObtain(ServerPlayer player, @Nullable ItemStack stack) {
         StatManager.addMultiplier(player, Multipliers.FIRE_RATE, 1);
-        StatManager.addTriggerModule(player, ModTriggerModules.FIRING_MODIFIER.getId(), 1);
+        MultishotCountManager.update(player, ModPassiveItems.THE_INNER_EYE.getId());
     }
 
     @Override
     public void handleRemove(ServerPlayer player, @Nullable ItemStack stack) {
         StatManager.removeMultiplier(player, Multipliers.FIRE_RATE, 1);
-        StatManager.addTriggerModule(player, ModTriggerModules.FIRING_MODIFIER.getId(), -1);
+        MultishotCountManager.update(player);
     }
 
     @Override

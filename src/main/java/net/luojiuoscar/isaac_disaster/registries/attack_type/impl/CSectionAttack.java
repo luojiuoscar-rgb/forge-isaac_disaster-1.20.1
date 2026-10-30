@@ -67,6 +67,7 @@ public class CSectionAttack extends BulletAttack implements IChargeableAttack {
         BulletState state = super.createOptimizedState(context);
         double collisionHeight = context.getBulletScale() * 0.35 * 1.8;
         return BulletState.from(context)
+                .renderScale(state.renderScale())
                 .position(state.position().add(0.0D, (collisionHeight - state.collisionHeight()) * 0.5D, 0.0D))
                 .lifetime(state.lifetime())
                 .collisionWidth(context.getBulletScale() * 0.35 * 0.6)
@@ -74,16 +75,20 @@ public class CSectionAttack extends BulletAttack implements IChargeableAttack {
                 .noGravity(true)
                 .homingRange(6.0).spectral(true).homing(true).piercing(true)
                 .controlRange(64.0D).controlSteer(0.8D)
+                .fetusKnife(context.getOwner().getCapability(PlayerAbilityProvider.PLAYER_ABILITY)
+                        .map(ability -> ability.getAttackTypes().getOrDefault(ModAttackTypes.MOMS_KNIFE.getId(), 0) > 0)
+                        .orElse(false))
                 .rememberHitTargets(false).steeringMode(BulletSteeringMode.DIRECT)
                 .maxSpeedChange(0.25D)
                 .build();
     }
 
     @Override
-    public void shoot(AttackContext ctx) {
-        super.shoot(ctx);
-        if (ctx.getOwner() == null || !(ctx.getOwner().level() instanceof ServerLevel level)) return;
+    protected boolean spawnBullet(AttackContext ctx) {
+        if (!super.spawnBullet(ctx)) return false;
+        ServerLevel level = (ServerLevel) ctx.getOwner().level();
         spawnBloodParticles(level, ctx.getPos(), ctx.getOwner().getLookAngle(), 10, 0.35, 0.35);
+        return true;
     }
 
     private void spawnBloodParticles(ServerLevel level, Vec3 pos, Vec3 direction, int count, double spread, double verticalOffset) {

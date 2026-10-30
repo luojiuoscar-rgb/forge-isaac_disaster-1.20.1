@@ -19,7 +19,7 @@ import java.util.List;
 public final class LeadPencil extends TriggerModule {
     private static final CompositeTrigger TRIGGER = new CompositeTrigger(List.of(
             new SimpleTrigger(ModTriggerTypes.ATTACK_CONTEXT_PREPARE, ModExecutableEffects.LEAD_PENCIL_ATTACHMENT),
-            new SimpleTrigger(ModTriggerTypes.ATTACK_PLAN, ModExecutableEffects.LEAD_PENCIL_SHOT_COUNTER)
+            new SimpleTrigger(ModTriggerTypes.ATTACK_FIRED, ModExecutableEffects.LEAD_PENCIL_SHOT_COUNTER)
     ));
 
     public LeadPencil() {

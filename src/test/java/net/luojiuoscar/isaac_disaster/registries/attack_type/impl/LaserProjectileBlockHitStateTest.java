@@ -1,5 +1,7 @@
 package net.luojiuoscar.isaac_disaster.registries.attack_type.impl;
 
+import net.luojiuoscar.isaac_disaster.registries.attack_pattern.impl.PatternTestSupport;
+import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackContext;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.phys.BlockHitResult;
@@ -12,8 +14,20 @@ import java.lang.reflect.Method;
 
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class LaserProjectileBlockHitStateTest {
+    @Test
+    void constructionAndRuntimeExposeTheSameShortContextRange() throws Exception {
+        AttackContext context = PatternTestSupport.context(0, 0).toBuilder().range(0.65).build();
+        var projectile = new AbstractLaserAttack.LaserProjectile(context);
+        assertEquals(0.65, projectile.getRange(), 1e-12);
+        assertEquals(context.getBulletRange(), projectile.getRange(), 1e-12);
+        assertEquals(projectile.getRange(), projectile.getAttackContext().getBulletRange(), 1e-12);
+        assertEquals(context.getMainAxis(), projectile.direction);
+        assertEquals(context.getPos(), projectile.position);
+    }
+
     @Test
     void storesTheFullLastBlockHitResult() throws Exception {
         AbstractLaserAttack.LaserProjectile projectile = allocateProjectile();

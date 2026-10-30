@@ -74,6 +74,7 @@ public final class ClientBulletRuntime {
                     .range(packet.range())
                     .damage(packet.damage())
                     .renderScale(packet.renderScale())
+                    .fetusKnife(packet.fetusKnife())
                     .collisionWidth(packet.collisionWidth())
                     .collisionHeight(packet.collisionHeight())
                     .ownerUuid(packet.ownerUuid())
@@ -89,6 +90,7 @@ public final class ClientBulletRuntime {
                     .homingSteer(packet.homingSteer())
                     .controlRange(packet.controlRange())
                     .controlSteer(packet.controlSteer())
+                    .controlTurnMultiplier(packet.controlTurnMultiplier())
                     .restoreTrajectory(packet.trajectorySnapshot())
                     .build();
         decoded.applyStickSnapshot(packet.stickSnapshot());

@@ -1,6 +1,7 @@
 package net.luojiuoscar.isaac_disaster.registries.trajectory;
 
 import net.luojiuoscar.isaac_disaster.registries.attack_type.IBulletObject;
+import net.luojiuoscar.isaac_disaster.registries.attack_type.ModAttackTypes;
 import net.minecraft.network.FriendlyByteBuf;
 
 import java.util.List;
@@ -85,7 +86,7 @@ public abstract class TrajectoryModule<S extends TrajectoryState> {
     }
 
     public boolean appliesTo(IBulletObject bullet) {
-        return true;
+        return !ModAttackTypes.MOMS_KNIFE.getId().equals(bullet.getRootTypeId());
     }
 
     public final TrajectoryMotion apply(TrajectoryContext context) {

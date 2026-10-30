@@ -25,7 +25,6 @@ import org.jetbrains.annotations.Nullable;
 public class AttackContext {
     public static final double DEFAULT_RANGE = 18.0;
     public static final double DEFAULT_SPEED = 1.0;
-    public static final double MIN_RANGE = 1.0;
     public static final double MAX_RANGE = 64.0;
     private static final double MIN_BULLET_SCALE = 0.25D;
     private static final double BULLET_SCALE_BASE_DAMAGE = 2.0D;
@@ -221,7 +220,7 @@ public class AttackContext {
 
     private static double sanitizeRange(double range) {
         if (!Double.isFinite(range) || range <= 0.0) return DEFAULT_RANGE;
-        return Math.max(MIN_RANGE, Math.min(range, MAX_RANGE));
+        return Math.min(range, MAX_RANGE);
     }
 
     private static double sanitizeSpeed(double speed) {

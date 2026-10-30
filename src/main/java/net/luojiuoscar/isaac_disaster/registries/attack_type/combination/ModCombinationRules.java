@@ -18,6 +18,22 @@ public class ModCombinationRules {
     public static final DeferredRegister<AttackCombinationRule> ATTACK_COMBINATION_RULE_REGISTRY =
             DeferredRegister.create(ATTACK_COMBINATION_RULE_KEY, IsaacDisaster.MOD_ID);
 
+    public static final RegistryObject<AttackCombinationRule> MOMS_KNIFE_C_SECTION =
+            ATTACK_COMBINATION_RULE_REGISTRY.register(
+                    "moms_knife_c_section", () -> new AttackCombinationRule(
+                            Set.of(ModAttackTypes.MOMS_KNIFE, ModAttackTypes.C_SECTION),
+                            ModAttackTypes.C_SECTION,
+                            AttackPrio.MOMS_KNIFE_C_SECTION_COMBO.getTier(),
+                            AttackPrio.MOMS_KNIFE_C_SECTION_COMBO.getPriority()));
+
+    public static final RegistryObject<AttackCombinationRule> BRIMSTONE_MOMS_KNIFE_C_SECTION =
+            ATTACK_COMBINATION_RULE_REGISTRY.register(
+                    "brimstone_moms_knife_c_section", () -> new AttackCombinationRule(
+                            Set.of(ModAttackTypes.BRIMSTONE, ModAttackTypes.MOMS_KNIFE, ModAttackTypes.C_SECTION),
+                            ModAttackTypes.BRIMSTONE,
+                            AttackPrio.BRIMSTONE_MOMS_KNIFE_C_SECTION_COMBO.getTier(),
+                            AttackPrio.BRIMSTONE_MOMS_KNIFE_C_SECTION_COMBO.getPriority()));
+
     public static final RegistryObject<AttackCombinationRule> NEPTUNUS_CURSED_EYE =
             ATTACK_COMBINATION_RULE_REGISTRY.register(
                     "neptunus_cursed_eye", () -> new AttackCombinationRule(

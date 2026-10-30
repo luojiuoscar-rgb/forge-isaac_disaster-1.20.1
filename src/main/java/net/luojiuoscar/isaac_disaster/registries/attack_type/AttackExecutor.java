@@ -5,7 +5,7 @@ public final class AttackExecutor {
     private AttackExecutor() {
     }
 
-    /** Executes the request through the default pipeline. */
+    /** Accepts a request into the pipeline; actual launches are reported by AttackFiredEvent. */
     public static boolean perform(AttackRequest request) {
         return AttackPipeline.executeRequest(request);
     }

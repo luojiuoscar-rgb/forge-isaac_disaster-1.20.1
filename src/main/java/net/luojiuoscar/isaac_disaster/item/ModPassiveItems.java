@@ -818,5 +818,12 @@ public class ModPassiveItems {
     public static final RegistryObject<Item> INFESTATION_2 = ITEMS.register("infestation_2",
             () -> new PassiveItem(new Item.Properties(), ModPassiveAbilities.INFESTATION_2));
     static {ItemListManager.PASSIVE_ITEM_LIST.add(INFESTATION_2);}
+    public static final RegistryObject<Item> TRACTOR_BEAM = ITEMS.register("tractor_beam",
+            () -> new PassiveItem(new Item.Properties(), ModPassiveAbilities.TRACTOR_BEAM));
+    static {ItemListManager.PASSIVE_ITEM_LIST.add(TRACTOR_BEAM);}
+
+    public static final RegistryObject<Item> MOMS_KNIFE = ITEMS.register("moms_knife",
+            () -> new PassiveItem(new Item.Properties(), ModPassiveAbilities.MOMS_KNIFE));
+    static {ItemListManager.PASSIVE_ITEM_LIST.add(MOMS_KNIFE);}
 
 }

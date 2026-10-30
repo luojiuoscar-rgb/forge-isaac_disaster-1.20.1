@@ -26,7 +26,8 @@ public class CompoundFractureSplitModule extends SplitModule {
 
     @Override
     public boolean canTrigger(SplitContext context) {
-        if (!ModAttackTypes.BULLET.getId().equals(context.getParent().getRootTypeId())) return false;
+        ResourceLocation root = context.getParent().getRootTypeId();
+        if (!ModAttackTypes.BULLET.getId().equals(root) && !ModAttackTypes.MOMS_KNIFE.getId().equals(root)) return false;
         if (context.getTriggerType() != SplitTriggerType.ENTITY
                 && context.getTriggerType() != SplitTriggerType.BLOCK) return false;
         return context.getModuleTriggerCount() == 0;

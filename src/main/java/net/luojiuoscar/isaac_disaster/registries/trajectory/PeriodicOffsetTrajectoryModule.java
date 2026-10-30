@@ -1,5 +1,8 @@
 package net.luojiuoscar.isaac_disaster.registries.trajectory;
 
+import net.luojiuoscar.isaac_disaster.registries.attack_type.IBulletObject;
+import net.luojiuoscar.isaac_disaster.registries.attack_type.ModAttackTypes;
+
 /**
  * Shared base for offset trajectories whose phase advances continuously and is evaluated as an
  * angle.
@@ -8,6 +11,12 @@ public abstract class PeriodicOffsetTrajectoryModule<S extends TrajectoryState>
         extends OffsetTrajectoryModule<S> {
     protected static final double ENTRY_DISTANCE = 2;
     protected static final double PERIOD = 8;
+
+    @Override
+    public boolean appliesTo(IBulletObject bullet) {
+        return ModAttackTypes.BULLET.getId().equals(bullet.getRootTypeId())
+                || ModAttackTypes.LASER.getId().equals(bullet.getRootTypeId());
+    }
 
     protected final double envelope(S state) {
         return TrajectoryFrame.smootherstep(phase(state) / ENTRY_DISTANCE);

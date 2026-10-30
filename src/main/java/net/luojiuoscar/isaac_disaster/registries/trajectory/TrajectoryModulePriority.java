@@ -3,6 +3,7 @@ package net.luojiuoscar.isaac_disaster.registries.trajectory;
 /** Numeric priorities assigned to this mod's built-in primary trajectory modules. */
 public enum TrajectoryModulePriority {
     TINY_PLANET_LASER(100),
+    TINY_PLANET_RETURNING_MOMS_KNIFE(100),
     MY_REFLECTION_LASER(50),
     DEFAULT(0),
     MY_REFLECTION_BULLET(-50),

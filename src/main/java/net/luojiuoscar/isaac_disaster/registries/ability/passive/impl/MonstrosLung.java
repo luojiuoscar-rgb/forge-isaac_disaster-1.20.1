@@ -25,6 +25,7 @@ public final class MonstrosLung extends PassiveAbility {
     public void handleObtain(ServerPlayer player, @Nullable ItemStack stack) {
         StatManager.addAttackType(player, ModAttackTypes.MONSTROS_LUNG.getId(), 1);
         StatManager.addTriggerModule(player, ModTriggerModules.BRIMSTONE_MONSTROS_LUNG.getId(), 1);
+        StatManager.addTriggerModule(player, ModTriggerModules.MONSTROS_LUNG_MOMS_KNIFE.getId(), 1);
         StatManager.addBulletColor(player, ModBulletColors.BLOOD_TEAR.getId(), 1);
     }
 
@@ -32,6 +33,7 @@ public final class MonstrosLung extends PassiveAbility {
     public void handleRemove(ServerPlayer player, @Nullable ItemStack stack) {
         StatManager.addAttackType(player, ModAttackTypes.MONSTROS_LUNG.getId(), -1);
         StatManager.addTriggerModule(player, ModTriggerModules.BRIMSTONE_MONSTROS_LUNG.getId(), -1);
+        StatManager.addTriggerModule(player, ModTriggerModules.MONSTROS_LUNG_MOMS_KNIFE.getId(), -1);
         StatManager.addBulletColor(player, ModBulletColors.BLOOD_TEAR.getId(), -1);
     }
 

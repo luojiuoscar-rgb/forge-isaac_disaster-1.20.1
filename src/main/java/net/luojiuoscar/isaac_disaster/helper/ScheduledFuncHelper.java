@@ -136,7 +136,16 @@ public class ScheduledFuncHelper {
         }
 
         // 避免漏掉 pendingAdd 中的任务
-        PENDING_ADD.removeIf(task -> task.typeId.equals(typeId) && Objects.equals(task.owner, owner));
+        PENDING_ADD.removeIf(task -> {
+            if (!task.typeId.equals(typeId) || !Objects.equals(task.owner, owner)) return false;
+            if (owner != null) {
+                PLAYER_TASK_INDEX.computeIfPresent(owner, (id, tasks) -> {
+                    tasks.remove(task.taskId);
+                    return tasks.isEmpty() ? null : tasks;
+                });
+            }
+            return true;
+        });
     }
 
     public static void clearPlayerTasks(UUID playerUUID) {
@@ -165,6 +174,7 @@ public class ScheduledFuncHelper {
         Iterator<Map.Entry<Integer, ScheduledTask>> iterator = TASKS.entrySet().iterator();
         while (iterator.hasNext()) {
             ScheduledTask task = iterator.next().getValue();
+            if (PENDING_REMOVE.contains(task.taskId)) continue;
             task.timeLeft--;
 
             if (task.timeLeft <= 0) {

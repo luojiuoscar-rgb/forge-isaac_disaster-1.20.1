@@ -1,16 +1,19 @@
 package net.luojiuoscar.isaac_disaster.registries.attack_type;
 
 import net.luojiuoscar.isaac_disaster.event.custom.attack.AttackContextPrepareEvent;
+import net.luojiuoscar.isaac_disaster.event.custom.attack.AttackFiredEvent;
 import net.luojiuoscar.isaac_disaster.event.custom.attack.AttackPlanEvent;
 import net.luojiuoscar.isaac_disaster.event.custom.attack.BeforePerformAttackEvent;
+import net.luojiuoscar.isaac_disaster.registries.attack_type.tags.IChargeableAttack;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraftforge.common.MinecraftForge;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Consumer;
 
 public final class AttackPipeline {
     private AttackPipeline() {
@@ -48,7 +51,7 @@ public final class AttackPipeline {
     /** Runs the one-time attack-plan phase and finalizes its final context sequence. */
     private static boolean executeAttackPlan(@NotNull AttackRequest request,
                                              @NotNull List<AttackContext> baseContexts) {
-        AttackPlan plan = new AttackPlan(request, baseContexts);
+        AttackPlan plan = request.getAttackType().createPlan(request, baseContexts);
         AttackPlanEvent planEvent = new AttackPlanEvent(request, plan);
         MinecraftForge.EVENT_BUS.post(planEvent);
         return executePreparedContexts(request, plan, plan.finalizeContexts());
@@ -56,42 +59,47 @@ public final class AttackPipeline {
 
     /** Creates a fixed plan wrapper for caller-provided contexts and prepares each context. */
     private static boolean executePrepareAndExecute(@NotNull AttackRequest request) {
-        AttackPlan plan = new AttackPlan(request, request.getProvidedContexts());
+        AttackPlan plan = request.getAttackType().createPlan(request, request.getProvidedContexts());
         return executePreparedContexts(request, plan, plan.finalizeContexts());
     }
 
-    /** Runs the per-context stage, omitting only contexts whose prepare event was cancelled. */
+    /** Prepares every context in the finalized sequence without changing its membership. */
     private static boolean executePreparedContexts(@NotNull AttackRequest request, @NotNull AttackPlan plan,
                                                    @NotNull List<AttackContext> contexts) {
         List<AttackContext> preparedContexts = new ArrayList<>();
         for (int i = 0; i < contexts.size(); i++) {
             AttackContext attackContext = contexts.get(i).bindAttackTypeOrCopy(request.getAttackType());
-            AttackContextPrepareEvent prepareEvent =
-                    new AttackContextPrepareEvent(request, plan, attackContext, i);
-            MinecraftForge.EVENT_BUS.post(prepareEvent);
-            if (!prepareEvent.isCanceled()) {
-                preparedContexts.add(attackContext);
-            }
+            MinecraftForge.EVENT_BUS.post(new AttackContextPrepareEvent(request, plan, attackContext, i));
+            preparedContexts.add(attackContext);
         }
 
         preparedContexts.forEach(AttackContext::freeze);
-        request.getAttackType().performAttack(preparedContexts);
-        if (request.shouldPlaySound()) {
-            request.getAttackType().makeSound(request.getOwner());
-        }
+        request.getAttackType().performAttack(plan, preparedContexts, firingCallback(request, preparedContexts));
+        if (request.shouldPlaySound()) request.getAttackType().makeSound(request.getOwner());
         return true;
     }
 
-    /** Executes already-prepared contexts directly without publishing pipeline events. */
+    /** Skips planning and preparation; actual launches still publish AttackFiredEvent. */
     private static boolean executeExecuteOnly(@NotNull AttackRequest request) {
-        List<AttackContext> contexts = request.getProvidedContexts().stream()
+        AttackPlan plan = request.getAttackType().createPlan(request, request.getProvidedContexts());
+        List<AttackContext> contexts = plan.finalizeContexts().stream()
                 .map(context -> context.bindAttackTypeOrCopy(request.getAttackType())).toList();
         contexts.forEach(AttackContext::freeze);
-        request.getAttackType().performAttack(contexts);
-        if (request.shouldPlaySound()) {
-            request.getAttackType().makeSound(request.getOwner());
-        }
+        request.getAttackType().performAttack(plan, contexts, firingCallback(request, contexts));
+        if (request.shouldPlaySound()) request.getAttackType().makeSound(request.getOwner());
         return true;
+    }
+
+    private static Consumer<AttackContext> firingCallback(AttackRequest request, List<AttackContext> contexts) {
+        List<AttackContext> snapshot = List.copyOf(contexts);
+        ServerPlayer player = request.getPlayer();
+        double chargeFraction = player != null && request.getAttackType() instanceof IChargeableAttack charge
+                ? charge.getChargeFraction(player) : 0;
+        AtomicBoolean fired = new AtomicBoolean();
+        return firstFired -> {
+            if (!fired.compareAndSet(false, true)) return;
+            MinecraftForge.EVENT_BUS.post(new AttackFiredEvent(request, snapshot, firstFired, chargeFraction));
+        };
     }
 
 }

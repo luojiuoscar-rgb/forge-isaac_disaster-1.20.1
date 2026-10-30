@@ -2,9 +2,10 @@ package net.luojiuoscar.isaac_disaster.registries.ability.passive.impl;
 
 
 import net.luojiuoscar.isaac_disaster.IsaacDisaster;
+import net.luojiuoscar.isaac_disaster.item.ModPassiveItems;
+import net.luojiuoscar.isaac_disaster.manager.MultishotCountManager;
 import net.luojiuoscar.isaac_disaster.manager.StatManager;
 import net.luojiuoscar.isaac_disaster.registries.ability.passive.PassiveAbility;
-import net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerModules;
 import net.luojiuoscar.isaac_disaster.system.stat_multiplier.MultiplierEntry;
 import net.luojiuoscar.isaac_disaster.system.stat_multiplier.MultiplierRules;
 import net.minecraft.network.chat.Component;
@@ -42,16 +43,16 @@ public class PerfectVision extends PassiveAbility {
     @Override
     public void handleObtain(ServerPlayer player, @Nullable ItemStack stack) {
         StatManager.addMultiplierRule(player, Rules.FIRE_RATE, 1);
-        StatManager.addTriggerModule(player, ModTriggerModules.FIRING_MODIFIER.getId(), 1);
 
         StatManager.addMultiplier(player, Multipliers.DAMAGE, 1);
+        MultishotCountManager.update(player, ModPassiveItems.PERFECT_VISION.getId());
     }
 
     @Override
     public void handleRemove(ServerPlayer player, @Nullable ItemStack stack) {
         StatManager.removeMultiplierRule(player, Rules.FIRE_RATE.id(), 1);
         StatManager.removeMultiplier(player, Multipliers.DAMAGE, 1);
-        StatManager.addTriggerModule(player, ModTriggerModules.FIRING_MODIFIER.getId(), -1);
+        MultishotCountManager.update(player);
     }
 
     @Override

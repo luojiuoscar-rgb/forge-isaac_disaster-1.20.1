@@ -284,6 +284,7 @@ public final class BulletStream {
             if (state == null || !state.isFlying()
                 || sampleTick < stickSampleTicks.getOrDefault(key(state.slot(), state.generation()), Integer.MIN_VALUE)) continue;
             authoritativeVelocities.put(identity, sample.velocity());
+            state.setControlTurnMultiplier(sample.controlTurnMultiplier());
             authoritativeVelocityTicks.put(identity, sampleTick);
             velocitySampleTicks.put(identity, sampleTick);
         }

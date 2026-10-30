@@ -29,6 +29,7 @@ import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
 
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.UUID;
 
 public class RevelationAttack extends AbstractLaserAttack implements IChargeableAttack, AdditionalAttackType {
@@ -113,16 +114,16 @@ public class RevelationAttack extends AbstractLaserAttack implements IChargeable
     }
 
     @Override
-    public void performAttack(List<AttackContext> contexts) {
+    public void performAttack(List<AttackContext> contexts, Consumer<AttackContext> onFired) {
         if (contexts == null) return;
         for (AttackContext context : contexts) {
             if (context == null || !(context.getOwner() instanceof ServerPlayer player)) continue;
             context.freeze();
-            scheduleBeam(new Beam(player, context, isControllable(player)));
+            scheduleBeam(new Beam(player, context, isControllable(player)), onFired);
         }
     }
 
-    private void scheduleBeam(Beam beam) {
+    private void scheduleBeam(Beam beam, Consumer<AttackContext> onFired) {
         // A global finite task survives player cleanup and always completes its 15 pulses.
         ScheduledFuncHelper.schedule(SCHEDULE_TYPE,
                 HIT_INTERVAL, HIT_INTERVAL - 1, HIT_COUNT, false, () -> {
@@ -130,9 +131,10 @@ public class RevelationAttack extends AbstractLaserAttack implements IChargeable
                     AttackContext shot = beam.snapshot.toBuilder()
                             .position(beam.position).mainAxis(beam.direction).build();
                     shot.setBulletScale(beam.snapshot.getBulletScale(), true);
-                    performBeamPulse(beam.level, shot);
+                    AttackContext firstFired = performBeamPulse(beam.level, shot);
                     syncBeam(beam);
                     beam.pulses++;
+                    if (firstFired != null) onFired.accept(firstFired);
                 });
     }
 
@@ -181,12 +183,12 @@ public class RevelationAttack extends AbstractLaserAttack implements IChargeable
         return entity.getEyePosition(partialTick).add(0, entity.getBbHeight() * -0.45D, 0);
     }
 
-    private void performBeamPulse(ServerLevel level, AttackContext context) {
+    private AttackContext performBeamPulse(ServerLevel level, AttackContext context) {
         ServerLevel previousLevel = beamLevel.get();
         beamLevel.set(level);
         try {
             context.freeze();
-            performLaserBatch(List.of(context), ignored -> 0);
+            return performLaserBatch(List.of(context), ignored -> 0);
         } finally {
             if (previousLevel == null) beamLevel.remove();
             else beamLevel.set(previousLevel);

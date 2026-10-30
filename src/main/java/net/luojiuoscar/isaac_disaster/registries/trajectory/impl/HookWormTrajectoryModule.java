@@ -1,5 +1,7 @@
 package net.luojiuoscar.isaac_disaster.registries.trajectory.impl;
 
+import net.luojiuoscar.isaac_disaster.registries.attack_type.IBulletObject;
+import net.luojiuoscar.isaac_disaster.registries.attack_type.ModAttackTypes;
 import net.luojiuoscar.isaac_disaster.registries.trajectory.OffsetTrajectoryModule;
 import net.luojiuoscar.isaac_disaster.registries.trajectory.TrajectoryKinematics;
 import net.luojiuoscar.isaac_disaster.registries.trajectory.TrajectorySpec;
@@ -14,6 +16,12 @@ public final class HookWormTrajectoryModule
         extends OffsetTrajectoryModule<HookWormTrajectoryModule.State> {
     private static final double FORWARD_DISTANCE = 2;
     private static final double SIDE_AMPLITUDE = 1;
+
+    @Override
+    public boolean appliesTo(IBulletObject bullet) {
+        return ModAttackTypes.BULLET.getId().equals(bullet.getRootTypeId())
+                || ModAttackTypes.LASER.getId().equals(bullet.getRootTypeId());
+    }
 
     public static final class State implements TrajectoryState {
         private double phase;
