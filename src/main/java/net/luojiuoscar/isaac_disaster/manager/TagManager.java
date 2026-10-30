@@ -28,6 +28,9 @@ public class TagManager {
             TagKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "d12_excluded"));
 
     // entity tag
+    public static final TagKey<EntityType<?>> D10_EXCLUDED_ENTITIES = TagKey.create(Registries.ENTITY_TYPE,
+            ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "d10_excluded"));
+
     public static final TagKey<EntityType<?>> BOSSES = TagKey.create(Registries.ENTITY_TYPE,
             ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "bosses"));
 }

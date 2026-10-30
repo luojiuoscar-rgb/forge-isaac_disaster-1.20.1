@@ -1208,4 +1208,7 @@ public class ModExecutableEffects {
     public static final RegistryObject<IExecutableEffect> AQUARIUS =
             EXECUTABLE_EFFECT_REGISTRY.register("aquarius", Aquarius::new);
 
+    public static final RegistryObject<IExecutableEffect> D10 =
+            EXECUTABLE_EFFECT_REGISTRY.register("d10", D10::new);
+
 }

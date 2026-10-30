@@ -191,4 +191,7 @@ public class ModActiveAbilities {
             ACTIVE_ABILITY_REGISTRY.register("box_of_spiders",
                     () -> new BoxOfSpiders(ItemId.BOX_OF_SPIDERS.getId(), ItemId.BOX_OF_SPIDERS.getLevel()));
 
+    public static final RegistryObject<ActiveAbility> D10 =
+            ACTIVE_ABILITY_REGISTRY.register("d10", () -> new D10(ItemId.D10.getId(), ItemId.D10.getLevel()));
+
 }

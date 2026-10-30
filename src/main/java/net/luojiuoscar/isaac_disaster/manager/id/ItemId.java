@@ -249,7 +249,8 @@ public enum ItemId {
     HOLY_LIGHT(3),
     FIRE_MIND(2),
     VIRGO(2),
-    AQUARIUS(2);
+    AQUARIUS(2),
+    D10(1);
 
 
 
