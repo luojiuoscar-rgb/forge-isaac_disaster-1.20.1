@@ -16,6 +16,7 @@ import net.luojiuoscar.isaac_disaster.entity.familiar.impl.sister_maggy.SisterMa
 import net.luojiuoscar.isaac_disaster.entity.familiar.impl.ghost_baby.GhostBabyEntity;
 import net.luojiuoscar.isaac_disaster.entity.familiar.impl.harlequin_baby.HarlequinBabyEntity;
 import net.luojiuoscar.isaac_disaster.entity.familiar.impl.rotten_baby.RottenBabyEntity;
+import net.luojiuoscar.isaac_disaster.entity.familiar.impl.loki_baby.LokiBabyEntity;
 import net.luojiuoscar.isaac_disaster.entity.tnt.GigaBomb;
 import net.luojiuoscar.isaac_disaster.entity.tnt.IsaacBomb;
 import net.minecraft.world.entity.EntityType;
@@ -96,6 +97,12 @@ public class ModEntities {
                     () -> EntityType.Builder.<RottenBabyEntity>of(RottenBabyEntity::new, MobCategory.MISC)
                             .sized(0.875F * AbstractBabyFamiliarEntity.BASE_SCALE, 1.4375F * AbstractBabyFamiliarEntity.BASE_SCALE)
                             .clientTrackingRange(8).updateInterval(1).build("rotten_baby"));
+
+    public static final RegistryObject<EntityType<LokiBabyEntity>> LOKI_BABY =
+            MOD_ENTITIES.register("loki_baby",
+                    () -> EntityType.Builder.<LokiBabyEntity>of(LokiBabyEntity::new, MobCategory.MISC)
+                            .sized(0.875F * AbstractBabyFamiliarEntity.BASE_SCALE, 1.4375F * AbstractBabyFamiliarEntity.BASE_SCALE)
+                            .clientTrackingRange(8).updateInterval(1).build("loki_baby"));
 
     public static final RegistryObject<EntityType<BlueFlyEntity>> BLUE_FLY =
             MOD_ENTITIES.register("blue_fly",

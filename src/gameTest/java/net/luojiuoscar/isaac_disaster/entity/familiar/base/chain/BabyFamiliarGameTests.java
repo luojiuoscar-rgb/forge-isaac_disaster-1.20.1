@@ -176,6 +176,9 @@ public final class BabyFamiliarGameTests {
             f.owner.getCapability(PlayerAbilityProvider.PLAYER_ABILITY).ifPresent(ability -> ability.setHoldRightClick(false));
             for (int tick = 0; tick < 8; tick++) { f.advance(); baby.tick(); }
             helper.assertTrue(baby.shots == 4, "The second baby also stops attacking on release");
+            helper.assertTrue(baby.getAttackAge(0) == 8, "Releasing input preserves the active action until its full duration");
+            f.advance(); baby.tick(); f.advance(); baby.tick();
+            helper.assertTrue(baby.getAttackAge(0) < 0 && baby.shots == 4, "The completed action returns to idle without triggering another attack");
         }
         helper.succeed();
     }

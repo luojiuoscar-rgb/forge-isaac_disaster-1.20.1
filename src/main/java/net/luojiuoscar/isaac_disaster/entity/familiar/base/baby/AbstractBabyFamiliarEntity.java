@@ -42,6 +42,7 @@ public abstract class AbstractBabyFamiliarEntity extends AbstractChainFamiliarEn
 
     private long nextAttackTick = Long.MIN_VALUE;
     private long lastAttackTick = Long.MIN_VALUE;
+    private long windupStartTick = Long.MIN_VALUE;
 
     protected AbstractBabyFamiliarEntity(EntityType<?> type, Level level) {
         super(type, level);
@@ -51,6 +52,9 @@ public abstract class AbstractBabyFamiliarEntity extends AbstractChainFamiliarEn
     protected abstract boolean performAttack(ServerPlayer owner, Vec3 direction);
 
     protected abstract int attackIntervalTicks();
+
+    /** Held input starts a complete action; direct attack requests remain immediate. */
+    protected int heldAttackWindupTicks() { return 0; }
 
     /** A one-shot request aimed at a world position, sharing the same cadence as held-player fire. */
     public final boolean attackTowards(Vec3 position) {
@@ -68,21 +72,50 @@ public abstract class AbstractBabyFamiliarEntity extends AbstractChainFamiliarEn
         if (now == lastAttackTick || now < nextAttackTick || !performAttack(owner, axis)) return false;
         lastAttackTick = now;
         nextAttackTick = now + Math.max(0, attackIntervalTicks());
+        windupStartTick = Long.MIN_VALUE;
         onAttackSucceeded(owner, axis);
         return true;
     }
 
     @Override
     protected final void tickChainServer(ServerPlayer owner, Vec3 movement) {
-        // Autonomous targeting is paused: babies currently follow the player's held input.
-        if (!owner.isSpectator() && PlayerHelper.isHoldingIsaacHead(owner)
+        if (windupStartTick != Long.MIN_VALUE || (!owner.isSpectator() && PlayerHelper.isHoldingIsaacHead(owner)
                 && owner.getCapability(PlayerAbilityProvider.PLAYER_ABILITY)
-                .map(ability -> ability.isHoldingRightClick()).orElse(false)) {
-            attackInDirection(owner.getLookAngle());
-        } else if (!continueAttackAim(level().getGameTime())) {
-            stopAttackAim();
-            super.tickChainServer(owner, movement);
+                .map(ability -> ability.isHoldingRightClick()).orElse(false))) {
+            tickHeldAttack(owner);
+        } else {
+            if (!continueAttackAim(level().getGameTime())) {
+                stopAttackAim();
+                super.tickChainServer(owner, movement);
+            }
         }
+    }
+
+    private void tickHeldAttack(ServerPlayer owner) {
+        int windup = Math.max(0, heldAttackWindupTicks());
+        if (windup == 0) {
+            attackInDirection(owner.getLookAngle());
+            return;
+        }
+        long now = level().getGameTime();
+        if (windupStartTick != Long.MIN_VALUE) {
+            aimAtDirection(attackDirection);
+            if (now - windupStartTick >= windup && now >= nextAttackTick) {
+                long started = windupStartTick;
+                boolean fired = attackInDirection(attackDirection);
+                windupStartTick = Long.MIN_VALUE;
+                entityData.set(LAST_ACTION, fired ? started : -1L);
+            }
+            return;
+        }
+        // Prepare during the final windup ticks of cooldown so successful shots retain their original cadence.
+        if (now == lastAttackTick || (now < nextAttackTick && nextAttackTick - now > windup)) {
+            if (!continueAttackAim(now)) stopAttackAim();
+            return;
+        }
+        aimAtDirection(owner.getLookAngle().normalize());
+        windupStartTick = now;
+        entityData.set(LAST_ACTION, now);
     }
 
     @Override
@@ -155,6 +188,7 @@ public abstract class AbstractBabyFamiliarEntity extends AbstractChainFamiliarEn
     }
 
     protected void resetBabyAction() {
+        windupStartTick = Long.MIN_VALUE;
         attackDirection = Vec3.ZERO;
         aimInitialized = false;
         entityData.set(AIMING, false);

@@ -835,4 +835,8 @@ public class ModPassiveAbilities {
             PASSIVE_ABILITY_REGISTRY.register("rotten_baby",
                     () -> new RottenBaby(ItemId.ROTTEN_BABY.getId(), ItemId.ROTTEN_BABY.getLevel()));
 
+    public static final RegistryObject<PassiveAbility> LOKI_BABY =
+            PASSIVE_ABILITY_REGISTRY.register("loki_baby",
+                    () -> new LokiBaby(ItemId.LOKI_BABY.getId(), ItemId.LOKI_BABY.getLevel()));
+
 }
