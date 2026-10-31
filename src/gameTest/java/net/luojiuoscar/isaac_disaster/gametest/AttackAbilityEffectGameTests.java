@@ -31,7 +31,7 @@ public final class AttackAbilityEffectGameTests {
         ServerPlayer player = player(helper);
         List<IAbilityEffect> eventEffects = List.of(new BrimstonePlusMonstrosLung(),
                 new FiringModifierAttackPlan(),
-                new TheWizAttackPlan(), new LeadPencilShotCounter());
+                new TheWizAttackPlan(), new ConjoinedAttackPlan(), new LeadPencilShotCounter());
         var invalidEntity = new ExecutableEffectContext(new Zombie(helper.getLevel()));
         for (var effect : eventEffects) {
             helper.assertTrue(!effect.applyEffect(invalidEntity), "Wrong entity is an invalid execution input");
@@ -45,6 +45,7 @@ public final class AttackAbilityEffectGameTests {
         helper.assertTrue(new BrimstonePlusMonstrosLung().applyEffect(context), "Ineligible beam plan is safely skipped");
         helper.assertTrue(new FiringModifierAttackPlan().applyEffect(context), "Derived plan is safely skipped");
         helper.assertTrue(new TheWizAttackPlan().applyEffect(context), "Missing Wiz status is safely skipped");
+        helper.assertTrue(new ConjoinedAttackPlan().applyEffect(context), "Derived plans do not trigger Conjoined");
         helper.assertTrue(new LeadPencilShotCounter().applyEffect(context), "Derived plan is not counted");
         helper.assertTrue(extraPlan.getExtraContexts().isEmpty(), "Skipped beam effect appends nothing");
         var data = player.getCapability(ExtraDataProvider.EXTRA_DATA_CAP).orElseThrow(IllegalStateException::new);
@@ -52,7 +53,7 @@ public final class AttackAbilityEffectGameTests {
 
         context.set(ContextKeys.EVENT, new Event());
         for (var effect : List.of(new BrimstonePlusMonstrosLung(), new FiringModifierAttackPlan(),
-                new TheWizAttackPlan(), new LeadPencilShotCounter())) {
+                new TheWizAttackPlan(), new ConjoinedAttackPlan(), new LeadPencilShotCounter())) {
             helper.assertTrue(!effect.applyEffect(context), "Wrong event type fails");
         }
         helper.succeed();

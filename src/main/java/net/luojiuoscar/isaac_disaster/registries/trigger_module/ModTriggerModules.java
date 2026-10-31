@@ -137,6 +137,8 @@ public class ModTriggerModules {
         TRIGGER_MODULE_REGISTRY.register("bogo_bombs", BogoBombs::new);
     public static final RegistryObject<TriggerModule> LOKIS_HORNS =
         TRIGGER_MODULE_REGISTRY.register("lokis_horns", LokisHorns::new);
+    public static final RegistryObject<TriggerModule> CONJOINED =
+        TRIGGER_MODULE_REGISTRY.register("conjoined", Conjoined::new);
     public static final RegistryObject<TriggerModule> MOMS_KEY =
         TRIGGER_MODULE_REGISTRY.register("moms_key", MomsKey::new);
     public static final RegistryObject<TriggerModule> MOMS_EYESHADOW =

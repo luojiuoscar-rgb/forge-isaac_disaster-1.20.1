@@ -398,6 +398,8 @@ public class ModExecutableEffects {
             EXECUTABLE_EFFECT_REGISTRY.register("bogo_bombs", BogoBombs::new);
     public static final RegistryObject<IExecutableEffect> LOKIS_HORNS =
             EXECUTABLE_EFFECT_REGISTRY.register("lokis_horns", LokisHorns::new);
+    public static final RegistryObject<IExecutableEffect> CONJOINED_ATTACK_PLAN =
+            EXECUTABLE_EFFECT_REGISTRY.register("conjoined_attack_plan", ConjoinedAttackPlan::new);
     public static final RegistryObject<IExecutableEffect> THE_WIZ_ATTACK_PLAN =
             EXECUTABLE_EFFECT_REGISTRY.register("the_wiz_attack_plan", TheWizAttackPlan::new);
     public static final RegistryObject<IExecutableEffect> BLOOD_RIGHTS =

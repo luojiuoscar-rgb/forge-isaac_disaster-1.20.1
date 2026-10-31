@@ -147,7 +147,7 @@ public final class AutoAttackBabyGameTests {
     public static void sphericalRangeIncludesBoundaryAndChecksPureHeight(GameTestHelper helper) {
         for (var type : List.of(ROBO, DEMON)) try (Fixture f = new Fixture(helper)) {
             var baby = f.add(type);
-            double range = type.equals(ROBO) ? 16 : 8;
+            double range = type.equals(ROBO) ? 12 : 8;
             Vec3 origin = f.head(baby);
             var target = f.enemy(origin.add(0, 0, range));
             baby.tick();
@@ -269,7 +269,7 @@ public final class AutoAttackBabyGameTests {
                 if (i > 0) f.advance(7);
                 helper.assertTrue(baby.attackInDirection(AIM), "普通方向攻击接口仍可正常发射");
                 var shot = f.shots(baby).get(i);
-                helper.assertTrue(shot.getRange() == expected[i] && shot.getDamage() == 2 * StatManager.DAMAGE.getBonus(),
+                helper.assertTrue(shot.getRange() == expected[i] && shot.getDamage() == 1.5 * StatManager.DAMAGE.getBonus(),
                         "射程下限8，支持超过64，伤害不读取玩家面板");
                 helper.assertTrue(shot.getVelocity().distanceTo(AIM) < 1e-7 && shot.position().distanceTo(f.head(baby)) < 1e-7
                         && shot.getOwner() == f.owner && shot.getShooter() == baby, "独立弹速、玩家归属和头部起点，无前移");
@@ -375,7 +375,7 @@ public final class AutoAttackBabyGameTests {
             StatManager.addFamiliarModifier(f.owner, ModFamiliarModifiers.BFFS_VISUAL_SCALE.getId(), 1);
             baby.tick();
             IBulletObject shot = type.equals(ROBO) ? f.lasers.iterator().next() : f.shots(baby).get(0);
-            helper.assertTrue(shot.getDamage() == 4 * StatManager.DAMAGE.getBonus() && Math.abs(baby.getVisualScale() - 1.25F) < 1e-7,
+            helper.assertTrue(shot.getDamage() == (type.equals(ROBO) ? 4 : 3) * StatManager.DAMAGE.getBonus() && Math.abs(baby.getVisualScale() - 1.25F) < 1e-7,
                     "BFFS自然增强两种宝宝的伤害与体型");
             StatManager.removeFamiliarModifier(f.owner, ModFamiliarModifiers.BFFS_ENHANCEMENT.getId(), 1);
             StatManager.addFamiliarModifier(f.owner, WEAKENING, 1);
