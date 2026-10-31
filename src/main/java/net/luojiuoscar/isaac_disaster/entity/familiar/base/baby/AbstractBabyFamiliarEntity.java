@@ -11,8 +11,9 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
+import org.jetbrains.annotations.Nullable;
 
-/** Chain-following babies share held-player attack scheduling while defining their own attacks and presentation. */
+/** Chain-following babies share attack scheduling while defining their own triggers, attacks and presentation. */
 public abstract class AbstractBabyFamiliarEntity extends AbstractChainFamiliarEntity {
     public static final float BASE_SCALE = 0.6F;
     public static final int ATTACK_DURATION_TICKS = 10;
@@ -79,10 +80,9 @@ public abstract class AbstractBabyFamiliarEntity extends AbstractChainFamiliarEn
 
     @Override
     protected final void tickChainServer(ServerPlayer owner, Vec3 movement) {
-        if (windupStartTick != Long.MIN_VALUE || (!owner.isSpectator() && PlayerHelper.isHoldingIsaacHead(owner)
-                && owner.getCapability(PlayerAbilityProvider.PLAYER_ABILITY)
-                .map(ability -> ability.isHoldingRightClick()).orElse(false))) {
-            tickHeldAttack(owner);
+        Vec3 requestedDirection = findAttackDirection(owner);
+        if (windupStartTick != Long.MIN_VALUE || requestedDirection != null) {
+            tickTriggeredAttack(requestedDirection);
         } else {
             if (!continueAttackAim(level().getGameTime())) {
                 stopAttackAim();
@@ -91,10 +91,17 @@ public abstract class AbstractBabyFamiliarEntity extends AbstractChainFamiliarEn
         }
     }
 
-    private void tickHeldAttack(ServerPlayer owner) {
+    /** Supplies a new action's world-space aim; an already triggered action completes independently. */
+    protected @Nullable Vec3 findAttackDirection(ServerPlayer owner) {
+        return !owner.isSpectator() && PlayerHelper.isHoldingIsaacHead(owner)
+                && owner.getCapability(PlayerAbilityProvider.PLAYER_ABILITY)
+                .map(ability -> ability.isHoldingRightClick()).orElse(false) ? owner.getLookAngle() : null;
+    }
+
+    private void tickTriggeredAttack(@Nullable Vec3 requestedDirection) {
         int windup = Math.max(0, heldAttackWindupTicks());
         if (windup == 0) {
-            attackInDirection(owner.getLookAngle());
+            if (requestedDirection != null) attackInDirection(requestedDirection);
             return;
         }
         long now = level().getGameTime();
@@ -113,7 +120,9 @@ public abstract class AbstractBabyFamiliarEntity extends AbstractChainFamiliarEn
             if (!continueAttackAim(now)) stopAttackAim();
             return;
         }
-        aimAtDirection(owner.getLookAngle().normalize());
+        if (requestedDirection == null || !Double.isFinite(requestedDirection.lengthSqr())
+                || requestedDirection.lengthSqr() < 1e-12) return;
+        aimAtDirection(requestedDirection.normalize());
         windupStartTick = now;
         entityData.set(LAST_ACTION, now);
     }

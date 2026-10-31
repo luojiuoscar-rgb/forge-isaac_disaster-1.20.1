@@ -1,5 +1,4 @@
-// Exported from Blockbench for Minecraft Forge 1.20.1 (Mojang mappings).
-// Attack Bezier curves are sampled at 60 Hz plus their exact control times.
+package net.luojiuoscar.isaac_disaster.client.model.familiar.demon_baby;
 
 import net.minecraft.client.animation.AnimationChannel;
 import net.minecraft.client.animation.AnimationDefinition;
@@ -8,7 +7,7 @@ import net.minecraft.client.animation.KeyframeAnimations;
 
 public final class DemonBabyAnimations {
 	public static final AnimationDefinition IDLE = AnimationDefinition.Builder.withLength(1.0F).looping()
-		.addAnimation("rig_root", new AnimationChannel(AnimationChannel.Targets.POSITION, 
+		.addAnimation("rig_root", new AnimationChannel(AnimationChannel.Targets.POSITION,
 			new Keyframe(0.0F, KeyframeAnimations.posVec(0.0F, 0.0F, 0.0F), AnimationChannel.Interpolations.LINEAR),
 			new Keyframe(0.0417F, KeyframeAnimations.posVec(0.0F, 0.1941F, 0.0F), AnimationChannel.Interpolations.LINEAR),
 			new Keyframe(0.0833F, KeyframeAnimations.posVec(0.0F, 0.375F, 0.0F), AnimationChannel.Interpolations.LINEAR),
@@ -35,7 +34,7 @@ public final class DemonBabyAnimations {
 			new Keyframe(0.9583F, KeyframeAnimations.posVec(0.0F, -0.1941F, 0.0F), AnimationChannel.Interpolations.LINEAR),
 			new Keyframe(1.0F, KeyframeAnimations.posVec(0.0F, 0.0F, 0.0F), AnimationChannel.Interpolations.LINEAR)
 		))
-		.addAnimation("arm_left", new AnimationChannel(AnimationChannel.Targets.ROTATION, 
+		.addAnimation("arm_left", new AnimationChannel(AnimationChannel.Targets.ROTATION,
 			new Keyframe(0.0F, KeyframeAnimations.degreeVec(-1.7678F, 0.0F, 3.8891F), AnimationChannel.Interpolations.LINEAR),
 			new Keyframe(0.0417F, KeyframeAnimations.degreeVec(-2.1651F, 0.0F, 4.7631F), AnimationChannel.Interpolations.LINEAR),
 			new Keyframe(0.0833F, KeyframeAnimations.degreeVec(-2.4148F, 0.0F, 5.3126F), AnimationChannel.Interpolations.LINEAR),
@@ -62,7 +61,7 @@ public final class DemonBabyAnimations {
 			new Keyframe(0.9583F, KeyframeAnimations.degreeVec(-1.25F, 0.0F, 2.75F), AnimationChannel.Interpolations.LINEAR),
 			new Keyframe(1.0F, KeyframeAnimations.degreeVec(-1.7678F, 0.0F, 3.8891F), AnimationChannel.Interpolations.LINEAR)
 		))
-		.addAnimation("arm_left", new AnimationChannel(AnimationChannel.Targets.POSITION, 
+		.addAnimation("arm_left", new AnimationChannel(AnimationChannel.Targets.POSITION,
 			new Keyframe(0.0F, KeyframeAnimations.posVec(0.0F, -0.0849F, 0.0F), AnimationChannel.Interpolations.LINEAR),
 			new Keyframe(0.0417F, KeyframeAnimations.posVec(0.0F, -0.1039F, 0.0F), AnimationChannel.Interpolations.LINEAR),
 			new Keyframe(0.0833F, KeyframeAnimations.posVec(0.0F, -0.1159F, 0.0F), AnimationChannel.Interpolations.LINEAR),
@@ -89,7 +88,7 @@ public final class DemonBabyAnimations {
 			new Keyframe(0.9583F, KeyframeAnimations.posVec(0.0F, -0.06F, 0.0F), AnimationChannel.Interpolations.LINEAR),
 			new Keyframe(1.0F, KeyframeAnimations.posVec(0.0F, -0.0849F, 0.0F), AnimationChannel.Interpolations.LINEAR)
 		))
-		.addAnimation("arm_right", new AnimationChannel(AnimationChannel.Targets.ROTATION, 
+		.addAnimation("arm_right", new AnimationChannel(AnimationChannel.Targets.ROTATION,
 			new Keyframe(0.0F, KeyframeAnimations.degreeVec(-1.7678F, 0.0F, -3.8891F), AnimationChannel.Interpolations.LINEAR),
 			new Keyframe(0.0417F, KeyframeAnimations.degreeVec(-2.1651F, 0.0F, -4.7631F), AnimationChannel.Interpolations.LINEAR),
 			new Keyframe(0.0833F, KeyframeAnimations.degreeVec(-2.4148F, 0.0F, -5.3126F), AnimationChannel.Interpolations.LINEAR),
@@ -116,7 +115,7 @@ public final class DemonBabyAnimations {
 			new Keyframe(0.9583F, KeyframeAnimations.degreeVec(-1.25F, 0.0F, -2.75F), AnimationChannel.Interpolations.LINEAR),
 			new Keyframe(1.0F, KeyframeAnimations.degreeVec(-1.7678F, 0.0F, -3.8891F), AnimationChannel.Interpolations.LINEAR)
 		))
-		.addAnimation("arm_right", new AnimationChannel(AnimationChannel.Targets.POSITION, 
+		.addAnimation("arm_right", new AnimationChannel(AnimationChannel.Targets.POSITION,
 			new Keyframe(0.0F, KeyframeAnimations.posVec(0.0F, -0.0849F, 0.0F), AnimationChannel.Interpolations.LINEAR),
 			new Keyframe(0.0417F, KeyframeAnimations.posVec(0.0F, -0.1039F, 0.0F), AnimationChannel.Interpolations.LINEAR),
 			new Keyframe(0.0833F, KeyframeAnimations.posVec(0.0F, -0.1159F, 0.0F), AnimationChannel.Interpolations.LINEAR),
@@ -146,7 +145,7 @@ public final class DemonBabyAnimations {
 		.build();
 
 	public static final AnimationDefinition ATTACK = AnimationDefinition.Builder.withLength(0.8F)
-		.addAnimation("rig_root", new AnimationChannel(AnimationChannel.Targets.POSITION, 
+		.addAnimation("rig_root", new AnimationChannel(AnimationChannel.Targets.POSITION,
 			new Keyframe(0.0F, KeyframeAnimations.posVec(0.0F, 0.0F, 0.0F), AnimationChannel.Interpolations.LINEAR),
 			new Keyframe(0.0167F, KeyframeAnimations.posVec(0.0F, -0.0135F, 0.0056F), AnimationChannel.Interpolations.LINEAR),
 			new Keyframe(0.0333F, KeyframeAnimations.posVec(0.0F, -0.0451F, 0.0188F), AnimationChannel.Interpolations.LINEAR),
@@ -202,7 +201,7 @@ public final class DemonBabyAnimations {
 			new Keyframe(0.7833F, KeyframeAnimations.posVec(0.0F, 0.0F, 0.0F), AnimationChannel.Interpolations.LINEAR),
 			new Keyframe(0.8F, KeyframeAnimations.posVec(0.0F, 0.0F, 0.0F), AnimationChannel.Interpolations.LINEAR)
 		))
-		.addAnimation("body", new AnimationChannel(AnimationChannel.Targets.ROTATION, 
+		.addAnimation("body", new AnimationChannel(AnimationChannel.Targets.ROTATION,
 			new Keyframe(0.0F, KeyframeAnimations.degreeVec(0.0F, 0.0F, 0.0F), AnimationChannel.Interpolations.LINEAR),
 			new Keyframe(0.0167F, KeyframeAnimations.degreeVec(-0.2243F, 0.0F, 0.0F), AnimationChannel.Interpolations.LINEAR),
 			new Keyframe(0.0333F, KeyframeAnimations.degreeVec(-0.7523F, 0.0F, 0.0F), AnimationChannel.Interpolations.LINEAR),
@@ -258,7 +257,7 @@ public final class DemonBabyAnimations {
 			new Keyframe(0.7833F, KeyframeAnimations.degreeVec(0.0F, 0.0F, 0.0F), AnimationChannel.Interpolations.LINEAR),
 			new Keyframe(0.8F, KeyframeAnimations.degreeVec(0.0F, 0.0F, 0.0F), AnimationChannel.Interpolations.LINEAR)
 		))
-		.addAnimation("head", new AnimationChannel(AnimationChannel.Targets.ROTATION, 
+		.addAnimation("head", new AnimationChannel(AnimationChannel.Targets.ROTATION,
 			new Keyframe(0.0F, KeyframeAnimations.degreeVec(0.0F, 0.0F, 0.0F), AnimationChannel.Interpolations.LINEAR),
 			new Keyframe(0.0167F, KeyframeAnimations.degreeVec(0.2243F, 0.0F, 0.0F), AnimationChannel.Interpolations.LINEAR),
 			new Keyframe(0.0333F, KeyframeAnimations.degreeVec(0.7523F, 0.0F, 0.0F), AnimationChannel.Interpolations.LINEAR),
@@ -314,7 +313,7 @@ public final class DemonBabyAnimations {
 			new Keyframe(0.7833F, KeyframeAnimations.degreeVec(0.0F, 0.0F, 0.0F), AnimationChannel.Interpolations.LINEAR),
 			new Keyframe(0.8F, KeyframeAnimations.degreeVec(0.0F, 0.0F, 0.0F), AnimationChannel.Interpolations.LINEAR)
 		))
-		.addAnimation("head", new AnimationChannel(AnimationChannel.Targets.POSITION, 
+		.addAnimation("head", new AnimationChannel(AnimationChannel.Targets.POSITION,
 			new Keyframe(0.0F, KeyframeAnimations.posVec(0.0F, 0.0F, 0.0F), AnimationChannel.Interpolations.LINEAR),
 			new Keyframe(0.0167F, KeyframeAnimations.posVec(0.0F, -0.009F, 0.0224F), AnimationChannel.Interpolations.LINEAR),
 			new Keyframe(0.0333F, KeyframeAnimations.posVec(0.0F, -0.0301F, 0.0752F), AnimationChannel.Interpolations.LINEAR),
@@ -370,7 +369,7 @@ public final class DemonBabyAnimations {
 			new Keyframe(0.7833F, KeyframeAnimations.posVec(0.0F, 0.0F, 0.0F), AnimationChannel.Interpolations.LINEAR),
 			new Keyframe(0.8F, KeyframeAnimations.posVec(0.0F, 0.0F, 0.0F), AnimationChannel.Interpolations.LINEAR)
 		))
-		.addAnimation("arm_left", new AnimationChannel(AnimationChannel.Targets.ROTATION, 
+		.addAnimation("arm_left", new AnimationChannel(AnimationChannel.Targets.ROTATION,
 			new Keyframe(0.0F, KeyframeAnimations.degreeVec(0.0F, 0.0F, 0.0F), AnimationChannel.Interpolations.LINEAR),
 			new Keyframe(0.0167F, KeyframeAnimations.degreeVec(0.3364F, 0.0F, 0.2243F), AnimationChannel.Interpolations.LINEAR),
 			new Keyframe(0.0333F, KeyframeAnimations.degreeVec(1.1285F, 0.0F, 0.7523F), AnimationChannel.Interpolations.LINEAR),
@@ -426,7 +425,7 @@ public final class DemonBabyAnimations {
 			new Keyframe(0.7833F, KeyframeAnimations.degreeVec(0.0F, 0.0F, 0.0F), AnimationChannel.Interpolations.LINEAR),
 			new Keyframe(0.8F, KeyframeAnimations.degreeVec(0.0F, 0.0F, 0.0F), AnimationChannel.Interpolations.LINEAR)
 		))
-		.addAnimation("arm_right", new AnimationChannel(AnimationChannel.Targets.ROTATION, 
+		.addAnimation("arm_right", new AnimationChannel(AnimationChannel.Targets.ROTATION,
 			new Keyframe(0.0F, KeyframeAnimations.degreeVec(0.0F, 0.0F, 0.0F), AnimationChannel.Interpolations.LINEAR),
 			new Keyframe(0.0167F, KeyframeAnimations.degreeVec(0.3364F, 0.0F, -0.2243F), AnimationChannel.Interpolations.LINEAR),
 			new Keyframe(0.0333F, KeyframeAnimations.degreeVec(1.1285F, 0.0F, -0.7523F), AnimationChannel.Interpolations.LINEAR),
@@ -482,7 +481,7 @@ public final class DemonBabyAnimations {
 			new Keyframe(0.7833F, KeyframeAnimations.degreeVec(0.0F, 0.0F, 0.0F), AnimationChannel.Interpolations.LINEAR),
 			new Keyframe(0.8F, KeyframeAnimations.degreeVec(0.0F, 0.0F, 0.0F), AnimationChannel.Interpolations.LINEAR)
 		))
-		.addAnimation("tail", new AnimationChannel(AnimationChannel.Targets.ROTATION, 
+		.addAnimation("tail", new AnimationChannel(AnimationChannel.Targets.ROTATION,
 			new Keyframe(0.0F, KeyframeAnimations.degreeVec(0.0F, 0.0F, 0.0F), AnimationChannel.Interpolations.LINEAR),
 			new Keyframe(0.0167F, KeyframeAnimations.degreeVec(-0.2243F, 0.0F, 0.0F), AnimationChannel.Interpolations.LINEAR),
 			new Keyframe(0.0333F, KeyframeAnimations.degreeVec(-0.7523F, 0.0F, 0.0F), AnimationChannel.Interpolations.LINEAR),
@@ -538,7 +537,7 @@ public final class DemonBabyAnimations {
 			new Keyframe(0.7833F, KeyframeAnimations.degreeVec(0.0F, 0.0F, 0.0F), AnimationChannel.Interpolations.LINEAR),
 			new Keyframe(0.8F, KeyframeAnimations.degreeVec(0.0F, 0.0F, 0.0F), AnimationChannel.Interpolations.LINEAR)
 		))
-		.addAnimation("tail", new AnimationChannel(AnimationChannel.Targets.POSITION, 
+		.addAnimation("tail", new AnimationChannel(AnimationChannel.Targets.POSITION,
 			new Keyframe(0.0F, KeyframeAnimations.posVec(0.0F, 0.0F, 0.0F), AnimationChannel.Interpolations.LINEAR),
 			new Keyframe(0.0167F, KeyframeAnimations.posVec(0.0F, 0.0F, -0.0056F), AnimationChannel.Interpolations.LINEAR),
 			new Keyframe(0.0333F, KeyframeAnimations.posVec(0.0F, 0.0F, -0.0188F), AnimationChannel.Interpolations.LINEAR),
@@ -594,7 +593,7 @@ public final class DemonBabyAnimations {
 			new Keyframe(0.7833F, KeyframeAnimations.posVec(0.0F, 0.0F, 0.0F), AnimationChannel.Interpolations.LINEAR),
 			new Keyframe(0.8F, KeyframeAnimations.posVec(0.0F, 0.0F, 0.0F), AnimationChannel.Interpolations.LINEAR)
 		))
-		.addAnimation("tail_tip", new AnimationChannel(AnimationChannel.Targets.ROTATION, 
+		.addAnimation("tail_tip", new AnimationChannel(AnimationChannel.Targets.ROTATION,
 			new Keyframe(0.0F, KeyframeAnimations.degreeVec(0.0F, 0.0F, 0.0F), AnimationChannel.Interpolations.LINEAR),
 			new Keyframe(0.0167F, KeyframeAnimations.degreeVec(0.0F, 0.0F, 0.0F), AnimationChannel.Interpolations.LINEAR),
 			new Keyframe(0.0333F, KeyframeAnimations.degreeVec(0.0F, 0.0F, 0.0F), AnimationChannel.Interpolations.LINEAR),

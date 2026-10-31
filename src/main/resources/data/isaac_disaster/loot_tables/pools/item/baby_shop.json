@@ -3,6 +3,8 @@
     {
       "rolls": 1,
       "entries": [
+        {"type": "minecraft:item", "name": "isaac_disaster:demon_baby"},
+        {"type": "minecraft:item", "name": "isaac_disaster:robo_baby_2"},
         {"type": "minecraft:item", "name": "isaac_disaster:robo_baby"},
         {"type": "minecraft:item", "name": "isaac_disaster:loki_baby"},
         {

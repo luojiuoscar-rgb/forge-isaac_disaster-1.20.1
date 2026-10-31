@@ -18,6 +18,8 @@ import net.luojiuoscar.isaac_disaster.entity.familiar.impl.harlequin_baby.Harleq
 import net.luojiuoscar.isaac_disaster.entity.familiar.impl.rotten_baby.RottenBabyEntity;
 import net.luojiuoscar.isaac_disaster.entity.familiar.impl.loki_baby.LokiBabyEntity;
 import net.luojiuoscar.isaac_disaster.entity.familiar.impl.robo_baby.RoboBabyEntity;
+import net.luojiuoscar.isaac_disaster.entity.familiar.impl.robo_baby_2.RoboBaby2Entity;
+import net.luojiuoscar.isaac_disaster.entity.familiar.impl.demon_baby.DemonBabyEntity;
 import net.luojiuoscar.isaac_disaster.entity.tnt.GigaBomb;
 import net.luojiuoscar.isaac_disaster.entity.tnt.IsaacBomb;
 import net.minecraft.world.entity.EntityType;
@@ -110,6 +112,18 @@ public class ModEntities {
                     () -> EntityType.Builder.<RoboBabyEntity>of(RoboBabyEntity::new, MobCategory.MISC)
                             .sized(0.84375F * AbstractBabyFamiliarEntity.BASE_SCALE, 1.34375F * AbstractBabyFamiliarEntity.BASE_SCALE)
                             .clientTrackingRange(8).updateInterval(1).build("robo_baby"));
+
+    public static final RegistryObject<EntityType<RoboBaby2Entity>> ROBO_BABY_2 =
+            MOD_ENTITIES.register("robo_baby_2",
+                    () -> EntityType.Builder.<RoboBaby2Entity>of(RoboBaby2Entity::new, MobCategory.MISC)
+                            .sized(1.0F * AbstractBabyFamiliarEntity.BASE_SCALE, 1.8125F * AbstractBabyFamiliarEntity.BASE_SCALE)
+                            .clientTrackingRange(8).updateInterval(1).build("robo_baby_2"));
+
+    public static final RegistryObject<EntityType<DemonBabyEntity>> DEMON_BABY =
+            MOD_ENTITIES.register("demon_baby",
+                    () -> EntityType.Builder.<DemonBabyEntity>of(DemonBabyEntity::new, MobCategory.MISC)
+                            .sized(1.125F * AbstractBabyFamiliarEntity.BASE_SCALE, 1.75F * AbstractBabyFamiliarEntity.BASE_SCALE)
+                            .clientTrackingRange(8).updateInterval(1).build("demon_baby"));
 
     public static final RegistryObject<EntityType<BlueFlyEntity>> BLUE_FLY =
             MOD_ENTITIES.register("blue_fly",

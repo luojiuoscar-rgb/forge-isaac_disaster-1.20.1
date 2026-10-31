@@ -14,6 +14,8 @@ import net.luojiuoscar.isaac_disaster.client.model.familiar.harlequin_baby.Harle
 import net.luojiuoscar.isaac_disaster.client.model.familiar.rotten_baby.RottenBabyModel;
 import net.luojiuoscar.isaac_disaster.client.model.familiar.loki_baby.LokiBabyModel;
 import net.luojiuoscar.isaac_disaster.client.model.familiar.robo_baby.RoboBabyModel;
+import net.luojiuoscar.isaac_disaster.client.model.familiar.robo_baby_2.RoboBaby2Model;
+import net.luojiuoscar.isaac_disaster.client.model.familiar.demon_baby.DemonBabyModel;
 import net.luojiuoscar.isaac_disaster.client.renderer.familiar.baby.BabyFamiliarRenderer;
 import net.luojiuoscar.isaac_disaster.client.renderer.creature.FlyRenderer;
 import net.luojiuoscar.isaac_disaster.client.renderer.creature.SpiderRenderer;
@@ -60,6 +62,8 @@ public class ClientModEvents {
         event.registerLayerDefinition(RottenBabyModel.LAYER_LOCATION, RottenBabyModel::createBodyLayer);
         event.registerLayerDefinition(LokiBabyModel.LAYER_LOCATION, LokiBabyModel::createBodyLayer);
         event.registerLayerDefinition(RoboBabyModel.LAYER_LOCATION, RoboBabyModel::createBodyLayer);
+        event.registerLayerDefinition(RoboBaby2Model.LAYER_LOCATION, RoboBaby2Model::createBodyLayer);
+        event.registerLayerDefinition(DemonBabyModel.LAYER_LOCATION, DemonBabyModel::createBodyLayer);
     }
 
     // 订阅实体渲染器注册事件
@@ -87,6 +91,12 @@ public class ClientModEvents {
         event.registerEntityRenderer(ModEntities.ROBO_BABY.get(), context -> new BabyFamiliarRenderer<>(context,
                 ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "textures/entity/familiar/robo_baby.png"),
                 new RoboBabyModel(context.bakeLayer(RoboBabyModel.LAYER_LOCATION))));
+        event.registerEntityRenderer(ModEntities.ROBO_BABY_2.get(), context -> new BabyFamiliarRenderer<>(context,
+                ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "textures/entity/familiar/robo_baby_2.png"),
+                new RoboBaby2Model(context.bakeLayer(RoboBaby2Model.LAYER_LOCATION))));
+        event.registerEntityRenderer(ModEntities.DEMON_BABY.get(), context -> new BabyFamiliarRenderer<>(context,
+                ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "textures/entity/familiar/demon_baby.png"),
+                new DemonBabyModel(context.bakeLayer(DemonBabyModel.LAYER_LOCATION))));
         event.registerEntityRenderer(ModEntities.BLUE_FLY.get(), FlyRenderer::new);
         event.registerEntityRenderer(ModEntities.LOCUST_OF_PESTILENCE.get(), FlyRenderer::new);
         event.registerEntityRenderer(ModEntities.LOCUST_OF_FAMINE.get(), FlyRenderer::new);

@@ -251,7 +251,9 @@ public enum ItemId {
     HARLEQUIN_BABY(1),
     ROTTEN_BABY(3),
     LOKI_BABY(1),
-    ROBO_BABY(1);
+    ROBO_BABY(1),
+    ROBO_BABY_2(3),
+    DEMON_BABY(2);
 
 
 

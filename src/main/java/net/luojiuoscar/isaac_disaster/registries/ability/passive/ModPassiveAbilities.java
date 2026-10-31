@@ -843,4 +843,13 @@ public class ModPassiveAbilities {
             PASSIVE_ABILITY_REGISTRY.register("robo_baby",
                     () -> new RoboBaby(ItemId.ROBO_BABY.getId(), ItemId.ROBO_BABY.getLevel()));
 
+    public static final RegistryObject<PassiveAbility> ROBO_BABY_2 =
+            PASSIVE_ABILITY_REGISTRY.register("robo_baby_2",
+                    () -> new RoboBaby2(ItemId.ROBO_BABY_2.getId(), ItemId.ROBO_BABY_2.getLevel()));
+
+    public static final RegistryObject<PassiveAbility> DEMON_BABY =
+            PASSIVE_ABILITY_REGISTRY.register("demon_baby",
+                    () -> new DemonBaby(ItemId.DEMON_BABY.getId(), ItemId.DEMON_BABY.getLevel()));
+
+
 }
