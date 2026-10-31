@@ -250,7 +250,8 @@ public enum ItemId {
     GHOST_BABY(1),
     HARLEQUIN_BABY(1),
     ROTTEN_BABY(3),
-    LOKI_BABY(1);
+    LOKI_BABY(1),
+    ROBO_BABY(1);
 
 
 

@@ -4,6 +4,7 @@ import net.luojiuoscar.isaac_disaster.IsaacDisaster;
 import net.luojiuoscar.isaac_disaster.entity.ModEntities;
 import net.luojiuoscar.isaac_disaster.entity.familiar.impl.rotten_baby.RottenBabyEntity;
 import net.luojiuoscar.isaac_disaster.entity.familiar.impl.loki_baby.LokiBabyEntity;
+import net.luojiuoscar.isaac_disaster.entity.familiar.impl.robo_baby.RoboBabyEntity;
 import net.luojiuoscar.isaac_disaster.entity.familiar.impl.brother_bobby.BrotherBobbyEntity;
 import net.luojiuoscar.isaac_disaster.entity.familiar.impl.sister_maggy.SisterMaggyEntity;
 import net.luojiuoscar.isaac_disaster.entity.familiar.impl.ghost_baby.GhostBabyEntity;
@@ -60,6 +61,10 @@ public final class ModFamiliarEntities {
     public static final RegistryObject<FamiliarEntityType> LOKI_BABY =
             FAMILIAR_ENTITY_REGISTRY.register("loki_baby", () ->
                     new FamiliarEntityType(ModEntities.LOKI_BABY, LokiBabyEntity.class, 64, ModFamiliarLimitGroups.BABIES, 0, true));
+
+    public static final RegistryObject<FamiliarEntityType> ROBO_BABY =
+            FAMILIAR_ENTITY_REGISTRY.register("robo_baby", () ->
+                    new FamiliarEntityType(ModEntities.ROBO_BABY, RoboBabyEntity.class, 64, ModFamiliarLimitGroups.BABIES, 0, true));
 
     public static final RegistryObject<FamiliarEntityType> BLUE_FLY =
             FAMILIAR_ENTITY_REGISTRY.register("blue_fly", () ->

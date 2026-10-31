@@ -1,12 +1,11 @@
-// Exported from Blockbench for Minecraft Forge 1.20.1 (Mojang mappings).
-// Idle only: 1-second hover and arm inertia.
+package net.luojiuoscar.isaac_disaster.client.model.familiar.robo_baby;
 
 import net.minecraft.client.animation.AnimationChannel;
 import net.minecraft.client.animation.AnimationDefinition;
 import net.minecraft.client.animation.Keyframe;
 import net.minecraft.client.animation.KeyframeAnimations;
 
-public final class MachineBabyAnimations {
+public final class RoboBabyAnimations {
 	public static final AnimationDefinition IDLE = AnimationDefinition.Builder.withLength(1.0F).looping()
 		.addAnimation("rig_root", new AnimationChannel(AnimationChannel.Targets.POSITION, 
 			new Keyframe(0.0F, KeyframeAnimations.posVec(0.0F, 0.0F, 0.0F), AnimationChannel.Interpolations.LINEAR),
@@ -145,5 +144,5 @@ public final class MachineBabyAnimations {
 		))
 		.build();
 
-	private MachineBabyAnimations() {}
+	private RoboBabyAnimations() {}
 }

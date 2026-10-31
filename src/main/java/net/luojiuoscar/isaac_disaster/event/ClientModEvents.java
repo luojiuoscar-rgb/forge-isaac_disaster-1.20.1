@@ -13,6 +13,7 @@ import net.luojiuoscar.isaac_disaster.client.model.familiar.tear_baby.TearBabyMo
 import net.luojiuoscar.isaac_disaster.client.model.familiar.harlequin_baby.HarlequinBabyModel;
 import net.luojiuoscar.isaac_disaster.client.model.familiar.rotten_baby.RottenBabyModel;
 import net.luojiuoscar.isaac_disaster.client.model.familiar.loki_baby.LokiBabyModel;
+import net.luojiuoscar.isaac_disaster.client.model.familiar.robo_baby.RoboBabyModel;
 import net.luojiuoscar.isaac_disaster.client.renderer.familiar.baby.BabyFamiliarRenderer;
 import net.luojiuoscar.isaac_disaster.client.renderer.creature.FlyRenderer;
 import net.luojiuoscar.isaac_disaster.client.renderer.creature.SpiderRenderer;
@@ -58,6 +59,7 @@ public class ClientModEvents {
         event.registerLayerDefinition(HarlequinBabyModel.LAYER_LOCATION, HarlequinBabyModel::createBodyLayer);
         event.registerLayerDefinition(RottenBabyModel.LAYER_LOCATION, RottenBabyModel::createBodyLayer);
         event.registerLayerDefinition(LokiBabyModel.LAYER_LOCATION, LokiBabyModel::createBodyLayer);
+        event.registerLayerDefinition(RoboBabyModel.LAYER_LOCATION, RoboBabyModel::createBodyLayer);
     }
 
     // 订阅实体渲染器注册事件
@@ -82,6 +84,9 @@ public class ClientModEvents {
         event.registerEntityRenderer(ModEntities.LOKI_BABY.get(), context -> new BabyFamiliarRenderer<>(context,
                 ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "textures/entity/familiar/loki_baby.png"),
                 new LokiBabyModel(context.bakeLayer(LokiBabyModel.LAYER_LOCATION))));
+        event.registerEntityRenderer(ModEntities.ROBO_BABY.get(), context -> new BabyFamiliarRenderer<>(context,
+                ResourceLocation.fromNamespaceAndPath(IsaacDisaster.MOD_ID, "textures/entity/familiar/robo_baby.png"),
+                new RoboBabyModel(context.bakeLayer(RoboBabyModel.LAYER_LOCATION))));
         event.registerEntityRenderer(ModEntities.BLUE_FLY.get(), FlyRenderer::new);
         event.registerEntityRenderer(ModEntities.LOCUST_OF_PESTILENCE.get(), FlyRenderer::new);
         event.registerEntityRenderer(ModEntities.LOCUST_OF_FAMINE.get(), FlyRenderer::new);
