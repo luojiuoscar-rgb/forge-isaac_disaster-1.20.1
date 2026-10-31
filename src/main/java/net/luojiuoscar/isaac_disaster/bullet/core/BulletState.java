@@ -16,8 +16,6 @@ import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackType;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.IBulletObject;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.ModAttackTypes;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.util.DamagedEntities;
-import net.luojiuoscar.isaac_disaster.registries.bullet_color.BulletColor;
-import net.luojiuoscar.isaac_disaster.registries.bullet_color.ModBulletColors;
 import net.luojiuoscar.isaac_disaster.registries.split_module.SplitSequence;
 import net.luojiuoscar.isaac_disaster.registries.split_module.SplitTriggerCounts;
 import net.luojiuoscar.isaac_disaster.registries.split_module.SplitTriggerType;
@@ -33,8 +31,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.registries.IForgeRegistry;
-import net.minecraftforge.registries.RegistryManager;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -149,7 +145,7 @@ public final class BulletState implements IBulletObject {
 
     /** Defers trajectory initialization until the final position and velocity are known. */
     public static Builder from(AttackContext context) {
-        BulletColor color = resolveColor(context.getColorRl());
+        var color = context.resolveColor();
         return builder()
             .position(context.getPos())
             .velocity(context.getMainAxis().scale(context.getBulletSpeed()))
@@ -161,21 +157,10 @@ public final class BulletState implements IBulletObject {
             .attackContext(context)
             .splitSequence(context.copySplitSequence())
             .triggers(context.copyTrigger())
-            .colorId(context.getColorRl())
+            .colorId(color.colorId())
             .color(color.color())
             .alpha(color.alpha())
             .visualIds(context.getVisualIds());
-    }
-
-    /**
-     * Resolves the one-time RGB/alpha snapshot so the client never needs the color registry per
-     * bullet.
-     */
-    private static BulletColor resolveColor(ResourceLocation colorId) {
-        IForgeRegistry<BulletColor> registry =
-            RegistryManager.ACTIVE.getRegistry(ModBulletColors.BULLET_COLOR_KEY);
-        BulletColor color = registry == null || colorId == null ? null : registry.getValue(colorId);
-        return color == null ? ModBulletColors.BASE.get() : color;
     }
 
     /** Advances one authoritative tick using only base kinematics. Returns whether still alive. */

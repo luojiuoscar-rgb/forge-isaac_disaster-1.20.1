@@ -43,7 +43,7 @@ class EffectAttachmentNodeTest {
 
     @Test
     @SuppressWarnings("unchecked")
-    void colorsKeepEqualPriorityAndAllowHigherPriority() throws Exception {
+    void colorsUseRegistryIdForEqualPriorityAndAllowHigherPriority() throws Exception {
         IForgeRegistry<BulletColor> registry = RegistryManager.ACTIVE.getRegistry(ModBulletColors.BULLET_COLOR_KEY);
         if (registry == null) {
             var create = RegistryBuilder.class.getDeclaredMethod("create");
@@ -54,17 +54,17 @@ class EffectAttachmentNodeTest {
         var first = ResourceLocation.parse("test:node_first");
         var equal = ResourceLocation.parse("test:node_equal");
         var higher = ResourceLocation.parse("test:node_higher");
-        registry.register(first, new BulletColor(0xFF0000, 1, 20));
-        registry.register(equal, new BulletColor(0x00FF00, 1, 20));
-        registry.register(higher, new BulletColor(0x0000FF, 1, 100));
+        registry.register(first, BulletColor.builder().color(0xFF0000).alpha(1).priority(0, 20).build());
+        registry.register(equal, BulletColor.builder().color(0x00FF00).alpha(1).priority(0, 20).build());
+        registry.register(higher, BulletColor.builder().color(0x0000FF).alpha(1).priority(0, 100).build());
         var attack = attack();
         attack.offerColor(first);
         attack.offerColor(equal);
-        assertEquals(first, attack.getColorRl());
+        assertEquals(equal, attack.getColorId());
         attack.offerColor(higher);
-        assertEquals(higher, attack.getColorRl());
+        assertEquals(higher, attack.getColorId());
         attack.freeze();
         attack.offerColor(first);
-        assertEquals(higher, attack.getColorRl());
+        assertEquals(higher, attack.getColorId());
     }
 }

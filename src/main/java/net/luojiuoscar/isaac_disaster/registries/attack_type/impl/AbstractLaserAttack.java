@@ -20,7 +20,6 @@ import net.luojiuoscar.isaac_disaster.registries.attack_type.IBulletObject;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.ModAttackTypes;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.util.DamagedEntities;
 import net.luojiuoscar.isaac_disaster.registries.bullet_color.BulletColor;
-import net.luojiuoscar.isaac_disaster.registries.bullet_color.ModBulletColors;
 import net.luojiuoscar.isaac_disaster.registries.split_module.SplitExecutor;
 import net.luojiuoscar.isaac_disaster.registries.split_module.SplitSequence;
 import net.luojiuoscar.isaac_disaster.registries.split_module.SplitTriggerCounts;
@@ -41,8 +40,6 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.registries.IForgeRegistry;
-import net.minecraftforge.registries.RegistryManager;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
 
@@ -313,7 +310,7 @@ public abstract class AbstractLaserAttack extends AttackType {
 
         @Override
         public ResourceLocation getColorId() {
-            return attackContext.getColorRl();
+            return attackContext.getColorId();
         }
 
         @Override
@@ -501,13 +498,13 @@ public abstract class AbstractLaserAttack extends AttackType {
                         || !beforeState.equals(level.getBlockState(block.hit().getBlockPos()));
                     if (result == SegmentResult.STOPPED && !blockMutated) {
                         queueStraightVisual(laser.owner, start, block.hit().getLocation(),
-                            laser.width, context.getColorRl());
+                            laser.width, context.resolveColor().color());
                         return;
                     }
                     if (result == SegmentResult.INTERRUPTED || blockMutated
                         || (firstBlockContact && laser.spectral)) {
                         queueStraightVisual(laser.owner, start, block.hit().getLocation(),
-                            laser.width, context.getColorRl());
+                            laser.width, context.resolveColor().color());
                         continueFromStraightContact(
                             laser, level, context, batch,
                             block.hit().getLocation(), block.parameter(), null);
@@ -533,7 +530,7 @@ public abstract class AbstractLaserAttack extends AttackType {
                         double currentParameter = ProjectileCollisionHelper.pathParameter(
                             start, end, currentHit.get());
                         queueStraightVisual(laser.owner, start, currentHit.get(),
-                            laser.width, context.getColorRl());
+                            laser.width, context.resolveColor().color());
                         // Entity callbacks may spawn, remove, move, or resize entities that were
                         // outside the original broad-phase snapshot. Resume from the contact so
                         // the remaining path observes the current world state.
@@ -552,7 +549,7 @@ public abstract class AbstractLaserAttack extends AttackType {
             laser.direction = direction;
             laser.traveled = laser.range;
             laser.tickCount += segmentCount;
-            queueStraightVisual(laser.owner, start, end, laser.width, context.getColorRl());
+            queueStraightVisual(laser.owner, start, end, laser.width, context.resolveColor().color());
         } finally {
             STRAIGHT_PATH_DEPTH.set(previousDepth);
         }
@@ -817,7 +814,7 @@ public abstract class AbstractLaserAttack extends AttackType {
         } else {
             nextPos = start.add(laser.direction.scale(laser.step));
         }
-        spawnInterpolatedParticles(level, start, nextPos, laser.width, context.getColorRl(), homingArc);
+        spawnInterpolatedParticles(level, start, nextPos, laser.width, context.resolveColor().color(), homingArc);
 
         int segments = homingArc == null ? 1 : homingArc.collisionSegments();
         double segmentLength = laser.step / segments;
@@ -1071,37 +1068,27 @@ public abstract class AbstractLaserAttack extends AttackType {
     }
 
     private void queueStraightVisual(
-        LivingEntity owner, Vec3 start, Vec3 end, double width, ResourceLocation colorRl) {
+        LivingEntity owner, Vec3 start, Vec3 end, double width, int color) {
         if (!usesParticleVisuals()) return;
         VisualBatchState batch = activeVisualBatch.get();
         if (batch == null) {
             batch = new VisualBatchState();
             activeVisualBatch.set(batch);
             try {
-                batch.add(getLaserLevel(owner), start, end, width, resolveLaserColor(colorRl));
+                batch.add(getLaserLevel(owner), start, end, width, color);
             } finally {
                 batch.flush();
                 activeVisualBatch.remove();
             }
             return;
         }
-        batch.add(getLaserLevel(owner), start, end, width, resolveLaserColor(colorRl));
+        batch.add(getLaserLevel(owner), start, end, width, color);
     }
 
-    private int resolveLaserColor(ResourceLocation colorRl) {
-        Vector3f rgb = resolveLaserRgb(colorRl);
-        return channel(rgb.x) << 16 | channel(rgb.y) << 8 | channel(rgb.z);
-    }
-
-    private Vector3f resolveLaserRgb(ResourceLocation colorRl) {
-        IForgeRegistry<BulletColor> registry =
-            RegistryManager.ACTIVE.getRegistry(ModBulletColors.BULLET_COLOR_KEY);
-        BulletColor color = colorRl == null || registry == null
-            ? ModBulletColors.BASE.get() : registry.getValue(colorRl);
-        color = color == null ? ModBulletColors.BASE.get() : color;
-        return color == ModBulletColors.BASE.get()
-            ? getDefaultLaserColor()
-            : BulletColor.getVec3fColorById(color.color());
+    @Override
+    public int getDefaultColor() {
+        Vector3f color = getDefaultLaserColor();
+        return channel(color.x) << 16 | channel(color.y) << 8 | channel(color.z);
     }
 
     private static int channel(float value) {
@@ -1158,10 +1145,10 @@ public abstract class AbstractLaserAttack extends AttackType {
     }
 
     private void spawnInterpolatedParticles(
-        ServerLevel level, Vec3 from, Vec3 to, double width, ResourceLocation colorRl,
+        ServerLevel level, Vec3 from, Vec3 to, double width, int rgb,
         @Nullable HomingArc homingArc) {
         if (!usesParticleVisuals()) return;
-        Vector3f color = resolveLaserRgb(colorRl);
+        Vector3f color = BulletColor.getVec3fColorById(rgb);
 
         Vec3 delta = to.subtract(from);
         double distance = homingArc == null ? delta.length() : homingArc.length();

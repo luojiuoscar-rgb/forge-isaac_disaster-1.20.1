@@ -22,7 +22,7 @@ public final class SinusInfectionAttachment extends AttackPreparationEffect {
         if (context.getEntity().getRandom().nextDouble() >= 0.20D) return;
         attackContext.setMaxStickDurationTicks(200);
         attackContext.setBulletScale(attackContext.getBulletScale() * 1.5D, true);
-        attackContext.setColorRl(ModBulletColors.POISON.getId());
+        attackContext.offerColor(ModBulletColors.POISON.getId());
         var visuals = new HashSet<>(attackContext.getVisualIds());
         visuals.add(ModBulletVisuals.SINUS_INFECTION_TEAR.getId());
         attackContext.setVisualIds(visuals);

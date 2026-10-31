@@ -15,7 +15,6 @@ import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackOrigin;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackPipelineMode;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackRequest;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackType;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 
@@ -35,11 +34,11 @@ public class LokisHorns implements IAbilityEffect {
                 playerAbility -> {
                     AttackType attack = playerAbility.getAttackSelection().baseAttack();
 
-                    ResourceLocation colorRl = playerAbility.getBestBulletColor();
+                    var colorIds = playerAbility.getBulletColorIds();
                     Vec3 eyePos = player.getEyePosition().add(0, player.getBbHeight() * -0.15, 0);
 
                     AttackContext baseCtx = AttackContext.builder(player, player)
-                            .color(colorRl).trigger(new CompositeTrigger())
+                            .colors(colorIds).trigger(new CompositeTrigger())
                             .position(eyePos).mainAxis(GeometryHelper.mainAxisFromRotation(player.getXRot(), player.getYRot()))
                             .range(attack.getRange(player)).speed(attack.getBulletSpeed(player)).build();
 

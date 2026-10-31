@@ -167,7 +167,7 @@ public final class ZodiacGameTests {
                     && poison.getAmplifier() == DeadlyPoisonEffect.amplifierForDamage(10),
                     "Ipecac water uses current full panel damage for poison while base damage remains saved");
             helper.assertTrue(target.hasEffect(ModEffects.BURNING.get()), "Fire Mind water applies pure burning");
-            helper.assertTrue(effect.getColor() == 0x5CA45C, "High-priority Ipecac green wins over orange");
+            helper.assertTrue(effect.getColor() == 0xFF9933, "Fire Mind's effect tier wins over Ipecac's base tint");
             helper.assertTrue(f.level.isEmptyBlock(BlockPos.containing(f.center))
                     && f.level.getBlockState(BlockPos.containing(f.center).below()).is(Blocks.STONE),
                     "Water does not place fire or destroy support");

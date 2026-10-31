@@ -125,11 +125,11 @@ public class CSectionAttack extends BulletAttack implements IChargeableAttack {
     public @Nullable AttackContext createAttackContext(ServerPlayer player, Entity shooter) {
         return player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY)
                 .map(playerAbility -> {
-                    ResourceLocation colorRl = playerAbility.getBestBulletColor();
+                    var colorIds = playerAbility.getBulletColorIds();
                     Vec3 eyePos = player.position().add(0, player.getBbHeight() * 0.5, 0);
 
                     return AttackContext.builder(player, shooter).attackType(this)
-                            .color(colorRl).visuals(playerAbility.getBulletVisuals())
+                            .colors(colorIds).visuals(playerAbility.getBulletVisuals())
                             .trigger(new CompositeTrigger())
                             .position(eyePos).mainAxis(GeometryHelper.mainAxisFromRotation(player.getXRot(), player.getYRot()))
                             .damage((double) getDamage(player) * DAMAGE_PERCENTAGE)

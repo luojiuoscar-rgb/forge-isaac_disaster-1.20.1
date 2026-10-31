@@ -74,7 +74,7 @@ public class Technology2Attack extends AbstractLaserAttack implements Additional
     public @Nullable AttackContext createAttackContext(ServerPlayer player, Entity shooter) {
         return player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY)
                 .map(playerAbility -> {
-                    ResourceLocation colorRl = playerAbility.getBestBulletColor();
+                    var colorIds = playerAbility.getBulletColorIds();
                     Vec3 eyePos = player.getEyePosition().add(0, player.getBbHeight() * -0.15, 0);
                     // offset
                     Vec3 look = player.getLookAngle();
@@ -83,7 +83,7 @@ public class Technology2Attack extends AbstractLaserAttack implements Additional
                     eyePos = eyePos.add(left.scale(-0.5));
 
                     return AttackContext.builder(player, shooter).attackType(this)
-                            .color(colorRl).trigger(new CompositeTrigger())
+                            .colors(colorIds).trigger(new CompositeTrigger())
                             .position(eyePos).mainAxis(GeometryHelper.mainAxisFromRotation(player.getXRot(), player.getYRot()))
                             .range(getRange(player)).speed(getBulletSpeed(player)).build();
                 })

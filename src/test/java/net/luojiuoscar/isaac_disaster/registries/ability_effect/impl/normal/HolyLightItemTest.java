@@ -81,7 +81,7 @@ class HolyLightItemTest {
             effect.apply(context);
             boolean success = i % 2 == 0;
             assertEquals(success ? 2 : 0, triggers(tear).size());
-            assertEquals(success ? ModBulletColors.HOLY_LIGHT.getId() : ModBulletColors.BASE.getId(), tear.getColorRl());
+            assertEquals(success ? ModBulletColors.HOLY_LIGHT.getId() : ModBulletColors.BASE.getId(), tear.getColorId());
             assertEquals(i + 1, player.randomSource.rolls);
             if (success) {
                 assertSame(ModTriggerTypes.BULLET_HIT_ENTITY_AFTER, triggers(tear).get(0).getType());
@@ -91,7 +91,7 @@ class HolyLightItemTest {
     }
 
     @Test
-    void equalAndHigherPriorityColorsSurviveWithoutRemovingTheHolyEffect() throws Exception {
+    void effectTierOverridesBaseColorsAndKeepsTheHolyEffect() throws Exception {
         ensureColors();
         var effect = new HolyLightAttachment();
         for (var color : List.of(ModBulletColors.POISON, ModBulletColors.SACRED_HEART, ModBulletColors.IPECAC)) {
@@ -101,7 +101,7 @@ class HolyLightItemTest {
             context.set(ContextKeys.ATTACK_CONTEXT, tear);
             context.set(ContextKeys.EFFECT_ATTACHMENT_NODE, tear);
             effect.apply(context);
-            assertEquals(color.getId(), tear.getColorRl());
+            assertEquals(ModBulletColors.HOLY_LIGHT.getId(), tear.getColorId());
             assertEquals(2, triggers(tear).size());
         }
     }
@@ -117,7 +117,7 @@ class HolyLightItemTest {
         new HolyLightAttachment().apply(context);
         AttackContext child = parent.toBuilder().damage(3.5).build();
         assertEquals(2, triggers(child).size());
-        assertEquals(ModBulletColors.HOLY_LIGHT.getId(), child.getColorRl());
+        assertEquals(ModBulletColors.HOLY_LIGHT.getId(), child.getColorId());
         assertEquals(3.5F, child.getDamage());
         assertEquals(7F, parent.getDamage());
         assertEquals(1, player.randomSource.rolls, "Inheritance does not reroll");
@@ -134,7 +134,7 @@ class HolyLightItemTest {
             context.set(ContextKeys.EFFECT_ATTACHMENT_NODE, laser);
             effect.apply(context);
             assertEquals(0, player.randomSource.rolls);
-            assertEquals(ModBulletColors.BLOOD_TEAR.getId(), laser.getColorRl());
+            assertEquals(ModBulletColors.BLOOD_TEAR.getId(), laser.getColorId());
             assertEquals(1, triggers(laser).size());
             SimpleTrigger trigger = triggers(laser).get(0);
             assertSame(ModTriggerTypes.BULLET_HIT_ENTITY_AFTER, trigger.getType());
@@ -193,11 +193,14 @@ class HolyLightItemTest {
         for (var entry : List.of(ModBulletColors.BASE, ModBulletColors.BLOOD_TEAR, ModBulletColors.HOLY_LIGHT, ModBulletColors.POISON,
                 ModBulletColors.SACRED_HEART, ModBulletColors.IPECAC)) {
             if (!registry.containsKey(entry.getId())) {
-                int priority = entry == ModBulletColors.BASE ? 0 : entry == ModBulletColors.BLOOD_TEAR ? 5
-                        : entry == ModBulletColors.SACRED_HEART ? 60 : entry == ModBulletColors.IPECAC ? 100 : 20;
+                var priority = entry == ModBulletColors.BASE ? BulletColorPrio.BASE
+                        : entry == ModBulletColors.BLOOD_TEAR ? BulletColorPrio.BLOOD_TEAR
+                        : entry == ModBulletColors.SACRED_HEART ? BulletColorPrio.SACRED_HEART
+                        : entry == ModBulletColors.IPECAC ? BulletColorPrio.IPECAC
+                        : entry == ModBulletColors.HOLY_LIGHT ? BulletColorPrio.HOLY_LIGHT : BulletColorPrio.POISON;
                 int rgb = entry == ModBulletColors.BASE ? 0xE7C5E0 : entry == ModBulletColors.BLOOD_TEAR ? 0xCC171F
                         : entry == ModBulletColors.HOLY_LIGHT ? 0x99DDFF : entry == ModBulletColors.SACRED_HEART ? 0xFFFFFF : 0x5CA45C;
-                registry.register(entry.getId(), new BulletColor(rgb, 1, priority));
+                registry.register(entry.getId(), BulletColor.builder().color(rgb).alpha(1).priority(priority).build());
             }
         }
     }

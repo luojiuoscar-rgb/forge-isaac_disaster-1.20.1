@@ -116,7 +116,7 @@ public final class UranusGameTests {
                 if (type == ModAttackTypes.BRIMSTONE.get()) ScheduledFuncHelper.tick(f.level.getServer());
                 h.assertTrue(target.isAlive() && target.getHealth() == 1 && target.hasEffect(ModEffects.FROZEN.get()),
                         "Lethal context is retained for " + type.getId());
-                h.assertTrue(attack.getColorRl().equals(ModBulletColors.URANUS.getId()), "Lasers carry ice blue");
+                h.assertTrue(attack.getColorId().equals(ModBulletColors.URANUS.getId()), "Lasers carry ice blue");
                 target.discard();
             }
         }

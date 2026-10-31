@@ -12,7 +12,6 @@ import net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerTypes;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.TriggerModule;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraftforge.registries.RegistryManager;
 
 import java.util.List;
 
@@ -39,13 +38,6 @@ public final class LeadPencil extends TriggerModule {
 
     /** Applies the blood-tear tint without replacing a higher-priority projectile color. */
     public static void applyBloodColor(AttackContext attackContext) {
-        var registry = RegistryManager.ACTIVE.getRegistry(ModBulletColors.BULLET_COLOR_KEY);
-        if (registry == null) return;
-        var blood = registry.getValue(ModBulletColors.BLOOD_TEAR.getId());
-        if (blood == null) return;
-        var current = attackContext.getColorRl() == null ? null : registry.getValue(attackContext.getColorRl());
-        if (current == null || current.priority() < blood.priority()) {
-            attackContext.setColorRl(ModBulletColors.BLOOD_TEAR.getId());
-        }
+        attackContext.offerColor(ModBulletColors.BLOOD_TEAR.getId());
     }
 }

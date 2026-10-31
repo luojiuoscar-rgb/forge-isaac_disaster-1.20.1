@@ -14,7 +14,6 @@ import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackOrigin;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackPipelineMode;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackRequest;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackType;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
@@ -29,12 +28,12 @@ public class SadBomb extends BombRelated {
                 playerAbility -> {
                     AttackType attack = playerAbility.getAttackSelection().baseAttack();
 
-                    ResourceLocation colorRl = playerAbility.getBestBulletColor();
+                    var colorIds = playerAbility.getBulletColorIds();
 
                     int bulletCount = getBulletCount(bomb.getPower());
 
                     AttackContext ctx = AttackContext.builder(player, bomb.getBombEffectEntity())
-                            .color(colorRl).trigger(new CompositeTrigger())
+                            .colors(colorIds).trigger(new CompositeTrigger())
                             .position(pos).mainAxis(GeometryHelper.mainAxisFromRotation(bomb.getBombEffectEntity().getXRot(), bomb.getBombEffectEntity().getYRot()))
                             .range(attack.getRange(player)).speed(attack.getBulletSpeed(player)).build();
 

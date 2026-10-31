@@ -254,7 +254,7 @@ public final class FireMindGameTests {
             ModAttackTypes.TECHNOLOGY2.get().performAttack(List.of(laser));
             helper.assertTrue(target.hasEffect(ModEffects.BURNING.get()), "Laser after-hit attaches burning");
             helper.assertTrue(f.level.getBlockState(target.blockPosition()).is(Blocks.FIRE), "Lasers also place legal fire");
-            helper.assertTrue(laser.getColorRl().equals(ModBulletColors.BASE.getId()), "Laser color stays unchanged");
+            helper.assertTrue(laser.getColorId().equals(ModBulletColors.BASE.getId()), "Laser color stays unchanged");
             health(helper, target, 199.8F);
         }
         helper.succeed();

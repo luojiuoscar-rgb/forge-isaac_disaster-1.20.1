@@ -10,6 +10,7 @@ import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackContext;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackType;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.TestAttackTypes;
 import net.luojiuoscar.isaac_disaster.registries.bullet_color.BulletColor;
+import net.luojiuoscar.isaac_disaster.registries.bullet_color.BulletColorPrio;
 import net.luojiuoscar.isaac_disaster.registries.bullet_color.ModBulletColors;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerTypes;
 import net.minecraft.network.chat.Component;
@@ -35,29 +36,34 @@ class FireMindAttachmentTest {
         for (double amplifier : new double[]{1, 100}) {
             AttackContext attack = attack(TestAttackTypes.BULLET, ModBulletColors.BASE.getId());
             prepare(attack, amplifier);
-            assertEquals(ModBulletColors.FIRE_MIND.getId(), attack.getColorRl());
+            assertEquals(ModBulletColors.FIRE_MIND.getId(), attack.getColorId());
             assertEquals(List.of(ModTriggerTypes.BULLET_HIT_ENTITY_AFTER, ModTriggerTypes.BULLET_HIT_BLOCK),
                     triggers(attack).stream().map(SimpleTrigger::getType).toList());
         }
     }
 
     @Test
-    void equalAndHigherPriorityColorsRemainWhileTheBurningAttachmentSurvives() throws Exception {
+    void effectTierOverridesBaseColorsAndEqualRanksUseRegistryId() throws Exception {
         ensureColors();
         for (var color : List.of(ModBulletColors.HOLY_LIGHT, ModBulletColors.IPECAC)) {
             AttackContext attack = attack(TestAttackTypes.BULLET, color.getId());
             prepare(attack, 1);
-            assertEquals(color.getId(), attack.getColorRl());
+            assertEquals(ModBulletColors.FIRE_MIND.getId(), attack.getColorId());
             assertEquals(2, triggers(attack).size());
         }
     }
 
     @Test
     void lasersKeepTheirOriginalColorButReceiveBothCollisionHooks() throws Exception {
+        ensureColors();
+        IForgeRegistry<BulletColor> registry = RegistryManager.ACTIVE.getRegistry(ModBulletColors.BULLET_COLOR_KEY);
+        if (!registry.containsKey(ModBulletColors.BLOOD_TEAR.getId())) {
+            registry.register(ModBulletColors.BLOOD_TEAR.getId(), BulletColor.builder().color(0xCC171F).priority(BulletColorPrio.BLOOD_TEAR).build());
+        }
         for (AttackType type : List.of(TestAttackTypes.LASER, TestAttackTypes.BRIMSTONE)) {
             AttackContext attack = attack(type, ModBulletColors.BLOOD_TEAR.getId());
             prepare(attack, 1);
-            assertEquals(ModBulletColors.BLOOD_TEAR.getId(), attack.getColorRl());
+            assertEquals(ModBulletColors.BLOOD_TEAR.getId(), attack.getColorId());
             assertEquals(2, triggers(attack).size());
         }
     }
@@ -69,7 +75,7 @@ class FireMindAttachmentTest {
         prepare(parent, 1);
         AttackContext child = parent.toBuilder().damage(2.0).build();
         assertEquals(2, triggers(child).size());
-        assertEquals(ModBulletColors.FIRE_MIND.getId(), child.getColorRl());
+        assertEquals(ModBulletColors.FIRE_MIND.getId(), child.getColorId());
         assertEquals(2, child.getDamage());
         assertEquals(7, parent.getDamage());
     }
@@ -128,8 +134,10 @@ class FireMindAttachmentTest {
         for (var entry : List.of(ModBulletColors.BASE, ModBulletColors.FIRE_MIND,
                 ModBulletColors.HOLY_LIGHT, ModBulletColors.IPECAC)) {
             if (!registry.containsKey(entry.getId())) {
-                int priority = entry == ModBulletColors.BASE ? 0 : entry == ModBulletColors.IPECAC ? 100 : 20;
-                registry.register(entry.getId(), new BulletColor(entry == ModBulletColors.FIRE_MIND ? 0xFF9933 : 0xFFFFFF, 1, priority));
+                var priority = entry == ModBulletColors.BASE ? BulletColorPrio.BASE
+                        : entry == ModBulletColors.IPECAC ? BulletColorPrio.IPECAC
+                        : entry == ModBulletColors.HOLY_LIGHT ? BulletColorPrio.HOLY_LIGHT : BulletColorPrio.FIRE_MIND;
+                registry.register(entry.getId(), BulletColor.builder().color(entry == ModBulletColors.FIRE_MIND ? 0xFF9933 : 0xFFFFFF).alpha(1).priority(priority).build());
             }
         }
     }

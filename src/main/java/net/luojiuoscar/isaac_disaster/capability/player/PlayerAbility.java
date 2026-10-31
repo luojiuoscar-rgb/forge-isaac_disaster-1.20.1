@@ -6,8 +6,6 @@ import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackSelection;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackSelectionContext;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackSelector;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.tags.IChargeableAttack;
-import net.luojiuoscar.isaac_disaster.registries.bullet_color.BulletColor;
-import net.luojiuoscar.isaac_disaster.registries.bullet_color.ModBulletColors;
 import net.luojiuoscar.isaac_disaster.networking.ChargeBarSync;
 import net.luojiuoscar.isaac_disaster.system.familiar.FamiliarModifiers;
 import net.minecraft.nbt.CompoundTag;
@@ -15,8 +13,6 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraftforge.registries.IForgeRegistry;
-import net.minecraftforge.registries.RegistryManager;
 
 import java.util.*;
 
@@ -34,13 +30,12 @@ public class PlayerAbility {
 
     private final Map<ResourceLocation, Integer> attackType;
     private AttackSelection attackSelection;
-    private final LinkedHashMap<ResourceLocation, Integer> bulletColor; // priority-ordered color id : count
-    private ResourceLocation bestBulletColor;
+    private final Map<ResourceLocation, Integer> bulletColor;
     private final Map<ResourceLocation, Integer> bulletVisuals;
 
     public PlayerAbility() {
         attackType = new HashMap<>();
-        bulletColor = new LinkedHashMap<>();
+        bulletColor = new HashMap<>();
         bulletVisuals = new HashMap<>();
         init();
     }
@@ -54,7 +49,6 @@ public class PlayerAbility {
         familiarModifiers.clear();
         clearChargeStates();
 
-        bestBulletColor = ModBulletColors.BASE.getId();
 
         attackType.clear();
         bulletColor.clear();
@@ -68,7 +62,6 @@ public class PlayerAbility {
         this.spectral = source.spectral;
         this.controllable = source.controllable;
         familiarModifiers.copyFrom(source.familiarModifiers);
-        this.bestBulletColor = source.bestBulletColor;
 
         this.attackType.clear();
         this.attackType.putAll(source.attackType);
@@ -86,7 +79,6 @@ public class PlayerAbility {
         nbt.putInt("spectral", spectral);
         nbt.putInt("controllable", controllable);
         nbt.put("familiar_modifiers", familiarModifiers.save());
-        nbt.putString("best_bullet_color", bestBulletColor.toString());
 
         ListTag bulletTypeList = new ListTag();
         for (Map.Entry<ResourceLocation, Integer> entry : attackType.entrySet()) {
@@ -122,7 +114,6 @@ public class PlayerAbility {
         this.homing = nbt.getInt("homing");
         this.controllable = nbt.getInt("controllable");
         familiarModifiers.load(nbt.getCompound("familiar_modifiers"));
-        this.bestBulletColor = ResourceLocation.parse(nbt.getString("best_bullet_color"));
 
         attackType.clear();
         if (nbt.contains("bullet_types", Tag.TAG_LIST)) {
@@ -149,7 +140,6 @@ public class PlayerAbility {
             }
         }
 
-        sortBulletColors();
         bulletVisuals.clear();
         if (nbt.contains("bullet_visuals", Tag.TAG_LIST)) {
             for (Tag t : nbt.getList("bullet_visuals", Tag.TAG_COMPOUND)) {
@@ -301,17 +291,8 @@ public class PlayerAbility {
     }
 
 
-    public Map<ResourceLocation, Integer> getBulletColor(){
-        return new LinkedHashMap<>(bulletColor);
-    }
-
-    public void updateBestBulletColor() {
-        sortBulletColors();
-        this.bestBulletColor = bulletColor.isEmpty() ? ModBulletColors.BASE.getId() : bulletColor.keySet().iterator().next();
-    }
-
-    public ResourceLocation getBestBulletColor() {
-        return bestBulletColor;
+    public Set<ResourceLocation> getBulletColorIds() {
+        return Set.copyOf(bulletColor.keySet());
     }
 
     public void addBulletColor(ResourceLocation key, int count) {
@@ -323,7 +304,6 @@ public class PlayerAbility {
             bulletColor.put(key, r);
         }
 
-        updateBestBulletColor();
     }
 
     public void addBulletVisual(ResourceLocation id, int count) {
@@ -337,18 +317,4 @@ public class PlayerAbility {
         return Set.copyOf(bulletVisuals.keySet());
     }
 
-    private void sortBulletColors() {
-        IForgeRegistry<BulletColor> registry = RegistryManager.ACTIVE.getRegistry(ModBulletColors.BULLET_COLOR_KEY);
-        if (registry == null) return;
-        LinkedHashMap<ResourceLocation, Integer> sorted = new LinkedHashMap<>();
-        bulletColor.entrySet().stream()
-                .filter(entry -> entry.getValue() > 0 && registry.getValue(entry.getKey()) != null)
-                .sorted(Map.Entry.<ResourceLocation, Integer>comparingByKey((a, b) -> {
-                    int priority = Double.compare(registry.getValue(b).priority(), registry.getValue(a).priority());
-                    return priority != 0 ? priority : a.toString().compareTo(b.toString());
-                }))
-                .forEach(entry -> sorted.put(entry.getKey(), entry.getValue()));
-        bulletColor.clear();
-        bulletColor.putAll(sorted);
-    }
 }

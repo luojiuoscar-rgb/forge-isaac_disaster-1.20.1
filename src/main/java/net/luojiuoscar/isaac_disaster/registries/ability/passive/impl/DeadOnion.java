@@ -29,6 +29,7 @@ public class DeadOnion extends PassiveAbility {
         StatManager.addPiercing(player, 1);
         StatManager.addSpectral(player, 1);
         StatManager.addBulletColor(player, ModBulletColors.DEAD_ONION.getId(), 1);
+        StatManager.addBulletColor(player, ModBulletColors.SPECTRAL.getId(), 1);
     }
 
     @Override
@@ -39,6 +40,7 @@ public class DeadOnion extends PassiveAbility {
         StatManager.addPiercing(player, -1);
         StatManager.addSpectral(player, -1);
         StatManager.addBulletColor(player, ModBulletColors.DEAD_ONION.getId(), -1);
+        StatManager.addBulletColor(player, ModBulletColors.SPECTRAL.getId(), -1);
     }
 
     @Override

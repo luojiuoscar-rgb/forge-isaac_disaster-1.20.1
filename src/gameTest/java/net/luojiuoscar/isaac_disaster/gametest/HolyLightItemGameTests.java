@@ -212,7 +212,7 @@ public final class HolyLightItemGameTests {
             ModAttackTypes.TECHNOLOGY2.get().performAttack(List.of(laser));
             helper.assertTrue(f.strikes().size() == 1, "A successful laser hurt independently rolls a holy strike");
             health(helper, target, 193.8F); // 0.2 laser damage plus six holy damage.
-            helper.assertTrue(laser.getColorRl().equals(ModBulletColors.BASE.getId()), "The laser retains its original color");
+            helper.assertTrue(laser.getColorId().equals(ModBulletColors.BASE.getId()), "The laser retains its original color");
         }
         helper.succeed();
     }

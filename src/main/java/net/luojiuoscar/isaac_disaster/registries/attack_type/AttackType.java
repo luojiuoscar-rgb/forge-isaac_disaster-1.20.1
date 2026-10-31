@@ -6,6 +6,7 @@ import net.luojiuoscar.isaac_disaster.helper.GeometryHelper;
 import net.luojiuoscar.isaac_disaster.capability.player.PlayerAbilityProvider;
 import net.luojiuoscar.isaac_disaster.event.custom.misc.IsaacGetBulletCountEvent;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.CompositeTrigger;
+import net.luojiuoscar.isaac_disaster.registries.bullet_color.ModBulletColors;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.tags.IChargeableAttack;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
@@ -45,6 +46,8 @@ public abstract class AttackType {
 
     /** Root behavior family. A new root defaults to its own registered ID. */
     public ResourceLocation getRootId() { return getId(); }
+
+    public int getDefaultColor() { return ModBulletColors.DEFAULT_TEAR_COLOR; }
 
     public abstract List<AttackContext> getAttackContexts(ServerPlayer player, int bulletCount);
     /** Starts this type's complete attack; delegating types intentionally do nothing. */
@@ -87,11 +90,11 @@ public abstract class AttackType {
     public AttackContext createAttackContext(ServerPlayer player, Entity shooter) {
         return player.getCapability(PlayerAbilityProvider.PLAYER_ABILITY)
                 .map(playerAbility -> {
-                    ResourceLocation colorRl = playerAbility.getBestBulletColor();
+                    var colorIds = playerAbility.getBulletColorIds();
                     Vec3 eyePos = player.getEyePosition().add(0, player.getBbHeight() * -0.15, 0);
 
                     return AttackContext.builder(player, shooter)
-                            .color(colorRl).visuals(playerAbility.getBulletVisuals())
+                            .colors(colorIds).visuals(playerAbility.getBulletVisuals())
                             .trigger(new CompositeTrigger())
                             .position(eyePos).attackType(this).mainAxis(GeometryHelper.mainAxisFromRotation(player.getXRot(), player.getYRot()))
                             .range(getRange(player)).speed(getBulletSpeed(player)).build();

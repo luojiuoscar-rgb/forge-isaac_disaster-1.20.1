@@ -6,7 +6,7 @@ import net.luojiuoscar.isaac_disaster.registries.ability_effect.ContextKeys;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.ExecutableEffectContext;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.IExecutableEffect;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.SimpleTrigger;
-import net.luojiuoscar.isaac_disaster.registries.bullet_color.ModBulletColors;
+import net.luojiuoscar.isaac_disaster.registries.bullet_color.BulletColorSelection;
 import net.luojiuoscar.isaac_disaster.registries.ground_effect.GroundEffectType;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerTypes;
 import net.luojiuoscar.isaac_disaster.system.combat_effect.attachment.EffectAttachmentNode;
@@ -23,11 +23,9 @@ import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.registries.RegistryManager;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.UUID;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -39,7 +37,8 @@ public final class AquariusPuddleEffect extends AbstractGroundEffect implements 
     public static final double TRACKING_RANGE = 8.0D;
     private static final int SEARCH_INTERVAL = 4;
     private final CompositeTrigger statuses = new CompositeTrigger();
-    private ResourceLocation color;
+    private final BulletColorSelection colors = new BulletColorSelection();
+    private BulletColorSelection.Result resolvedColor;
     private boolean homing;
     @Nullable
     private LivingEntity trackingTarget;
@@ -64,20 +63,17 @@ public final class AquariusPuddleEffect extends AbstractGroundEffect implements 
     public boolean canRepaint() { return false; }
 
     @Override
-    public ResourceLocation getColorRl() { return color; }
-
-    @Override
-    public void setColorRl(ResourceLocation value) {
-        if (Objects.equals(color, value)) return;
-        color = value;
-        markDirty();
+    public void offerColor(ResourceLocation value) {
+        if (colors.offer(value)) {
+            resolvedColor = null;
+            markDirty();
+        }
     }
 
     @Override
     public int getColor() {
-        var registry = RegistryManager.ACTIVE.getRegistry(ModBulletColors.BULLET_COLOR_KEY);
-        var tint = registry == null || color == null ? null : registry.getValue(color);
-        return tint == null ? 0x3C9BE8 : tint.color();
+        if (resolvedColor == null) resolvedColor = colors.resolveForGroundEffect(0x3C9BE8);
+        return resolvedColor.color();
     }
 
     @Override

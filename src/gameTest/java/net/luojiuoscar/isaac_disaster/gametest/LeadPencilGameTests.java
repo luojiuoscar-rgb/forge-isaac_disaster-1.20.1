@@ -97,7 +97,7 @@ public final class LeadPencilGameTests {
                 helper.assertTrue(tear.getBulletSpeed() == reference.getBulletSpeed(), "Ordinary tear speed");
                 helper.assertTrue(tear.getBulletScale() == reference.getBulletScale(), "No lung size randomization");
                 helper.assertTrue(tear.getMainAxis().dot(reference.getMainAxis()) >= Math.cos(Math.toRadians(15)) - 1e-12, "Fifteen-degree cone around current aim");
-                helper.assertTrue(tear.getColorRl().equals(ModBulletColors.BLOOD_TEAR.getId()), "Unmodified burst is blood red");
+                helper.assertTrue(tear.getColorId().equals(ModBulletColors.BLOOD_TEAR.getId()), "Unmodified burst is blood red");
                 helper.assertTrue(tear.getTrajectorySpecs().stream().anyMatch(spec -> spec.id().equals(ModTrajectoryModules.GRAVITY.getId())), "Burst carries gravity");
             }
             for (AttackOrigin origin : List.of(AttackOrigin.ABILITY_EXTRA, AttackOrigin.SPLIT_CHILD, AttackOrigin.BULLET_SECONDARY, AttackOrigin.SYSTEM)) {
@@ -160,7 +160,7 @@ public final class LeadPencilGameTests {
                 publish(player, ModAttackTypes.C_SECTION.get(), AttackOrigin.PLAYER_PRIMARY, 1);
             }
             helper.assertTrue(burst.size() == 240, "Each threshold produces twelve independently prepared tears");
-            long poison = burst.stream().filter(tear -> tear.getColorRl().equals(ModBulletColors.POISON.getId())).count();
+            long poison = burst.stream().filter(tear -> tear.getColorId().equals(ModBulletColors.POISON.getId())).count();
             helper.assertTrue(poison > 0 && poison < burst.size(), "Poison is independently rolled rather than inherited");
             for (var tear : burst) {
                 for (var split : List.of(ModSplitModules.HAEMOLACRIA, ModSplitModules.CRICKETS_BODY,

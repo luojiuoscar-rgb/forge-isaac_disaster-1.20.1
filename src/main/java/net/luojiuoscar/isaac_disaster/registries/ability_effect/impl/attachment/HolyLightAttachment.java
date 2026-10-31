@@ -7,7 +7,6 @@ import net.luojiuoscar.isaac_disaster.registries.ability_effect.SimpleTrigger;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackContext;
 import net.luojiuoscar.isaac_disaster.registries.bullet_color.ModBulletColors;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerTypes;
-import net.minecraftforge.registries.RegistryManager;
 
 import java.util.List;
 
@@ -32,13 +31,7 @@ public final class HolyLightAttachment extends AttackPreparationEffect {
                     hit -> hit.getEntity().getRandom().nextDouble() < chance(hit.getEntity())));
         } else if (context.getEntity().getRandom().nextDouble() < chance(context.getEntity())) {
             attackContext.addSimpleTriggers(TEAR_TRIGGERS);
-            var registry = RegistryManager.ACTIVE.getRegistry(ModBulletColors.BULLET_COLOR_KEY);
-            if (registry == null) return;
-            var holy = registry.getValue(ModBulletColors.HOLY_LIGHT.getId());
-            var current = attackContext.getColorRl() == null ? null : registry.getValue(attackContext.getColorRl());
-            if (holy != null && (current == null || current.priority() < holy.priority())) {
-                attackContext.setColorRl(ModBulletColors.HOLY_LIGHT.getId());
-            }
+            attackContext.offerColor(ModBulletColors.HOLY_LIGHT.getId());
         }
     }
 }

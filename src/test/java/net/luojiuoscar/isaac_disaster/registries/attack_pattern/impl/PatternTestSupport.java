@@ -1,6 +1,7 @@
 package net.luojiuoscar.isaac_disaster.registries.attack_pattern.impl;
 
 import net.luojiuoscar.isaac_disaster.registries.attack_type.TestAttackTypes;
+import net.luojiuoscar.isaac_disaster.registries.bullet_color.BulletColorSelection;
 import net.luojiuoscar.isaac_disaster.registries.ability_effect.CompositeTrigger;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackContext;
 import net.luojiuoscar.isaac_disaster.registries.split_module.SplitSequence;
@@ -30,7 +31,7 @@ public final class PatternTestSupport {
         Method allocateInstance = unsafeClass.getMethod("allocateInstance", Class.class);
         AttackContext context = (AttackContext) allocateInstance.invoke(unsafe, AttackContext.class);
 
-        setObject(unsafe, context, "colorRl", null);
+        setObject(unsafe, context, "colors", new BulletColorSelection());
         setObject(unsafe, context, "visualIds", Set.of());
         setObject(unsafe, context, "trigger", new CompositeTrigger());
         setObject(unsafe, context, "trajectorySequence", new TrajectorySequence());

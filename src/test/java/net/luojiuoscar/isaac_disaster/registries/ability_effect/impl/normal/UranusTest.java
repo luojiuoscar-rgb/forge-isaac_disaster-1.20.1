@@ -11,6 +11,7 @@ import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackContext;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.AttackType;
 import net.luojiuoscar.isaac_disaster.registries.attack_type.TestAttackTypes;
 import net.luojiuoscar.isaac_disaster.registries.bullet_color.BulletColor;
+import net.luojiuoscar.isaac_disaster.registries.bullet_color.BulletColorPrio;
 import net.luojiuoscar.isaac_disaster.registries.bullet_color.ModBulletColors;
 import net.luojiuoscar.isaac_disaster.registries.bullet_visual.ModBulletVisuals;
 import net.luojiuoscar.isaac_disaster.registries.trigger_module.ModTriggerTypes;
@@ -41,7 +42,7 @@ class UranusTest {
         prepare(parent);
         AttackContext child = parent.toBuilder().damage(2.0).build();
         assertEquals(List.of(ModTriggerTypes.BULLET_HIT_ENTITY_AFTER, ModTriggerTypes.KILL_ENTITY), types(child));
-        assertEquals(ModBulletColors.URANUS.getId(), child.getColorRl());
+        assertEquals(ModBulletColors.URANUS.getId(), child.getColorId());
         assertTrue(child.getVisualIds().containsAll(parent.getVisualIds()));
         assertTrue(child.getVisualIds().contains(ModBulletVisuals.URANUS_ICE_TEAR.getId()));
         assertEquals(2, child.getDamage());
@@ -55,19 +56,19 @@ class UranusTest {
         for (AttackType type : List.of(TestAttackTypes.LASER, TestAttackTypes.BRIMSTONE)) {
             AttackContext attack = attack(type, ModBulletColors.BASE.getId());
             prepare(attack);
-            assertEquals(ModBulletColors.URANUS.getId(), attack.getColorRl());
+            assertEquals(ModBulletColors.URANUS.getId(), attack.getColorId());
             assertFalse(attack.getVisualIds().contains(ModBulletVisuals.URANUS_ICE_TEAR.getId()));
             assertEquals(2, types(attack).size());
         }
     }
 
     @Test
-    void higherAndEqualPriorityColorsStay() throws Exception {
+    void iceEffectTierOverridesBaseColor() throws Exception {
         ensureColors();
         for (var color : List.of(ModBulletColors.URANUS, ModBulletColors.IPECAC)) {
             AttackContext attack = attack(TestAttackTypes.BULLET, color.getId());
             prepare(attack);
-            assertEquals(color.getId(), attack.getColorRl());
+            assertEquals(ModBulletColors.URANUS.getId(), attack.getColorId());
         }
     }
 
@@ -134,7 +135,8 @@ class UranusTest {
         }
         for (var entry : List.of(ModBulletColors.BASE, ModBulletColors.URANUS, ModBulletColors.IPECAC)) {
             if (!registry.containsKey(entry.getId())) registry.register(entry.getId(),
-                    new BulletColor(0xA7E8FF, 1, entry == ModBulletColors.BASE ? 0 : entry == ModBulletColors.URANUS ? 30 : 100));
+                    BulletColor.builder().color(0xA7E8FF).alpha(1).priority(entry == ModBulletColors.BASE ? BulletColorPrio.BASE
+                            : entry == ModBulletColors.URANUS ? BulletColorPrio.URANUS : BulletColorPrio.IPECAC).build());
         }
     }
 }
